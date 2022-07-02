@@ -4,14 +4,14 @@ BZR Player is an audio player for Windows with the primary goal being able to pl
 
 <h3>SUPPORTED FORMATS</h3>
 Commodore 64	SID, PSID<br/>
-Amiga IFF/8SVX
-Audio Visual Research
-Berkeley/IRCAM/CARL
-Compressed AIFF
-NeXT .snd
-NIST SPHERE
-SampleVision
-Sun .au
+Amiga IFF/8SVX<br/>
+Audio Visual Research<br/>
+Berkeley/IRCAM/CARL<br/>
+Compressed AIFF<br/>
+NeXT .snd<br/>
+NIST SPHERE<br/>
+SampleVision<br/>
+Sun .au<br/>
 
 <h3>SUPPORTED PACKERS</h3>
 None right now
