@@ -2,9 +2,11 @@
 BZR Player is an audio player for Windows with the primary goal being able to play a lot of different file formats. It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008. The last 1.x version was released 2019-Apr-08. This is the beginning of the new 2.x version which is coded pretty much from scratch. Please add features and bugs here on Github.
 
 <h3>SUPPORTED FORMATS</h3>
-<b>Using Libsidplayfp</b>
+
+<b>Using Libsidplayfp</b><br/>
 Commodore 64	SID, PSID<br/>
-<b>Using Audio File Library</b>
+
+<b>Using Audio File Library</b><br/>
 Amiga IFF/8SVX<br/>
 Audio Visual Research<br/>
 Berkeley/IRCAM/CARL<br/>
@@ -13,7 +15,8 @@ NeXT .snd<br/>
 NIST SPHERE<br/>
 SampleVision<br/>
 Sun .au<br/>
-<b>Using ASAP</b>
+
+<b>Using ASAP</b><br/>
 Atari systems using POKEY sound chip<br/>
 Chaos Music Composer<br/>
 Chaos Music Composer -3-4-<br/>
