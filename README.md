@@ -33,5 +33,37 @@ Theta Music Composer 1.x 4-channel<br/>
 Theta Music Composer 1.x 8-channel<br/>
 Theta Music Composer 2.x<br/>
 
+<b>Using Game Music Emu</b><br/>
+AY - ZX Spectrum, Amstrad CPC<br/>
+GBS - Nintendo Game Boyr<br/>
+GYM - Sega Genesis, Mega Drive<br/>
+HES - NEC TurboGrafx-16, PC Engine<br/>
+KSS - MSX Home Computer, other Z80 systems<br/>
+NSF - NES Sound Format<br/>
+NSFE - NES Sound Format Extended<br/>
+SPC - Super Nintendo, Super Famicom<br/>
+VGM - Video Game Music File<br/>
+VGZ - Compressed Video Game Music File<br/>
+RSN - RAR archive with SPC songs<br/>
+
+<b>Using HivelyTracker</b><br/>
+AHX<br/>
+HivelyTracker<br/>
+
+<b>Using KB Media Player</b><br/>
+S98
+
+<b>Using Ken's Digital Music</b><br/>
+Ken's Digital Music
+
+<b>Using libpac</b><br/>
+SBStudio PAC
+
+<b>Using LibV2</b><br/>
+Farbrausch V2M
+
+<b>Using Organya</b><br/>
+Organya<br/>
+
 <h3>SUPPORTED PACKERS</h3>
 None right now
