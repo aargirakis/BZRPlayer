@@ -65,5 +65,116 @@ Farbrausch V2M
 <b>Using Organya</b><br/>
 Organya<br/>
 
+<b>Using UADE</b><br/>
+ActionAmics<br/>
+Activision Pro (MartinWalker)<br/>
+Alcatraz_Packer<br/>
+AM-Composer<br/>
+Anders Øland<br/>
+Andrew Parton<br/>
+Art And Magic<br/>
+ArtOfNoise-4V<br/>
+ArtOfNoise-8V<br/>
+Ashley Hogg<br/>
+BeathovenSynthesizer<br/>
+Ben Daglish SID<br/>
+BladePacker<br/>
+Channel Players<br/>
+Cinemaware<br/>
+CoreDesign<br/>
+CustomMade<br/>
+DariusZendeh<br/>
+Dave Lowe<br/>
+Dave Lowe New<br/>
+David Hanney<br/>
+Desire<br/>
+Digital Sonix And Chrome<br/>
+DigitalSoundStudio<br/>
+Dirk Bialluch<br/>
+Dynamic Synthesizer<br/>
+EarAche<br/>
+EMS (Editeur Musical Sequentiel)<br/>
+Fashion Tracker<br/>
+FredGray<br/>
+FutureComposer-BSI<br/>
+FuturePlayer<br/>
+GlueMon<br/>
+HowieDavies<br/>
+InStereo<br/>
+InStereo! 2.0<br/>
+JamCracker<br/>
+JankoMrsicFlogel<br/>
+JanneSalmijarviOptimizer<br/>
+JasonPage<br/>
+Jeroen Tel<br/>
+JesperOlsen<br/>
+JochenHippel-7V<br/>
+Kim Christensen<br/>
+KrisHatlelid<br/>
+LegglessMusicEditor<br/>
+Lionheart_Game<br/>
+MajorTom<br/>
+ManiacsOfNoise<br/>
+MarkII<br/>
+Mark_Cooksey<br/>
+Mark_Cooksey_Old<br/>
+MCMD<br/>
+Medley<br/>
+MIDI-Loriciel<br/>
+MikeDavies<br/>
+MMDC<br/>
+Mosh Packer<br/>
+MusicAssembler<br/>
+MusiclineEditor<br/>
+MusicMaker-8V<br/>
+Nick Pelling Packer<br/>
+NTSP-system<br/>
+onEscapee<br/>
+Paul Robotham<br/>
+Paul Tonge<br/>
+PaulShields<br/>
+PaulSummers<br/>
+PeterVerswyvelen<br/>
+ProfessionalSoundArtists<br/>
+PumaTracker<br/>
+Quartet PSG<br/>
+Quartet_ST<br/>
+RiffRaff<br/>
+RobHubbardOld<br/>
+SCUMM<br/>
+SeanConnolly<br/>
+SeanConran<br/>
+Silmarils<br/>
+SonicArranger<br/>
+SonicArranger-pc-all<br/>
+SonixMusicDriver<br/>
+SoundControl<br/>
+SoundFactory<br/>
+SoundImages<br/>
+SoundMaster<br/>
+SoundPlayer<br/>
+SoundProgrammingLanguage<br/>
+Special-FX<br/>
+Special-FX_ST<br/>
+SpeedyA1System<br/>
+SpeedySystem<br/>
+SteveBarrett<br/>
+SteveTurner (Jason Page Old)<br/>
+SUN-Tronic<br/>
+Synth (Synthesis)<br/>
+SynTracker<br/>
+TFMX<br/>
+TFMX-7V<br/>
+TFMX-Pro<br/>
+TFMX_ST<br/>
+TheMusicalEnlightenment<br/>
+ThomasHermann<br/>
+TimFollin<br/>
+TomyTracker<br/>
+Tronic (TronicTracker)<br/>
+VoodooSupremeSynthesizer<br/>
+WallyBeben<br/>
+YM-2149<br/>
+
 <h3>SUPPORTED PACKERS</h3>
 None right now
