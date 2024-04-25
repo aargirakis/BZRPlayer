@@ -158,15 +158,15 @@ FORMS += \
         mainwindow.ui \
         settingswindow.ui
 
-win32: LIBS += -L$$PWD/../../../FMOD/api/core/lib/x86/ -lfmod
+win32: LIBS += -L$$PWD/../../../../FMOD/api/core/lib/x86/ -lfmod
 LIBS += -L$$PWD/external/Qt-Advanced-Docking-System-4.0.0/bin -llibqtadvanceddocking
-INCLUDEPATH += $$PWD/../../../FMOD/api/core/inc \
-../../../libmodplug/ \
-../../../includes/ \
+INCLUDEPATH += $$PWD/../../../../FMOD/api/core/inc \
+../../../../libmodplug/ \
+../../../../includes/ \
 patternview/ \
 external/Qt-Advanced-Docking-System-4.0.0/src
 
-DEPENDPATH += $$PWD/../../../FMOD/api/core/inc \
+DEPENDPATH += $$PWD/../../../../FMOD/api/core/inc \
 $$PWD/external/Qt-Advanced-Docking-System-4.0.0/src
 
 # Default rules for deployment.
