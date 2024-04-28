@@ -42,12 +42,13 @@ void SoundManager::Init(int device, QString outputfilename)
     loadPlugin("codec_flod.dll",1);
 
     loadPlugin("codec_sndh-player.dll",1);
+    loadPlugin("codec_furnace.dll",1);
     loadPlugin("codec_uade.dll",1);
     //loadPlugin("codec_quartet.dll",1);
 
 
 
-    loadPlugin("codec_furnace.dll",99999);
+
 
     loadPlugin("codec_aac.dll",99999);
 
