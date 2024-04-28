@@ -795,6 +795,11 @@ void settingsWindow::loadSidplaySettings()
         //The file could not be opened
         useDefaults = true;
     }
+    //Hack, because "toggled" means changing value,
+    //so just to be sure, set it to both values so
+    //that on_checkBoxSIDSonglengthsEnabled_toggled is called
+    ui->checkBoxSIDSonglengthsEnabled->setChecked(false);
+    ui->checkBoxSIDSonglengthsEnabled->setChecked(true);
     if(!useDefaults)
     {
         while( getline( ifs , line) )
@@ -828,15 +833,29 @@ void settingsWindow::loadSidplaySettings()
                         ui->lineEditSonglengthOld->setText(value.c_str());
                     }
                 }
+                else if(word.compare("songlengths_enabled")==0)
+                {
+                    if(value.compare("true")==0)
+                    {
+                        ui->checkBoxSIDSonglengthsEnabled->setChecked(true);
+                    }
+                    else
+                    {
+                        ui->checkBoxSIDSonglengthsEnabled->setChecked(false);
+                    }
+                }
             }
         }
         ifs.close();
     }
     else
     {
+        ui->checkBoxSIDSonglengthsEnabled->setChecked(false);
+        ui->checkBoxSIDSonglengthsEnabled->setChecked(true);
         ui->lineEditSonglength->setText("/user/plugin/sid/Songlengths.md5");
         ui->lineEditSonglengthOld->setText("/user/plugin/sid/Songlengths.txt");
     }
+
 }
 void settingsWindow::saveSidplaySettings()
 {
@@ -845,12 +864,23 @@ void settingsWindow::saveSidplaySettings()
     ofstream ofs( filename.c_str() );
     string line;
 
+    QString songlengthsEnabled;
+    if(ui->checkBoxSIDSonglengthsEnabled->isChecked())
+    {
+        songlengthsEnabled="true";
+    }
+    else
+    {
+        songlengthsEnabled="false";
+    }
+
     if(ofs.fail())
     {
         //The file could not be opened
         return;
     }
 
+    ofs << "songlengths_enabled=" << songlengthsEnabled.toStdString().c_str() << "\n";
     ofs << "songlengths_path=" << ui->lineEditSonglength->text().toStdString().c_str() << "\n";
     ofs << "songlengths_path_old=" << ui->lineEditSonglengthOld->text().toStdString().c_str() << "\n";
     ofs.close();
@@ -2322,6 +2352,14 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxSongLengthUADE->setIcon(mainWindow->icons["checkbox-off"]);
     }
+    if(ui->checkBoxSIDSonglengthsEnabled->isChecked())
+    {
+        ui->checkBoxSIDSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBoxSIDSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+    }
     if(ui->checkBoxOnlyOneInstance->isChecked())
     {
         ui->checkBoxOnlyOneInstance->setIcon(mainWindow->icons["checkbox-on"]);
@@ -2443,6 +2481,26 @@ void settingsWindow::on_checkBoxSongLengthUADE_toggled(bool checked)
         ui->buttonBrowseUADESonglengths->setEnabled(false);
     }
 }
+
+
+void settingsWindow::on_checkBoxSIDSonglengthsEnabled_toggled(bool checked)
+{
+    ui->labelSidSongFilePath->setEnabled(checked);
+    ui->lineEditSonglength->setEnabled(checked);
+    ui->labelSidSongFilePathOld->setEnabled(checked);
+    ui->lineEditSonglengthOld->setEnabled(checked);
+    ui->buttonBrowseSonglengths->setEnabled(checked);
+    ui->buttonBrowseSonglengthsOld->setEnabled(checked);
+    if(ui->checkBoxSIDSonglengthsEnabled->isChecked())
+    {
+        ui->checkBoxSIDSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBoxSIDSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+    }
+}
+
 
 
 void settingsWindow::on_checkBoxFilterOpenMPT_toggled(bool checked)

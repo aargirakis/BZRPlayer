@@ -1087,7 +1087,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>600</x>
-      <y>31</y>
+      <y>101</y>
       <width>75</width>
       <height>29</height>
      </rect>
@@ -1103,7 +1103,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>25</y>
+      <y>95</y>
       <width>201</width>
       <height>41</height>
      </rect>
@@ -1116,7 +1116,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>30</y>
+      <y>100</y>
       <width>281</width>
       <height>31</height>
      </rect>
@@ -1132,7 +1132,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>70</y>
+      <y>140</y>
       <width>281</width>
       <height>31</height>
      </rect>
@@ -1148,7 +1148,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>66</y>
+      <y>136</y>
       <width>271</width>
       <height>41</height>
      </rect>
@@ -1161,7 +1161,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>600</x>
-      <y>71</y>
+      <y>141</y>
       <width>75</width>
       <height>29</height>
      </rect>
@@ -1177,7 +1177,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>150</y>
+      <y>220</y>
       <width>651</width>
       <height>41</height>
      </rect>
@@ -1202,7 +1202,7 @@ font-size:10px;
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>105</y>
+      <y>175</y>
       <width>201</width>
       <height>41</height>
      </rect>
@@ -1215,7 +1215,7 @@ font-size:10px;
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>110</y>
+      <y>180</y>
       <width>221</width>
       <height>31</height>
      </rect>
@@ -1228,7 +1228,7 @@ font-size:10px;
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>111</y>
+      <y>181</y>
       <width>126</width>
       <height>29</height>
      </rect>
@@ -1238,6 +1238,38 @@ font-size:10px;
     </property>
     <property name="text">
      <string>Download now</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSidSongLengthDatabase">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>201</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Song Length Database</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxSIDSonglengthsEnabled">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>60</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enabled</string>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
     </property>
    </widget>
   </widget>

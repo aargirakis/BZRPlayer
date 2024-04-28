@@ -209,6 +209,8 @@ private slots:
 
     void on_sliderNowPlayingFontSize_valueChanged(int value);
 
+    void on_checkBoxSIDSonglengthsEnabled_toggled(bool checked);
+
 private:
     void updateColorButtons();
 
