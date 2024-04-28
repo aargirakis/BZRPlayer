@@ -1,6 +1,9 @@
 <h1>BZR Player</h1>
 BZR Player is an audio player for Windows with the primary goal being able to play a lot of different file formats. It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008. The last 1.x version was released 2019-Apr-08. This is the beginning of the new 2.x version which is coded pretty much from scratch. Please add features and bugs here on Github.
-
+<br/><br/>
+Official page is http://bzrplayer.blazer.nu
+<br/>
+<br/>
 
 ![bzr2 0 27](https://user-images.githubusercontent.com/10993634/201359947-2633341d-9ff6-4a59-bb9e-ce1794df9cba.png)
 
