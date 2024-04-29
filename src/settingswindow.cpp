@@ -100,6 +100,11 @@ settingsWindow::settingsWindow(QWidget *parent) :
     ui->comboBoxDitherOpenMPT->addItem("Rectangular, 0.5 bit depth","2");
     ui->comboBoxDitherOpenMPT->addItem("Rectangular, 1 bit depth","3");
 
+    ui->SliderStereoSeparationOpenMPT->installEventFilter(this);
+
+
+    ui->sliderSilenceTimeOut->installEventFilter(this);
+
     ui->comboBoxReverb->installEventFilter(this);
     ui->comboBox->installEventFilter(this);
     ui->comboBoxFilter->installEventFilter(this);
@@ -226,6 +231,7 @@ settingsWindow::settingsWindow(QWidget *parent) :
 
 
 
+    ui->comboBoxSidSongFileUpdateFrequency->installEventFilter(this);
     ui->comboBoxSidSongFileUpdateFrequency->addItem("At every start","At every start");
     ui->comboBoxSidSongFileUpdateFrequency->addItem("Daily","Daily");
     ui->comboBoxSidSongFileUpdateFrequency->addItem("Weekly","Weekly");
@@ -547,7 +553,10 @@ bool settingsWindow::eventFilter(QObject *obj, QEvent *event) {
                 obj == ui->sliderNumberOfRasterBars ||
                 obj == ui->comboBoxFilterOpenMPT ||
                 obj == ui->comboBoxResamplingOpenMPT ||
-                obj == ui->comboBoxDitherOpenMPT
+                obj == ui->comboBoxDitherOpenMPT ||
+                obj == ui->SliderStereoSeparationOpenMPT ||
+                obj == ui->comboBoxSidSongFileUpdateFrequency ||
+                obj == ui->sliderSilenceTimeOut
             )
        )
 
