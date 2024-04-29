@@ -66,7 +66,6 @@ void ButtonOscilloscope::paintEvent(QPaintEvent *event)
             painter.setBrush(QBrush(enabledColor));
             painter.drawRect(event->rect());
             painter.end();
-            update();
         }
     }
     else
@@ -76,7 +75,6 @@ void ButtonOscilloscope::paintEvent(QPaintEvent *event)
         painter.setBrush(QBrush(disabledColor));
         painter.drawRect(event->rect());
         painter.end();
-        update();
     }
     drawChannelNumber(QString::number(channelNumber));
 
@@ -97,6 +95,7 @@ void ButtonOscilloscope::mouseReleaseEvent(QMouseEvent *event)
     {
         checked=!checked;
         channels->muteChannels();
+        update();
     }
 }
 void ButtonOscilloscope::drawOscilloVoice(const uint32_t* audio, int count, int index)
