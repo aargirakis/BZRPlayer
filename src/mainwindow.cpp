@@ -64,9 +64,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
     if(!instanceExists)
     {
         //Fonts needs to be added before the GUI
-        QFontDatabase::addApplicationFont(QApplication::applicationDirPath() + QDir::separator() + "Resources" + QDir::separator() + "Roboto-Medium.ttf");
-        QFontDatabase::addApplicationFont(QApplication::applicationDirPath() + QDir::separator() + "Resources" + QDir::separator() + "Roboto-Regular.ttf");
-        QFontDatabase::addApplicationFont(QApplication::applicationDirPath() + QDir::separator() + "Resources" + QDir::separator() + "RobotoMono-Regular.ttf");
+        QFontDatabase::addApplicationFont(QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() + "Roboto-Medium.ttf");
+        QFontDatabase::addApplicationFont(QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() + "Roboto-Regular.ttf");
+        QFontDatabase::addApplicationFont(QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() + "RobotoMono-Regular.ttf");
 
         ui->setupUi(this);
 
@@ -321,8 +321,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
         getEffect()->setResolutionWidth(settings.value("visualizer/resolutionwidth",320).toInt());
         getEffect()->setResolutionHeight(settings.value("visualizer/resolutionheight",256).toInt());
 
-        getEffect()->setScrollerFont(settings.value("scroller/font",QApplication::applicationDirPath() + "/resources/visualizer/bitmapfonts/angels_font.png").toString());
-        getEffect()->setPrinterFont(settings.value("printer/font",QApplication::applicationDirPath() + "/resources/visualizer/bitmapfonts/angels_font.png").toString());
+        getEffect()->setScrollerFont(settings.value("scroller/font",QApplication::applicationDirPath() + "/data/resources/visualizer/bitmapfonts/angels_font.png").toString());
+        getEffect()->setPrinterFont(settings.value("printer/font",QApplication::applicationDirPath() + "/data/resources/visualizer/bitmapfonts/angels_font.png").toString());
 
 
         getEffect()->setReflectionOpacity(settings.value("reflectionopacity",50).toInt());

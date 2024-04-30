@@ -401,11 +401,11 @@ settingsWindow::settingsWindow(QWidget *parent) :
     ui->tableWidgetPlugins->setRowCount(row);
     ui->fontWidget->setVisible(false);
     ui->fontWidgetPrinter->setVisible(false);
-    QDir directory(QApplication::applicationDirPath() + "/resources/visualizer/bitmapfonts");
+    QDir directory(QApplication::applicationDirPath() + "/data/resources/visualizer/bitmapfonts");
     QStringList images = directory.entryList(QStringList() << "*.thumb.png",QDir::Files);
     foreach(QString filename, images)
     {
-        QString fullfilename = QApplication::applicationDirPath() +"/resources/visualizer/bitmapfonts/" + filename;
+        QString fullfilename = QApplication::applicationDirPath() +"/data/resources/visualizer/bitmapfonts/" + filename;
         Album* album = new Album(filename);
         album->artwork=fullfilename;
         album->title=filename.replace(".thumb.png","");

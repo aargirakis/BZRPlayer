@@ -12,7 +12,7 @@ BitmapFont::BitmapFont()
 
 BitmapFont::BitmapFont(QString filename)
 {
-    QString fontDir = QApplication::applicationDirPath() + QDir::separator() + "Resources/trackerview/fonts" + QDir::separator();
+    QString fontDir = QApplication::applicationDirPath() + QDir::separator() + "data/resources/trackerview/fonts" + QDir::separator();
 
     QFile myFile(fontDir + filename+".inf");
     if (myFile.open(QIODevice::ReadOnly))
