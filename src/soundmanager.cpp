@@ -382,12 +382,12 @@ int SoundManager::getNumTags()
 
 void SoundManager::loadPlugin(string filename,int prority)
 {
-    result = FMOD_System_LoadPlugin(system,QString("plugin/" + QString(filename.c_str())).toLocal8Bit().data(), nullptr, prority);
+    result = FMOD_System_LoadPlugin(system,QString("data/plugin/" + QString(filename.c_str())).toLocal8Bit().data(), nullptr, prority);
     if (result != FMOD_OK)
     {
         //DebugWindow::instance()->addText(QString(filename.c_str()));
     }
-    ERRCHECK(result, QString("plugin/" + QString(filename.c_str())).toLocal8Bit().data());
+    ERRCHECK(result, QString("data/plugin/" + QString(filename.c_str())).toLocal8Bit().data());
 
     //DebugWindow::instance()->addText("GetNumPlugins " + QString::number(numplugins));
 }
@@ -524,7 +524,7 @@ bool SoundManager::LoadSound(QString filename)
     FMOD_CREATESOUNDEXINFO extrainfo1;
     memset( &extrainfo1, 0, sizeof(FMOD_CREATESOUNDEXINFO) );
     extrainfo1.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-    string dls = m_Info1->applicationPath + + "/plugin/fmod/gm.dls";
+    string dls = m_Info1->applicationPath + + "/data/plugin/fmod/gm.dls";
     extrainfo1.dlsname=dls.c_str();
     extrainfo1.userdata = m_Info1;
 
