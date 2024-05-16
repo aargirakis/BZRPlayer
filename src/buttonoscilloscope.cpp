@@ -36,6 +36,7 @@ void ButtonOscilloscope::setTextColor(QColor text)
 void ButtonOscilloscope::setChecked(bool c)
 {
     checked=c;
+    update();
 }
 void ButtonOscilloscope::paintEvent(QPaintEvent *event)
 {
