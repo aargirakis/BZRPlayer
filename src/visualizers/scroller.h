@@ -34,7 +34,6 @@ public:
    void setCustomScrolltextEnabled(bool);
    void setCustomScrolltext(QString);
     void setScrollerReflectionColor(QColor);
-    int replaceWithBackUpLetter(QString letter, QString charset);
 
     void setNumberOfStars(int);
     void setNumberOfRasterBars(int);
@@ -74,6 +73,7 @@ public:
     QColor getColorVisualizerBackground();
 
 
+    QString replaceIllegalLetters(QString);
 
     QString getStarsDirection();
     int getNumberOfStars();

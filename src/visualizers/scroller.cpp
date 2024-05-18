@@ -4,6 +4,7 @@
 #include <math.h>
 #include "qmessagebox.h"
 #include "qpainterpath.h"
+#include "qregularexpression.h"
 #include "soundmanager.h"
 Scroller::Scroller(QWidget* parent)
 {
@@ -392,10 +393,6 @@ void Scroller::paintScroller(QPainter *painter, QPaintEvent *event)
               x[n] = (letters - 1) * (fontWidth);
               int charPos;
               charPos = bitmapFontCharset.indexOf(m_scrollText.at(position));
-              if(charPos==-1)
-              {
-                  charPos = replaceWithBackUpLetter(m_scrollText.at(position),bitmapFontCharset);
-              }
               chars[n]=charPos;
               position++;
               if (position > m_scrollText.length()) position = 0;
@@ -983,9 +980,6 @@ int Scroller::getRasterBarsHeight()
 }
 void Scroller::setScrollText(QString text)
 {
-    //TODO add spaces at the end if it's shorter than the screen, Update: I don't think it's needed?
-    //int scrollLength = text.toUpper().trimmed().length();
-
     int pixelsPerCharacter = fontWidth;
     int spacesNeeded = (originalWidth/pixelsPerCharacter)+1;
     QString spaces=" ";
@@ -1000,10 +994,91 @@ void Scroller::setScrollText(QString text)
     {
         m_scrollText=spaces+QString(text.toUpper()).trimmed();
     }
-    //cout << "scrolltext 2: \"" << m_scrollText.toStdString().c_str() << "\"\n";
+    m_scrollText = replaceIllegalLetters(m_scrollText);
     letters=spacesNeeded+1; //Added one because some fontsizes will popup into the screen otherwise
-    //reset();
 }
+QString Scroller::replaceIllegalLetters(QString text)
+{
+    QString a1 = "ÀÁÂÃÄÅĀĂáàāãåä";
+    QString a2 = "A";
+    QString b1 = "ß";
+    QString b2 = "B";
+    QString c1 = "Çç";
+    QString c2 = "C";
+    QString e1 = "ËÉÈÊèéêë";
+    QString e2 = "E";
+    QString f1 = "ƒ";
+    QString f2 = "F";
+    QString i1 = "ÍÌÎÏìíîï";
+    QString i2 = "I";
+    QString n1 = "Ññ";
+    QString n2 = "N";
+    QString o1 = "ØÓÒÔÕÖòóôðøõöø";
+    QString o2 = "O";
+    QString u1 = "ÛÙÚÜùúüûµ";
+    QString u2 = "U";
+    QString x1 = "×";
+    QString x2 = "X";
+    QString y1 = "Ýýÿ";
+    QString y2 = "Y";
+    QString question1 = "¿";
+    QString question2 = "?";
+    QString exclamation1 = "¡";
+    QString exclamation2     = "!";
+    QString hyphen1 = "¯─~·";
+    QString hyphen2     = "-";
+    QString eq1 = "═‗≈";
+    QString eq2     = "=";
+    QString quote1 = "`´‘’“”";
+    QString quote2     = "\"";
+    QString one1 = "¹";
+    QString one2     = "1";
+    QString two1 = "²";
+    QString two2     = "2";
+    QString three1 = "³";
+    QString three2     = "3";
+    QString half1 = "½";
+    QString half2 = "1/2";
+    QString quarter1 = "¼";
+    QString quarter2 = "1/4";
+    QString threequarter1 = "¾";
+    QString threequarter2 = "3/4";
+    QString arrow1 = "→";
+    QString arrow2     = "->";
+
+
+    // Performance: Check for characters
+    if (text.contains(QRegularExpression("[" + QRegularExpression::escape("$/:" + a1 + b1 + c1 + e1 + f1 + i1 + n1 + o1 + u1 + x1 + y1 + question1 + exclamation1 + hyphen1 + eq1 + quote1 + one1 + two1 + three1 + arrow1 + half1 + quarter1 + threequarter1) + "]")))
+    {
+        text.replace(QRegularExpression("[ëêéè]"), "e");
+    }
+    text.replace(QRegularExpression("["+a1+"]"), a2);
+    text.replace(QRegularExpression("["+b1+"]"), b2);
+    text.replace(QRegularExpression("["+c1+"]"), c2);
+    text.replace(QRegularExpression("["+e1+"]"), e2);
+    text.replace(QRegularExpression("["+f1+"]"), f2);
+    text.replace(QRegularExpression("["+i1+"]"), i2);
+    text.replace(QRegularExpression("["+n1+"]"), n2);
+    text.replace(QRegularExpression("["+o1+"]"), o2);
+    text.replace(QRegularExpression("["+u1+"]"), u2);
+    text.replace(QRegularExpression("["+x1+"]"), x2);
+    text.replace(QRegularExpression("["+y1+"]"), y2);
+    text.replace(QRegularExpression("["+question1+"]"), question2);
+    text.replace(QRegularExpression("["+exclamation1+"]"), exclamation2);
+    text.replace(QRegularExpression("["+hyphen1+"]"), hyphen2);
+    text.replace(QRegularExpression("["+eq1+"]"), eq2);
+    text.replace(QRegularExpression("["+quote1+"]"), quote2);
+    text.replace(QRegularExpression("["+one1+"]"), one2);
+    text.replace(QRegularExpression("["+two1+"]"), two2);
+    text.replace(QRegularExpression("["+three1+"]"), three2);
+    text.replace(QRegularExpression("["+half1+"]"), half2);
+    text.replace(QRegularExpression("["+quarter1+"]"), quarter2);
+    text.replace(QRegularExpression("["+threequarter1+"]"), threequarter2);
+    text.replace(QRegularExpression("["+arrow1+"]"), arrow2);
+
+    return text;
+}
+
 void Scroller::setPrinterText(QString text)
 {
     reset();
@@ -1140,10 +1215,6 @@ bool Scroller::setScrollerFont(QString font)
         {
           int charPos;
           charPos = bitmapFontCharset.indexOf(m_scrollText.at(n));
-          if(charPos==-1)
-          {
-              charPos = replaceWithBackUpLetter(m_scrollText.at(n),bitmapFontCharset);
-          }
           chars[n]=charPos;
           x[n] = n * fontWidth;
         }
@@ -1186,10 +1257,6 @@ bool Scroller::setPrinterFont(QString font)
           {
             int charPos;
             charPos = bitmapFontCharsetPrinter.indexOf(row.at(n));
-            if(charPos==-1)
-            {
-                charPos = replaceWithBackUpLetter(row.at(n),bitmapFontCharsetPrinter);
-            }
             charsPrinter[pos] = charPos;
             pos++;
           }
@@ -1322,132 +1389,7 @@ void Scroller::setVerticalScrollPosition(int v)
     verticalScrollPosition=v;
     bottomY=0;
 }
-int Scroller::replaceWithBackUpLetter(QString letter, QString charset)
-{
-    int charPos=-1;
-    QString a1 = "ÀÁÂÃÄÅĀĂáàāãåä";
-    QString a2 = "A";
-    QString b1 = "ß";
-    QString b2 = "B";
-    QString c1 = "Çç";
-    QString c2 = "C";
-    QString e1 = "ËÉÈÊèéêë";
-    QString e2 = "E";
-    QString f1 = "ƒ";
-    QString f2 = "F";
-    QString i1 = "ÍÌÎÏìíîï";
-    QString i2 = "I";
-    QString n1 = "Ññ";
-    QString n2 = "N";
-    QString o1 = "ØÓÒÔÕÖòóôðøõöø";
-    QString o2 = "O";
-    QString u1 = "ÛÙÚÜùúüûµ";
-    QString u2 = "U";
-    QString x1 = "×";
-    QString x2 = "X";
-    QString y1 = "Ýýÿ";
-    QString y2 = "Y";
-    QString question1 = "¿";
-    QString question2 = "?";
-    QString exclamation1 = "¡";
-    QString exclamation2     = "!";
-    QString hyphen1 = "¯─~·";
-    QString hyphen2     = "-";
-    QString eq1 = "═‗≈";
-    QString eq2     = "=";
-    QString quote1 = "`´‘’“”";
-    QString quote2     = "\"";
-    QString one1 = "¹";
-    QString one2     = "1";
-    QString two1 = "²";
-    QString two2     = "2";
-    QString three1 = "³";
-    QString three2     = "3";
-    QString arrow1 = "→";
-    QString arrow2     = ">";
 
-    if(a1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(a2);
-    }
-    else if(b1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(b2);
-    }
-    else if(c1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(c2);
-    }
-    else if(e1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(e2);
-    }
-    else if(f1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(f2);
-    }
-    else if(i1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(i2);
-    }
-    else if(n1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(n2);
-    }
-    else if(o1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(o2);
-    }
-    else if(u1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(u2);
-    }
-    else if(x1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(x2);
-    }
-    else if(y1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(y2);
-    }
-    else if(question1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(question2);
-    }
-    else if(exclamation1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(exclamation2);
-    }
-    else if(hyphen1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(hyphen2);
-    }
-    else if(eq1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(eq2);
-    }
-    else if(quote1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(quote2);
-    }
-    else if(one1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(one2);
-    }
-    else if(two1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(two2);
-    }
-    else if(three1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(three2);
-    }
-    else if(arrow1.indexOf(letter)>=0)
-    {
-        charPos = charset.indexOf(arrow2);
-    }
-    return charPos;
-}
 void Scroller::transform3DPointsTo2DPoints (std::vector<Point3D> points, Point3D* axisRotations, std::vector<Point2D>* TransformedPointsArray)
 {
     // the array to hold transformed 2D points - the 3D points
