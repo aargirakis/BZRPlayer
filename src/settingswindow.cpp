@@ -339,7 +339,7 @@ settingsWindow::settingsWindow(QWidget *parent) :
     ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.9.0"));
     ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("libpac"));
 
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2.6.0"));
+    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2.7.1"));
     ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("libsidplayfp"));
 
     ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem(""));
