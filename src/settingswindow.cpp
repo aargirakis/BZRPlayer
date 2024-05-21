@@ -301,7 +301,7 @@ settingsWindow::settingsWindow(QWidget *parent) :
     ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("4.0"));
     ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("FLOD"));
 
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.6.2"));
+    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.6.3"));
     ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("Furnace"));
 
     ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.6.3"));
