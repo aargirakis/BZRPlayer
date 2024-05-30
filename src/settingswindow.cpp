@@ -708,7 +708,7 @@ void settingsWindow::loadUADESettings()
     //defaults
     ui->comboBoxFilter->setCurrentIndex(0);
     ui->checkBoxFilterEnabled->setChecked(false);
-    ui->sliderSilenceTimeOut->setValue(2);
+    ui->sliderSilenceTimeOut->setValue(5);
     ui->lineEditUADESonglength->setText("/uade.md5");
     ui->checkBoxSongLengthUADE->setChecked(true);
 
