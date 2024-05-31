@@ -41,7 +41,7 @@
 #define PLAYLISTFIELDSPLITTER "<><>::????"
 
 using namespace std;
-const QString MainWindow::VERSION = "2.0.71";
+const QString MainWindow::VERSION = "2.0.72";
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
     QMainWindow(parent),
