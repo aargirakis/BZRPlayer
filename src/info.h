@@ -2,7 +2,6 @@
 #define BZRINFO_H
 
 using namespace std;
-#include "libmodplug\modplug.h"
 #include "BaseRow.h"
 #include <vector>
 #include <iostream>
@@ -109,7 +108,6 @@ public:
         numChannelsStream=0;
         startSubSong=0;
         numSubsongs=0;
-        modPattern=nullptr;
         modPatternRestart=0;
         modPatternRows=0;
         modVUMeters=nullptr;
@@ -336,7 +334,7 @@ public:
     vector<unsigned char> modTrackPositions;
     vector<BaseRow*> modRows;
     vector< vector<BaseRow*> > patterns;
-    ModPlugNote* modPattern;
+
     unsigned int modPatternRows; //how many rows modPattern has
     unsigned int modPatternRestart;
     unsigned char* modVUMeters;

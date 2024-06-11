@@ -161,7 +161,6 @@ FORMS += \
 win32: LIBS += -L$$PWD/../../../../FMOD/api/core/lib/x86/ -lfmod
 LIBS += -L$$PWD/external/Qt-Advanced-Docking-System-4.0.0/bin -llibqtadvanceddocking
 INCLUDEPATH += $$PWD/../../../../FMOD/api/core/inc \
-../../../../libmodplug/ \
 ../../../../includes/ \
 patternview/ \
 external/Qt-Advanced-Docking-System-4.0.0/src
