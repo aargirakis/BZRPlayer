@@ -176,4 +176,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     resource.qrc
 
-RC_ICONS = resources/icon.ico
+CONFIG -= embed_manifest_exe
+
+RC_FILE = BZRPlayer.rc
