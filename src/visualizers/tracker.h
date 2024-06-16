@@ -3,7 +3,7 @@
 
 
 #include "AbstractPatternView.h"
-#include "Info.h"
+#include "info.h"
 #include "bitmapfont.h"
 class Tracker
 {
