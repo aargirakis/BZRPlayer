@@ -1,0 +1,10 @@
+How to use command-line JavaScript ASAP2WAV
+-------------------------------------------
+
+Enter the following command line to see the syntax:
+
+    Node.js: node asap2wav.js
+Rhino Shell: java -jar rhino-*.jar asap2wav.js
+
+Unless you specify the '-o/--output' option, the output filename will be
+constructed from the input filename with the extension changed to 'wav'.

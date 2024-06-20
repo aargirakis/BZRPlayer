@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<playlist version="1" xmlns="http://xspf.org/ns/0/">
+<extension application="http://zxtune.googlecode.com">
+  <property name="zxtune.app.playlist.name">Samples</property>
+  <property name="zxtune.app.playlist.version">1</property>
+</extension>
+<trackList>
+  <!-- AY-3-8910 -->
+  <track>
+    <location>Samples/AY-3-8910/Samba.as0</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/SANDRA.asc</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/AYMD39.ay</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/MEGAPAB2.AYC</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/Nostalgy.ftc</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/L.Boy.gtr</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/FL_SH_EI.psc</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/Illusion.psg</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/Calamba.psm</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/GoldenGift.pt1</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/PITON.pt2</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/Speccy2.pt3</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/taiobyte.sqt</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/EPILOG.st1</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/Kvs_Joke.st3</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/stracker.stc</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/iris_setup.stp</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/INEEDREST.ts</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/C_IMPROV.txt</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/Enlight3.vtx</location>
+  </track>
+  <track>
+    <location>Samples/AY-3-8910/Kurztech.ym</location>
+  </track>
+  <!-- CO12294 -->
+  <track>
+    <location>Samples/CO12294/Intro.sap</location>
+  </track>
+  <!-- DAC/ZX -->
+  <track>
+    <location>Samples/DAC/ZX/ducktale.chi</location>
+  </track>
+  <track>
+    <location>Samples/DAC/ZX/popcorn.dmm</location>
+  </track>
+  <track>
+    <location>Samples/DAC/ZX/Untitled.dst</location>
+  </track>
+  <track>
+    <location>Samples/DAC/ZX/mortal.m</location>
+  </track>
+  <track>
+    <location>Samples/DAC/ZX/TechCent.M</location>
+  </track>
+  <track>
+    <location>Samples/DAC/ZX/Maskarad.sqd</location>
+  </track>
+  <track>
+    <location>Samples/DAC/ZX/COMETDAY.str</location>
+  </track>
+  <!-- DAC/Amiga -->
+  <track>
+    <location>Samples/DAC/Amiga/Stormlord.ahx</location>
+  </track>
+  <!-- DAC/Sega -->
+  <track>
+    <location>Samples/DAC/Sega/m20.dsf</location>
+  </track>
+  <!-- HuC6270 -->
+  <track>
+    <location>Samples/HuC6270/raiden.hes?#1</location>
+  </track>
+  <!-- LR35902 -->
+  <track>
+    <location>Samples/LR35902/stripped.gbs</location>
+  </track>
+  <!-- MOS6581 -->
+  <track>
+    <location>Samples/MOS6581/Love_Is_a_Shield.sid</location>
+  </track>
+  <!-- Multi -->
+  <track>
+    <location>Samples/Multi/TheLionKing.gym</location>
+  </track>
+  <track>
+    <location>Samples/Multi/CyberMotion.mtc</location>
+  </track>
+  <track>
+    <location>Samples/Multi/EarthwormJim.vgm</location>
+  </track>
+  <track>
+    <location>Samples/Multi/MSX_Fan.kss</location>
+  </track>
+  <!-- RP2A0X -->
+  <track>
+    <location>Samples/RP2A0X/knifus.nsf</location>
+  </track>
+  <track>
+    <location>Samples/RP2A0x/SuperContra.nsfe?#15</location>
+  </track>
+  <!-- SAA1099 -->
+  <track>
+    <location>Samples/SAA1099/axel.cop</location>
+  </track>
+  <!-- SPC700 -->
+  <track>
+    <location>Samples/SPC700/ala-16.spc</location>
+  </track>
+  <!-- YM2203 -->
+  <track>
+    <location>Samples/YM2203/ducktales1_moon.tf0</location>
+  </track>
+  <track>
+    <location>Samples/YM2203/unbeliev.tfc</location>
+  </track>
+  <track>
+    <location>Samples/YM2203/mass_production.tfd</location>
+  </track>
+  <track>
+    <location>Samples/YM2203/disco.tfe</location>
+  </track>
+</trackList>
+</playlist>

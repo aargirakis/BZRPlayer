@@ -1,0 +1,4 @@
+All other code is licensed under the GNU GPL (see file COPYING.GPL) except:
+
+ - Powerpacker code is in public domain (see ppdepack.c)
+ - Stonecracker (S404) code is in public domain (s404_dec.c)

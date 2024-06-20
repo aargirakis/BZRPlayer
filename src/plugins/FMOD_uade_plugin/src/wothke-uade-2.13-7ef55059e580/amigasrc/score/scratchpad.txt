@@ -1,0 +1,231 @@
+playing around with shared library loading.. - code meanwhile replaced with score.s side impl..
+just keeping it here for now - as long as the stonepacker.library songs still dont work..
+
+-----------------------------------------------------------------------------------------------
+
+  case AMIGAMSG_LOADLIB_SIZE: {
+	uint32_t name = uade_get_u32(0x204);
+	if (!uade_valid_string(name)) {
+		fprintf(stderr, "uade: LoadLibrary - name* in invalid address range.\n");
+		break;
+	}
+	src = uade_get_u32(0x208);
+	if (!valid_address(src<<2, 1)) {
+		fprintf(stderr, "uade: LoadLibrary - BPTR in invalid address range.\n");
+		break;
+	}
+	dst = uade_get_u32(0x20c);
+	if (!valid_address(dst, 4)) {
+		fprintf(stderr, "uade: LoadLibrary - invalid dst address range.\n");
+		break;
+	}
+	load_library_size((const char*)get_real_address(name), intSwapEndian(src), intSwapEndian(dst));
+  } break;
+  case AMIGAMSG_LOADLIB: {
+	uint32_t name = uade_get_u32(0x204);
+	if (!uade_valid_string(name)) {
+		fprintf(stderr, "uade: LoadLibrary - name* in invalid address range.\n");
+		break;
+	}
+	src = uade_get_u32(0x208);
+	if (!valid_address(src<<2, 1)) {
+		fprintf(stderr, "uade: LoadLibrary - BPTR in invalid address range.\n");
+		break;
+	}
+	uint32_t dstbuf= uade_get_u32(0x20c);
+	if (!valid_address(dstbuf, 4)) {
+		fprintf(stderr, "uade: LoadLibrary - invalid dstbuf address range.\n");
+		break;
+	}
+	dst = uade_get_u32(0x210);
+	if (!valid_address(dst, 4)) {
+		fprintf(stderr, "uade: LoadLibrary - invalid dst address range.\n");
+		break;
+	}
+	load_library((const char*)get_real_address(name), intSwapEndian(src), intSwapEndian(dstbuf), intSwapEndian(dst));
+  } break;
+
+--------------------------
+// this is what the amiga's "loadseg" BCPL garbage API's return value points to
+struct __attribute__((__packed__)) SegmentBPCL {
+	uint32_t seg_next;
+	uint8_t seg_data;
+};
+
+// whereas the allocated/underlying data structure is actually this:
+struct __attribute__((__packed__)) Segment {
+	uint32_t length;
+	struct SegmentBPCL seg_bpcl; 
+};
+
+struct __attribute__((__packed__)) InitTable {
+    ULONG		libBaseSize;
+    APTR		functionTable;
+    APTR		dataTable;
+    APTR		initLibTable;
+};
+
+
+// structure of the *.library file after hunk-load into memory
+struct __attribute__((__packed__)) LibraryFile {
+	uint32_t			dummyStartProg;	// returns -1 to signal that this cannot be run as an executable
+	struct Resident 	resident;
+	// the below section is also pointed to by resident.rt_Init
+	// unclear if this layout is always fixed - better always bootstrap via
+	// the pointers from resident (etc)
+	struct InitTable 	initTab;
+	// then comes the funtion table.. specifically pointed to by "functionTable"
+};
+
+
+uint8_t* get_segment_data(uint32_t alb_segListPtr) {
+	struct Segment *seg = (struct Segment *)get_real_address((intSwapEndian(alb_segListPtr)<<2) - 4);
+	return (uint8_t*)&(seg->seg_bpcl.seg_data);
+}
+
+
+uint16_t get_lib_numfuncs(struct LibraryFile *lf) {
+	struct InitTable* initTab = &(lf->initTab);	
+	uint32_t refInitTab = get_real_address(intSwapEndian(lf->resident.rt_Init));
+	
+	if ((uint32_t)initTab == (uint32_t)refInitTab) {
+		uint32_t* ftab= get_real_address(intSwapEndian(initTab->functionTable));
+		uint16_t count = 0;		
+		while (*ftab != 0xffffffff) {
+			count++;
+			ftab++;
+		}		
+	//	fprintf(stderr, "     library has %d functions\n", count);
+		return count;
+	} else {
+		fprintf(stderr, "error: unexpected InitTable pointer mismatch %x -> %x\n", initTab, refInitTab);
+		return 0;
+	}
+}
+
+// size in bytes needed to alloc the library struct (etc)
+uint32_t get_libsize(struct LibraryFile *lf) {
+	struct InitTable* initTab = &(lf->initTab);	
+	
+	int n = get_lib_numfuncs(lf);
+	int ftab =  n * 6;
+	int lstruct = intSwapEndian(initTab->libBaseSize); 
+	
+//fprintf(stderr, "n: %d ftab: %d lstruct; %d\n", n, ftab, lstruct);
+	return ftab +		// function table
+						// <= lib's baseaddress will point here
+			lstruct; 	// "subclassed" Library struct
+}
+/*
+* @param alb_segListPtr input: an amigaland BPTR to a SegList
+* @param al_destAddr output: an amigaland addr where to write the size (needed to alloc the Library)
+*/
+void load_library_size(const char* name, uint32_t alb_segListPtr, uint32_t al_destPtrAddr) {
+	
+	struct LibraryFile *lf= (struct LibraryFile*)get_segment_data(alb_segListPtr);
+	int32_t *sizePtr= (uint32_t *)get_real_address(intSwapEndian(al_destPtrAddr));
+	
+	if (wordSwapEndian(lf->resident.rt_MatchWord) == RTC_MATCHWORD) {
+		const char* n= (const char*)get_real_address(intSwapEndian(lf->resident.rt_Name));
+	//	const char* n= (const char*)get_real_address(intSwapEndian(lf->resident.rt_IdString));		
+		fprintf(stderr, "installing: %s\n", n);
+		
+		uint32_t libAllocSize= get_libsize(lf);
+		*sizePtr = intSwapEndian(libAllocSize);
+	// fprintf(stderr, "	allocating %d bytes for library base; sizeof(Library): %d\n", libAllocSize, sizeof(struct Library));
+		
+	} else {
+		fprintf(stderr, "fatal error: %s has unexpected input format\n", name);
+		*sizePtr = -1;
+	}	
+}
+
+void initLibraryStruct(struct Library* library, uint8_t* patchInsts) {
+	// poor man's version of what exec_lib/InitStruct() does - but limited to the 
+	// few special cases used in stonepacker.library
+	
+	uint8_t* base = (uint8_t*) library;
+	
+	uint8_t offset;
+	uint8_t al_byteVal;
+	uint16_t al_wordVal;
+	uint32_t al_longVal;
+	
+	int patchCount = 0;
+	
+	while (*patchInsts) {
+		switch (*patchInsts++) {
+			case 0xa0:	// byte
+				offset = *patchInsts++;
+				al_byteVal=	*patchInsts++;
+				patchInsts++;	// align
+				
+				*(base+offset) = al_byteVal;
+				break;
+			case 0x90:	// word
+				offset = *patchInsts++;
+				al_wordVal=	*((uint16_t*)patchInsts);
+				patchInsts+= 2;
+				
+				*(uint16_t*)(base+offset) = al_wordVal;
+				break;
+			case 0x80:	// long
+				offset = *patchInsts++;
+				al_longVal=	*((uint32_t*)patchInsts);
+				patchInsts+= 4;
+				
+				*(uint32_t*)(base+offset) = al_longVal;
+				break;
+			default:
+				// lets wait and see if there are more..
+				fprintf(stderr, "error: unsupported patch tag\n");
+				return;
+		}
+		patchCount++;		
+	}
+	fprintf(stderr, "	applied %d library initialization patches\n", patchCount);
+}
+/*
+* @param alb_segListPtr input: amigaland BPTR to a SegList
+* @param al_destBufAddr input: amigaland addr where the memory allocated for the Library is available
+* @param al_destAddr output: an amigaland addr where to write the result library-base-address
+*/
+void load_library(const char* name, uint32_t alb_segListPtr, uint32_t al_destBufAddr, uint32_t al_destPtrAddr) {
+	// checks have already benn done in load_library_size so skip them here
+	struct LibraryFile *lf= (struct LibraryFile*)get_segment_data(alb_segListPtr);
+	
+	uint8_t* buf= (uint32_t*) get_real_address(intSwapEndian(al_destBufAddr));
+	
+	// init function table
+	struct InitTable* initTab = &(lf->initTab);	
+	uint32_t* ftab = get_real_address(intSwapEndian(initTab->functionTable));
+	
+	uint32_t flen = get_lib_numfuncs(lf);
+	
+	for (int i = 0; i<flen; i++) {
+		(*(uint16_t*)buf) = 0xf94e; // opcode: 4ef9 JMP to absolute address (switched byte order)
+		*(uint32_t*)(buf+2) = ftab[flen-1 -i];	// just copy amiga->amiga
+		buf+= 6;
+	}
+	
+	struct Library *library= (struct Library *)buf;
+	
+	// just in case.. might be overwritten by the libs InitLib
+	library->lib_Node.ln_Type = NT_LIBRARY;
+	
+	// lib_NegSize+lib_PosSize = total allocated size
+	library->lib_NegSize = intSwapEndian(flen*6);
+	library->lib_PosSize = initTab->libBaseSize;
+	
+	library->lib_Version = lf->resident.rt_Version;
+	library->lib_IdString = lf->resident.rt_IdString;
+
+//	library->lib_OpenCnt = wordSwapEndian(0x1122);	// just avoid somebody trying to trash it
+	
+ 	initLibraryStruct(library, (uint8_t*)get_real_address(intSwapEndian(initTab->dataTable)));
+	
+	
+	uint32_t* baseAddrPtr= (uint32_t*) get_real_address(intSwapEndian(al_destPtrAddr));
+	*baseAddrPtr = intSwapEndian(intSwapEndian(al_destBufAddr) + flen*6);	// point to Library structure
+
+}

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SingleItemContextMenu</class>
+ <widget class="QMenu" name="SingleItemContextMenu">
+  <addaction name="PlayAction"/>
+  <addaction name="DeleteAction"/>
+  <addaction name="CropAction"/>
+  <addaction name="separator"/>
+  <addaction name="DelDupsAction"/>
+  <addaction name="SelectionSubmenu"/>
+  <addaction name="separator"/>
+  <addaction name="ExportAction"/>
+  <addaction name="ConvertAction"/>
+  <addaction name="SaveAsAction"/>
+  <addaction name="separator"/>
+  <addaction name="CopyToClipboardAction"/>
+  <addaction name="PropertiesAction"/>
+  <action name="PlayAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/playback/play.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Play</string>
+   </property>
+  </action>
+  <action name="DeleteAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/playlist/delete.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="CropAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/playlist/crop.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Crop</string>
+   </property>
+  </action>
+  <action name="DelDupsAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/playlist/delduplicates.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Remove duplicates of</string>
+   </property>
+  </action>
+  <widget class="QMenu" name="SelectionSubmenu">
+   <property name="title">
+    <string>Select</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/playlist/select.png</normalon>
+    </iconset>
+   </property>
+   <addaction name="SelRipOffsAction"/>
+   <addaction name="SelSameTypesAction"/>
+   <addaction name="SelSameFilesAction"/>
+  </widget>
+  <action name="SelRipOffsAction">
+   <property name="text">
+    <string>Rip-offs of this item</string>
+   </property>
+  </action>
+  <action name="SelSameTypesAction">
+   <property name="text">
+    <string>Items with the same type</string>
+   </property>
+  </action>
+  <action name="SelSameFilesAction">
+   <property name="text">
+    <string>Items from the same file</string>
+   </property>
+  </action>
+  <action name="CopyToClipboardAction">
+   <property name="text">
+    <string>Copy full path</string>
+   </property>
+  </action>
+  <action name="ExportAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/playlist/export.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Export to file</string>
+   </property>
+  </action>
+  <action name="ConvertAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/playlist/convert.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Convert</string>
+   </property>
+  </action>
+  <action name="SaveAsAction">
+   <property name="text">
+    <string>Save as...</string>
+   </property>
+  </action>
+  <action name="PropertiesAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/playlist/info.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Properties</string>
+   </property>
+  </action>
+ </widget>
+</ui>

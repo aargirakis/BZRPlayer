@@ -1,0 +1,117 @@
+cheatsheet for the binary Eagleplayer tags used in player files (see enums
+in EaglePlayer.i and DeliPlayer.i):
+
+
+Deliplayer Tags:
+
+80004454	DTP_InternalPlayer		; obsolete
+80004455	DTP_CustomPlayer		; player is a customplayer
+80004456	DTP_RequestDTVersion		; minimum DeliTracker version needed
+80004457	DTP_RequestKickVersion		aka DTP_RequestV37
+80004458	DTP_PlayerVersion		; actual player version & revision
+80004459	DTP_PlayerName			; name of this player
+8000445A	DTP_Creator			; misc string
+8000445B	DTP_Check1			; Check Format before loading
+8000445C	DTP_Check2			; Check Format after file is loaded
+8000445D	DTP_ExtLoad			; Load additional files
+8000445E	DTP_Interrupt			; Interrupt routine
+8000445F	DTP_Stop			; Clear Patterncounter
+80004460	DTP_Config			; Config Player
+80004461	DTP_UserConfig			; User-Configroutine
+80004462	DTP_SubSongRange		; Get min&max subsong number
+80004463	DTP_InitPlayer			; Initialisize the Player
+80004464	DTP_EndPlayer			; Player clean up
+80004465	DTP_InitSound			; Soundinitialisation routine
+80004466	DTP_EndSound			; End sound
+80004467	DTP_StartInt			; Start interrupt
+80004468	DTP_StopInt			; Stop interrupt
+80004469	DTP_Volume			; Set Volume
+8000446A	DTP_Balance			; Set Balance
+8000446B	DTP_Faster			; Incease playspeed
+8000446C	DTP_Slower			; Decrease playspeed
+8000446D	DTP_NextPatt			; Jump to next pattern
+8000446E	DTP_PrevPatt			; Jump to previous pattern
+8000446F	DTP_NextSong			; Play next subsong
+80004470	DTP_PrevSong			; Play previous subsong
+80004471	DTP_SubSongTest			; Test, if given subsong is vaild
+80004472	DTP_NewSubSongRange		; enhanced replacement for DTP_SubSongRange
+80004473	DTP_DeliBase			; the address of a pointer where DT
+80004474	DTP_Flags			; misc Flags (see below)
+80004475	DTP_CheckLen			; Length of the Check Code
+80004476	DTP_Description			; misc string
+80004477	DTP_Decrunch			; pointer to Decrunch Code
+80004478	DTP_Convert			; pointer to Converter Code
+80004479	DTP_NotePlayer			; pointer to a NotePlayer Structure
+8000447A	DTP_NoteStruct			; the address of a pointer to the
+8000447B	DTP_NoteInfo			; a pointer where DT stores a pointer
+8000447C	DTP_NoteSignal			; pointer to NoteSignal code
+8000447D	DTP_Process			; pointer to process entry code
+8000447E	DTP_Priority			; priority of the process
+8000447F	DTP_StackSize			; stack size of the process
+80004480	DTP_MsgPort			; a pointer where DT stores a pointer
+80004481	DTP_Appear			; open your window, if you can
+80004482	DTP_Disappear			; go dormant
+80004483	DTP_ModuleName			; get the name of the current module
+80004484	DTP_FormatName			; get the name of the module format
+80004485	DTP_AuthorName			; not implemented yet
+80004486	DTP_InitNote			; NoteStruct initialization
+80004487	DTP_NoteAllocMem	* allocates memory for module
+80004488	DTP_NoteFreeMem		* frees module-memory
+80004489	DTP_PlayerInfo		* a pointer where DT stores a pointer
+8000448A	DTP_Patterns		* FPTR to a pattern-count routine
+8000448B	DTP_Duration		* FPTR to a duration calc routine
+8000448C	DTP_SampleData		* FPTR to a sample-info routine
+8000448D	DTP_MiscText		* FPTR to a misc-text routine
+
+
+
+
+New EaglePlayer Tags:
+
+80004550	EP_Get_ModuleInfo 
+80004551	EP_Free_ModuleInfo
+80004552	EP_Voices
+80004553	EP_SampleInit
+80004554	EP_SampleEnd
+80004555	EP_Save
+80004556	EP_ModuleChange
+80004557	EP_ModuleRestore
+80004558	EP_StructInit
+80004559	EP_StructEnd
+8000455a	EP_LoadPlConfig
+8000455b	EP_SavePlConfig
+8000455c	EP_GetPositionNr
+8000455d	EP_SetSpeed
+8000455e	EP_Flags
+8000455f	EP_KickVersion
+80004560	EP_PlayerVersion
+80004561	EP_CheckModule
+80004562	EP_EjectPlayer
+80004563	EP_Date
+80004564	EP_Check3
+80004565	EP_SaveAsPT
+80004566	EP_NewModuleInfo
+80004567	EP_FreeExtLoad
+80004568	EP_PlaySample
+80004569	EP_PatternInit
+8000456a	EP_PatternEnd
+8000456b	EP_Check4
+8000456c	EP_Check5
+8000456d	EP_Check6
+8000456e	EP_CreatorLNr
+8000456f	EP_PlayerNameLNr
+80004570	EP_PlayerInfo
+80004571	EP_PlaySampleInit
+80004572	EP_PlaySampleEnd
+80004573	EP_InitAmplifier
+80004574	EP_CheckSegment
+80004575	EP_Show
+80004576	EP_Hide
+80004577	EP_LocaleTable
+80004578	EP_Helpnodename
+80004579	EP_AttnFlags
+8000457a	EP_EagleBase
+8000457b	EP_Check7
+8000457c	EP_Check8
+8000457d	EP_SetPlayFrequency
+8000457e	EP_SamplePlayer

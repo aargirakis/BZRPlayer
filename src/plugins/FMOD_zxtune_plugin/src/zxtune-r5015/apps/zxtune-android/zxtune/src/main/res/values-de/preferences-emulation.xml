@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- emulation -->
+  <string name="time_0s">Nein</string>
+  <string name="time_1s">1 Sekunde</string>
+  <string name="time_2s">2 Sekunden</string>
+  <string name="time_3s">3 Sekunden</string>
+  <string name="time_4s">4 Sekunden</string>
+  <string name="time_5s">5 Sekunden</string>
+  <string name="time_10s">10 Sekunden</string>
+  <string name="time_15s">15 Sekunden</string>
+
+    <!-- common -->
+  <string name="pref_interpolation">Interpolierung</string>
+  <string-array name="pref_interpolation_entries">
+    <item>Nein</item>
+    <item>Leistung</item>
+    <item>Qualität <b>(hohe CPU-last)</b></item>
+  </string-array>
+  
+  <!-- ay/ym -->
+  <!-- zxtune.core.aym.clockrate -->
+  <string name="pref_zxtune_aym_clockrate_title">Taktrate</string>
+  <!-- zxtune.core.aym.type -->
+  <string name="pref_zxtune_aym_type_title">Typ</string>
+  <!-- zxtun.core.aym.layout -->
+  <string name="pref_zxtune_aym_layout_title">Kanäle</string>
+  
+  <!-- dac -->
+  <string name="pref_zxtune_dac_title">Digitalklang</string>
+  
+  <!-- sid -->
+  <string  name="pref_zxtune_sid_filter_title">Filter-Emulator</string>
+
+  <!-- other -->
+  <string name="pref_zxtune_other_title">Sonstiges</string>
+  <!-- zxtune.core.plugins.default_duration -->
+  <string name="pref_zxtune_default_duration_title">Standarddauer</string>
+  <string-array name="pref_zxtune_default_duration_entries">
+    <item>30 Sekunden</item>
+    <item>1 Minute</item>
+    <item>2 Minuten</item>
+    <item>3 Minuten</item>
+    <item>5 Minuten</item>
+    <item>10 Minuten</item>
+    <item>15 Minuten</item>
+    <item>30 Minuten</item>
+  </string-array>
+  <!-- zxtune.sound.silencelimit -->
+  <string  name="pref_zxtune_silence_limit_title">Stilleerkennung</string>
+  <!-- zxtune.sound.looplimit -->
+  <string  name="pref_zxtune_loop_limit_title">Schleifen Grenze</string>
+  <string-array name="pref_zxtune_loop_limit_entries">
+    <item>Nein</item>
+    <item>1 Schleife</item>
+    <item>2 Schleifen</item>
+    <item>3 Schleifen</item>
+    <item>4 Schleifen</item>
+    <item>5 Schleifen</item>
+  </string-array>
+  <!-- zxtune.sound.fadein/fadeout -->
+  <string name="pref_zxtune_fadein_title">Fade-in</string>
+  <string name="pref_zxtune_fadeout_title">Fade-out</string>
+  <!-- zxtune.sound.gain -->
+  <string name="pref_zxtune_gain_title">Gain</string>
+</resources>

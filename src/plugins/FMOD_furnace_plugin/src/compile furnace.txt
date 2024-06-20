@@ -1,0 +1,200 @@
+remove src\furnace-0.6.1\src\engine\sfWrapper.cpp
+remove src\furnace-0.6.1\src\engine\platform\sound\m114s.c
+
+rename furnace-0.6.1\src\engine\platform\sound\c64_fp\SID.cpp till SID1.cpp
+rename furnace-0.6.1\src\engine\platform\sound\c64_fp\SID.h till SID1.h
+Ändra till #include "SID1.h" i SID1.cpp
+Ändra till #include "SID1.h" i src\furnace-0.6.1\src\engine\platform\c64.h
+
+rename src\furnace-0.6.1\src\engine\platform\x1_010.cpp till x1_010-2.cpp
+rename src\furnace-0.6.1\src\engine\platform\x1_010.h till x1_010-2.h
+Ändra till #include "x1_010-2.h" i x1_010-2.cpp
+Ändra till #include "x1_010-2.h" i src\furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename src\furnace-0.6.1\src\engine\platform\opll.cpp till opll-2.cpp
+rename src\furnace-0.6.1\src\engine\platform\opll.h till opll-2.h
+Ändra till #opll-2.h" i src\furnace-0.6.1\src\engine\platform\opll-2.cpp
+Ändra till #include "opll-2.h" i src\furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename src\furnace-0.6.1\src\engine\platform\sound\c64_fp\Filter.cpp till Filter-1.cpp
+rename src\furnace-0.6.1\src\engine\platform\sound\c64_fp\Filter.h till Filter-1.h
+Ändra till #include "Filter-1.h" i src\furnace-0.6.1\src\engine\platform\sound\c64_fp\Filter-1.cpp
+Ändra till #include "Filter-1.h" i src\furnace-0.6.1\src\engine\platform\sound\c64_fp\Filter6581.h
+Ändra till #include "Filter-1.h" i src\furnace-0.6.1\src\engine\platform\sound\c64_fp\Filter8580.h
+
+Lagt till
+#include "Filter-1.h" //added by blazer
+i furnace-0.6.1\src\engine\platform\sound\c64_fp\SID1.h
+
+rename furnace-0.6.1\src\engine\platform\es5506.cpp till es5506-2.cpp
+rename furnace-0.6.1\src\engine\platform\es5506.h till es5506-2.h
+Ändra till #include "es5506-2.h" i furnace-0.6.1\src\engine\platform\es5506-2.cpp
+Ändra till #include "es5506-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+Ändra till #include "es5506-2.h" i furnace-0.6.1\src\gui\debug.cpp
+
+
+rename furnace-0.6.1\src\engine\platform\k053260.cpp till k053260-2.cpp
+rename furnace-0.6.1\src\engine\platform\k053260.h till k053260-2.h
+Ändra till #include "k053260-2.h" i furnace-0.6.1\src\engine\platform\k053260-2.cpp
+Ändra till #include "k053260-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\k007232.cpp till k007232-2.cpp
+rename furnace-0.6.1\src\engine\platform\k007232.h till k007232-2.h
+Ändra till #include "k053260-2.h" i furnace-0.6.1\src\engine\platform\k007232-2.cpp
+Ändra till #include "k053260-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\scc.cpp till scc-2.cpp
+rename furnace-0.6.1\src\engine\platform\scc.h till scc-2.h
+Ändra till #include "scc-2.h" i furnace-0.6.1\src\engine\platform\scc-2.cpp
+Ändra till #include "scc-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\n163.cpp till n163-2.cpp
+rename furnace-0.6.1\src\engine\platform\n163.h till n163-2.h
+Ändra till #include "n163-2.h" i furnace-0.6.1\src\engine\platform\n163-2.cpp
+Ändra till #include "n163-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\msm6295.cpp till msm6295-2.cpp
+rename furnace-0.6.1\src\engine\platform\msm6295.h till msm6295-2.h
+Ändra till #include "msm6295-2.h" i furnace-0.6.1\src\engine\platform\msm6295-2.cpp
+Ändra till #include "msm6295-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\swan.cpp till swan-2.cpp
+rename furnace-0.6.1\src\engine\platform\swan.h till swan-2.h
+Ändra till #include "swan-2.h" i furnace-0.6.1\src\engine\platform\swan-2.cpp
+Ändra till #include "swan-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\qsound.cpp till qsound-2.cpp
+rename furnace-0.6.1\src\engine\platform\qsound.h till qsound-2.h
+Ändra till #include "qsound-2.h" i furnace-0.6.1\src\engine\platform\qsound-2.cpp
+Ändra till #include "qsound-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\segapcm.cpp till segapcm-2.cpp
+rename furnace-0.6.1\src\engine\platform\segapcm.h till segapcm-2.h
+Ändra till #include "segapcm-2.h" i furnace-0.6.1\src\engine\platform\segapcm-2.cpp
+Ändra till #include "segapcm-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\esfm.cpp till esfm-2.cpp
+rename furnace-0.6.1\src\engine\platform\esfm.h till esfm-2.h
+Ändra till #include "esfm-2.h" i furnace-0.6.1\src\engine\platform\esfm-2.cpp
+Ändra till #include "esfm-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\mmc5.cpp till mmc5-2.cpp
+rename furnace-0.6.1\src\engine\platform\mmc5.h till mmc5-2.h
+Ändra till #include "mmc5-2.h" i furnace-0.6.1\src\engine\platform\esfm-2.cpp
+Ändra till #include "mmc5-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\fds.cpp till fds-2.cpp
+rename furnace-0.6.1\src\engine\platform\fds.h till fds-2.h
+Ändra till #include "fds-2.h" i furnace-0.6.1\src\engine\platform\fds-2.cpp
+Ändra till #include "fds-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\rf5c68.cpp till rf5c68-2.cpp
+rename furnace-0.6.1\src\engine\platform\rf5c68.h till rf5c68-2.h
+Ändra till #include "rf5c68-2.h" i furnace-0.6.1\src\engine\platform\rf5c68-2.cpp
+Ändra till #include "rf5c68-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\ymz280b.cpp till ymz280b-2.cpp
+rename furnace-0.6.1\src\engine\platform\ymz280b.h till ymz280b-2.h
+Ändra till #include "ymz280b-2.h" i furnace-0.6.1\src\engine\platform\ymz280b-2.cpp
+Ändra till #include "ymz280b-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\sm8521.cpp till sm8521-2.cpp
+rename furnace-0.6.1\src\engine\platform\sm8521.h till sm8521-2.h
+Ändra till #include "sm8521-2.h" i furnace-0.6.1\src\engine\platform\sm8521-2.cpp
+Ändra till #include "sm8521-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\msm5232.cpp till msm5232-2.cpp
+rename furnace-0.6.1\src\engine\platform\msm5232.h till msm5232-2.h
+Ändra till #include "msm5232-2.h" i furnace-0.6.1\src\engine\platform\msm5232-2.cpp
+Ändra till #include "msm5232-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\su.cpp till su-2.cpp
+rename furnace-0.6.1\src\engine\platform\su.h till su-2.h
+Ändra till #include "su-2.h" i furnace-0.6.1\src\engine\platform\su-2.cpp
+Ändra till #include "su-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\gb.cpp till gb-2.cpp
+rename furnace-0.6.1\src\engine\platform\gb.h till gb-2.h
+Ändra till #include "gb-2.h" i furnace-0.6.1\src\engine\platform\gb-2.cpp
+Ändra till #include "gb-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\nds.cpp till nds-2.cpp
+rename furnace-0.6.1\src\engine\platform\nds.h till nds-2.h
+Ändra till #include "nds-2.h" i furnace-0.6.1\src\engine\platform\nds-2.cpp
+Ändra till #include "nds-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\dave.cpp till dave-2.cpp
+rename furnace-0.6.1\src\engine\platform\dave.h till dave-2.h
+Ändra till #include "dave-2.h" i furnace-0.6.1\src\engine\platform\dave-2.cpp
+Ändra till #include "dave-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+
+rename furnace-0.6.1\src\engine\platform\pokey.cpp till pokey-2.cpp
+rename furnace-0.6.1\src\engine\platform\pokey.h till pokey-2.h
+Ändra till #include "pokey-2.h" i furnace-0.6.1\src\engine\platform\pokey-2.cpp
+Ändra till #include "pokey-2.h" i furnace-0.6.1\src\engine\dispatchContainer.cpp
+
+rename furnace-0.6.1\src\engine\platform\sound\gb\apu.c till apu-2.c
+rename furnace-0.6.1\src\engine\platform\sound\gb\apu.h till apu-2.h
+Ändra till #include "apu-2.h" i furnace-0.6.1\src\engine\platform\sound\gb\gb.h
+
+rename furnace-0.6.1\src\engine\filter.cpp till filter-4.cpp
+rename furnace-0.6.1\src\engine\filter.h till filter-4.h
+Ändra till #include "filter-4.h" i furnace-0.6.1\src\engine\filter.cpp
+Ändra till #include "filter-4.h" i furnace-0.6.1\src\engine\sample.cpp
+Ändra till #include "filter-4.h" i furnace-0.6.1\src\gui\osc.cpp
+Ändra till #include "filter-4.h" i furnace-0.6.1\src\engine\platform\pcmdac.cpp
+Ändra till #include "filter-4.h" i furnace-0.6.1\src\engine\platform\bifurcator.cpp
+Ändra till #include "filter-4.h" i furnace-0.6.1\src\engine\platform\gbadma.cpp
+
+
+rename furnace-0.6.1\extern\freetype\src\gzip\inflate.c till inflate-2.c
+rename furnace-0.6.1\extern\freetype\src\gzip\inflate.h till inflate-2.h
+Ändra till #include "inflate-2.h" i furnace-0.6.1\extern\freetype\src\gzip\inflate.c
+
+rename furnace-0.6.1\src\audio\abstract.cpp till abstract-2.cpp
+rename furnace-0.6.1\src\audio\engine\abstract.cpp till abstract-3.cpp
+
+rename furnace-0.6.1\src\engine\platform\sound\sid2\sid.cc till sid3.cc
+rename furnace-0.6.1\src\engine\platform\sound\sid2\sid.h till sid3.h
+Ändra #include "sid2.h" i furnace-0.6.1\src\engine\platform\sound\sid2\sid.cc till sid3.h
+rename furnace-0.6.1\src\engine\platform\sound\sid2\filter.cc till filter-3.cc
+rename furnace-0.6.1\src\engine\platform\sound\sid2\filter.h till filter-3.h
+Ändra #include "filter-3.h" i furnace-0.6.1\src\engine\platform\sound\sid2\filter-3.cc
+Ändra #include "filter-3.h" i furnace-0.6.1\src\engine\platform\sound\sid2\sid3.h
+
+rename furnace-0.6.1\src\engine\platform\sound\64\envelope.cc till envelope-2.cc
+rename furnace-0.6.1\src\engine\platform\sound\64\envelope.h till envelope-2.h
+Ändra till #include "envelope-2.h" i furnace-0.6.1\src\engine\platform\sound\64\envelope-2.cc
+Ändra till #include "envelope-2.h" i furnace-0.6.1\src\engine\platform\sound\64\voice.h
+
+rename furnace-0.6.1\src\engine\platform\sound\64\voice.cc till voice-2.cc
+rename furnace-0.6.1\src\engine\platform\sound\64\voice.h till voice-2.h
+Ändra till #include "voice-2.h" i furnace-0.6.1\src\engine\platform\sound\64\voice-2.cc
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\voice-2.cc
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\wave6581__ST.cc
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\wave6581_P_T.cc
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\wave6581_PS_.cc
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\wave6581_PST.cc
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\wave8580__ST-2.cc
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\wave8580_P_T-2.cc
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\wave8580_PS-2.cc
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\wave8580_PST-2.cc
+rename furnace-0.6.1\src\engine\platform\sound\64\wave.cc till wave-2.cc
+rename furnace-0.6.1\src\engine\platform\sound\64\wave.h till wave-2.h
+Ändra till #include "wave-2.h" i furnace-0.6.1\src\engine\platform\sound\64\wave-2.cc
+rename furnace-0.6.1\src\engine\platform\sound\64\filter.cc till filter-2.cc
+rename furnace-0.6.1\src\engine\platform\sound\64\filter.h till filter-2.h
+Ändra till #include "filter-2.h" i furnace-0.6.1\src\engine\platform\sound\64\filter-2.cc
+Ändra till #include "filter-2.h" i furnace-0.6.1\src\engine\platform\sound\64\sid.h
+Ändra till #include "voice-2.h" i furnace-0.6.1\src\engine\platform\sound\64\sid.h
+rename furnace-0.6.1\src\engine\platform\sound\64\version.h till version-2.h
+rename furnace-0.6.1\src\engine\platform\sound\64\wave8580__ST.cc till wave8580__ST-2.cc
+rename furnace-0.6.1\src\engine\platform\sound\64\wave8580_P_T.cc till wave8580_P_T-2.cc
+rename furnace-0.6.1\src\engine\platform\sound\64\wave8580_PS_.cc till wave8580_PS_-2.cc
+rename furnace-0.6.1\src\engine\platform\sound\64\wave8580_PST.cc till wave8580_PST-2.cc
+
+Ändra till #include "sid3.h" i furnace-0.6.1\src\engine\platform\sid2.h
+
+Ska ej finnas med i kompilering: (men finnas som fil) src\furnace-0.6.3\extern\YM2608-LLE\fmopna_impl.c
+Och några få kommenteringar, sök på blazer

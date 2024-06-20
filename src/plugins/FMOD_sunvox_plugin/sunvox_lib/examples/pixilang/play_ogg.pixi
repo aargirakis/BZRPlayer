@@ -1,0 +1,37 @@
+//Load and play OGG Vorbis file using the SunVox engine
+
+set_pixel_size( WINDOW_XSIZE / 480 )
+resize( get_screen(), WINDOW_XSIZE, WINDOW_YSIZE )
+scr = get_screen()
+xsize = get_xsize( scr )
+ysize = get_ysize( scr )
+
+sv = sv_new() //create a new SunVox sound stream
+
+sv_lock( sv )
+mod_vplayer = sv_new_module( sv, "Vorbis player" )
+sv_connect_module( sv, mod_vplayer, 0 ) //Vorbis player -> Output (always module 0)
+sv_unlock( sv )
+
+//load SunVox-compatible file (sunvox, xm, mod, midi):
+while 1
+{
+    if sv_vplayer_load( sv, mod_vplayer, "../../resources/drums.ogg" ) == 0 { break }
+    if sv_vplayer_load( sv, mod_vplayer, "../sound_files/drums.ogg" ) == 0 { break }
+    break
+}
+
+sv_set_module_ctl_value( sv, mod_vplayer, 1, 1, 2 ) //original speed = 1
+sv_set_module_ctl_value( sv, mod_vplayer, 6, 1, 2 ) //repeat = 1
+sv_send_event( sv, 0, 12*4, 129, mod_vplayer+1, 0, 0 )
+
+while 1 //Wait for the EVT_QUIT event:
+{
+    clear()
+
+    while( get_event() ) { if EVT[ EVT_TYPE ] == EVT_QUIT { breakall } }
+
+    frame()
+}
+
+sv_remove( sv ) //remove the SunVox stream

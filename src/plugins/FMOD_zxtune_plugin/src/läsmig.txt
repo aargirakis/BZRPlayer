@@ -1,0 +1,117 @@
+
+
+lagt till
+ZXTUNE_API std::string ZXTune_GetInfo(ZXTuneHandle player, std::string paramName);
+ZXTUNE_API long ZXTune_GetDuration(ZXTuneHandle player);
+
+och deras implementationer i zxtune.h/cpp
+
+i zxtune.cpp
+
+lagt till 
+
+#include <core/module_attrs.h>
+
+
+zxtune-r2880\3rdparty\unrar: Renamat log.cpp och log.hpp till log_.cpp och log_.hpp
+zxtune-r2880\3rdparty\unrar\consio.cpp kommenterat ut #include "log.cpp"
+zxtune-r2880\3rdparty\unrar\rar.hpp ändrat till #include "log_.hpp"
+zxtune-r2880\3rdparty\unrar\consio.cpp ändrat till #include "log_.hpp"
+chiptune/container.h: renamat till chiptune/chiptune_container.h
+ersatt alla #include "formats/chiptune/container.h" till #include "formats/chiptune/chiptune_container.h" (29 st)
+parameters/container.h renamat till parameters/parameters_container.h
+ersatt alla #include <parameters/container.h> till #include <parameters/parameters_container.h> (20 st)
+src\binary\container.h renamat till src\binary\binary_container.h
+ersatt alla <binary/container.h> till <binary/binary_container.h> (22 st)
+renamat src\formats\image\container.h till src\formats\image\image_container.h
+ersatt alla #include "container.h" till #include "image_container.h" i filerna 
+	ascscreencrusher.cpp
+	lasercompact40.cpp
+	lasercompact52.cpp
+
+renamat src\formats\packed\container.h till src\formats\packed\packed_container.h
+ersatt alla #include "container.h" till #include "packed_container.h" alla filer i mappen src\zxtune-r2880\src\formats\packed (31 st)
+
+renamat src\tools\src\crc.cpp till src\tools\src\crc_.cpp
+renamat include\crc.h till include\crc_.h
+ersatt alla #include <crc.h> till #include <crc_.h> (6 st)
+renamat src\resource\src\resource.cpp till src\resource\src\resource_.cpp
+
+renamat src\platform\tools.h till src\platform\src\platform_tools.h
+renamat src\platform\src\windows\tools.cpp till src\platform\src\windows\platform_tools.cpp
+ersatrt alla #include <platform/tools.h> till #include <platform/platform_tools.h> (4 st)
+
+rename zxtune-r2880\src\sound\impl\parameters.cpp till rename zxtune-r2880\src\sound\impl\sound_parameters.cpp
+rename zxtune-r2880\src\io\impl\parameters.cpp till rename zxtune-r2880\src\io\impl\io_parameters.cpp
+
+rename zxtune-r2880\src\parameters\tracking.h till zxtune-r2880\src\parameters\parameters_tracking.h
+rename zxtune-r2880\src\parameters\src\tracking.cpp till zxtune-r2880\src\parameters\src\parameters_tracking.cpp
+ersatt #include <parameters/tracking.h> till #include <parameters/parameters_tracking.h> i zxtune-r2880\src\parameters\src\parameters_tracking.cpp
+
+rename zxtune-r2880\src\formats\packed\z80.cpp till zxtune-r2880\src\formats\packed\z80_packed.cpp
+
+i zxtune-r2880\3rdparty\z80ex\z80ex.c lägg till
+#define Z80EX_API_REVISION 1
+#define Z80EX_VERSION_MAJOR 1
+#define Z80EX_VERSION_MINOR 19
+
+rename zxtune-r2880\src\formats\chiptune\aym\soundtracker.h till zxtune-r2880\src\formats\chiptune\aym\aym_soundtracker.h
+rename zxtune-r2880\src\formats\chiptune\aym\soundtracker.cpp till zxtune-r2880\src\formats\chiptune\aym\aym_soundtracker.cpp
+ersatt <formats/chiptune/aym/soundtracker.h> till <formats/chiptune/aym/aym_soundtracker.h> i
+	zxtune-r2880\src\core\plugins\players\ay\soundtracker.h
+	zxtune-r2880\src\formats\packed\compiledst3.cpp
+
+ersatt #include "soundtracker.h" till #include "aym_soundtracker.h" i src\formats\chiptune\aym\soundtracker_detail.h
+rename zxtune-r2880\src\parameters\src\container.cpp till rename zxtune-r2880\src\parameters\src\parameters_container.cpp
+
+
+
+rename zxtune-r2880\src\binary\src\compress.cpp till zxtune-r2880\src\binary\src\binary_compress.cpp
+rename zxtune-r2880\src\binary\compress.h till zxtune-r2880\src\binary\binary_compress.h
+
+ersatt #include <binary/compress.h> med #include <binary/binary_compress.h> (3 st)
+
+rename zxtune-r2880\src\devices\aym\src\turbosound.cpp till zxtune-r2880\src\devices\aym\src\devices_turbosound.cpp
+rename zxtune-r2880\src\devices\turbosound.h till zxtune-r2880\src\devices\devices_turbosound.h
+ersatt <devices/turbosound.h> till <devices/devices_turbosound.h> i
+	zxtune-r2880\src\core\plugins\players\ay\ts_base.h
+	zxtune-r2880\src\devices\aym\src\devices_turbosound.cpp
+	
+
+kommentera bort
+void RegisterXMPPlugins(PlayerPluginsRegistrator& registrator);
+RegisterXMPPlugins(registrator);
+i zxtune-r2880\src\core\plugins\players\plugins_list.h
+
+i zxtune-r2880\apps\libzxtune\zxtune.h 
+
+lagt till
+
+#include <string>
+
+samt kommenterat bort
+
+// #if defined(_WIN32)
+// #define ZXTUNE_API_EXPORT __declspec(dllexport)
+// #define ZXTUNE_API_IMPORT __declspec(dllimport)
+// #elif __GNUC__ > 3
+#define ZXTUNE_API_EXPORT __attribute__ ((visibility("default")))
+#define ZXTUNE_API_IMPORT
+// #else
+// #define ZXTUNE_API_EXPORT
+// #define ZXTUNE_API_IMPORT
+// #endif
+
+
+//oklart om nödvändigt
+rename zxtune-r2880\src\strings\format.h till zxtune-r2880\src\strings\strings_format.h
+rename zxtune-r2880\src\strings\src\format.cpp till zxtune-r2880\src\strings\strings_format.cpp
+
+ersatt #include <strings/format.h> med #include <strings/strings_format.h> (24 st)
+
+
+rename zxtune-r2880\src\devices\aym\src\device.h till zxtune-r2880\src\devices\aym\src\aym_device.h
+ersatt #include "device.h" med #include "aym_device.h" i zxtune-r2880\src\devices\aym\src\psg.h
+
+
+//oklart om nödvändigt

@@ -1,0 +1,22 @@
+﻿<page title="macOS">
+	<h2>macOS</h2>
+	<p>Download <download prefix="asap-" suffix="-macos.dmg" />.</p>
+
+	<h2>VLC</h2>
+	<p><a href="http://www.videolan.org/vlc/">VLC</a> is a popular video player that plays audio as well.
+	It provides limited support for the SAP file format out of the box (no digitized sounds, buggy emulation).
+	For best experience, install the ASAP plugin as follows:</p>
+	<ol>
+		<li>Install VLC first.</li>
+		<li>Open <code>asap-<version />-macos.dmg</code>.</li>
+		<li>Drag <code>libasap_plugin.dylib</code> to <code>plugins</code>.</li>
+	</ol>
+	<p>Due to limitations of the VLC plugin interface, the VLC plugin only supports SAP and FC formats.</p>
+
+	<h2>asapconv</h2>
+	<p>For command-line conversions (e.g. to WAV or between SAP and the tracker formats)
+	and editing the metadata, install asapconv: open <code>asap-<version />-macos.dmg</code>
+	then drag <code>asapconv</code> to <code>bin</code>.</p>
+	<p>Run the program from the command prompt to see the syntax.
+	The <code>-o/--output</code> option selects the output format and is mandatory.</p>
+</page>

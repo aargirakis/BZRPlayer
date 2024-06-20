@@ -1,0 +1,8 @@
+sök på blazer, en del bortkommenterat etc.
+
+rename src\builders\residfp-builder\residfp\siddefs-fp.h.in till siddefs-fp.h
+
+kopiera in
+sidplayer1.bin
+sidplayer2.bin
+till src\sidtune filerna finns bara i tar.gz-releasen

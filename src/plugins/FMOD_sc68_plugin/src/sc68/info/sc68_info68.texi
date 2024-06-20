@@ -1,0 +1,83 @@
+@c -*-texinfo-*-
+@c @node info68
+@c @chapter info68
+
+@center info68 - Get and format information from sc68 files.
+
+@section Usage
+
+@display
+info68 [option ... ] sc68-file [ command ...] 
+@end display
+
+@section Options
+
+@table @asis
+ @item ---help
+ Display this message and exit.
+ @item ---version
+ @itemx ---build
+ Display build date and exit.
+ @item --o file
+ @itemx ---output file
+ Change output to file (- is stdout).
+@end table
+
+@section Commands
+
+All COMMANDS excepted TRACK-LIST display something. Unkwown commands are skipped with a warning.
+
+@subsection Disk commands
+
+These commands display disk information.
+
+@multitable @columnfractions .1 .9
+  @item -# @tab Number of tracks.
+  @item -? @tab Default track.
+  @item -n @tab Disk name.
+  @item -a @tab Default track author name.
+  @item -c @tab Default track composer name.
+  @item -T @tab Disk time in sec.
+  @item -Y @tab Formated disk time. Format "TT MM:SS".
+  @item -H @tab All tracks ORed hardware flags (see -h).
+@end multitable
+
+@subsection Track-list command
+
+This command is a kind of loop.
+
+@table @asis
+  @item -DIGIT[[,DIGIT]|[-DIGIT]]
+track-list executes following track-commands for all listed tracks until another track-list is encountered or end of command line.
+
+Track are base 1 numbered. 0 is substituted to the number of tracks.
+
+e.g: @samp{-1,5,[4-6]} works with tracks 1,5,4,5 and 6 in this order.
+@end table
+
+@subsection Track commands
+
+Following commands are applied to current track.
+
+@multitable @columnfractions .1 .9
+  @item -% @tab Track number.
+  @item -n @tab Track name.
+  @item -a @tab Author name.
+  @item -c @tab Composer name.
+  @item -r @tab Replay name.
+  @item -t @tab Time in sec.
+  @item -y @tab Formated "TT MM:SS" time.
+  @item -f @tab Replay frequency.
+  @item -@@ @tab Load address.
+  @item -h @tab Hardware flags [YSA] uppercase means activated.
+                Y:YM-2149 S:STE A:Amiga
+@end multitable
+
+@subsection Misc commands
+
+@multitable {xxxxxxxxx} {Display a newline character}
+  @item -L        @tab Display a newline character.
+  @item ---STRING @tab Display "-STRING".
+  @item STRING    @tab Display "STRING".
+@end multitable
+

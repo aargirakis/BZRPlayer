@@ -1,0 +1,72 @@
+/**
+
+@mainpage sc68 developer documentation
+
+@section copyright Copyright
+
+Copyright (C) 2001-2003 Benjamin Gerard
+
+@section intro Introduction
+
+This documentation intends to help developers to use or modify sc68
+components.
+
+The @link api68_devel api68 library @endlink is the easiest way to play
+sc68 files in a third party application.
+Sample files may be found in the xmms68 sc68 or winamp68 directories.
+
+The @link file68_devel file68 library @endlink can be used to handle sc68
+files. It provides loading verifying and saving functions and many other
+useful functions.
+Sample files may be found in the info68 and debug68 directories.
+
+The @link emu68_devel emu68 library @endlink and
+the @link io68_devel io68 library @endlink are respectively the 68000 emulator
+and the Atari ST and Amiga chipset emulators.
+@note emu68 is compiled in two versions. The fast one is used for music playing
+programs. The debug one is used by tools that need a 68000 emulator. Debug
+version includes a smarter memory access control but is slower and required
+more memory.
+
+The @link desa68_devel desa68 library @endlink is a 68000 disassembler.
+It has enhanced features that help to trace branch instructions.
+A good sample is may be found in the sourcer68 directory. This library
+is also used by debug68 programs.
+
+The @link unice68_devel unice68 library @endlink is a ICE 2.4 depacker.
+It is a rougth "C" conversion of original 68000 ICE 2.4 depacker routine.
+
+@section portability Portability issue
+
+sc68 has currently been ported on many platforms. Anyway all these platforms
+were 32 bit wide. Is is possible that some modules does not compile properly
+with platform that does not handle all fixed size integer types used by the
+libraries (64, 32, 16 and 8 bit integer both signed and unsigned).
+It may works with 64 bit platforms as soon as it has support for above
+integer types but generated code may be not fully optimized for such platforms.
+
+*/
+
+/**
+@defgroup emu68_devel		emu68 library documentation.
+@brief                          68000 emulator.
+@author                         Benjamin Gerard <ben@sashipa.com>
+*/
+
+/**
+@defgroup file68_devel		file68 library documentation.
+@brief                          sc68 file.
+@author                         Benjamin Gerard <ben@sashipa.com>
+*/
+
+/**
+@defgroup io68_devel		io68 library documentation.
+@brief                          sc68 chipset emulator.
+@author                         Benjamin Gerard <ben@sashipa.com>
+*/
+
+/**	
+@defgroup api68_devel		api68 library documentation.
+@brief                          sc68 api.
+@author                         Benjamin Gerard <ben@sashipa.com>
+*/

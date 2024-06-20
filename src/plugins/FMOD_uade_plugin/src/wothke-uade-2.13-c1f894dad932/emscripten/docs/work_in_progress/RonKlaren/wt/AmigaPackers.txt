@@ -1,0 +1,439 @@
+AudComp v2.0/
+audcomp v2.0                   164216  
+AudComp.readme                  12332  
+                               176548  2 files
+Black & Decker v2.0/
+bd20                             4580  
+                                 4580  1 file
+Black & Decker v2.1/
+Black&Decker2.1                  4948  Byte Killer 1.3 fake
+                                 4948  1 file
+Byte Cruncher v1.0/
+ByteCruncher1.0                  1080  very strong data (?) packer or fake
+                                 1080  1 file
+Byte Killer Pro v1.0/
+ByteKillerPro1.0                 7600  
+                                 7600  1 file
+Byte Killer v1.2/
+bk12                             3344  
+bk12p                            3440  
+                                 6784  2 files
+Byte Killer v1.3/
+ByteKiller1.3                    3344  
+ByteKiller1.3.doc                4223  
+ByteKiller1.3.noforbid           3344  
+                                10911  3 files
+Byte Killer v2.0/
+ByteKiller2.0                    3788  
+ByteKiller2DeCrunch.S            1644  
+                                 5432  2 files
+Byte Killer v2.03/
+bk2.03                           6340  
+bytekiller.s                    40797  
+                                47137  2 files
+Byte Killer v3.0/
+bk30                             2248  
+BK30b                            2280  
+                                 4528  2 files
+Chryseis Cruncher v0.9/
+ChryseisCruncher0.9             13020  
+                                13020  1 file
+Com Pack v0.1/
+ComPack0.1                       2208  very old (1987) data packer
+                                 2208  1 file
+Compacker v4.2/
+Compacker42                      3340  
+                                 3340  1 file
+Compress Rexx v3.0/
+CompressRexx                    15748  
+CompressRexx.doc                 7413  
+CompressRexx.readme              2419  
+                                25580  3 files
+Crunch Mania v1.95/
+crunchmania                     42108  
+CrunchMania.info                  450  
+                                42558  2 files
+Crunch Master v1.0/
+CrunchMaster1.0                  3216  
+                                 3216  1 file
+Crunch v1.4b/
+cru                             12848  
+cru.guide                        6543  
+DataDecr.Bin                      290  
+DecrDoc.Txt                       390  
+File_id.diz                       371  
+                                20442  5 files
+Crunch v1.4b/fonts/
+thinpaz.font                      264  
+                                  264  1 file
+Crunch v1.4b/fonts/thinpaz/
+8                                2232  
+                                 2232  1 file
+Crunch-O-Matic v1.0/
+Crunch-O-Matic1.0               29472  don't working, why ?
+matic                           29472  
+                                58944  2 files
+Cruncher v1.4/
+cruncher                        35576  
+Cruncher.guide                  16548  
+Cruncher.guide.info               841  
+Cruncher.info                     831  
+                                53796  4 files
+Crunchy Dat v1.0/
+CrunchyDat                      74196  very lame ProPack v2.08 fake
+CrunchyDat.guide                 6803  
+CrunchyDat.guide.info             468  
+CrunchyDat.info                  1683  
+FILE_ID.DIZ                       402  
+                                83552  5 files
+Crunchy Dat v1.0/fonts/
+MWarp.font                        264  
+                                  264  1 file
+Crunchy Dat v1.0/fonts/MWarp/
+8                                4308  
+                                 4308  1 file
+Data Pack v2.2/
+DataPacker2.2                   13196  PowerPacker data fake
+                                13196  1 file
+Defjam Packer v3.2/
+DefjamPacker.Doc                  979  
+DefjamPacker3.2                  8964  
+                                 9943  2 files
+Defjam Packer v3.5/
+DefJam35                        13752  
+                                13752  1 file
+Defjam Packer v3.6/
+DefjamPacker3.6                 13780  possible fake cruncher
+                                13780  1 file
+DMA Crunch v1.0/
+DMACrunchV1.0                    3808  
+                                 3808  1 file
+Double Action v1.0/
+DoubleAction1.0                 32048  
+DoubleActionV1.0.doc             9481  
+                                41529  2 files
+Drag Pack v1.0b/
+DragPack1.0b                     9328  Byte Killer clone
+                                 9328  1 file
+Drag Pack v2.52 Pro/
+DragPackPro2.52                 14248  
+                                14248  1 file
+DS Packer v1.4/
+DSPacker1.4                      3080  data packer ID "D&S3"
+                                 3080  1 file
+FCG Packer v1.0/
+fcg10                            6800  
+                                 6800  1 file
+File Implode v2.34/
+FileImplode2.34                  8264  
+                                 8264  1 file
+Flash Speed-Cruncher v1.0/
+FlashSpeedCruncher1.0            4124  
+                                 4124  1 file
+Freeway Cruncher v0.7/
+FreewaY                          4812  
+                                 4812  1 file
+FullView Compression/
+FVCompress                      11172  
+                                11172  1 file
+Gnu Packer v1.2/
+gnu                             59028  
+GnuPacker1.2                    59012  
+                               118040  2 files
+High Pressure Cruncher/
+HighPressureCruncher             6936  
+                                 6936  1 file
+House v1.4 a.k.a RSI/
+House1.4                         5180  
+                                 5180  1 file
+HQC Cruncher v2.0/
+HQCCruncher2.0                   9544  
+                                 9544  1 file
+HQC Cruncher v2.0/Cruncher/
+Cruncher1                        9772  
+Cruncher2                        1800  
+                                11572  2 files
+IAM Packer v1.0 Pro/
+IAMPackerPro1.0                 21772  
+                                21772  1 file
+IFF-ILBM Cruncher v2.0/
+iff-ilbm-SHOWPIC                 1588  
+iff-ilbm-V2.0                    5220  ID "TTW!"
+                                 6808  2 files
+Imploder v3.1/
+imploder                        74536  
+Imploder.info                    1376  
+                                75912  2 files
+Imploder v4.0/
+imploder4.0                    133704  
+                               133704  1 file
+ISC Amiga v1.5/
+ISCAmiga1.5                     15648  
+                                15648  1 file
+Light Pack v1.5/
+LightPack1.5                     1420  ID "LPv1"
+                                 1420  1 file
+Master Cruncher v1.1/
+MasterCruncher1.1               10268  
+MasterCruncherV1.1              11796  
+                                22064  2 files
+Master Cruncher v3.0/
+master30                        14044  
+MasterCruncher3.0               14020  
+                                28064  2 files
+Max Packer v1.2/
+MaxPacker1.2                     5564  
+                                 5564  1 file
+Mega Cruncher v1.0/
+mega10                          11150  original version
+MegaCruncher10                  10936  cracked version
+                                22086  2 files
+Mega Cruncher v1.2/
+mega12                          17288  cracked version
+MegaCruncher1.2                 17516  original version
+Supplex-Cruncher                17288  very lame MasterCruncher v1.2 fake
+                                52092  3 files
+ModCrusher v2.0/
+modcrusher                       8840  
+modCRUSHER.doc                   8744  
+                                17584  2 files
+Multi FAST v3.01/
+multi                           15916  
+                                15916  1 file
+Omega Packer v1.3/
+omega                           19552  
+OmegaPacker1.3                  19560  maybe don't pack
+                                39112  2 files
+P-Compress v2.9/
+compress.brush                   1738  
+decompress.brush                 1076  
+exec.brush                        556  
+P-Compress                      34164  
+P-Compress.doc                  16102  
+P-Reader                        30472  
+P-Unpack                         9228  
+What's_new                        234  
+                                93570  8 files
+P-Compress v2.9/Object/
+comp.o                           2568  
+comp_linker                        85  
+crunch                           8064  
+crunch.c                         1618  
+decomp.o                         1724  
+decomp_linker                      91  
+decrunch                         6928  
+decrunch.c                       1255  
+Object.doc                       1298  
+Object.doc.info                   394  
+                                24025  10 files
+P-Compress2 v1.1/
+com                             29768  
+P-Compress2                     29772  
+P-Compress2.doc                  8273  
+                                67813  3 files
+PackIt v1.0/
+PackIt1.0                       45908  ID "PIcd"
+                                45908  1 file
+PackIt v37.103/
+PackIt1.0a                       6864  PowerPacker fake
+                                 6864  1 file
+PowerPlayer Music Cruncher/
+PMC                              3432  SFHD mode
+                                 3432  1 file
+PPack v2.2/
+PPack2.2                         4756  PowerPacker data fake
+                                 4756  1 file
+Pro Pack v2.08/
+PROPACK.DOC                     16688  
+ProPack2.08                     43044  
+                                59732  2 files
+Relo Kit v1.0/
+ReloKit1.0                       7952  
+                                 7952  1 file
+Shorten v1.22/
+shorten881                      32268  
+shorten881.nfo                   3405  
+                                35673  2 files
+Slavepack v1.3/
+Slave-Packer                     3700  
+                                 3700  1 file
+SMF Compacker v1.0/
+SMFCompacker1.0                  2748  
+                                 2748  1 file
+Sound-Tracker Cruncher v1.0/
+STCruncher1.0.reass             64932  
+STCruncher1.0                   25256  ID "STC"
+                                90188  2 files
+Spikes Crunching v1.5/
+SpikeCruncherV1.5                8304  
+SpikesCrunchingProgram1.5        6920  
+                                15224  2 files
+Stone Cracker v2.70/
+SC270                            5400  
+                                 5400  1 file
+Stone Cracker v2.92/
+SC292                            4944  
+                                 4944  1 file
+Stone Cracker v2.99b/
+DeCruncher299b.s                 1488  
+StoneCracker2.99b                5712  
+                                 7200  2 files
+Stone Cracker v2.99d/
+SC299d                           5188  
+                                 5188  1 file
+Stone Cracker v2.99/
+SC299                            5712  
+                                 5712  1 file
+Stone Cracker v3.00/
+decrunch.asm                     1288  
+SC300                            9640  
+stc3.0-decrunch.s                1288  
+                                12216  3 files
+Stone Cracker v3.10/
+SC310                           11740  
+stc3.10.doc                     11718  
+                                23458  2 files
+Stone Cracker v3.11b/
+SC311                           11516  
+                                11516  1 file
+Stone Cracker v4.00/
+SC400                           10836  
+                                10836  1 file
+Stone Cracker v4.01/
+SC401                           20736  
+stonecracker401.doc             12623  
+                                33359  2 files
+Stone Cracker v4.01b/
+SC401ß                          20692  
+                                20692  1 file
+Stone Cracker v4.02a/
+!stc.txt                          291  
+stc402a                         13720  
+stc402a.doc                      8452  
+stclibrary.doc                   9288  
+                                31751  4 files
+Stone Cracker v4.02a/include/
+Stone Cracker v4.02a/include/clib/
+stc_protos.h                      843  
+                                  843  1 file
+Stone Cracker v4.02a/include/libraries/
+stc.h                            2628  
+stc.i                            2499  
+stc_lib.i                        1259  
+                                 6386  3 files
+Stone Cracker v4.02a/include/pragmas/
+stc_pragmas.h                     840  
+                                  840  1 file
+Stone Cracker v4.02a/include/proto/
+stc.h                             165  
+                                  165  1 file
+Stone Cracker v4.02a/Libs/
+!stc.library                     1096  
+stc.library                      5284  
+                                 6380  2 files
+Stone Cracker v4.02a/sources/
+s403optdatadecr.S                2977  
+                                 2977  1 file
+Stone Cracker v4.10.3 Pro/
+StoneCracker4.10.3              31984  
+                                31984  1 file
+Storm AMOS Cruncher v2.0b/
+packerv12.AMOS                  19312  
+README.displayme                  460  
+stormcrunch2                   121188  
+STORMCRUNCH2.AMOS               54316  
+Stormcrunch2.doc                 3222  
+                               198498  5 files
+Super Cruncher v2.7/
+SuperCruncher2.7                 6772  
+                                 6772  1 file
+Syncropacker v4.6/
+SyncroPacker4.6                  5456  
+                                 5456  1 file
+Tetra Crunch v1.02/
+TetraCrunch1.02                  4684  
+                                 4684  1 file
+Tetra Crunch v1.1/
+tetra11                          5400  
+                                 5400  1 file
+Tetra Pack v2.1/
+TetraPack2.1                     7212  
+TetraPackV2.1.doc               13617  
+                                20829  2 files
+Tetra Pack v2.2/
+TetraPack2.2                     7480  
+                                 7480  1 file
+TFA Cruncher v1.54-bis/
+TFACruncher1.54bis              12652  Time Cruncher clone
+                                12652  1 file
+Time Cruncher v1.7/
+TimeCruncher1.7                  5588  
+                                 5588  1 file
+Time Cruncher v2.2/
+TimeCruncher2.2                  5648  
+TimeDecruncher22.s               2667  
+                                 8315  2 files
+Titanics Cruncher v1.1/
+TitanCrunch.doc                  3548  
+TitanCrunch                    110508  
+                               114056  2 files
+Titanics Cruncher v1.2/
+titancrunch                    117284  
+                               117284  1 file
+Trash Eliminator v1.0/
+TrashEliminator1.0              55476  
+                                55476  1 file
+Tronix Cruncher/
+Trx_Cruncher.Doc                 2411  
+Trx_Cruncher.exe                44112  
+                                46523  2 files
+Tryit Cruncher v1.01/
+TryitCruncher1.01               10828  
+                                10828  1 file
+TSK Cruncher/
+Tsk1.0                           4392  
+TSK                              4396  
+                                 8788  2 files
+Turbo Spike v1.03/
+Spike103                        16332  
+                                16332  1 file
+Turbo Squeezer v6.1/
+TurboSqueezer6.1                 6536  
+                                 6536  1 file
+Turbo Squeezer v8.0/
+turbosq80                       10560  
+TurboSqueezer8.0                10512  
+                                21072  2 files
+Turtle Smasher v1.3/
+turtle13                        13296  
+                                13296  1 file
+Turtle Smasher v1.32/
+TurtleDecruncher.asm             2667  
+TurtleSmasher.doc                4995  
+TurtleSmasher1.32               13356  based on Time Cruncher
+                                21018  3 files
+Turtle Smasher v1.41/
+TurtleSmasher1.41               12108  based on Time Cruncher
+TurtleSmasher141.asm             3232  
+TurtleSmasher141.doc             5406  
+                                20746  3 files
+Turtle Smasher v2.0/
+Turtle200                       23640  
+TurtleDecruncher.s               6684  
+TurtleSmasher2.0                23600  
+                                53924  3 files
+Ultimate Cruncher v1.16d/
+TUC_NewDOS                       1488  
+UltimateCruncher1.16D           13904  
+                                15392  2 files
+Ultimate Packer v1.1b/
+ultimatepacker                  55236  
+UltimatePacker1.1b              54820  
+                               110056  2 files
+Wave's Data Packer v2.0/
+decrunch.asm                     5127  
+TWPack2.0                        9452  
+                                14579  2 files
+
+Total: 118 dirs, 203 files, 2.955.138 bytes
+List making time 1,18 min. (Spis 1.0 by Inikep/Genetic)

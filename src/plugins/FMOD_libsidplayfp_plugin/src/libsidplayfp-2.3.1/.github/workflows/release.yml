@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  release:
+     types: [published]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: deps
+      run: sudo apt-get install libgcrypt20-dev xa65 doxygen graphviz
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
+        ref: ${{ github.ref }}
+    - name: Bootstrap
+      run: autoreconf -vfi
+    - name: Configure
+      run: ./configure
+    - name: Prepare package
+      id: package-generator
+      run: |
+        make dist
+        RELEASE_TARBALL=$(ls libsidplayfp-*.tar.gz)
+        echo ::set-output name=filename::${RELEASE_TARBALL}
+    - name: Upload to release
+      uses: JasonEtco/upload-to-release@master
+      with:
+        args: ${{ steps.package-generator.outputs.filename }} application/gzip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Prepare docs
+      run: make doc
+    - name: Deploy docs
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        publish_dir: ./docs/html
+        destination_dir: html
+        commit_message: Update docs
+        github_token: ${{ secrets.GITHUB_TOKEN }}

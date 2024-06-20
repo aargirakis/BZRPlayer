@@ -1,0 +1,24 @@
+@c -*-texinfo-*-
+
+@center debug68 - Create and debug sc68 files
+
+
+@section Usage
+@display
+debug68 [options ... ] <file>
+@end display
+ 
+
+@section Options
+
+@table @asis
+ @item ---help          Display help message and exit.
+@end table
+
+@section Description
+
+debug68 commands are self documented. Try @samp{help} command inside debug68 shell.
+
+@section Resource files
+
+For information, see @ref{Resource files}.

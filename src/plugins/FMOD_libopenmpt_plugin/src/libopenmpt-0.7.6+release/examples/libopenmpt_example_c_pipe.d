@@ -1,0 +1,39 @@
+examples/libopenmpt_example_c_pipe.o: \
+ examples/libopenmpt_example_c_pipe.c \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/memory.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/crtdefs.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/_mingw.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/_mingw_mac.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/_mingw_secapi.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/vadefs.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/sdks/_mingw_directx.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/sdks/_mingw_ddk.h \
+ C:/Dev/Qt/Tools/mingw810_32/lib/gcc/i686-w64-mingw32/8.1.0/include/stdint.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/stdint.h \
+ C:/Dev/Qt/Tools/mingw810_32/lib/gcc/i686-w64-mingw32/8.1.0/include/stddef.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/stddef.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/stdlib.h \
+ C:/Dev/Qt/Tools/mingw810_32/lib/gcc/i686-w64-mingw32/8.1.0/include-fixed/limits.h \
+ C:/Dev/Qt/Tools/mingw810_32/lib/gcc/i686-w64-mingw32/8.1.0/include-fixed/syslimits.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/limits.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/sec_api/stdlib_s.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/malloc.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/string.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/sec_api/string_s.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/errno.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/unistd.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/io.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/_mingw_off_t.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/process.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/corecrt_startup.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/sys/types.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/getopt.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/pthread_unistd.h \
+ libopenmpt/libopenmpt.h libopenmpt/libopenmpt_config.h \
+ libopenmpt/libopenmpt_version.h \
+ libopenmpt/libopenmpt_stream_callbacks_fd.h libopenmpt/libopenmpt.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/stdio.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/_mingw_print_push.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/swprintf.inl \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/sec_api/stdio_s.h \
+ C:/Dev/Qt/Tools/mingw810_32/i686-w64-mingw32/include/_mingw_print_pop.h

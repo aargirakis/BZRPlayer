@@ -1,0 +1,185 @@
+//uppdaterat för 4.4.1. (radnr stämmer ej exakt)
+
+
+
+uppdatera makefile med korrekt mappnamn
+uppdatera FMOD_libxmp_plugin.files med korrekt mappnamn
+
+i mkstemp.c lägg lägg till överst efter sista includen
+#include <sys/types.h> //added by blazer
+
+i include/xmp.h lägg till ovanför #define XMP_VERSION "4.4.1"
+#include "queue.h" //added by blazer
+#define BUILDING_DLL 1 //added by blazer
+
+i include/xmp.h lägg sist i filen under /* External sample mixer API */
+//added by blazer
+LIBXMP_EXPORT void        xmp_get_channel_volumes  (xmp_context, unsigned char*);
+
+
+
+kopiera in queue.c och .h i src
+
+i player.c
+lägg till i funktionen xmp_start_player efter returnerade felkoderna
+    //added by blazer
+    unsigned char queue_size;
+    if(strcmp(mod->type,"Composer 669"))
+    {
+        queue_size=22;
+    }
+    else
+    {
+        queue_size=14;
+    }
+    p->patternPosBuffer = CreateQueue(queue_size); //added by blazer
+	p->posBuffer = CreateQueue(queue_size); //added by blazer
+    p->trackPosBuffer = CreateQueue(queue_size); //added by blazer
+    p->vumeterBuffer = CreateQueue(queue_size); //added by blazer
+	p->speedBuffer = CreateQueue(queue_size); //added by blazer
+	p->bpmBuffer = CreateQueue(queue_size); //added by blazer
+
+lägg sist i funktonen xmp_play_frame:
+    //added by blazer
+    if(IsFull(p->trackPosBuffer))
+
+    {
+
+        Dequeue(p->trackPosBuffer);
+        Dequeue(p->patternPosBuffer);
+        Dequeue(p->posBuffer);
+        Dequeue(p->vumeterBuffer);
+		Dequeue(p->speedBuffer);
+		Dequeue(p->bpmBuffer);
+
+    }
+
+    int chan;
+    int numChans = mod->chn;
+    unsigned char* vumeters = malloc( sizeof(unsigned char) * numChans );
+    for(chan = 0;chan<numChans;chan++)
+    {
+        struct channel_data *c = &p->xc_data[chan];
+        unsigned char vol = c->info_finalvol >> 4;
+        vumeters[chan] = vol;
+    }
+    Enqueue(p->row,p->trackPosBuffer);
+    Enqueue(mod->xxo[p->pos],p->patternPosBuffer);
+    Enqueue(p->pos,p->posBuffer);
+    Enqueue(vumeters,p->vumeterBuffer);
+	Enqueue(p->speed,p->speedBuffer);
+	Enqueue(p->bpm,p->bpmBuffer);
+    //end added by blazer
+
+lägg till i xmp_end_player efter 
+	
+		if (ctx->state < XMP_STATE_PLAYING)
+		return;
+		
+	i början:
+	
+    DisposeQueue(p->patternPosBuffer); //added by blazer
+    DisposeQueue(p->trackPosBuffer); //added by blazer
+    DisposeQueue(p->vumeterBuffer); //added by blazer
+    DisposeQueue(p->posBuffer); //added by blazer
+	DisposeQueue(p->speedBuffer); //added by blazer
+	DisposeQueue(p->bpmBuffer); //added by blazer
+	
+lägg till följande i void xmp_get_frame_info(xmp_context opaque, struct xmp_frame_info *info)
+
+    //info->row = p->row; //commented out by blazer
+    //added by blazer
+    if(!IsEmpty(p->trackPosBuffer))
+    {
+        info->row = Front(p->trackPosBuffer);
+    }
+    else
+    {
+        info->row=0;
+    }
+    if(!IsEmpty(p->patternPosBuffer))
+    {
+        info->pattern = Front(p->patternPosBuffer);
+    }
+    else
+    {
+        info->pattern = 0;
+    }
+    if(!IsEmpty(p->posBuffer))
+    {
+        info->pos = Front(p->posBuffer);
+    }
+    else
+    {
+        info->pos = 0;
+    }
+    if(!IsEmpty(p->speedBuffer))
+    {
+        info->speed = Front(p->speedBuffer);
+    }
+    else
+    {
+        info->speed = 0;
+    }
+    if(!IsEmpty(p->bpmBuffer))
+    {
+        info->bpm = Front(p->bpmBuffer);
+    }
+    else
+    {
+        info->bpm = 0;
+    }
+    //end added by blazer
+	info->frame = p->frame;
+	//info->speed = p->speed; //commented out by blazer
+	//info->bpm = p->bpm; //commented out by blazer
+	
+i player.c lägg till sist i filen
+//added by blazer
+void  xmp_get_channel_volumes(xmp_context opaque, unsigned char* volumes)
+{
+    struct context_data *ctx = (struct context_data *)opaque;
+    struct player_data *p = &ctx->p;
+    struct module_data *m = &ctx->m;
+    struct xmp_module *mod = &m->mod;
+    int chn;
+    chn = mod->chn;
+    if(!IsEmpty(p->vumeterBuffer))
+    {
+        int i = 0;
+        for(i=0;i<chn;i++)
+        {
+            unsigned char* test = Front(p->vumeterBuffer);
+            volumes[i]=test[i];
+        }
+    }
+    else
+    {
+        volumes = 0;
+    }
+}
+
+	
+i common.h lägg till i struct player_data, efter frame_time ca rad 364
+
+Queue patternPosBuffer; //added by blazer
+Queue trackPosBuffer; //added by blazer
+Queue posBuffer; //added by blazer
+Queue vumeterBuffer; //added by blazer
+Queue speedBuffer; //added by blazer
+Queue bpmBuffer; //added by blazer
+	
+bortkommentera rad 44-51 i loaders/it_load.c
+bortkommentera rad 377-383 samt rad 372 struct tm version; i loaders/it_load.c
+
+radera: i prowizard/
+pm.c
+pm20.c
+pm40.c
+pp30.c
+
+
+bortkommentera extern const struct format_loader sfx_loader;  i format.c (ca rad 71)
+bortkommentera &sfx_loader,  i format.c (ca rad 140)
+
+prowizard/pm01.c rad 118 period_to_note till libxmp_period_to_note

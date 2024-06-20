@@ -1,0 +1,1 @@
+-std=c17 -D__REPLAYER__ -D__STAND_ALONE__ -D__WINAMP__

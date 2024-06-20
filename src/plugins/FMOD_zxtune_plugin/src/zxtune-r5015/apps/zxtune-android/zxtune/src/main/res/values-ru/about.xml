@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="about">О программе</string>
+  <string name="about_credits">Авторы</string>
+  <string name="about_plugins">Плагины</string>
+  <string name="about_author">
+    Идея, код: <b>Vitamin/CAIG</b>\n
+    Дизайн: <b>Restorer</b>, <b>Vitamin/CAIG</b>, <b>Nodeus</b>\n\n
+    Использованы исходные коды:\n
+    \tAYEmul от <b>S.Bulba</b>\n
+    \tAYFly от <b>Ander</b>\n
+    \tPusher от <b>Himik/ZxZ</b>\n
+    Использованы библиотеки:\n
+    \tboost\n
+    \tzlib от <b>Jean-Loup Gailly</b> и <b>Mark Adler</b>\n
+    \tz80ex от <b>Boo-boo</b>\n
+    \tlhasa от <b>Simon Howard</b>\n
+    \tunrar от <b>Alexander Roshal</b>\n
+    \tlibxmp от <b>Claudio Matsuoka</b>\n
+    \tlibsidplayfp+resid\n
+    \tsnes_spc от <b>Shay Green</b>\n
+    \tGame_Music_Emu от <b>Shay Green</b> и <b>Chris Moeller</b>\n
+    \t7-Zip от <b>Igor Pavlov</b>\n
+    \tHVL2WAV от <b>Peter Gordon</b>\n
+    \tCrashlytics от <b>Twitter</b>\n
+    \tHighly Experimental от <b>Neill Corlett</b>\n
+    \tlazyusf2 от <b>Christopher Snowhill</b>\n
+    \tmGBA от <b>Jeffrey Pfau</b>\n
+    \tvio2sf от <b>Christopher Snowhill</b>\n
+    \tHighly Threoretical от <b>Neill Corlett</b> и <b>Christopher Snowhill</b>\n
+    \tASAP от <b>Piotr Fusik</b>\n
+    \tjsoup от <b>Jonathan Hedley</b>\n
+    \tminimp3 от <b>lieff</b>\n
+    \tstb-vorbis от <b>Sean Barrett</b>\n
+    \tlibFLAC\n
+    \tv2m-player от <b>Farbrausch</b> и <b>Joakim L.Gilje</b>\n
+    \tFFmpeg\n
+    \tlibvgm от <b>Valley Bell</b>\n
+    \tlibopenmpt\n
+    \tsseqplayer от <b>Christopher Snowhill</b>\n
+    \tLibAtrac9 от <b>Alex Barney</b>\n
+    \tmpg123 от <b>Thomas Orgis</b>\n
+    \tOGG Vorbis\n
+    \tvgmstream\n
+    \n
+    Посвящается <b>Lizzi</b>
+  </string>
+  <!-- players -->
+  <string name="plugin_player_dac">Цифровые форматы</string>
+  <string name="plugin_player_multidevice">Произвольные устройства</string>
+  <!-- containers -->
+  <string name="plugin_multitrack">Многотрековые</string>
+  <string name="plugin_archive">Архиваторы</string>
+  <string name="plugin_compressor">Упаковщики</string>
+  <string name="plugin_decompiler">Декомпиляторы</string>
+</resources>

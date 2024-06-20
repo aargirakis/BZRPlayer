@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<!--
+ Chron-O-Loo: HTML5 Audio/JavaScript port of UADE.
+
+ 	Copyright (C) 2014 Juergen Wothke
+
+ Original C code of "UADE" (see http://zakalwe.fi/uade/):
+
+   UADE plays old Amiga tunes through UAE emulation and cloned m68k-assembler Eagleplayer API.
+
+ Credits: The visualization used on this page was strongly "inspired" by this demo:
+ http://html5-demos.appspot.com/static/webaudio/createMediaSourceElement.html
+
+ LICENSE
+ 
+ This library is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or (at
+ your option) any later version. This library is distributed in the hope
+ that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
+-->
+<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+<title>Chron-O-Loo - amiga music nostalgia for the Web</title>
+
+<meta name="description" content="Experimental JavaScript version of UADE">
+<meta name="author" content="Juergen Wothke">
+<meta name="keywords" content="WebAudio API, HTML5, JavaScript, UADE, Delitracker, Amiga music">
+
+<link href="stdlib/font.css" rel="stylesheet" type="text/css">
+<link href="stdlib/common.css" rel="stylesheet" type="text/css">
+<link href="add_on.css" rel="stylesheet" type="text/css">
+
+<link rel="image_src" href="screenshot.gif" />
+<meta property="og:image" content="http://www.wothke.ch/webuade/screenshot.gif" />
+
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+<link type="image/x-icon" href="favicon.ico" />
+
+<script type="text/javascript" src="stdlib/jquery1.11.min.js"></script>
+<script type="text/javascript" src="stdlib/jquery.details.min.js"></script>
+<script type="text/javascript" src="stdlib/scriptprocessor_player.min.js"></script>
+
+<script>window.openDetails=false;</script>
+<script type="text/javascript" src="stdlib/mini_display.js"></script>
+<script type="text/javascript" src="stdlib/mini_controls.js"></script>
+
+<script type="text/javascript" src="backend_uade.js"></script>
+<script>
+var playerControls;
+var	songDisplay;
+	
+	
+// configure what music infos to display in SongDisplay
+UADEDisplayAccessor = (function(){ var $this = function (doGetSongInfo) {
+		$this.base.call(this, doGetSongInfo);
+	}; 
+	extend(DisplayAccessor, $this, {
+		getDisplayTitle: function() 	{ return "Chron-O-Loo\u2122";},
+		getDisplaySubtitle: function() 	{ return "Amiga Delitracker Emulator..on WebAudio";},
+		getDisplayLine1: function() { return this.getSongInfo().info1;},
+		getDisplayLine2: function() { return this.getSongInfo().info2; },
+		getDisplayLine3: function() { return this.getSongInfo().info3;  }
+	});	return $this; })();
+		
+// link player events to "controls" and "display"
+function doOnTrackEnd(){
+	if (playerControls) playerControls.playNextSong();  
+}
+function doOnTrackReadyToPlay(){ 	
+	ScriptNodePlayer.getInstance().play();
+	songDisplay.redrawSongInfo();
+}
+
+function doOnUpdate(){
+	songDisplay.redrawSongInfo();
+}
+
+function doOnPlayerReady() {
+	if (playerControls) playerControls.playNextSong();
+}
+
+function init() {
+	// --------------------------- UADE music player -----------------------
+	var basePath= 'uade/';	// UADE backend uses this when looking for files
+	
+	// shorten the trial&error phase by preloading essential files
+	var preload = [
+				basePath+"uaerc",
+				basePath+"eagleplayer.conf",
+				basePath+"amigasrc/score/score",
+			];
+			
+	ScriptNodePlayer.createInstance(new UADEBackendAdapter(basePath), basePath, preload, true,
+							doOnPlayerReady, doOnTrackReadyToPlay, doOnTrackEnd, doOnUpdate);
+		
+	// --------------------------- UI - basic player controls --------------
+	var songs = [
+		'songs/sct.ACID IT.dyter',
+		'songs/mod.px.bladswede remix!;0;150',
+		'songs/mdat.title',	
+		'songs/mod15.crystalhammer',	
+		'songs/dl.IK+',
+		'songs/cust.The_Pawn;0;190',
+		'songs/defender of the crown.cus',
+		'songs/AHX.Cruisin',
+		'songs/xenon2-short.dw',
+		'songs/scumm.title.mckracken',
+		'songs/speedball2.cus',
+		'songs/doubledragon.cus',
+		'songs/railroad tycoon.dl',
+		'songs/power drift.dl',
+		'songs/lemmings-onefile.cus;0;40',
+		'songs/dw.Speedball',
+		'songs/dyter07.cus;0;180',
+		'songs/formula one grandprix.cus;0;80',
+		'songs/afterburner.dl',
+		'songs/starball (ingame).cus;0;120',
+		'songs/ghouls n ghosts title.tf',
+		'songs/hip.Battle_Valley',
+		'songs/menace.dw',
+		'songs/mod15_ust.silkwormtitle',
+		'songs/rho.Gold_Runner',
+		'songs/bp.PXLEVEL2',
+		'songs/bss.title',
+		'songs/cust.Backlash;0;60',
+		'songs/cust.Corruption;0;85',
+		'songs/cust.Indiana_Jones_3_Adventure',
+		'songs/cust.S.D.I;0;70',
+		'songs/cust.Spy_vs_Spy;0;40',
+		'songs/dw.intro',
+		'songs/jcb.out_run;0;55',
+		'songs/kh.Test_Drive_2',
+		'songs/gmc.title',
+		'songs/mod.bloood',
+		'songs/mod.gods17',
+		'songs/mod.ingame;0;135',
+		'songs/sfx.intro',
+		'songs/sjs.tune1',
+	];
+	playerControls= new BasicPlayerControls(songs, false, true,
+				(function(someSong) {
+					var options= {};
+					// 'filename' may contain additional track and timeout info
+					var arr= someSong.split(";");	
+					options.track= arr.length>1?parseInt(arr[1]):0;
+					options.timeout= arr.length>2?parseInt(arr[2]):-1;
+
+					return [arr[0], options];
+				})
+			);
+
+	// limit rendering to 50% of the available time (UADE is fast so there is no need ..)
+	songDisplay= new SongDisplay(new UADEDisplayAccessor((function(){return playerControls.getSongInfo();})), 
+								[0x66e565], 0, 0.5, (function(){playerControls.animate()}));
+
+	playerControls.playNextSong();
+}
+</script>
+<script type="text/javascript" src="stdlib/analytics.js"></script>
+</head>
+
+<body onload="init();">
+<div class="tooltip" id="tooltip" alt= "This is a hobby project, but it costs not only time to regularily maintain this site but also money to pay for the internet service provider (etc). If you want to keep this site up and running.. or if you just like my work (see https://jwothke.wordpress.com/) and you'd like to see more of it in the future, please make a contribution. Thank you!"></div>
+
+<details>
+  <summary>What's this?</summary>
+  <div>
+  <p>Ajax at its best.. this poor man's version of the unmatched Chron-O-John gives you a front seat for your time travel to the days of Amiga music. Based on <a href="http://zakalwe.fi/uade/" target="_blank">UADE</a> (Unix Amiga Delitracker Emulator). You can bring your own Amiga music files by dragging them onto the device (only single file songs supported).</p>
+		
+  <p>2014 by Juergen Wothke  (The source code can be found <a target="_blank" href="https://github.com/wothke/">here</a>.)</p>
+ 
+  <p>This page does not use any plugins but is based exclusively on the WebAudio API. 
+  You'll need a modern browser with WebAudio support to make it play the music (The page has been successfully tested using Firefox, 
+  Chrome and Edge).
+  
+  <p>Contrarry to most other HTML5 based pages out there, the music here is NOT based on  
+  OscillatorNode based waveforms or the playback of some mp3 file. Instead the samples here 
+  are completely calculated within JavaScript by running the uade emulator logic (respective music files are
+  therefore much smaller than say mp3 - ranging from single digit to several hundred kilobytes).</p>  
+ 
+  <p>Credits: Many people have contributed to 'UADE' and I cannot name them all here. I had to tinker a bit with their code to get an architecture suitable for the web but once again <a href="https://github.com/kripken/emscripten/wiki" target="_blank">emscripten</a> then did the heavy lifting compiling the C code into JavaScript.</p>
+ 
+ <p>Please use the below controls to navigate between the songs that you have dropped on the player:</p>
+  <span id="controls"></span>
+ </div>
+</details>
+<aside></aside>
+<section>
+  <div id="logo">
+		<!-- in new Chrome the SHIT reflections disapear dependig on the canvas height.. what a fucking joke -->
+		<div id="moz-reflect-logo"><canvas  id="logoCanvas"  width="300" height="100"></canvas></div>	
+  </div>
+  
+  <div id="spectrum" >
+		<!-- use "hight" greater than 80 and the fucking reflection is gone.. FUCK YOU IDIOTS -->
+		<div id="moz-reflect-spectrum"><canvas id="spectrumCanvas" width="800" height="80"></canvas></div>
+  </div>
+  <div id="drop" class="drop"><img src="warp.gif" width=500 height=300/></div><!--see BasicPlayerControls-->
+</section>
+</body>
+</html>

@@ -1,0 +1,1 @@
+#define HAVE_MEMCPY 1

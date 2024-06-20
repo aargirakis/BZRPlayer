@@ -1,0 +1,86 @@
+//Input (Mic/Line) -> Amplifier -> Filter -> Output
+
+set_pixel_size( WINDOW_XSIZE / 256 )
+resize( get_screen(), WINDOW_XSIZE, WINDOW_YSIZE )
+
+xsize = get_xsize( get_screen() )
+ysize = get_ysize( get_screen() )
+hxsize = xsize / 2
+hysize = ysize / 2
+
+fn audio_callback(
+    $stream, 
+    $userdata, 
+    $channels, 
+    $frames, 
+    $output_time_in_system_ticks, 
+    $in_channels, 
+    $latency_in_frames )
+{
+    $rv = 0
+    if $in_channels >= 0
+    {
+	copy( in_buf, $in_channels[ 0 ], 0, 0, $frames, 2, 1 ) //convert to interleaved format: LL RR -> LRLR
+	copy( in_buf, $in_channels[ 1 ], 1, 0, $frames, 2, 1 ) //...
+	$rv = sv_render( sv, out_buf, $frames, $latency_in_frames, $output_time_in_system_ticks, in_buf, 2 )
+	copy( $channels[ 0 ], out_buf, 0, 0, $frames, 1, 2 ) //convert from interleaved format: LRLR -> LL RR
+	copy( $channels[ 1 ], out_buf, 0, 1, $frames, 1, 2 ) //...
+
+	//Visualization:
+	copy( visual_buf, $channels[ 0 ] )
+    }
+    ret( $rv )
+}
+
+visual_buf = new( 256, 1, FLOAT )
+in_buf = new( 8192, 1, FLOAT )
+out_buf = new( 8192, 1, FLOAT )
+clean( visual_buf )
+
+sv = sv_new( 44100, SV_INIT_FLAG_OFFLINE )
+set_audio_callback( audio_callback, 0, 44100, FLOAT, 2 )
+enable_audio_input( 1 )
+
+sv_lock( sv )
+mod_input = sv_new_module( sv, "Input" )
+mod_amp = sv_new_module( sv, "Amplifier" )
+mod_filter = sv_new_module( sv, "Filter" )
+sv_connect_module( sv, mod_input, mod_amp ) //Input -> Amplifier
+sv_connect_module( sv, mod_amp, mod_filter ) //Amplifier -> Filter
+sv_connect_module( sv, mod_filter, 0 ) //Filter -> OUTPUT
+sv_unlock( sv )
+
+sv_set_event_t( sv, 1, 0 ) //handle all incoming events as quickly as possible
+
+//Input.02.Channels = 1 (stereo)
+ctl_num = 2
+ctl_val = 1
+sv_send_event( sv, 0, 0, 0, mod_input + 1, ctl_num << 8, ctl_val )
+
+//Amplifier.08.Gain = some value
+ctl_num = 8
+ctl_val = 16 //16000
+sv_send_event( sv, 0, 0, 0, mod_amp + 1, ctl_num << 8, ctl_val )
+
+while 1
+{
+    transp( 64 );
+    clear()
+    transp( 256 );
+
+    x = 0 while( x < 256 )
+    {
+        line( x - 128, 0, x - 128, visual_buf[ x ] * 256, GREEN )
+        x + 1
+    }
+
+    while( get_event() ) { if EVT[ EVT_TYPE ] == EVT_QUIT { breakall } }
+
+    frame()
+}
+
+set_audio_callback( -1 )
+sv_remove( sv )
+remove( visual_buf )
+remove( in_buf )
+remove( out_buf )

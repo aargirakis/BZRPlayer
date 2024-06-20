@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: deps [Linux]
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get install \
+          libgcrypt20-dev \
+          xa65 \
+          libunittest++-dev \
+          libftdi1-dev
+    - name: deps [macOS]
+      if: runner.os == 'macOS'
+      run: |
+        export HOMEBREW_NO_INSTALL_CLEANUP=1
+        brew update
+        brew install \
+          autoconf \
+          automake \
+          coreutils \
+          gnu-sed \
+          libgcrypt \
+          xa \
+          unittest-cpp \
+          libftdi
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: bootstrap
+      run: autoreconf -vfi
+    - name: configure
+      run: ./configure
+    - name: make distcheck
+      run: |
+        if [ '${{ runner.os }}' == 'macOS' ]; then
+          # Assumes `sed` is GNU sed:
+          # sed: illegal option -- r
+          export PATH="$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$PATH"
+        fi
+        make distcheck

@@ -1,0 +1,16 @@
+Source: zxtune-qt
+Priority: optional
+Section: sound
+Maintainer: Vitamin <vitamin.caig@gmail.com>
+Build-Depends: debhelper
+Homepage: http://zxtune.bitbucket.org/
+Vcs-Git: https://bitbucket.org/zxtune/zxtune.git
+Vcs-Browser: https://bitbucket.org/zxtune/zxtune/src
+
+Package: zxtune-qt
+Architecture: any
+Depends: ${shlibs:Depends} ${misc:Depends}
+Conflicts: zxtune
+Suggests: libasound2, libflac8, libogg0, libvorbis0a, libvorbisenc2, libmp3lame, libcurl3
+Description: Qt-based GUI version of crossplatform ZX Spectrum music player and ripper.
+ For additional information please visit homepage and online manual.

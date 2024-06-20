@@ -1,0 +1,66 @@
+.TH "sourcer68" 1 "29 Aug 2003" "sc68-tools-manual" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+sourcer68 \- 68000 disassembler.
+.SH "AUTHOR"
+.PP
+Copyright (C) 1998-2003 Benjamin Gerard <ben@sashipa.com>
+.PP
+This program is free software.
+.SH "DATE"
+.PP
+2003
+.SH "SYNOPSIS"
+.PP
+sourcer68 [options] 
+.SH "DESCRIPTION"
+.PP
+sourcer68 is a 68000 disassambler. Input file can be either BINARY, TOS program (Atari .prg .tos ...) or SC68 file. The dissassembler starts a disassemble pass at the beginning of the input depending on its type. 
+.IP "\(bu" 2
+\fBBINARY\fP entry is offset +0. 
+.IP "\(bu" 2
+\fBTOS\fP entry is the program entry point. By default TOS program are relocated. 
+.IP "\(bu" 2
+\fBSC68\fP 3 entries are offset +0 +4 and +8 corresponding to sc68 replay convention. External replay is loaded if needed. Specify replay-path with --replay= or with environment varaiable.
+.PP
+.SS "DISASSEMBLE PASS"
+A disassemble pass starts at an ENTRY point. The disassembler will try to follow program branchs. It should add every needed symbols. There is a heuristic to try to find jump tables (sequential branch instruction).
+.SH "OPTIONS"
+.PP
+.IP "\(bu" 2
+\fB--help\fP Display this message and exit. 
+.IP "\(bu" 2
+\fB--reloc=\fP[yes|no|auto] TOS relocation (default:auto). 
+.IP "\(bu" 2
+\fB--replay=PATH\fP Force replay path. 
+.IP "\(bu" 2
+\fB--entry=\fP[ENTRY-LIST] Set disassembly entry points. 
+.IP "\(bu" 2
+\fB--tab=\fP[STRING] Set tabulation string.
+.PP
+.SS "ENTRY-LIST"
+ENTRY-LIST := ENTRY[,ENTRY...]
+.PP
+An \fBENTRY-LIST\fP is an ordered coma (',') separated list of \fBENTRY\fP points which define disassembler start points.
+.SS "ENTRY"
+ENTRY := [l][+]integer
+.PP
+.IP "\(bu" 2
+\fBl\fP Get long at the effective address (indirection). 'l' options could by use more than once. (eg. ll0x440). 
+.IP "\(bu" 2
+\fB+\fP Effective address is file start + integer. 
+.IP "\(bu" 2
+\fBinteger\fP Number ('C' format: 0x for hexa, 0 for octal)
+.PP
+.SH "ENVIRONMENT VARIABLES"
+.PP
+The \fBSC68_DATA\fP variable overrides the default shared data path. By default it is set to \fI$datadir/sc68\fP where \fI$datadir\fP depends on the installation options. In most case this is \fI/usr/local/share/sc68\fP or \fI/usr/share/sc68\fP.
+.PP
+The \fBSC68_HOME\fP variable overrides the default user data path. By default it is set to $HOME/.sc68.
+.SH "BUGS"
+.PP
+None has been reported. Report to \fIbug@sashipa.com\fP.
+.SH "SEE ALSO"
+.PP
+\fIas68\fP, \fIdebug68\fP, \fIinfo68\fP, \fIsc68\fP, \fIsourcer68\fP, \fIunice68\fP 

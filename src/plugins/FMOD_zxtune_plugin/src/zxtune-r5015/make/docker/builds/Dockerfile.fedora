@@ -1,0 +1,22 @@
+FROM fedora:29
+RUN yum update -y && \
+    yum install -y git zip make gcc-c++ rpmdevtools \
+        alsa-lib-devel pulseaudio-libs-devel \
+        boost-devel \
+        qt5-devel && \
+    rm -Rf /var/cache/yum && \
+    useradd -m -s /bin/bash -U -G users -d /build build
+
+# TODO: link own static boost
+USER build
+RUN mkdir -p /build/zxtune && cd /build/zxtune && \
+    git init && \
+    git remote add --tags origin https://bitbucket.org/zxtune/zxtune.git && \
+    echo -e "platform=linux\narch=x86_64\npackaging=rpm\ndistro=fedora" > variables.mak && \
+    echo -e "qt.includes=/usr/include/qt5\ncxx_flags=-fPIC" >> variables.mak && \
+    echo -e "tools.moc=moc-qt5\ntools.uic=uic-qt5\ntools.rcc=rcc-qt5\ntools.python=python3" >> variables.mak
+
+WORKDIR /build/zxtune
+COPY entrypoint.sh .
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["package", "-C", "apps/bundle"]

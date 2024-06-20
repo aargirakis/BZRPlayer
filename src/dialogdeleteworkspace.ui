@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogDeleteWorkspace</class>
+ <widget class="QDialog" name="DialogDeleteWorkspace">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>150</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>150</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Delete Layout</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget
+{
+border-color:#282828;
+selection-background-color: #282828;
+selection-color: #ffffff;
+font-family:Roboto;
+font-size:14px;
+background-color:#282828;
+color:#ffffff;
+}
+
+QComboBox:disabled {
+    border: 1px solid #404040;
+
+}
+
+QComboBox::drop-down:disabled
+{
+    border-left-color: #404040;
+
+}
+QComboBox {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    min-width: 6em;
+}
+
+QComboBox:editable {
+    background: #333;
+}
+
+QComboBox:!editable, QComboBox::drop-down:editable {
+     background: ;
+}
+
+/* QComboBox gets the &quot;on&quot; state when the popup is open */
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+                                stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+}
+
+QComboBox:on { /* shift the text when the popup opens */
+    padding-top: 3px;
+    padding-left: 4px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 3px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow {
+    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}
+
+QSlider::groove:horizontal { 
+	background-color: #404040;
+	height: 4px; 
+	border-radius: 4px;
+}
+QSlider::handle:horizontal { 
+	background-color: #009379/*main*/; 
+	border: 2px solid #009379/*main*/; 
+	width: 11px; 
+	height: 20px; 
+	line-height: 20px; 
+	margin-top: -5px; 
+	margin-bottom: -5px; 
+	border-radius: 7px; 
+}
+
+QSlider::handle:horizontal:hover { 
+	background-color: #00c09e; 
+	border: 2px solid #00c09e; 
+}
+
+
+QSlider::sub-page:horizontal {
+background-color:#009379/*main*/; 
+}
+QWidget:disabled
+{
+color:#404040;
+
+}
+QSlider::handle:disabled { 
+	background-color: #404040; 
+	border: 2px solid #404040; 
+}
+QSlider::sub-page:horizontal:disabled {
+background-color:#404040; 
+}
+
+QLineEdit {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    min-width: 6em;
+}
+QPushButton
+{
+font-family:roboto;
+background-color: #b7b7b7;
+border-radius: 12px;
+padding:6px;
+font-size:14px;
+color:#000;
+}</string>
+  </property>
+  <widget class="QPushButton" name="buttonDelete">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>30</y>
+     <width>75</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="buttonCancel">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>70</y>
+     <width>75</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBoxWorkspace">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>30</y>
+     <width>221</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>81</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Layout:</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

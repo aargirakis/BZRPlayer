@@ -1,0 +1,241 @@
+﻿Build instructions
+==================
+
+Required tools
+--------------
+
+1. The core of ASAP is written in the Ć programming language.
+You'll need 'cito' (https://github.com/pfusik/cito).
+For your convenience, this is not needed for most of the C and C++ ports.
+
+2. GNU Make.
+On Windows, install from MSYS2 (https://www.msys2.org/).
+
+3. If compiling from Git:
+xasm (https://github.com/pfusik/xasm)
+and MADS (http://mads.atari8.info).
+
+Make sure these tools are on your 'PATH'.
+
+
+Getting the source code
+-----------------------
+
+a. Download and uncompress 'asap-*.tar.gz'
+
+b. git clone git://git.code.sf.net/p/asap/code asap-code
+
+
+Building asapconv and libasap on Unix-like systems
+--------------------------------------------------
+
+From a directory which contains 'asap.c' run:
+
+    make
+    sudo make install
+
+The latter command installs the command-line converter and the C library
+in '/usr/local'.  Add '--prefix=DIR' to install somewhere else.
+
+
+Building the MOC plugin on Unix-like systems
+--------------------------------------------
+
+You need the source code of MOC.
+The plugin is compatible with MOC 2.4.x and MOC 2.5.0.
+From the directory with MOC sources run:
+
+    ./configure
+
+Make sure it finishes successfully.
+
+Check MOC_INCLUDE and MOC_PLUGIN_DIR in the 'moc/moc.mk' file.
+These should be the directory with MOC sources
+and the directory with the installed MOC plugins, respectively.
+
+If the defaults are correct, use the following commands:
+
+    make asap-moc
+    sudo make install-moc
+
+If you need to specify different directories, use:
+
+    make asap-moc MOC_INCLUDE=path/to/moc/sources
+    sudo make install-moc MOC_PLUGIN_DIR=/path/to/moc/plugins
+
+
+Building the VLC plugin on Linux
+--------------------------------
+
+Install 'libvlccore-dev' (Debian/Ubuntu) or 'vlc-devel' (Fedora).
+Verify the paths at the top of 'vlc/vlc.mk'.  Run:
+
+    make asap-vlc
+    sudo make install-vlc
+
+
+Building the VLC plugin on macOS
+--------------------------------
+
+Install the Xcode Command Line Tools.
+
+You need 'vlc_plugin.h' and other header files.
+Unfortunately they are not installed with the VLC on Mac.
+You can find them in VLC source code.
+Make sure 'VLC_OSX_CFLAGS' in 'vlc/vlc.mk' points to the directory
+with these header files.
+Run:
+
+    make asap-vlc-osx
+    make install-vlc-osx
+
+
+Building the XMMS plugin on Unix-like systems
+---------------------------------------------
+
+You need 'xmms' and 'xmms-devel' packages.
+Compile:
+
+    make asap-xmms
+
+Install the plugin in your home directory:
+
+    make install-xmms-user
+
+or for all users:
+
+    sudo make install-xmms
+
+If you have another XMMS plugin that supports Atari 8-bit music,
+remove it in order to avoid conflicts.
+
+
+Building the XMMS2 plugin on Unix-like systems
+----------------------------------------------
+
+You need the 'xmms2-devel' package.
+Compile:
+
+    make asap-xmms2
+
+Install the plugin for all users:
+
+    sudo make install-xmms2
+
+
+Building asapconv, WASAP, Winamp/XMPlay/BASS plugins, RMT DLL,
+asapscan, shell extension and libasap on Windows
+---------------------------------------------------------------------
+
+Install MSYS2 (https://www.msys2.org/), then additional packages:
+
+    pacman -S make mingw-w64-i686-gcc mingw-w64-x86_64-gcc
+
+Open the command prompt in the root directory of ASAP sources and run:
+
+    make mingw
+
+
+Building the foobar2000 plugin on Windows
+-----------------------------------------
+
+In addition to the common prerequisites you need:
+1. A Microsoft C++ compiler and a Windows SDK.
+   I use Visual Studio Community 2022.
+2. foobar2000 SDK (http://www.foobar2000.org/SDK).
+   Extract it to a new directory called 'foobar2000_SDK'
+   next to (not inside!) the ASAP directory.
+
+Open the command prompt in the root directory of ASAP sources and run:
+
+    make win32/foo_asap.dll
+
+
+Building the VLC plugin on Windows
+----------------------------------
+
+TODO: where to get VLC SDK.
+
+Open the command prompt in the root directory of ASAP sources and run:
+
+    make win32/libasap_plugin.dll
+
+
+Building Java ASAP2WAV
+----------------------
+
+You need Java Development Kit (JDK).
+
+If necessary, edit the paths at the top of 'java/java.mk'
+so that they point to your installed tools.
+
+Open the command prompt in the root directory of ASAP sources and run:
+
+    make java/asap2wav.jar
+
+
+Building AndroidASAP
+--------------------
+
+Install Android Studio (https://developer.android.com/studio).
+
+Edit the paths at the top of 'java/android/android.mk'
+so that they point to your installed Android SDK.
+Open the command prompt in the root directory of ASAP sources and run:
+
+    make android-debug
+
+AndroidASAP integrates with file managers.
+
+
+Building C# ASAP2WAV and asapplay on Windows
+--------------------------------------------
+
+Open the command prompt in the root directory of ASAP sources and run:
+
+    make csharp
+
+
+Building JavaScript command-line ASAP2WAV and the web browser player
+--------------------------------------------------------------------
+
+Open the command prompt in the root directory of ASAP sources and run:
+
+    make javascript
+
+'asap2wav.js' is the command-line script.
+'asapweb.js' plus 'asap.js' are the browser player.
+
+
+Building Python command-line ASAP2WAV
+-------------------------------------
+
+Open the command prompt in the root directory of ASAP sources and run:
+
+    make python
+
+'asap2wav.py' together with 'asap.py' are the command-line script.
+
+
+Building Swift command-line ASAP2WAV
+------------------------------------
+
+Install Swift (https://swift.org/download/).
+
+Open the command prompt in the root directory of ASAP sources and run:
+
+    make swift
+
+
+Using asapconv
+--------------
+
+Run the program from the command line to see the syntax.
+The '-o/--output' option selects the output format and is mandatory.
+
+
+Using libasap
+-------------
+
+The library is documented in the 'asap.h' header file.
+Be warned there might be breaking changes in the future versions of the library.

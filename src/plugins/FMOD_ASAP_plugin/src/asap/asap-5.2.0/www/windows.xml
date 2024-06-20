@@ -1,0 +1,67 @@
+﻿<page title="Windows">
+	<h2>Windows</h2>
+	<p>Download <download prefix="asap-" suffix="-win32.msi" />, it's an installer for Windows 10/8/7/Vista/XP,
+	also the 64-bit ones.</p>
+
+	<h2>foobar2000</h2>
+	<p><a href="http://www.foobar2000.org/">foobar2000</a> is the recommended player.
+	The ASAP installer detects it and installs a plugin.
+	This plugin can play directly from ATR disk images.
+	You may also use foobar2000's conversion, e.g. to MP3.
+	If you want to install just the foobar2000 plugin and nothing else, there's an alternative download:
+	<download prefix="foo_asap-" suffix=".fb2k-component" />.</p>
+	<img src="foobar2000.png" alt="foobar2000" />
+
+	<h2>XMPlay</h2>
+	<p><a href="http://www.un4seen.com/xmplay.html">XMPlay</a> is a player supporting MOD and similar formats out of the box.
+	The ASAP plugin can display RMT instrument names. If you want to use the "File information" window
+	(to edit tags or convert between SAP and other formats), assign a shortcut to it from XMPlay options.</p>
+	<img src="xmplay.png" alt="XMPlay" />
+
+	<h2>Winamp</h2>
+	<p><a href="http://www.winamp.com/">Winamp</a> is a pure old-school classic! Believe it or not, it works on Windows 10.
+	The ASAP plugin supports ATR disk images.</p>
+	<img src="winamp.png" alt="Winamp" />
+
+	<h2>BASS / AIMP</h2>
+	<p><a href="http://www.un4seen.com/bass.html">BASS</a> is a component that provides audio playback
+	in <a href="http://www.aimp.ru/">AIMP</a> and <a href="http://www.un4seen.com/bass_showcase.php">other players</a>.
+	The ASAP installer detects AIMP. For other players, modify the install directory.</p>
+	<img src="aimp.png" alt="AIMP" />
+
+	<h2>VLC</h2>
+	<p><a href="http://www.videolan.org/vlc/">VLC</a> is a popular video player that plays audio as well.
+	It provides limited support for the SAP file format out of the box (no digitized sounds, buggy emulation).
+	For best experience, install the ASAP plugin.</p>
+	<p>For 64-bit VLC, you need to install <download prefix="asap-" suffix="-win64.msi" />.
+	It is okay to have both 32-bit and 64-bit ASAP packages installed at the same time.</p>
+	<img src="vlc.png" alt="VLC" />
+
+	<h2>Raster Music Tracker</h2>
+	<p><a href="http://raster.infos.cz/atari/rmt/rmt.htm">RMT</a> is a chiptune editor running on Windows.
+	For better emulation of the POKEY chip, install the ASAP plugin.</p>
+
+	<h2>WASAP</h2>
+	<p>WASAP is a tiny standalone player. When you run it, an "Open file" dialog appears.
+	Simply select the file you want to listen to. WASAP is later controlled by its red tray icon.
+	When you hover the mouse pointer over the icon, the name of the loaded file appears.
+	To open another file, left-click the tray icon. The other options are
+	available in the menu which appears when you right-click the icon.</p>
+	<p>Because of limited functionality of WASAP (for instance, no playlist),
+	it's recommended to use the previously described players instead.</p>
+	<img src="wasap.png" alt="WASAP" />
+
+	<h2>Windows Explorer</h2>
+	<p>The Windows Explorer extension provides no playback, only metadata display and editor.
+	On 64-bit Windows, you need to install <download prefix="asap-" suffix="-win64.msi" />.</p>
+	<img src="shellex.png" alt="Windows Explorer" />
+
+	<h2>asapconv</h2>
+	<p>For command-line conversions (e.g. to WAV or between SAP and the tracker formats)
+	and editing the metadata, use asapconv. Run the program from the command prompt to see the syntax.
+	The <code>-o/--output</code> option selects the output format and is mandatory.</p>
+
+	<h2>Manual installation</h2>
+	<p>If you are allergic to installers, you may download <download prefix="asap-" suffix="-win32.zip" />
+	and extract the files to proper locations.</p>
+</page>

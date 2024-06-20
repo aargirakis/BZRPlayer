@@ -1,0 +1,1 @@
+D:\Programs\vasm\vasmm68k_mot.exe  -no-opt  -o score -Fbin  score.s

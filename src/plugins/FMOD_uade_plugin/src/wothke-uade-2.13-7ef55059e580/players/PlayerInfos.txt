@@ -1,0 +1,15 @@
+
+FredOld
+   Fred player module V0.1 for UADE (21.12.2001) $COPYRIGHT: Heikki Orsila <heikki.orsila@tut.fi>	
+  
+FredGrey
+  @$VER: Fred Gray player module V1.0 (6 Jan 2001) adapted by Wanted Team
+FredGreyWT  
+  Fred Gray player module V1.0 (6 Jan 2001)
+  
+ Fred
+  Fred player module V2.3 (25-Aug-97)
+
+
+PlayAY and AYPlayers(folder with 4 ZXAY* files) belong together - don't work in UADE ("..this
+    deliplayer uses loadseg()/dos.library" -> warning originating from "score")

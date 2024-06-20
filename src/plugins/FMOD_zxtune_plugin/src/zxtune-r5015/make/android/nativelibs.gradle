@@ -1,0 +1,115 @@
+/*
+ * Native libs basic functionality
+ *
+ */
+
+def getListProperty(name, defvalue) {
+  def prop = localProperties.getProperty(name, defvalue)
+  return prop.split();
+}
+
+android {
+    // required for stripping
+    ndkVersion localProperties.getProperty("ndk.version", "")
+    // store debug symbols in bundle
+    defaultConfig.ndk.debugSymbolLevel 'FULL'
+}
+
+android {
+    flavorDimensions "packaging"
+
+    splits.abi {
+        reset()
+    }
+
+    // Splits config is global and cannot be per-variant
+    // so, it conflicts with another flavors due to non-empty ndk.abiFilters
+    productFlavors {
+        // Single APK
+        fat {
+            dimension "packaging"
+            versionNameSuffix "-fat"
+            ndk.abiFilters getListProperty("flavors.fat.abifilters", "")
+        }
+
+        // Single AAB
+        thin {
+            dimension "packaging"
+            versionNameSuffix "-thin"
+            ndk.abiFilters getListProperty("flavors.thin.abifilters", "")
+        }
+
+        // Several APKs
+        // Should not be combined with another flavors (configs)
+        splitted {
+            dimension "packaging"
+            versionNameSuffix "-splitted"
+            ndk.abiFilters getListProperty("flavors.splitted.abifilters", "")
+        }
+    }
+
+    variantFilter { variant ->
+        def flavor = variant.getFlavors().get(0)
+        def abis = flavor.ndk.abiFilters
+        if (variant.name =~ /splitted/) {
+            if (!abis.isEmpty()) {
+                splits.abi.enable true
+                splits.abi.include((String[])abis.toArray())
+                abis.clear()
+            }
+            if (splits.abi.enable) {
+                return
+            }
+        }
+        if (abis.isEmpty()) {
+            setIgnore(true)
+            println 'Disable ' + variant.name
+        }
+    }
+}
+
+def callMake(cmdline) {
+    def fullCmd = "make platform=android ${cmdline}"
+    def proc = fullCmd.execute()
+    proc.consumeProcessOutput(System.out, System.out)
+    assert 0 == proc.waitFor()
+}
+
+def abiToName(abi) {
+    return abi.replace('-', '_').capitalize()
+}
+
+android {
+    def jniIntermediateDir = "${project.buildDir}/jni"
+    sourceSets {
+        main {
+            jniLibs.srcDirs = [jniIntermediateDir]
+        }
+    }
+
+    def allAbis = ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
+    allAbis.each { arch ->
+        task("nativeLibs${abiToName(arch)}", group: "Native") {
+            //optimize incremental builds - assume existing soFolder means that all libs are ready
+            def outDir = "${jniIntermediateDir}/${arch}"
+            outputs.dir outDir
+            doLast {
+                def cpuCount = Runtime.runtime.availableProcessors()
+                android.sourceSets.main.jni.srcDirs.each { jniDir ->
+                    callMake("arch=${arch} bins_dir=${outDir} -C ${jniDir} -j ${cpuCount}")
+                }
+            }
+        }
+    }
+
+    applicationVariants.all { variant ->
+        def suffix = variant.name.capitalize()
+        def pkg = tasks.getByName("package${suffix}")
+        def fld = tasks.getByName("merge${suffix}JniLibFolders")
+        [variant.productFlavors*.ndk.abiFilters, splits.abiFilters].flatten().unique().each { arch ->
+            def makeNative = "nativeLibs${abiToName(arch)}"
+            pkg.dependsOn.add(makeNative)
+            fld.dependsOn.add(makeNative)
+        }
+    }
+}

@@ -1,0 +1,51 @@
+
+WRAPPERDIR := $(CURDIR)
+BASEDIR = $(CURDIR)/..
+
+CC = gcc
+
+CFLAGS = -g -D__SDL_WRAPPER__
+
+LIBS = sdl SDL_image SDL_ttf gtk+-3.0
+CFLAGS += -g $(shell pkg-config $(LIBS) --cflags) -DPREFIX=\"$(PREFIX)\"
+LFLAGS += -lm $(shell pkg-config $(LIBS) --libs)
+PREFIX = /usr
+
+CFLAGS += -I$(BASEDIR) \
+          -I$(WRAPPERDIR)
+
+TARGET = hivelytracker
+
+OBJECTS = sdl_wrapper.o \
+          ht.o \
+	  linux.o \
+	  ../gui.o \
+	  ../replay.o \
+	  ../util.o \
+	  ../undo.o \
+	  ../about.o
+
+all: $(TARGET)
+
+-include $(OBJECTS:.o=.d)
+
+$(TARGET): $(OBJECTS)
+	$(CC) -o $(TARGET) $(OBJECTS) $(LFLAGS)
+
+$(OBJECTS): %.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+	@$(CC) -MM $(CFLAGS) $< > $*.d
+
+clean:
+	rm $(OBJECTS) $(OBJECTS:.o=.d) $(TARGET)
+
+install:
+	install -Dm644 ../Docs/hivelytracker.1 $(PREFIX)/share/man/man1/hivelytracker.1
+	gzip -f -9 $(PREFIX)/share/man/man1/hivelytracker.1
+	install -Dm 755 ../sdl/hivelytracker $(PREFIX)/bin/hivelytracker
+	install -Dm 644 ../sdl/winicon.png $(PREFIX)/share/icons/hivelytracker.png
+	install -Dm 644 ../sdl/hivelytracker.desktop $(PREFIX)/share/applications/hivelytracker.desktop
+	mkdir -p $(PREFIX)/share/hivelytracker
+	cp -r ../Instruments $(PREFIX)/share/hivelytracker/Instruments
+	cp -r ../Skins $(PREFIX)/share/hivelytracker/Skins
+	cp -r ../ttf $(PREFIX)/share/hivelytracker/ttf

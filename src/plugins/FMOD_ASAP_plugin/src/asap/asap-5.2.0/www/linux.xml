@@ -1,0 +1,31 @@
+﻿<page title="Linux">
+	<h2>VLC</h2>
+	<p>On Ubuntu, install <a href="http://www.videolan.org/vlc/">VLC</a>
+	via <code>apt</code>, not <code>snap</code>.
+	Then install the ASAP plugin: <download prefix="asap-vlc_" suffix="-1_amd64.deb" />.</p>
+	<p>On Fedora, <a href="https://www.videolan.org/vlc/download-fedora.html">install VLC from RPM Fusion</a>,
+	then install the ASAP plugin: <download prefix="asap-vlc-" suffix="-1.x86_64.rpm" />.</p>
+	<img src="vlc-ubuntu.png" alt="VLC on Ubuntu 18.04" />
+
+	<h2>XMMS2</h2>
+	<p>On Ubuntu install XMMS2 with <code>sudo apt install xmms2</code>.
+	Then install the ASAP plugin: <download prefix="asap-xmms2_" suffix="-1_amd64.deb" />.</p>
+	<p>On Fedora: <code>sudo dnf install xmms2</code>,
+	then <download prefix="asap-xmms2-" suffix="-1.x86_64.rpm" />.</p>
+
+	<h2>Command-line converter</h2>
+	<p>For command-line conversions (e.g. to WAV or between SAP and the tracker formats)
+	and editing the metadata, install asapconv:</p>
+	<ul>
+		<li>on Ubuntu: <download prefix="asap_" suffix="-1_amd64.deb" /></li>
+		<li>on Fedora: <download prefix="asap-" suffix="-1.x86_64.rpm" /></li>
+	</ul>
+	<p>Run <code>asapconv</code> from the shell to see the syntax.
+	The <code>-o/--output</code> option selects the output format and is mandatory.</p>
+
+	<h2>Other distros</h2>
+	<p>Download the source code <download prefix="asap-" suffix=".tar.gz" />.
+	Inside you will find instructions on how to build a VLC plugin,
+	a <a href="http://moc.daper.net/">MOC</a> plugin, an XMMS plugin
+	and a command-line converter asapconv.</p>
+</page>

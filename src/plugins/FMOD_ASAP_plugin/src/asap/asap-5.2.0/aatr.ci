@@ -1,0 +1,405 @@
+// aatr.ci - another ATR file extractor
+//
+// Copyright (C) 2012-2021  Piotr Fusik
+//
+// This file is part of ASAP (Another Slight Atari Player),
+// see http://asap.sourceforge.net
+//
+// ASAP is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published
+// by the Free Software Foundation; either version 2 of the License,
+// or (at your option) any later version.
+//
+// ASAP is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with ASAP; if not, write to the Free Software Foundation, Inc.,
+// 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+/// ATR disk image reader.
+public abstract class AATR
+{
+	/// Reads part of the ATR file to the specified buffer.
+	protected abstract bool Read(
+		/// Offset in the file.
+		int offset,
+		/// Destination buffer.
+		byte[]! buffer,
+		/// Number of bytes to read.
+		int length);
+
+	int BytesPerSector;
+	int Sector4Offset;
+
+	/// Opens an ATR disk image.
+	/// Returns `true` on success.
+	public bool Open!()
+	{
+		byte[6] header;
+		if (!Read(0, header, 6) || header[0] != 0x96 || header[1] != 2)
+			return false;
+		BytesPerSector = header[4] | header[5] << 8;
+		Sector4Offset = 0x190;
+		switch (BytesPerSector) {
+		case 0x80:
+			break;
+		case 0x100:
+			// For 256-byte sectors, the boot sectors are stored as:
+			// a. 3*128 bytes (the more common format)
+			// b. 3*128 bytes followed by 3*128 zero bytes
+			// For correct disk images, (header[2] & 7) should be zero
+			// (i.e. the length of the image should be multiple of 128).
+			// Then (header[2] & 8) != 0 means case a, and (header[2] & 8) == 0 means case b.
+			// However, there are some strange disk images, such as SV2K12_STUFF_AtariDOS.atr,
+			// where (header[2] & 0xf) == 6 while it is case a.
+			// So, assume case b only if (header[2] & 0xf) == 0
+			// and default to the more common case a otherwise.
+			if ((header[2] & 0xf) == 0)
+				Sector4Offset = 0x310;
+			break;
+		default:
+			return false;
+		}
+		return true;
+	}
+
+	/// Returns sector size in bytes.
+	public int GetBytesPerSector() => BytesPerSector;
+
+	internal bool ReadSector(int sectorNo, byte[]! buffer, int length)
+	{
+		int offset;
+		if (sectorNo < 4) {
+			if (sectorNo < 1 || length > 128)
+				return false;
+			offset = (sectorNo << 7) - 0x70;
+		}
+		else
+			offset = Sector4Offset + (sectorNo - 4) * BytesPerSector;
+		return Read(offset, buffer, length);
+	}
+}
+
+/// Forward-only iterator over a directory on an ATR disk image.
+public class AATRDirectory
+{
+	internal AATR Disk;
+	int FirstSector;
+	int FileNo;
+	byte[128] Sector;
+	string() Filename;
+
+	public AATRDirectory()
+	{
+	}
+
+	/// Opens the root directory of the specified disk image.
+	public void OpenRoot!(
+		/// The disk image.
+		AATR disk)
+	{
+		Disk = disk;
+		FirstSector = 361;
+		FileNo = -1;
+	}
+
+	int GetFilenamePart(int sectorOffset, int maxLength)
+	{
+		for (int length = 0; length < maxLength; length++) {
+			int c = Sector[sectorOffset + length];
+			if (c == ' ') {
+				int result = length;
+				// make sure there are no spaces in filename
+				while (++length < maxLength) {
+					if (Sector[sectorOffset + length] != ' ')
+						return -1;
+				}
+				return result;
+			}
+			if ((c >= 'A' && c <= 'Z')
+			 || (c >= '0' && c <= '9')
+			 || c == '_')
+				continue;
+			return -1;
+		}
+		return maxLength;
+	}
+
+	/// Advances to the next entry (file or directory).
+	/// Returns the filename or `null` if no more entries found.
+	public string NextEntry!()
+	{
+		for (;;) {
+			if (FileNo >= 63)
+				return null;
+			FileNo++;
+			int sectorOffset = (FileNo & 7) << 4;
+			if (sectorOffset == 0 && !Disk.ReadSector(FirstSector + (FileNo >> 3), Sector, 128))
+				return null;
+			switch (Sector[sectorOffset] & 0xd7) { // mask out readonly and unused bits
+			case 0x00:
+				return null; // end of directory
+			case 0x40: // DOS 1 file
+				if (Disk.GetBytesPerSector() != 128)
+					continue;
+				break;
+			case 0x42: // DOS 2 file
+			case 0x03: // DOS 2.5 file
+			case 0x46: // MyDOS file
+			case 0x10: // MyDOS directory
+				break;
+			default:
+				continue;
+			}
+			int filenameLength = GetFilenamePart(sectorOffset + 5, 8);
+			if (filenameLength < 0)
+				continue;
+			int extLength = GetFilenamePart(sectorOffset + 13, 3);
+			if (extLength < 0 || (filenameLength == 0 && extLength == 0))
+				continue;
+			Filename = Encoding.UTF8.GetString(Sector, sectorOffset + 5, filenameLength);
+			if (extLength > 0) {
+				Sector[sectorOffset + 12] = '.';
+				string() ext = Encoding.UTF8.GetString(Sector, sectorOffset + 12, 1 + extLength);
+				Filename += ext;
+			}
+			return Filename;
+		}
+	}
+
+	internal int GetEntryType()
+	{
+		int sectorOffset = (FileNo & 7) << 4;
+		return Sector[sectorOffset] & 0xd7;
+	}
+
+	/// Returns `true` if the current entry is a directory.
+	public bool IsEntryDirectory() => GetEntryType() == 0x10;
+
+	internal int GetEntryFirstSector()
+	{
+		int sectorOffset = (FileNo & 7) << 4;
+		return Sector[sectorOffset + 3] | Sector[sectorOffset + 4] << 8;
+	}
+
+	/// Opens the specified subdirectory.
+	public void Open!(
+		/// The iterator pointing at the subdirectory to open.
+		AATRDirectory directory)
+	{
+		Disk = directory.Disk;
+		FirstSector = directory.GetEntryFirstSector();
+		FileNo = -1;
+	}
+
+	/// Advances to the specified entry.
+	/// Returns whether the entry is found.
+	public bool FindEntry!(
+		/// The name of the file or directory to find.
+		string filename)
+	{
+		for (;;) {
+			string currentFilename = NextEntry();
+			if (currentFilename == null)
+				return false;
+			if (currentFilename == filename)
+				return true;
+		}
+	}
+
+	/// Advances to the specified entry, which may be in a subdirectory.
+	/// Returns whether the entry is found.
+	public bool FindEntryRecursively!(
+		/// The name of the file or directory to find, with subdirectories separated with slashes.
+		string path)
+	{
+		int i = 0;
+		int pathLength = path.Length;
+		for (int j = 0; j < pathLength; j++) {
+			if (path[j] == '/') {
+				if (j - i > 12)
+					return false;
+				string() dirname = path.Substring(i, j - i);
+				if (!FindEntry(dirname) || !IsEntryDirectory())
+					return false;
+				Open(this);
+				i = j + 1;
+			}
+		}
+		if (pathLength - i > 12)
+			return false;
+		string() filename = path.Substring(i, pathLength - i);
+		return FindEntry(filename);
+	}
+}
+
+/// Iterator over all files on an ATR disk image.
+public class AATRRecursiveLister
+{
+	const int MaxDepth = 20;
+	AATRDirectory()[MaxDepth] Directories;
+	int Depth;
+	string() DirectoryPath;
+	string() FilePath;
+
+	public AATRRecursiveLister()
+	{
+	}
+
+	/// Opens a disk image.
+	public void Open!(
+		/// The disk image to list files on.
+		AATR disk)
+	{
+		Directories[0].OpenRoot(disk);
+		Depth = 0;
+		DirectoryPath = "";
+	}
+
+	/// Advances to the next file.
+	/// Returns the full path of the file or `null` if no more files found.
+	public string NextFile!()
+	{
+		for (;;) {
+			AATRDirectory! directory = Directories[Depth];
+			string filename = directory.NextEntry();
+			if (filename == null) {
+				if (Depth == 0)
+					return null;
+				int i = DirectoryPath.Length - 1;
+				while (--i >= 0 && DirectoryPath[i] != '/') {
+				}
+				DirectoryPath = DirectoryPath.Substring(0, i + 1);
+				Depth--;
+			}
+			else if (directory.IsEntryDirectory()) {
+				if (Depth >= MaxDepth - 1)
+					continue; // skip too deep directories
+				DirectoryPath += filename;
+				DirectoryPath += "/";
+				Directories[++Depth].Open(directory);
+			}
+			else {
+				// workaround "FilePath = DirectoryPath + filename;" unsupported by cito
+				FilePath = DirectoryPath;
+				FilePath += filename;
+				return FilePath;
+			}
+		}
+	}
+
+	/// Returns the directory iterator pointing at the file found by `NextFile`.
+	public AATRDirectory GetDirectory() => Directories[Depth];
+}
+
+/// Contents of a file on an ATR disk image.
+public class AATRFileStream
+{
+	AATR Disk;
+	int FirstSector;
+	int FileType;
+	int Position;
+	int NextSector;
+	byte[256] Sector;
+	int SectorOffset;
+
+	public AATRFileStream()
+	{
+	}
+
+	void Rewind!()
+	{
+		Position = 0;
+		NextSector = FirstSector;
+		SectorOffset = 255;
+	}
+
+	/// Opens a file.
+	public void Open!(
+		/// Directory iterator pointing at the file to open.
+		AATRDirectory directory)
+	{
+		Disk = directory.Disk;
+		FirstSector = directory.GetEntryFirstSector();
+		FileType = directory.GetEntryType() & 6;
+		Rewind();
+	}
+
+	/// Reads from the open file.
+	/// Returns the number of bytes read.
+	public int Read!(
+		/// Destination buffer.
+		byte[]! buffer,
+		/// Start offset in buffer at which the data is written.
+		int offset,
+		/// Maximum number of bytes to read.
+		int length)
+	{
+		int totalRead = 0;
+		int bytesPerSector = Disk.GetBytesPerSector();
+		while (length > 0) {
+			int got = Sector[bytesPerSector - 1];
+			if (FileType == 0) {
+				// DOS 1
+				if (got < 128)
+					got = 125;
+				else
+					got -= 128;
+			}
+			else if (got > bytesPerSector)
+				return -1;
+			got -= SectorOffset;
+			if (got <= 0) {
+				if (!Disk.ReadSector(NextSector, Sector, bytesPerSector))
+					return totalRead;
+				SectorOffset = 0;
+				int sectorHi = Sector[bytesPerSector - 3];
+				if (FileType != 6) // not MyDOS
+					sectorHi &= 3;
+				NextSector = sectorHi << 8 | Sector[bytesPerSector - 2];
+			}
+			else {
+				if (got > length)
+					got = length;
+				if (buffer != null)
+					Sector.CopyTo(SectorOffset, buffer, offset + totalRead, got);
+				Position += got;
+				SectorOffset += got;
+				totalRead += got;
+				length -= got;
+			}
+		}
+		return totalRead;
+	}
+
+	/// Returns the disk image containing this file.
+	public AATR GetDisk() => Disk;
+
+	/// Returns the current position in the open file.
+	public int GetPosition() => Position;
+
+	/// Sets the current position in the open file.
+	/// Returns `true` on success.
+	public bool SetPosition!(
+		/// Requested position.
+		int position)
+	{
+		int toSkip = position - Position;
+		if (toSkip >= 0)
+			return Read(null, 0, toSkip) == toSkip;
+		Rewind();
+		return Read(null, 0, position) == position;
+	}
+
+	/// Returns the length of the open file.
+	public int GetLength!()
+	{
+		int position = GetPosition();
+		int length = position + Read(null, 0, 0x7fffffff - position);
+		SetPosition(position);
+		return length;
+	}
+}

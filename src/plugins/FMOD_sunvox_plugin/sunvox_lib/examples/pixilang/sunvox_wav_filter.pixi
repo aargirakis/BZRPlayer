@@ -1,0 +1,47 @@
+// Input WAV file
+INPUT_FILE = "../sound_files/drums.wav"
+// SunVox project file that will be used as a sound filter; must contain the following chain: INPUT -> some filters -> OUTPUT
+SUNVOX_FILTER_FILE = "../sound_files/filter.sunvox"
+// Output WAV file - changed using the SunVox filter
+OUTPUT_FILE = "../sound_files/drums_filtered.wav"
+
+w = load( INPUT_FILE )
+if w < 0
+{
+    logf( "%s not found\n", INPUT_FILE )
+    halt
+}
+show_info( w )
+apply_sunvox_filter( w, SUNVOX_FILTER_FILE )
+save( w, OUTPUT_FILE, FORMAT_WAVE )
+
+fn show_info( $w )
+{
+    $rate = $w.sample_rate
+    $channels = $w.channels
+    $frames = get_size( $w ) div $channels
+    logf( "%d frames; %d Hz; %d channels;\n", $frames, $rate, $channels )
+}
+
+fn apply_sunvox_filter( $w, $sunvox_file_name )
+{
+    logf( "Applying SunVox filter...\n" )
+    $sample_rate = $w.sample_rate
+    if $sample_rate <= 0 { $sample_rate = 44100 }
+    $type = get_type( $w )
+    $channels = $w.channels
+    if $channels == 1
+    {
+	//mono -> stereo:
+	resize( $w, get_size( $w ) * 2, 1, -1, RESIZE_INTERP1 )
+	$channels = 2
+	$w.channels = 2
+    }
+    $frames = get_size( $w ) div $channels
+    $sv = sv_new( $sample_rate, SV_INIT_FLAG_OFFLINE )
+    sv_load( $sv, $sunvox_file_name )
+    sv_volume( $sv, 255 )
+    sv_render( $sv, $w, $frames, 0, 0, $w, $channels )
+    sv_remove( $sv )
+    logf( "SunVox filter finished\n" )
+}

@@ -1,0 +1,210 @@
+; A small reloc routine for those who include the module directly in
+; the program code.
+
+; NOTE: The module pointer is passed in register A0. Use stubs with
+;	C.
+
+		SECTION	"text",code
+
+		XDEF	_RelocModule
+
+;mmd_songinfo	EQU	8
+;mmd_blockarr	EQU	16
+;mmd_expdata	EQU	32
+;mmd_songsleft	EQU	51
+;msng_numblocks	EQU	504
+;msng_pseqs	EQU	508
+;msng_numsamples	EQU	787
+
+reloci		move.l	24(a2),d0
+		beq.s	xloci
+		movea.l	d0,a0
+		moveq   #0,d0
+		move.b  msng_numsamples(a1),d0	;number of samples
+		subq.b  #1,d0
+relocs		bsr.s   relocentr
+		move.l	-4(a0),d3	;sample ptr
+		beq.s	nosyn
+		move.l	d3,a3
+		tst.w	4(a3)
+		bpl.s	nosyn		;type >= 0
+		move.w	20(a3),d2	;number of waveforms
+		lea	278(a3),a3	;ptr to wf ptrs
+		subq.w	#1,d2
+relsyn		add.l	d3,(a3)+
+		dbf	d2,relsyn
+nosyn		dbf     d0,relocs
+xloci		rts
+norel		addq.l	#4,a0
+		rts
+relocentr	tst.l   (a0)
+		beq.s   norel
+		add.l   d1,(a0)+
+		rts
+_RelocModule:
+		movem.l	a2-a4/d2-d4,-(sp)
+		;movea.l a0,a2
+		move.l  a2,d1		;d1 = ptr to start of module
+		bsr.s	relocp
+		movea.l mmd_songinfo(a2),a1
+		bsr.s	reloci
+		move.b	mmd_songsleft(a2),d4
+rel_lp		bsr.s	relocb
+		cmp.b	#'T',3(a2)	;MCNT?
+		beq.s	norelmmd2
+		cmp.b	#'2',3(a2)	;MMD2?
+		bcs.s	norelmmd2
+		bsr.w	relocmmd2sng
+norelmmd2	move.l	mmd_expdata(a2),d0	;extension struct
+		beq.s	rel_ex
+		move.l	d0,a0
+		bsr.s	relocentr	;ptr to next module
+		bsr.s	relocentr	;InstrExt...
+		addq.l	#4,a0		;skip sizes of InstrExt
+; We reloc the pointers of MMD0exp, so anybody who needs them can easily
+; read them.
+		bsr.s	relocentr	;annotxt
+		addq.l	#4,a0		;annolen
+		bsr.s	relocentr	;InstrInfo
+		addq.l	#8,a0
+		bsr.s	relocentr	;rgbtable (not useful for most people)
+		addq.l	#4,a0		;skip channelsplit
+		bsr.s	relocentr	;NotationInfo
+		bsr.s	relocentr	;songname
+		addq.l	#4,a0		;skip song name length
+		bsr.s	relocentr	;MIDI dumps
+		bsr.s	relocmdd
+		bsr.s	relocentr	;mmdinfo
+		bsr.s	relocentr	;mmdrexx
+		bsr.w	relocrx
+		bsr.s	relocentr	;mmdcmd3x
+		bsr.w	reloccmd3x
+		subq.b	#1,d4		;songs left..?
+		bcs.s	rel_ex
+		move.l	d0,a0
+		move.l	(a0),d0
+		beq.s	rel_ex
+		move.l	d0,a2
+		bsr.s	relocp
+		movea.l 8(a2),a1
+		bra.s	rel_lp
+rel_ex		movem.l	(sp)+,d2-d4/a2-a4
+		rts
+
+relocp		lea	mmd_songinfo(a2),a0
+		bsr.w	relocentr
+		addq.l	#4,a0
+		bsr.w	relocentr
+		addq.l	#4,a0
+		bsr.w	relocentr
+		addq.l	#4,a0
+		bra.w	relocentr
+
+relocb		move.l	mmd_blockarr(a2),d0
+		beq.s	xlocb
+		movea.l	d0,a0
+		move.w  msng_numblocks(a1),d0
+		subq.b  #1,d0
+rebl		bsr	relocentr
+		dbf     d0,rebl
+		cmp.b	#'T',3(a2)	;MMD0 (= MCNT)
+		beq.s	xlocb
+		cmp.b	#'1',3(a2)	;test MMD type
+		bge.w	relocbi
+xlocb		rts
+
+relocmdd	movem.l	d0/a0,-(sp)
+		tst.l	-(a0)
+		beq.s	xlocmdd
+		movea.l	(a0),a0
+		move.w	(a0),d0		;# of msg dumps
+		addq.l	#8,a0
+.1		beq.s	xlocmdd
+		bsr	relocentr
+		bsr.s	relocdmp
+		subq.w	#1,d0
+		bra.s	.1
+xlocmdd		movem.l	(sp)+,d0/a0
+		rts
+
+relocrxtrig	movem.l	d0/a0,-(sp)
+		subq.l	#4,a0
+.2		move.l	(a0),d0
+		beq.s	.1
+		move.l	d0,a0
+		addq.l	#8,a0
+		bsr	relocentr	;command name
+		bsr	relocentr	;port name
+		move.l	d0,a0
+		bra.s	.2
+.1		movem.l	(sp)+,d0/a0
+		rts
+
+relocrx		movem.l	d0/a0,-(sp)
+		move.l	-(a0),d0
+		beq.s	.1
+		move.l	d0,a0
+		addq.l	#4,a0		;skip res, trigcmdlen
+		bsr	relocentr
+		bsr.s	relocrxtrig
+.1		movem.l	(sp)+,d0/a0
+		rts
+
+reloccmd3x	movem.l	d0/a0,-(sp)
+		move.l	-(a0),d0
+		beq.s	.1
+		move.l	d0,a0
+		addq.l	#4,a0	;skip struct_vers, pad, num_of_settings
+		bsr	relocentr	;ctrlr_types
+		bsr	relocentr	;ctrlr_numbers
+.1		movem.l	(sp)+,d0/a0
+		rts
+
+relocdmp	move.l	-4(a0),d3
+		beq.s	xlocdmp
+		exg.l	a0,d3		;save
+		addq.l	#4,a0
+		bsr	relocentr	;reloc data pointer
+		move.l	d3,a0		;restore
+xlocdmp		rts
+
+relocbi		move.w	msng_numblocks(a1),d0
+		move.l	a0,a3
+biloop		subq.w	#1,d0
+		bmi.s	xlocdmp
+		move.l	-(a3),a0
+		addq.l	#4,a0
+		bsr	relocentr	;BlockInfo ptr
+		tst.l	-(a0)
+		beq.s	biloop
+		move.l	(a0),a0
+		bsr	relocentr	;hldata
+		bsr	relocentr	;block name
+		addq.l	#4,a0		;skip blocknamelen
+		bsr	relocentr	;pagetable
+		tst.l	-(a0)
+		bne.s	relocpgtbl
+		bra.s	biloop
+; take care of the new features of MMD2s
+relocmmd2sng	move.l	mmd_songinfo(a2),a0
+		lea	msng_pseqs(a0),a0
+		bsr	relocentr	;playseqtable
+		bsr	relocentr	;sectiontable
+		bsr	relocentr	;trackvols
+		addq.l	#4,a0
+		bsr	relocentr	;trackpans
+		move.w	-6(a0),d0	;numpseqs
+		move.l	-20(a0),a0	;get back to playseqtable
+		subq.w	#1,d0
+psqtblloop	bsr	relocentr
+		dbf	d0,psqtblloop
+		rts
+relocpgtbl	movea.l	(a0),a4		;page table list hdr
+		move.w	(a4),d2
+		subq.w	#1,d2
+		lea	4(a4),a0
+pgtblloop	bsr	relocentr
+		dbf	d2,pgtblloop
+		bra	biloop
+
+		;END

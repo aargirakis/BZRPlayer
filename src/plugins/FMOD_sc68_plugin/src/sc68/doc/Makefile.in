@@ -1,0 +1,150 @@
+# ------------------------------------------------------------------
+#
+# SC68 - DOC - Makefile
+#
+#   Benjamin Gerard  <ben@sashipa.com>
+#
+# ------------------------------------------------------------------
+#
+# $Id: Makefile.in,v 2.4 2003/09/06 09:13:54 benjihan Exp $
+#
+
+DOXYGEN=@DOXYGEN@
+VERSION=@VERSION@
+
+ifeq 'xdoxygen' 'xecho'
+DOXYGEN_IS_MISSING=missing-doxygen
+endif
+
+DEVDOCDIR  	:= .. ../emu68 ../io68 ../desa68 ../file68 ../api68
+DEVDOCFILES	:= devdoc.h  ../unice68/unice68.h
+
+TOOLS		:= as68 info68 unice68 sc68 sourcer68 debug68
+MANDOCFILES	:= $(foreach tool,$(TOOLS),../$(tool)/$(tool)_doc.h)
+
+DATE		:= $(shell date +"%B %Y")
+
+## project configuration.
+#
+PROJECT := -D DATE="$(DATE)"
+PROJECT += -D PROJECT_NUMBER="$(VERSION)"
+
+DOXALL  := $(PROJECT)
+DOXALL  += -D QUIET=YES
+DOXALL  += -D WARNINGS=YES
+DOXALL  += -D WARN_IF_UNDOCUMENTED=YES
+
+DOXALL  += -D FILE_PATTERNS='*.h'
+DOXALL  += -D IMAGE_PATH=.
+
+DOXALL  += -D EXTRACT_ALL=NO
+DOXALL  += -D PRIVATE=NO
+DOXALL  += -D SOURCE_BROWSER=NO
+DOXALL  += -D JAVADOC_AUTOBRIEF=YES
+DOXALL  += -D DISTRIBUTE_GROUP_DOC=YES
+DOXALL  += -D OPTIMIZE_OUTPUT_FOR_C=YES
+DOXALL  += -D TAB_SIZE=8  
+
+DOXALL  += -D PREPROCESSING=YES
+DOXALL  += -D MACRO_EXPANSION=YES
+DOXALL  += -D SORT_MEMBER_DOCS=NO
+DOXALL  += -D RECURSIVE=NO
+DOXALL  += -D ALPHABETICAL_INDEX=NO
+DOXALL  += -D INTERNAL_DOCS=YES
+DOXALL  += -D DETAILS_AT_TOP=YES
+DOXALL  += -D DISABLE_INDEX=NO 
+
+# Developer documentation
+#
+
+DOXDEV	=
+DOXDEV	+= -D PROJECT_NAME="sc68 for developers"
+DOXDEV	+= -D INPUT="$(DEVDOCDIR) $(DEVDOCFILES)"
+DOXDEV	+= -D PREDEFINED="EMU68DEBUG"
+DOXDEV	+= -D INCLUDE_PATH=..
+DOXDEV	+= -D ENABLED_SECTIONS=""
+DOXDEV	+= -D GENERATE_HTML=YES
+DOXDEV	+= -D GENERATE_TREEVIEW=NO
+DOXDEV	+= -D GENERATE_MAN=NO
+DOXDEV	+= -D GENERATE_LATEX=NO
+DOXDEV	+= -D GENERATE_XML=NO
+DOXDEV	+= -D GENERATE_RTF=NO
+
+# Developer documentation (sc68 web version)
+#
+DOXWEB  = $(DOXDEV)\
+ -D HTML_OUTPUT="web"\
+ -D HTML_HEADER="empty.html"\
+ -D HTML_FOOTER="empty.html"
+
+# Man for tools 
+#
+
+DOXMAN	=
+DOXMAN	+= -D PROJECT_NAME="sc68-tools-manual"
+DOXMAN  += -D INPUT="$(MANDOCFILES)"
+DOXMAN	+= -D PREDEFINED=
+DOXMAN	+= -D REPEAT_BRIEF=NO
+DOXMAN	+= -D JAVADOC_AUTOBRIEF=NO
+DOXMAN	+= -D SHOW_USED_FILES=YES
+DOXMAN	+= -D INCLUDE_PATH=..
+DOXMAN	+= -D ENABLED_SECTIONS=""
+DOXMAN	+= -D GENERATE_HTML=NO
+DOXMAN	+= -D GENERATE_TREEVIEW=NO
+DOXMAN	+= -D GENERATE_MAN=YES
+DOXMAN	+= -D MAN_EXTENSION=.1
+DOXMAN	+= -D GENERATE_LATEX=NO
+DOXMAN	+= -D GENERATE_XML=NO
+DOXMAN	+= -D GENERATE_RTF=NO
+
+# Makefile rules
+#
+all: dev-doc
+
+.PHONY: missing-doxygen
+missing-doxygen:
+	@echo "doxygen is missing."
+	@echo "You can find the package at http://www.doxygen.org/"
+
+doxyfile.dox: $(DOXYGEN_IS_MISSING)
+	@echo "[$@]"
+	@$(DOXYGEN) -s -g $@ > /dev/null
+
+devdoc.dox : doxyfile.dox $(DEVDOCFILES)
+	@echo "[$@]"
+	@./doxygeneric.sh $@ $(DOXDEV) $(DOXALL) < $<
+
+webdoc.dox : doxyfile.dox $(DEVDOCFILES)
+	@echo "[$@]"
+	@./doxygeneric.sh $@ $(DOXWEB) $(DOXALL)  < $<
+
+mandoc.dox : doxyfile.dox  $(MANDOCFILES)
+	@echo "[$@]"
+	@./doxygeneric.sh $@ $(DOXMAN) $(DOXALL) < $<
+
+.PHONY: dev-doc
+dev-doc: devdoc.dox $(DOXYGEN_IS_MISSING)
+	@$(DOXYGEN) $<
+
+.PHONY: web-doc
+web-doc: webdoc.dox $(DOXYGEN_IS_MISSING) empty.html
+	@$(DOXYGEN) $<
+
+.PHONY: man-doc 
+man-doc: mandoc.dox $(DOXYGEN_IS_MISSING)
+	@$(DOXYGEN) $< && cp -v man/man1/*.1 ../man
+
+empty.html:
+	@echo "[$@]"
+	@echo "<! empty header >" > $@
+
+%.h : %.hin
+	@echo "[$@]"
+	@cp $< $@
+
+clean:
+	@echo "[$@]"
+	@rm -rf web html latex man *.dox *.h empty.html
+
+Makefile : Makefile.in
+	(cd ..; ./config.status)

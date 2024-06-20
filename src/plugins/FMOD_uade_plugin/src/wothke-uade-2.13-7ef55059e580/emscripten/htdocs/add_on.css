@@ -1,0 +1,68 @@
+/* player specific positioning of the displayed 'frequency spectrum', etc */
+.logo {
+  position: relative;
+  top: 40px;
+  left: 800px;
+  z-index:2;
+  
+   -webkit-box-reflect: below 10px -webkit-linear-gradient(top, transparent 10%, transparent 40%,  rgba(255,255,255,0.9));
+}
+#logo {
+  -webkit-transform: translateX(-570px) translateY(-10px) translateZ(-370px) rotateX(-10deg) rotateY(-60deg) rotateZ(1deg);
+  -moz-transform: translateX(-570px) translateY(-10px) translateZ(-470px) rotateX(-28deg) rotateY(-60deg) rotateZ(-6deg);
+}
+#moz-reflect-logo:after {
+    content: "";
+    display: none;
+}
+
+#moz-reflect-logo.enableMozReflection:after {
+    display: block;
+
+    background: -moz-linear-gradient(top, white, white 30%, rgba(255,255,255,0.6) 65%, rgba(255,255,255,0.3)) -60px,
+	            -moz-element(#moz-reflect-logo)  0px -77px no-repeat;
+    position:relative;
+    width: auto;
+    height: 235px;
+    margin-bottom: 0px;
+    -moz-transform: scaleY(-1);
+}
+.spectrum {
+	position: relative;
+	top: -20px;
+	left: 265px;
+	z-index:1;
+ 
+	-webkit-box-reflect: below 5px -webkit-linear-gradient(top, transparent, transparent 50%, rgba(255,255,255,0.4));
+}
+#spectrum {
+  -webkit-transform: translateX(-250px) translateY(-250px) translateZ(-540px) rotateX(-30deg) rotateY(45deg);
+  -moz-transform: translateX(-250px) translateY(-510px) translateZ(-500px) rotateX(-40deg) rotateY(45deg);  
+}
+
+#moz-reflect-spectrum:after {
+    content: "";
+    display: none;
+}
+
+#moz-reflect-spectrum.enableMozReflection:after {
+    display: block;
+	background: -moz-linear-gradient(top, white, white 30%, rgba(255,255,255,0.6) 65%, rgba(255,255,255,0.3)) -60px,
+	            -moz-element(#moz-reflect-spectrum)  0px -27px no-repeat;
+	position:relative;
+	top: 0px;
+    width: auto;
+	height: 155px;
+	margin-bottom: 0px;
+	-moz-transform: scaleY(-1);
+}
+
+.drop {
+  position: relative;
+	width:300px;
+	height:300px;
+}
+#drop {
+  -webkit-transform: translateX(80px) translateY(-130px) translateZ(0px) rotateX(60deg) rotateY(0deg) rotateZ(20deg);
+  -moz-transform: translateX(80px) translateY(-400px) translateZ(0px) rotateX(60deg) rotateY(0deg) rotateZ(20deg);
+}

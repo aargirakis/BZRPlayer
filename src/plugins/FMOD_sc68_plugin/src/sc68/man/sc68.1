@@ -1,0 +1,43 @@
+.TH "sc68" 1 "29 Aug 2003" "sc68-tools-manual" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+sc68 \- sc68 command line player.
+.SH "AUTHOR"
+.PP
+Copyright (C) 1998-2003 Benjamin Gerard <ben@sashipa.com>
+.PP
+This program is free software.
+.SH "DATE"
+.PP
+2003
+.SH "SYNOPSIS"
+.PP
+sc68 [options] <input.sc68>
+.SH "DESCRIPTION"
+.PP
+sc68 is an Atari ST and Amiga music emulator.
+.PP
+This program loads and plays a sc68 disk file (.sc68). Audio data is written to standard output. PCM format is stereo signed 16 bit stereo machine endian.
+.SH "OPTIONS"
+.PP
+.IP "\(bu" 2
+\fB--help\fP Display this message and exit. 
+.IP "\(bu" 2
+\fB--version\fP Display sc68 version x.y.z and exit. 
+.IP "\(bu" 2
+\fB--quiet\fP Do not display music information. 
+.IP "\(bu" 2
+\fB--track=\fP[track] Choose track to play [0=all tracks].
+.PP
+.SH "ENVIRONMENT VARIABLES"
+.PP
+The \fBSC68_DATA\fP variable overrides the default shared data path. By default it is set to \fI$datadir/sc68\fP where \fI$datadir\fP depends on the installation options. In most case this is \fI/usr/local/share/sc68\fP or \fI/usr/share/sc68\fP.
+.PP
+The \fBSC68_HOME\fP variable overrides the default user data path. By default it is set to $HOME/.sc68.
+.SH "BUGS"
+.PP
+None has been reported. Report to \fIbug@sashipa.com\fP.
+.SH "SEE ALSO"
+.PP
+\fIas68\fP, \fIdebug68\fP, \fIinfo68\fP, \fIsc68\fP, \fIsourcer68\fP, \fIunice68\fP 

@@ -1,0 +1,111 @@
+\input texinfo  @c -*-texinfo-*-
+
+@c --- Header ---
+
+@setfilename sc68.info
+@settitle sc68 documentation	@c appear page in header
+@dircategory Sound
+@direntry
+* sc68: (sc68).                 Atari ST and Amiga music player
+@end direntry
+@c --- End of Header ---
+
+@include version.texi
+@include sc68_status.texi
+@setchapternewpage odd
+@headings double
+@ifnottex
+@paragraphindent 0
+@end ifnottex
+@iftex
+@parindent = 8pt
+@end iftex
+
+@c --- Title page ---
+
+@titlepage
+@sp 3
+@title{sc68 documentation}
+@subtitle version @value{VERSION}, last updated the @value{UPDATED}
+@author Benjamin Gerard
+
+@c --- Copyright page ---
+
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2001-2003 Benjamin Gerard
+@end titlepage
+
+@c --- Top menu ---
+
+@node Top, Overview, (dir), (dir)
+@menu
+* Overview::                    About sc68 project.
+* Install::                     Install documentation.
+* sc68::                        sc68 command line player documentation.
+* info68::                      sc68 file information program.
+* debug68::                     sc68 file creation and debug program.
+* as68::                        68000 assembler program.
+* sourcer68::                   68000 sourcer (disassembler) program.
+* unice68::                     ICE depacker program.
+* Resource files::              sc68 resource files.
+@end menu
+
+@c --- Overview ---
+
+@node Overview, Install, Top, Top
+@chapter Overview
+@include sc68_overview.texi
+
+@c --- Install ---
+
+@node Install, sc68, Overview, Top
+@chapter Install
+@include sc68_install.texi
+
+@c --- sc68 command line player documentation ---
+
+@node sc68, info68, Install, Top
+@chapter sc68
+@include sc68_player.texi
+
+@c --- info68 documentation ---
+
+@node info68, debug68, sc68, Top
+@chapter info68
+@include sc68_info68.texi
+
+@c --- debug68 ---
+
+@node debug68, as68, info68, Top
+@chapter debug68
+@include sc68_debug68.texi
+
+@c --- as68 ---
+
+@node as68, sourcer68, debug68, Top
+@chapter as68
+@include sc68_as68.texi
+
+@c --- sourcer68 ---
+
+@node sourcer68, unice68, as68, Top
+@chapter sourcer68
+@include sc68_sourcer68.texi
+
+@c --- unice68 ---
+
+@node unice68, Resource files, sourcer68, Top
+@chapter unice68
+@include sc68_unice68.texi
+
+@c --- resource file ---
+
+@node Resource files,  , unice68, Top
+@chapter Resource files
+@include sc68_configfile.texi
+
+@c --- Footer section ---
+
+@contents
+@bye

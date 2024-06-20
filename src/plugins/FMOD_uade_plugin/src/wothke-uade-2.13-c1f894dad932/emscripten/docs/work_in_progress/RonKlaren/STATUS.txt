@@ -1,0 +1,6 @@
+None if the players found on the net seem to work (see Eagleplayers folder). some do pass 
+the module check .. some don't.
+
+The RonKlaren player uses the 21th FPTR in the EaglePlayer struct 
+
+The only player that seem to play some files is CustomMade.

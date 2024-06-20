@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<!--
+ Chron-O-Loo: HTML5 Audio/JavaScript port of UADE.
+
+ 	Copyright (C) 2014 Juergen Wothke
+
+ This file is released to the public domain.
+	
+ Credits: The visualization used on this page was strongly "inspired" by <a target="_blank" href="http://html5-demos.appspot.com/static/webaudio/createMediaSourceElement.html">this demo</a>
+
+-->
+
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+<title>Chron-O-Loo - amiga music nostalgia for the Web</title>
+
+<meta name="description" content="Experimental JavaScript version of UADE">
+<meta name="author" content="Juergen Wothke">
+<meta name="keywords" content="WebAudio API, HTML5, JavaScript, UADE, Delitracker, Amiga music">
+
+<!--link href="http://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css"-->
+<link href="font.css" rel="stylesheet" type="text/css">
+<link href="common.css" rel="stylesheet" type="text/css">
+<link rel="image_src" href="screenshot.gif" />
+
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+<link type="image/x-icon" href="favicon.ico" />
+
+<script type="text/javascript" src="web_uade.js"></script>
+<script type="text/javascript" src="sample_player.js"></script>
+
+<script>
+var songs = [
+	'songs/AHX.Cruisin',
+];
+
+// ---------------- UADE player setup ----------------------------------------
+var sampleRate;
+try {
+	window.AudioContext = window.AudioContext||window.webkitAudioContext;
+	sampleRate= new AudioContext().sampleRate;
+} catch(e) {
+	alert('Web Audio API is not supported in this browser (get Chrome 18 or Firefox 26)');
+}
+
+var basePath= "uade";	// setup virtual file system used within Emscripten
+
+var player= new SamplePlayer(basePath, sampleRate, updateGUI, doOnEnd, doOnError);
+
+function doOnEnd(){ 
+	audio.playNextSong(); 	/*	player.isPaused= false;*/
+
+}
+function doOnError(){ 
+	console.log("song error");
+	doOnEnd();
+}
+
+// ---------------------    drag&drop feature -----------------------------------
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("Text");
+	var file = ev.dataTransfer.files[0];
+	if (file instanceof File) {
+		var f= window.player['playTmpFile'].bind(window.player);
+		f(file);
+	}
+}
+
+// ---------------- WebAudio setup ------------------------------------------------
+
+Audio = function(songs) {
+	this.audioCtx;
+	this.bufferSource;
+	this.gainNode;
+	this.analyzerNode;
+	
+	this.current=-1;
+	this.someSongs= songs;
+};
+
+Audio.prototype = {
+	initialAudioSetup: function() {
+		if (typeof this.bufferSource != 'undefined') { 
+			this.bufferSource.stop(0);
+		} else {
+			this.setupAudioNodes();
+		}
+	},
+	setupAudioNodes: function() {
+		if (typeof this.audioCtx == 'undefined') {
+			try {
+				window.AudioContext = window.AudioContext||window.webkitAudioContext;
+				this.audioCtx = new AudioContext();
+			} catch(e) {
+				alert('Web Audio API is not supported in this browser (get Chrome 18 or Firefox 26)');
+			}
+			this.analyzerNode = this.audioCtx.createAnalyser();
+			
+			this.gainNode = this.audioCtx.createGain();						
+			var scriptNode= player.createScriptProcessor(this.audioCtx);
+			
+			scriptNode.connect(this.gainNode);
+			this.gainNode.connect(this.analyzerNode);
+			this.analyzerNode.connect(this.audioCtx.destination);
+		}
+	},	
+	playNextSong: function(preload) {
+		this.playNextSong2(false);
+	},
+	playNextSong2: function(preload) {
+		this.current= (++this.current >=this.someSongs.length) ? 0 : this.current;
+		var someSong= this.someSongs[this.current];
+		this.playSong(someSong, preload);		
+	},
+	playPreviousSong: function() {
+		this.current= (--this.current<0) ? this.current+this.someSongs.length : this.current;
+		var someSong= this.someSongs[this.current];
+		this.playSong(someSong, false);
+	},
+	playSong: function(someSong, preload) {				
+		this.initialAudioSetup();
+
+		player.setPauseMode(true);
+		
+		if (preload) {
+			// shorten the trail&error phase by preloading essential files
+			var files = [
+				basePath+"/"+someSong,	// song to play must be on top
+				basePath+"/uaerc",
+				basePath+"/eagleplayer.conf",
+				basePath+"/amigasrc/score/score",
+			];
+		
+			var f= window.player['preloadSongData'].bind(window.player);
+			f(files);
+		} else {
+			var f= window.player['setupSongData'].bind(window.player);
+			f(someSong);
+		}
+		updateGUI();
+
+		this.startMusicPlayback();
+	},	
+	startMusicPlayback: function() {
+		if (typeof this.bufferSource === 'undefined') {
+			this.bufferSource = this.audioCtx.createBufferSource();
+			if (!this.bufferSource.start) {
+			  this.bufferSource.start = this.bufferSource.noteOn;
+			  this.bufferSource.stop = this.bufferSource.noteOff;
+			}
+			this.bufferSource.start(0);		
+		}
+	}
+};
+
+
+// ---------------------- visuals ---------------------------------------------
+
+Graphix = function(audio) {
+	this.audio= audio;
+	
+	this.WIDTH= 800;
+	this.HEIGHT= 200;
+	
+	this.canvasSpectrum = document.getElementById('spectrum');
+	this.ctxSpectrum = this.canvasSpectrum.getContext('2d');
+	this.canvasSpectrum.width = this.WIDTH;
+
+	var canvas2 = document.getElementById('logo');
+	this.ctxLegend = canvas2.getContext('2d');
+};
+
+Graphix.prototype = {
+	reqAnimationFrame: function() {
+		window.requestAnimationFrame(this.redrawSpectrum.bind(this));
+	},
+	redrawSpectrum: function() {
+		this.reqAnimationFrame();
+		
+		var freqByteData = new Uint8Array(this.audio.analyzerNode.frequencyBinCount);
+		this.audio.analyzerNode.getByteFrequencyData(freqByteData);
+
+		var SPACER_WIDTH = 10;
+		var BAR_WIDTH = 5;
+		var OFFSET = 100;
+
+		var numBars = Math.round(this.WIDTH / SPACER_WIDTH);
+
+		this.ctxSpectrum.clearRect(0, 0, this.WIDTH, this.HEIGHT);
+
+		this.ctxSpectrum.fillStyle = '#66e565';
+		this.ctxSpectrum.lineCap = 'round';
+
+		for (var i = 0; i < numBars; ++i) {
+		var magnitude = freqByteData[i + OFFSET]*this.HEIGHT/255;
+			this.ctxSpectrum.fillRect(i * SPACER_WIDTH, this.HEIGHT, BAR_WIDTH, -magnitude);
+		}
+	},
+	text: function(ctx, text, x, y) {
+		ctx.strokeText(text, x, y);
+		ctx.fillText(text, x, y);
+	},
+	redrawSongInfo: function() {
+		var info= player.getSongInfo();
+	
+		this.ctxLegend.clearRect(0, 0, 800, 300);
+		
+		this.ctxLegend.textBaseline = "middle";
+		this.ctxLegend.fillStyle = '#000';
+		this.ctxLegend.strokeStyle = "#FFFFFF";
+		
+		this.ctxLegend.font = '90px serif bold';
+		
+		this.text(this.ctxLegend, "Chron-O-Loo\u2122", 20, 70);
+		this.ctxLegend.font = '25px sans-serif';
+		this.text(this.ctxLegend, "Amiga Delitracker Emulator..on WebAudio", 20, 125);
+
+		this.ctxLegend.fillStyle = '#888';
+		this.ctxLegend.font = '25px sans-serif';
+
+		this.ctxLegend.textBaseline = 'bottom';
+		this.text(this.ctxLegend, info[0], 20, 190);
+		this.text(this.ctxLegend, info[1], 20, 230);
+		this.text(this.ctxLegend, info[2], 20, 270);
+	},
+};
+
+function updateGUI() {
+	gfx.reqAnimationFrame();
+	gfx.redrawSongInfo();
+}
+
+function init() {
+	audio= new Audio(songs);
+	gfx= new Graphix(audio);
+
+	document.getElementById("previous").onclick = audio.playPreviousSong.bind(audio);
+	document.getElementById("next").onclick = audio.playNextSong.bind(audio);
+			
+	document.getElementById("play").onclick = function(e){
+		player.setPauseMode(false);
+	};
+	document.getElementById("pause").onclick = function(e){
+		player.setPauseMode(true);
+	};
+	document.getElementById("gain").onchange = function(e){
+		audio.gainNode.gain.value= this.value/255;
+	};
+
+	audio.playNextSong2(true);
+}
+
+</script>
+
+</head>
+
+<body ondragstart="return false;" ondrop="return false;" onload="init();">
+<div class="tooltip" alt="If you like my work and you'd like to see more of it in the future, please consider making a contribution. Thank you!">
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="E7ACAHA7W5FYC">
+<input type="image" src="btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="pixel.gif" width="1" height="1">
+</form>
+</div>
+
+<details>
+  <summary>What's this?</summary>
+  <div>
+    Ajax at its best.. this poor man's version of the unmatched Chron-O-John gives you a front seat for your time travel to the 
+	days of Amiga music. Based on <a href="http://zakalwe.fi/uade/" target="_blank">UADE</a> (Unix Amiga Delitracker Emulator). 
+	You can bring your own Amiga music files by dragging them onto the device (only single file songs supported).  
+		
+  <p>2014 by Juergen Wothke </p>
+ 
+  <p>This page does not use any plugins but is based exclusively on the draft version Web Audio API. 
+  You'll need Chrome or Firefox to make it play the music. The visual effects 
+  work best in Chrome. (If Firefox passes out - press 'reload'... it's experimental.)
+  
+  <p>Contrarry to most other HTML5 based pages out there, the music here is NOT based on  
+  OscillatorNode based waveforms or the playback of some sampledata file. Instead the samples here 
+  are completely calculated within JavaScript by running the 'uade' emulator logic. The source code can be found
+  <a href="https://github.com/wothke/uade-2.13" target="_blank">here</a></p>
+  
+ <p>Credits: Many people have contributed to 'UADE' and I cannot name them all here. I had to tinker a bit with their code to get an architecture suitable for the web but once again <a href="https://github.com/kripken/emscripten/wiki" target="_blank">emscripten</a> then did the heavy lifting compiling the C code into JavaScript.</p>
+ 
+ <p>Please use controls on the right (e.g. to play another song): 
+<button id="play"> &gt;</button>
+<button id="pause"> ||</button>
+<button id="previous"> |&lt;&lt;</button>
+<button id="next"> &gt;&gt;|</button>
+<input type="range" id="gain" name="gain" min="1" max="255" value="255">
+
+ </div>
+</details>
+<aside>
+</aside>
+
+<section>
+  <div>
+	<canvas id="logo" class="logo" width="800" height="290"></canvas>
+    <canvas id="spectrum" class="spectrum" width="512" height="200"></canvas>
+  </div>
+  <div id="drop" class="drop" ondrop="drop(event)" ondragover="allowDrop(event)">
+ <img src="warp.gif" width=200 height=200/>
+  </div>
+</section>
+
+</body>
+</html>

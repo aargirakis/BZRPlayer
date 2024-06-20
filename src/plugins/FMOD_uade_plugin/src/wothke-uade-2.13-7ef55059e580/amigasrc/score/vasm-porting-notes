@@ -1,0 +1,6 @@
+* Add/Compare/And immediate generates a difference opcode:
+  - add.l #1024,d0 -> addi.l #1024,d0 (0xd0bc -> 0x0680)
+  - grep 'add\.l\W\+\#' newscore.asm
+  - cmp #2,d1 -> cmpi #2,d1 (0xb27c -> 0x0c41)
+  - 'cmp\W\+\#' newscore.asm
+  - cmp.l #32,d0 -> cmpi.l #32,d0 (0xb0bc -> 0x0c80)

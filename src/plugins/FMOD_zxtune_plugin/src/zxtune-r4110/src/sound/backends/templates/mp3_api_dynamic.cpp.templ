@@ -1,0 +1,63 @@
+/**
+*
+* @file
+*
+* @brief  MP3 subsystem API gate implementation
+*
+* @author vitamin.caig@gmail.com
+*
+**/
+
+//local includes
+#include "mp3_api.h"
+//common includes
+#include <make_ptr.h>
+//library includes
+#include <debug/log.h>
+#include <platform/shared_library_adapter.h>
+
+namespace Sound
+{
+  namespace Mp3
+  {
+    class LibraryName : public Platform::SharedLibrary::Name
+    {
+    public:
+      LibraryName()
+      {
+      }
+
+      std::string Base() const override
+      {
+        return "mp3lame";
+      }
+      
+      std::vector<std::string> PosixAlternatives() const override
+      {
+        static const std::string ALTERNATIVES[] =
+        {
+          "libmp3lame.so.0",
+        };
+        return std::vector<std::string>(ALTERNATIVES, std::end(ALTERNATIVES));
+      }
+      
+      std::vector<std::string> WindowsAlternatives() const override
+      {
+        static const std::string ALTERNATIVES[] =
+        {
+          "libmp3lame.dll",
+        };
+        return std::vector<std::string>(ALTERNATIVES, std::end(ALTERNATIVES));
+      }
+    };
+
+<TMPL_INCLUDE NAME="api_dynamic.cpp.templ">
+
+    Api::Ptr LoadDynamicApi()
+    {
+      static const LibraryName NAME;
+      const Platform::SharedLibrary::Ptr lib = Platform::SharedLibrary::Load(NAME);
+      return MakePtr<DynamicApi>(lib);
+    }
+  }
+}

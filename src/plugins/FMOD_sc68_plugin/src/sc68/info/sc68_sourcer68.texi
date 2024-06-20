@@ -1,0 +1,66 @@
+@c -*-texinfo-*-
+
+@center sourcer68 - Mc68000 disassembler
+
+@section Usage
+@display
+sourcer68 [options] <input>
+@end display
+
+
+@section Description
+
+sourcer68 is a 68000 disassambler. Input file can be either BINARY, TOS program (Atari .prg .tos ...) or SC68 file. The dissassembler starts a disassemble pass at the beginning of the input depending on its type.
+
+@table @asis
+@item BINARY
+      entry is offset +0.
+@item TOS
+      entry is the program entry point. By default TOS program are relocated.
+@item SC68
+      3 entries are offset +0 +4 and +8 corresponding to sc68 replay convention.
+
+      External replay is loaded if needed. Specify replay-path with --replay= or with environment varaiable.
+@end table
+
+
+@subsection Disassemble pass
+
+            A disassemble pass starts at an ENTRY point. The disassembler will try to follow program branchs. It should add every needed symbols. There is a heuristic to try to find jump tables (sequential branch instruction).
+
+ 
+@section Options
+
+@table @asis
+@item --help                    Display this message and exit.
+@item --reloc=[yes|no|auto]     TOS relocation (default:auto).
+@item --replay=PATH             Force replay path.
+@item --entry=[ENTRY-LIST]      Set disassembly entry points.
+@item --tab=[STRING]            Set tabulation string.
+@end table
+
+
+@subsection ENTRY-LIST
+
+   ENTRY-LIST := ENTRY[,ENTRY...]
+
+   An ENTRY-LIST is an ordered coma (',') separated list of ENTRY points which define disassembler start points.
+
+
+@subsection ENTRY
+
+   ENTRY := [l][+]integer
+
+@table @asis
+@item l
+      Get long at the effective address (indirection). l options could by use more than once. (eg. @samp{ll0x440}).
+@item +
+      Effective address is file start + integer.
+@item integer
+      Number ("C" format: 0x for hexa, 0 for octal)
+@end table
+
+
+@section Resource files
+
+For information, see @ref{Resource files}.

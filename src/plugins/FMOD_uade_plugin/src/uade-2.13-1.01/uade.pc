@@ -1,0 +1,8 @@
+uadecore=/usr/local/lib/uade2/uadecore.exe
+data_directory=/usr/local/share/uade2
+ipc_protocol_version=1
+
+Name: UADE (Unix Amiga Delitracker Emulator)
+Description: A music player for Amiga music formats
+Version: 2.13
+Requires: ao

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Local -->
+    <string name="vfs_local_root_name">Local filesystem</string>
+    <string name="vfs_local_root_description">Content of internal and external storages</string>
+    <!-- zxtunes.com -->
+    <string name="vfs_zxtunes_root_name">ZXTUNES music collection</string>
+    <string name="vfs_zxtunes_root_description" translatable="false">http://www.zxtunes.com</string>
+    <string name="vfs_zxtunes_authors_name">Authors</string>
+    <string name="vfs_zxtunes_authors_description">ZX Spectrum musicians catalogue</string>
+    <!-- Playlists -->
+    <string name="vfs_playlists_root_name">Playlists</string>
+    <string name="vfs_playlists_root_description">Saved playlists storage</string>
+    <!-- ftp.modland.com -->
+    <string name="vfs_modland_root_name">Modland - largest module archive</string>
+    <string name="vfs_modland_root_description">Via http://www.exotica.org.uk</string>
+    <string name="vfs_modland_authors_name">Authors</string>
+    <string name="vfs_modland_authors_description">Browse by author</string>
+    <string name="vfs_modland_collections_name">Collections</string>
+    <string name="vfs_modland_collections_description">Browse by collection</string>
+    <string name="vfs_modland_formats_name">Formats</string>
+    <string name="vfs_modland_formats_description">Browse by format</string>
+    <!-- errors -->
+    <string name="network_inaccessible">Network is not accessible</string>
+</resources>

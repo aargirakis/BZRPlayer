@@ -1,0 +1,8 @@
+The original StSound is made by Leonard/Oxygene.
+
+This version was modified by :
+ * Ramlaid : Stereo
+ * Krusty : Autotools update
+ * CloudStrife : cleanup and some changes to emulate an AY3-8912
+ * PulkoMandy : lowpass filter fix
+ * Targhan : noise generation and mixer fixes

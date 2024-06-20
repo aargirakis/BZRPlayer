@@ -1,0 +1,25 @@
+/**
+*
+* @file
+*
+* @brief  ALSA subsystem API gate interface
+*
+* @author vitamin.caig@gmail.com
+*
+**/
+
+#pragma once
+
+//std includes
+#include <memory>
+//platform-specific includes
+#include <alsa/asoundlib.h>
+#include <alsa/pcm.h>
+
+namespace Sound
+{
+  namespace Alsa
+  {
+<TMPL_INCLUDE NAME="api.h.templ">
+  }
+}

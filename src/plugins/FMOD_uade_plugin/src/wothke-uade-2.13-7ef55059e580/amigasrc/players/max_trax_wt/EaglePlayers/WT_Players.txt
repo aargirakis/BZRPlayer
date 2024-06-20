@@ -1,0 +1,94 @@
+
+Archive name        Size     Date   STD  AMP  Format name                                          Modules available on
+                                    ver. ver.
+
+EP_AMComposer.lha   7961 20-10-2001 v1.3 v2.1 A.M.Composer 1.2                                     Amiga
+EP_BeathovenSS.lha  6388 03-06-2001 v1.0  N/A Beathoven Synthesizer                                Amiga
+EP_BennDaglish.lha 11019 06-03-2004 v1.2  N/A Benn Daglish                                         Amiga
+EP_DaglishSID.lha   7395 11-03-2004 v1.1  N/A Benn Daglish SID                                     Amiga
+EP_BladePacker.lha 16241 13-11-2002 v1.1 v2.0 Blade Packer                                         Amiga, Atari ST, PC
+EP_ChipTracker.lha 13107 22-02-2007 v1.2 v2.1 ChipTracker                                          Amiga, Atari ST
+EP_Cinemaware.lha  13341 24-04-2004 v1.0 v2.0 Cinemaware                                           Amiga
+EP_CoreDesign.lha   7910 11-03-2004 v1.1  N/A Core Design                                          Amiga
+EP_CustomMade.lha  10523 05-01-2004 v1.1 v2.0 CustomMade (Ron Klaren)                              Amiga
+EP_DaveLowe.lha     8426 09-06-2001 v1.2  N/A Dave Lowe                                            Amiga
+EP_DaveLoweNew.lha 12963 08-06-2001 v1.1 v2.0 Dave Lowe New (binary)                               Amiga
+EP_DWhittaker.lha   6721 11-11-2000 v1.0  N/A David Whittaker                                      Amiga
+EP_Desire.lha       6661 30-04-2002 v1.0 v2.0 Desire                                               Amiga
+EP_DigitSonix.lha   7124 19-05-2003 v1.0  N/A Digital Sonix & Chrome                               Amiga
+EP_DigitSound.lha   9746 29-12-2005 v1.0  N/A Digital Sound Creations                              Amiga
+EP_DSS.lha         11532 15-06-2002 v1.2 v2.0 Digital Sound Studio 1.0-3.0                         Amiga
+EP_DBialluch.lha   13051 08-04-2006 v1.0 v2.0 Dirk Bialluch                                        Amiga
+EP_DynamicSynt.lha  5596 24-04-2001 v1.1  N/A Dynamic Synthesizer 1.34                             Amiga
+EP_EarAche.lha     10003 26-01-2005 v1.0 v2.0 EarAche 1.05                                         Amiga
+EP_EMS.lha         11918 05-12-2005 v1.0 v2.0 Editeur Musical Sequentiel 1.24                      Amiga
+EP_Fashion.lha      9606 26-06-2004 v1.0 v2.0 Fashion Tracker                                      Amiga
+EP_FredGray.lha     5261 06-01-2001 v1.0  N/A Fred Gray                                            Amiga
+EP_FuturePlay.lha  12709 18-11-2004 v1.0 v2.1 Future Player                                        Amiga
+EP_HowieDavies.lha  5989 02-04-2001 v1.0  N/A Howie Davies                                         Amiga
+EP_ImagesMusic.lha  9452 18-11-2001 v1.2 v2.0 Images Music System                                  Amiga
+EP_JankoMrsic.lha   5495 25-09-2001 v1.0  N/A Janko Mrsic-Flogel                                   Amiga
+EP_JasonBrooke.lha  4588 07-01-2000 v1.0  N/A Jason Brooke                                         Amiga
+EP_JasonPage.lha   17795 13-10-2002 v1.3 v2.1 Jason Page                                           Amiga
+EP_JeroenTel.lha   14474 27-10-2004 v1.0 v2.0 Jeroen Tel                                           Amiga
+EP_JoHippel.lha    10140 17-01-2003 v1.0  N/A Jochen Hippel & MCMD                                 Amiga, Atari ST
+EP_JHippel7V.lha   11338 20-09-2002 v1.0  N/A Jochen Hippel 7V                                     Amiga
+EP_HippelCOSO.lha  14162 07-11-2006 v1.0 v2.0 Jochen Hippel COSO                                   Amiga, Atari ST
+EP_JHippelST.lha   13388 17-12-2006 v1.2  N/A Jochen Hippel ST                                     Atari ST
+EP_KHatlelid.lha    6191 06-11-2001 v1.0  N/A Kris Hatlelid                                        Amiga
+EP_LME.lha         10034 29-09-2003 v1.1 v2.0 Leggless Music Editor                                Amiga
+EP_MFP.lha         16678 27-05-2003 v1.3 v2.1 Magnetic Fields Packer                               Amiga
+EP_MarkCooksey.lha 15457 13-12-2006 v1.1 v2.0 Mark Cooksey                                         Amiga
+EP_MWalker.lha	    8271 20-07-2001 v1.1 v2.0 Martin Walker                                        Amiga
+EP_MaxTrax.lha      ---- 20-09-2007 v1.1  N/A MaxTrax                                              Amiga
+EP_MMDC.lha        10114 08-03-2003 v1.2 v2.1 MED Packer                                           Amiga
+EP_MikeDavies.lha   4767 30-09-2000 v1.0  N/A Mike Davies (Tiertex Player)                         Amiga
+EP_Mugician.lha    15042 29-11-2001 v1.1 v2.0 Mugician                                             Amiga
+EP_Mugician2.lha   12360 20-09-2002 v1.3  N/A Mugician II (7V)                                     Amiga
+EP_Musicline4V.lha 46744 20-08-2006 v1.0 v2.0 Musicline 4V 1.15                                    Amiga
+EP_Musicline8V.lha 33602 11-09-2006 v1.0  N/A Musicline 8V 1.15                                    Amiga
+EP_NoiseTrack.lha  28560 30-06-2003 v1.3 v2.2 NoiseTracker & SoundTracker (15 samples)             Amiga
+EP_NovoTrade.lha    8894 24-08-2003 v1.1 v2.0 NovoTrade Packer                                     Amiga
+EP_PRobotham.lha   12740 13-10-2002 v1.0 v2.0 Paul Robotham                                        Amiga
+EP_PaulShields.lha 10626 04-02-2002 v1.2 v2.0 Paul Shields                                         Amiga
+EP_PaulSummers.lha  8500 02-11-2003 v1.2 v2.1 Paul Summers                                         Amiga
+EP_PVP.lha          8439 22-08-2002 v1.1 v2.0 Peter Verswyvelen Packer                             Amiga
+EP_PAP.lha          8637 13-10-2002 v1.1 v2.1 Pierre Adane Packer                                  Amiga
+EP_PSA.lha          9478 21-04-2003 v1.1 v2.1 Professional Sound Artists                           Amiga
+EP_Protracker.lha  17977 31-05-2003 v1.4 v2.2 Protracker & SoundTracker (15 samples)               Amiga, Atari ST, PC
+EP_PumaTracker.lha 14060 12-04-2006 v1.1 v2.1 PumaTracker                                          Amiga, Atari ST
+EP_Quartet.lha     13272 31-12-2006 v1.0 v2.0 Quartet                                              Amiga
+EP_QuartetPSG.lha   9964 12-02-2007 v1.0  N/A Quartet PSG                                          Atari ST
+EP_QuartetST.lha   10967 08-02-2007 v1.1  N/A Quartet ST                                           Amiga, Atari ST
+EP_RJosephPlay.lha 11457 21-10-2002 v1.1 v2.1 Richard Joseph Player 1.7A                           Amiga
+EP_RiffRaff.lha     5680 03-01-2001 v1.0  N/A Riff Raff                                            Amiga
+EP_RobHubbard.lha   8505 07-07-2001 v1.4 v2.1 Rob Hubbard                                          Amiga
+EP_RobHubbardO.lha  5276 29-07-2001 v1.1  N/A Rob Hubbard ST                                       Amiga
+EP_SConnolly.lha    4601 29-10-1999 v1.1  N/A Sean Connolly (EMS 3.01/3.18/5.xx)                   Amiga
+EP_SeanConran.lha   7439 10-11-2003 v1.2  N/A Sean Conran                                          Amiga
+EP_SierraAGI.lha   12854 14-01-2006 v1.0 v2.0 Sierra AGI                                           Amiga, Atari ST, PC
+EP_Silmarils.lha    8530 22-10-2001 v1.0  N/A Silmarils                                            Amiga, Atari ST
+EP_Sonix.lha       24315 09-06-2004 v1.0 v2.0 Sonix Music Driver (SMUS v2.0f/TINY v2.0b/SNX v2.3c) Amiga
+EP_SoundImages.lha  5173 06-06-2000 v1.1  N/A Sound Images (1 & 2)                                 Amiga
+EP_SoundMaster.lha  5631 25-02-2002 v1.0  N/A Sound Master 1.0-3.0                                 Amiga
+EP_SOPROL.lha       5629 14-12-2000 v1.0  N/A Sound Programming Language                           Amiga
+EP_Soundcontr.lha  15505 25-03-2002 v1.2 v2.1 Soundcontrol 3.0/3.2/4.0/5.0                         Amiga, PC
+EP_Soundfactor.lha 10637 12-09-2001 v1.1 v2.0 Soundfactory 1.0                                     Amiga
+EP_SoundFX.lha     11255 15-11-2001 v1.1 v2.1 SoundFX 1.0-1.8                                      Amiga
+EP_SoundPlayer.lha  9285 02-03-2003 v1.0 v2.0 SoundPlayer 4.05                                     Amiga
+EP_SpecialFX.lha   12984 25-03-2007 v1.1 v2.0 Special FX                                           Amiga, Atari ST
+EP_SpecialFXST.lha 11470 30-03-2007 v1.0  N/A Special FX ST                                        Atari ST
+EP_SpeedyA1Sys.lha  5821 16-11-2000 v1.0  N/A Speedy A1 System                                     Amiga
+EP_SpeedSystem.lha  7908 05-11-2000 v1.0  N/A Speedy System 2.0-3.0/A                              Amiga
+EP_StevBarrett.lha  8268 11-12-2002 v1.1 v2.0 Steve Barrett                                        Amiga
+EP_SteveTurner.lha  9267 17-06-2001 v1.3 v2.0 Steve Turner                                         Amiga
+EP_SynthDream.lha  17125 28-04-2007 v1.1 v2.0 Synth Dream                                          Amiga
+EP_SynthPack.lha    8129 20-06-2000 v1.1  N/A Synth Pack                                           Amiga
+EP_TFMX.lha        11074 09-02-2002 v1.3  N/A TFMX                                                 Amiga, Atari ST
+EP_TFMX7V.lha      13918 20-09-2002 v1.1  N/A TFMX 7V                                              Amiga
+EP_TFMXPro.lha     20592 20-09-2002 v1.3  N/A TFMX Pro                                             Amiga, Atari ST
+EP_TFMXST.lha      14013 10-05-2007 v1.0  N/A TFMX ST                                              Atari ST
+EP_TME.lha         10372 17-02-2002 v1.2 v2.0 The Musical Enlightenment 2.0                        Amiga
+EP_THermann.lha     7507 01-02-2002 v1.1  N/A Thomas Hermann                                       Amiga
+EP_TomyTracker.lha  8932 17-01-2003 v1.1 v2.0 Tomy Tracker                                         Amiga
+EP_WallyBeben.lha   7578 15-12-2002 v1.0  N/A Wally Beben (Ariston)                                Amiga

@@ -1,0 +1,34 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sabd="http://schemas.android.com/apk/res-auto" >
+  <item
+    android:id="@+id/action_playlist"
+    android:title="@string/playlist"
+    sabd:showAsAction="always"
+    >
+    <menu>
+      <item
+        android:id="@+id/action_clear"
+        android:icon="@drawable/ic_menu_delete"
+        android:title="@string/clear"
+        sabd:showAsAction="never" />
+      <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_menu_save"
+        android:title="@string/save"
+        sabd:showAsAction="never" />
+      <item
+        android:id="@+id/action_statistics"
+        android:icon="@drawable/ic_menu_statistics"
+        android:title="@string/statistics"
+        sabd:showAsAction="never" />
+      <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_menu_sort"
+        android:title="@string/sort"
+        sabd:showAsAction="never"
+        >
+        <menu/>
+      </item>
+    </menu>
+  </item>
+</menu>

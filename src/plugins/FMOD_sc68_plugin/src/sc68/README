@@ -1,0 +1,86 @@
+                sc68 - Atari ST and Amiga music player
+                **************************************
+
+               Copyright (C) 1998-2003  Benjamin Gerard
+                          <ben@sashipa.com>
+                  <http://sashipa.ben.free.fr/sc68/>
+               <http://sourceforge.net/projects/sc68/>
+				   
+Introduction
+============
+
+    New release of sc68 version 2.
+
+    It consists on a source distribution that trying to be compliant with GNU
+    requiments.
+    
+    This new API should much easier to use for developers who want to use
+    sc68 music files in their programs or make a portage for unsupported
+    system.
+
+Install
+=======
+
+    This package contains many programs and libraries that will be installed
+    in your system. Here is a complete list of what get installed once you
+    have completed the installation :
+
+        1.  sc68 - command line player
+        2.  as68 - a 68000 macro assembler
+        3.  info68 - get sc68 information (title, author ...)
+        4.  debug68 - create and debug sc68 files
+        5.  unice68 - an ice depacker
+        6.  sourcer68 - a 68000 disassembler
+        7.  sc68-config - replacement to pkg-config if missing
+        8.  sc68.pc - pkg-config description file
+        9.  A few libraries - emu68, io68, file68, api68, desa68
+        10. man and info pages
+
+    Here is quick installation instructions for hurry people. For more
+    installation instruction read the `INSTALL' file.
+
+        1. Get in the package top directory (which contains this file).
+        2. type `sh ./configure'. Watch out eventual error messages.
+        3. type `make'.
+        4. Get a root shell, type `su' <enter root password>
+        5. Install binary, library and data. Type `make install'.
+        6. Exit root shell and go back to user. Type `exit'.
+        7. Optionally create sc68 user resource path
+           Type `mkdir $HOME/.sc68'.
+        8. You're done.
+
+    Please report any installation problem.
+
+Music files
+===========
+
+    sc68 needs special music files. sc68 project tries to build a complete
+    database of Atari ST and Amiga musics. Check out sc68 website :
+
+		  <http://sashipa.ben.free.fr/sc68/>
+
+    You will find there almost all Atari ST musics ever done and many Amiga
+    "chip" tunes from various music players.
+
+    There is a sample music in this distribution. You can find it in the
+    sc68 resource path.
+    Its location depends on your installation configuration. It should be
+    something like:
+
+	   `/usr/local/share/sc68/Sample/About-Intro.sc68'
+
+    If you have installed xmms68, just load this file. Else you can try to
+    play it with the `play' program (from sox package) :
+
+       `sc68 "/usr/local/share/sc68/Sample/About-Intro.sc68" |
+		play - -c 2 -f s -r 44100 -s w -t raw'
+
+   !! New !! sc68 can now load SNDH files. You can find many od them on
+   Atari ST related website.
+
+Documentation
+=============
+
+    This package installs both info and man pages.
+    Type `info sc68' or `man sc68` or `man info68' ... etc ...
+

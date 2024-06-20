@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- menu-related -->
+    <string name="prefs">Preferences</string>
+    <string name="review">Rate</string>
+    <string name="quit">Quit</string>
+    <!-- action-related -->
+    <string name="add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="clear">Clear</string>
+    <string name="save">Save</string>
+    <string name="overwrite">Overwrite</string>
+    <string name="send">Send</string>
+    <string name="share">Share</string>
+    <string name="sort">Sort</string>
+    <!-- information-related -->
+    <string name="information_title">Title</string>
+    <string name="information_author">Author</string>
+    <string name="information_program">Program</string>
+    <string name="information_comment">Comment</string>
+    <string name="information_location">Location</string>
+    <string name="scanning_started">Started scanning</string>
+    <string name="scanning_stopped">Stopped scanning</string>
+    <string name="scanning_failed">Failed to scan: %s</string>
+    <string name="scanning_title">Scanning.</string>
+    <string name="scanning_text">Click to cancel</string>
+    <!-- other -->
+    <string name="main">Main</string>
+    <plurals name="items">
+      <item quantity="one">%d item</item>
+      <item quantity="other">%d items</item>
+    </plurals>
+    <plurals name="tracks">
+      <item quantity="one">%d track</item>
+      <item quantity="other">%d tracks</item>
+    </plurals>
+    <plurals name="packs">
+      <item quantity="one">%d pack</item>
+      <item quantity="other">%d packs</item>
+    </plurals>
+    <string name="no_tracks_found">No supported tracks found</string>
+    <string name="track">Track</string>
+    <!-- notifications -->
+    <string name="notification_channel_name_events">Events</string>
+    <string name="notification_channel_name_services">Services</string>
+</resources>
