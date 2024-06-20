@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/bzr">
+        <file>../static/data/resources/icon.png</file>
         <file>resources/close.png</file>
         <file>resources/undock.png</file>
-        <file>resources/icon.png</file>
         <file>resources/shuffle.svg</file>
         <file>resources/play.svg</file>
         <file>resources/next.svg</file>
