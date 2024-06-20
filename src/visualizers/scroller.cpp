@@ -5,7 +5,7 @@
 #include "qmessagebox.h"
 #include "qpainterpath.h"
 #include "qregularexpression.h"
-#include "src/soundmanager.h"
+#include "soundmanager.h"
 Scroller::Scroller(QWidget* parent)
 {
 

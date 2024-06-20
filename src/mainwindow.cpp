@@ -37,11 +37,14 @@
 #include <QTcpSocket>
 #include <QWheelEvent>
 #include "about.h"
+#include "version.h"
 #define NEZPLAYLISTSPLITTER "::<>::?<>"
 #define PLAYLISTFIELDSPLITTER "<><>::????"
+#define PROJECT_NAME "BZR Player"
+#define PROJECT_NAME_VERSIONED PROJECT_NAME " " PROJECT_VERSION
 
 using namespace std;
-const QString MainWindow::VERSION = "2.0.73";
+const QString MainWindow::VERSION = PROJECT_VERSION;
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
     QMainWindow(parent),
@@ -70,7 +73,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
 
         ui->setupUi(this);
 
-        setWindowTitle("BZR Player " + VERSION);
+        setWindowTitle(PROJECT_NAME_VERSIONED);
         srand (time(NULL));
 
         ads::CDockManager::setConfigFlags(ads::CDockManager::DefaultOpaqueConfig);
@@ -1607,7 +1610,7 @@ void MainWindow::changeEvent(QEvent *event)
         }
         else
         {
-            this->setWindowTitle("BZR Player " + VERSION);
+            this->setWindowTitle(PROJECT_NAME_VERSIONED);
         }
         if (isMinimized() == true && m_systrayOnQuitEnabled)
         {
@@ -2300,7 +2303,7 @@ void MainWindow::PlaySong(int currentRow)
         }
         else
         {
-            this->setWindowTitle("BZR Player " + VERSION);
+            this->setWindowTitle(PROJECT_NAME_VERSIONED);
         }
 
         if(m_Tray->isVisible())
@@ -3071,7 +3074,7 @@ void MainWindow::exportInstrument(QString format)
             }
 
             // "ANNO" chunk (we put the program name here)
-            const char annoStr[] = "BZR PLayer";
+            const char annoStr[] = PROJECT_NAME;
             chunkLen = sizeof (annoStr) - 1;
             iffWriteChunkHeader(f, "ANNO", chunkLen);
             iffWriteChunkData(f, annoStr, chunkLen);
@@ -4470,7 +4473,7 @@ void MainWindow::restoreFromTray()
         }
         else
         {
-            this->setWindowTitle("BZR Player " + VERSION);
+            this->setWindowTitle(PROJECT_NAME_VERSIONED);
         }
     }
     //minimize to system tray (user clicked on system tray)
@@ -4501,7 +4504,7 @@ void MainWindow::restoreFromTray()
         }
         else
         {
-            this->setWindowTitle("BZR Player " + VERSION);
+            this->setWindowTitle(PROJECT_NAME_VERSIONED);
         }
 
     }
@@ -4680,7 +4683,7 @@ void MainWindow::createTrayMenu()
 
     trayIcon = QIcon(":/bzr/resources/icon.png");
     m_Tray->setIcon(trayIcon);
-    m_Tray->setToolTip("BZR Player");
+    m_Tray->setToolTip(PROJECT_NAME);
 
     connect(m_Tray,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(clickSysTrayIcon(QSystemTrayIcon::ActivationReason)));
 
@@ -5430,7 +5433,7 @@ void MainWindow::resetAll()
     }
 
     ui->labelFilename->clear();
-    this->setWindowTitle("BZR Player " + VERSION);
+    this->setWindowTitle(PROJECT_NAME_VERSIONED);
     channels->updateChannels();
 
     removeHighlight();

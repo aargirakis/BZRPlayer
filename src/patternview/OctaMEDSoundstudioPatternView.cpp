@@ -1,5 +1,5 @@
 #include "OctaMEDSoundstudioPatternView.h"
-#include "src/visualizers/tracker.h"
+#include "visualizers/tracker.h"
 
 OctaMEDSoundstudioPatternView::OctaMEDSoundstudioPatternView(Tracker *parent, unsigned int channels, int scale)
                             :AbstractPatternView(parent,channels,scale)

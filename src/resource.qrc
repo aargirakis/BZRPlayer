@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/bzr">
-        <file>../static/data/resources/icon.png</file>
+        <file>static/data/resources/icon.png</file>
         <file>resources/close.png</file>
         <file>resources/undock.png</file>
         <file>resources/shuffle.svg</file>

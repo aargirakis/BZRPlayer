@@ -1,5 +1,5 @@
 #include "FastTracker26ChanPatternView.h"
-#include "src/visualizers/tracker.h"
+#include "visualizers/tracker.h"
 
 FastTracker26ChanPatternView::FastTracker26ChanPatternView(Tracker *parent, unsigned int channels, int scale)
                             :FastTracker2PatternView(parent,channels,scale)

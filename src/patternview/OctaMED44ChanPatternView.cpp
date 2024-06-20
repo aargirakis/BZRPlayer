@@ -1,5 +1,5 @@
 #include "OctaMED44ChanPatternView.h"
-#include "src/visualizers/tracker.h"
+#include "visualizers/tracker.h"
 
 OctaMED44ChanPatternView::OctaMED44ChanPatternView(Tracker *parent, unsigned int channels, int scale)
                             :MEDPatternView(parent,channels,scale)

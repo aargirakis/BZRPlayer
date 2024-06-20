@@ -1,6 +1,8 @@
 <h1>BZR Player</h1>
-BZR Player is an audio player for Windows with the primary goal being able to play a lot of different file formats. It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008. The last 1.x version was released 2019-Apr-08. This is the beginning of the new 2.x version which is coded pretty much from scratch. Please add features and bugs here on Github.
+BZR Player is an audio player for Windows with the primary goal being able to play a lot of different file formats. It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008. The last 1.x version was released 2019-Apr-08. This is the beginning of the new 2.x version which is coded pretty much from scratch. Please add features and bugs here on Github.<br/><br/>
+Build BZR Player 2 with <strong>-DCMAKE_PREFIX_PATH="&lt;<em>your_qt5_mingw81_32_path</em>&gt;" -G "Ninja"</strong> cmake flags.<br/>For generating a zip release package run cmake with <strong>Release</strong> profile: you may need to specify the <strong>cpack</strong> path, in which case add also <strong>-DCPACK_EXECUTABLE="&lt;<em>your_cpack_executable_path</em>&gt;"</strong> to cmake command
 <br/><br/>
+
 Official page is http://bzrplayer.blazer.nu
 <br/>
 <br/>

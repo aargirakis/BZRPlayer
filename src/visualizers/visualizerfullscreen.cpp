@@ -1,5 +1,5 @@
 #include "visualizerfullscreen.h"
-#include "src/soundmanager.h"
+#include "soundmanager.h"
 #include <QtOpenGL>
 VisualizerFullScreen::VisualizerFullScreen(Effect* effect, QWidget *parent)
     : QOpenGLWidget(parent)
