@@ -1,6 +1,5 @@
-# the compiler to use.
 CC=g++
-GLOBAL_INCLUDES= -I C:/Dev/FMOD/api/core/inc -I C:\Dev\includes -I C:\Dev\libmodplug
+GLOBAL_INCLUDES= -I C:/Dev/FMOD/api/core/inc -I C:\Dev\QTCreator\BZRPlayer\BZRPlayer\src
 GLOBAL_LIBS=-L C:/Dev/FMOD/api/core/lib/x86 -lfmod
 CFLAGS=-Wall -O2
 BZRPLAYER_PLUGIN=C:\Dev\QTCreator\BZRPlayer\BZRPlayer\build-BZRPlayer-Desktop_Qt_5_15_2_MinGW_32_bit-Release\release\data\plugin

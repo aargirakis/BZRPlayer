@@ -2,9 +2,9 @@
 #define TRACKER_H
 
 
-#include "AbstractPatternView.h"
-#include "Info.h"
-#include "bitmapfont.h"
+#include "src/patternview/AbstractPatternView.h"
+#include "src/include/info.h"
+#include "src/patternview/bitmapfont.h"
 class Tracker
 {
 public:

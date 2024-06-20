@@ -2,7 +2,7 @@
 #define BZRINFO_H
 
 using namespace std;
-#include "modplug.h"
+#include "external/libmodplug/libmodplug/modplug.h"
 #include "BaseRow.h"
 #include <vector>
 #include <iostream>

@@ -1,7 +1,7 @@
 #include "trackerfullscreen.h"
-#include "visualizers/tracker.h"
+#include "src/visualizers/tracker.h"
 #include <QtOpenGL>
-#include "soundmanager.h"
+#include "src/soundmanager.h"
 TrackerFullScreen::TrackerFullScreen(Tracker* tracker, QWidget *parent)
     : QOpenGLWidget(parent)
 {

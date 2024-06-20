@@ -8,8 +8,6 @@
 #include "info.h"
 #include "engine.h"
 
-#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004 //added by blazer
-
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
@@ -34,7 +32,6 @@ FMOD_CODEC_DESCRIPTION tfmxcodec =
 };
 
     static constexpr uint32_t kMaxSamples = 2048;
-
 
 class ahxplugin
 {
@@ -94,6 +91,7 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION * __stdcall _FMODGetCodecDescriptio
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo)
 {
 
+
     FMOD_RESULT       result;
     unsigned int filesize;
     unsigned int bytesread;
@@ -102,10 +100,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     {
         return FMOD_ERR_FORMAT;
     }
-
-
-    initLog(stdout);
-
 
     ahxplugin *ahx = new ahxplugin(codec);
 
@@ -131,6 +125,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
     result = FMOD_CODEC_FILE_SEEK(codec,0,0);
     result = FMOD_CODEC_FILE_READ(codec,buffer,filesize,&bytesread);
+    logLevel = LOGLEVEL_WARN; //added by blazer (but not needed?)
+    initLog(stdout); //added by blazer (but maybe should go just before "ahxplugin *ahx = new ahxplugin(codec);" ? )
+
     ahx->m_engine = new DivEngine;
     ahx->m_engine->preInit();
     if(ahx->m_engine->load(buffer,filesize) && ahx->m_engine->init())
@@ -139,7 +136,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     }
     else
     {
-        ahx->m_engine->quit();
+        ahx->m_engine->quit(false);
 
         delete ahx->m_engine;
         return FMOD_ERR_FORMAT;

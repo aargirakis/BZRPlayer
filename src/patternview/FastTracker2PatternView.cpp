@@ -1,6 +1,6 @@
 #include "FastTracker2PatternView.h"
 #include "qdebug.h"
-#include "visualizers/tracker.h"
+#include "src/visualizers/tracker.h"
 FastTracker2PatternView::FastTracker2PatternView(Tracker *parent, unsigned int channels, int scale)
                             :AbstractPatternView(parent,channels,scale)
 {

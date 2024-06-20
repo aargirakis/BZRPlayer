@@ -5042,7 +5042,7 @@ QPushButton:hover
   <customwidget>
    <class>AlbumGrid</class>
    <extends>QListWidget</extends>
-   <header>albumgrid.h</header>
+   <header>src/albumgrid.h</header>
   </customwidget>
  </customwidgets>
  <resources>

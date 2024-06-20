@@ -1,5 +1,5 @@
 #include "OctaMED54ChanPatternView.h"
-#include "visualizers/tracker.h"
+#include "src/visualizers/tracker.h"
 
 OctaMED54ChanPatternView::OctaMED54ChanPatternView(Tracker *parent, unsigned int channels, int scale)
                             :MEDPatternView(parent,channels,scale)
@@ -28,10 +28,10 @@ OctaMED54ChanPatternView::OctaMED54ChanPatternView(Tracker *parent, unsigned int
 QString OctaMED54ChanPatternView::effect(BaseRow* row)
 {
 
-    //*kolla octamedkällkod i libxmp om jag fattar effekterna
-    //*man kan välja 16 kanaler i GUI, kolla igenom alla mmd1 och se antal kanaler
-    //*vumeters visas ej i mer än 4 kanaler
-    //*instrument utan not visas ej (och kan då inte heller visa lodrät linje) kolla hur det är i protracker, annars föreslå til libxmp
+    //*kolla octamedkï¿½llkod i libxmp om jag fattar effekterna
+    //*man kan vï¿½lja 16 kanaler i GUI, kolla igenom alla mmd1 och se antal kanaler
+    //*vumeters visas ej i mer ï¿½n 4 kanaler
+    //*instrument utan not visas ej (och kan dï¿½ inte heller visa lodrï¿½t linje) kolla hur det ï¿½r i protracker, annars fï¿½reslï¿½ til libxmp
 
     if(row->effect<9 || row->effect==0xC || row->effect==0xB) return AbstractPatternView::effect(row);
 

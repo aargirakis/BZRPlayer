@@ -7,7 +7,7 @@
 #include <QPainter>
 #include <QMap>
 #include <QPoint>
-#include "BaseRow.h"
+#include "src/include/BaseRow.h"
 #include "bitmapfont.h"
 class Tracker;
 class AbstractPatternView

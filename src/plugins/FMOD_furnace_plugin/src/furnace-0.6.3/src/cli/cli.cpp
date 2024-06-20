@@ -20,8 +20,6 @@
 #include "cli.h"
 #include "../ta-log.h"
 
-#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004 //added by blazer
-
 bool cliQuit=false;
 
 #ifndef _WIN32

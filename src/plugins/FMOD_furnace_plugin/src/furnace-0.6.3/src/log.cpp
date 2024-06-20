@@ -28,9 +28,9 @@
 
 #define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004 //added by blazer
 #ifdef IS_MOBILE
-int logLevel=LOGLEVEL_WARN;
+int logLevel=LOGLEVEL_TRACE;
 #else
-int logLevel=LOGLEVEL_WARN; // until done
+int logLevel=LOGLEVEL_TRACE; // until done
 #endif
 
 FILE* logOut;
@@ -53,198 +53,198 @@ static constexpr unsigned int TA_LOG_MASK=TA_LOG_SIZE-1;
 static constexpr unsigned int TA_LOGFILE_BUF_MASK=TA_LOGFILE_BUF_SIZE-1;
 
 const char* logTypes[5]={
-    "ERROR",
-    "warning",
-    "info",
-    "debug",
-    "trace"
+  "ERROR",
+  "warning",
+  "info",
+  "debug",
+  "trace"
 };
 
 void appendLogBuf(const LogEntry& entry) {
-    logFileLockI.lock();
+  logFileLockI.lock();
 
-    std::string toWrite=fmt::sprintf(
-        "%02d:%02d:%02d [%s] %s\n",
-        entry.time.tm_hour,
-        entry.time.tm_min,
-        entry.time.tm_sec,
-        logTypes[entry.loglevel],
-        entry.text
-        );
+  std::string toWrite=fmt::sprintf(
+    "%02d:%02d:%02d [%s] %s\n",
+    entry.time.tm_hour,
+    entry.time.tm_min,
+    entry.time.tm_sec,
+    logTypes[entry.loglevel],
+    entry.text
+  );
 
-    const char* msg=toWrite.c_str();
-    size_t len=toWrite.size();
+  const char* msg=toWrite.c_str();
+  size_t len=toWrite.size();
 
-    int remaining=(logFilePosO-logFilePosI-1)&TA_LOGFILE_BUF_SIZE;
+  int remaining=(logFilePosO-logFilePosI-1)&TA_LOGFILE_BUF_SIZE;
 
-    if (len>=(unsigned int)remaining) {
-        printf("line too long to fit in log buffer!\n");
-        logFileLockI.unlock();
-        return;
-    }
-
-    if ((logFilePosI+len)>=TA_LOGFILE_BUF_SIZE) {
-        size_t firstWrite=TA_LOGFILE_BUF_SIZE-logFilePosI;
-        memcpy(logFileBuf+logFilePosI,msg,firstWrite);
-        memcpy(logFileBuf,msg+firstWrite,len-firstWrite);
-    } else {
-        memcpy(logFileBuf+logFilePosI,msg,len);
-    }
-
-    logFilePosI=(logFilePosI+len)&TA_LOGFILE_BUF_MASK;
+  if (len>=(unsigned int)remaining) {
+    printf("line too long to fit in log buffer!\n");
     logFileLockI.unlock();
+    return;
+  }
+
+  if ((logFilePosI+len)>=TA_LOGFILE_BUF_SIZE) {
+    size_t firstWrite=TA_LOGFILE_BUF_SIZE-logFilePosI;
+    memcpy(logFileBuf+logFilePosI,msg,firstWrite);
+    memcpy(logFileBuf,msg+firstWrite,len-firstWrite);
+  } else {
+    memcpy(logFileBuf+logFilePosI,msg,len);
+  }
+
+  logFilePosI=(logFilePosI+len)&TA_LOGFILE_BUF_MASK;
+  logFileLockI.unlock();
 }
 
 int writeLog(int level, const char* msg, fmt::printf_args args) {
-    time_t thisMakesNoSense=time(NULL);
-    int pos=(logPosition.fetch_add(1))&TA_LOG_MASK;
+  time_t thisMakesNoSense=time(NULL);
+  int pos=(logPosition.fetch_add(1))&TA_LOG_MASK;
 
 #if FMT_VERSION >= 100100
-    logEntries[pos].text.assign(fmt::vsprintf(fmt::basic_string_view<char>(msg),args));
+  logEntries[pos].text.assign(fmt::vsprintf(fmt::basic_string_view<char>(msg),args));
 #else
-    logEntries[pos].text.assign(fmt::vsprintf(msg,args));
+  logEntries[pos].text.assign(fmt::vsprintf(msg,args));
 #endif
-    // why do I have to pass a pointer
-    // can't I just pass the time_t directly?!
+  // why do I have to pass a pointer
+  // can't I just pass the time_t directly?!
 #ifdef _WIN32
-    struct tm* tempTM=localtime(&thisMakesNoSense);
-    if (tempTM==NULL) {
-        memset(&logEntries[pos].time,0,sizeof(struct tm));
-    } else {
-        memcpy(&logEntries[pos].time,tempTM,sizeof(struct tm));
-    }
+  struct tm* tempTM=localtime(&thisMakesNoSense);
+  if (tempTM==NULL) {
+    memset(&logEntries[pos].time,0,sizeof(struct tm));
+  } else {
+    memcpy(&logEntries[pos].time,tempTM,sizeof(struct tm));
+  }
 #else
-    if (localtime_r(&thisMakesNoSense,&logEntries[pos].time)==NULL) {
-        memset(&logEntries[pos].time,0,sizeof(struct tm));
-    }
+  if (localtime_r(&thisMakesNoSense,&logEntries[pos].time)==NULL) {
+    memset(&logEntries[pos].time,0,sizeof(struct tm));
+  }
 #endif
-    logEntries[pos].loglevel=level;
-    logEntries[pos].ready=true;
+  logEntries[pos].loglevel=level;
+  logEntries[pos].ready=true;
 
-    // write to log file
-    //if (logFileAvail) {
+  // write to log file
+  //commented out by blazer
+  // if (logFileAvail) {
     // appendLogBuf(logEntries[pos]);
     // logFileNotify.notify_one();
-    //}
+  // }
 
-    logLevel=LOGLEVEL_INFO;
-
-    if (logLevel<level) return 0;
-    switch (level) {
+logLevel=LOGLEVEL_INFO;
+  if (logLevel<level) return 0;
+  switch (level) {
     case LOGLEVEL_ERROR:
-        return fmt::fprintf(logOut,"\x1b[1;31m[ERROR]\x1b[m %s\n",logEntries[pos].text);
+      return fmt::fprintf(logOut,"\x1b[1;31m[ERROR]\x1b[m %s\n",logEntries[pos].text);
     case LOGLEVEL_WARN:
-        return fmt::fprintf(logOut,"\x1b[1;33m[warning]\x1b[m %s\n",logEntries[pos].text);
+      return fmt::fprintf(logOut,"\x1b[1;33m[warning]\x1b[m %s\n",logEntries[pos].text);
     case LOGLEVEL_INFO:
-        return fmt::fprintf(logOut,"\x1b[1;32m[info]\x1b[m %s\n",logEntries[pos].text);
+      return fmt::fprintf(logOut,"\x1b[1;32m[info]\x1b[m %s\n",logEntries[pos].text);
     case LOGLEVEL_DEBUG:
-        return fmt::fprintf(logOut,"\x1b[1;34m[debug]\x1b[m %s\n",logEntries[pos].text);
+      return fmt::fprintf(logOut,"\x1b[1;34m[debug]\x1b[m %s\n",logEntries[pos].text);
     case LOGLEVEL_TRACE:
-        return fmt::fprintf(logOut,"\x1b[1;37m[trace]\x1b[m %s\n",logEntries[pos].text);
-    }
-    return -1;
+      return fmt::fprintf(logOut,"\x1b[1;37m[trace]\x1b[m %s\n",logEntries[pos].text);
+  }
+  return -1;
 }
 
 void initLog(FILE* where) {
-    logOut=where;
+  logOut=where;
 
-// initialize coloring on Windows
+  // initialize coloring on Windows
 #ifdef _WIN32
-    HANDLE winout=GetStdHandle(STD_OUTPUT_HANDLE);
-    int termprop=0;
-    GetConsoleMode(winout,(LPDWORD)&termprop);
-    termprop|=ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    SetConsoleMode(winout,termprop);
+  HANDLE winout=GetStdHandle(STD_OUTPUT_HANDLE);
+  int termprop=0;
+  GetConsoleMode(winout,(LPDWORD)&termprop);
+  termprop|=ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+  SetConsoleMode(winout,termprop);
 #endif
 
-    // initialize log buffer
-    logPosition=0;
-    for (int i=0; i<TA_LOG_SIZE; i++) {
-        logEntries[i].text.reserve(128);
-    }
+  // initialize log buffer
+  logPosition=0;
+  for (int i=0; i<TA_LOG_SIZE; i++) {
+    logEntries[i].text.reserve(128);
+  }
 
-    // initialize log to file thread
-    logFileAvail=false;
+  // initialize log to file thread
+  logFileAvail=false;
 }
 
 void changeLogOutput(FILE* where) {
-    logOut=where;
+  logOut=where;
 }
 
 void _logFileThread() {
-    std::unique_lock<std::mutex> lock(logFileLock);
-    while (true) {
-        unsigned int logFilePosICopy=logFilePosI;
-        if (logFilePosICopy!=logFilePosO) {
-            // write
-            if (logFilePosO>logFilePosICopy) {
-                fwrite(logFileBuf+logFilePosO,1,TA_LOGFILE_BUF_SIZE-logFilePosO,logFile);
-                logFilePosO=0;
-            } else {
-                fwrite(logFileBuf+logFilePosO,1,logFilePosICopy-logFilePosO,logFile);
-                logFilePosO=logFilePosICopy&TA_LOGFILE_BUF_MASK;
-            }
-        } else {
-            // wait
-            fflush(logFile);
-            if (!logFileAvail) break;
-            logFileNotify.wait(lock);
-        }
+  std::unique_lock<std::mutex> lock(logFileLock);
+  while (true) {
+    unsigned int logFilePosICopy=logFilePosI;
+    if (logFilePosICopy!=logFilePosO) {
+      // write
+      if (logFilePosO>logFilePosICopy) {
+        fwrite(logFileBuf+logFilePosO,1,TA_LOGFILE_BUF_SIZE-logFilePosO,logFile);
+        logFilePosO=0;
+      } else {
+        fwrite(logFileBuf+logFilePosO,1,logFilePosICopy-logFilePosO,logFile);
+        logFilePosO=logFilePosICopy&TA_LOGFILE_BUF_MASK;
+      }
+    } else {
+      // wait
+      fflush(logFile);
+      if (!logFileAvail) break;
+      logFileNotify.wait(lock);
     }
+  }
 }
 
 bool startLogFile(const char* path) {
-    if (logFileAvail) return true;
+  if (logFileAvail) return true;
 
-    // rotate log file if possible
-    char oldPath[4096];
-    char newPath[4096];
+  // rotate log file if possible
+  char oldPath[4096];
+  char newPath[4096];
 
-    if (fileExists(path)==1) {
-        for (int i=4; i>=0; i--) {
-            if (i>0) {
-                snprintf(oldPath,4095,"%s.%d",path,i);
-            } else {
-                strncpy(oldPath,path,4095);
-            }
-            snprintf(newPath,4095,"%s.%d",path,i+1);
+  if (fileExists(path)==1) {
+    for (int i=4; i>=0; i--) {
+      if (i>0) {
+        snprintf(oldPath,4095,"%s.%d",path,i);
+      } else {
+        strncpy(oldPath,path,4095);
+      }
+      snprintf(newPath,4095,"%s.%d",path,i+1);
 
-            if (i>=4) {
-                deleteFile(oldPath);
-            } else {
-                moveFiles(oldPath,newPath);
-            }
-        }
+      if (i>=4) {
+        deleteFile(oldPath);
+      } else {
+        moveFiles(oldPath,newPath);
+      }
     }
+  }
+  
+  // open log file
+  if ((logFile=ps_fopen(path,"w+"))==NULL) {
+    logFileAvail=false;
+    logW("could not open log file! (%s)",strerror(errno));
+    return false;
+  }
 
-    // open log file
-    if ((logFile=ps_fopen(path,"w+"))==NULL) {
-        logFileAvail=false;
-        logW("could not open log file! (%s)",strerror(errno));
-        return false;
-    }
+  logFileBuf=new char[TA_LOGFILE_BUF_SIZE];
+  logFileWriteBuf=new char[TA_LOGFILE_BUF_SIZE];
+  logFilePosI=0;
+  logFilePosO=0;
+  logFileAvail=true;
 
-    logFileBuf=new char[TA_LOGFILE_BUF_SIZE];
-    logFileWriteBuf=new char[TA_LOGFILE_BUF_SIZE];
-    logFilePosI=0;
-    logFilePosO=0;
-    logFileAvail=true;
-
-    logFileThread=new std::thread(_logFileThread);
-    return true;
+  logFileThread=new std::thread(_logFileThread);
+  return true;
 }
 
 bool finishLogFile() {
-    if (!logFileAvail) return false;
+  if (!logFileAvail) return false;
 
-    logFileAvail=false;
+  logFileAvail=false;
 
-    // flush
-    logFileLockI.lock();
-    logFileNotify.notify_one();
-    logFileThread->join();
-    logFileLockI.unlock();
+  // flush
+  logFileLockI.lock();
+  logFileNotify.notify_one();
+  logFileThread->join();
+  logFileLockI.unlock();
 
-    fclose(logFile);
-    return true;
+  fclose(logFile);
+  return true;
 }

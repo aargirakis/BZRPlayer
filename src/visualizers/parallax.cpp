@@ -1,7 +1,7 @@
 #include "parallax.h"
 #include <QGLWidget>
 #include "qapplication.h"
-#include "soundmanager.h"
+#include "src/soundmanager.h"
 Parallax::Parallax()
 {
     inited=false;

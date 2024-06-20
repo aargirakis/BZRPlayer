@@ -3930,7 +3930,7 @@ bool DivEngine::preInit(bool noSafeMode) {
   if (!systemsRegistered) registerSystems();
 
   // init config
- // initConfDir();
+  //initConfDir(); //commented out by blazer
   logD("config path: %s",configPath.c_str());
 
   // TODO: re-enable with a better approach

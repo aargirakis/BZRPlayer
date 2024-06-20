@@ -1,7 +1,7 @@
 #ifndef VISUALIZERFULLSCREEN_H
 #define VISUALIZERFULLSCREEN_H
 
-#include "visualizers/parallax.h"
+#include "src/visualizers/parallax.h"
 #include <QObject>
 #include <QWidget>
 #include <QOpenGLWidget>

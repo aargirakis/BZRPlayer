@@ -1,7 +1,7 @@
 # the compiler to use.
 CC=gcc
 CCP=g++
-GLOBAL_INCLUDES= -I C:/Dev/FMOD/api/core/inc -I C:\Dev\includes -I C:\Dev\libmodplug -I C:\Dev\QTCreator\BZRPlayer\BZRPlayer
+GLOBAL_INCLUDES= -I C:/Dev/FMOD/api/core/inc -I C:\Dev\QTCreator\BZRPlayer\BZRPlayer\src
 GLOBAL_LIBS=-L C:/Dev/FMOD/api/core/lib/x86 -L C:\Dev\zlib\lib -lfmod -lz
 CCPFLAGS=-Wall -O2 -DENABLE_ALL_CORES
 CFLAGS=-Wall -O2

@@ -1,4 +1,4 @@
-\/**
+/**
  * Furnace Tracker - multi-system chiptune tracker
  * Copyright (C) 2021-2024 tildearrow and contributors
  *
@@ -33,8 +33,6 @@
 #include <shellapi.h>
 
 #include "gui/shellScalingStub.h"
-
-#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004 //added by blazer
 
 typedef HRESULT (WINAPI *SPDA)(PROCESS_DPI_AWARENESS);
 #else

@@ -1,7 +1,7 @@
 # the compiler to use.
 CC=gcc
 CCP=g++
-GLOBAL_INCLUDES= -I C:/Dev/FMOD/api/core/inc -I C:\Dev\includes -I C:\Dev\libmodplug
+GLOBAL_INCLUDES= -I C:/Dev/FMOD/api/core/inc -I C:\Dev\QTCreator\BZRPlayer\BZRPlayer\src
 GLOBAL_LIBS=-L C:/Dev/FMOD/api/core/lib/x86 -lfmod -L C:\Dev\QTCreator\BZRPlayer\BZRPlayer\src\external\zlib -lzdll
 CCPFLAGS=-Wall -O2
 CFLAGS=-Wall -O2 -std=gnu11 -msse4.1

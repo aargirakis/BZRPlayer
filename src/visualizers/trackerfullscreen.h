@@ -1,7 +1,7 @@
 #ifndef TRACKERFULLSCREEN_H
 #define TRACKERFULLSCREEN_H
 
-#include "visualizers/tracker.h"
+#include "src/visualizers/tracker.h"
 #include <QMainWindow>
 #include <QObject>
 #include <QWidget>

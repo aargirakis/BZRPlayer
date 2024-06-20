@@ -2898,22 +2898,22 @@ color:#ffffff;
   <customwidget>
    <class>NoPageSlider</class>
    <extends>QSlider</extends>
-   <header>nopageslider.h</header>
+   <header>src/nopageslider.h</header>
   </customwidget>
   <customwidget>
    <class>Visualizer</class>
    <extends>QOpenGLWidget</extends>
-   <header>visualizer.h</header>
+   <header>src/visualizer.h</header>
   </customwidget>
   <customwidget>
    <class>TrackerView</class>
    <extends>QOpenGLWidget</extends>
-   <header>trackerview.h</header>
+   <header>src/trackerview.h</header>
   </customwidget>
   <customwidget>
    <class>QListWidgetCustom</class>
    <extends>QListWidget</extends>
-   <header>qlistwidgetcustom.h</header>
+   <header>src/qlistwidgetcustom.h</header>
   </customwidget>
  </customwidgets>
  <resources>
