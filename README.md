@@ -1,18 +1,104 @@
-<h1>BZR Player</h1>
-BZR Player is an audio player for Windows with the primary goal being able to play a lot of different file formats. It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008. The last 1.x version was released 2019-Apr-08. This is the beginning of the new 2.x version which is coded pretty much from scratch. Please add features and bugs here on Github.
-<br/><br/>
-Official page is http://bzrplayer.blazer.nu
-<br/>
-<br/>
+# BZR Player 2 (BZR2)
+
+Audio player for **Windows** (**Wine** compatible) supporting a wide types of multi-platform **exotic** file formats,
+written in **C++** & **Qt5** with sound engine based on **FMOD**.\
+The first BZR version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version which is
+coded pretty much from scratch.
+
+## Download binaries
+
+- Latest version: http://bzrplayer.blazer.nu/download.php
+- All versions archive: https://github.com/aargirakis/BZRPlayer/tree/binaries/binaries
+- Windows & Linux installers: https://github.com/aargirakis/BZRPlayer/blob/main/src/inst
+- AUR package: `bzr-player` https://aur.archlinux.org/packages/bzr-player
+
+## How To Build
+
+### Windows
+
+**[MSYS2](https://www.msys2.org/)** with following packages is required:
+
+`make` `mingw-w64-i686-cmake` `mingw-w64-i686-qt5-base` `mingw-w64-i686-qt5-svg` `mingw-w64-i686-SDL2`
+`mingw-w64-i686-toolchain` `openssl-devel` `patch`
+
+From the MSYS2 **mingw32.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
+required), then start the configuration process executing:\
+`cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
+
+To build the project execute:\
+`ninja -C cmake-build`
+
+As result of the building process, in the chosen cmake build directory the `output` directory will be populated with
+binaries.\
+If the **Release** build type is selected, along with `output` also `output_release` directory will be created,
+containing the final archive release file
+
+#### build example
+
+```
+cd /c/BZRPlayer
+cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
+ninja -C cmake-build 
+```
+
+### Linux (cross-compilation)
+
+Dockerized cross-compilation toolchain is provided, just execute `run.sh` from the **docker** directory with following
+flags:
+
+- `CONFIG=1` for running the cmake configuration stage (Debug eventually setting `BUILD_TYPE=Release` if needed)
+- `BUILD=1` for building the project
+- `RUN_BZR2=1` for running built BZR2 (**Wine** is required)
+
+### Offline mode
+
+By default, the cmake configuration stage will download all needed libraries and files. Add `-DOFFLINE_MODE=1` to cmake
+command (or `OFFLINE_MODE=1` to `run.sh`) for switching to offline mode.\
+Offline mode doesn't guarantee that the build will include the latest versions of the files with unmanaged version
+
+### Windows installer
+
+Although the **BZR2 online installer for Windows** is scripted in **Nullsoft Scriptable Install System (NSIS)**, it can
+be only compiled using **WSL2** or cross-compiled on Linux since it contains Linux specific code (mostly the bash script
+for the XDG MIME types handling), also **MSYS2** it is currently not viable since the required **NSIS** plugins are
+currently still missing.
+
+**NSIS** (3.10 or newer) with following plugins (check AUR entries) is required:
+
+- [AccessControl](https://nsis.sourceforge.io/AccessControl_plug-in) `nsis-accesscontrol-bin`
+- [Inetc](https://nsis.sourceforge.io/Inetc_plug-in) `nsis-inetc-bin`
+- [NsArray](https://nsis.sourceforge.io/Arrays_in_NSIS) `nsis-nsarray-bin`
+- [Nsisunz](https://nsis.sourceforge.io/Nsisunz_plug-in) `nsis-nsisunz-bin`
+- [NsJSON](https://nsis.sourceforge.io/NsJSON_plug-in) `nsis-nsjson-bin`
+- [NsRichEdit](https://nsis.sourceforge.io/NsRichEdit_plug-in) `nsis-nsrichedit-bin`
+- [Registry](https://nsis.sourceforge.io/Registry_plug-in) `nsis-registry-bin`
+
+In order to build the Windows installer enter `src/inst/nsis` directory then execute: `makensis bzr2_setup.nsi`\
+As result of the building process (the Wine compatible) `bzr2_setup.exe` will be generated in the same directory.\
+Since it is a self-updating installer, the latest installer version check is done at runtime (based on
+`bzr2_setup.exe_latest` file content generated at compile-time).\
+It may be useful to disable it (for dev/test purposes) executing: `bzr2_setup.exe /skipInstallerUpdate2`
+
+----
+
+#### Useful links:
+
+- [BZR2 website](http://bzrplayer.blazer.nu)
+- [Patreon](https://www.patreon.com/bzrplayer)
+- [Discord](https://discord.com/channels/893241318120239124/893241440174477382)
 
 ![bzr2 0 27](https://user-images.githubusercontent.com/10993634/201359947-2633341d-9ff6-4a59-bb9e-ce1794df9cba.png)
 
-<h3>SUPPORTED FORMATS</h3>
+----
 
-<b>Using Libsidplayfp</b><br/>
-Commodore 64	SID, PSID<br/>
+## SUPPORTED FORMATS (#TODO wrong & incomplete)
 
-<b>Using Audio File Library</b><br/>
+### Using Libsidplayfp
+
+Commodore 64 SID, PSID<br/>
+
+### Using Audio File Library
+
 Amiga IFF/8SVX<br/>
 Audio Visual Research<br/>
 Berkeley/IRCAM/CARL<br/>
@@ -22,7 +108,8 @@ NIST SPHERE<br/>
 SampleVision<br/>
 Sun .au<br/>
 
-<b>Using ASAP</b><br/>
+### Using ASAP
+
 Atari systems using POKEY sound chip<br/>
 Chaos Music Composer<br/>
 Chaos Music Composer -3-4-<br/>
@@ -36,7 +123,8 @@ Theta Music Composer 1.x 4-channel<br/>
 Theta Music Composer 1.x 8-channel<br/>
 Theta Music Composer 2.x<br/>
 
-<b>Using Game Music Emu</b><br/>
+### Using Game Music Emu
+
 AY - ZX Spectrum, Amstrad CPC<br/>
 GBS - Nintendo Game Boyr<br/>
 GYM - Sega Genesis, Mega Drive<br/>
@@ -49,26 +137,33 @@ VGM - Video Game Music File<br/>
 VGZ - Compressed Video Game Music File<br/>
 RSN - RAR archive with SPC songs<br/>
 
-<b>Using HivelyTracker</b><br/>
+### Using HivelyTracker
+
 AHX<br/>
 HivelyTracker<br/>
 
-<b>Using KB Media Player</b><br/>
+### Using Mamiya's m_s98.kpi
+
 S98
 
-<b>Using Ken's Digital Music</b><br/>
+### Using Ken's Digital Music
+
 Ken's Digital Music
 
-<b>Using libpac</b><br/>
+### Using libpac
+
 SBStudio PAC
 
-<b>Using LibV2</b><br/>
+### Using LibV2
+
 Farbrausch V2M
 
-<b>Using Organya</b><br/>
+### Using Organya
+
 Organya<br/>
 
-<b>Using UADE</b><br/>
+### Using UADE
+
 ActionAmics<br/>
 Activision Pro (MartinWalker)<br/>
 Alcatraz_Packer<br/>
@@ -179,5 +274,6 @@ VoodooSupremeSynthesizer<br/>
 WallyBeben<br/>
 YM-2149<br/>
 
-<h3>SUPPORTED PACKERS</h3>
+### SUPPORTED PACKERS
+
 None right now

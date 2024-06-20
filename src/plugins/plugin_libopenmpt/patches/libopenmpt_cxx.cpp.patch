@@ -1,0 +1,28 @@
+--- libopenmpt/libopenmpt_cxx.cpp	2022-06-05 14:29:08.000000000 +0200
++++ libopenmpt/libopenmpt_cxx.cpp	2024-09-21 11:33:59.203197752 +0200
+@@ -307,6 +307,25 @@
+ 	return impl->get_metadata( key );
+ }
+ 
++int module::get_mod_sample_size( int32_t index ) const {
++	return impl->get_mod_sample_size( index );
++}
++
++int module::get_mod_sample_loopstart( int32_t index ) const {
++	return impl->get_mod_sample_loopstart( index );
++}
++
++int module::get_mod_sample_loopend( int32_t index ) const {
++	return impl->get_mod_sample_loopend( index );
++}
++
++int module::get_mod_sample_volume( int32_t index ) const {
++	return impl->get_mod_sample_volume( index );
++}
++
++int module::get_mod_sample_finetune( int32_t index ) const {
++	return impl->get_mod_sample_finetune( index );
++}
+ double module::get_current_estimated_bpm() const {
+ 	return impl->get_current_estimated_bpm();
+ }

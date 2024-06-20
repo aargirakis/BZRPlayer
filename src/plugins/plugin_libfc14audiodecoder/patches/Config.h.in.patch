@@ -1,0 +1,23 @@
+--- src/Config.h.in	2013-03-25 17:34:44.000000000 +0100
++++ src/Config.h.in	2024-09-21 11:33:59.196531170 +0200
+@@ -72,16 +72,16 @@
+ #undef PACKAGE_VERSION
+ 
+ /* The size of `char', as computed by sizeof. */
+-#undef SIZEOF_CHAR
++#define SIZEOF_CHAR @SIZEOF_CHAR@
+ 
+ /* The size of `int', as computed by sizeof. */
+-#undef SIZEOF_INT
++#define SIZEOF_INT @SIZEOF_INT@
+ 
+ /* The size of `long int', as computed by sizeof. */
+-#undef SIZEOF_LONG_INT
++#define SIZEOF_LONG_INT @SIZEOF_LONG_INT@
+ 
+ /* The size of `short int', as computed by sizeof. */
+-#undef SIZEOF_SHORT_INT
++#define SIZEOF_SHORT_INT @SIZEOF_SHORT_INT@
+ 
+ /* Define to 1 if you have the ANSI C header files. */
+ #undef STDC_HEADERS

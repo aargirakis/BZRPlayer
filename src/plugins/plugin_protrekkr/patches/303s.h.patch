@@ -1,0 +1,15 @@
+--- src/files/include/303s.h	2024-02-05 23:48:28.000000000 +0100
++++ src/files/include/303s.h	2024-09-21 11:33:59.333196091 +0200
+@@ -43,9 +43,9 @@
+ // Functions
+ void Load_303(char *FileName);
+ void Save_303(void);
+-void Load_303_Data(int (*Read_Function)(void *, int ,int, FILE *),
+-                   int (*Read_Function_Swap)(void *, int ,int, FILE *),
+-                   FILE *in, int unit, int pattern);
++void Load_303_Data(int (*Read_Function)(void *, int ,int, ReplayerFile&),
++                   int (*Read_Function_Swap)(void *, int ,int, ReplayerFile&),
++                   ReplayerFile& in, int unit, int pattern);
+ void Save_303_Data(int (*Write_Function)(void *, int ,int, FILE *),
+                    int (*Write_Function_Swap)(void *, int ,int, FILE *),
+                    FILE *in, int unit, int pattern);

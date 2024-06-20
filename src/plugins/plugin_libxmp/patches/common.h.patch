@@ -1,0 +1,16 @@
+--- src/common.h	2021-06-10 02:24:24.000000000 +0200
++++ src/common.h	2024-09-21 11:33:59.266530277 +0200
+@@ -361,7 +361,12 @@
+ 
+ 	double current_time;
+ 	double frame_time;
+-
++Queue patternPosBuffer;
++Queue trackPosBuffer;
++Queue posBuffer;
++Queue vumeterBuffer;
++Queue speedBuffer;
++Queue bpmBuffer;
+ 	int loop_count;
+ 	int sequence;
+ 	unsigned char sequence_control[XMP_MAX_MOD_LENGTH];

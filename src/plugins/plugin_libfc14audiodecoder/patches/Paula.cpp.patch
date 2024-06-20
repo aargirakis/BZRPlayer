@@ -1,0 +1,12 @@
+--- src/Paula.cpp	2008-10-19 20:30:00.000000000 +0200
++++ src/Paula.cpp	2024-09-21 11:33:59.196531170 +0200
+@@ -9,6 +9,9 @@
+     // intentionally left blank
+ }
+ 
++void PaulaVoice::mute(bool) {
++    // intentionally left blank
++}
+ 
+ void PaulaVoice::on() {
+     // intentionally left blank

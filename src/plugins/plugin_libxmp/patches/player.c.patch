@@ -1,0 +1,157 @@
+--- src/player.c	2021-06-10 02:24:24.000000000 +0200
++++ src/player.c	2024-09-21 11:33:59.269863567 +0200
+@@ -1509,6 +1509,21 @@
+ 	if (libxmp_mixer_on(ctx, rate, format, m->c4rate) < 0)
+ 		return -XMP_ERROR_INTERNAL;
+ 
++    unsigned char queue_size;
++    if(strcmp(mod->type,"Composer 669"))
++    {
++        queue_size=22;
++    }
++    else
++    {
++        queue_size=14;
++    }
++    p->patternPosBuffer = CreateQueue(queue_size);
++	p->posBuffer = CreateQueue(queue_size);
++    p->trackPosBuffer = CreateQueue(queue_size);
++    p->vumeterBuffer = CreateQueue(queue_size);
++	p->speedBuffer = CreateQueue(queue_size);
++	p->bpmBuffer = CreateQueue(queue_size);
+ 	p->master_vol = 100;
+ 	p->smix_vol = 100;
+ 	p->gvol = m->volbase;
+@@ -1732,6 +1747,35 @@
+ 
+ 	libxmp_mixer_softmixer(ctx);
+ 
++    if(IsFull(p->trackPosBuffer))
++
++    {
++
++        Dequeue(p->trackPosBuffer);
++        Dequeue(p->patternPosBuffer);
++        Dequeue(p->posBuffer);
++        Dequeue(p->vumeterBuffer);
++		Dequeue(p->speedBuffer);
++		Dequeue(p->bpmBuffer);
++
++    }
++
++    int chan;
++    int numChans = mod->chn;
++    unsigned char* vumeters = malloc( sizeof(unsigned char) * numChans );
++    for(chan = 0;chan<numChans;chan++)
++    {
++        struct channel_data *c = &p->xc_data[chan];
++        unsigned char vol = c->info_finalvol >> 4;
++        vumeters[chan] = vol;
++    }
++    Enqueue(p->row,p->trackPosBuffer);
++    Enqueue(mod->xxo[p->pos],p->patternPosBuffer);
++    Enqueue(p->pos,p->posBuffer);
++    Enqueue(vumeters,p->vumeterBuffer);
++	Enqueue(p->speed,p->speedBuffer);
++	Enqueue(p->bpm,p->bpmBuffer);
++
+ 	return 0;
+ }
+ 
+@@ -1804,7 +1848,12 @@
+ 
+ 	if (ctx->state < XMP_STATE_PLAYING)
+ 		return;
+-
++    DisposeQueue(p->patternPosBuffer);
++    DisposeQueue(p->trackPosBuffer);
++    DisposeQueue(p->vumeterBuffer);
++    DisposeQueue(p->posBuffer);
++	DisposeQueue(p->speedBuffer);
++	DisposeQueue(p->bpmBuffer);
+ 	ctx->state = XMP_STATE_LOADED;
+ 
+ #ifndef LIBXMP_CORE_PLAYER
+@@ -1871,10 +1920,52 @@
+ 		info->num_rows = 0;
+ 	}
+ 
+-	info->row = p->row;
++    //info->row = p->row;
++
++    if(!IsEmpty(p->trackPosBuffer))
++    {
++        info->row = Front(p->trackPosBuffer);
++    }
++    else
++    {
++        info->row=0;
++    }
++    if(!IsEmpty(p->patternPosBuffer))
++    {
++        info->pattern = Front(p->patternPosBuffer);
++    }
++    else
++    {
++        info->pattern = 0;
++    }
++    if(!IsEmpty(p->posBuffer))
++    {
++        info->pos = Front(p->posBuffer);
++    }
++    else
++    {
++        info->pos = 0;
++    }
++    if(!IsEmpty(p->speedBuffer))
++    {
++        info->speed = Front(p->speedBuffer);
++    }
++    else
++    {
++        info->speed = 0;
++    }
++    if(!IsEmpty(p->bpmBuffer))
++    {
++        info->bpm = Front(p->bpmBuffer);
++    }
++    else
++    {
++        info->bpm = 0;
++    }
++
+ 	info->frame = p->frame;
+-	info->speed = p->speed;
+-	info->bpm = p->bpm;
++	//info->speed = p->speed;
++	//info->bpm = p->bpm;
+ 	info->total_time = p->scan[p->sequence].time;
+ 	info->frame_time = p->frame_time * 1000;
+ 	info->time = p->current_time;
+@@ -1926,3 +2017,25 @@
+ 		}
+ 	}
+ }
++void  xmp_get_channel_volumes(xmp_context opaque, unsigned char* volumes)
++{
++    struct context_data *ctx = (struct context_data *)opaque;
++    struct player_data *p = &ctx->p;
++    struct module_data *m = &ctx->m;
++    struct xmp_module *mod = &m->mod;
++    int chn;
++    chn = mod->chn;
++    if(!IsEmpty(p->vumeterBuffer))
++    {
++        int i = 0;
++        for(i=0;i<chn;i++)
++        {
++            unsigned char* test = Front(p->vumeterBuffer);
++            volumes[i]=test[i];
++        }
++    }
++    else
++    {
++        volumes = 0;
++    }
++}
+\ No newline at end of file

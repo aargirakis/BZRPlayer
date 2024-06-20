@@ -1,0 +1,37 @@
+--- src/engine/config.cpp	2024-05-02 03:00:07.000000000 +0200
++++ src/engine/config.cpp	2024-09-21 11:33:59.163198263 +0200
+@@ -55,14 +55,14 @@
+   FILE* f=ps_fopen(path,"wb");
+   if (f==NULL) {
+     logW("could not write config file! %s",strerror(errno));
+-    reportError(fmt::sprintf("could not write config file! %s",strerror(errno)));
++    // reportError(fmt::sprintf("could not write config file! %s",strerror(errno)));
+     return false;
+   }
+   for (auto& i: conf) {
+     String toWrite=fmt::sprintf("%s=%s\n",i.first,i.second);
+     if (fwrite(toWrite.c_str(),1,toWrite.size(),f)!=toWrite.size()) {
+       logW("could not write config file! %s",strerror(errno));
+-      reportError(fmt::sprintf("could not write config file! %s",strerror(errno)));
++      // reportError(fmt::sprintf("could not write config file! %s",strerror(errno)));
+       logV("removing config file");
+       fclose(f);
+       deleteFile(path);
+@@ -185,7 +185,7 @@
+         //reportError(fmt::sprintf("Creating default config: %s",strerror(errno)));
+         return save(path,redundancy);
+       } else {
+-        reportError(fmt::sprintf("COULD NOT LOAD CONFIG %s",strerror(errno)));
++        // reportError(fmt::sprintf("COULD NOT LOAD CONFIG %s",strerror(errno)));
+         return false;
+       }
+     }
+@@ -198,7 +198,7 @@
+         //reportError(fmt::sprintf("Creating default config: %s",strerror(errno)));
+         return save(path);
+       } else {
+-        reportError(fmt::sprintf("COULD NOT LOAD CONFIG %s",strerror(errno)));
++        // reportError(fmt::sprintf("COULD NOT LOAD CONFIG %s",strerror(errno)));
+         return false;
+       }
+     }

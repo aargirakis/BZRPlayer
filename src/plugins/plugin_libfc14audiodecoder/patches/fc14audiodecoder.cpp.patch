@@ -1,0 +1,54 @@
+--- src/fc14audiodecoder.cpp	2008-10-19 20:30:00.000000000 +0200
++++ src/fc14audiodecoder.cpp	2024-09-21 11:33:59.196531170 +0200
+@@ -97,3 +97,51 @@
+     FC14_DECLARE_DECODER;
+     return p->decoder.formatName.c_str();
+ }
++int fc14dec_get_used_patterns(void* ptr)
++{
++	FC14_DECLARE_DECODER;
++    return p->decoder.getUsedPatterns();
++}
++int fc14dec_get_used_snd_mod_seqs(void* ptr)
++{
++	FC14_DECLARE_DECODER;
++	return p->decoder.getUsedSndModSeqs();
++}
++int fc14dec_get_used_vol_mod_seqs(void* ptr)
++{
++	FC14_DECLARE_DECODER;
++	return p->decoder.getUsedVolModSeqs();
++}
++int fc14dec_get_sample_length(void* ptr, unsigned int qual)
++{
++	FC14_DECLARE_DECODER;
++	return p->decoder.getSampleLength(qual);
++}
++int fc14dec_get_sample_rep_offset(void* ptr, unsigned int qual)
++{
++	FC14_DECLARE_DECODER;
++	return p->decoder.getSampleRepOffset(qual);
++}
++int fc14dec_get_sample_rep_length(void* ptr, unsigned int qual)
++{
++	FC14_DECLARE_DECODER;
++	return p->decoder.getSampleRepLength(qual);
++}
++void fc14dec_mute_channel(void* ptr, bool mute, unsigned int qual)
++{
++    FC14_DECLARE_DECODER;
++    p->mixer.getVoice(qual)->mute(mute);
++
++}
++unsigned short int fc14dec_get_channel_volume(void* ptr, unsigned int qual)
++{
++    FC14_DECLARE_DECODER;
++    if(!p->mixer.getVoice(qual)->isMuted)
++    {
++        return (p->mixer.getVoice(qual)->paula.volume/64.0)*100;
++    }
++    else
++    {
++        return 0;
++    }
++}

@@ -1,0 +1,40 @@
+--- soundlib/Sndfile.cpp	2023-04-22 20:48:14.000000000 +0200
++++ soundlib/Sndfile.cpp	2024-09-21 11:33:59.203197752 +0200
+@@ -1407,6 +1407,37 @@
+ }
+ 
+ 
++
++SmpLength CSoundFile::GetModSampleSize(SAMPLEINDEX nSample) const
++{
++	MPT_ASSERT(nSample <= GetNumSamples());
++	return Samples[nSample].nLength;
++}
++
++SmpLength CSoundFile::GetModSampleLoopStart(SAMPLEINDEX nSample) const
++{
++	MPT_ASSERT(nSample <= GetNumSamples());
++	return Samples[nSample].nLoopStart;
++}
++
++SmpLength CSoundFile::GetModSampleLoopEnd(SAMPLEINDEX nSample) const
++{
++	MPT_ASSERT(nSample <= GetNumSamples());
++	return Samples[nSample].nLoopEnd;
++}
++
++uint16 CSoundFile::GetModSampleVolume(SAMPLEINDEX nSample) const
++{
++	MPT_ASSERT(nSample <= GetNumSamples());
++	return Samples[nSample].nVolume;
++}
++
++uint8 CSoundFile::GetModSampleFineTune(SAMPLEINDEX nSample) const
++{
++	MPT_ASSERT(nSample <= GetNumSamples());
++	return Samples[nSample].nFineTune;
++}
++
+ const char *CSoundFile::GetInstrumentName(INSTRUMENTINDEX nInstr) const
+ {
+ 	if((nInstr >= MAX_INSTRUMENTS) || (!Instruments[nInstr]))

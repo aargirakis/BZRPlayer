@@ -1,0 +1,11 @@
+--- CMakeLists.txt	2023-06-30 14:01:56.000000000 +0200
++++ CMakeLists.txt	2024-10-12 09:40:49.266374821 +0200
+@@ -26,7 +26,7 @@
+ project(QtADS LANGUAGES CXX VERSION ${VERSION_SHORT})
+ 
+ option(BUILD_STATIC "Build the static library" OFF)
+-option(BUILD_EXAMPLES "Build the examples" ON)
++option(BUILD_EXAMPLES "Build the examples" OFF)
+ 
+ if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
+     set(ads_PlatformDir "x86")

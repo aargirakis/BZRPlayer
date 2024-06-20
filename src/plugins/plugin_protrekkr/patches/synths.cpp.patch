@@ -1,0 +1,15 @@
+--- src/files/synths.cpp	2024-02-05 23:48:28.000000000 +0100
++++ src/files/synths.cpp	2024-09-21 11:33:59.333196091 +0200
+@@ -36,9 +36,9 @@
+ // ------------------------------------------------------
+ // Load the data of a synth instrument
+ // (The new version (v4) use correct data aligment)
+-void Read_Synth_Params(int (*Read_Function)(void *, int ,int, FILE *),
+-                       int (*Read_Function_Swap)(void *, int ,int, FILE *),
+-                       FILE *in,
++void Read_Synth_Params(int (*Read_Function)(void *, int ,int, ReplayerFile&),
++                       int (*Read_Function_Swap)(void *, int ,int, ReplayerFile&),
++                       ReplayerFile& in,
+                        int idx,
+                        int read_disto,
+                        int read_lfo_adsr,

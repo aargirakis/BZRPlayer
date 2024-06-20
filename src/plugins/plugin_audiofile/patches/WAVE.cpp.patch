@@ -1,0 +1,14 @@
+--- libaudiofile/WAVE.cpp	2016-07-05 04:57:44.000000000 +0200
++++ libaudiofile/WAVE.cpp	2024-09-26 10:03:44.929750417 +0200
+@@ -280,7 +280,10 @@
+ 			readU16(&numCoefficients);
+ 
+ 			/* numCoefficients should be at least 7. */
+-			assert(numCoefficients >= 7 && numCoefficients <= 255);
++			//assert(numCoefficients >= 7 && numCoefficients <= 255);
++			if (!(numCoefficients >= 7 && numCoefficients <= 255)) {
++				return AF_FAIL;
++			}
+ 
+ 			m_msadpcmNumCoefficients = numCoefficients;
+ 

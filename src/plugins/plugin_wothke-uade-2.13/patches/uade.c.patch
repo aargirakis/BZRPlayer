@@ -1,0 +1,240 @@
+--- src/uade.c	2014-09-16 19:11:24.000000000 +0200
++++ src/uade.c	2024-09-21 11:33:59.423194942 +0200
+@@ -47,6 +47,7 @@
+ #include "amigamsg.h"
+ #include "ossupport.h"
+ #include "sysincludes.h"
++#include <winsock2.h> // for ntohl etc.
+ 
+ 
+ enum print_help {
+@@ -60,7 +61,7 @@
+ #ifndef EMSCRIPTEN
+ static 
+ #endif
+-void change_subsong(int subsong);
++//void change_subsong(int subsong);
+ 
+ static int uade_calc_reloc_size(uae_u32 *src, uae_u32 *end);
+ static int uade_get_u32(int addr);
+@@ -101,7 +102,7 @@
+ struct uade_ipc uadeipc;
+ #else 
+ // code adapted from uade123.c: uses EaglePlayer to determine the player name used for a song
+-struct uade_state _state;
++//struct uade_state _state; // place in uade.h
+ #endif
+ 
+ int uade_audio_skip;
+@@ -130,6 +131,14 @@
+ static size_t epoptionsize;
+ 
+ 
++struct uade_state* get_uade_state(void)
++{
++    return &_state;
++}
++void set_uade_state(struct uade_state* state)
++{
++    loadsettings(state);
++}
+ static void add_ep_option(const char *s)
+ {
+   size_t bufsize, l, i;
+@@ -218,9 +227,34 @@
+     return 0;
+   return ((int) offset);
+ }
+-
++int get_quit()
++{
++    return quit_program;
++}
++int get_silence_detected()
++{
++    return silence_detected;
++}
++int get_missing_file()
++{
++    return missing_file;
++}
+ #ifdef EMSCRIPTEN
+-struct uade_sample_data sample_data= {.alloclen=0, .buflen= 0, .buf= 0, .is_new = 0};
++struct uade_sample_data sample_data= {0, 0, 0, 0};
++
++int get_samples(void* buffer)
++{
++    if (sample_data.is_new != 0)
++    {
++        memcpy((char *)buffer, sample_data.buf, sample_data.buflen);
++        //printf("buflen: %i\n",sample_data.buflen);
++        //fflush(stdout);
++        sample_data.is_new=0;
++        return 1;
++    }
++    return 0;
++}
++//struct uade_sample_data sample_data= {.alloclen=0, .buflen= 0, .buf= 0, .is_new = 0};
+ struct uade_sample_data * get_new_samples() {
+ 	if (sample_data.is_new != 0) {
+ 		return &sample_data;
+@@ -261,6 +295,7 @@
+ 	if (uade_test_silence(sndbuffer, bytes, &_state)) {
+ 	  fprintf(stderr, "silence detected (%d seconds)\n", _state.config.silence_timeout);
+ 		quit_program = 1;
++        silence_detected = 1;
+ 	}
+   
+   // signal that we have a new buffer full of sample data.. somebody should better go and fetch it..
+@@ -319,8 +354,18 @@
+ char inf_curs[10];	
+ 
+ char *song_info[4] = {info_text,inf_mins,inf_maxs,inf_curs};
++int max_subsongs;
++int min_subsongs;
+ #endif
+ 
++int get_max_subsongs()
++{
++    return max_subsongs;
++}
++int get_min_subsongs()
++{
++    return min_subsongs;
++}
+ void uade_get_amiga_message(void)
+ {
+   uae_u8 *ptr;
+@@ -367,6 +412,9 @@
+ 	snprintf(inf_maxs, sizeof inf_maxs, "%d", maxs);
+ 	snprintf(inf_curs, sizeof inf_curs, "%d", curs);
+ 		
++    max_subsongs = maxs;
++    min_subsongs = mins;
++
+ 	uade_notify_song_update(info_text, inf_mins, inf_maxs, inf_curs);
+ #else
+     um->msgtype = UADE_REPLY_SUBSONG_INFO;
+@@ -445,6 +493,7 @@
+ #ifndef EMSCRIPTEN
+     if ((file = uade_open_amiga_file((char *) nameptr, uade_player_dir))) {
+ #else
++    fprintf (stderr, "AMIGAMSG_LOADFILE: (%s)\n", nameptr);
+ 	uo= uade_open_amiga_file((char *) nameptr, uade_player_dir);
+     if ((file = uo->file)) {
+ #endif
+@@ -453,8 +502,11 @@
+       fclose(file); file = NULL;
+       uade_put_long(0x20C, len);
+       uade_send_debug("load success: %s ptr 0x%x size 0x%x", nameptr, dst, len);
++      fprintf (stderr, "load success: %s ptr 0x%x size: %i\n", nameptr, dst, len);
+     } else {
+       uade_send_debug("load: file not found: %s", nameptr);
++      fprintf (stderr, "load: file not found: %s\n", nameptr);
++      uade_put_long(0x20C, len);
+     }
+     break;
+ 
+@@ -471,6 +523,7 @@
+ #ifndef EMSCRIPTEN
+     if ((file = uade_open_amiga_file((char *) nameptr, uade_player_dir))) {
+ #else
++    fprintf (stderr, "AMIGAMSG_READ: (%s)\n", nameptr);
+ 	uo= uade_open_amiga_file((char *) nameptr, uade_player_dir);
+     if ((file = uo->file)) {
+ #endif
+@@ -501,6 +554,7 @@
+ #ifndef EMSCRIPTEN
+     if ((file = uade_open_amiga_file((char *) nameptr, uade_player_dir))) {
+ #else
++    fprintf (stderr, "AMIGAMSG_FILESIZE: (%s)\n", nameptr);
+ 	uo= uade_open_amiga_file((char *) nameptr, uade_player_dir);
+     if ((file = uo->file)) {
+ #endif
+@@ -732,7 +786,11 @@
+ #ifdef EMSCRIPTEN
+   snprintf(optionsfile, PATH_MAX, "%s/uaerc", basedir);
+   FILE *f= uade_fopen(optionsfile, "r")->file;
+-  if (f == 0) return -1;	// this file must exist in a consistent installation
++  if (f == 0)
++  {
++      fprintf(stderr, "uadecore: Could not load uaerc (%s).\n", optionsfile);
++      return -1;	// this file must exist in a consistent installation
++  }
+ 
+     if (cfgfile_load_file (&currprefs, f) == 0) {
+       fprintf(stderr, "uadecore: Could not load uaerc (%s).\n", optionsfile);
+@@ -1046,6 +1104,7 @@
+ 
+   bytesread = uade_safe_load(vaddr, file, maxlen);
+   fclose(file);
++  fprintf(stderr, "file closed: %s\n", name);
+   return bytesread;
+ }
+ 
+@@ -1058,7 +1117,9 @@
+ {
+ 	uade_reboot = 1;
+ 	quit_program = 0;
+-	
++    silence_detected = 0;
++    missing_file = 0;
++
+ 	if (uade_initialize(basedir) < 0) return -1;
+ 	
+ 	snprintf(uade_player_dir, sizeof uade_player_dir, basedir);
+@@ -1110,7 +1171,7 @@
+ 
+ #ifdef EMSCRIPTEN  
+ 	snprintf(song.scorename, sizeof song.scorename, "%s/amigasrc/score/score", basedir);
+-	snprintf(song.modulename, sizeof song.modulename, "%s/%s", basedir, songmodule);
++	snprintf(song.modulename, sizeof song.modulename, "%s", songmodule);
+ 	snprintf(song.playername, sizeof song.playername, "");
+ //	fprintf(stderr, "song.modulename: %s [%s] %s\n", song.modulename, basedir, songmodule);
+ 	// resolve the needed player (for "custom" modules the module becomes the player)
+@@ -1208,6 +1269,7 @@
+ 
+   /* load the module if available */
+   if (song.modulename[0]) {
++      fprintf (stderr, "song.modulename: %s\n", song.modulename);
+     bytesread = uade_safe_load_name(modaddr, song.modulename, "module", uade_highmem - modaddr);
+ #ifdef EMSCRIPTEN
+ 	if (bytesread <1) return (bytesread<0)?-1:1; // async load pending or error	
+@@ -1357,6 +1419,17 @@
+ #endif
+ }
+ 
++void loadsettings(struct uade_state* state)
++{
++
++
++    applySettings(state);
++
++    m68k_reset ();
++    customreset ();	// reset of the Amiga custom-chips
++
++    uade_reboot = 0;
++}
+ 
+ static void uade_put_long(int addr, int val)
+ {
+@@ -1483,6 +1556,7 @@
+   }
+ #else
+   quit_program= 1;	// end and let client decide how he wants to proceed
++  fprintf(stderr, "quit_program uade_song_end\n");
+ #endif
+   /* if audio_output is zero (and thus the client is waiting for the first
+      sound data block from this song), then start audio output so that the
+@@ -1518,3 +1592,11 @@
+   fprintf(stderr, "uadecore: Invalid string at 0x%x.\n", address);
+   return 0;
+ }
++
++void uade_notify_song_update(const char *info_text, const char *inf_mins, const char *inf_maxs, const char *inf_curs)
++{
++    song_info[0] = info_text;
++    song_info[1] = inf_mins;
++    song_info[2] = inf_maxs;
++    song_info[3] = inf_curs;
++}

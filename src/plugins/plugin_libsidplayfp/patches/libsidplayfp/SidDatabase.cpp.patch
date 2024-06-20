@@ -1,0 +1,40 @@
+--- src/utils/SidDatabase.cpp	2024-09-26 12:01:19.917357077 +0200
++++ src/utils/SidDatabase.cpp	2024-09-21 11:33:59.263196986 +0200
+@@ -114,22 +114,23 @@
+     return true;
+ }
+ 
+-#ifdef _WIN32
+-bool SidDatabase::open(const wchar_t* filename)
+-{
+-    delete m_parser;
+-    m_parser = new libsidplayfp::iniParser();
+ 
+-    if (!m_parser->open(filename))
+-    {
+-        close();
+-        errorString = ERR_UNABLE_TO_LOAD_DATABASE;
+-        return false;
+-    }
++// #ifdef _WIN32
++// bool SidDatabase::open(const wchar_t* filename)
++// {
++    // delete m_parser;
++    // m_parser = new libsidplayfp::iniParser();
+ 
+-    return true;
+-}
+-#endif
++    // if (!m_parser->open(filename))
++    // {
++        // close();
++        // errorString = ERR_UNABLE_TO_LOAD_DATABASE;
++        // return false;
++    // }
++
++    // return true;
++// }
++// #endif
+ 
+ void SidDatabase::close()
+ {

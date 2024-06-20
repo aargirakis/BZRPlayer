@@ -1,0 +1,11 @@
+--- src/engine/engine.cpp	2024-05-02 03:00:07.000000000 +0200
++++ src/engine/engine.cpp	2024-09-21 11:33:59.163198263 +0200
+@@ -3930,7 +3930,7 @@
+   if (!systemsRegistered) registerSystems();
+ 
+   // init config
+-  initConfDir();
++  // initConfDir();
+   logD("config path: %s",configPath.c_str());
+ 
+   // TODO: re-enable with a better approach

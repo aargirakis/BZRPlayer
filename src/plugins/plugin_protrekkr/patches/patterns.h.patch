@@ -1,0 +1,11 @@
+--- src/files/include/patterns.h	2024-02-05 23:48:28.000000000 +0100
++++ src/files/include/patterns.h	2024-09-21 11:33:59.333196091 +0200
+@@ -39,7 +39,7 @@
+ #include "../../editors/include/editor_pattern.h"
+ #include "../../editors/include/editor_sequencer.h"
+ #include "../../editors/include/patterns_blocks.h"
+-#include "../../ui/include/misc_draw.h"
++//#include "../../ui/include/misc_draw.h"
+ 
+ // ------------------------------------------------------
+ // Functions

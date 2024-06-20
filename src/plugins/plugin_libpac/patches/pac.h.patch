@@ -1,0 +1,29 @@
+--- src/pac.h	2024-09-26 12:01:18.707376522 +0200
++++ src/pac.h	2024-09-21 11:33:59.203197752 +0200
+@@ -13,6 +13,9 @@
+  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  */
++#ifdef __cplusplus
++extern "C" {
++#endif /* __cplusplus */
+ 
+ #ifndef H_PAC_INCLUDED
+ #define H_PAC_INCLUDED
+@@ -70,8 +73,15 @@
+ 
+ long pac_length (const struct pac_module *);
+ const char *pac_title (const struct pac_module *);
+-
++struct pac_sound *pac_sample (const struct pac_module *, unsigned int);
++const int pac_num_channels (const struct pac_module *m);
++const int pac_num_samples (const struct pac_module *m);
++const int pac_num_sheets (const struct pac_module *m);
++const int pac_num_positions (const struct pac_module *m);
+ void pac_perror (const char *);
+ const char *pac_strerror (int);
+ 
+ #endif /* H_PAC_INCLUDED */
++#ifdef __cplusplus
++}
++#endif /* __cplusplus */

@@ -1,0 +1,27 @@
+--- src/LamePaula.h	2008-10-19 20:30:00.000000000 +0200
++++ src/LamePaula.h	2024-09-21 11:33:59.196531170 +0200
+@@ -19,12 +19,15 @@
+     ~LamePaulaVoice();
+ 
+     void on();
++    void mute(bool);
+     void off();
+     void takeNextBuf();    // take parameters from paula.* (or just to repeat.*)
++    bool isMuted;
+ 
+     friend class LamePaulaMixer;
+ 
+  private:
++
+     bool isOn;
+     bool looping;  // whether to loop sample buffer continously (PAULA emu)
+     
+@@ -49,7 +52,7 @@
+     ~LamePaulaMixer();
+     void init(udword freq, ubyte bits, ubyte channels, uword zero);
+     void init(ubyte voices);
+-    PaulaVoice* getVoice(ubyte); 
++    LamePaulaVoice* getVoice(ubyte);
+ 
+     void fillBuffer(void* buffer, udword bufferLen, PaulaPlayer *player);
+ 

@@ -1,0 +1,15 @@
+--- src/editors/include/editor_setup.h	2024-02-05 23:48:28.000000000 +0100
++++ src/editors/include/editor_setup.h	2024-09-26 12:41:44.801226720 +0200
+@@ -37,9 +37,11 @@
+ #if defined(__GCC__)
+ #include "../../include/variables.h"
+ #include "../../ui/include/misc_draw.h"
+-#else
++#elif !defined(BZR2)
+ #include "../include/variables.h"
+ #include "../ui/include/misc_draw.h"
++#else
++#include "../include/variables.h"
+ #endif
+ 
+ // ------------------------------------------------------

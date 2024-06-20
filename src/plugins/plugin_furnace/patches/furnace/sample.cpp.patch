@@ -1,0 +1,19 @@
+--- src/engine/sample.cpp	2024-05-02 03:00:07.000000000 +0200
++++ src/engine/sample.cpp	2024-09-21 11:33:59.163198263 +0200
+@@ -29,11 +29,11 @@
+ #include "bsr.h"
+ 
+ extern "C" {
+-#include "../../extern/adpcm/bs_codec.h"
+-#include "../../extern/adpcm/oki_codec.h"
+-#include "../../extern/adpcm/yma_codec.h"
+-#include "../../extern/adpcm/ymb_codec.h"
+-#include "../../extern/adpcm/ymz_codec.h"
++#include "bs_codec.h"
++#include "oki_codec.h"
++#include "yma_codec.h"
++#include "ymb_codec.h"
++#include "ymz_codec.h"
+ }
+ #include "../../extern/adpcm-xq-s/adpcm-lib.h"
+ #include "brrUtils.h"

@@ -1,0 +1,11 @@
+--- src/LamePaulaMixer.cpp	2008-10-19 20:30:00.000000000 +0200
++++ src/LamePaulaMixer.cpp	2024-09-21 11:33:59.196531170 +0200
+@@ -40,7 +40,7 @@
+ }
+ 
+ 
+-PaulaVoice* LamePaulaMixer::getVoice(ubyte n) {
++LamePaulaVoice *LamePaulaMixer::getVoice(ubyte n) {
+     if (n < _maxVoices) {
+         return _voice[n];
+     }

@@ -1,0 +1,27 @@
+--- liborganya/decoder.h	2018-01-30 05:38:35.000000000 +0100
++++ liborganya/decoder.h	2024-09-21 11:33:59.273196858 +0200
+@@ -13,11 +13,13 @@
+ typedef struct {
+ 	uint16_t current_note; // Index into org_instrument_t.notes
+ 	uint8_t playing; // Whether or not the track is currently playing
+-	
++
+ 	org_note_t note; // Current note properties.
+ 
+ 	int16_t last_amp[2];
+ 	int32_t last_clock;
++
++	bool muted; // Whether or not the track is muted
+ } org_track_t;
+ 
+ typedef struct {
+@@ -46,6 +48,8 @@
+ 	org_sample_data_t samples[16]; // The sample data for each track
+ };
+ 
+-uint8_t _org_decoder_load_samples(org_decoder_t *decoder, const char *resource_path, abort_callback & p_abort); // Loads instrument sample data for the decoder
++uint8_t _org_decoder_load_samples(org_decoder_t *decoder, const char *resource_path); // Loads instrument sample data for the decoder
+ void _org_advance_beat(org_decoder_t *decoder); // Advances the decoder by 1 beat
+ void org_decoder_destroy(org_decoder_t *decoder); // Clean up the decoder
++void org_decoder_seek_sample(org_decoder_t *decoder, size_t sample);
++std::string ZeroPadNumber(int num);

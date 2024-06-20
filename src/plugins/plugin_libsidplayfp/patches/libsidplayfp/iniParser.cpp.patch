@@ -1,0 +1,24 @@
+--- src/utils/iniParser.cpp	2024-09-26 12:01:19.954023154 +0200
++++ src/utils/iniParser.cpp	2024-09-21 11:33:59.263196986 +0200
+@@ -60,14 +60,14 @@
+     return open_internal(iniFile);
+ }
+ 
+-#ifdef _WIN32
+-bool iniParser::open(const wchar_t *fName)
+-{
+-    std::ifstream iniFile(fName);
++//#ifdef _WIN32
++// bool iniParser::open(const wchar_t *fName)
++// {
++    // std::ifstream iniFile(fName);
+ 
+-    return open_internal(iniFile);
+-}
+-#endif
++    // return open_internal(iniFile);
++// }
++// #endif
+ 
+ bool iniParser::open_internal(std::ifstream & iniFile)
+ {

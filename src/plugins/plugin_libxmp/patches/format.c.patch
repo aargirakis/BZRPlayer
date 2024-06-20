@@ -1,0 +1,20 @@
+--- src/format.c	2021-06-10 02:24:24.000000000 +0200
++++ src/format.c	2024-09-21 11:33:59.269863567 +0200
+@@ -68,7 +68,7 @@
+ extern const struct format_loader libxmp_loader_dbm;
+ extern const struct format_loader libxmp_loader_emod;
+ extern const struct format_loader libxmp_loader_okt;
+-extern const struct format_loader libxmp_loader_sfx;
++/* extern const struct format_loader libxmp_loader_sfx; */
+ extern const struct format_loader libxmp_loader_far;
+ extern const struct format_loader libxmp_loader_umx;
+ extern const struct format_loader libxmp_loader_stim;
+@@ -137,7 +137,7 @@
+ 	&libxmp_loader_dbm,
+ 	&libxmp_loader_emod,
+ 	&libxmp_loader_okt,
+-	&libxmp_loader_sfx,
++	/* &libxmp_loader_sfx, */
+ 	&libxmp_loader_far,
+ 	&libxmp_loader_umx,
+ 	&libxmp_loader_hmn,
