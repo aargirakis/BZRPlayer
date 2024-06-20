@@ -1,3 +1,5 @@
 .idea/
+build/
 cmake-build-debug/
 cmake-build-release/
+BZRPlayer.pro.user
