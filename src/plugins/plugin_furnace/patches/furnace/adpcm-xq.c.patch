@@ -1,0 +1,227 @@
+--- extern/adpcm-xq-s/adpcm-xq.c	2024-05-02 03:00:07.000000000 +0200
++++ extern/adpcm-xq-s/adpcm-xq.c	2024-09-21 11:33:59.163198263 +0200
+@@ -46,115 +46,115 @@
+ static int adpcm_converter (char *infilename, char *outfilename, int flags, int blocksize_pow2, int lookahead);
+ static int verbosity = 0, decode_only = 0, encode_only = 0;
+ 
+-int main (argc, argv) int argc; char **argv;
+-{
+-    int lookahead = 3, flags = ADPCM_FLAG_NOISE_SHAPING, blocksize_pow2 = 0, overwrite = 0, asked_help = 0;
+-    char *infilename = NULL, *outfilename = NULL;
+-    FILE *outfile;
+-
+-    // if the name of the executable ends in "encoder" or "decoder", just do that function
+-    encode_only = argc && strstr (argv [0], "encoder") && strlen (strstr (argv [0], "encoder")) == strlen ("encoder");
+-    decode_only = argc && strstr (argv [0], "decoder") && strlen (strstr (argv [0], "decoder")) == strlen ("decoder");
+-
+-    // loop through command-line arguments
+-
+-    while (--argc) {
+-#if defined (_WIN32)
+-        if ((**++argv == '-' || **argv == '/') && (*argv)[1])
+-#else
+-        if ((**++argv == '-') && (*argv)[1])
+-#endif
+-            while (*++*argv)
+-                switch (**argv) {
+-
+-                    case '0': case '1': case '2':
+-                    case '3': case '4': case '5':
+-                    case '6': case '7': case '8':
+-                        lookahead = **argv - '0';
+-                        break;
+-
+-                    case 'B': case 'b':
+-                        blocksize_pow2 = strtol (++*argv, argv, 10);
+-
+-                        if (blocksize_pow2 < 8 || blocksize_pow2 > 15) {
+-                            fprintf (stderr, "\nblock size power must be 8 to 15!\n");
+-                            return -1;
+-                        }
+-
+-                        --*argv;
+-                        break;
+-
+-                    case 'D': case 'd':
+-                        decode_only = 1;
+-                        break;
+-
+-                    case 'E': case 'e':
+-                        encode_only = 1;
+-                        break;
+-
+-                    case 'F': case 'f':
+-                        flags &= ~ADPCM_FLAG_NOISE_SHAPING;
+-                        break;
+-
+-                    case 'H': case 'h':
+-                        asked_help = 0;
+-                        break;
+-
+-                    case 'Q': case 'q':
+-                        verbosity = -1;
+-                        break;
+-
+-                    case 'R': case 'r':
+-                        flags |= ADPCM_FLAG_RAW_OUTPUT;
+-                        break;
+-
+-                    case 'V': case 'v':
+-                        verbosity = 1;
+-                        break;
+-
+-                    case 'Y': case 'y':
+-                        overwrite = 1;
+-                        break;
+-
+-                    default:
+-                        fprintf (stderr, "\nillegal option: %c !\n", **argv);
+-                        return 1;
+-                }
+-        else if (!infilename) {
+-            infilename = malloc (strlen (*argv) + 10);
+-            strcpy (infilename, *argv);
+-        }
+-        else if (!outfilename) {
+-            outfilename = malloc (strlen (*argv) + 10);
+-            strcpy (outfilename, *argv);
+-        }
+-        else {
+-            fprintf (stderr, "\nextra unknown argument: %s !\n", *argv);
+-            return 1;
+-        }
+-    }
+-
+-    if (verbosity >= 0)
+-        fprintf (stderr, "%s", sign_on);
+-
+-    if (!outfilename || asked_help) {
+-        printf ("%s", usage);
+-        return 0;
+-    }
+-
+-    if (!strcmp (infilename, outfilename)) {
+-        fprintf (stderr, "can't overwrite input file (specify different/new output file name)\n");
+-        return -1;
+-    }
+-
+-    if (!overwrite && (outfile = fopen (outfilename, "r"))) {
+-        fclose (outfile);
+-        fprintf (stderr, "output file \"%s\" exists (use -y to overwrite)\n", outfilename);
+-        return -1;
+-    }
+-
+-    return adpcm_converter (infilename, outfilename, flags, blocksize_pow2, lookahead);
+-}
++// int main (argc, argv) int argc; char **argv;
++// {
++//     int lookahead = 3, flags = ADPCM_FLAG_NOISE_SHAPING, blocksize_pow2 = 0, overwrite = 0, asked_help = 0;
++//     char *infilename = NULL, *outfilename = NULL;
++//     FILE *outfile;
++//
++//     // if the name of the executable ends in "encoder" or "decoder", just do that function
++//     encode_only = argc && strstr (argv [0], "encoder") && strlen (strstr (argv [0], "encoder")) == strlen ("encoder");
++//     decode_only = argc && strstr (argv [0], "decoder") && strlen (strstr (argv [0], "decoder")) == strlen ("decoder");
++//
++//     // loop through command-line arguments
++//
++//     while (--argc) {
++// #if defined (_WIN32)
++//         if ((**++argv == '-' || **argv == '/') && (*argv)[1])
++// #else
++//         if ((**++argv == '-') && (*argv)[1])
++// #endif
++//             while (*++*argv)
++//                 switch (**argv) {
++//
++//                     case '0': case '1': case '2':
++//                     case '3': case '4': case '5':
++//                     case '6': case '7': case '8':
++//                         lookahead = **argv - '0';
++//                         break;
++//
++//                     case 'B': case 'b':
++//                         blocksize_pow2 = strtol (++*argv, argv, 10);
++//
++//                         if (blocksize_pow2 < 8 || blocksize_pow2 > 15) {
++//                             fprintf (stderr, "\nblock size power must be 8 to 15!\n");
++//                             return -1;
++//                         }
++//
++//                         --*argv;
++//                         break;
++//
++//                     case 'D': case 'd':
++//                         decode_only = 1;
++//                         break;
++//
++//                     case 'E': case 'e':
++//                         encode_only = 1;
++//                         break;
++//
++//                     case 'F': case 'f':
++//                         flags &= ~ADPCM_FLAG_NOISE_SHAPING;
++//                         break;
++//
++//                     case 'H': case 'h':
++//                         asked_help = 0;
++//                         break;
++//
++//                     case 'Q': case 'q':
++//                         verbosity = -1;
++//                         break;
++//
++//                     case 'R': case 'r':
++//                         flags |= ADPCM_FLAG_RAW_OUTPUT;
++//                         break;
++//
++//                     case 'V': case 'v':
++//                         verbosity = 1;
++//                         break;
++//
++//                     case 'Y': case 'y':
++//                         overwrite = 1;
++//                         break;
++//
++//                     default:
++//                         fprintf (stderr, "\nillegal option: %c !\n", **argv);
++//                         return 1;
++//                 }
++//         else if (!infilename) {
++//             infilename = malloc (strlen (*argv) + 10);
++//             strcpy (infilename, *argv);
++//         }
++//         else if (!outfilename) {
++//             outfilename = malloc (strlen (*argv) + 10);
++//             strcpy (outfilename, *argv);
++//         }
++//         else {
++//             fprintf (stderr, "\nextra unknown argument: %s !\n", *argv);
++//             return 1;
++//         }
++//     }
++//
++//     if (verbosity >= 0)
++//         fprintf (stderr, "%s", sign_on);
++//
++//     if (!outfilename || asked_help) {
++//         printf ("%s", usage);
++//         return 0;
++//     }
++//
++//     if (!strcmp (infilename, outfilename)) {
++//         fprintf (stderr, "can't overwrite input file (specify different/new output file name)\n");
++//         return -1;
++//     }
++//
++//     if (!overwrite && (outfile = fopen (outfilename, "r"))) {
++//         fclose (outfile);
++//         fprintf (stderr, "output file \"%s\" exists (use -y to overwrite)\n", outfilename);
++//         return -1;
++//     }
++//
++//     return adpcm_converter (infilename, outfilename, flags, blocksize_pow2, lookahead);
++// }
+ 
+ typedef struct {
+     char ckID [4];

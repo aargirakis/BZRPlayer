@@ -1,0 +1,43 @@
+--- apps/libzxtune/zxtune.h	2018-02-19 23:24:41.000000000 +0100
++++ apps/libzxtune/zxtune.h	2024-09-21 11:33:59.493194047 +0200
+@@ -11,21 +11,22 @@
+ #pragma once
+ 
+ #include <stddef.h>
++#include <string>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+-#if defined(_WIN32)
+-#define ZXTUNE_API_EXPORT __declspec(dllexport)
+-#define ZXTUNE_API_IMPORT __declspec(dllimport)
+-#elif __GNUC__ > 3
++// #if defined(_WIN32)
++// #define ZXTUNE_API_EXPORT __declspec(dllexport)
++// #define ZXTUNE_API_IMPORT __declspec(dllimport)
++// #elif __GNUC__ > 3
+ #define ZXTUNE_API_EXPORT __attribute__ ((visibility("default")))
+ #define ZXTUNE_API_IMPORT
+-#else
+-#define ZXTUNE_API_EXPORT
+-#define ZXTUNE_API_IMPORT
+-#endif
++// #else
++// #define ZXTUNE_API_EXPORT
++// #define ZXTUNE_API_IMPORT
++// #endif
+ 
+ #ifndef ZXTUNE_API
+ #define ZXTUNE_API ZXTUNE_API_IMPORT
+@@ -68,6 +69,9 @@
+ ZXTUNE_API bool ZXTune_GetPlayerParameterInt(ZXTuneHandle player, const char* paramName, int* paramValue);
+ ZXTUNE_API bool ZXTune_SetPlayerParameterInt(ZXTuneHandle player, const char* paramName, int paramValue);
+ 
++ZXTUNE_API std::string ZXTune_GetInfo(ZXTuneHandle player, std::string paramName);
++ZXTUNE_API long ZXTune_GetDuration(ZXTuneHandle player);
++
+ #ifdef __cplusplus
+ } //extern
+ #endif

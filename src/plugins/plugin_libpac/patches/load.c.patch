@@ -1,0 +1,45 @@
+--- src/load.c	2024-09-26 12:01:18.700709962 +0200
++++ src/load.c	2024-09-21 11:33:59.203197752 +0200
+@@ -315,6 +315,33 @@
+    return m->name;
+ }
+ 
++struct pac_sound *
++pac_sample (const struct pac_module *m, unsigned int idx)
++{
++   return &m->sound[idx];
++}
++
++const int
++pac_num_samples (const struct pac_module *m)
++{
++   return m->soundcnt;
++}
++
++const int pac_num_channels (const struct pac_module *m)
++{
++    return m->channelcnt;
++}
++
++const int pac_num_sheets (const struct pac_module *m)
++{
++    return m->sheetcnt;
++}
++
++const int pac_num_positions (const struct pac_module *m)
++{
++    return m->poscnt;
++}
++
+ static int
+ read_sheet (struct pac_module *m, int i, FILE *fp)
+ {
+@@ -403,7 +430,7 @@
+       case ID_SNNA:
+          if (snna)
+             return -1;
+-#if 0 /* Skip reading sound name. */
++#if 1 /* Skip reading sound name. */
+          if (size > PAC_NAME_MAX) {
+             skip = size - PAC_NAME_MAX;
+             size = PAC_NAME_MAX;

@@ -1,0 +1,186 @@
+--- sidid.c	2024-07-26 11:52:45.000000000 +0200
++++ sidid.c	2024-09-21 11:33:59.263196986 +0200
+@@ -27,7 +27,7 @@
+  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  * POSSIBILITY OF SUCH DAMAGE.
+  */
+-
++#include "sidid.h"
+ #ifdef __WIN32__
+ #include <windows.h>
+ #endif
+@@ -40,20 +40,9 @@
+ #include <dirent.h>
+ #include <sys/stat.h>
+ 
+-#define MAX_SIGSIZE 4096
+-#define MAX_PATHNAME 256
+-#define END -1
+-#define ANY -2
+-#define AND -3
+-#define NAME -4
+ 
+-typedef struct
+-{
+-  char *name;
+-  int count;
+-  void *firstsig;
+-  void *next;
+-} SIDID;
++
++
+ 
+ typedef struct
+ {
+@@ -62,10 +51,10 @@
+ } SIDSIG;
+ 
+ int main(int argc, char **argv);
+-void readconfig(char *name);
++
+ void identifydir(void);
+-void identifyfile(char *name, char *fullname);
+-int identifybuffer(SIDID *id, unsigned char *buffer, int length);
++
++
+ int identifybytes(int *bytes, unsigned char *buffer, int length);
+ int ishex(char c);
+ int gethex(char c);
+@@ -86,7 +75,7 @@
+ 
+ char scanbasedir[MAX_PATHNAME];
+ char playername[MAX_PATHNAME];
+-
++/*
+ int main(int argc, char **argv)
+ {
+   char basedir[MAX_PATHNAME];
+@@ -177,17 +166,17 @@
+   printstats();
+   return 0;
+ }
+-
+-void readconfig(char *name)
++*/
++int readconfig(const char *name)
+ {
+   char tokenstr[MAX_PATHNAME];
+   int temp[MAX_SIGSIZE];
+   int sigsize = 0;
+   SIDSIG *lastsig = NULL;
+ 
+-  printf("Using configfile %s\n", name);
++  //printf("Using configfile %s\n", name);
+   FILE *in = fopen(name, "rt");
+-  if (!in) return;
++  if (!in) return -1;
+ 
+   for (;;)
+   {
+@@ -302,10 +291,11 @@
+         break;
+       }
+     }
+-    else break;
++    else return 0;
+   }
+   CONFIG_ERROR:
+   fclose(in);
++  return -1;
+ }
+ 
+ void identifydir(void)
+@@ -388,8 +378,8 @@
+   fread(buffer, 1, length, in);
+   fclose(in);
+ 
+-  if (!playerid)
+-    fullname[56] = 0;
++  //if (!playerid)
++  //  fullname[56] = 0;
+   
+   while (id)
+   {
+@@ -403,15 +393,18 @@
+       }
+       else
+       {
+-        fullname[0] = 0;
+-      }
+-      if (!onlyunknown)
+-      {
+-        if (!playerid)
+-          printf("%-56s %s\n", fullname, id->name);
+-        else
+-          printf("%s\n", fullname);
++        //fullname[0] = 0;
++        id->name="gwwg";
+       }
++//      if (!onlyunknown)
++//      {
++//        if (!playerid)
++//          printf("%-56s %s\n", fullname, id->name);
++//        else
++//          printf("%s\n", fullname);
++//      }
++      //strcpy(fullname, id->name);
++
+       if (!multiscan) break;
+     }
+     if (!playerid) id = (SIDID *)id->next;
+@@ -424,6 +417,7 @@
+     {
+       fullname[56] = 0;
+       printf("%-56s *Unidentified*\n", fullname);
++      id->name="gwwg";
+     }
+   }
+   examined++;
+@@ -431,6 +425,47 @@
+   free(buffer);
+ }
+ 
++char* identify(unsigned char *buffer, int length)
++{
++  SIDID *id;
++  int found = 0;
++
++  if (!playerid) id = firstid;
++  else id = playerid;
++
++  while (id)
++  {
++    if (identifybuffer(id, buffer, length))
++    {
++      id->count++;
++      if (!found)
++      {
++        found = 1;
++        identified++;
++      }
++
++      if (!multiscan) break;
++    }
++    if (!playerid)
++    {
++        id = (SIDID *)id->next;
++    }
++    else
++    {
++        break;
++    }
++  }
++  if (!found)
++  {
++
++    unidentified++;
++    return "Unknown";
++  }
++  examined++;
++  return id->name;
++
++}
++
+ int identifybuffer(SIDID *id, unsigned char *buffer, int length)
+ {
+   SIDSIG *sig = id->firstsig;

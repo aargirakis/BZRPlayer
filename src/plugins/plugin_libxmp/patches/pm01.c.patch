@@ -1,0 +1,11 @@
+--- src/loaders/prowizard/pm01.c	2021-06-10 02:24:24.000000000 +0200
++++ src/loaders/prowizard/pm01.c	2024-09-21 11:33:59.269863567 +0200
+@@ -115,7 +115,7 @@
+ 			note = (int)((double)note *
+ 					pow(2, -1.0 * fin[j % 4] / 12 / 8));
+ 			if (note > 0) {
+-				note = period_to_note(note) - 48;
++				note = libxmp_period_to_note(note) - 48;
+ 			}
+ 
+ 			p[0] = ptk_table[note][0];

@@ -1,0 +1,193 @@
+cmake_minimum_required(VERSION 3.28)
+
+include(ExternalProject)
+include(FetchContent)
+include(ProcessorCount)
+
+set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
+
+function(download_to target_filename target_url sha_256_hash
+        destination_path display_destination_path target_name)
+    if (OFFLINE_MODE EQUAL 1 OR "${target_url}" STREQUAL "")
+        file(COPY ${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename} DESTINATION ${destination_path})
+    else ()
+        if (NOT target_name)
+            set(target_name "${target_filename}")
+        endif ()
+
+        if (display_destination_path)
+            message(STATUS "Downloading ${target_name} ${target_url} to ${destination_path}")
+        else ()
+            message(STATUS "Downloading ${target_name} ${target_url}")
+        endif ()
+
+        if ("${sha_256_hash}" STREQUAL "")
+            file(DOWNLOAD ${target_url} ${destination_path}/${target_filename} STATUS status)
+        else ()
+            file(
+                    DOWNLOAD ${target_url} ${destination_path}/${target_filename}
+                    EXPECTED_HASH SHA256=${sha_256_hash} STATUS status
+            )
+        endif ()
+
+        list(GET status 0 status_code)
+        list(GET status 1 error_message)
+
+        if (NOT status_code EQUAL 0)
+            message(FATAL_ERROR "Error downloading ${target_url}: ${error_message}")
+        endif ()
+    endif ()
+endfunction()
+
+function(unpack file_to_unpack unpack_to unpack_to_parent_dir)
+    if (NOT unpack_to_parent_dir)
+        set(unpack_to ${unpack_to}/..)
+    endif ()
+
+    file(ARCHIVE_EXTRACT INPUT "${file_to_unpack}" DESTINATION "${unpack_to}")
+    set(EXTERNAL_SOURCE_DIR ${unpack_to} PARENT_SCOPE)
+endfunction()
+
+function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
+    if (NOT patches_dir)
+        return()
+    endif ()
+
+    message(STATUS "Patching ${target_name}")
+
+    file(GLOB PATCH_FILES "${patches_dir}/*.patch")
+
+    foreach (PATCH_FILE ${PATCH_FILES})
+        if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+            set(PATCH_EXECUTABLE "${CMAKE_PREFIX_PATH}/../usr/bin/patch.exe")
+        else ()
+            set(PATCH_EXECUTABLE "patch")
+            execute_process(
+                    COMMAND lsdiff ${PATCH_FILE}
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    OUTPUT_VARIABLE FILE_TO_PATCH
+            )
+            execute_process(
+                    COMMAND dos2unix ${EXTERNAL_SOURCE_DIR}/${FILE_TO_PATCH}
+                    ERROR_QUIET
+            )
+        endif ()
+
+        execute_process(
+                COMMAND ${PATCH_EXECUTABLE}
+                -ul -d ${EXTERNAL_SOURCE_DIR}
+                -p0 -i ${PATCH_FILE}
+                RESULT_VARIABLE PATCH_RESULT
+                OUTPUT_VARIABLE PATCH_OUTPUT
+                ERROR_VARIABLE PATCH_ERROR
+        )
+        if (NOT PATCH_RESULT EQUAL 0)
+            message(FATAL_ERROR
+                    "Failed to apply patch ${PATCH_FILE}: ${PATCH_OUTPUT}"
+                    "${PATCH_ERROR}"
+            )
+        endif ()
+    endforeach ()
+endfunction()
+
+function(unpack_and_patch file_to_unpack target_name unpack_to_parent_dir
+        target_unpacked_dir patches_dir)
+    unpack("${file_to_unpack}" "${DEPENDENCIES_DIR}/${target_name}" ${unpack_to_parent_dir})
+
+    set(EXTERNAL_SOURCE_DIR "${DEPENDENCIES_DIR}/${target_name}/${target_unpacked_dir}")
+
+    patch_sources("${target_name}" "${patches_dir}" "${EXTERNAL_SOURCE_DIR}")
+
+    set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
+endfunction()
+
+function(download_and_patch target_name target_filename target_url
+        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
+    if (OFFLINE_MODE EQUAL 1 OR "${target_url}" STREQUAL "")
+        unpack_and_patch("${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename}" "${target_name}"
+                "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
+    else ()
+        download_to("${target_filename}" "${target_url}" "${sha_256_hash}" "${DEPENDENCIES_DIR}/${target_name}"
+                false "${target_name}")
+        unpack_and_patch("${DEPENDENCIES_DIR}/${target_name}/${target_filename}" "${target_name}"
+                "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
+    endif ()
+
+    set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
+endfunction()
+
+function(download_patch_and_add target_name target_filename target_url
+        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
+    download_and_patch(
+            "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_unpacked_dir}" "${patches_dir}"
+    )
+
+    ExternalProject_Add(
+            ${target_name}
+            SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
+            CONFIGURE_COMMAND ""
+            BUILD_COMMAND ""
+            INSTALL_COMMAND ""
+    )
+
+    set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
+endfunction()
+
+function(download_patch_and_make target_name target_filename target_url sha_256_hash
+        unpack_to_parent_dir target_unpacked_dir patches_dir make_args
+        build_byproducts)
+    download_and_patch(
+            "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_unpacked_dir}" "${patches_dir}"
+    )
+
+    if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+        set(make_command
+                ${CMAKE_PREFIX_PATH}/../usr/bin/make.exe
+                AR=${CMAKE_PREFIX_PATH}/bin/ar.exe
+        )
+    else ()
+        set(make_command make)
+    endif ()
+
+    ProcessorCount(N)
+    if (N EQUAL 0)
+        set(N "")
+    else ()
+        math(EXPR N "${N}-1")
+    endif ()
+
+    set(make_command ${make_command} -j${N} ${make_args})
+
+    ExternalProject_Add(
+            ${target_name}
+            SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
+            CONFIGURE_COMMAND ""
+            BUILD_COMMAND ${make_command}
+            INSTALL_COMMAND ""
+            BUILD_IN_SOURCE 1
+            BUILD_BYPRODUCTS ${EXTERNAL_SOURCE_DIR}/${build_byproducts}
+    )
+
+    set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
+endfunction()
+
+function(download_patch_and_cmake target_name target_filename target_url
+        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
+    download_and_patch(
+            "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_unpacked_dir}" "${patches_dir}"
+    )
+
+    set(FETCHCONTENT_BASE_DIR "${DEPENDENCIES_DIR}/${target_name}")
+
+    FetchContent_Declare(
+            ${target_name}
+            SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
+            EXCLUDE_FROM_ALL
+    )
+    FetchContent_MakeAvailable(${target_name})
+
+    set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
+endfunction()

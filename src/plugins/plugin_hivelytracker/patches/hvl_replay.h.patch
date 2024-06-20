@@ -1,0 +1,33 @@
+--- Replayer_Windows/hvl_replay.h	2022-10-28 23:50:38.000000000 +0200
++++ Replayer_Windows/hvl_replay.h	2024-09-21 11:33:59.193197880 +0200
+@@ -1,3 +1,8 @@
++#ifdef __cplusplus
++extern "C" {
++#endif /* __cplusplus */
++
++#include "queue.h"
+ 
+ typedef char int8;
+ typedef unsigned char uint8;
+@@ -223,6 +228,9 @@
+   int32                  ht_defpanright;
+   int32                  ht_mixgain;
+   uint8                  ht_Version;
++  Queue                  trackPosBuffer;
++  Queue                  patternPosBuffer;
++  Queue                  vumeterBuffer;
+ };
+ 
+ void hvl_DecodeFrame( struct hvl_tune *ht, int8 *buf1, int8 *buf2, int32 bufmod );
+@@ -231,4 +239,10 @@
+ struct hvl_tune *hvl_LoadTune( const TEXT *name, uint32 freq, uint32 defstereo );
+ struct hvl_tune *hvl_ParseTune(const uint8 *buf, uint32 buflen, uint32 freq, uint32 defstereo );
+ void hvl_FreeTune( struct hvl_tune *ht );
+-
++uint32 hvl_GetLen(struct hvl_tune *ht); // from Replayer
++uint32 hvl_Seek(struct hvl_tune *ht, uint32 time); // from Replayer
++void hvl_GetChannelVolumes(struct hvl_tune *ht, unsigned char* volumes);
++
++#ifdef __cplusplus
++}
++#endif /* __cplusplus */

@@ -1,0 +1,10 @@
+--- src/strings/src/encoding.cpp	2018-02-19 23:24:41.000000000 +0100
++++ src/strings/src/encoding.cpp	2024-09-21 11:33:59.493194047 +0200
+@@ -19,6 +19,7 @@
+ //std includes
+ #include <algorithm>
+ #include <cassert>
++#include <limits>       //added for linux cross-compilation
+ 
+ namespace Strings
+ {

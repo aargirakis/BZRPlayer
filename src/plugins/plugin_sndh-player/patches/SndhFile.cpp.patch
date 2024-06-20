@@ -1,0 +1,62 @@
+--- AtariAudio/SndhFile.cpp	2024-03-22 00:57:02.000000000 +0100
++++ AtariAudio/SndhFile.cpp	2024-09-21 11:33:59.346529254 +0200
+@@ -10,11 +10,14 @@
+ #include "SndhFile.h"
+ #include "external/ice_24.h"
+ 
++//blazer added tag for reading "ripper" and "converter"													   
+ SndhFile::SndhFile()
+ {
+ 	m_rawBuffer = NULL;
+ 	m_Title = NULL;
+ 	m_Author = NULL;
++    m_Ripper = NULL;
++    m_Converter = NULL;				
+ 	m_sYear = NULL;
+ 	m_rawSize = 0;
+ }
+@@ -29,11 +32,15 @@
+ 	free((void*)m_rawBuffer);
+ 	free(m_Title);
+ 	free(m_Author);
++    free(m_Ripper);
++    free(m_Converter);				   
+ 	free(m_sYear);
+ 	m_bLoaded = false;
+ 	m_rawBuffer = NULL;
+ 	m_Title = NULL;
+ 	m_Author = NULL;
++    m_Converter = NULL;
++    m_Ripper = NULL;					   
+ 	m_sYear = NULL;
+ 	m_rawSize = 0;
+ 	m_playerRate = 0;
+@@ -119,11 +126,16 @@
+ 					m_Author = _strdup(read8 + 4);
+ 					read8 = skipNTString(read8 + 4);
+ 				}
+-				else if (	(0 == strncmp(read8, "RIPP", 4)) ||
+-							(0 == strncmp(read8, "CONV", 4)))
+-				{
++                else if (0 == strncmp(read8, "RIPP", 4))
++                {
++                    m_Ripper = _strdup(read8 + 4);
+ 					read8 = skipNTString(read8 + 4);
+ 				}
++                else if (0 == strncmp(read8, "CONV", 4))
++                {
++                    m_Converter = _strdup(read8 + 4);
++                    read8 = skipNTString(read8 + 4);
++                }
+ 				else if ((0 == strncmp(read8, "YEAR", 4)))
+ 				{
+ 					if ( read8[4] != 0)
+@@ -205,6 +217,8 @@
+ 	out.musicName = m_Title;
+ 	out.musicAuthor = m_Author;
+ 	out.year = m_sYear;
++    out.converter = m_Converter;
++    out.ripper = m_Ripper;								
+ 
+ 	out.subsongCount = m_subSongCount;
+ 	return true;

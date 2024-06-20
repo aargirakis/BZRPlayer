@@ -1,0 +1,6 @@
+#ifndef WIN32_VER_H
+#define WIN32_VER_H
+
+#define PACKAGE_VERSION "@PROJECT_VERSION@"
+
+#endif

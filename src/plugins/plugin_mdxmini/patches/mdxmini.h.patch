@@ -1,0 +1,20 @@
+--- src/mdxmini.h	2022-07-27 02:53:01.000000000 +0200
++++ src/mdxmini.h	2024-09-24 21:07:26.530946787 +0200
+@@ -4,6 +4,9 @@
+  * \author Misty De Meo
+  * \date 3 January 2016
+  */
++#ifdef __cplusplus
++extern "C" {
++#endif /* __cplusplus */
+ 
+ #ifndef __MDXMINI_H__
+ #define __MDXMINI_H__
+@@ -141,3 +144,6 @@
+ void mdx_get_current_notes(t_mdxmini *data, int *notes, int len);
+ 
+ #endif
++#ifdef __cplusplus
++}
++#endif /* __cplusplus */
+\ No newline at end of file

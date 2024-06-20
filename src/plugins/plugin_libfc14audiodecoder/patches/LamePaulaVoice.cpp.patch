@@ -1,0 +1,50 @@
+--- src/LamePaulaVoice.cpp	2008-10-19 20:30:00.000000000 +0200
++++ src/LamePaulaVoice.cpp	2024-09-21 11:33:59.196531170 +0200
+@@ -10,6 +10,7 @@
+ LamePaulaVoice::LamePaulaVoice() {
+     looping = true;
+     off();
++    isMuted=false;
+ }
+ 
+ 
+@@ -17,6 +18,9 @@
+     off();
+ }
+ 
++void LamePaulaVoice::mute(bool mute) {
++    isMuted=mute;
++}
+ 
+ void LamePaulaVoice::off() {
+     isOn = false;
+@@ -32,6 +36,7 @@
+ 
+ 
+ void LamePaulaVoice::takeNextBuf() {
++
+     if (!isOn) {
+         // If channel is off, take sample START parameters.
+         start = paula.start;
+@@ -42,6 +47,7 @@
+         }
+         end = start+length;
+     }
++
+     repeatStart = paula.start;
+     repeatLength = paula.length;
+     repeatLength <<= 1;
+@@ -49,4 +55,13 @@
+         repeatLength = 1;
+     }
+     repeatEnd = repeatStart+repeatLength;
++    if(isMuted)
++    {
++        repeatStart = paula.start;
++        repeatLength = 0;
++        start = paula.start;
++        length = 0;
++        end = start+length;
++        repeatEnd = repeatStart+repeatLength;
++    }
+ }

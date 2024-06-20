@@ -1,0 +1,11 @@
+--- src/frontends/common/uadeconf.c	2014-09-16 19:11:24.000000000 +0200
++++ src/frontends/common/uadeconf.c	2024-09-21 11:33:59.423194942 +0200
+@@ -129,7 +129,7 @@
+ 	if (*endptr == ',' || *endptr == '.') {
+ 		newvalue = strdup(value);
+ 		if (newvalue == NULL)
+-			uade_error("Out of memory\n");
++			fprintf(stderr, "Out of memory\n");
+ 
+ 		newseparator = (*endptr == ',') ? '.' : ',';
+ 

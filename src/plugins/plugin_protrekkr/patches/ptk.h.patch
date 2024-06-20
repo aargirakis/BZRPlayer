@@ -1,0 +1,94 @@
+--- src/include/ptk.h	2024-02-05 23:48:28.000000000 +0100
++++ src/include/ptk.h	2024-09-26 12:41:44.784560295 +0200
+@@ -34,14 +34,14 @@
+ 
+ // ------------------------------------------------------
+ // Includes
+-#include "../support/include/main.h"
+-
++//#include "../support/include/main.h"
++#include <cstdio>
+ #include "../samples/wav/include/riff.h"
+ #include "../samples/aiff/include/aiff.h"
+ #include "../include/variables.h"
+ 
+-#include "../ui/include/misc_draw.h"
+-#include "../ui/include/requesters.h"
++//#include "../ui/include/misc_draw.h"
++//#include "../ui/include/requesters.h"
+ 
+ #include "../files/include/files.h"
+ #include "../files/include/files_list.h"
+@@ -51,24 +51,24 @@
+ #include "../files/include/midi_cfg.h"
+ #include "../files/include/patterns.h"
+ 
+-#include "../editors/include/editor_setup.h"
+-#include "../editors/include/editor_midi.h"
+-#include "../editors/include/editor_303.h"
+-#include "../editors/include/editor_fx_setup.h"
+-#include "../editors/include/editor_synth.h"
+-#include "../editors/include/editor_track_fx.h"
+-#include "../editors/include/editor_diskio.h"
+-#include "../editors/include/editor_reverb.h"
+-#include "../editors/include/editor_sequencer.h"
+-#include "../editors/include/editor_track.h"
+-#include "../editors/include/editor_instrument.h"
+-#include "../editors/include/editor_pattern.h"
+-#include "../editors/include/editor_sample.h"
+-#include "../editors/include/patterns_blocks.h"
++// #include <editors/include/editor_setup.h>
++// #include <editors/include/editor_midi.h>
++// #include <editors/include/editor_303.h>
++// #include <editors/include/editor_fx_setup.h>
++// #include <editors/include/editor_synth.h>
++// #include <editors/include/editor_track_fx.h>
++// #include <editors/include/editor_diskio.h>
++// #include <editors/include/editor_reverb.h>
++// #include <editors/include/editor_sequencer.h>
++// #include <editors/include/editor_track.h>
++// #include <editors/include/editor_instrument.h>
++// #include <editors/include/editor_pattern.h>
++// #include <editors/include/editor_sample.h>
++// #include <editors/include/patterns_blocks.h>
+ 
+-#include "../support/include/timer.h"
++//#include "../support/include/timer.h"
+ 
+-#include "../midi/include/midi.h"
++//#include "../midi/include/midi.h"
+ 
+ #include "../../release/distrib/replay/lib/include/endianness.h"
+ #include "../../release/distrib/replay/lib/include/replay.h"
+@@ -87,8 +87,10 @@
+ };
+ 
+ extern list <skin_file> skin_files;
++#if !defined(BZR2)
+ extern SDL_Surface *POINTER;
+ extern REQUESTER Exit_Requester;
++#endif
+ 
+ // ------------------------------------------------------
+ // Structures
+@@ -101,8 +103,10 @@
+ 
+ // ------------------------------------------------------
+ // Variables
++#if !defined(BZR2)
+ extern SDL_Surface *Main_Screen;
+ extern MOUSE Mouse;
++#endif
+ 
+ #if defined(__WIN32__)
+ #include <mmsystem.h>
+@@ -135,7 +139,9 @@
+ void Destroy_Context(void);
+ int Screen_Update(void);
+ void STDCALL Mixer(Uint8 *Buffer, Uint32 Len);
++#if !defined(BZR2)
+ SDL_Surface *Load_Skin_Picture(char *name);
++#endif
+ LPJAZZ_KEY Get_Jazz_Key_Off(JAZZ_KEY Pool[MAX_TRACKS][MAX_POLYPHONY], int Note);
+ int Discard_Key_Note_Off(JAZZ_KEY Pool[MAX_TRACKS][MAX_POLYPHONY], int Channel, int Sub_Channel);
+ void Set_Default_Channels_Polyphony(void);

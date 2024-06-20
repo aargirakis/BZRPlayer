@@ -1,0 +1,29 @@
+--- libopenmpt/libopenmpt_impl.cpp	2024-01-10 21:12:23.000000000 +0100
++++ libopenmpt/libopenmpt_impl.cpp	2024-09-21 11:33:59.203197752 +0200
+@@ -1200,6 +1200,26 @@
+ 	}
+ 	return retval;
+ }
++
++int module_impl::get_mod_sample_size(int32_t index) const {
++	return m_sndFile->GetModSampleSize(index);
++}
++
++int module_impl::get_mod_sample_loopstart(int32_t index) const {
++	return m_sndFile->GetModSampleLoopStart(index);
++}
++
++int module_impl::get_mod_sample_loopend(int32_t index) const {
++	return m_sndFile->GetModSampleLoopEnd(index);
++}
++
++int module_impl::get_mod_sample_volume(int32_t index) const {
++	return m_sndFile->GetModSampleVolume(index);
++}
++
++int module_impl::get_mod_sample_finetune(int32_t index) const {
++	return m_sndFile->GetModSampleFineTune(index);
++}
+ std::string module_impl::get_metadata( const std::string & key ) const {
+ 	if ( key == std::string("type") ) {
+ 		return mpt::transcode<std::string>( mpt::common_encoding::utf8, m_sndFile->m_modFormat.type );

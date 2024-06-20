@@ -1,0 +1,18 @@
+--- liborganya/swap.h	2018-01-30 05:38:35.000000000 +0100
++++ liborganya/swap.h	2024-09-21 11:33:59.273196858 +0200
+@@ -6,10 +6,12 @@
+ //  Copyright 2009 __MyCompanyName__. All rights reserved.
+ //
+ 
+-#include <foobar2000.h>
++#include <inttypes.h>
+ 
+-#define org_btoh_16(x) pfc::byteswap_if_le_t(x)
+-#define org_btoh_32(x) pfc::byteswap_if_le_t(x)
++static uint16_t org_btoh_16(uint16_t val) {
++    return (((uint16_t) (val) & (uint16_t) 0x00ffU) << 8) | (((uint16_t) (val) & (uint16_t) 0xff00U) >> 8);
++}
++//#define org_btoh_32(x) pfc::byteswap_if_le_t(x)
+ 
+ #define org_ltoh_16(x) x
+ #define org_ltoh_32(x) x

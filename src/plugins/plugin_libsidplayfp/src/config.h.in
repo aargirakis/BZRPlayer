@@ -1,0 +1,3 @@
+#define PACKAGE "@PACKAGE@"
+#define VERSION "@VERSION@"
+#define PACKAGE_URL "@PACKAGE_URL@"
