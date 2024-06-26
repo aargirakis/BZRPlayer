@@ -1,19 +1,19 @@
 cmake_minimum_required(VERSION 3.28)
-project(plugin_adplug)
+
+set(NAME adplug)
+project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-file(GLOB_RECURSE PLUGIN_SOURCES
+file(GLOB SOURCES
         src/adplug-adplug-2.3.3/src/*.c
         src/adplug-adplug-2.3.3/src/*.cpp
         src/adplug/libbinio/*.cpp
-)
-
-add_library(${PROJECT_NAME} SHARED
-        ${PLUGIN_SOURCES}
         src/main.cpp
 )
+
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         src/adplug-adplug-2.3.3/src
@@ -24,7 +24,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-        OUTPUT_NAME "codec_adplug"
+        OUTPUT_NAME "codec_${NAME}"
         PREFIX ""
         SUFFIX ".dll"
         #LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR_PARENT}/data/plugin

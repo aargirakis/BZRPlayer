@@ -2,24 +2,42 @@ cmake_minimum_required(VERSION 3.28)
 
 project(bzr2 VERSION "2.0.73")
 
+#TODO remove
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+
 configure_file(${CMAKE_SOURCE_DIR}/src/version.h.in ${CMAKE_SOURCE_DIR}/src/version.h @ONLY NEWLINE_STYLE UNIX)
 configure_file(${CMAKE_SOURCE_DIR}/src/BZRPlayer.exe.manifest.in ${CMAKE_SOURCE_DIR}/src/BZRPlayer.exe.manifest @ONLY NEWLINE_STYLE UNIX)
 
 set(OUTPUT_DIR_PARENT "${CMAKE_BINARY_DIR}/output")
 
-add_subdirectory(src)
-add_subdirectory(src/plugins/FMOD_aac_plugin)
-add_subdirectory(src/plugins/FMOD_adplug_plugin)
+set(SUBDIRECTORIES_BY_MODULES
+        app "src"
+        plugin_aac "src/plugins/FMOD_aac_plugin"
+        plugin_adplug "src/plugins/FMOD_adplug_plugin"
+        plugin_ahx "src/plugins/FMOD_AHX_plugin"   #crash when opening tracker view during playback
+        plugin_asap "src/plugins/FMOD_ASAP_plugin"
+        plugin_audiofile "src/plugins/FMOD_audiofile_plugin"
+        plugin_fc "src/plugins/FMOD_FC_plugin"
+        plugin_flod "src/plugins/FMOD_Flod_plugin"
+        plugin_furnace "src/plugins/FMOD_furnace_plugin"
+)
+
+set(MODULES)
+while (SUBDIRECTORIES_BY_MODULES)
+    list(POP_FRONT SUBDIRECTORIES_BY_MODULES MODULE SUBDIRECTORY)
+    list(APPEND MODULES ${MODULE})
+    add_subdirectory(${SUBDIRECTORY})
+endwhile ()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-
     set(CPACK_GENERATOR "ZIP")
     set(CPACK_PACKAGE_NAME "BZR-Player")
     set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
     set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
     set(CPACK_OUTPUT_FILE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/release_zip)
-#   set(CPACK_PACKAGE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/release_zip)
+    #   set(CPACK_PACKAGE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/release_zip)
 
 
     #install(TARGETS app
@@ -74,11 +92,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     include(CPack)
 
     add_custom_target(run_cpack ALL
-            DEPENDS app plugin_aac plugin_adplug
             COMMAND ${CPACK_EXECUTABLE}
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            DEPENDS ${MODULES}
     )
-
 endif ()
 
 #TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR_PARENT})
+#TODO why compiled output is bigger?

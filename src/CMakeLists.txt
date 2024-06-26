@@ -38,70 +38,10 @@ set(QT_MODULES Core Gui Network OpenGL Svg Widgets Xml)
 
 find_package(Qt5 COMPONENTS ${QT_MODULES} REQUIRED)
 
-add_executable(${PROJECT_NAME}
-        about.cpp
-        album.cpp
-        albumgrid.cpp
-        buttonoscilloscope.cpp
-        channels.cpp
-        dialogdeleteworkspace.cpp
-        dialognewworkspace.cpp
-        filedownloader.cpp
-        fileinfoparser.cpp
-        main.cpp
-        mainwindow.cpp
-        myitemdelegate.cpp
-        noPageSlider.cpp
-        patternview/AbstractPatternView.cpp
-        patternview/AHXPatternView.cpp
-        patternview/bitmapfont.cpp
-        patternview/ChipTrackerPatternView.cpp
-        patternview/Composer669PatternView.cpp
-        patternview/DigiBooster17PatternView.cpp
-        patternview/DigiBoosterProPatternView.cpp
-        patternview/FastTracker1PatternView.cpp
-        patternview/FastTracker2PatternView.cpp
-        patternview/FastTracker24ChanPatternView.cpp
-        patternview/FastTracker26ChanPatternView.cpp
-        patternview/GameMusicCreatorPatternView.cpp
-        patternview/GenericPatternView.cpp
-        patternview/HivelyTrackerPatternView.cpp
-        patternview/IceTrackerPatternView.cpp
-        patternview/ImpulseTrackerPatternView.cpp
-        patternview/MEDPatternView.cpp
-        patternview/MultiTrackerPatternView.cpp
-        patternview/NoiseTrackerPatternView.cpp
-        patternview/OctaMED5ChanPatternView.cpp
-        patternview/OctaMED44ChanPatternView.cpp
-        patternview/OctaMED54ChanPatternView.cpp
-        patternview/OctaMEDPatternView.cpp
-        patternview/OctaMEDSoundstudioPatternView.cpp
-        patternview/OktalyzerPatternView.cpp
-        patternview/ProTracker1PatternView.cpp
-        patternview/ProTracker36PatternView.cpp
-        patternview/ScreamTracker2PatternView.cpp
-        patternview/ScreamTracker3PatternView.cpp
-        patternview/SoundFXPatternView.cpp
-        patternview/SoundTracker26PatternView.cpp
-        patternview/StarTrekker13PatternView.cpp
-        patternview/UltimateSoundTrackerPatternView.cpp
-        patternview/UltraTrackerPatternView.cpp
-        playlist.cpp
-        playlistitem.cpp
-        playlistmodel.cpp
-        qlistwidgetcustom.cpp
-        QTableWidgetCustom.cpp
-        settingswindow.cpp
-        soundmanager.cpp
-        trackerview.cpp
-        various.cpp
-        visualizer.cpp
-        visualizers/effect.cpp
-        visualizers/parallax.cpp
-        visualizers/scroller.cpp
-        visualizers/tracker.cpp
-        visualizers/trackerfullscreen.cpp
-        visualizers/visualizerfullscreen.cpp
+file(GLOB SOURCES
+        *.cpp
+        patternview/*.cpp
+        visualizers/*.cpp
 
         resource.qrc
 
@@ -114,6 +54,8 @@ add_executable(${PROJECT_NAME}
         BZRPlayer.rc
         BZRPlayer.exe.manifest
 )
+
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         external/FMOD/api/core/inc
