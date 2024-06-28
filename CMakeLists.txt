@@ -22,6 +22,9 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_flod "src/plugins/FMOD_Flod_plugin"
         plugin_furnace "src/plugins/FMOD_furnace_plugin"
         plugin_game "src/plugins/FMOD_Gamemusic_plugin"
+        plugin_highly_experimental "src/plugins/FMOD_Highly_Experimental_plugin"  #check cmake TODO
+        plugin_highly_quixotic "src/plugins/FMOD_Highly_Quixotic_plugin"          #check cmake TODO
+        plugin_highly_theoretical "src/plugins/FMOD_Highly_Theoretical_plugin"    #check cmake TODO
 )
 
 set(MODULES)

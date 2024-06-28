@@ -56,7 +56,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "codec_${NAME}"
         PREFIX ""
         SUFFIX ".dll"
-        #LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR_PARENT}/data/plugin
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR_PARENT}/data/plugin
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
