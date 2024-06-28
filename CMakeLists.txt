@@ -21,6 +21,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_fc "src/plugins/FMOD_FC_plugin"
         plugin_flod "src/plugins/FMOD_Flod_plugin"
         plugin_furnace "src/plugins/FMOD_furnace_plugin"
+        plugin_game "src/plugins/FMOD_Gamemusic_plugin"
 )
 
 set(MODULES)
