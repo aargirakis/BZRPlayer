@@ -9,12 +9,9 @@ set(CMAKE_CXX_STANDARD 17)
 file(GLOB SOURCES
         src/1.9/*.c
         src/queue.c
-
-        #TODO
-        #${CMAKE_SOURCE_DIR}/src/FMOD_Flod_plugin/src/flod/BaseRow.cpp
-        ../FMOD_Flod_plugin/src/flod/BaseRow.cpp
-
         src/main.cpp
+
+        ${CMAKE_SOURCE_DIR}/src/plugins/FMOD_Flod_plugin/src/flod/BaseRow.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
