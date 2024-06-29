@@ -90,9 +90,15 @@ foreach (QT_MODULE ${QT_MODULES})
     )
 endforeach ()
 
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    set(QT_PLATFORMS_DIR "${CMAKE_PREFIX_PATH}/plugins/platforms")
+else ()
+    set(QT_PLATFORMS_DIR "${CMAKE_PREFIX_PATH}/lib/qt/plugins/platforms")
+endif ()
+
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR_PARENT}/platforms"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_PREFIX_PATH}/plugins/platforms/qwindows.dll" "${OUTPUT_DIR_PARENT}/platforms"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_PLATFORMS_DIR}/qwindows.dll" "${OUTPUT_DIR_PARENT}/platforms"
         VERBATIM
 )
 
@@ -102,6 +108,33 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll ${OUTPUT_DIR_PARENT}
         VERBATIM
 )
+
+if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libgraphite2.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libharfbuzz-0.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libiconv-2.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libintl-8.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libssp-0.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libzstd.dll ${OUTPUT_DIR_PARENT}
+            VERBATIM
+    )
+endif ()
+
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    #TODO
+    set(ZLIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/static")
+else ()
+    set(ZLIB_DIR "${CMAKE_PREFIX_PATH}/bin")
+endif ()
 
 ##TODO miss: libcrypto-1_1.dll, libssl-1_1.dll (really needed?)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -115,7 +148,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayerTest.exe ${OUTPUT_DIR_PARENT}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml ${OUTPUT_DIR_PARENT}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/qtadvanceddocking.dll ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/zlib1.dll ${OUTPUT_DIR_PARENT}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ZLIB_DIR}/zlib1.dll ${OUTPUT_DIR_PARENT}
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_klystrack_plugin/src/x86/release/ksnd.dll ${OUTPUT_DIR_PARENT}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_libopenmpt_plugin/src/libopenmpt-0.7.6+release/bin/libopenmpt.dll ${OUTPUT_DIR_PARENT}
