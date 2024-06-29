@@ -2898,7 +2898,7 @@ color:#ffffff;
   <customwidget>
    <class>NoPageSlider</class>
    <extends>QSlider</extends>
-   <header>nopageslider.h</header>
+   <header>noPageSlider.h</header>
   </customwidget>
   <customwidget>
    <class>Visualizer</class>
