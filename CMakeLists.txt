@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(bzr2 VERSION "2.0.73")
+set(PROJECT_VERSION_PARENT ${PROJECT_VERSION})
 
 #TODO remove
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
-
-configure_file(${CMAKE_SOURCE_DIR}/src/version.h.in ${CMAKE_SOURCE_DIR}/src/version.h @ONLY NEWLINE_STYLE UNIX)
-configure_file(${CMAKE_SOURCE_DIR}/src/BZRPlayer.exe.manifest.in ${CMAKE_SOURCE_DIR}/src/BZRPlayer.exe.manifest @ONLY NEWLINE_STYLE UNIX)
 
 set(OUTPUT_DIR_PARENT "${CMAKE_BINARY_DIR}/output")
 
