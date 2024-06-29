@@ -6,9 +6,12 @@ project(plugin_${NAME})
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
+set(VERSION "2.3.3")
+configure_file(src/adplug-adplug-${VERSION}/src/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/adplug-adplug-${VERSION}/src/version.h @ONLY NEWLINE_STYLE UNIX)
+
 file(GLOB SOURCES
-        src/adplug-adplug-2.3.3/src/*.c
-        src/adplug-adplug-2.3.3/src/*.cpp
+        src/adplug-adplug-${VERSION}/src/*.c
+        src/adplug-adplug-${VERSION}/src/*.cpp
         src/adplug/libbinio/*.cpp
         src/main.cpp
 )
@@ -16,7 +19,7 @@ file(GLOB SOURCES
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        src/adplug-adplug-2.3.3/src
+        src/adplug-adplug-${VERSION}/src
         src/adplug/libbinio
 
         ${CMAKE_SOURCE_DIR}/src
