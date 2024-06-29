@@ -15,7 +15,7 @@ set(SUBDIRECTORIES_BY_MODULES
         app "src"
         plugin_aac "src/plugins/FMOD_aac_plugin"
         plugin_adplug "src/plugins/FMOD_adplug_plugin"
-        plugin_ahx "src/plugins/FMOD_AHX_plugin"   #crash when opening tracker view during playback
+        plugin_ahx "src/plugins/FMOD_AHX_plugin"   #crash when opening tracker view during playback #check cmake TODO
         plugin_asap "src/plugins/FMOD_ASAP_plugin"
         plugin_audiofile "src/plugins/FMOD_audiofile_plugin"
         plugin_fc "src/plugins/FMOD_FC_plugin"
