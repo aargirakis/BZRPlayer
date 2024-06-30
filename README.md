@@ -1,10 +1,30 @@
-<h1>BZR Player</h1>
-BZR Player is an audio player for Windows with the primary goal being able to play a lot of different file formats. It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008. The last 1.x version was released 2019-Apr-08. This is the beginning of the new 2.x version which is coded pretty much from scratch. Please add features and bugs here on Github.<br/><br/>
-Build BZR Player 2 with <strong>-DCMAKE_PREFIX_PATH="&lt;<em>your_qt5_mingw81_32_path</em>&gt;" -G "Ninja"</strong> cmake flags.
+<h1>BZR Player 2</h1>
+BZR Player 2 is an audio player for Windows with the primary goal being able to play a lot of different file formats.
+It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008.
+The last 1.x version was released 2019-Apr-08.
+This is the beginning of the new 2.x version which is coded pretty much from scratch.
+Please add features and bugs here on GitHub.
 <br/>
-For generating a zip release package run cmake with <strong>Release</strong> profile: you may need to specify the <strong>cpack</strong> path, in which case add also <strong>-DCPACK_EXECUTABLE="&lt;<em>your_cpack_executable_path</em>&gt;"</strong> to cmake command
+
+<h3>Build with CMake</h3>
+<h4>on Windows:</h4>
+Build BZR2 with <strong>-DCMAKE_PREFIX_PATH="/path/to/your/qt5/mingw81_32" -G "Ninja"</strong>
+cmake flags;
+<strong>mingw810_32</strong> toolchain is needed (can be also found in <strong>
+/path/to/your/qt/installation/Tools/mingw810_32</strong>).
 <br/>
-Dockerized cross-compilation toolchain it is also provided
+For generating a zip release package add <strong>-DCMAKE_BUILD_TYPE=Release</strong> flag: you may need to specify
+the <strong>cpack</strong> path, in which case add <strong>-DCPACK_EXECUTABLE="/path/to/your/cpack/executable"</strong>
+flag.
+<br/><br/>
+<h4>cross-compilation on Linux:</h4>
+Dockerized cross-compilation toolchain it is also provided: just execute <strong>run.sh</strong> from the <strong>
+docker</strong> dir, eventually
+setting <strong>BUILD_TYPE=Release</strong> if needed.
+<br/>
+If you also want to run BZR2 after the build, then set <strong>RUN_BZR2=1</strong> (<strong>wine</strong> is required).
+<br/>
+For generating a zip release package add <strong>-DCMAKE_BUILD_TYPE=Release</strong> flag.
 <br/><br/>
 
 Official page is http://bzrplayer.blazer.nu
