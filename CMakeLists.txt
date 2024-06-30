@@ -10,10 +10,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 set(OUTPUT_DIR_PARENT "${CMAKE_BINARY_DIR}/output")
 
 set(SUBDIRECTORIES_BY_MODULES
-        app "src"
+        app "src"                                                                 #TODO songlength download doesnt work
         plugin_aac "src/plugins/FMOD_aac_plugin"
         plugin_adplug "src/plugins/FMOD_adplug_plugin"
-        plugin_ahx "src/plugins/FMOD_AHX_plugin"   #crash when opening tracker view during playback #check cmake TODO
+        plugin_ahx "src/plugins/FMOD_AHX_plugin"                                  #TODO crash when opening tracker view during playback #check cmake TODO
         plugin_asap "src/plugins/FMOD_ASAP_plugin"
         plugin_audiofile "src/plugins/FMOD_audiofile_plugin"
         plugin_fc "src/plugins/FMOD_FC_plugin"
@@ -101,4 +101,5 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 endif ()
 
 #TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR_PARENT})
-#TODO why compiled output is bigger?
+#TODO why compiled output on win is bigger?
+#TODO manage plugin versions in settingswindow.cpp
