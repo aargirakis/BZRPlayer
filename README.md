@@ -4,7 +4,7 @@ Build BZR Player 2 with <strong>-DCMAKE_PREFIX_PATH="&lt;<em>your_qt5_mingw81_32
 <br/>
 For generating a zip release package run cmake with <strong>Release</strong> profile: you may need to specify the <strong>cpack</strong> path, in which case add also <strong>-DCPACK_EXECUTABLE="&lt;<em>your_cpack_executable_path</em>&gt;"</strong> to cmake command
 <br/>
-Dockerized cross-compilation toolchain it is also provided
+Dockerized cross-compilation toolchain it is also provided: just execute <strong>run.sh</strong> from the <strong>docker</strong> dir, eventually setting <strong>BUILD_TYPE=Release</strong> if needed
 <br/><br/>
 
 Official page is http://bzrplayer.blazer.nu
