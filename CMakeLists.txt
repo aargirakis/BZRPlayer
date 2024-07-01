@@ -29,6 +29,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_libopenmpt "src/plugins/FMOD_libopenmpt_plugin"                    #TODO crash when opening tracker view during playback
         plugin_libsidplayfp "src/plugins/FMOD_libsidplayfp_plugin"                #check cmake TODO
         plugin_libxmp "src/plugins/FMOD_libxmp_plugin"                            #TODO might crash when opening tracker view during playback
+        plugin_mdx "src/plugins/FMOD_MDX_plugin"
 )
 
 set(MODULES)
