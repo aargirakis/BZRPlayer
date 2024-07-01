@@ -27,7 +27,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_kdm "src/plugins/FMOD_kdm_plugin"
         plugin_klystrack "src/plugins/FMOD_klystrack_plugin"                      #TODO never worked
         plugin_libopenmpt "src/plugins/FMOD_libopenmpt_plugin"                    #TODO crash when opening tracker view during playback
-        plugin_libsidplayfp "src/plugins/FMOD_libsidplayfp_plugin"
+        plugin_libsidplayfp "src/plugins/FMOD_libsidplayfp_plugin"                #check cmake TODO
         plugin_libxmp "src/plugins/FMOD_libxmp_plugin"                            #TODO might crash when opening tracker view during playback
 )
 

@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef __WIN32__          //added by blazer for linux cross-compilation
 #ifdef __WIN32__
 	#include <windows.h>
 #endif
