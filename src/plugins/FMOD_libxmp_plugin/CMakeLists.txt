@@ -1,15 +1,17 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME ahx)
+set(NAME libxmp)
 project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
 
 file(GLOB SOURCES
-        src/1.9/*.c
-        src/queue.c
+        src/libxmp-4.5.0/src/*.c
+        src/libxmp-4.5.0/src/depackers/*.c
+        src/libxmp-4.5.0/src/loaders/*.c
+        src/libxmp-4.5.0/src/loaders/prowizard/*.c
+        src/libxmp-4.5.0/src/win32/*.c
         src/main.cpp
 
         ${CMAKE_SOURCE_DIR}/src/plugins/FMOD_Flod_plugin/src/flod/BaseRow.cpp #TODO might cause crash when opening tracker view during playback
@@ -18,8 +20,13 @@ file(GLOB SOURCES
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        src
-        src/1.9
+        src/libxmp-4.5.0/include
+        src/libxmp-4.5.0/src
+        src/libxmp-4.5.0/src/depackers
+        src/libxmp-4.5.0/src/loaders
+        src/libxmp-4.5.0/src/loaders/prowizard
+        src/libxmp-4.5.0/src/win32
+        src/libxmp-4.5.0/src/win32/sys
 
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc

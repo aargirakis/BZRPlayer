@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME ahx)
+set(NAME libopenmpt)
 project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
 
 file(GLOB SOURCES
-        src/1.9/*.c
         src/queue.c
         src/main.cpp
 
@@ -18,11 +16,14 @@ file(GLOB SOURCES
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        src
-        src/1.9
+        src/libopenmpt-0.7.6+release/libopenmpt
 
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        -L${CMAKE_CURRENT_SOURCE_DIR}/src/libopenmpt-0.7.6+release/bin -llibopenmpt
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

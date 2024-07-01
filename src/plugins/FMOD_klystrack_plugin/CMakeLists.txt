@@ -1,28 +1,27 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME ahx)
+set(NAME klystrack)
 project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 --no-strict-aliasing") #TODO needed?
 
 file(GLOB SOURCES
-        src/1.9/*.c
-        src/queue.c
         src/main.cpp
-
-        ${CMAKE_SOURCE_DIR}/src/plugins/FMOD_Flod_plugin/src/flod/BaseRow.cpp #TODO might cause crash when opening tracker view during playback
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        src
-        src/1.9
+        src/include
 
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        -L${CMAKE_CURRENT_SOURCE_DIR}/src/x86/release -lksnd
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
