@@ -10,7 +10,6 @@
 
 #include "fmod_errors.h"
 
-#include "libsidplayfp-2.4.2/src/sidplayfp/sidplayfp.h"
 #include "sidplayfp.h"
 #include "SidTune.h"
 #include "SidTuneInfo.h"

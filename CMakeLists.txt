@@ -23,6 +23,12 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_highly_experimental "src/plugins/FMOD_Highly_Experimental_plugin"  #check cmake TODO
         plugin_highly_quixotic "src/plugins/FMOD_Highly_Quixotic_plugin"          #check cmake TODO
         plugin_highly_theoretical "src/plugins/FMOD_Highly_Theoretical_plugin"    #check cmake TODO
+        plugin_jaytrax "src/plugins/FMOD_jaytrax_plugin"
+        plugin_kdm "src/plugins/FMOD_kdm_plugin"
+        plugin_klystrack "src/plugins/FMOD_klystrack_plugin"                      #TODO never worked
+        plugin_libopenmpt "src/plugins/FMOD_libopenmpt_plugin"                    #TODO crash when opening tracker view during playback
+        plugin_libsidplayfp "src/plugins/FMOD_libsidplayfp_plugin"
+        plugin_libxmp "src/plugins/FMOD_libxmp_plugin"                            #TODO might crash when opening tracker view during playback
 )
 
 set(MODULES)
