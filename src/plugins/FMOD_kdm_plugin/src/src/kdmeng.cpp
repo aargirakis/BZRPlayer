@@ -3,7 +3,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <windows.h> //added by blazer
-#include "myendian.h" //added by blazer
+#include "MyEndian.h" //added by blazer
 #include <iostream> //for cout
 #include <fstream>
 using namespace std;
