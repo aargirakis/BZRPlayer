@@ -1,17 +1,21 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME adplug)
-project(plugin_${NAME})
+project(plugin_${NAME} VERSION "2.3.3")
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-set(VERSION "2.3.3")
-configure_file(src/adplug-adplug-${VERSION}/src/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/adplug-adplug-${VERSION}/src/version.h @ONLY NEWLINE_STYLE UNIX)
+set(VERSION ${PROJECT_VERSION})
+configure_file(
+        src/adplug-adplug-${PROJECT_VERSION}/src/version.h.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/adplug-adplug-${PROJECT_VERSION}/src/version.h
+        @ONLY NEWLINE_STYLE UNIX
+)
 
 file(GLOB SOURCES
-        src/adplug-adplug-${VERSION}/src/*.c
-        src/adplug-adplug-${VERSION}/src/*.cpp
+        src/adplug-adplug-${PROJECT_VERSION}/src/*.c
+        src/adplug-adplug-${PROJECT_VERSION}/src/*.cpp
         src/adplug/libbinio/*.cpp
         src/main.cpp
 )
@@ -19,7 +23,7 @@ file(GLOB SOURCES
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        src/adplug-adplug-${VERSION}/src
+        src/adplug-adplug-${PROJECT_VERSION}/src
         src/adplug/libbinio
 
         ${CMAKE_SOURCE_DIR}/src
