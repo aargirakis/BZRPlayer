@@ -38,6 +38,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_sndh-player "src/plugins/FMOD_sndh_player_plugin"
         plugin_sunvox "src/plugins/FMOD_sunvox_plugin"
         plugin_uade "src/plugins/FMOD_uade_plugin"
+        plugin_v2m "src/plugins/FMOD_v2m_plugin"
 )
 
 set(MODULES)
