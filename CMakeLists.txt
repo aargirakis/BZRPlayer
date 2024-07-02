@@ -35,6 +35,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_protrekkr "src/plugins/FMOD_protrekkr_plugin"
         plugin_s98 "src/plugins/FMOD_s98_plugin"                                  #TODO never worked ?
         plugin_sc68 "src/plugins/FMOD_sc68_plugin"
+        plugin_sndh-player "src/plugins/FMOD_sndh_player_plugin"
 )
 
 set(MODULES)
