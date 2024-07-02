@@ -41,6 +41,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_v2m "src/plugins/FMOD_v2m_plugin"
         plugin_vgmplay "src/plugins/FMOD_vgmplay_plugin"                          #check cmake TODO
         plugin_vgmstream "src/plugins/FMOD_vgmstream_plugin"
+        plugin_vio2sf "src/plugins/FMOD_vio2sf_plugin"                            #check cmake TODO
 )
 
 set(MODULES)
