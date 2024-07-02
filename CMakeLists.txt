@@ -44,6 +44,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_vio2sf "src/plugins/FMOD_vio2sf_plugin"                            #check cmake TODO
         plugin_wsr "src/plugins/FMOD_wsr_plugin"
         plugin_ym "src/plugins/FMOD_ym_plugin"
+        plugin_zxtune "src/plugins/FMOD_zxtune_plugin"                            #check cmake TODO
 )
 
 set(MODULES)
