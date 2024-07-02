@@ -4,7 +4,13 @@ set(NAME protrekkr)
 project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
-set(CMAKE_CXX_STANDARD 17)
+
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_CXX_STANDARD 17)
+else ()
+    set(CMAKE_CXX_STANDARD 14)
+endif ()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__REPLAYER__ -D__STAND_ALONE__ -D__WINAMP__")
 
 file(GLOB SOURCES
