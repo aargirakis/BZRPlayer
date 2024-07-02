@@ -32,6 +32,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_mdx "src/plugins/FMOD_MDX_plugin"
         plugin_org "src/plugins/FMOD_org_plugin"                                   #TODO never worked ?
         plugin_pac "src/plugins/FMOD_pac_plugin"
+        plugin_protrekkr "src/plugins/FMOD_protrekkr_plugin"
 )
 
 set(MODULES)
