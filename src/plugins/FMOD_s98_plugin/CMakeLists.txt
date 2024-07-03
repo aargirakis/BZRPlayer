@@ -4,7 +4,12 @@ set(NAME s98)
 project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
-set(CMAKE_CXX_STANDARD 17)
+
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_CXX_STANDARD 17)
+else ()
+    set(CMAKE_CXX_STANDARD 14)
+endif ()
 
 file(GLOB SOURCES
         src/s98/*.cpp
