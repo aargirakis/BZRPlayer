@@ -5,6 +5,7 @@ project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
 
 file(GLOB SOURCES
         src/blazer.c
@@ -47,6 +48,7 @@ file(GLOB SOURCES
         src/uade-2.13-1.01/src/uade.c
         src/uade-2.13-1.01/src/uademain.c
         src/uade-2.13-1.01/src/unixatomic.c
+        src/*.c
         src/main.cpp
 )
 

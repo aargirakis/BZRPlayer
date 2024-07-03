@@ -1,7 +1,8 @@
 #ifndef AMIGA_H
 #define AMIGA_H
 #include <vector>
-#include "AmigaFilter.h"
+//#include "AmigaFilter.h" //added by blazer for linux cross-compilation
+#include "amigafilter.h" //added by blazer for linux cross-compilation
 class AmigaPlayer;
 class AmigaFilter;
 class AmigaChannel;
