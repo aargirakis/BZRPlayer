@@ -19,6 +19,7 @@
 //std includes
 #include <algorithm>
 #include <cassert>
+#include <limits>       //added by blazer for linux cross-compilation
 
 namespace Strings
 {
