@@ -13,34 +13,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_SOURCE_D
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest.in ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest @ONLY NEWLINE_STYLE UNIX)
 
 set(QT_VERSION_MAJOR "5")
+set(QT_MODULES Core Gui Network OpenGL Svg Widgets Xml) #TODO Angle?
 
-#TODO debug crashes
-#set(CMAKE_C_FLAGS_DEBUG "-O3 -DNDEBUG")
-#set(CMAKE_CXX_FLAGS_DEBUG "-O3 -DNDEBUG")
-#message(WARNING "CMAKE_C_FLAGS_DEBUG is ${CMAKE_C_FLAGS_DEBUG}")
-#message(WARNING "CMAKE_CXX_FLAGS_DEBUG is ${CMAKE_CXX_FLAGS_DEBUG}")
-#message(WARNING "CMAKE_C_FLAGS_RELEASE is ${CMAKE_C_FLAGS_RELEASE}")
-#message(WARNING "CMAKE_CXX_FLAGS_RELEASE is ${CMAKE_CXX_FLAGS_RELEASE}")
-
-#SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
-#SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
-
-
-#set(build_types Debug Release RelWithDebInfo MinSizeRel)
-#if(NOT CMAKE_BUILD_TYPE)
-#    message(STATUS "You can choose the type of build, options are:${build_types}")
-#    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
-#            "Options are ${build_types}"
-#            FORCE
-#    )
-#    # Provide drop down menu options in cmake-gui
-#    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${build_types})
-#endif()
-#message(STATUS "Doing a ${CMAKE_BUILD_TYPE} build")
-
-set(QT_MODULES Core Gui Network OpenGL Svg Widgets Xml)
-
-find_package(Qt5 COMPONENTS ${QT_MODULES} REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
 
 file(GLOB SOURCES
         *.cpp

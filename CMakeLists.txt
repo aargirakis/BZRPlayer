@@ -13,7 +13,7 @@ set(SUBDIRECTORIES_BY_MODULES
         app "src"                                                                 #TODO songlength download doesnt work
         plugin_aac "src/plugins/FMOD_aac_plugin"
         plugin_adplug "src/plugins/FMOD_adplug_plugin"
-        plugin_ahx "src/plugins/FMOD_AHX_plugin"                                  #TODO crash when opening tracker view during playback #check cmake TODO
+        plugin_ahx "src/plugins/FMOD_AHX_plugin"                                  #check cmake TODO
         plugin_asap "src/plugins/FMOD_ASAP_plugin"
         plugin_audiofile "src/plugins/FMOD_audiofile_plugin"
         plugin_fc "src/plugins/FMOD_FC_plugin"
@@ -26,9 +26,9 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_jaytrax "src/plugins/FMOD_jaytrax_plugin"
         plugin_kdm "src/plugins/FMOD_kdm_plugin"
         plugin_klystrack "src/plugins/FMOD_klystrack_plugin"                      #TODO never worked
-        plugin_libopenmpt "src/plugins/FMOD_libopenmpt_plugin"                    #TODO crash when opening tracker view during playback
+        plugin_libopenmpt "src/plugins/FMOD_libopenmpt_plugin"
         plugin_libsidplayfp "src/plugins/FMOD_libsidplayfp_plugin"                #check cmake TODO
-        plugin_libxmp "src/plugins/FMOD_libxmp_plugin"                            #TODO might crash when opening tracker view during playback
+        plugin_libxmp "src/plugins/FMOD_libxmp_plugin"
         plugin_mdx "src/plugins/FMOD_MDX_plugin"
         plugin_org "src/plugins/FMOD_org_plugin"                                  #TODO never worked ?
         plugin_pac "src/plugins/FMOD_pac_plugin"
@@ -61,14 +61,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
     set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
     set(CPACK_OUTPUT_FILE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/release_zip)
-    #   set(CPACK_PACKAGE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/release_zip)
-
-
-    #install(TARGETS app
-    #        RUNTIME DESTINATION bin
-    #        LIBRARY DESTINATION lib
-    #        ARCHIVE DESTINATION lib
-    #)
 
     install(
             DIRECTORY
@@ -122,6 +114,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     )
 endif ()
 
+#TODO tracker view modVUMeters crash
 #TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR_PARENT})
 #TODO why compiled output on win is bigger?
 #TODO manage plugin versions in settingswindow.cpp
