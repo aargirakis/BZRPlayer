@@ -502,7 +502,8 @@ void SoundManager::MuteChannels(unsigned int mask, QString maskStr)
 bool SoundManager::isChannelMuted(unsigned int channel)
 {
     bool muted = false;
-    if(m_mutedChannelsMaskString.at(channel)=='0')
+    if (m_mutedChannelsMaskString != nullptr &&
+        m_mutedChannelsMaskString.at(channel)=='0')
     {
         muted=true;
     }
