@@ -1,2 +1,0 @@
-Original libxmp library by Claudio Matsuoka https://github.com/cmatsuoka/libxmp
-Custom fork at https://github.com/vitamin-caig/libxmp
