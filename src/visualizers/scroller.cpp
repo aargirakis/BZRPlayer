@@ -333,6 +333,7 @@ void Scroller::printText(QPainter *painter, QPaintEvent *event)
 }
 void Scroller::paintScroller(QPainter *painter, QPaintEvent *event)
 {
+    if (m_scrollText.isEmpty()) return;
     // Sine
     for (int n = 0; n < letters; n++)
     {
@@ -360,21 +361,19 @@ void Scroller::paintScroller(QPainter *painter, QPaintEvent *event)
               //Only draw if it's visible
               int scrollerYPosition = originalHeight / 2-fontHeight/2;
               int finalY = y+scrollerYPosition+verticalScrollPosition;
-              if(!m_scrollText.isEmpty())
+
+              if(x[n]+(xC)>(-1*fontWidth) && x[n]+(xC)<originalWidth && finalY<originalHeight &&  finalY>(-1*fontHeight))
               {
-                  if(x[n]+(xC)>(-1*fontWidth) && x[n]+(xC)<originalWidth && finalY<originalHeight &&  finalY>(-1*fontHeight))
-                  {
-                    painter->setOpacity(1.0f);
-                    painter->setTransform(QTransform().scale(scaleX, scaleY));
-                    painter->drawPixmap(x[n]+(xC), finalY,    fontScaleX,   fontHeight, m_CharacterMap, chars[n] * fontWidth + xC, 0,      fontScaleX,   fontHeight);
-                    //reflection
-                    if(reflectionEnabled)
-                    {
-                        painter->setOpacity(reflectionOpacity);
-                        painter->setTransform(QTransform().scale(scaleX, -1*scaleY));
-                        painter->drawPixmap(x[n]+(xC), y-scrollerYPosition-verticalScrollPosition-(bottomY*2)-fontHeight-(fontHeight/2),    fontScaleX,   fontHeight/2, m_CharacterMap, chars[n] * fontWidth + xC, 0,      fontScaleX,   fontHeight);
-                    }
-                  }
+                painter->setOpacity(1.0f);
+                painter->setTransform(QTransform().scale(scaleX, scaleY));
+                painter->drawPixmap(x[n]+(xC), finalY,    fontScaleX,   fontHeight, m_CharacterMap, chars[n] * fontWidth + xC, 0,      fontScaleX,   fontHeight);
+                //reflection
+                if(reflectionEnabled)
+                {
+                    painter->setOpacity(reflectionOpacity);
+                    painter->setTransform(QTransform().scale(scaleX, -1*scaleY));
+                    painter->drawPixmap(x[n]+(xC), y-scrollerYPosition-verticalScrollPosition-(bottomY*2)-fontHeight-(fontHeight/2),    fontScaleX,   fontHeight/2, m_CharacterMap, chars[n] * fontWidth + xC, 0,      fontScaleX,   fontHeight);
+                }
               }
           }
           painter->setOpacity(1.0f);
@@ -1184,6 +1183,7 @@ void Scroller::setPrinterFontScaleY(int v)
 }
 bool Scroller::setScrollerFont(QString font)
 {
+    if (m_scrollText.isEmpty()) return false;
 
     int extensionPos = font.lastIndexOf('.');
     if (extensionPos==-1)
