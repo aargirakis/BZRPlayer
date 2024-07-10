@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.28)
 project(bzr2 VERSION "2.0.73")
 set(PROJECT_VERSION_PARENT ${PROJECT_VERSION})
 
+include(${CMAKE_SOURCE_DIR}/utils.cmake)
+
 #TODO remove
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
@@ -116,5 +118,5 @@ endif ()
 
 #TODO tracker view modVUMeters crash
 #TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR_PARENT})
-#TODO why compiled output on win is bigger?
+#TODO why compiled output is bigger than using makefile?
 #TODO manage plugin versions in settingswindow.cpp
