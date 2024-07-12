@@ -3,3 +3,4 @@ build/
 cmake-build-*/
 
 BZRPlayer.pro.user
+src/version.h
