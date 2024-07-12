@@ -107,11 +107,14 @@ endif ()
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     #TODO
     set(ZLIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/static")
+    set(LIBCRYPTO "${CMAKE_CURRENT_SOURCE_DIR}/static/libcrypto-1_1.dll") #TODO needed?
+    set(LIBSSL "${CMAKE_CURRENT_SOURCE_DIR}/static/libssl-1_1.dll")
 else ()
     set(ZLIB_DIR "${CMAKE_PREFIX_PATH}/bin")
+    set(LIBCRYPTO "${CMAKE_PREFIX_PATH}/bin/libcrypto-3.dll") #TODO needed?
+    set(LIBSSL "${CMAKE_PREFIX_PATH}/bin/libssl-3.dll")
 endif ()
 
-##TODO miss: libcrypto-1_1.dll, libssl-1_1.dll (really needed?)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/LICENSE ${OUTPUT_DIR_PARENT}/LICENSE.txt
 
@@ -122,8 +125,10 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayerTest.exe ${OUTPUT_DIR_PARENT}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml ${OUTPUT_DIR_PARENT}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LIBCRYPTO} ${OUTPUT_DIR_PARENT}  #TODO needed?
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LIBSSL} ${OUTPUT_DIR_PARENT}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/qtadvanceddocking.dll ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ZLIB_DIR}/zlib1.dll ${OUTPUT_DIR_PARENT}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ZLIB_DIR}/zlib1.dll ${OUTPUT_DIR_PARENT} #TODO move to the right place
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_klystrack_plugin/src/x86/release/ksnd.dll ${OUTPUT_DIR_PARENT}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_libopenmpt_plugin/src/libopenmpt-0.7.6+release/bin/libopenmpt.dll ${OUTPUT_DIR_PARENT}

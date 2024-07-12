@@ -12,7 +12,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 set(OUTPUT_DIR_PARENT "${CMAKE_BINARY_DIR}/output")
 
 set(SUBDIRECTORIES_BY_MODULES
-        app "src"                                                                 #TODO songlength download doesnt work
+        app "src"
         plugin_aac "src/plugins/FMOD_aac_plugin"
         plugin_adplug "src/plugins/FMOD_adplug_plugin"
         plugin_ahx "src/plugins/FMOD_AHX_plugin"                                  #check cmake TODO
@@ -86,8 +86,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             ${OUTPUT_DIR_PARENT}/BZRPlayer.VisualElementsManifest.xml
             ${OUTPUT_DIR_PARENT}/fmod.dll
             ${OUTPUT_DIR_PARENT}/ksnd.dll
+            ${OUTPUT_DIR_PARENT}/libcrypto-1_1.dll #TODO needed?
             ${OUTPUT_DIR_PARENT}/libgcc_s_dw2-1.dll
             ${OUTPUT_DIR_PARENT}/libopenmpt.dll
+            ${OUTPUT_DIR_PARENT}/libssl-1_1.dll
             ${OUTPUT_DIR_PARENT}/libstdc++-6.dll
             ${OUTPUT_DIR_PARENT}/libwinpthread-1.dll
             ${OUTPUT_DIR_PARENT}/LICENSE.txt
