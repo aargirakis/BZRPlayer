@@ -9,8 +9,17 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 set(PROJECT_VERSION ${PROJECT_VERSION_PARENT})
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/version.h @ONLY NEWLINE_STYLE UNIX)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest.in ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest @ONLY NEWLINE_STYLE UNIX)
+
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/version.h.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/version.h
+        @ONLY NEWLINE_STYLE UNIX
+)
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest
+        @ONLY NEWLINE_STYLE UNIX
+)
 
 set(QT_VERSION_MAJOR "5")
 set(QT_MODULES Core Gui Network OpenGL Svg Widgets Xml) #TODO Angle?
@@ -60,7 +69,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 foreach (QT_MODULE ${QT_MODULES})
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll" ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll"
+            ${OUTPUT_DIR_PARENT}
             VERBATIM
     )
 endforeach ()
@@ -73,33 +84,39 @@ endif ()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR_PARENT}/platforms"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_PLATFORMS_DIR}/qwindows.dll" "${OUTPUT_DIR_PARENT}/platforms"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${QT_PLATFORMS_DIR}/qwindows.dll"
+        "${OUTPUT_DIR_PARENT}/platforms"
         VERBATIM
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libgcc_s_dw2-1.dll ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll ${OUTPUT_DIR_PARENT}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_PREFIX_PATH}/bin/libgcc_s_dw2-1.dll
+        ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll
+        ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll
+        ${OUTPUT_DIR_PARENT}
         VERBATIM
 )
 
 if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libgraphite2.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libharfbuzz-0.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libiconv-2.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libintl-8.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libssp-0.dll ${OUTPUT_DIR_PARENT}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_PREFIX_PATH}/bin/libzstd.dll ${OUTPUT_DIR_PARENT}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
+            ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
+            ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
+            ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
+            ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
+            ${CMAKE_PREFIX_PATH}/bin/libgraphite2.dll
+            ${CMAKE_PREFIX_PATH}/bin/libharfbuzz-0.dll
+            ${CMAKE_PREFIX_PATH}/bin/libiconv-2.dll
+            ${CMAKE_PREFIX_PATH}/bin/libintl-8.dll
+            ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll
+            ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll
+            ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll
+            ${CMAKE_PREFIX_PATH}/bin/libssp-0.dll
+            ${CMAKE_PREFIX_PATH}/bin/libzstd.dll
+            ${OUTPUT_DIR_PARENT}
             VERBATIM
     )
 endif ()
@@ -116,23 +133,33 @@ else ()
 endif ()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/LICENSE ${OUTPUT_DIR_PARENT}/LICENSE.txt
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/LICENSE
+        ${OUTPUT_DIR_PARENT}/LICENSE.txt
 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/external/FMOD/api/core/lib/x86/fmod.dll ${OUTPUT_DIR_PARENT}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/FMOD/api/core/lib/x86/fmod.dll
+        ${OUTPUT_DIR_PARENT}
 
-        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/data ${OUTPUT_DIR_PARENT}/data
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/user/plugin/sid/Songlengths.md5 ${OUTPUT_DIR_PARENT}/user/plugin/sid/Songlengths.md5
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/static/data
+        ${OUTPUT_DIR_PARENT}/data
 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayerTest.exe ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LIBCRYPTO} ${OUTPUT_DIR_PARENT}  #TODO needed?
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LIBSSL} ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/static/qtadvanceddocking.dll ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ZLIB_DIR}/zlib1.dll ${OUTPUT_DIR_PARENT} #TODO move to the right place
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/static/user/plugin/sid/Songlengths.md5
+        ${OUTPUT_DIR_PARENT}/user/plugin/sid/Songlengths.md5
 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_klystrack_plugin/src/x86/release/ksnd.dll ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_libopenmpt_plugin/src/libopenmpt-0.7.6+release/bin/libopenmpt.dll ${OUTPUT_DIR_PARENT}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_sunvox_plugin/sunvox_lib/windows/lib_x86/sunvox.dll ${OUTPUT_DIR_PARENT}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayerTest.exe
+        ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml
+        ${LIBCRYPTO}   #TODO needed?
+        ${LIBSSL}
+        ${CMAKE_CURRENT_SOURCE_DIR}/static/qtadvanceddocking.dll
+        ${ZLIB_DIR}/zlib1.dll  #TODO move to the right place
+        ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_klystrack_plugin/src/x86/release/ksnd.dll
+        ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_libopenmpt_plugin/src/libopenmpt-0.7.6+release/bin/libopenmpt.dll
+        ${CMAKE_CURRENT_SOURCE_DIR}/plugins/FMOD_sunvox_plugin/sunvox_lib/windows/lib_x86/sunvox.dll
+        ${OUTPUT_DIR_PARENT}
 
         VERBATIM
 )
