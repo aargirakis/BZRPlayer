@@ -96,10 +96,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             ${OUTPUT_DIR_PARENT}/Qt5Core.dll
             ${OUTPUT_DIR_PARENT}/Qt5Gui.dll
             ${OUTPUT_DIR_PARENT}/Qt5Network.dll
-
-            #TODO not needed?
             ${OUTPUT_DIR_PARENT}/Qt5OpenGL.dll
-
             ${OUTPUT_DIR_PARENT}/Qt5Svg.dll
             ${OUTPUT_DIR_PARENT}/Qt5Widgets.dll
             ${OUTPUT_DIR_PARENT}/Qt5Xml.dll
