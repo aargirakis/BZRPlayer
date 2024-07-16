@@ -394,7 +394,7 @@ void Scroller::paintScroller(QPainter *painter, QPaintEvent *event)
               charPos = bitmapFontCharset.indexOf(m_scrollText.at(position));
               chars[n]=charPos;
               position++;
-              if (position > m_scrollText.length()) position = 0;
+              if (position >= m_scrollText.length()) position = 0;
           }
       }
 
