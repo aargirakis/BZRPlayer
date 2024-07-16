@@ -3,6 +3,8 @@ project(app)
 
 set(CMAKE_CXX_STANDARD 14)
 
+#TODO original qmake flags to check: -fexceptions -mthreads -DUNICODE -D_UNICODE -DMINGW_HAS_SECURE_API=1
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
