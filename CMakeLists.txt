@@ -120,7 +120,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     )
 endif ()
 
-#TODO tracker view modVUMeters crash
 #TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR_PARENT})
 #TODO why compiled output is bigger than using makefile?
 #TODO manage plugin versions in settingswindow.cpp
