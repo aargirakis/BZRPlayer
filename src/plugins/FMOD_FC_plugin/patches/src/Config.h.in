@@ -1,4 +1,4 @@
-/* src/Config.h.in.  Generated from configure.in by autoheader.  */
+/* src/Config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
@@ -72,16 +72,16 @@
 #undef PACKAGE_VERSION
 
 /* The size of `char', as computed by sizeof. */
-#define SIZEOF_CHAR 1
+#define SIZEOF_CHAR @SIZEOF_CHAR@
 
 /* The size of `int', as computed by sizeof. */
-#define SIZEOF_INT 4
+#define SIZEOF_INT @SIZEOF_INT@
 
 /* The size of `long int', as computed by sizeof. */
-#define SIZEOF_LONG_INT 4
+#define SIZEOF_LONG_INT @SIZEOF_LONG_INT@
 
 /* The size of `short int', as computed by sizeof. */
-#define SIZEOF_SHORT_INT 2
+#define SIZEOF_SHORT_INT @SIZEOF_SHORT_INT@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
