@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME libsidplayfp)
+set(NAME "libsidplayfp")
 project(plugin_${NAME} VERSION "2.7.1")
 
 set(CMAKE_C_STANDARD 17)
@@ -15,20 +15,20 @@ endif ()
 #TODO see https://github.com/libsidplayfp/libsidplayfp/issues/135 for the right source code to utilize.
 #TODO these files are: sidplayer1.bin, sidplayer2.bin, config.h and others
 
-set(PACKAGE_VERSION ${PROJECT_VERSION})
+set(PACKAGE_VERSION "${PROJECT_VERSION}")
 set(RESID_BRANCH_HINTS 1)
 set(HAVE_BUILTIN_EXPECT 1) #TODO
 set(RESID_INLINING 1)
-set(RESID_INLINE inline)
+set(RESID_INLINE "inline")
 configure_file(
         src/libsidplayfp-${PROJECT_VERSION}/src/builders/residfp-builder/residfp/siddefs-fp.h.in
         ${CMAKE_CURRENT_SOURCE_DIR}/src/libsidplayfp-${PROJECT_VERSION}/src/builders/residfp-builder/residfp/siddefs-fp.h
         @ONLY NEWLINE_STYLE UNIX
 )
 
-#set(LIB_MAJOR ${PROJECT_VERSION_MAJOR})
-#set(LIB_MINOR ${PROJECT_VERSION_MINOR})
-#set(LIB_LEVEL ${PROJECT_VERSION_PATCH})
+#set(LIB_MAJOR "${PROJECT_VERSION_MAJOR}")
+#set(LIB_MINOR "${PROJECT_VERSION_MINOR}")
+#set(LIB_LEVEL "${PROJECT_VERSION_PATCH}")
 #configure_file(
 #        src/libsidplayfp-${PROJECT_VERSION}/src/sidplayfp/sidversion.h.in
 #        ${CMAKE_CURRENT_SOURCE_DIR}/src/libsidplayfp-${PROJECT_VERSION}/src/sidplayfp/sidversion.h

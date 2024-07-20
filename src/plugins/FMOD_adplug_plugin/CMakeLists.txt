@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME adplug)
+set(NAME "adplug")
 project(plugin_${NAME} VERSION "2.3.3")
 
 set(CMAKE_C_STANDARD 17)

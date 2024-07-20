@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME asap)
+set(NAME "asap")
 project(plugin_${NAME} VERSION "5.2.0")
 
 set(CMAKE_C_STANDARD 17)
@@ -10,7 +10,6 @@ set(GIT_REPO_NAME "${NAME}")
 set(GIT_REPO_URL "https://git.code.sf.net/p/${GIT_REPO_NAME}/code")
 string(REPLACE "." "_" GIT_CLONE_AT "ASAP_${PROJECT_VERSION}")
 set(GIT_IS_TAG true)
-
 clone_and_patch(
         ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
         ""

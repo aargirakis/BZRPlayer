@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME audiofile)
+set(NAME "audiofile")
 project(plugin_${NAME}) #TODO version
 
 set(CMAKE_C_STANDARD 17)
@@ -11,14 +11,12 @@ set(GIT_REPO_NAME "${NAME}")
 set(GIT_REPO_URL "https://github.com/mpruett/${GIT_REPO_NAME}.git")
 set(GIT_CLONE_AT "d9363a5d16af4ce55eb35c5aad9ca19bb9c53cbe")
 set(GIT_IS_TAG false)
-
-list(APPEND external_sources_to_remove
+list(APPEND EXTERNAL_SOURCES_TO_REMOVE
         libaudiofile/modules/UT_RebufferModule.cpp
 )
-
 clone_and_patch(
         ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
-        "${external_sources_to_remove}"
+        "${EXTERNAL_SOURCES_TO_REMOVE}"
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 

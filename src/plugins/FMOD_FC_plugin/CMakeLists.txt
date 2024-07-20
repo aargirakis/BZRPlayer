@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME fc)
+set(NAME "fc")
 project(plugin_${NAME} VERSION "1.0.3")
 
 set(CMAKE_C_STANDARD 17)
@@ -11,7 +11,6 @@ set(LIB_NAME_VERSIONED "libfc14audiodecoder-${PROJECT_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.bz2")
 set(LIB_URL "https://src.fedoraproject.org/repo/pkgs/${LIB_NAME}/${LIB_FILENAME}/4df18b3f7eac9ec4ff8e53f7c9a017c3/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "0b8c87fe933158c63dfb6943f88f65be2b0c63c959fb30f0b2821388840168e6")
-
 download_and_patch(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
         ""
@@ -22,7 +21,6 @@ set(SIZEOF_CHAR 1)
 set(SIZEOF_INT 4)
 set(SIZEOF_LONG_INT 4)
 set(SIZEOF_SHORT_INT 2)
-
 configure_file(
         ${EXTERNAL_SOURCE_DIR}/src/Config.h.in
         ${EXTERNAL_SOURCE_DIR}/src/Config.h

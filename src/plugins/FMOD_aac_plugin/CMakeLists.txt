@@ -10,7 +10,6 @@ set(GIT_REPO_NAME "faad2")
 set(GIT_REPO_URL "https://github.com/knik0/${GIT_REPO_NAME}.git")
 string(REPLACE "." "_" GIT_CLONE_AT "${PROJECT_VERSION}")
 set(GIT_IS_TAG true)
-
 clone_and_patch(
         ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
         ""
@@ -19,7 +18,6 @@ clone_and_patch(
 
 add_compile_definitions(HAVE_CONFIG_H=1)
 set(HAVE_MEMCPY 1)
-
 configure_file(
         src/config.h.in
         ${EXTERNAL_SOURCE_DIR}/config.h

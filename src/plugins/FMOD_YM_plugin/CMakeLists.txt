@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME ym)
+set(NAME "ym")
 project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)

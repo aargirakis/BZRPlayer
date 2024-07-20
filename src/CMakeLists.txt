@@ -10,8 +10,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(PROJECT_VERSION ${PROJECT_VERSION_PARENT})
-
+set(PROJECT_VERSION "${PROJECT_VERSION_PARENT}")
 configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/version.h.in
         ${CMAKE_CURRENT_SOURCE_DIR}/version.h
@@ -24,7 +23,7 @@ configure_file(
 )
 
 set(QT_VERSION_MAJOR "5")
-set(QT_MODULES Core Gui Network OpenGL Svg Widgets Xml) #TODO Angle?
+set(QT_MODULES Core Gui Network OpenGL Svg Widgets Xml)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
 
