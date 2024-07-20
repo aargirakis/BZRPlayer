@@ -1,7 +1,0 @@
-*.o
-*.o.*
-*.d
-*.dylib
-lib
-*~
-*.dSYM

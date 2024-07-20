@@ -1,0 +1,4 @@
+do not download source code asset from github because they lack of some needed files.
+use instead: git clone --depth 1 --branch v${PROJECT_VERSION} --recursive https://github.com/tildearrow/${GIT_REPO_NAME}.git
+then remove .git and .github dirs, and pack the the remaining content (without root folder) to furnace-${PROJECT_VERSION}.zip
+

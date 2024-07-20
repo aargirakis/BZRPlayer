@@ -125,8 +125,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
     result = FMOD_CODEC_FILE_SEEK(codec,0,0);
     result = FMOD_CODEC_FILE_READ(codec,buffer,filesize,&bytesread);
-    logLevel = LOGLEVEL_WARN; //added by blazer (but not needed?)
-    initLog(stdout); //added by blazer (but maybe should go just before "ahxplugin *ahx = new ahxplugin(codec);" ? )
+
+    initLog(stdout);
 
     ahx->m_engine = new DivEngine;
     ahx->m_engine->preInit();
