@@ -1,8 +1,0 @@
-config.bat
-*.dsw
-*.ncb
-*.opt
-*.plg
-Debug
-Release
-*.test

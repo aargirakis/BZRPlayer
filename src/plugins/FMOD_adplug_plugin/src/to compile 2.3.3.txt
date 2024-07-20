@@ -1,2 +1,0 @@
-renama version.in.h till version.h
-Lagt in "2.3.3" i version.h
