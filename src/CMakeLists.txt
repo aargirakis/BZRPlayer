@@ -166,6 +166,4 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         VERBATIM
 )
 
-
-#TODO preserve date when copy files
 #TODO add BZRPlayerTest compilation
