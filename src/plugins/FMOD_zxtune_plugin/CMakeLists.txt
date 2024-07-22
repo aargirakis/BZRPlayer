@@ -160,7 +160,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/zxtune-r4110/include
         src/zxtune-r4110/src
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 

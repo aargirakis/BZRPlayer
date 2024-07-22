@@ -176,7 +176,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/ymfm
         ${EXTERNAL_SOURCE_DIR}/src/icon
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 

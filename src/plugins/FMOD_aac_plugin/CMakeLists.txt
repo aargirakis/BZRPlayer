@@ -41,7 +41,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/include
         ${EXTERNAL_SOURCE_DIR}/libfaad
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 

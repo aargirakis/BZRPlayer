@@ -65,7 +65,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/uade-2.13-1.01/src/include
         src/uade-2.13-1.01/src/machdep
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 

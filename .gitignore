@@ -4,5 +4,5 @@ cmake-build-*/
 
 BZRPlayer.pro.user
 
-src/BZRPlayer.exe.manifest
-src/version.h
+src/app/BZRPlayer.exe.manifest
+src/app/version.h

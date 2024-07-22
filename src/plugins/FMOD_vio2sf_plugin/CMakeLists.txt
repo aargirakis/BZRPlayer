@@ -21,7 +21,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/desmume
         src/psflib
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 

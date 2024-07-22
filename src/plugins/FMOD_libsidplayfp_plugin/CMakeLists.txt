@@ -71,7 +71,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/libsidplayfp-${PROJECT_VERSION}/src/utils/MD5
         src/libsidplayfp-${PROJECT_VERSION}/src/utils/STILview
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 

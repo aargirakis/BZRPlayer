@@ -24,7 +24,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/vgmstream-r1831/meta
         src/vgmstream-r1831/util
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 

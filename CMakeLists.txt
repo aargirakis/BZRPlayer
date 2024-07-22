@@ -17,7 +17,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 set(OUTPUT_DIR_PARENT "${CMAKE_BINARY_DIR}/output")
 
 set(SUBDIRECTORIES_BY_MODULES
-        app "src"
+        app "src/app"
         plugin_aac "src/plugins/FMOD_aac_plugin"
         plugin_adplug "src/plugins/FMOD_adplug_plugin"
         plugin_ahx "src/plugins/FMOD_AHX_plugin"                                  #check cmake TODO

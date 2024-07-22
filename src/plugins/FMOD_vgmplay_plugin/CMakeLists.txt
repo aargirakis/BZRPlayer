@@ -90,7 +90,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/vgmplay
         src/vgmplay-0.40.9/chips
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 

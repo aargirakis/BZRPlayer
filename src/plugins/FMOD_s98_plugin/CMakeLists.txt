@@ -28,7 +28,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/s98/device/emu2413
         src/s98/device/fmgen
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 

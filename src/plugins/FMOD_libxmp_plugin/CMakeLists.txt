@@ -28,7 +28,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/libxmp-4.5.0/src/win32
         src/libxmp-4.5.0/src/win32/sys
 
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 
