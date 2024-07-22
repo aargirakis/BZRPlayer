@@ -180,6 +180,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 
+if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows") #fix #543
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/libstdc++.a
+    )
+endif ()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
         -L${CMAKE_SOURCE_DIR}/src/external/zlib -lzdll -lshlwapi
 )
