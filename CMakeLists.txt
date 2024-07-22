@@ -122,5 +122,6 @@ endif ()
 
 #TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR_PARENT})
 #TODO why compiled output is bigger than using makefile?
+#TODO too many baserow.h/baserow.cpp
 #TODO rename plugins with their original names
 #TODO manage plugin names/versions in settingswindow.cpp
