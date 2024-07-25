@@ -1,20 +1,30 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "game")
-project(plugin_${NAME})
+project(plugin_${NAME} VERSION "0.6.3")
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
+set(GIT_REPO_NAME "game-music-emu")
+set(GIT_REPO_URL "https://github.com/libgme/${GIT_REPO_NAME}.git")
+set(GIT_CLONE_AT "${PROJECT_VERSION}")
+set(GIT_IS_TAG true)
+clone_and_patch(
+        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+        ""
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches
+)
+
 file(GLOB SOURCES
-        src/game-music-emu-0.6.3/gme/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/gme/*.cpp
         src/main.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        src/game-music-emu-0.6.3/gme
+        ${EXTERNAL_SOURCE_DIR}/gme
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
