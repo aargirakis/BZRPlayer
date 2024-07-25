@@ -43,7 +43,9 @@ function(clone_and_patch repo_name repo_url repo_tag is_tag external_sources_to_
 
     set(external_source_dir ${${external_repo_name}_SOURCE_DIR})
 
-    patch_sources("${repo_name}" "${external_source_dir}" "${external_sources_to_remove}" "${patch_sources_dir}")
+    if (external_sources_to_remove OR patch_sources_dir)
+        patch_sources("${repo_name}" "${external_source_dir}" "${external_sources_to_remove}" "${patch_sources_dir}")
+    endif ()
 
     set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
 endfunction()
