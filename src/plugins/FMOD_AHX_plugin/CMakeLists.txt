@@ -5,7 +5,10 @@ project(plugin_${NAME} VERSION "1.9")
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
+
+if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
+endif ()
 
 set(GIT_REPO_NAME "hivelytracker")
 set(GIT_REPO_URL "https://github.com/pete-gordon/${GIT_REPO_NAME}.git")

@@ -5,8 +5,14 @@ project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O3") #TODO why dll linking on windows with debug build type fails with (default) -O0 flag ?
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
+
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O3") #TODO why dll linking on windows with debug build type fails with (default) -O0 flag ?
+endif ()
+
+if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
+endif ()
 
 file(GLOB SOURCES
         src/blazer.c
