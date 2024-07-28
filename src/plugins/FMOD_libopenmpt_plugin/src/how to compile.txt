@@ -1,6 +1,0 @@
-Downnload libopenmpt-0.x.x+release.makefile.tar.gz
-starta GIT bash från startmenyn
-cd "C:\Dev\QTCreator\FMOD_libopenmpt_plugin\src\libopenmpt-0.7.6+release"
-mingw32-make.exe CONFIG=mingw64-win32
-
-Done. A libopenmpt.dll is now ready to use in /bin

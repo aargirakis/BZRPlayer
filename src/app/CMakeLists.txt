@@ -160,7 +160,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         #TODO are these in the right place?
         ${CMAKE_SOURCE_DIR}/src/plugins/FMOD_klystrack_plugin/src/x86/release/ksnd.dll
-        ${CMAKE_SOURCE_DIR}/src/plugins/FMOD_libopenmpt_plugin/src/libopenmpt-0.7.6+release/bin/libopenmpt.dll
         ${CMAKE_SOURCE_DIR}/src/plugins/FMOD_sunvox_plugin/sunvox_lib/windows/lib_x86/sunvox.dll
         ${OUTPUT_DIR_PARENT}
 

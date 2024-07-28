@@ -93,7 +93,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             ${OUTPUT_DIR_PARENT}/ksnd.dll
             ${OUTPUT_DIR_PARENT}/libcrypto-1_1.dll #TODO needed?
             ${OUTPUT_DIR_PARENT}/libgcc_s_dw2-1.dll
-            ${OUTPUT_DIR_PARENT}/libopenmpt.dll
             ${OUTPUT_DIR_PARENT}/libssl-1_1.dll
             ${OUTPUT_DIR_PARENT}/libstdc++-6.dll
             ${OUTPUT_DIR_PARENT}/libwinpthread-1.dll
