@@ -24,24 +24,28 @@ function(patch_sources target_name external_source_dir external_sources_to_remov
 endfunction()
 
 function(clone_and_patch repo_name repo_url repo_tag is_tag external_sources_to_remove patch_sources_dir)
-    message(STATUS "Cloning repository '${repo_name}' ${repo_url} at '${repo_tag}' (if needed)")
+    if (is_tag)
+        set(clone_at tag)
+    else ()
+        set(clone_at commit)
+    endif ()
 
-    set(external_repo_name external_repo_${repo_name})
+    message(STATUS "Cloning repository '${repo_name}' ${repo_url} at ${clone_at} '${repo_tag}'")
 
     include(FetchContent)
 
     #set(PATCH_FILE git apply ${CMAKE_CURRENT_SOURCE_DIR}/patches/test.patch)
     FetchContent_Declare(
-            ${external_repo_name}
+            ${repo_name}
             GIT_REPOSITORY ${repo_url}
             GIT_TAG ${repo_tag}
             GIT_SHALLOW ${is_tag}
             # PATCH_COMMAND ${PATCH_FILE}
     )
 
-    FetchContent_Populate(${external_repo_name})
+    FetchContent_Populate(${repo_name})
 
-    set(external_source_dir ${${external_repo_name}_SOURCE_DIR})
+    set(external_source_dir ${${repo_name}_SOURCE_DIR})
 
     if (external_sources_to_remove OR patch_sources_dir)
         patch_sources("${repo_name}" "${external_source_dir}" "${external_sources_to_remove}" "${patch_sources_dir}")
@@ -52,7 +56,7 @@ endfunction()
 
 #TODO add ExternalProject_Add for avoiding useless re-downloads
 function(download_and_patch target_name target_name_versioned target_filename target_url sha_256_hash external_sources_to_remove patch_sources_dir)
-    message(STATUS "Downloading '${target_name_versioned}' at '${target_url}' (if needed)")
+    message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
 
     set(external_source_dir "${CMAKE_BINARY_DIR}/${target_name_versioned}")
 
@@ -72,7 +76,7 @@ function(download_and_patch target_name target_name_versioned target_filename ta
     endif ()
 
     execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar xjf ${downloaded_file}# --directory ${UNTAR_DESTINATION}
+            COMMAND ${CMAKE_COMMAND} -E tar xjf ${downloaded_file} #TODO? --directory ${UNTAR_DESTINATION}
             RESULT_VARIABLE UNPACK_RESULT
     )
 
