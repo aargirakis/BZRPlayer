@@ -1,4 +1,8 @@
 function(patch_sources target_name external_source_dir external_sources_to_remove patch_sources_dir)
+    if (NOT external_sources_to_remove AND NOT patch_sources_dir)
+        return()
+    endif ()
+
     message(STATUS "Patching '${target_name}'")
 
     foreach (source_to_remove ${external_sources_to_remove})
@@ -47,14 +51,11 @@ function(clone_and_patch repo_name repo_url repo_tag is_tag external_sources_to_
 
     set(external_source_dir ${${repo_name}_SOURCE_DIR})
 
-    if (external_sources_to_remove OR patch_sources_dir)
-        patch_sources("${repo_name}" "${external_source_dir}" "${external_sources_to_remove}" "${patch_sources_dir}")
-    endif ()
+    patch_sources("${repo_name}" "${external_source_dir}" "${external_sources_to_remove}" "${patch_sources_dir}")
 
     set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
 endfunction()
 
-#TODO add ExternalProject_Add for avoiding useless re-downloads
 function(download_and_patch target_name target_name_versioned target_filename target_url sha_256_hash external_sources_to_remove patch_sources_dir)
     message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
 
@@ -79,7 +80,6 @@ function(download_and_patch target_name target_name_versioned target_filename ta
             COMMAND ${CMAKE_COMMAND} -E tar xjf ${downloaded_file} #TODO? --directory ${UNTAR_DESTINATION}
             RESULT_VARIABLE UNPACK_RESULT
     )
-
 
     if (NOT UNPACK_RESULT EQUAL 0)
         message(FATAL_ERROR "Error unpacking '${downloaded_file}'")
