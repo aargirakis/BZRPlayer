@@ -4,12 +4,12 @@ set(NAME "s98")
 project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_CXX_STANDARD 17)
-else ()
-    set(CMAKE_CXX_STANDARD 14)
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-incompatible-pointer-types>)
 endif ()
+
 
 file(GLOB SOURCES
         src/s98/*.cpp

@@ -42,8 +42,8 @@ function(download_patch_and_make target_name target_name_versioned target_filena
     if (make_args)
         if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
             set(make_command
-                    ${CMAKE_PREFIX_PATH}/../../Tools/mingw810_32/bin/mingw32-make.exe
-                    AR=${CMAKE_PREFIX_PATH}/../../Tools/mingw810_32/bin/ar.exe
+                    ${CMAKE_PREFIX_PATH}/../usr/bin/make.exe
+                    AR=${CMAKE_PREFIX_PATH}/bin/ar.exe
             )
         else ()
             set(make_command make)

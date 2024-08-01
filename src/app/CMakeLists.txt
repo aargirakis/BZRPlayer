@@ -70,16 +70,62 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 foreach (QT_MODULE ${QT_MODULES})
+    List(APPEND RUNTIME_DLLS ${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll)
+endforeach ()
+
+List(APPEND RUNTIME_DLLS
+        ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
+        ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
+        ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
+        ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
+        ${CMAKE_PREFIX_PATH}/bin/libgcc_s_dw2-1.dll
+        ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
+        ${CMAKE_PREFIX_PATH}/bin/libgraphite2.dll
+        ${CMAKE_PREFIX_PATH}/bin/libharfbuzz-0.dll
+        ${CMAKE_PREFIX_PATH}/bin/libiconv-2.dll
+        ${CMAKE_PREFIX_PATH}/bin/libintl-8.dll
+        ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll
+        ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll
+        ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll
+        ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll
+        ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll
+        ${CMAKE_PREFIX_PATH}/bin/libzstd.dll
+
+        #TODO sort
+        ${CMAKE_PREFIX_PATH}/bin/zlib1.dll
+        ${CMAKE_PREFIX_PATH}/bin/libssl-3.dll
+
+        #TODO needed?
+        ${CMAKE_PREFIX_PATH}/bin/libcrypto-3.dll
+)
+
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    List(APPEND RUNTIME_DLLS
+            ${CMAKE_PREFIX_PATH}/bin/libdouble-conversion.dll
+            ${CMAKE_PREFIX_PATH}/bin/libicudt75.dll
+            ${CMAKE_PREFIX_PATH}/bin/libicuin75.dll
+            ${CMAKE_PREFIX_PATH}/bin/libicuuc75.dll
+            ${CMAKE_PREFIX_PATH}/bin/libmd4c.dll
+    )
+else ()
+    List(APPEND RUNTIME_DLLS
+            ${CMAKE_PREFIX_PATH}/bin/libssp-0.dll
+    )
+endif ()
+
+foreach (DLL ${RUNTIME_DLLS})
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll"
+            "${DLL}"
             ${OUTPUT_DIR_PARENT}
             VERBATIM
     )
 endforeach ()
 
+set(RUNTIME_DLLS ${RUNTIME_DLLS} PARENT_SCOPE)
+
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(QT_PLATFORMS_DIR "${CMAKE_PREFIX_PATH}/plugins/platforms")
+    set(QT_PLATFORMS_DIR "${CMAKE_PREFIX_PATH}/share/qt${QT_VERSION_MAJOR}/plugins/platforms")
 else ()
     set(QT_PLATFORMS_DIR "${CMAKE_PREFIX_PATH}/lib/qt/plugins/platforms")
 endif ()
@@ -91,48 +137,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         "${OUTPUT_DIR_PARENT}/platforms"
         VERBATIM
 )
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_PREFIX_PATH}/bin/libgcc_s_dw2-1.dll
-        ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll
-        ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll
-        ${OUTPUT_DIR_PARENT}
-        VERBATIM
-)
-
-if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
-            ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
-            ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
-            ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
-            ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
-            ${CMAKE_PREFIX_PATH}/bin/libgraphite2.dll
-            ${CMAKE_PREFIX_PATH}/bin/libharfbuzz-0.dll
-            ${CMAKE_PREFIX_PATH}/bin/libiconv-2.dll
-            ${CMAKE_PREFIX_PATH}/bin/libintl-8.dll
-            ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll
-            ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll
-            ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll
-            ${CMAKE_PREFIX_PATH}/bin/libssp-0.dll
-            ${CMAKE_PREFIX_PATH}/bin/libzstd.dll
-            ${OUTPUT_DIR_PARENT}
-            VERBATIM
-    )
-endif ()
-
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    #TODO
-    set(ZLIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/static")
-    set(LIBCRYPTO "${CMAKE_CURRENT_SOURCE_DIR}/static/libcrypto-1_1.dll") #TODO needed?
-    set(LIBSSL "${CMAKE_CURRENT_SOURCE_DIR}/static/libssl-1_1.dll")
-else ()
-    set(ZLIB_DIR "${CMAKE_PREFIX_PATH}/bin")
-    set(LIBCRYPTO "${CMAKE_PREFIX_PATH}/bin/libcrypto-3.dll") #TODO needed?
-    set(LIBSSL "${CMAKE_PREFIX_PATH}/bin/libssl-3.dll")
-endif ()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -150,10 +154,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayerTest.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml
-        ${LIBCRYPTO}   #TODO needed?
-        ${LIBSSL}
         ${CMAKE_CURRENT_SOURCE_DIR}/static/qtadvanceddocking.dll
-        ${ZLIB_DIR}/zlib1.dll  #TODO move to the right place
 
         #TODO are this in the right place?
         ${CMAKE_SOURCE_DIR}/src/plugins/FMOD_klystrack_plugin/src/x86/release/ksnd.dll

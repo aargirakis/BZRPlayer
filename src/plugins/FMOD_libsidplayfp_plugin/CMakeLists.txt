@@ -4,12 +4,7 @@ set(NAME "libsidplayfp")
 project(plugin_${NAME} VERSION "2.7.1")
 
 set(CMAKE_C_STANDARD 17)
-
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_CXX_STANDARD 17)
-else ()
-    set(CMAKE_CXX_STANDARD 14)
-endif ()
+set(CMAKE_CXX_STANDARD 14)
 
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION ${PROJECT_VERSION})

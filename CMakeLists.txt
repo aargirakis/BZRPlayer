@@ -68,6 +68,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CPACK_OUTPUT_FILE_PREFIX "${OUTPUT_DIR_PARENT}_release")
 
     install(
+            FILES ${RUNTIME_DLLS}
+            DESTINATION .
+    )
+
+    install(
             DIRECTORY
             ${OUTPUT_DIR_PARENT}/data
             ${OUTPUT_DIR_PARENT}/platforms
@@ -89,21 +94,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             ${OUTPUT_DIR_PARENT}/BZRPlayer.VisualElementsManifest.xml
             ${OUTPUT_DIR_PARENT}/fmod.dll
             ${OUTPUT_DIR_PARENT}/ksnd.dll
-            ${OUTPUT_DIR_PARENT}/libcrypto-1_1.dll #TODO needed?
-            ${OUTPUT_DIR_PARENT}/libgcc_s_dw2-1.dll
-            ${OUTPUT_DIR_PARENT}/libssl-1_1.dll
-            ${OUTPUT_DIR_PARENT}/libstdc++-6.dll
-            ${OUTPUT_DIR_PARENT}/libwinpthread-1.dll
             ${OUTPUT_DIR_PARENT}/LICENSE.txt
-            ${OUTPUT_DIR_PARENT}/Qt5Core.dll
-            ${OUTPUT_DIR_PARENT}/Qt5Gui.dll
-            ${OUTPUT_DIR_PARENT}/Qt5Network.dll
-            ${OUTPUT_DIR_PARENT}/Qt5OpenGL.dll
-            ${OUTPUT_DIR_PARENT}/Qt5Svg.dll
-            ${OUTPUT_DIR_PARENT}/Qt5Widgets.dll
-            ${OUTPUT_DIR_PARENT}/Qt5Xml.dll
             ${OUTPUT_DIR_PARENT}/qtadvanceddocking.dll
-            ${OUTPUT_DIR_PARENT}/zlib1.dll
             DESTINATION .
     )
 

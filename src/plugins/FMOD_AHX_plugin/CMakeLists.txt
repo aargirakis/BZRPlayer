@@ -10,6 +10,10 @@ if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10)
     add_compile_options($<$<COMPILE_LANGUAGE:C>:-fcommon>)
 endif ()
 
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-int-conversion>)
+endif ()
+
 set(LIB_NAME "hivelytracker")
 set(LIB_VERSION "${PROJECT_VERSION}")
 string(REPLACE "." "_" LIB_TAG "${LIB_VERSION}")

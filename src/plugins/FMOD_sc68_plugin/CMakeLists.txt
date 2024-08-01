@@ -6,6 +6,10 @@ project(plugin_${NAME})
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
+endif ()
+
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION "83cc8653e06cb4ba8c17b0c3e24b9cce4e461cfd")
 set(LIB_REVISION "r100") # original sourceforge svn revision number

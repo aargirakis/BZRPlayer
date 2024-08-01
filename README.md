@@ -6,25 +6,32 @@ This is the beginning of the new 2.x version which is coded pretty much from scr
 Please add features and bugs here on GitHub.
 <br/>
 
-<h3>Build with CMake</h3>
-<h4>on Windows:</h4>
-Build BZR2 with <strong>-DCMAKE_PREFIX_PATH="/path/to/your/qt5/mingw81_32" -G "Ninja"</strong>
-cmake flags;
-<strong>mingw810_32</strong> toolchain is needed (can be also found in <strong>
-/path/to/your/qt/installation/Tools/mingw810_32</strong>).
-<br/>
-For generating a zip release package add <strong>-DCMAKE_BUILD_TYPE=Release</strong> flag: you may need to specify
-the <strong>cpack</strong> path, in which case add <strong>-DCPACK_EXECUTABLE="/path/to/your/cpack/executable"</strong>
-flag.
+<h3>How To Build</h3>
+<h4>Windows (#TODO msys2 gdb?):</h4>
+<strong>MSYS2</strong> with following packages is required:<br/>
+<strong>mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg openssl-devel make</strong>
+
+Ensure you have <strong>\path\to\msys\mingw32\bin</strong> in <strong>%PATH%</strong><br/>
+
+Inside the project directory create the cmake build directory with name <strong>cmake-build-[debug|release]</strong>,
+then enter it and execute:<br/>
+<strong>cmake -DCMAKE_PREFIX_PATH="/path/to/msys/mingw32" -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja .. &&
+ninja</strong>
+
+If building with <strong>Release CMAKE_BUILD_TYPE</strong> then add <strong>-DCPACK_EXECUTABLE=cpack</strong> to cmake
+args
+
+build example (from within the project dir):<br/>
+<strong>mkdir cmake-build-release</strong><br/>
+<strong>cd cmake-build-release</strong><br/>
+<strong>cmake -DCMAKE_PREFIX_PATH="C:/msys64/mingw32" -DCMAKE_BUILD_TYPE=Release -DCPACK_EXECUTABLE=cpack -G Ninja .. &&
+ninja</strong>
 <br/><br/>
-<h4>cross-compilation on Linux:</h4>
-Dockerized cross-compilation toolchain it is also provided: just execute <strong>run.sh</strong> from the <strong>
-docker</strong> dir, eventually
-setting <strong>BUILD_TYPE=Release</strong> if needed.
+<h4>Linux cross-compilation:</h4>
+Dockerized cross-compilation toolchain it is provided: just execute <strong>run.sh</strong> from the <strong>
+docker</strong> dir, eventually setting <strong>BUILD_TYPE=Release</strong> if needed.
 <br/>
 If you also want to run BZR2 after the build, then set <strong>RUN_BZR2=1</strong> (<strong>wine</strong> is required).
-<br/>
-For generating a zip release package add <strong>-DCMAKE_BUILD_TYPE=Release</strong> flag.
 <br/><br/>
 
 Official page is http://bzrplayer.blazer.nu

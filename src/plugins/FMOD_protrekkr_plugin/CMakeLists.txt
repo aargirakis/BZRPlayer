@@ -4,12 +4,7 @@ set(NAME "protrekkr")
 project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
-
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_CXX_STANDARD 17)
-else ()
-    set(CMAKE_CXX_STANDARD 14)
-endif ()
+set(CMAKE_CXX_STANDARD 14)
 
 add_compile_definitions(__REPLAYER__ __STAND_ALONE__ __WINAMP__)
 
