@@ -34,7 +34,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_kdm "src/plugins/FMOD_kdm_plugin"
         plugin_klystrack "src/plugins/FMOD_klystrack_plugin"                      #TODO never worked
         plugin_libopenmpt "src/plugins/FMOD_libopenmpt_plugin"
-        plugin_libsidplayfp "src/plugins/FMOD_libsidplayfp_plugin"                #check cmake TODO
+        plugin_libsidplayfp "src/plugins/FMOD_libsidplayfp_plugin"
         plugin_libxmp "src/plugins/FMOD_libxmp_plugin"
         plugin_mdx "src/plugins/FMOD_MDX_plugin"
         plugin_org "src/plugins/FMOD_org_plugin"                                  #TODO never worked ?

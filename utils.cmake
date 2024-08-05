@@ -98,3 +98,28 @@ function(download_and_patch target_name target_name_versioned target_filename ta
 
     set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
 endfunction()
+
+function(download_to target_filename target_url sha_256_hash destination_path)
+    message(STATUS "Downloading '${target_filename}' at '${target_url}' to '${destination_path}'")
+
+    if ("${sha_256_hash}" STREQUAL "")
+        file(
+                DOWNLOAD ${target_url} ${destination_path}/${target_filename}
+                STATUS DOWNLOAD_STATUS
+        )
+    else ()
+        file(
+                DOWNLOAD ${target_url} ${destination_path}/${target_filename}
+                EXPECTED_HASH SHA256=${sha_256_hash}
+                STATUS DOWNLOAD_STATUS
+        )
+    endif ()
+
+    list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
+    list(GET DOWNLOAD_STATUS 1 ERROR_MESSAGE)
+
+    if (NOT ${STATUS_CODE} EQUAL 0)
+        message(FATAL_ERROR "Error downloading '${target_filename}': ${ERROR_MESSAGE}")
+    endif ()
+
+endfunction()
