@@ -13,8 +13,11 @@ set(GIT_IS_TAG true)
 clone_and_patch(
         ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
         ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
+        ""
 )
+
+add_compile_definitions(BLARGG_BUILD_DLL)
+add_compile_definitions(VGM_YM2612_MAME)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/gme/*.cpp
