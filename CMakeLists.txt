@@ -124,3 +124,4 @@ endif ()
 #TODO too many baserow.h/baserow.cpp
 #TODO rename plugins with their original names
 #TODO manage plugin names/versions in settingswindow.cpp
+#TODO redundant queue.h & queue.c should be treated as external dependency like src/external/psflib
