@@ -92,7 +92,7 @@ function(download_and_patch target_name target_name_versioned target_filename ta
             SOURCE_DIR ${external_source_dir}
     )
 
-    FetchContent_MakeAvailable(${target_name})
+    FetchContent_Populate(${target_name})
 
     patch_sources("${target_name_versioned}" "${external_source_dir}" "${external_sources_to_remove}" "${patch_sources_dir}")
 

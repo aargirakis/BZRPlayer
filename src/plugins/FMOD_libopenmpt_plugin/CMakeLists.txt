@@ -31,8 +31,7 @@ else ()
     set(MAKE ${CMAKE_PREFIX_PATH}/../bin/make)
 endif ()
 
-set(LIBOPENMPT_STATIC_FILENAME "libopenmpt.a")
-set(LIBOPENMPT_STATIC "${EXTERNAL_SOURCE_DIR}/bin/${LIBOPENMPT_STATIC_FILENAME}")
+set(LIBOPENMPT_STATIC "${EXTERNAL_SOURCE_DIR}/bin/libopenmpt.a")
 set(LIBOPENMPT_STATIC_FINAL "${LIBOPENMPT_STATIC}.final")
 
 add_custom_target(

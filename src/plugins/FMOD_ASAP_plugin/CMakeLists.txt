@@ -6,15 +6,27 @@ project(plugin_${NAME} VERSION "5.2.0")
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-set(GIT_REPO_NAME "${NAME}")
-set(GIT_REPO_URL "https://git.code.sf.net/p/${GIT_REPO_NAME}/code")
-string(REPLACE "." "_" GIT_CLONE_AT "ASAP_${PROJECT_VERSION}")
-set(GIT_IS_TAG true)
-clone_and_patch(
-        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+set(LIB_NAME "${NAME}")
+set(LIB_VERSION ${PROJECT_VERSION})
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
+set(LIB_URL "https://sourceforge.net/projects/${LIB_NAME}/files/${LIB_NAME}/${LIB_VERSION}/${LIB_FILENAME}/download")
+set(LIB_SHA_256_HASH "8c7bff24d14068fcf1857710c9eb331e9d7ca1b74e718705228e9da9eac8e6ac")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
         ""
         ""
 )
+
+#set(GIT_REPO_NAME "${NAME}")
+#set(GIT_REPO_URL "https://git.code.sf.net/p/${GIT_REPO_NAME}/code")
+#string(REPLACE "." "_" GIT_CLONE_AT "ASAP_${PROJECT_VERSION}")
+#set(GIT_IS_TAG true)
+#clone_and_patch(
+#        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+#        ""
+#        ""
+#)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/asap.c
