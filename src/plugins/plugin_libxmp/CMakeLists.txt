@@ -21,7 +21,7 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/releases/download/${LIB_NAME_VERSIONED}/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "7847d262112d14e8442f44e5ac6ed9ddbca54c251284720b563c852b31f26e75")
-download_and_patch(
+download_patch_and_add(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )

@@ -17,7 +17,7 @@ set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
 set(LIB_FILENAME_URL "v${LIB_VERSION}.zip")
 set(LIB_URL "https://github.com/arnaud-carre/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
 set(LIB_SHA_256_HASH "e54d569c364b6040c85af75902d49b8c724743597e2aeeba357d6aa9e52fc438")
-download_and_patch(
+download_patch_and_add(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )

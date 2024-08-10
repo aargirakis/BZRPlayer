@@ -104,7 +104,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
             ${OUTPUT_DIR}/fmod.dll
             ${OUTPUT_DIR}/LICENSE.txt
-            ${OUTPUT_DIR}/qtadvanceddocking.dll
+            ${OUTPUT_DIR}/libqt5advanceddocking.dll
             DESTINATION .
     )
 
@@ -114,7 +114,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             cpack ALL
             DEPENDS ${MODULES}
             COMMAND ${CPACK_EXECUTABLE}
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             DEPENDS ${MODULES}
     )
 endif ()

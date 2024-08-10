@@ -40,7 +40,11 @@ void ButtonOscilloscope::setChecked(bool c)
 }
 void ButtonOscilloscope::paintEvent(QPaintEvent *event)
 {
-
+if(SoundManager::getInstance().m_Info1 == nullptr)
+{
+    return;
+}
+    //TODO refactor this shit
     if(checked || SoundManager::getInstance().m_Info1->plugin=="sndh-player")
     {
         if(SoundManager::getInstance().m_Info1->plugin=="sndh-player")

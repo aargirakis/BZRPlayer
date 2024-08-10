@@ -27,7 +27,7 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME}.lha")
 set(LIB_URL "https://www.a500.org/downloads/audio/tunenet/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "b93958b4546dcc1609015ae724d5fc1267152635489ce23724629d0561fe3828")
-download_and_patch(
+download_patch_and_add(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ""
         "${CMAKE_CURRENT_SOURCE_DIR}/patches"
 )

@@ -17,7 +17,7 @@ set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_FILENAME_URL "${LIB_VERSION}.tar.gz")
 set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
 set(LIB_SHA_256_HASH "d3485abc1094f104244e8367b352fef7e17e7fc1e6ade19a78bbd09cbf3daea9")
-download_and_patch(
+download_patch_and_add(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ""
 )

@@ -26,7 +26,7 @@ set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
 set(LIB_URL "https://github.com/kometbomb/${LIB_NAME}/archive/${LIB_FILENAME_URL}")
 set(LIB_SHA_256_HASH "32744f21bb452ea5f9388d522a56c9f977659b05273544280eed0bb1d73ac3f3")
 set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
-download_and_patch(
+download_patch_and_add(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )

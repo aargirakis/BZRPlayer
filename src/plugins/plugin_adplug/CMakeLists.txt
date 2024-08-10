@@ -16,7 +16,7 @@ set(LIB1_NAME_VERSIONED "${LIB1_NAME}-${LIB1_VERSION}")
 set(LIB1_FILENAME "${LIB1_NAME_VERSIONED}.tar.bz2")
 set(LIB1_URL "https://github.com/${LIB1_NAME}/${LIB1_NAME}/releases/download/${LIB1_NAME_VERSIONED}/${LIB1_FILENAME}")
 set(LIB1_SHA_256_HASH "a0f3c1b18fb49dea7ac3e8f820e091a663afa5410d3443612bf416cff29fa928")
-download_and_patch(
+download_patch_and_add(
         ${LIB1_NAME} ${LIB1_NAME_VERSIONED} ${LIB1_FILENAME} ${LIB1_URL} ${LIB1_SHA_256_HASH} false ""
         ""
 )
@@ -32,7 +32,7 @@ set(LIB2_FILENAME_URL "${LIB2_NAME_VERSIONED}.zip")
 set(LIB2_URL "https://github.com/${LIB1_NAME}/${LIB2_NAME}/archive/refs/tags/${LIB2_FILENAME_URL}")
 set(LIB2_SHA_256_HASH "fd00c22d9ad3d4b5c90c4428d49719d0549f6a15cf5c612ffd5c9ba6c10689b9")
 set(LIB2_UNPACKED_DIR "${LIB2_NAME_VERSIONED2}")
-download_and_patch(
+download_patch_and_add(
         ${LIB2_NAME} ${LIB2_NAME_VERSIONED} ${LIB2_FILENAME} ${LIB2_URL} ${LIB2_SHA_256_HASH} true ${LIB2_UNPACKED_DIR}
         ""
 )

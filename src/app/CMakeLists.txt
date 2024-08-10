@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.28)
 
 project(app VERSION "${BZR2_VERSION}")
 
+include(${CMAKE_SOURCE_DIR}/src/external/qt-advanced-docking-system/qt-advanced-docking-system.cmake)
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
 
@@ -48,7 +50,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
-        ${CMAKE_SOURCE_DIR}/src/external/Qt-Advanced-Docking-System-4.0.0/src
+        ${EXTERNAL_SOURCE_DIR_qt-advanced-docking-system}/src
 )
 
 foreach (QT_MODULE ${QT_MODULES})
@@ -57,7 +59,7 @@ endforeach ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86 -lfmod
-        -L${CMAKE_SOURCE_DIR}/src/external/Qt-Advanced-Docking-System-4.0.0/bin -lqtadvanceddocking
+        ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -145,7 +147,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayerTest.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml
-        ${CMAKE_CURRENT_SOURCE_DIR}/static/qtadvanceddocking.dll
 
         ${OUTPUT_DIR}
 

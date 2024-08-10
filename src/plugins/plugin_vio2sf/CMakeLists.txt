@@ -23,7 +23,7 @@ set(LIB_FILENAME "${LIB_NAME}-${LIB_VERSION}.tar.bz2")
 set(LIB_URL "https://gitlab.com/kode54/${LIB_NAME}/-/archive/${LIB_VERSION}/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "471cf5cd1c54f2dfd8c863a6e241a80bcbde7b7a9d419f3dae6ebc20e35b7176")
 set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
-download_and_patch(
+download_patch_and_add(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
         ""
 )

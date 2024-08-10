@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 include(ExternalProject)
+include(FetchContent)
 include(ProcessorCount)
 
 set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
@@ -47,7 +48,7 @@ function(unpack file_to_unpack unpack_to unpack_to_parent_dir)
     set(EXTERNAL_SOURCE_DIR ${unpack_to} PARENT_SCOPE)
 endfunction()
 
-function(patch_sources target_name patches_dir external_source_dir)
+function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
     if (NOT patches_dir)
         return()
     endif ()
@@ -67,14 +68,14 @@ function(patch_sources target_name patches_dir external_source_dir)
                     OUTPUT_VARIABLE FILE_TO_PATCH
             )
             execute_process(
-                    COMMAND dos2unix ${external_source_dir}/${FILE_TO_PATCH}
+                    COMMAND dos2unix ${EXTERNAL_SOURCE_DIR}/${FILE_TO_PATCH}
                     ERROR_QUIET
             )
         endif ()
 
         execute_process(
                 COMMAND ${PATCH_EXECUTABLE}
-                -ul -d ${external_source_dir}
+                -ul -d ${EXTERNAL_SOURCE_DIR}
                 -p0 -i ${PATCH_FILE}
                 RESULT_VARIABLE PATCH_RESULT
                 OUTPUT_VARIABLE PATCH_OUTPUT
@@ -93,16 +94,15 @@ function(unpack_and_patch file_to_unpack target_name_versioned unpack_to_parent_
         target_unpacked_dir patches_dir)
     unpack("${file_to_unpack}" "${DEPENDENCIES_DIR}/${target_name_versioned}" ${unpack_to_parent_dir})
 
-    set(external_source_dir "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_unpacked_dir}")
+    set(EXTERNAL_SOURCE_DIR "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_unpacked_dir}")
 
-    patch_sources("${target_name_versioned}" "${patches_dir}" "${external_source_dir}")
+    patch_sources("${target_name_versioned}" "${patches_dir}" "${EXTERNAL_SOURCE_DIR}")
 
-    set(external_source_dir "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_unpacked_dir}" PARENT_SCOPE)
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
 
-function(download_patch_and_make target_name target_name_versioned target_filename
-        target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir make_args)
+function(download_and_patch target_name_versioned target_filename target_url
+        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
     if (OFFLINE_MODE EQUAL 1)
         unpack_and_patch("${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename}" "${target_name_versioned}"
                 "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
@@ -113,53 +113,79 @@ function(download_patch_and_make target_name target_name_versioned target_filena
                 "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
     endif ()
 
-    if (make_args)
-        if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-            set(make_command
-                    ${CMAKE_PREFIX_PATH}/../usr/bin/make.exe
-                    AR=${CMAKE_PREFIX_PATH}/bin/ar.exe
-            )
-        else ()
-            set(make_command make)
-        endif ()
-
-        ProcessorCount(N)
-        if (N EQUAL 0)
-            set(N "")
-        else ()
-            math(EXPR N "${N}-1")
-        endif ()
-
-        set(make_command ${make_command} -j${N} ${make_args})
-    endif ()
-
-    ExternalProject_Add(  #TODO add update step & patch step with ExternalProject_Add
-            ${target_name}_ExtProj
-            #URL ${target_url}
-            #URL_HASH SHA256=${sha_256_hash}
-            SOURCE_DIR ${external_source_dir}
-            DOWNLOAD_COMMAND ""
-            #PATCH_COMMAND ""
-            CONFIGURE_COMMAND ""
-            BUILD_COMMAND "${make_command}"
-            INSTALL_COMMAND ""
-            WORKING_DIRECTORY ${external_source_dir}
-            #DOWNLOAD_NO_PROGRESS true
-            #CONFIGURE_HANDLED_BY_BUILD true
-            BUILD_IN_SOURCE 1
-            #BUILD_ALWAYS OFF
-            #TODO skip download and extraction when not needed
-    )
-
-    set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
+    set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
 
-function(download_and_patch target_name target_name_versioned target_filename target_url
-        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
-    download_patch_and_make(
-            "${target_name}" "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}"
-            "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}" ""
+function(download_patch_and_add target_name target_name_versioned target_filename
+        target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
+    download_and_patch(
+            "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_unpacked_dir}" "${patches_dir}"
     )
+
+    ExternalProject_Add(
+            ${target_name}_ExtProj
+            SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
+            CONFIGURE_COMMAND ""
+            BUILD_COMMAND ""
+            INSTALL_COMMAND ""
+    )
+
+    set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
+endfunction()
+
+function(download_patch_and_make target_name target_name_versioned target_filename target_url
+        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir make_args)
+    download_and_patch(
+            "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_unpacked_dir}" "${patches_dir}"
+    )
+
+    if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+        set(make_command
+                ${CMAKE_PREFIX_PATH}/../usr/bin/make.exe
+                AR=${CMAKE_PREFIX_PATH}/bin/ar.exe
+        )
+    else ()
+        set(make_command make)
+    endif ()
+
+    ProcessorCount(N)
+    if (N EQUAL 0)
+        set(N "")
+    else ()
+        math(EXPR N "${N}-1")
+    endif ()
+
+    set(make_command ${make_command} -j${N} ${make_args})
+
+    ExternalProject_Add(
+            ${target_name}_ExtProj
+            SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
+            CONFIGURE_COMMAND ""
+            BUILD_COMMAND ${make_command}
+            INSTALL_COMMAND ""
+            BUILD_IN_SOURCE 1
+    )
+
+    set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
+endfunction()
+
+function(download_patch_and_cmake target_name target_name_versioned target_filename
+        target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
+    download_and_patch(
+            "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_unpacked_dir}" "${patches_dir}"
+    )
+
+    set(FETCHCONTENT_BASE_DIR "${DEPENDENCIES_DIR}/${target_name_versioned}")
+
+    FetchContent_Declare(
+            ${target_name}
+            SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
+            EXCLUDE_FROM_ALL
+    )
+    FetchContent_MakeAvailable(${target_name})
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()

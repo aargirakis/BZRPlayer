@@ -17,7 +17,7 @@ set(LIB_FILENAME "${LIB_NAME}_lib-${LIB_VERSION}.zip")
 set(LIB_URL "https://web.archive.org/web/20230329102810/https://warmplace.ru/soft/${LIB_NAME}/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "5856adc13bb0105b5d5b0422d2cbb5fb5c74831fd7f52412d922ed35cd17bbca")
 set(LIB_UNPACKED_DIR "sunvox_lib")
-download_and_patch(
+download_patch_and_add(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
         ""
 )
