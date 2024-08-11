@@ -18,16 +18,6 @@ download_and_patch(
         ""
 )
 
-#set(GIT_REPO_NAME "${NAME}")
-#set(GIT_REPO_URL "https://git.code.sf.net/p/${GIT_REPO_NAME}/code")
-#string(REPLACE "." "_" GIT_CLONE_AT "ASAP_${PROJECT_VERSION}")
-#set(GIT_IS_TAG true)
-#clone_and_patch(
-#        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
-#        ""
-#        ""
-#)
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/asap.c
         src/main.cpp

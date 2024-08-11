@@ -6,12 +6,14 @@ project(plugin_${NAME})
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-set(GIT_REPO_NAME ${NAME})
-set(GIT_REPO_URL "https://github.com/pachuco/${GIT_REPO_NAME}.git")
-set(GIT_CLONE_AT "1c2a999014058ef04973c4f3fac8bdf61a3fa9a4")
-set(GIT_IS_TAG false)
-clone_and_patch(
-        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+set(LIB_NAME "${NAME}")
+set(LIB_VERSION "1c2a999014058ef04973c4f3fac8bdf61a3fa9a4")
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "${LIB_VERSION}.zip")
+set(LIB_URL "https://github.com/pachuco/${LIB_NAME}/archive/${LIB_FILENAME}")
+set(LIB_SHA_256_HASH "f65a4b33a060acca1294d35a57a8bbfda39af452daff76edcddb76d85b9468e3")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
         ""
         ""
 )

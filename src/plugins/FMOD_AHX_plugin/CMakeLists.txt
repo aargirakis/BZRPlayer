@@ -10,12 +10,14 @@ if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
 endif ()
 
-set(GIT_REPO_NAME "hivelytracker")
-set(GIT_REPO_URL "https://github.com/pete-gordon/${GIT_REPO_NAME}.git")
-string(REPLACE "." "_" GIT_CLONE_AT "V${PROJECT_VERSION}")
-set(GIT_IS_TAG true)
-clone_and_patch(
-        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+set(LIB_NAME "hivelytracker")
+string(REPLACE "." "_" LIB_VERSION "${PROJECT_VERSION}")
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
+set(LIB_URL "https://github.com/pete-gordon/${LIB_NAME}/archive/refs/tags/V${LIB_VERSION}.zip")
+set(LIB_SHA_256_HASH "22e5f98bf92502443510cacd9c3c1b8163063bf4108c215dce6d20a41d003e75")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
         ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )

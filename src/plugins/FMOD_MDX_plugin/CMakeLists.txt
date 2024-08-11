@@ -6,12 +6,14 @@ project(plugin_${NAME} VERSION "2.0.0")
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-set(GIT_REPO_NAME "mdxmini")
-set(GIT_REPO_URL "https://github.com/mistydemeo/${GIT_REPO_NAME}.git")
-set(GIT_CLONE_AT "v${PROJECT_VERSION}")
-set(GIT_IS_TAG true)
-clone_and_patch(
-        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+set(LIB_NAME "mdxmini")
+set(LIB_VERSION "${PROJECT_VERSION}")
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "v${LIB_VERSION}.zip")
+set(LIB_URL "https://github.com/mistydemeo/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME}")
+set(LIB_SHA_256_HASH "5377613b212020d79c478a04b24ded9e9a2365c8271e48973eb3360b434d9e60")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
         ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )

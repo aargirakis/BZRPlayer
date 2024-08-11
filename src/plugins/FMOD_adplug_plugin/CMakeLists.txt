@@ -6,24 +6,28 @@ project(plugin_${NAME} VERSION "2.3.3")
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-set(GIT1_REPO_NAME "${NAME}")
-set(GIT1_REPO_URL "https://github.com/${GIT1_REPO_NAME}/${GIT1_REPO_NAME}.git")
-set(GIT1_CLONE_AT "${GIT1_REPO_NAME}-${PROJECT_VERSION}")
-set(GIT1_IS_TAG true)
-clone_and_patch(
-        ${GIT1_REPO_NAME} ${GIT1_REPO_URL} ${GIT1_CLONE_AT} ${GIT1_IS_TAG}
+set(LIB1_NAME "${NAME}")
+set(LIB1_VERSION ${PROJECT_VERSION})
+set(LIB1_NAME_VERSIONED "${LIB1_NAME}-${PROJECT_VERSION}")
+set(LIB1_FILENAME "${LIB1_NAME_VERSIONED}.tar.bz2")
+set(LIB1_URL "https://github.com/${LIB1_NAME}/${LIB1_NAME}/releases/download/${LIB1_NAME_VERSIONED}/${LIB1_FILENAME}")
+set(LIB1_SHA_256_HASH "a0f3c1b18fb49dea7ac3e8f820e091a663afa5410d3443612bf416cff29fa928")
+download_and_patch(
+        ${LIB1_NAME} ${LIB1_NAME_VERSIONED} ${LIB1_FILENAME} ${LIB1_URL} ${LIB1_SHA_256_HASH}
         ""
         ""
 )
 
 set(EXTERNAL_SOURCE_DIR_1 "${EXTERNAL_SOURCE_DIR}")
 
-set(GIT2_REPO_NAME "libbinio")
-set(GIT2_REPO_URL "https://github.com/${GIT1_REPO_NAME}/${GIT2_REPO_NAME}.git")
-set(GIT2_CLONE_AT "${GIT2_REPO_NAME}-1.5")
-set(GIT2_IS_TAG true)
-clone_and_patch(
-        ${GIT2_REPO_NAME} ${GIT2_REPO_URL} ${GIT2_CLONE_AT} ${GIT2_IS_TAG}
+set(LIB2_NAME "libbinio")
+set(LIB2_VERSION "1.5")
+set(LIB2_NAME_VERSIONED "${LIB2_NAME}-${LIB2_NAME}-${LIB2_VERSION}")
+set(LIB2_FILENAME "${LIB2_NAME_VERSIONED}.zip")
+set(LIB2_URL "https://github.com/${LIB1_NAME}/${LIB2_NAME}/archive/refs/tags/${LIB2_NAME}-${LIB2_VERSION}.zip")
+set(LIB2_SHA_256_HASH "fd00c22d9ad3d4b5c90c4428d49719d0549f6a15cf5c612ffd5c9ba6c10689b9")
+download_and_patch(
+        ${LIB2_NAME} ${LIB2_NAME_VERSIONED} ${LIB2_FILENAME} ${LIB2_URL} ${LIB2_SHA_256_HASH}
         ""
         ""
 )

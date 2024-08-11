@@ -56,14 +56,16 @@ configure_file(
         @ONLY NEWLINE_STYLE UNIX
 )
 
-set(GIT_REPO_NAME "sidid")
-set(GIT_REPO_URL "https://github.com/cadaver/${GIT_REPO_NAME}.git")
-set(GIT_CLONE_AT "eba761121a3f1239d7cc16b59a64140dc7d483ff")
-set(GIT_IS_TAG false)
-clone_and_patch(
-        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+set(LIB_NAME "sidid")
+set(LIB_VERSION "eba761121a3f1239d7cc16b59a64140dc7d483ff")
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "${LIB_VERSION}.zip")
+set(LIB_URL "https://github.com/cadaver/${LIB_NAME}/archive/${LIB_FILENAME}")
+set(LIB_SHA_256_HASH "2ae065ef4c58c8b12210fd6d9e8543ebdc272ccd9996ab963ef3b464bc4b0ddc")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
         ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches/${GIT_REPO_NAME}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB_NAME}
 )
 
 set(EXTERNAL_SOURCE_DIR_2 "${EXTERNAL_SOURCE_DIR}")

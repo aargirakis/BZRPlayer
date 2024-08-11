@@ -6,12 +6,14 @@ project(plugin_${NAME} VERSION "0.6.3")
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-set(GIT_REPO_NAME "game-music-emu")
-set(GIT_REPO_URL "https://github.com/libgme/${GIT_REPO_NAME}.git")
-set(GIT_CLONE_AT "${PROJECT_VERSION}")
-set(GIT_IS_TAG true)
-clone_and_patch(
-        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+set(LIB_NAME "game-music-emu")
+set(LIB_VERSION ${PROJECT_VERSION})
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "${LIB_VERSION}.zip")
+set(LIB_URL "https://github.com/libgme/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME}")
+set(LIB_SHA_256_HASH "2fe64e09ab228aa9b055cd69997a2b49179011e091127cf801161fb5bf5ae8cf")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
         ""
         ""
 )

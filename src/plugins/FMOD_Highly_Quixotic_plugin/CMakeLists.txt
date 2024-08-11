@@ -8,12 +8,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DEMU_COMPILE -DEMU_LITTLE_ENDIAN")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
 
-set(GIT_REPO_NAME ${NAME})
-set(GIT_REPO_URL "https://gitlab.com/kode54/${GIT_REPO_NAME}.git")
-set(GIT_CLONE_AT "d730174d436e8cabca90fabdb3ad4ddf614d31cc")
-set(GIT_IS_TAG false)
-clone_and_patch(
-        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+set(LIB_NAME ${NAME})
+set(LIB_VERSION "d730174d436e8cabca90fabdb3ad4ddf614d31cc")
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
+set(LIB_URL "https://gitlab.com/kode54/${LIB_NAME}/-/archive/${LIB_VERSION}/${LIB_FILENAME}")
+set(LIB_SHA_256_HASH "6e25e219fe7877dfd871a500a6e03e95f15e6cf873289a275fa246eb7f58f918")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
         ""
         ""
 )

@@ -6,12 +6,14 @@ project(plugin_${NAME} VERSION "2.10.0")
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-set(GIT_REPO_NAME "faad2")
-set(GIT_REPO_URL "https://github.com/knik0/${GIT_REPO_NAME}.git")
-string(REPLACE "." "_" GIT_CLONE_AT "${PROJECT_VERSION}")
-set(GIT_IS_TAG true)
-clone_and_patch(
-        ${GIT_REPO_NAME} ${GIT_REPO_URL} ${GIT_CLONE_AT} ${GIT_IS_TAG}
+set(LIB_NAME "faad2")
+string(REPLACE "." "_" LIB_VERSION "${PROJECT_VERSION}")
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
+set(LIB_URL "https://github.com/knik0/${LIB_NAME}/archive/refs/tags/${LIB_VERSION}.zip")
+set(LIB_SHA_256_HASH "841841dd2ccd8cac295b15420ad20cc69ca4951a3de642ed2bdba8d634bfcf8a")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
         ""
         ""
 )
