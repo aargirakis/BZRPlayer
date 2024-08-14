@@ -15,7 +15,6 @@ set(LIB1_SHA_256_HASH "a0f3c1b18fb49dea7ac3e8f820e091a663afa5410d3443612bf416cff
 download_and_patch(
         ${LIB1_NAME} ${LIB1_NAME_VERSIONED} ${LIB1_FILENAME} ${LIB1_URL} ${LIB1_SHA_256_HASH}
         ""
-        ""
 )
 
 set(EXTERNAL_SOURCE_DIR_1 "${EXTERNAL_SOURCE_DIR}")
@@ -28,7 +27,6 @@ set(LIB2_URL "https://github.com/${LIB1_NAME}/${LIB2_NAME}/archive/refs/tags/${L
 set(LIB2_SHA_256_HASH "fd00c22d9ad3d4b5c90c4428d49719d0549f6a15cf5c612ffd5c9ba6c10689b9")
 download_and_patch(
         ${LIB2_NAME} ${LIB2_NAME_VERSIONED} ${LIB2_FILENAME} ${LIB2_URL} ${LIB2_SHA_256_HASH}
-        ""
         ""
 )
 

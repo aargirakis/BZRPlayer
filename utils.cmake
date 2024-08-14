@@ -1,20 +1,12 @@
 include(FetchContent)
 include(ExternalProject)
 
-function(patch_sources target_name external_source_dir external_sources_to_remove patch_sources_dir)
-    if (NOT external_sources_to_remove AND NOT patch_sources_dir)
+function(patch_sources target_name external_source_dir patch_sources_dir)
+    if (NOT patch_sources_dir)
         return()
     endif ()
 
     message(STATUS "Patching '${target_name}'")
-
-    foreach (source_to_remove ${external_sources_to_remove})
-        execute_process(
-                COMMAND ${CMAKE_COMMAND} -E rm -f
-                ${external_source_dir}/${source_to_remove}
-                #RESULT_VARIABLE delete_result
-        )
-    endforeach ()
 
     if (patch_sources_dir)
         execute_process(
@@ -30,7 +22,7 @@ function(patch_sources target_name external_source_dir external_sources_to_remov
     endif ()
 endfunction()
 
-function(download_patch_and_make target_name target_name_versioned target_filename target_url sha_256_hash external_sources_to_remove patch_sources_dir make_args)
+function(download_patch_and_make target_name target_name_versioned target_filename target_url sha_256_hash patch_sources_dir make_args)
     message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
 
     set(external_source_dir "${CMAKE_BINARY_DIR}/_deps/${target_name_versioned}")
@@ -59,7 +51,7 @@ function(download_patch_and_make target_name target_name_versioned target_filena
         message(FATAL_ERROR "Error unpacking '${downloaded_file}'")
     endif ()
 
-    patch_sources("${target_name_versioned}" "${external_source_dir}" "${external_sources_to_remove}" "${patch_sources_dir}")
+    patch_sources("${target_name_versioned}" "${external_source_dir}" "${patch_sources_dir}")
 
     if (make_args)
         if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
@@ -74,32 +66,31 @@ function(download_patch_and_make target_name target_name_versioned target_filena
         set(make_command ${make_command} -j -l10 ${make_args}) #TODO -j -l10?
     endif ()
 
-        ExternalProject_Add(  #TODO add update step & patch step with ExternalProject_Add
-                ${target_name}_ExternalProject_Add
-                #URL ${target_url}
-                #URL_HASH SHA256=${sha_256_hash}
-                SOURCE_DIR ${external_source_dir}
-                DOWNLOAD_COMMAND ""
-                #PATCH_COMMAND ""
-                CONFIGURE_COMMAND ""
-                BUILD_COMMAND "${make_command}"
-                INSTALL_COMMAND ""
-                WORKING_DIRECTORY ${external_source_dir}
-                #DOWNLOAD_NO_PROGRESS true
-                #CONFIGURE_HANDLED_BY_BUILD true
-                BUILD_IN_SOURCE 1
-                #BUILD_ALWAYS OFF
-                #EXCLUDE_FROM_ALL #TODO instead of external_sources_to_remove
-                #TODO skip download and extraction when not needed
-        )
+    ExternalProject_Add(  #TODO add update step & patch step with ExternalProject_Add
+            ${target_name}_ExternalProject_Add
+            #URL ${target_url}
+            #URL_HASH SHA256=${sha_256_hash}
+            SOURCE_DIR ${external_source_dir}
+            DOWNLOAD_COMMAND ""
+            #PATCH_COMMAND ""
+            CONFIGURE_COMMAND ""
+            BUILD_COMMAND "${make_command}"
+            INSTALL_COMMAND ""
+            WORKING_DIRECTORY ${external_source_dir}
+            #DOWNLOAD_NO_PROGRESS true
+            #CONFIGURE_HANDLED_BY_BUILD true
+            BUILD_IN_SOURCE 1
+            #BUILD_ALWAYS OFF
+            #TODO skip download and extraction when not needed
+    )
 
     set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
 endfunction()
 
-function(download_and_patch target_name target_name_versioned target_filename target_url sha_256_hash external_sources_to_remove patch_sources_dir)
+function(download_and_patch target_name target_name_versioned target_filename target_url sha_256_hash patch_sources_dir)
     download_patch_and_make(
             "${target_name}" "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}"
-            "${external_sources_to_remove}" "${patch_sources_dir}" ""
+            "${patch_sources_dir}" ""
     )
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
@@ -131,7 +122,7 @@ function(download_to target_filename target_url sha_256_hash destination_path)
 endfunction()
 
 #TODO remove (unused & deprecated)
-function(clone_and_patch repo_name repo_url repo_tag is_tag external_sources_to_remove patch_sources_dir)
+function(clone_and_patch repo_name repo_url repo_tag is_tag patch_sources_dir)
     if (is_tag)
         set(clone_at tag)
     else ()
@@ -153,7 +144,7 @@ function(clone_and_patch repo_name repo_url repo_tag is_tag external_sources_to_
 
     set(external_source_dir ${${repo_name}_SOURCE_DIR})
 
-    patch_sources("${repo_name}" "${external_source_dir}" "${external_sources_to_remove}" "${patch_sources_dir}")
+    patch_sources("${repo_name}" "${external_source_dir}" "${patch_sources_dir}")
 
     set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
 endfunction()

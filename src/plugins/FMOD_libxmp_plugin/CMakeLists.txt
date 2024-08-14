@@ -12,15 +12,8 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/releases/download/${LIB_NAME_VERSIONED}/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "7847d262112d14e8442f44e5ac6ed9ddbca54c251284720b563c852b31f26e75")
-list(APPEND EXTERNAL_SOURCES_TO_REMOVE
-        src/loaders/prowizard/pm.c
-        src/loaders/prowizard/pm20.c
-        src/loaders/prowizard/pm40.c
-        src/loaders/prowizard/pp30.c
-)
 download_and_patch(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
-        "${EXTERNAL_SOURCES_TO_REMOVE}"
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
@@ -35,6 +28,13 @@ file(GLOB SOURCES
         src/main.cpp
 
         ${CMAKE_SOURCE_DIR}/src/plugins/FMOD_Flod_plugin/src/flod/BaseRow.cpp
+)
+
+list(REMOVE_ITEM SOURCES
+        ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/pm.c
+        ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/pm20.c
+        ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/pm40.c
+        ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/pp30.c
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

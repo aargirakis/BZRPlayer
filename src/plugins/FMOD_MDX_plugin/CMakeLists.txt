@@ -14,7 +14,6 @@ set(LIB_URL "https://github.com/mistydemeo/${LIB_NAME}/archive/refs/tags/${LIB_F
 set(LIB_SHA_256_HASH "5377613b212020d79c478a04b24ded9e9a2365c8271e48973eb3360b434d9e60")
 download_and_patch(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
-        ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
