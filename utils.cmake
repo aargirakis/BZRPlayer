@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.28)
+
 include(FetchContent)
 include(ExternalProject)
 
