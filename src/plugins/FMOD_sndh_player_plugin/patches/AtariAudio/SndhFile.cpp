@@ -263,7 +263,7 @@ int	SndhFile::AudioRender(int16_t* buffer, int count, uint32_t* pSampleViewInfo)
 		// compute the Atari machine sample (YM2149 and STE DAC)
 		*buffer++ = m_atariMachine.ComputeNextSample(pSampleViewInfo);
 		if (pSampleViewInfo)
-            pSampleViewInfo++;
+			pSampleViewInfo++;
 	}
 	return m_loopCount;
 }
