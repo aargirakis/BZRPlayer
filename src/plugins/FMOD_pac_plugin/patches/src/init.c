@@ -160,10 +160,10 @@ pac_init (long rate, int bits, int channels)
       pac_mode_flags &= ~PAC_VOLUME_REDUCTION;
    pac_initialized = 1;
 
-//#ifndef NDEBUG
-//   fprintf (stderr, "pac_init: %ld Hz, %d bits, %d channels (framesize %d)\n",
-//            pac_rate, pac_bits, pac_channels, pac_framesize);
-//#endif
+#ifndef NDEBUG
+   fprintf (stderr, "pac_init: %ld Hz, %d bits, %d channels (framesize %d)\n",
+            pac_rate, pac_bits, pac_channels, pac_framesize);
+#endif
    return 0;
 }
 
