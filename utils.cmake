@@ -33,15 +33,7 @@ function(download_patch_and_make target_name target_name_versioned target_filena
     file(
             DOWNLOAD ${target_url} ${downloaded_file}
             EXPECTED_HASH SHA256=${sha_256_hash}
-            STATUS DOWNLOAD_STATUS
     )
-
-    list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
-    list(GET DOWNLOAD_STATUS 1 ERROR_MESSAGE)
-
-    if (NOT ${STATUS_CODE} EQUAL 0)
-        message(FATAL_ERROR "Error downloading '${target_filename}': ${ERROR_MESSAGE}")
-    endif ()
 
     file(ARCHIVE_EXTRACT INPUT "${downloaded_file}" DESTINATION "${external_source_dir}/..")
 
@@ -96,20 +88,11 @@ function(download_to target_filename target_url sha_256_hash destination_path)
     if ("${sha_256_hash}" STREQUAL "")
         file(
                 DOWNLOAD ${target_url} ${destination_path}/${target_filename}
-                STATUS DOWNLOAD_STATUS
         )
     else ()
         file(
                 DOWNLOAD ${target_url} ${destination_path}/${target_filename}
                 EXPECTED_HASH SHA256=${sha_256_hash}
-                STATUS DOWNLOAD_STATUS
         )
-    endif ()
-
-    list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
-    list(GET DOWNLOAD_STATUS 1 ERROR_MESSAGE)
-
-    if (NOT ${STATUS_CODE} EQUAL 0)
-        message(FATAL_ERROR "Error downloading '${target_filename}': ${ERROR_MESSAGE}")
     endif ()
 endfunction()
