@@ -7,13 +7,17 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
 set(LIB_NAME "faad2")
-string(REPLACE "." "_" LIB_VERSION "${PROJECT_VERSION}")
+set(LIB_VERSION "${PROJECT_VERSION}")
+string(REPLACE "." "_" LIB_TAG "${LIB_VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
-set(LIB_URL "https://github.com/knik0/${LIB_NAME}/archive/refs/tags/${LIB_VERSION}.zip")
+set(LIB_NAME_TAGGED "${LIB_NAME}-${LIB_TAG}")
+set(LIB_FILENAME "${LIB_NAME}-${LIB_TAG}.zip")
+set(LIB_FILENAME2 "${LIB_TAG}.zip")
+set(LIB_URL "https://github.com/knik0/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME2}")
 set(LIB_SHA_256_HASH "841841dd2ccd8cac295b15420ad20cc69ca4951a3de642ed2bdba8d634bfcf8a")
+set(LIB_UNPACKED_DIR "${LIB_NAME_TAGGED}")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ${LIB_UNPACKED_DIR}
         ""
 )
 

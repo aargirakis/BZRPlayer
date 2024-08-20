@@ -13,7 +13,7 @@ set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tgz")
 set(LIB_URL "http://prdownloads.sourceforge.net/${LIB_NAME}/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "17516a4a9fd75c4186c6d85a8b0d46cbff98fbc2042bccf0ce4062b6f68e3e49")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 

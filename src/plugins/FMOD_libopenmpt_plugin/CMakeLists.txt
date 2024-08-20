@@ -14,7 +14,7 @@ set(LIB_URL "https://lib.openmpt.org/files/${NAME}/src/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "36643c01ee48b43eabff54c5cffb395987edf71adcddf89a6511cb9c81431fb3")
 set(MAKE_ARGS CONFIG=mingw-w64 WINDOWS_ARCH=x86 OPENMPT123=0 TEST=0 EXAMPLES=0 SHARED_LIB=0 STATIC_LIB=1)
 download_patch_and_make(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
         "${MAKE_ARGS}"
 )

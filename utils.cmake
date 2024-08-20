@@ -24,10 +24,10 @@ function(patch_sources target_name external_source_dir patch_sources_dir)
     endif ()
 endfunction()
 
-function(download_patch_and_make target_name target_name_versioned target_filename target_url sha_256_hash patch_sources_dir make_args)
+function(download_patch_and_make target_name target_name_versioned target_filename target_url sha_256_hash target_unpacked_dir patch_sources_dir make_args)
     message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
 
-    set(external_source_dir "${CMAKE_BINARY_DIR}/_deps/${target_name_versioned}")
+    set(external_source_dir "${CMAKE_BINARY_DIR}/_deps/${target_name_versioned}/${target_unpacked_dir}")
     set(downloaded_file "${external_source_dir}/${target_filename}")
 
     file(
@@ -43,15 +43,7 @@ function(download_patch_and_make target_name target_name_versioned target_filena
         message(FATAL_ERROR "Error downloading '${target_filename}': ${ERROR_MESSAGE}")
     endif ()
 
-    execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar xjf ${downloaded_file}
-            WORKING_DIRECTORY ${external_source_dir}/..
-            RESULT_VARIABLE UNPACK_RESULT
-    )
-
-    if (NOT UNPACK_RESULT EQUAL 0)
-        message(FATAL_ERROR "Error unpacking '${downloaded_file}'")
-    endif ()
+    file(ARCHIVE_EXTRACT INPUT "${downloaded_file}" DESTINATION "${external_source_dir}/..")
 
     patch_sources("${target_name_versioned}" "${external_source_dir}" "${patch_sources_dir}")
 
@@ -89,9 +81,9 @@ function(download_patch_and_make target_name target_name_versioned target_filena
     set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
 endfunction()
 
-function(download_and_patch target_name target_name_versioned target_filename target_url sha_256_hash patch_sources_dir)
+function(download_and_patch target_name target_name_versioned target_filename target_url sha_256_hash target_unpacked_dir patch_sources_dir)
     download_patch_and_make(
-            "${target_name}" "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}"
+            "${target_name}" "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${target_unpacked_dir}"
             "${patch_sources_dir}" ""
     )
 
@@ -120,33 +112,4 @@ function(download_to target_filename target_url sha_256_hash destination_path)
     if (NOT ${STATUS_CODE} EQUAL 0)
         message(FATAL_ERROR "Error downloading '${target_filename}': ${ERROR_MESSAGE}")
     endif ()
-
-endfunction()
-
-#TODO remove (unused & deprecated)
-function(clone_and_patch repo_name repo_url repo_tag is_tag patch_sources_dir)
-    if (is_tag)
-        set(clone_at tag)
-    else ()
-        set(clone_at commit)
-    endif ()
-
-    message(STATUS "Cloning repository '${repo_name}' ${repo_url} at ${clone_at} '${repo_tag}'")
-
-    #set(PATCH_FILE git apply ${CMAKE_CURRENT_SOURCE_DIR}/patches/test.patch)
-    FetchContent_Declare(
-            ${repo_name}
-            GIT_REPOSITORY ${repo_url}
-            GIT_TAG ${repo_tag}
-            GIT_SHALLOW ${is_tag}
-            # PATCH_COMMAND ${PATCH_FILE}
-    )
-
-    FetchContent_Populate(${repo_name})
-
-    set(external_source_dir ${${repo_name}_SOURCE_DIR})
-
-    patch_sources("${repo_name}" "${external_source_dir}" "${patch_sources_dir}")
-
-    set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
 endfunction()

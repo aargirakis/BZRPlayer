@@ -8,7 +8,7 @@ set(LIB_URL "https://gitlab.com/kode54/${LIB_NAME}/-/archive/${LIB_VERSION}/${LI
 set(LIB_SHA_256_HASH "16cf2ffc3113c84edcb04e2980087626c70e1915c9597eeb0a5f70b36d30d1fd")
 if (NOT TARGET "${LIB_NAME}_ExternalProject_Add")
     download_and_patch(
-            ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
+            ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
             ""
     )
 

@@ -18,7 +18,7 @@ set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/releases/download/v${PROJECT_VERSION}/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "416df16c09b0ab058c21adc1792abfac8524a27b0dac0034afc040057f6346ba")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB_NAME}
 )
 
@@ -62,7 +62,7 @@ set(LIB_FILENAME "${LIB_VERSION}.zip")
 set(LIB_URL "https://github.com/cadaver/${LIB_NAME}/archive/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "2ae065ef4c58c8b12210fd6d9e8543ebdc272ccd9996ab963ef3b464bc4b0ddc")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB_NAME}
 )
 
@@ -75,7 +75,7 @@ set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_URL "https://sourceforge.net/projects/${LIB_NAME}-emu/files/releases/${LIB_FILENAME}/download")
 set(LIB_SHA_256_HASH "1d7dc4d0f2bbcc2a871bb954ff4a5df63048dea9c16f5f1e9bc8260fa41a1004")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
         ""
 )
 

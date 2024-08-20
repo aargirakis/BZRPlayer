@@ -13,7 +13,7 @@ set(LIB_FILENAME "${LIB_VERSION}.zip")
 set(LIB_URL "https://github.com/libgme/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "2fe64e09ab228aa9b055cd69997a2b49179011e091127cf801161fb5bf5ae8cf")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
         ""
 )
 

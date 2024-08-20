@@ -13,7 +13,7 @@ set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.bz2")
 set(LIB_URL "https://src.fedoraproject.org/repo/pkgs/${LIB_NAME}/${LIB_FILENAME}/4df18b3f7eac9ec4ff8e53f7c9a017c3/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "0b8c87fe933158c63dfb6943f88f65be2b0c63c959fb30f0b2821388840168e6")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
