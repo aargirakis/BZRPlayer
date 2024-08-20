@@ -43,7 +43,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_s98 "src/plugins/FMOD_s98_plugin"                                  #TODO never worked ?
         plugin_sc68 "src/plugins/FMOD_sc68_plugin"
         plugin_sndh-player "src/plugins/FMOD_sndh_player_plugin"                  #check cmake TODO
-        plugin_sunvox "src/plugins/FMOD_sunvox_plugin"                            #TODO avoid archive.org url
+        plugin_sunvox "src/plugins/FMOD_sunvox_plugin"                            #TODO avoid archive.org url #TODO sv_unload_dll()?
         plugin_uade "src/plugins/FMOD_uade_plugin"
         plugin_v2m "src/plugins/FMOD_v2m_plugin"
         plugin_vgmplay "src/plugins/FMOD_vgmplay_plugin"                          #check cmake TODO
@@ -105,7 +105,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             ${OUTPUT_DIR_PARENT}/Qt5Widgets.dll
             ${OUTPUT_DIR_PARENT}/Qt5Xml.dll
             ${OUTPUT_DIR_PARENT}/qtadvanceddocking.dll
-            ${OUTPUT_DIR_PARENT}/sunvox.dll
             ${OUTPUT_DIR_PARENT}/zlib1.dll
             DESTINATION .
     )

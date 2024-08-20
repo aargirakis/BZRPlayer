@@ -43,6 +43,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR}/windows/lib_x86/sunvox.dll
-        ${OUTPUT_DIR_PARENT}
+        ${OUTPUT_DIR_PARENT}/data/plugin
         VERBATIM
 )

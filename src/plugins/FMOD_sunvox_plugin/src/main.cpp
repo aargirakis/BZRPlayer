@@ -76,7 +76,7 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION * __stdcall _FMODGetCodecDescriptio
 
 FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo)
 {
-    if( sv_load_dll() )
+    if (sv_load_dll2(TEXT("data/plugin/sunvox.dll")))
     return FMOD_ERR_FORMAT;
     FMOD_RESULT       result;
 
