@@ -1,1 +1,0 @@
-D:\Programs\vasm\vasmm68k_mot.exe -no-opt -Fhunkexe -nosym -kick1hunks -I ../../score IFF8SVX.amp2.s -o IFF8SVX

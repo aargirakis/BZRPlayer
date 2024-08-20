@@ -1,1 +1,0 @@
-D:\Programs\vasm\vasmm68k_mot.exe -no-opt -Fhunkexe -nosym -kick1hunks -I ../../score QuartetST_v3.s -o Quartet_ST

@@ -44,7 +44,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_sc68 "src/plugins/FMOD_sc68_plugin"
         plugin_sndh-player "src/plugins/FMOD_sndh_player_plugin"                  #check cmake TODO
         plugin_sunvox "src/plugins/FMOD_sunvox_plugin"                            #TODO avoid archive.org url #TODO sv_unload_dll()?
-        plugin_uade "src/plugins/FMOD_uade_plugin"
+        plugin_uade "src/plugins/FMOD_uade_plugin"                                #TODO unfinished #TODO patches "#define EMSCRIPTEN 1" -> add_compile_definitions(EMSCRIPTEN=1)
         plugin_v2m "src/plugins/FMOD_v2m_plugin"
         plugin_vgmplay "src/plugins/FMOD_vgmplay_plugin"                          #check cmake TODO
         plugin_vgmstream "src/plugins/FMOD_vgmstream_plugin"
