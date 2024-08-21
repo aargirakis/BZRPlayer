@@ -11,7 +11,7 @@ else ()
     set(CMAKE_CXX_STANDARD 14)
 endif ()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__REPLAYER__ -D__STAND_ALONE__ -D__WINAMP__")
+add_compile_definitions(__REPLAYER__ __STAND_ALONE__ __WINAMP__)
 
 file(GLOB SOURCES
         src/protrekkr/editors/patterns_blocks.cpp

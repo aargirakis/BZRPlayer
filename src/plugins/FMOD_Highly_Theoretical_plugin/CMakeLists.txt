@@ -5,7 +5,6 @@ project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DEMU_COMPILE -DEMU_LITTLE_ENDIAN -DLSB_FIRST -DC68K_NO_JUMP_TABLE -DNO_DYNAREC")
 
 set(LIB_NAME ${NAME})
 set(LIB_VERSION "0e4c18c5b757b04dbcb68c572c5a4f6fd803283c")
@@ -19,6 +18,11 @@ download_and_patch(
 )
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
+
+add_compile_definitions(
+        EMU_COMPILE EMU_LITTLE_ENDIAN
+        LSB_FIRST C68K_NO_JUMP_TABLE NO_DYNAREC
+)
 
 include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
 

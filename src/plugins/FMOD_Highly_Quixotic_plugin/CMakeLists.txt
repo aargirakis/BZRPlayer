@@ -5,7 +5,6 @@ project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DEMU_COMPILE -DEMU_LITTLE_ENDIAN")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
 
 set(LIB_NAME ${NAME})
@@ -20,6 +19,8 @@ download_and_patch(
 )
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
+
+add_compile_definitions(EMU_COMPILE EMU_LITTLE_ENDIAN)
 
 include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
 
