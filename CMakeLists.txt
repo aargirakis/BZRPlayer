@@ -45,7 +45,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_sndh-player "src/plugins/FMOD_sndh_player_plugin"                  #check cmake TODO
         plugin_sunvox "src/plugins/FMOD_sunvox_plugin"                            #TODO avoid archive.org url #TODO sv_unload_dll()?
         plugin_uade "src/plugins/FMOD_uade_plugin"                                #TODO unfinished #TODO patches "#define EMSCRIPTEN 1" -> add_compile_definitions(EMSCRIPTEN=1)
-        plugin_v2m "src/plugins/FMOD_v2m_plugin"
+        plugin_v2m "src/plugins/FMOD_v2m_plugin"                                  #TODO seeking it is now supported (should be implemented into main.cpp). #TODO add v2mz support (see sources/v2m dir for example files)
         plugin_vgmplay "src/plugins/FMOD_vgmplay_plugin"                          #check cmake TODO
         plugin_vgmstream "src/plugins/FMOD_vgmstream_plugin"
         plugin_vio2sf "src/plugins/FMOD_vio2sf_plugin"                            #check cmake TODO

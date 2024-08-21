@@ -3,10 +3,10 @@
 #include <string>
 #include <algorithm>
 #include "fmod_errors.h"
-#include "src/v2mplayer.h"
-#include "src/v2mconv.h"
-#include "src/sounddef.h"
-#include "src/libv2.h"
+#include "v2mplayer.h"
+#include "v2mconv.h"
+#include "sounddef.h"
+#include "libv2.h"
 #include "info.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
@@ -108,7 +108,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
 
     sdInit();
-    int version = CheckV2MVersion(myBuffer, filesize);
+	ssbase base;
+    int version = CheckV2MVersion(myBuffer, filesize, base);
     if (version < 0)
     {
         delete [] myBuffer;

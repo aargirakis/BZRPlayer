@@ -1,4 +1,3 @@
-#define V2MPLAYER_SYNC_FUNCTIONS
 /*************************************************************************************/
 /*************************************************************************************/
 /**                                                                                 **/
@@ -10,8 +9,7 @@
 /*************************************************************************************/
 
 #pragma once
-#ifndef V2MPLAYER_H_
-#define V2MPLAYER_H_
+
 /*************************************************************************************/
 /**                                                                                 **/
 /**  Type definitions                                                               **/
@@ -81,10 +79,12 @@ public:
         reinterpret_cast<V2MPlayer*>(a_this)->Render(a_buffer, a_len);
     }
 
-  bool NoEnd();
-  uint32_t Length();
+    bool NoEnd();
 
-  // returns if song is currently playing
+    // returns song length
+    uint32_t Length();
+
+    // returns if song is currently playing
     bool IsPlaying();
 
     #ifdef V2MPLAYER_SYNC_FUNCTIONS
@@ -200,7 +200,6 @@ private:
     V2MBase      m_base;
     PlayerState  m_state;
     uint32_t     m_samplerate;
-    int32_t      m_timeoffset;
     uint8_t      m_midibuf[4096];
     float        m_fadeval;
     float        m_fadedelta;
@@ -210,5 +209,3 @@ private:
     void Reset();                      // resets player, inits synth
     void Tick();                       // one midi player tick
 };
-
-#endif
