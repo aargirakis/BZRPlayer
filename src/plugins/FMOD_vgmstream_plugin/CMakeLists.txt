@@ -6,23 +6,35 @@ project(plugin_${NAME})
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
+set(LIB_NAME "${NAME}")
+set(LIB_VERSION "r1831")
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
+set(LIB_FILENAME2 "${LIB_VERSION}.tar.gz")
+set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME2}")
+set(LIB_SHA_256_HASH "d3485abc1094f104244e8367b352fef7e17e7fc1e6ade19a78bbd09cbf3daea9")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
+        ""
+)
+
 file(GLOB SOURCES
-        src/vgmstream-r1831/*.c
-        src/vgmstream-r1831/coding/*.c
-        src/vgmstream-r1831/layout/*.c
-        src/vgmstream-r1831/meta/*.c
-        src/vgmstream-r1831/util/*.c
+        ${EXTERNAL_SOURCE_DIR}/src/*.c
+        ${EXTERNAL_SOURCE_DIR}/src/coding/*.c
+        ${EXTERNAL_SOURCE_DIR}/src/layout/*.c
+        ${EXTERNAL_SOURCE_DIR}/src/meta/*.c
+        ${EXTERNAL_SOURCE_DIR}/src/util/*.c
         src/main.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        src/vgmstream-r1831
-        src/vgmstream-r1831/coding
-        src/vgmstream-r1831/layout
-        src/vgmstream-r1831/meta
-        src/vgmstream-r1831/util
+        ${EXTERNAL_SOURCE_DIR}/src
+        ${EXTERNAL_SOURCE_DIR}/src/coding
+        ${EXTERNAL_SOURCE_DIR}/src/layout
+        ${EXTERNAL_SOURCE_DIR}/src/meta
+        ${EXTERNAL_SOURCE_DIR}/src/util
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
