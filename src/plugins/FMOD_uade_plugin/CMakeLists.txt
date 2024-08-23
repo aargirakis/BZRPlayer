@@ -6,12 +6,12 @@ project(plugin_${NAME})
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O3") #TODO why dll linking on windows with debug build type fails with (default) -O0 flag ?
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon")
 endif ()
 
-if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O3") #TODO why dll linking on windows with debug build type fails with (default) -O0 flag ?
 endif ()
 
 set(LIB_NAME "wothke-uade-2.13")

@@ -6,8 +6,8 @@ project(plugin_${NAME})
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon") #TODO why needed for linux cross-compilation only?
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon")
 endif ()
 
 set(LIB_NAME "audiodecoder.wsr")
