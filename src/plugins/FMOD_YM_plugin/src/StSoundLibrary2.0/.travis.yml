@@ -1,5 +1,0 @@
-language: cpp
-script:
-    - ./build_config.sh
-    - ./configure
-    - make
