@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.28)
 set(NAME "furnace")
 project(plugin_${NAME} VERSION "0.6.3")
 
+find_package(ZLIB)
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -218,7 +220,8 @@ if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows") #fix #543
 endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L${CMAKE_SOURCE_DIR}/src/external/zlib -lzdll -lshlwapi
+        ZLIB::ZLIB
+        -lshlwapi
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

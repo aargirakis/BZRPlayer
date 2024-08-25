@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.28)
 set(NAME "sc68")
 project(plugin_${NAME})
 
+find_package(ZLIB)
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -65,9 +67,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L${CMAKE_SOURCE_DIR}/src/external/zlib -lzdll
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "codec_${NAME}"
