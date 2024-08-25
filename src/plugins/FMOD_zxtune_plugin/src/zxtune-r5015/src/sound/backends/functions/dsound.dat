@@ -1,4 +1,0 @@
-CALLTYPE=WINAPI
-DEBUGMODULE=Sound::Backend::DirectSound
-HRESULT DirectSoundEnumerateW(LPDSENUMCALLBACKW cb, LPVOID param)
-HRESULT DirectSoundCreate(LPCGUID pcGuidDevice, LPDIRECTSOUND* ppDS, LPUNKNOWN pUnkOuter)

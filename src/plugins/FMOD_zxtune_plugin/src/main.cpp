@@ -12,9 +12,6 @@
 #include <string>
 
 #include "info.h"
-#include "zxtune-r4110/apps/libzxtune/zxtune.h"
-
-
 
 using namespace std;
 
