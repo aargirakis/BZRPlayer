@@ -5,7 +5,8 @@ project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fpermissive>)
 
 set(LIB_NAME ${NAME})
 set(LIB_VERSION "d730174d436e8cabca90fabdb3ad4ddf614d31cc")

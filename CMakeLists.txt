@@ -10,9 +10,7 @@ if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_
     set(CMAKE_BUILD_TYPE "Debug")
 endif ()
 
-#TODO remove
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+add_compile_options(-w) #TODO remove
 
 set(OUTPUT_DIR_PARENT "${CMAKE_BINARY_DIR}/output")
 

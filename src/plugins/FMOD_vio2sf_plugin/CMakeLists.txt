@@ -5,7 +5,8 @@ project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
+
+add_compile_options($<$<COMPILE_LANGUAGE:C>:-msse4.1>)
 
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION "1d68801f5fd370c3275affd51505353e2b366a7e")

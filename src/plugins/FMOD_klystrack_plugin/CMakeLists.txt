@@ -5,7 +5,6 @@ project(plugin_${NAME})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 --no-strict-aliasing") #TODO needed?
 
 file(GLOB SOURCES
         src/main.cpp
