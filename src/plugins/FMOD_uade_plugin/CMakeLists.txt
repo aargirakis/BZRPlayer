@@ -11,7 +11,7 @@ if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10)
 endif ()
 
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O3") #TODO why dll linking on windows with debug build type fails with (default) -O0 flag ?
+    add_compile_options($<$<CONFIG:DEBUG>:$<$<COMPILE_LANGUAGE:C>:-O3>>) #TODO why dll linking on windows with debug build type fails with (default) -O0 flag ?
 endif ()
 
 set(LIB_NAME "wothke-uade-2.13")
