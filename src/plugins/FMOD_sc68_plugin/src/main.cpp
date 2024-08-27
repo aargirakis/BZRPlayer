@@ -11,16 +11,10 @@
 #include <stdlib.h>
 #include <iostream>
 #include "fmod_errors.h"
-#define SC68_SHARED_DATA_PATH "nothing"
 //#include "Logfile.h"
 #include "info.h"
-
-
-
-/* sc68 includes */
-#include <config68.h>
-#include <api68/api68.h>
-
+#include "libsc68/sc68/sc68.h"
+#include "file68/sc68/rsc68.h"
 
 //CLogFile *LogFile;
 
@@ -77,17 +71,6 @@ public:
         _codec = codec;
         //LogFile = new CLogFile("sc68.log");
         memset(&gpwaveformat, 0, sizeof(gpwaveformat));
-
-        memset(&init68, 0, sizeof(init68));
-        init68.alloc = malloc;
-        init68.free = free;
-
-
-        // Set debug message handler (optionnal).
-        //init68.debug = (debugmsg68_t)vfprintf;
-        //init68.debug_cookie = stderr;
-
-
     }
 
     ~gameplugin()
@@ -96,9 +79,10 @@ public:
 
     }
     FMOD_CODEC_WAVEFORMAT gpwaveformat;
-    api68_t * sc68;
-    api68_init_t init68;
-    api68_music_info_t info;
+    sc68_t * sc68;
+    sc68_init_t init68;
+    sc68_create_t create68;
+    sc68_music_info_t info;
     int currentSubsong;
 
 };
@@ -168,8 +152,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
 
     Info* info = (Info*)userexinfo->userdata;
-    string path = info->applicationPath + "/data/plugin/SC68";
-    gp->init68.shared_path=path.c_str();
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
@@ -187,13 +169,25 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec,myBuffer,filesize,&bytesread);
     //ERRCHECK(result);
 
+    memset(&gp->init68, 0, sizeof(gp->init68));
 
-    gp->sc68 = api68_init(&gp->init68);
+    // Set debug message handler (optionnal).
+    //init68.debug = (debugmsg68_t)vfprintf;
+    //init68.debug_cookie = stderr;
 
-    if(api68_load_mem(gp->sc68, (signed short*)myBuffer, filesize)<0)
+    sc68_init(&gp->init68);
+
+    string path = info->applicationPath + FILE68_SHARED_PATH;
+    rsc68_set_share(path.c_str());
+
+    memset(&gp->create68,0,sizeof(gp->create68));
+    gp->sc68 = sc68_create(&gp->create68);
+
+    if(sc68_load_mem(gp->sc68, (signed short*)myBuffer, filesize)<0)
     {
         invalidFile = true;
-        api68_shutdown(gp->sc68);
+        sc68_destroy(gp->sc68);
+        sc68_shutdown();
         delete[] myBuffer;
         cout << "FMOD_ERR_FORMAT load" << endl;
         return FMOD_ERR_FORMAT;
@@ -202,7 +196,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
 
     //just to get number of subsongs
-    int infoError = api68_music_info(gp->sc68, &gp->info,1,0); //No idea why I have to put track #2 in here to get the time?
+    int infoError = sc68_music_info(gp->sc68, &gp->info,1,0); //No idea why I have to put track #2 in here to get the time?
 
 
     if(infoError)
@@ -234,7 +228,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
 
     gp->currentSubsong=1;
-    api68_play(gp->sc68, gp->currentSubsong,0);
+    sc68_play(gp->sc68, gp->currentSubsong,0);
 
     info->plugin = "sc68";
     info->fileformat = "SC68";
@@ -264,7 +258,8 @@ FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec)
     gameplugin* gp = (gameplugin*)codec->plugindata;
     if(!invalidFile)
     {
-        api68_shutdown(gp->sc68);
+        sc68_destroy(gp->sc68);
+        sc68_shutdown();
     }
 
     delete (gameplugin*)codec->plugindata;
@@ -275,7 +270,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int 
 {
     gameplugin* gp = (gameplugin*)codec->plugindata;
 
-    if (api68_process(gp->sc68, (signed short*)buffer, gp->gpwaveformat.pcmblocksize) ==API68_MIX_ERROR)
+    if (sc68_process(gp->sc68, (signed short*)buffer, gp->gpwaveformat.pcmblocksize) ==SC68_MIX_ERROR)
     {
         //cout << "FMOD_ERR_FORMAT play" << endl;
         //return FMOD_ERR_FORMAT;
@@ -295,14 +290,14 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE *codec, int subsound, unsign
         //but seeking is so slow (like slowly winding it up, audible so it's pretty useless
         //int* seek = 0;
         //api68_seek(gp->sc68, position,seek);
-        api68_play(gp->sc68, gp->currentSubsong,0);
+        sc68_play(gp->sc68, gp->currentSubsong,0);
         return FMOD_OK;
     }
     else if(postype==FMOD_TIMEUNIT_SUBSONG)
     {
         if(position<0) position = 0;
-        api68_play(gp->sc68, position+1,0);
-        api68_music_info(gp->sc68, &gp->info,position+1,0);
+        sc68_play(gp->sc68, position+1,0);
+        sc68_music_info(gp->sc68, &gp->info,position+1,0);
         gp->currentSubsong = position+1;
         return FMOD_OK;
     }

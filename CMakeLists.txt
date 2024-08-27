@@ -39,7 +39,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_pac "src/plugins/FMOD_pac_plugin"
         plugin_protrekkr "src/plugins/FMOD_protrekkr_plugin"
         plugin_s98 "src/plugins/FMOD_s98_plugin"                                  #TODO never worked ?
-        plugin_sc68 "src/plugins/FMOD_sc68_plugin"
+        plugin_sc68 "src/plugins/FMOD_sc68_plugin"                                #TODO seeking it is now supported (should be implemented into main.cpp) #TODO also track length seems supported (see DisplayInfo function in sc68.c)
         plugin_sndh-player "src/plugins/FMOD_sndh_player_plugin"                  #check cmake TODO
         plugin_sunvox "src/plugins/FMOD_sunvox_plugin"                            #TODO avoid archive.org url #TODO sv_unload_dll()?
         plugin_uade "src/plugins/FMOD_uade_plugin"                                #TODO unfinished #TODO patches "#define EMSCRIPTEN 1" -> add_compile_definitions(EMSCRIPTEN=1)

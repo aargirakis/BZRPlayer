@@ -1,3 +1,0 @@
-@set DATADIR /usr/share/sc68
-@set BINDIR /usr/bin
-@set SC68URL http://sashipa.ben.free.fr/sc68
