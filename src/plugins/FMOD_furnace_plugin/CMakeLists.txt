@@ -210,7 +210,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_3}/include
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
+        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
 if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows") #fix #543

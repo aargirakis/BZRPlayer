@@ -4,6 +4,7 @@ project(bzr2 VERSION "2.0.73")
 set(PROJECT_VERSION_PARENT "${PROJECT_VERSION}")
 
 include(${CMAKE_SOURCE_DIR}/utils.cmake)
+include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)
 
 if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_TYPE STREQUAL "None")
     message(STATUS "CMAKE_BUILD_TYPE is 'None' or not set: forcing to 'Debug'")

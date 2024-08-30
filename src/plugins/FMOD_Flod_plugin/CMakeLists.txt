@@ -49,7 +49,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/flod/whittaker
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
+        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

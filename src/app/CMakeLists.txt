@@ -48,7 +48,7 @@ file(GLOB SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
+        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
         ${CMAKE_SOURCE_DIR}/src/external/Qt-Advanced-Docking-System-4.0.0/src
 )
 
@@ -57,7 +57,7 @@ foreach (QT_MODULE ${QT_MODULES})
 endforeach ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/lib/x86 -lfmod
+        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86 -lfmod
         -L${CMAKE_SOURCE_DIR}/src/external/Qt-Advanced-Docking-System-4.0.0/bin -lqtadvanceddocking
 )
 
@@ -144,7 +144,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${OUTPUT_DIR_PARENT}/LICENSE.txt
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/lib/x86/fmod.dll
+        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/lib/x86/fmod.dll
         ${OUTPUT_DIR_PARENT}
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different

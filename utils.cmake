@@ -3,6 +3,13 @@ cmake_minimum_required(VERSION 3.28)
 include(FetchContent)
 include(ExternalProject)
 
+set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
+
+function(extract downloaded_file extract_to)
+    file(ARCHIVE_EXTRACT INPUT "${downloaded_file}" DESTINATION "${extract_to}/..")
+    set(EXTERNAL_SOURCE_DIR ${extract_to} PARENT_SCOPE)
+endfunction()
+
 function(patch_sources target_name external_source_dir patch_sources_dir)
     if (NOT patch_sources_dir)
         return()
@@ -27,7 +34,7 @@ endfunction()
 function(download_patch_and_make target_name target_name_versioned target_filename target_url sha_256_hash target_unpacked_dir patch_sources_dir make_args)
     message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
 
-    set(external_source_dir "${CMAKE_BINARY_DIR}/_deps/${target_name_versioned}/${target_unpacked_dir}")
+    set(external_source_dir "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_unpacked_dir}")
     set(downloaded_file "${external_source_dir}/${target_filename}")
 
     file(
@@ -35,8 +42,7 @@ function(download_patch_and_make target_name target_name_versioned target_filena
             EXPECTED_HASH SHA256=${sha_256_hash}
     )
 
-    file(ARCHIVE_EXTRACT INPUT "${downloaded_file}" DESTINATION "${external_source_dir}/..")
-
+    extract("${downloaded_file}" "${external_source_dir}")
     patch_sources("${target_name_versioned}" "${external_source_dir}" "${patch_sources_dir}")
 
     if (make_args)

@@ -42,7 +42,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_psflib}
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
+        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)

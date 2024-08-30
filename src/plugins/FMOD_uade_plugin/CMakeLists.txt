@@ -91,11 +91,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
+        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/lib/x86 -lfmod -lws2_32
+        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86 -lfmod -lws2_32
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

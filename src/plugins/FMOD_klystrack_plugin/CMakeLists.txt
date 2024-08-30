@@ -16,7 +16,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/include
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${CMAKE_SOURCE_DIR}/src/external/FMOD/api/core/inc
+        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
