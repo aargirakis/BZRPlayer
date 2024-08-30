@@ -10,7 +10,8 @@ set(LIB_NAME "${NAME}")
 set(LIB_VERSION ${PROJECT_VERSION})
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
-set(LIB_URL "https://sourceforge.net/projects/${LIB_NAME}/files/${LIB_NAME}/${LIB_VERSION}/${LIB_FILENAME}/download")
+#alternative download url: https://sourceforge.net/projects/${LIB_NAME}/files/${LIB_NAME}/${LIB_VERSION}/${LIB_FILENAME}/download
+set(LIB_URL "https://unlimited.dl.sourceforge.net/project/${LIB_NAME}/${LIB_NAME}/${LIB_VERSION}/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "8c7bff24d14068fcf1857710c9eb331e9d7ca1b74e718705228e9da9eac8e6ac")
 download_and_patch(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
