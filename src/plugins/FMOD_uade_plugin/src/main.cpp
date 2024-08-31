@@ -249,7 +249,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec,myBuffer,filesize,&bytesread);
 
     char uade_basedir[1024];
-    snprintf(uade_basedir, 1024, "%s/%s", gp->info->applicationPath.c_str(),"data/plugin/uade");
+    snprintf(uade_basedir, 1024, "%s/%s", gp->info->applicationPath.c_str(),UADE_DATA_PATH);
     #ifdef UNICODEHACK
     gp->basefilename = gp->info->filename.substr(gp->info->filename.find_last_of("/\\") + 1);
 
@@ -383,7 +383,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
     if(gp->songlengthpath.empty() || gp->songlengthpath=="/uade.md5")
     {
-        gp->songlengthpath=gp->info->applicationPath + "/data/plugin/uade/uade.md5";
+        gp->songlengthpath=gp->info->applicationPath + UADE_DATA_PATH + "/uade.md5";
     }
 
     uade_state* state;
@@ -609,7 +609,7 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE *codec, int subsound, unsign
     if(postype==FMOD_TIMEUNIT_MS)
     {
             char uade_basedir[1024];
-            snprintf(uade_basedir, 1024, "%s/%s", gp->info->applicationPath.c_str(),"data/plugin/uade");
+            snprintf(uade_basedir, 1024, "%s/%s", gp->info->applicationPath.c_str(),UADE_DATA_PATH);
              #ifdef UNICODEHACK
             int err = uade_reset(gp->gpwaveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME));
             #else

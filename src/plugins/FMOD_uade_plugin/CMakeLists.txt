@@ -32,6 +32,14 @@ download_and_patch(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
+set(uade_data_path "/data/plugin/uade")
+add_compile_definitions(UADE_DATA_PATH="${uade_data_path}")
+
+set(FILENAME "uade.md5")
+set(FILE_URL "http://bzrplayer.blazer.nu/${FILENAME}")
+set(DESTINATION_PATH "${OUTPUT_DIR_PARENT}${uade_data_path}")
+download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH})
+
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/compat/memmemrep.c
         ${EXTERNAL_SOURCE_DIR}/compat/strlrep.c
@@ -105,4 +113,23 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR_PARENT}/data/plugin
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${EXTERNAL_SOURCE_DIR}/players
+        ${OUTPUT_DIR_PARENT}${uade_data_path}/players
+
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${EXTERNAL_SOURCE_DIR}/amigasrc/score/score
+        ${OUTPUT_DIR_PARENT}${uade_data_path}/amigasrc/score/score
+
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${EXTERNAL_SOURCE_DIR}/eagleplayer.conf
+        ${EXTERNAL_SOURCE_DIR}/uade.conf
+        ${EXTERNAL_SOURCE_DIR}/uaerc
+        ${OUTPUT_DIR_PARENT}${uade_data_path}
+
+        VERBATIM
 )
