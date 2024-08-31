@@ -573,4 +573,6 @@ FMOD_RESULT F_CALLBACK libopenmptgetposition(FMOD_CODEC_STATE *  codec, unsigned
         *position = libopenmpt->mod->get_position_seconds()*1000;
         return FMOD_OK;
     }
+
+    return FMOD_OK;
 }
