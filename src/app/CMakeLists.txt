@@ -77,6 +77,7 @@ List(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
         ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
         ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
+        ${CMAKE_PREFIX_PATH}/bin/libcrypto-3.dll        #TODO needed?
         ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
         ${CMAKE_PREFIX_PATH}/bin/libgcc_s_dw2-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
@@ -87,16 +88,11 @@ List(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll
         ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll
         ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll
+        ${CMAKE_PREFIX_PATH}/bin/libssl-3.dll
         ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll
         ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libzstd.dll
-
-        #TODO sort
         ${CMAKE_PREFIX_PATH}/bin/zlib1.dll
-        ${CMAKE_PREFIX_PATH}/bin/libssl-3.dll
-
-        #TODO needed?
-        ${CMAKE_PREFIX_PATH}/bin/libcrypto-3.dll
 )
 
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
