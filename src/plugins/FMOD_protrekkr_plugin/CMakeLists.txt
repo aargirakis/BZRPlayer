@@ -1,32 +1,50 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "protrekkr")
-project(plugin_${NAME})
+project(plugin_${NAME} VERSION "2.6.4")
 
 find_package(ZLIB)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
 
+set(LIB_NAME "${NAME}")
+set(LIB_VERSION ${PROJECT_VERSION})
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
+set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
+set(LIB_FILENAME2 "v${LIB_VERSION}.tar.gz")
+set(LIB_URL "https://github.com/hitchhikr/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME2}")
+set(LIB_SHA_256_HASH "801deb0ac1781fbd0b6608b8c319b5dc7d36400e15401abeb8a559e3127914e2")
+download_and_patch(
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
+        "${CMAKE_CURRENT_SOURCE_DIR}/patches"
+)
+
 add_compile_definitions(__REPLAYER__ __STAND_ALONE__ __WINAMP__)
 
 file(GLOB SOURCES
-        src/protrekkr/editors/patterns_blocks.cpp
-        src/protrekkr/files/*.cpp
-        src/protrekkr/replay/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/editors/patterns_blocks.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/files/303s.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/files/files.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/files/reverbs.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/files/synths.cpp
         src/main.cpp
+)
+
+list(REMOVE_ITEM SOURCES
+        ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/endianness.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        src/protrekkr
-        src/protrekkr/editors/include
-        src/protrekkr/files
-        src/protrekkr/include
-        src/protrekkr/replay/include
-        src/protrekkr/replay/samples/aiff/include
-        src/protrekkr/replay/samples/wav/include
+        ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib
+        ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/include
+        ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/sounddriver/include
+        ${EXTERNAL_SOURCE_DIR}/src/editors/include
+        ${EXTERNAL_SOURCE_DIR}/src/files/include
+        ${EXTERNAL_SOURCE_DIR}/src/include
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc

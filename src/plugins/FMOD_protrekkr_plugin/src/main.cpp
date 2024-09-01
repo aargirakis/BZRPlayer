@@ -8,9 +8,8 @@
 #include "info.h"
 #include <iostream>
 
-#include "protrekkr/include/version.h"
-#include "protrekkr/replay/include/replay.h"
-#include "protrekkr/files/include/files.h"
+#include "../../release/distrib/replay/lib/include/replay.h"
+#include "../../src/files/include/files.h"
 
 int AUDIO_Play_Flag;
 
