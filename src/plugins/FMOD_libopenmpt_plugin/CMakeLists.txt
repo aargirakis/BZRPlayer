@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.28)
 set(NAME "libopenmpt")
 project(plugin_${NAME} VERSION "0.7.6")
 
+find_package(ZLIB)
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -52,7 +54,10 @@ file(GLOB SOURCES
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LIB_NAME}_static)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${LIB_NAME}_static
+        ZLIB::ZLIB
+)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/libopenmpt
