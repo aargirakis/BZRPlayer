@@ -6,15 +6,15 @@ project(plugin_${NAME} VERSION "2.7.1")
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION ${PROJECT_VERSION})
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
-set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/releases/download/v${PROJECT_VERSION}/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "416df16c09b0ab058c21adc1792abfac8524a27b0dac0034afc040057f6346ba")
+set(LIB1_NAME "${NAME}")
+set(LIB1_VERSION ${PROJECT_VERSION})
+set(LIB1_NAME_VERSIONED "${LIB1_NAME}-${LIB1_VERSION}")
+set(LIB1_FILENAME "${LIB1_NAME_VERSIONED}.tar.gz")
+set(LIB1_URL "https://github.com/${LIB1_NAME}/${LIB1_NAME}/releases/download/v${PROJECT_VERSION}/${LIB1_FILENAME}")
+set(LIB1_SHA_256_HASH "416df16c09b0ab058c21adc1792abfac8524a27b0dac0034afc040057f6346ba")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB_NAME}
+        ${LIB1_NAME} ${LIB1_NAME_VERSIONED} ${LIB1_FILENAME} ${LIB1_URL} ${LIB1_SHA_256_HASH} ""
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB1_NAME}
 )
 
 set(EXTERNAL_SOURCE_DIR_1 "${EXTERNAL_SOURCE_DIR}")
@@ -50,27 +50,27 @@ configure_file(
         @ONLY NEWLINE_STYLE UNIX
 )
 
-set(LIB_NAME "sidid")
-set(LIB_VERSION "eba761121a3f1239d7cc16b59a64140dc7d483ff")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_VERSION}.zip")
-set(LIB_URL "https://github.com/cadaver/${LIB_NAME}/archive/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "2ae065ef4c58c8b12210fd6d9e8543ebdc272ccd9996ab963ef3b464bc4b0ddc")
+set(LIB2_NAME "sidid")
+set(LIB2_VERSION "eba761121a3f1239d7cc16b59a64140dc7d483ff")
+set(LIB2_NAME_VERSIONED "${LIB2_NAME}-${LIB2_VERSION}")
+set(LIB2_FILENAME "${LIB2_VERSION}.zip")
+set(LIB2_URL "https://github.com/cadaver/${LIB2_NAME}/archive/${LIB2_FILENAME}")
+set(LIB2_SHA_256_HASH "2ae065ef4c58c8b12210fd6d9e8543ebdc272ccd9996ab963ef3b464bc4b0ddc")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB_NAME}
+        ${LIB2_NAME} ${LIB2_NAME_VERSIONED} ${LIB2_FILENAME} ${LIB2_URL} ${LIB2_SHA_256_HASH} ""
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB2_NAME}
 )
 
 set(EXTERNAL_SOURCE_DIR_2 "${EXTERNAL_SOURCE_DIR}")
 
-set(LIB_NAME "vice")
-set(LIB_VERSION "3.8")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
-set(LIB_URL "https://sourceforge.net/projects/${LIB_NAME}-emu/files/releases/${LIB_FILENAME}/download")
-set(LIB_SHA_256_HASH "1d7dc4d0f2bbcc2a871bb954ff4a5df63048dea9c16f5f1e9bc8260fa41a1004")
+set(LIB3_NAME "vice")
+set(LIB3_VERSION "3.8")
+set(LIB3_NAME_VERSIONED "${LIB3_NAME}-${LIB3_VERSION}")
+set(LIB3_FILENAME "${LIB3_NAME_VERSIONED}.tar.gz")
+set(LIB3_URL "https://sourceforge.net/projects/${LIB3_NAME}-emu/files/releases/${LIB3_FILENAME}/download")
+set(LIB3_SHA_256_HASH "1d7dc4d0f2bbcc2a871bb954ff4a5df63048dea9c16f5f1e9bc8260fa41a1004")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
+        ${LIB3_NAME} ${LIB3_NAME_VERSIONED} ${LIB3_FILENAME} ${LIB3_URL} ${LIB3_SHA_256_HASH} ""
         ""
 )
 

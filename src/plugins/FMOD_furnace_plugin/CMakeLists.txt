@@ -16,7 +16,7 @@ set(LIB1_URL "https://github.com/tildearrow/${LIB1_NAME}/archive/refs/tags/${LIB
 set(LIB1_SHA_256_HASH "34415b19c9fff8300fdb41bd24a349c8852be7336e6286bee368b48b6b770e4e")
 download_and_patch(
         ${LIB1_NAME} ${LIB1_NAME_VERSIONED} ${LIB1_FILENAME} ${LIB1_URL} ${LIB1_SHA_256_HASH} ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches/furnace
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB1_NAME}
 )
 
 set(EXTERNAL_SOURCE_DIR_1 "${EXTERNAL_SOURCE_DIR}")
@@ -29,7 +29,7 @@ set(LIB2_URL "https://github.com/superctr/${LIB2_NAME}/archive/${LIB2_FILENAME}"
 set(LIB2_SHA_256_HASH "d78895a68ada6dfc6de72943f005d42d7f4e9d98436a0237617c2b523766bab0")
 download_and_patch(
         ${LIB2_NAME} ${LIB2_NAME_VERSIONED} ${LIB2_FILENAME} ${LIB2_URL} ${LIB2_SHA_256_HASH} ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches/adpcm
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB2_NAME}
 )
 
 set(EXTERNAL_SOURCE_DIR_2 "${EXTERNAL_SOURCE_DIR}")

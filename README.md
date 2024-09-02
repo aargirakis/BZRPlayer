@@ -30,8 +30,8 @@ cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja .. && nin
 
 ### Linux cross-compilation:
 
-Dockerized cross-compilation toolchain is provided: just execute `run.sh` from the **
-docker** directory, eventually setting `BUILD_TYPE=Release` if needed.
+Dockerized cross-compilation toolchain is provided: just execute `run.sh` from the **docker** directory, eventually
+setting `BUILD_TYPE=Release` if needed.
 
 If you also want to run BZR2 after the build, then set `RUN_BZR2=1` (**wine** is required).
 
