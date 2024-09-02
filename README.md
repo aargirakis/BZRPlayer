@@ -1,212 +1,224 @@
-<h1>BZR Player 2</h1>
+# BZR Player 2
+
 BZR Player 2 is an audio player for Windows with the primary goal being able to play a lot of different file formats.
+
 It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008.
+
 The last 1.x version was released 2019-Apr-08.
+
 This is the beginning of the new 2.x version which is coded pretty much from scratch.
+
 Please add features and bugs here on GitHub.
-<br/>
 
-<h3>How To Build</h3>
-<h4>Windows (#TODO msys2 gdb?):</h4>
-<strong>MSYS2</strong> with following packages is required:<br/>
-<strong>mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg openssl-devel make</strong>
 
-Open the MSYS2 <strong>mingw32.exe</strong> command prompt<br/>
-Go to your project dir (take in mind Unix-style paths are required)<br/>
-Inside the project directory create the cmake build directory with name <strong>cmake-build-[debug|release]</strong>,
-then enter it and execute:<br/>
-<strong>cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja .. && ninja</strong>
+## How To Build
 
-build example:<br/>
-<strong>cd /c/BZRPlayer</strong><br/>
-<strong>mkdir cmake-build-release</strong><br/>
-<strong>cd cmake-build-release</strong><br/>
-<strong>cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja .. && ninja</strong>
-<br/><br/>
-<h4>Linux cross-compilation:</h4>
-Dockerized cross-compilation toolchain it is provided: just execute <strong>run.sh</strong> from the <strong>
-docker</strong> dir, eventually setting <strong>BUILD_TYPE=Release</strong> if needed.
-<br/>
-If you also want to run BZR2 after the build, then set <strong>RUN_BZR2=1</strong> (<strong>wine</strong> is required).
-<br/><br/>
+### Windows (#TODO msys2 gdb?):
+
+**MSYS2** with following packages (install as shown) is required:\
+`pacman -Syu mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg openssl-devel make`
+
+ - Open the MSYS2 **mingw32** command prompt
+ - Go to your project dir (take in mind Unix-style paths are required)
+ - Inside the project directory create the cmake build directory with name `cmake-build-[debug|release]`,
+ - then enter it and execute:\
+`cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja .. && ninja`
+
+#### build example:
+```
+cd /c/BZRPlayer
+mkdir cmake-build-release</strong>
+cd cmake-build-release</strong>
+cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja .. && ninja
+```
+
+### Linux cross-compilation:
+
+Dockerized cross-compilation toolchain is provided: just execute `run.sh` from the **
+docker** directory, eventually setting `BUILD_TYPE=Release` if needed.
+
+If you also want to run BZR2 after the build, then set `RUN_BZR2=1` (**wine** is required).
+
+----
 
 Official page is http://bzrplayer.blazer.nu
-<br/>
-<br/>
 
 ![bzr2 0 27](https://user-images.githubusercontent.com/10993634/201359947-2633341d-9ff6-4a59-bb9e-ce1794df9cba.png)
 
-<h3>SUPPORTED FORMATS</h3>
+----
 
-<b>Using Libsidplayfp</b><br/>
-Commodore 64 SID, PSID<br/>
 
-<b>Using Audio File Library</b><br/>
-Amiga IFF/8SVX<br/>
-Audio Visual Research<br/>
-Berkeley/IRCAM/CARL<br/>
-Compressed AIFF<br/>
-NeXT .snd<br/>
-NIST SPHERE<br/>
-SampleVision<br/>
-Sun .au<br/>
+## SUPPORTED FORMATS
 
-<b>Using ASAP</b><br/>
-Atari systems using POKEY sound chip<br/>
-Chaos Music Composer<br/>
-Chaos Music Composer -3-4-<br/>
-Chaos Music Composer -Rzog-<br/>
-Delta Music Composer<br/>
-DoublePlay Chaos Music Composer<br/>
-Music ProTracker<br/>
-Raster Music Tracker<br/>
-Stereo Double Chaos Music Composer<br/>
-Theta Music Composer 1.x 4-channel<br/>
-Theta Music Composer 1.x 8-channel<br/>
-Theta Music Composer 2.x<br/>
+### Using Libsidplayfp
+Commodore 64 SID, PSID
 
-<b>Using Game Music Emu</b><br/>
-AY - ZX Spectrum, Amstrad CPC<br/>
-GBS - Nintendo Game Boyr<br/>
-GYM - Sega Genesis, Mega Drive<br/>
-HES - NEC TurboGrafx-16, PC Engine<br/>
-KSS - MSX Home Computer, other Z80 systems<br/>
-NSF - NES Sound Format<br/>
-NSFE - NES Sound Format Extended<br/>
-SPC - Super Nintendo, Super Famicom<br/>
-VGM - Video Game Music File<br/>
-VGZ - Compressed Video Game Music File<br/>
-RSN - RAR archive with SPC songs<br/>
+### Using Audio File Library
+Amiga IFF/8SVX\
+Audio Visual Research\
+Berkeley/IRCAM/CARL\
+Compressed AIFF\
+NeXT .snd\
+NIST SPHERE\
+SampleVision\
+Sun .au
 
-<b>Using HivelyTracker</b><br/>
-AHX<br/>
-HivelyTracker<br/>
+### Using ASAP
+Atari systems using POKEY sound chip\
+Chaos Music Composer\
+Chaos Music Composer -3-4-\
+Chaos Music Composer -Rzog-\
+Delta Music Composer\
+DoublePlay Chaos Music Composer\
+Music ProTracker\
+Raster Music Tracker\
+Stereo Double Chaos Music Composer\
+Theta Music Composer 1.x 4-channel\
+Theta Music Composer 1.x 8-channel\
+Theta Music Composer 2.x
 
-<b>Using KB Media Player</b><br/>
+### Using Game Music Emu
+AY - ZX Spectrum, Amstrad CPC\
+GBS - Nintendo Game Boyr\
+GYM - Sega Genesis, Mega Drive\
+HES - NEC TurboGrafx-16, PC Engine\
+KSS - MSX Home Computer, other Z80 systems\
+NSF - NES Sound Format\
+NSFE - NES Sound Format Extended\
+SPC - Super Nintendo, Super Famicom\
+VGM - Video Game Music File\
+VGZ - Compressed Video Game Music File\
+RSN - RAR archive with SPC songs
+
+### Using HivelyTracker
+AHX\
+HivelyTracker
+
+### Using KB Media Player
 S98
 
-<b>Using Ken's Digital Music</b><br/>
+### Using Ken's Digital Music
 Ken's Digital Music
 
-<b>Using libpac</b><br/>
+### Using libpac
 SBStudio PAC
 
-<b>Using LibV2</b><br/>
+### Using LibV2
 Farbrausch V2M
 
-<b>Using Organya</b><br/>
-Organya<br/>
+### Using Organya
+Organya
 
-<b>Using UADE</b><br/>
-ActionAmics<br/>
-Activision Pro (MartinWalker)<br/>
-Alcatraz_Packer<br/>
-AM-Composer<br/>
-Anders Øland<br/>
-Andrew Parton<br/>
-Art And Magic<br/>
-ArtOfNoise-4V<br/>
-ArtOfNoise-8V<br/>
-Ashley Hogg<br/>
-BeathovenSynthesizer<br/>
-Ben Daglish SID<br/>
-BladePacker<br/>
-Channel Players<br/>
-Cinemaware<br/>
-CoreDesign<br/>
-CustomMade<br/>
-DariusZendeh<br/>
-Dave Lowe<br/>
-Dave Lowe New<br/>
-David Hanney<br/>
-Desire<br/>
-Digital Sonix And Chrome<br/>
-DigitalSoundStudio<br/>
-Dirk Bialluch<br/>
-Dynamic Synthesizer<br/>
-EarAche<br/>
-EMS (Editeur Musical Sequentiel)<br/>
-Fashion Tracker<br/>
-FredGray<br/>
-FutureComposer-BSI<br/>
-FuturePlayer<br/>
-GlueMon<br/>
-HowieDavies<br/>
-InStereo<br/>
-InStereo! 2.0<br/>
-JamCracker<br/>
-JankoMrsicFlogel<br/>
-JanneSalmijarviOptimizer<br/>
-JasonPage<br/>
-Jeroen Tel<br/>
-JesperOlsen<br/>
-JochenHippel-7V<br/>
-Kim Christensen<br/>
-KrisHatlelid<br/>
-LegglessMusicEditor<br/>
-Lionheart_Game<br/>
-MajorTom<br/>
-ManiacsOfNoise<br/>
-MarkII<br/>
-Mark_Cooksey<br/>
-Mark_Cooksey_Old<br/>
-MCMD<br/>
-Medley<br/>
-MIDI-Loriciel<br/>
-MikeDavies<br/>
-MMDC<br/>
-Mosh Packer<br/>
-MusicAssembler<br/>
-MusiclineEditor<br/>
-MusicMaker-8V<br/>
-Nick Pelling Packer<br/>
-NTSP-system<br/>
-onEscapee<br/>
-Paul Robotham<br/>
-Paul Tonge<br/>
-PaulShields<br/>
-PaulSummers<br/>
-PeterVerswyvelen<br/>
-ProfessionalSoundArtists<br/>
-PumaTracker<br/>
-Quartet PSG<br/>
-Quartet_ST<br/>
-RiffRaff<br/>
-RobHubbardOld<br/>
-SCUMM<br/>
-SeanConnolly<br/>
-SeanConran<br/>
-Silmarils<br/>
-SonicArranger<br/>
-SonicArranger-pc-all<br/>
-SonixMusicDriver<br/>
-SoundControl<br/>
-SoundFactory<br/>
-SoundImages<br/>
-SoundMaster<br/>
-SoundPlayer<br/>
-SoundProgrammingLanguage<br/>
-Special-FX<br/>
-Special-FX_ST<br/>
-SpeedyA1System<br/>
-SpeedySystem<br/>
-SteveBarrett<br/>
-SteveTurner (Jason Page Old)<br/>
-SUN-Tronic<br/>
-Synth (Synthesis)<br/>
-SynTracker<br/>
-TFMX<br/>
-TFMX-7V<br/>
-TFMX-Pro<br/>
-TFMX_ST<br/>
-TheMusicalEnlightenment<br/>
-ThomasHermann<br/>
-TimFollin<br/>
-TomyTracker<br/>
-Tronic (TronicTracker)<br/>
-VoodooSupremeSynthesizer<br/>
-WallyBeben<br/>
-YM-2149<br/>
+### Using UADE
+ActionAmics\
+Activision Pro (MartinWalker)\
+Alcatraz_Packer\
+AM-Composer\
+Anders Øland\
+Andrew Parton\
+Art And Magic\
+ArtOfNoise-4V\
+ArtOfNoise-8V\
+Ashley Hogg\
+BeathovenSynthesizer\
+Ben Daglish SID\
+BladePacker\
+Channel Players\
+Cinemaware\
+CoreDesign\
+CustomMade\
+DariusZendeh\
+Dave Lowe\
+Dave Lowe New\
+David Hanney\
+Desire\
+Digital Sonix And Chrome\
+DigitalSoundStudio\
+Dirk Bialluch\
+Dynamic Synthesizer\
+EarAche\
+EMS (Editeur Musical Sequentiel)\
+Fashion Tracker\
+FredGray\
+FutureComposer-BSI\
+FuturePlayer\
+GlueMon\
+HowieDavies\
+InStereo\
+InStereo! 2.0\
+JamCracker\
+JankoMrsicFlogel\
+JanneSalmijarviOptimizer\
+JasonPage\
+Jeroen Tel\
+JesperOlsen\
+JochenHippel-7V\
+Kim Christensen\
+KrisHatlelid\
+LegglessMusicEditor\
+Lionheart_Game\
+MajorTom\
+ManiacsOfNoise\
+MarkII\
+Mark_Cooksey\
+Mark_Cooksey_Old\
+MCMD\
+Medley\
+MIDI-Loriciel\
+MikeDavies\
+MMDC\
+Mosh Packer\
+MusicAssembler\
+MusiclineEditor\
+MusicMaker-8V\
+Nick Pelling Packer\
+NTSP-system\
+onEscapee\
+Paul Robotham\
+Paul Tonge\
+PaulShields\
+PaulSummers\
+PeterVerswyvelen\
+ProfessionalSoundArtists\
+PumaTracker\
+Quartet PSG\
+Quartet_ST\
+RiffRaff\
+RobHubbardOld\
+SCUMM\
+SeanConnolly\
+SeanConran\
+Silmarils\
+SonicArranger\
+SonicArranger-pc-all\
+SonixMusicDriver\
+SoundControl\
+SoundFactory\
+SoundImages\
+SoundMaster\
+SoundPlayer\
+SoundProgrammingLanguage\
+Special-FX\
+Special-FX_ST\
+SpeedyA1System\
+SpeedySystem\
+SteveBarrett\
+SteveTurner (Jason Page Old)\
+SUN-Tronic\
+Synth (Synthesis)\
+SynTracker\
+TFMX\
+TFMX-7V\
+TFMX-Pro\
+TFMX_ST\
+TheMusicalEnlightenment\
+ThomasHermann\
+TimFollin\
+TomyTracker\
+Tronic (TronicTracker)\
+VoodooSupremeSynthesizer\
+WallyBeben\
+YM-2149
 
-<h3>SUPPORTED PACKERS</h3>
+### SUPPORTED PACKERS
 None right now
