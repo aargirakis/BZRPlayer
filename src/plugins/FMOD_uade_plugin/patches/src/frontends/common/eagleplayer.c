@@ -30,7 +30,7 @@
 #include "songdb.h"
 #include "support.h"
 #include "uadestate.h"
-#include "blazer.h" //added by blazer
+#include "blazer.h"
 
 #define OPTION_DELIMITER ","
 

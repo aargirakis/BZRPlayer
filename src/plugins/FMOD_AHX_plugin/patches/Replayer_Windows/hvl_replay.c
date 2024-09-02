@@ -322,9 +322,9 @@ struct hvl_tune *hvl_load_ahx( const uint8 *buf, uint32 buflen, uint32 defstereo
   }
   
   hvl_InitSubsong( ht, 0 );
-  ht->patternPosBuffer = CreateQueue(22); //added by blazer
-  ht->trackPosBuffer = CreateQueue(22); //added by blazer
-  ht->vumeterBuffer = CreateQueue(22); //added by blazer
+  ht->patternPosBuffer = CreateQueue(22);
+  ht->trackPosBuffer = CreateQueue(22);
+  ht->vumeterBuffer = CreateQueue(22);
   return ht;
 }
 
@@ -544,9 +544,9 @@ struct hvl_tune *hvl_load_hvl( const uint8 *buf, uint32 buflen, uint32 defstereo
   }
   
   hvl_InitSubsong( ht, 0 );
-  ht->patternPosBuffer = CreateQueue(22); //added by blazer
-  ht->trackPosBuffer = CreateQueue(22); //added by blazer
-  ht->vumeterBuffer = CreateQueue(22); //added by blazer
+  ht->patternPosBuffer = CreateQueue(22);
+  ht->trackPosBuffer = CreateQueue(22);
+  ht->vumeterBuffer = CreateQueue(22);
   return ht;
 }
 
@@ -617,9 +617,9 @@ struct hvl_tune *hvl_LoadTune( const TEXT *name, uint32 freq, uint32 defstereo )
 void hvl_FreeTune( struct hvl_tune *ht )
 {
   if( !ht ) return;
-  DisposeQueue(ht->patternPosBuffer); //added by blazer
-  DisposeQueue(ht->trackPosBuffer); //added by blazer
-  DisposeQueue(ht->vumeterBuffer); //added by blazer
+  DisposeQueue(ht->patternPosBuffer);
+  DisposeQueue(ht->trackPosBuffer);
+  DisposeQueue(ht->vumeterBuffer);
   free( ht );
 }
 
@@ -1641,7 +1641,7 @@ void hvl_set_audio( struct hvl_voice *voice, float64 freqf )
 void hvl_play_irq( struct hvl_tune *ht )
 {
   uint32 i;
-  //added by blazer
+
 
   if(IsFull(ht->trackPosBuffer))
   {
@@ -1712,22 +1712,22 @@ void hvl_play_irq( struct hvl_tune *ht )
   for( i=0; i<ht->ht_Channels; i++ )
     hvl_set_audio( &ht->ht_Voices[i], ht->ht_Frequency );
 
-  unsigned char* vumeters = malloc( sizeof(unsigned char) * ht->ht_Channels );//added by blazer
+  unsigned char* vumeters = malloc( sizeof(unsigned char) * ht->ht_Channels );
   for( i=0; i<ht->ht_Channels; i++ )
   {
         hvl_set_audio( &ht->ht_Voices[i], ht->ht_Frequency );
         //printf("voice %i: %i\n",i,ht->ht_Voices[i].vc_AudioVolume);
 
-        if(!ht->ht_Voices[i].vc_TrackOn)//added by blazer
+        if(!ht->ht_Voices[i].vc_TrackOn)
         {
-            vumeters[i] = 0;//added by blazer
+            vumeters[i] = 0;
         }
         else
         {
-            vumeters[i] = ht->ht_Voices[i].vc_AudioVolume;//added by blazer
+            vumeters[i] = ht->ht_Voices[i].vc_AudioVolume;
         }
   }
-  Enqueue(vumeters,ht->vumeterBuffer);//added by blazer
+  Enqueue(vumeters,ht->vumeterBuffer);
 }
 
 void hvl_mixchunk( struct hvl_tune *ht, uint32 samples, int8 *buf1, int8 *buf2, int32 bufmod )
@@ -1849,7 +1849,7 @@ void hvl_DecodeFrame( struct hvl_tune *ht, int8 *buf1, int8 *buf2, int32 bufmod 
     loops--;
   } while( loops );
 }
-//added by Blazer
+
 void  hvl_GetChannelVolumes(struct hvl_tune *ht, unsigned char* volumes)
 {
     if(!IsEmpty(ht->vumeterBuffer))

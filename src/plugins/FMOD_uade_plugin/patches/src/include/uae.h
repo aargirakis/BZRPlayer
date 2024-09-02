@@ -5,7 +5,7 @@
   *
   * Copyright 1996 Bernd Schmidt
   */
-#define EMSCRIPTEN 1 //added by blazer
+#define EMSCRIPTEN 1
 #ifdef EMSCRIPTEN
 extern void uade_teardown (void);
 extern int uade_initialize (const char*);
@@ -20,7 +20,7 @@ extern int uade_is_reboot(void);
 extern int uade_is_exit(void);
 extern void m68k_reset (void);
 extern void customreset (void);
-extern void m68k_run_1 (void); //added by blazer
+extern void m68k_run_1 (void);
 int uade_is_reboot(void);
 int uade_is_exit(void);
 

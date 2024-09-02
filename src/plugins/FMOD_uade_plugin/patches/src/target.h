@@ -5,7 +5,7 @@
   *
   * Copyright 1997 Bernd Schmidt
   */
-#define EMSCRIPTEN 1 //added by blazer
+#define EMSCRIPTEN 1
 #define TARGET_NAME "x11"
 
 #define write_log write_log_standard

@@ -1,6 +1,6 @@
 #include "ossupport.h"
 
-#define EMSCRIPTEN 1 //added by blazer
+#define EMSCRIPTEN 1
 #ifdef EMSCRIPTEN
 #include "standalonesupport.c"
 #else

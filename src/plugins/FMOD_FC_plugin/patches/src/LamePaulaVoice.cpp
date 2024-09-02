@@ -18,7 +18,7 @@ LamePaulaVoice::~LamePaulaVoice() {
     off();
 }
 
-void LamePaulaVoice::mute(bool mute) {//added by blazer
+void LamePaulaVoice::mute(bool mute) {
     isMuted=mute;
 }
 
@@ -55,7 +55,7 @@ void LamePaulaVoice::takeNextBuf() {
         repeatLength = 1;
     }
     repeatEnd = repeatStart+repeatLength;
-    if(isMuted) //added by blazer
+    if(isMuted)
     {
         repeatStart = paula.start;
         repeatLength = 0;

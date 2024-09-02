@@ -20,7 +20,7 @@ class PaulaVoice {
 
     virtual void on();
     virtual void off();
-    virtual void mute(bool); //added by blazer
+    virtual void mute(bool);
     virtual void takeNextBuf();   // take parameters from paula.* (or just to repeat.*)
 };
 

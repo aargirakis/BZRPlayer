@@ -9,7 +9,7 @@ void PaulaVoice::off() {
     // intentionally left blank
 }
 
-void PaulaVoice::mute(bool) { //added by blazer
+void PaulaVoice::mute(bool) {
     // intentionally left blank
 }
 

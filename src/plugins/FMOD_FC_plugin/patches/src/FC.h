@@ -30,13 +30,13 @@ class FC : public PaulaPlayer {
     ~FC();
 
 	
-	int getUsedPatterns(); //added by blazer
-	int getUsedSndModSeqs(); //added by blazer
-	int getUsedVolModSeqs(); //added by blazer
-	unsigned short getSampleLength(unsigned int qual); //added by blazer
-	unsigned short getSampleRepOffset(unsigned int qual); //added by blazer
-	unsigned short getSampleRepLength(unsigned int qual); //added by blazer
-    void muteChannel(unsigned int qual); //added by blazer
+	int getUsedPatterns();
+	int getUsedSndModSeqs();
+	int getUsedVolModSeqs();
+	unsigned short getSampleLength(unsigned int qual);
+	unsigned short getSampleRepOffset(unsigned int qual);
+	unsigned short getSampleRepLength(unsigned int qual);
+    void muteChannel(unsigned int qual);
 
     void setMixer(PaulaMixer*);
     bool isOurData(void*,unsigned long int);
@@ -118,7 +118,7 @@ class FC : public PaulaPlayer {
             udword silence;
         } offsets;
 
-		int numPatterns; //added by bLAZER
+		int numPatterns;
         int usedPatterns;
         int usedSndModSeqs;
         int usedVolModSeqs;

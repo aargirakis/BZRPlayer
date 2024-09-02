@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "queue.h" //added by blazer
+#include "queue.h"
 
 #define XMP_VERSION "4.5.0"
 #define XMP_VERCODE 0x040500

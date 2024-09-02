@@ -307,23 +307,22 @@ std::string module::get_metadata( const std::string & key ) const {
 	return impl->get_metadata( key );
 }
 
-//added by blazer
 int module::get_mod_sample_size( int32_t index ) const {
 	return impl->get_mod_sample_size( index );
 }
-//added by blazer
+
 int module::get_mod_sample_loopstart( int32_t index ) const {
 	return impl->get_mod_sample_loopstart( index );
 }
-//added by blazer
+
 int module::get_mod_sample_loopend( int32_t index ) const {
 	return impl->get_mod_sample_loopend( index );
 }
-//added by blazer
+
 int module::get_mod_sample_volume( int32_t index ) const {
 	return impl->get_mod_sample_volume( index );
 }
-//added by blazer
+
 int module::get_mod_sample_finetune( int32_t index ) const {
 	return impl->get_mod_sample_finetune( index );
 }

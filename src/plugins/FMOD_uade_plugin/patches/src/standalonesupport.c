@@ -15,7 +15,7 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <libgen.h>
-//#include <sys/socket.h> //commented out by blazer
+//#include <sys/socket.h>
 #include <unistd.h>
 #include <limits.h>
 #include <ctype.h>
@@ -47,8 +47,7 @@ struct AFILE * uade_fopen(const char *filename, const char *mode) {
 		fprintf(stderr, "error: file does not exist: /%s\n", filename);	
 		f= 0;
 	} else {	
-        //snprintf(virt_fs_path, 255, "/%s", filename); //commented out by blazer and replaced by row below
-        snprintf(virt_fs_path, 255, "%s", filename); //added by blazer (no leading slash)
+        snprintf(virt_fs_path, 255, "%s", filename);
         f =fopen(virt_fs_path, mode);	// in Emscripten this will use the virtual in memory FS
         fprintf(stderr, "loading of: [%s] %s\n", virt_fs_path, f?"succeeded":"failed (must NEVER happen!)");
         fprintf(stderr,"error: %i\n",errno);
@@ -87,7 +86,7 @@ int is_amiga_file_not_ready(void) {
 	return last_file_not_ready;
 }
 									
-//added by blazer instead of the function below
+
 /* opens file in amiga namespace */
 //struct AFILE * uade_open_amiga_file(char *aname, const char *playerdir)
 //{
@@ -187,7 +186,7 @@ void uade_portable_initializations(void)
 {
 }
 
-//added temporarily by blazer
+//added temporarily
 extern int uade_request_file(const char *filename)
 {
 	return 0;

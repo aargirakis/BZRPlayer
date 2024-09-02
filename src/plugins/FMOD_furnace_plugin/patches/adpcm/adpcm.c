@@ -47,7 +47,7 @@ void decode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 	else
 		exit(-1);
 }
-// commented out by blazer
+
 // int main(int argc, char* argv [])
 // {
 //

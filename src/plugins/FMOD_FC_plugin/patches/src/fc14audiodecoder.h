@@ -66,14 +66,14 @@ extern "C" {
     /* Fill output sample buffer with audio. */
     void fc14dec_buffer_fill(void* decoder, void* buffer, unsigned long int length);
 
-	int fc14dec_get_used_patterns(void* decoder); //added by blazer
-	int fc14dec_get_used_snd_mod_seqs(void* decoder); //added by blazer
-	int fc14dec_get_used_vol_mod_seqs(void* decoder); //added by blazer
-	int fc14dec_get_sample_length(void* decoder, unsigned int qual); //added by blazer
-	int fc14dec_get_sample_rep_offset(void* decoder, unsigned int qual); //added by blazer
-	int fc14dec_get_sample_rep_length(void* decoder, unsigned int qual); //added by blazer
-    void fc14dec_mute_channel(void* ptr, bool mute, unsigned int qual); //added by blazer
-    unsigned short int fc14dec_get_channel_volume(void* ptr, unsigned int qual); //added by blazer
+	int fc14dec_get_used_patterns(void* decoder);
+	int fc14dec_get_used_snd_mod_seqs(void* decoder);
+	int fc14dec_get_used_vol_mod_seqs(void* decoder);
+	int fc14dec_get_sample_length(void* decoder, unsigned int qual);
+	int fc14dec_get_sample_rep_offset(void* decoder, unsigned int qual);
+	int fc14dec_get_sample_rep_length(void* decoder, unsigned int qual);
+    void fc14dec_mute_channel(void* ptr, bool mute, unsigned int qual);
+    unsigned short int fc14dec_get_channel_volume(void* ptr, unsigned int qual);
 
 #ifdef __cplusplus
 }

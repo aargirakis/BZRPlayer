@@ -1407,35 +1407,31 @@ const char *CSoundFile::GetSampleName(SAMPLEINDEX nSample) const
 }
 
 
-//added by blazer
+
 SmpLength CSoundFile::GetModSampleSize(SAMPLEINDEX nSample) const
 {
 	MPT_ASSERT(nSample <= GetNumSamples());
 	return Samples[nSample].nLength;
 }
 
-//added by blazer
 SmpLength CSoundFile::GetModSampleLoopStart(SAMPLEINDEX nSample) const
 {
 	MPT_ASSERT(nSample <= GetNumSamples());
 	return Samples[nSample].nLoopStart;
 }
 
-//added by blazer
 SmpLength CSoundFile::GetModSampleLoopEnd(SAMPLEINDEX nSample) const
 {
 	MPT_ASSERT(nSample <= GetNumSamples());
 	return Samples[nSample].nLoopEnd;
 }
 
-//added by blazer
 uint16 CSoundFile::GetModSampleVolume(SAMPLEINDEX nSample) const
 {
 	MPT_ASSERT(nSample <= GetNumSamples());
 	return Samples[nSample].nVolume;
 }
 
-//added by blazer
 uint8 CSoundFile::GetModSampleFineTune(SAMPLEINDEX nSample) const
 {
 	MPT_ASSERT(nSample <= GetNumSamples());

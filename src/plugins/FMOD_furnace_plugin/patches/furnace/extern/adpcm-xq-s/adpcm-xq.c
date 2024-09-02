@@ -45,7 +45,7 @@ static const char *usage =
 
 static int adpcm_converter (char *infilename, char *outfilename, int flags, int blocksize_pow2, int lookahead);
 static int verbosity = 0, decode_only = 0, encode_only = 0;
-// commented out by blazer
+
 // int main (argc, argv) int argc; char **argv;
 // {
 //     int lookahead = 3, flags = ADPCM_FLAG_NOISE_SHAPING, blocksize_pow2 = 0, overwrite = 0, asked_help = 0;

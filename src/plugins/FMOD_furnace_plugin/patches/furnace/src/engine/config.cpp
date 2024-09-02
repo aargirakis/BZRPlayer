@@ -55,14 +55,14 @@ bool DivConfig::save(const char* path, bool redundancy) {
   FILE* f=ps_fopen(path,"wb");
   if (f==NULL) {
     logW("could not write config file! %s",strerror(errno));
-    // reportError(fmt::sprintf("could not write config file! %s",strerror(errno))); // commented out by blazer
+    // reportError(fmt::sprintf("could not write config file! %s",strerror(errno)));
     return false;
   }
   for (auto& i: conf) {
     String toWrite=fmt::sprintf("%s=%s\n",i.first,i.second);
     if (fwrite(toWrite.c_str(),1,toWrite.size(),f)!=toWrite.size()) {
       logW("could not write config file! %s",strerror(errno));
-      // reportError(fmt::sprintf("could not write config file! %s",strerror(errno))); // commented out by blazer
+      // reportError(fmt::sprintf("could not write config file! %s",strerror(errno)));
       logV("removing config file");
       fclose(f);
       deleteFile(path);
@@ -185,7 +185,7 @@ bool DivConfig::loadFromFile(const char* path, bool createOnFail, bool redundanc
         //reportError(fmt::sprintf("Creating default config: %s",strerror(errno)));
         return save(path,redundancy);
       } else {
-        // reportError(fmt::sprintf("COULD NOT LOAD CONFIG %s",strerror(errno))); // commented out by blazer
+        // reportError(fmt::sprintf("COULD NOT LOAD CONFIG %s",strerror(errno)));
         return false;
       }
     }
@@ -198,7 +198,7 @@ bool DivConfig::loadFromFile(const char* path, bool createOnFail, bool redundanc
         //reportError(fmt::sprintf("Creating default config: %s",strerror(errno)));
         return save(path);
       } else {
-        // reportError(fmt::sprintf("COULD NOT LOAD CONFIG %s",strerror(errno))); // commented out by blazer
+        // reportError(fmt::sprintf("COULD NOT LOAD CONFIG %s",strerror(errno)));
         return false;
       }
     }

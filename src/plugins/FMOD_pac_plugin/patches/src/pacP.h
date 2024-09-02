@@ -114,7 +114,7 @@ struct pac_channel
 
 struct pac_sound
 {
-   char name[PAC_NAME_MAX+1]; //added by blazer
+   char name[PAC_NAME_MAX+1];
    int number;
    long middlec;
    int tune;

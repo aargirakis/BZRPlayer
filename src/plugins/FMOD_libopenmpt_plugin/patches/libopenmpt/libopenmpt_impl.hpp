@@ -216,11 +216,11 @@ public:
 	std::size_t read_interleaved_quad( std::int32_t samplerate, std::size_t count, std::int16_t * interleaved_quad );
 	std::size_t read_interleaved_stereo( std::int32_t samplerate, std::size_t count, float * interleaved_stereo );
 	std::size_t read_interleaved_quad( std::int32_t samplerate, std::size_t count, float * interleaved_quad );
-	int get_mod_sample_size(int32_t index) const; //added by blazer
-	int get_mod_sample_loopstart(int32_t index) const; //added by blazer
-	int get_mod_sample_loopend(int32_t index) const; //added by blazer
-	int get_mod_sample_volume(int32_t index) const; //added by blazer
-	int get_mod_sample_finetune(int32_t index) const; //added by blazer
+	int get_mod_sample_size(int32_t index) const;
+	int get_mod_sample_loopstart(int32_t index) const;
+	int get_mod_sample_loopend(int32_t index) const;
+	int get_mod_sample_volume(int32_t index) const;
+	int get_mod_sample_finetune(int32_t index) const;
 	std::vector<std::string> get_metadata_keys() const;
 	std::string get_metadata( const std::string & key ) const;
 	double get_current_estimated_bpm() const;

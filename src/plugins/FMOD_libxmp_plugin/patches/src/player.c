@@ -1509,7 +1509,6 @@ int xmp_start_player(xmp_context opaque, int rate, int format)
 	if (libxmp_mixer_on(ctx, rate, format, m->c4rate) < 0)
 		return -XMP_ERROR_INTERNAL;
 
-//added by blazer
     unsigned char queue_size;
     if(strcmp(mod->type,"Composer 669"))
     {
@@ -1519,12 +1518,12 @@ int xmp_start_player(xmp_context opaque, int rate, int format)
     {
         queue_size=14;
     }
-    p->patternPosBuffer = CreateQueue(queue_size); //added by blazer
-	p->posBuffer = CreateQueue(queue_size); //added by blazer
-    p->trackPosBuffer = CreateQueue(queue_size); //added by blazer
-    p->vumeterBuffer = CreateQueue(queue_size); //added by blazer
-	p->speedBuffer = CreateQueue(queue_size); //added by blazer
-	p->bpmBuffer = CreateQueue(queue_size); //added by blazer
+    p->patternPosBuffer = CreateQueue(queue_size);
+	p->posBuffer = CreateQueue(queue_size);
+    p->trackPosBuffer = CreateQueue(queue_size);
+    p->vumeterBuffer = CreateQueue(queue_size);
+	p->speedBuffer = CreateQueue(queue_size);
+	p->bpmBuffer = CreateQueue(queue_size);
 	p->master_vol = 100;
 	p->smix_vol = 100;
 	p->gvol = m->volbase;
@@ -1747,7 +1746,7 @@ int xmp_play_frame(xmp_context opaque)
 	p->current_time += p->frame_time;
 
 	libxmp_mixer_softmixer(ctx);
-   //added by blazer
+
     if(IsFull(p->trackPosBuffer))
 
     {
@@ -1776,7 +1775,7 @@ int xmp_play_frame(xmp_context opaque)
     Enqueue(vumeters,p->vumeterBuffer);
 	Enqueue(p->speed,p->speedBuffer);
 	Enqueue(p->bpm,p->bpmBuffer);
-    //end added by blazer
+
 	return 0;
 }
 
@@ -1849,12 +1848,12 @@ void xmp_end_player(xmp_context opaque)
 
 	if (ctx->state < XMP_STATE_PLAYING)
 		return;
-    DisposeQueue(p->patternPosBuffer); //added by blazer
-    DisposeQueue(p->trackPosBuffer); //added by blazer
-    DisposeQueue(p->vumeterBuffer); //added by blazer
-    DisposeQueue(p->posBuffer); //added by blazer
-	DisposeQueue(p->speedBuffer); //added by blazer
-	DisposeQueue(p->bpmBuffer); //added by blazer
+    DisposeQueue(p->patternPosBuffer);
+    DisposeQueue(p->trackPosBuffer);
+    DisposeQueue(p->vumeterBuffer);
+    DisposeQueue(p->posBuffer);
+	DisposeQueue(p->speedBuffer);
+	DisposeQueue(p->bpmBuffer);
 	ctx->state = XMP_STATE_LOADED;
 
 #ifndef LIBXMP_CORE_PLAYER
@@ -1921,8 +1920,8 @@ void xmp_get_frame_info(xmp_context opaque, struct xmp_frame_info *info)
 		info->num_rows = 0;
 	}
 
-    //info->row = p->row; //commented out by blazer
-    //added by blazer
+    //info->row = p->row;
+
     if(!IsEmpty(p->trackPosBuffer))
     {
         info->row = Front(p->trackPosBuffer);
@@ -1963,10 +1962,10 @@ void xmp_get_frame_info(xmp_context opaque, struct xmp_frame_info *info)
     {
         info->bpm = 0;
     }
-    //end added by blazer
+
 	info->frame = p->frame;
-	//info->speed = p->speed; //commented out by blazer
-	//info->bpm = p->bpm; //commented out by blazer
+	//info->speed = p->speed;
+	//info->bpm = p->bpm;
 	info->total_time = p->scan[p->sequence].time;
 	info->frame_time = p->frame_time * 1000;
 	info->time = p->current_time;

@@ -1163,38 +1163,37 @@ void FC::processPerVol(CHdata& CHXdata)
     }
     CHXdata.period = tmp0;
 }
-//added by blazer
+
 int FC::getUsedPatterns()
 {
 	return _admin.usedPatterns;
 }
-//added by blazer
+
 int FC::getUsedSndModSeqs()
 {
 	return _admin.usedSndModSeqs;
 }
-//added by blazer
+
 int FC::getUsedVolModSeqs()
 {
 	return _admin.usedVolModSeqs;
 }
-//added by blazer
+
 unsigned short FC::getSampleLength(unsigned int qual)
 {
 	return _sounds[qual].len*2;
 }
 
-//added by blazer
 unsigned short FC::getSampleRepOffset(unsigned int qual)
 {
 	return _sounds[qual].repOffs;
 }
-//added by blazer
+
 unsigned short FC::getSampleRepLength(unsigned int qual)
 {
 	return _sounds[qual].repLen*2;
 }
-//added by blazer
+
 void FC::muteChannel(unsigned int qual)
 {
     _CHdata[qual].volume=0;

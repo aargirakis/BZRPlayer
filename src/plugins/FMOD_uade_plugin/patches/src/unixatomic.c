@@ -56,7 +56,7 @@ ssize_t atomic_read(int fd, const void *buf, size_t count)
 {
   char *b = (char *) buf;
   ssize_t bytes_read = 0;
-// commented out by blazer
+
 //  ssize_t ret;
 //  while (bytes_read < count) {
 //    ret = read(fd, &b[bytes_read], count - bytes_read);
@@ -128,7 +128,7 @@ ssize_t atomic_write(int fd, const void *buf, size_t count)
 {
   char *b = (char *) buf;
   ssize_t bytes_written = 0;
-// commented out by blazer
+
 //  ssize_t ret;
 //  while (bytes_written < count) {
 //    ret = write(fd, &b[bytes_written], count - bytes_written);

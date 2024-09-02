@@ -1,8 +1,8 @@
-#ifdef __cplusplus //added by blazer
+#ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-#include "queue.h" //added by blazer
+#include "queue.h"
 
 typedef char int8;
 typedef unsigned char uint8;
@@ -228,9 +228,9 @@ struct hvl_tune
   int32                  ht_defpanright;
   int32                  ht_mixgain;
   uint8                  ht_Version;
-  Queue                  trackPosBuffer; //added by blazer
-  Queue                  patternPosBuffer; //added by blazer
-  Queue                  vumeterBuffer; //added by blazer
+  Queue                  trackPosBuffer;
+  Queue                  patternPosBuffer;
+  Queue                  vumeterBuffer;
 };
 
 void hvl_DecodeFrame( struct hvl_tune *ht, int8 *buf1, int8 *buf2, int32 bufmod );
@@ -239,10 +239,10 @@ BOOL hvl_InitSubsong( struct hvl_tune *ht, uint32 nr );
 struct hvl_tune *hvl_LoadTune( const TEXT *name, uint32 freq, uint32 defstereo );
 struct hvl_tune *hvl_ParseTune(const uint8 *buf, uint32 buflen, uint32 freq, uint32 defstereo );
 void hvl_FreeTune( struct hvl_tune *ht );
-uint32 hvl_GetLen(struct hvl_tune *ht); //added by blazer from Replayer
-uint32 hvl_Seek(struct hvl_tune *ht, uint32 time); //added by blazer from Replayer
-void hvl_GetChannelVolumes(struct hvl_tune *ht, unsigned char* volumes);//added by blazer
+uint32 hvl_GetLen(struct hvl_tune *ht); // from Replayer
+uint32 hvl_Seek(struct hvl_tune *ht, uint32 time); // from Replayer
+void hvl_GetChannelVolumes(struct hvl_tune *ht, unsigned char* volumes);
 
-#ifdef __cplusplus //added by blazer
+#ifdef __cplusplus
 }
 #endif /* __cplusplus */

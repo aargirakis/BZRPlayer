@@ -22,7 +22,7 @@ class LamePaulaVoice : public PaulaVoice
     void mute(bool);
     void off();
     void takeNextBuf();    // take parameters from paula.* (or just to repeat.*)
-    bool isMuted;//added by Blazer
+    bool isMuted;
 
     friend class LamePaulaMixer;
 

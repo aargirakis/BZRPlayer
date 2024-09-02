@@ -121,13 +121,13 @@ int writeLog(int level, const char* msg, fmt::printf_args args) {
   logEntries[pos].ready=true;
 
   // write to log file
-  // commented out by blazer
+  //
   // if (logFileAvail) {
   //   appendLogBuf(logEntries[pos]);
   //   logFileNotify.notify_one();
   // }
 
-logLevel=LOGLEVEL_INFO; //added by blazer
+logLevel=LOGLEVEL_INFO;
   if (logLevel<level) return 0;
   switch (level) {
     case LOGLEVEL_ERROR:

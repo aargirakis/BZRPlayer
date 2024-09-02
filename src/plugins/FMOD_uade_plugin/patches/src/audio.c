@@ -134,7 +134,7 @@ static void check_sound_buffers (void)
     if (uade_reboot)
 	return;
 
-    //assert(uade_read_size > 0); //commented out by blazer
+    //assert(uade_read_size > 0);
 
 
     bytes = ((intptr_t) sndbufpt) - ((intptr_t) sndbuffer);

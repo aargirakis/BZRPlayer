@@ -4,7 +4,7 @@
  * \author Misty De Meo
  * \date 3 January 2016
  */
-#ifdef __cplusplus //added by blazer
+#ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 

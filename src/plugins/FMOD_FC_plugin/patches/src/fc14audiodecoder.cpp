@@ -97,43 +97,43 @@ const char* fc14dec_format_name(void* ptr) {
     FC14_DECLARE_DECODER;
     return p->decoder.formatName.c_str();
 }
-int fc14dec_get_used_patterns(void* ptr) //added by blazer
+int fc14dec_get_used_patterns(void* ptr)
 {
 	FC14_DECLARE_DECODER;
     return p->decoder.getUsedPatterns();
 }
-int fc14dec_get_used_snd_mod_seqs(void* ptr) //added by blazer
+int fc14dec_get_used_snd_mod_seqs(void* ptr)
 {
 	FC14_DECLARE_DECODER;
 	return p->decoder.getUsedSndModSeqs();
 }
-int fc14dec_get_used_vol_mod_seqs(void* ptr) //added by blazer
+int fc14dec_get_used_vol_mod_seqs(void* ptr)
 {
 	FC14_DECLARE_DECODER;
 	return p->decoder.getUsedVolModSeqs();
 }
-int fc14dec_get_sample_length(void* ptr, unsigned int qual) //added by blazer
+int fc14dec_get_sample_length(void* ptr, unsigned int qual)
 {
 	FC14_DECLARE_DECODER;
 	return p->decoder.getSampleLength(qual);
 }
-int fc14dec_get_sample_rep_offset(void* ptr, unsigned int qual) //added by blazer
+int fc14dec_get_sample_rep_offset(void* ptr, unsigned int qual)
 {
 	FC14_DECLARE_DECODER;
 	return p->decoder.getSampleRepOffset(qual);
 }
-int fc14dec_get_sample_rep_length(void* ptr, unsigned int qual) //added by blazer
+int fc14dec_get_sample_rep_length(void* ptr, unsigned int qual)
 {
 	FC14_DECLARE_DECODER;
 	return p->decoder.getSampleRepLength(qual);
 }
-void fc14dec_mute_channel(void* ptr, bool mute, unsigned int qual) //added by blazer
+void fc14dec_mute_channel(void* ptr, bool mute, unsigned int qual)
 {
     FC14_DECLARE_DECODER;
     p->mixer.getVoice(qual)->mute(mute);
 
 }
-unsigned short int fc14dec_get_channel_volume(void* ptr, unsigned int qual) //added by blazer
+unsigned short int fc14dec_get_channel_volume(void* ptr, unsigned int qual)
 {
     FC14_DECLARE_DECODER;
     if(!p->mixer.getVoice(qual)->isMuted)

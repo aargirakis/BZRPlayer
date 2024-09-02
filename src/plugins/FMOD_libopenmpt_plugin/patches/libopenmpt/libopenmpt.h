@@ -1235,11 +1235,11 @@ LIBOPENMPT_API float openmpt_module_get_current_channel_vu_rear_left( openmpt_mo
  */
 LIBOPENMPT_API float openmpt_module_get_current_channel_vu_rear_right( openmpt_module * mod, int32_t channel );
 
-LIBOPENMPT_API int32_t get_mod_sample_size(int32_t index); //added by blazer
-LIBOPENMPT_API int32_t get_mod_sample_loopstart(int32_t index); //added by blazer
-LIBOPENMPT_API int32_t get_mod_sample_loopend(int32_t index); //added by blazer
-LIBOPENMPT_API int32_t get_mod_sample_volume(int32_t index); //added by blazer
-LIBOPENMPT_API int32_t get_mod_sample_finetune(int32_t index); //added by blazer
+LIBOPENMPT_API int32_t get_mod_sample_size(int32_t index);
+LIBOPENMPT_API int32_t get_mod_sample_loopstart(int32_t index);
+LIBOPENMPT_API int32_t get_mod_sample_loopend(int32_t index);
+LIBOPENMPT_API int32_t get_mod_sample_volume(int32_t index);
+LIBOPENMPT_API int32_t get_mod_sample_finetune(int32_t index);
 
 /*! \brief Get the number of sub-songs
  *

@@ -3,7 +3,7 @@
 
 #include <limits.h>
 #include <stdlib.h>
-#define EMSCRIPTEN 1 //added by blazer
+#define EMSCRIPTEN 1
 
 #ifndef EMSCRIPTEN
 #include "uadeipc.h"
@@ -38,11 +38,11 @@ struct uade_sample_data {
 };
 
 
-//struct uade_sample_data sample_data; //commented out by blazer
-int get_samples(void*);//added by blazer
-int get_quit();//added by blazer
-int get_silence_detected();//added by blazer
-int get_missing_file();//added by blazer
+//struct uade_sample_data sample_data;
+int get_samples(void*);
+int get_quit();
+int get_silence_detected();
+int get_missing_file();
 struct uade_sample_data *get_new_samples(void);
 
 #endif
@@ -53,11 +53,11 @@ void uade_send_debug(const char *fmt, ...);
 void uade_get_amiga_message(void);
 void uade_handle_r_state(void);
 #ifdef EMSCRIPTEN
-struct uade_state _state; //added by blazer (was in uade.c)
-struct uade_state* get_uade_state(void); //added by blazer
-void set_uade_state(struct uade_state* state); //added by blazer
-int get_max_subsongs(); //added by blazer
-int get_min_subsongs(); //added by blazer
+struct uade_state _state; // was in uade.c
+struct uade_state* get_uade_state(void);
+void set_uade_state(struct uade_state* state);
+int get_max_subsongs();
+int get_min_subsongs();
 void change_subsong(int subsong);
 int uade_option(const char *basedir);
 int uade_reset(int,char*,char*);

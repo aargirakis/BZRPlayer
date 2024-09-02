@@ -47,8 +47,8 @@ extern int fpp_movem_next[256];
 
 extern int broken_in;
 
-//typedef unsigned long cpuop_func (uae_u32) REGPARAM; //commented out by blazer
-typedef unsigned long cpuop_func (uae_u32); //added by blazer
+//typedef unsigned long cpuop_func (uae_u32) REGPARAM;
+typedef unsigned long cpuop_func (uae_u32);
 
 struct cputbl {
     cpuop_func *handler;
@@ -56,8 +56,8 @@ struct cputbl {
     uae_u16 opcode;
 };
 
-//extern unsigned long op_illg (uae_u32) REGPARAM; //commented out by blazer
-extern unsigned long op_illg (uae_u32); //added by blazer
+//extern unsigned long op_illg (uae_u32) REGPARAM;
+extern unsigned long op_illg (uae_u32);
 
 typedef char flagtype;
 

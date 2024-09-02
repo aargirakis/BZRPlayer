@@ -58,7 +58,7 @@ const struct pac_channel pac_channel_init =
 
 const struct pac_sound pac_sound_init =
 {
-   "",       /*name*/ //added by blazer
+   "",       /*name*/
    -1,       /* number */
    8363,     /* middlec */
    0,        /* finetune */

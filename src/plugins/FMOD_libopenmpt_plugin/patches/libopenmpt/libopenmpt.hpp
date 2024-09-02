@@ -809,11 +809,11 @@ public:
 	  \sa openmpt::module::get_metadata
 	*/
 	
-	int get_mod_sample_size(int32_t index) const; //added by blazer
-	int get_mod_sample_loopstart(int32_t index) const; //added by blazer
-	int get_mod_sample_loopend(int32_t index) const; //added by blazer
-	int get_mod_sample_volume(int32_t index) const; //added by blazer
-	int get_mod_sample_finetune(int32_t index) const; //added by blazer
+	int get_mod_sample_size(int32_t index) const;
+	int get_mod_sample_loopstart(int32_t index) const;
+	int get_mod_sample_loopend(int32_t index) const;
+	int get_mod_sample_volume(int32_t index) const;
+	int get_mod_sample_finetune(int32_t index) const;
 	
 	LIBOPENMPT_CXX_API_MEMBER std::vector<std::string> get_metadata_keys() const;
 	//! Get a metadata item value

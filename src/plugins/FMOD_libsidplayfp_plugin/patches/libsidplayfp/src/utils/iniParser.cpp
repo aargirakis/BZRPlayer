@@ -59,7 +59,7 @@ bool iniParser::open(const char *fName)
 
     return open_internal(iniFile);
 }
-//commented out by blazer
+
 //#ifdef _WIN32
 // bool iniParser::open(const wchar_t *fName)
 // {

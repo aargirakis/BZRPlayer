@@ -5,7 +5,7 @@
  * 2014, Juergen Wothke
  */
 
-#define EMSCRIPTEN 1 //added by blazer
+#define EMSCRIPTEN 1
 #include <assert.h>
 
 #include <stdio.h>
@@ -62,8 +62,8 @@ void uade_notify_song_update(const char *info_text, const char *inf_mins, const 
 #ifndef EMSCRIPTEN
 static 
 #endif
-//void change_subsong(int subsong); //commented out by blazer
-//added by blazer
+//void change_subsong(int subsong);
+
 
 
 static int uade_calc_reloc_size(uae_u32 *src, uae_u32 *end);
@@ -105,7 +105,7 @@ static const int SCORE_OUTPUT_MSG    = 0x300;
 struct uade_ipc uadeipc;
 #else 
 // code adapted from uade123.c: uses EaglePlayer to determine the player name used for a song
-//struct uade_state _state; //commented out and place in uade.h by blazer
+//struct uade_state _state; // place in uade.h
 #endif
 
 int uade_audio_skip;
@@ -133,7 +133,7 @@ static int voltestboolean;
 static char epoptions[256];
 static size_t epoptionsize;
 
-//added by blazer
+
 struct uade_state* get_uade_state(void)
 {
     return &_state;
@@ -230,21 +230,21 @@ static int uade_calc_reloc_size(uae_u32 *src, uae_u32 *end)
     return 0;
   return ((int) offset);
 }
-int get_quit()//function added by blazer
+int get_quit()
 {
     return quit_program;
 }
-int get_silence_detected()//function added by blazer
+int get_silence_detected()
 {
     return silence_detected;
 }
-int get_missing_file()//function added by blazer
+int get_missing_file()
 {
     return missing_file;
 }
 #ifdef EMSCRIPTEN
-struct uade_sample_data sample_data= {0, 0, 0, 0}; //added by blazer
-//function added by blazer
+struct uade_sample_data sample_data= {0, 0, 0, 0};
+
 int get_samples(void* buffer)
 {
     if (sample_data.is_new != 0)
@@ -257,7 +257,7 @@ int get_samples(void* buffer)
     }
     return 0;
 }
-//struct uade_sample_data sample_data= {.alloclen=0, .buflen= 0, .buf= 0, .is_new = 0}; //commented out by blazer
+//struct uade_sample_data sample_data= {.alloclen=0, .buflen= 0, .buf= 0, .is_new = 0};
 struct uade_sample_data * get_new_samples() {
 	if (sample_data.is_new != 0) {
 		return &sample_data;
@@ -415,8 +415,8 @@ void uade_get_amiga_message(void)
 	snprintf(inf_maxs, sizeof inf_maxs, "%d", maxs);
 	snprintf(inf_curs, sizeof inf_curs, "%d", curs);
 		
-    max_subsongs = maxs; //added by blazer
-    min_subsongs = mins; //added by blazer
+    max_subsongs = maxs;
+    min_subsongs = mins;
 
 	uade_notify_song_update(info_text, inf_mins, inf_maxs, inf_curs);
 #else
@@ -1174,8 +1174,8 @@ int uade_reset(int sample_rate, char *basedir, char *songmodule)
 
 #ifdef EMSCRIPTEN  
 	snprintf(song.scorename, sizeof song.scorename, "%s/amigasrc/score/score", basedir);
-    //snprintf(song.modulename, sizeof song.modulename, "%s/%s", basedir, songmodule); //commented by blazer
-    snprintf(song.modulename, sizeof song.modulename, "%s", songmodule); //added by blazer
+    //snprintf(song.modulename, sizeof song.modulename, "%s/%s", basedir, songmodule);
+    snprintf(song.modulename, sizeof song.modulename, "%s", songmodule);
 	snprintf(song.playername, sizeof song.playername, "");
 //	fprintf(stderr, "song.modulename: %s [%s] %s\n", song.modulename, basedir, songmodule);
 	// resolve the needed player (for "custom" modules the module becomes the player)
@@ -1423,7 +1423,6 @@ int uade_reset(int sample_rate, char *basedir, char *songmodule)
 #endif
 }
 
-//added by blazer
 void loadsettings(struct uade_state* state)
 {
 
@@ -1598,7 +1597,6 @@ static int uade_valid_string(uae_u32 address)
   return 0;
 }
 
-//added by blazer
 void uade_notify_song_update(const char *info_text, const char *inf_mins, const char *inf_maxs, const char *inf_curs)
 {
     song_info[0] = info_text;

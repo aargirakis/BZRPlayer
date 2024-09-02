@@ -314,29 +314,29 @@ pac_title (const struct pac_module *m)
 {
    return m->name;
 }
-//added by blazer
+
 struct pac_sound *
 pac_sample (const struct pac_module *m, unsigned int idx)
 {
    return &m->sound[idx];
 }
-//added by blazer
+
 const int
 pac_num_samples (const struct pac_module *m)
 {
    return m->soundcnt;
 }
-//added by blazer
+
 const int pac_num_channels (const struct pac_module *m)
 {
     return m->channelcnt;
 }
-//added by blazer
+
 const int pac_num_sheets (const struct pac_module *m)
 {
     return m->sheetcnt;
 }
-//added by blazer
+
 const int pac_num_positions (const struct pac_module *m)
 {
     return m->poscnt;
@@ -430,7 +430,7 @@ read_sound (struct pac_module *m, int i, FILE *fp)
       case ID_SNNA:
          if (snna)
             return -1;
-#if 1 /* Skip reading sound name. */ //uncommented by blazer
+#if 1 /* Skip reading sound name. */
          if (size > PAC_NAME_MAX) {
             skip = size - PAC_NAME_MAX;
             size = PAC_NAME_MAX;

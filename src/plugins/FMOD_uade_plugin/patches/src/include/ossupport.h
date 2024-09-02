@@ -1,7 +1,7 @@
 #ifndef _UADE_OSSUPPORT_H_
 #define _UADE_OSSUPPORT_H_
 
-#define EMSCRIPTEN 1 //added by blazer
+#define EMSCRIPTEN 1
 #ifdef EMSCRIPTEN
 #include "standalonesupport.h"
 #else

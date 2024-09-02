@@ -1200,26 +1200,23 @@ std::string module_impl::get_message_samples() const {
 	}
 	return retval;
 }
-//added by blazer
+
 int module_impl::get_mod_sample_size(int32_t index) const {
 	return m_sndFile->GetModSampleSize(index);
 }
-//added by blazer
+
 int module_impl::get_mod_sample_loopstart(int32_t index) const {
 	return m_sndFile->GetModSampleLoopStart(index);
 }
 
-//added by blazer
 int module_impl::get_mod_sample_loopend(int32_t index) const {
 	return m_sndFile->GetModSampleLoopEnd(index);
 }
 
-//added by blazer
 int module_impl::get_mod_sample_volume(int32_t index) const {
 	return m_sndFile->GetModSampleVolume(index);
 }
 
-//added by blazer
 int module_impl::get_mod_sample_finetune(int32_t index) const {
 	return m_sndFile->GetModSampleFineTune(index);
 }

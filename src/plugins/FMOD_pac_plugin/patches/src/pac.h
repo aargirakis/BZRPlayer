@@ -73,11 +73,11 @@ void pac_disable (int);
 
 long pac_length (const struct pac_module *);
 const char *pac_title (const struct pac_module *);
-struct pac_sound *pac_sample (const struct pac_module *, unsigned int); //added by blazer
-const int pac_num_channels (const struct pac_module *m); //added by blazer
-const int pac_num_samples (const struct pac_module *m); //added by blazer
-const int pac_num_sheets (const struct pac_module *m); //added by blazer
-const int pac_num_positions (const struct pac_module *m); //added by blazer
+struct pac_sound *pac_sample (const struct pac_module *, unsigned int);
+const int pac_num_channels (const struct pac_module *m);
+const int pac_num_samples (const struct pac_module *m);
+const int pac_num_sheets (const struct pac_module *m);
+const int pac_num_positions (const struct pac_module *m);
 void pac_perror (const char *);
 const char *pac_strerror (int);
 

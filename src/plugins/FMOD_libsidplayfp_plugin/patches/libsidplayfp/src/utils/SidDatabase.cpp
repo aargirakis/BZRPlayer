@@ -114,7 +114,7 @@ bool SidDatabase::open(const char *filename)
     return true;
 }
 
-//commented out by blazer
+
 // #ifdef _WIN32
 // bool SidDatabase::open(const wchar_t* filename)
 // {

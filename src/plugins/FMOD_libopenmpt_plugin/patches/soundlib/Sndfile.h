@@ -816,11 +816,11 @@ public:
 	std::string GetTitle() const { return m_songName; }
 	bool SetTitle(const std::string &newTitle); // Return true if title was changed.
 	const char *GetSampleName(SAMPLEINDEX nSample) const;
-	SmpLength GetModSampleSize(SAMPLEINDEX nSample) const; //added by blazer
-	SmpLength GetModSampleLoopStart(SAMPLEINDEX nSample) const; //added by blazer
-	SmpLength GetModSampleLoopEnd(SAMPLEINDEX nSample) const; //added by blazer
-	uint16 GetModSampleVolume(SAMPLEINDEX nSample) const; //added by blazer
-	uint8 GetModSampleFineTune(SAMPLEINDEX nSample) const; //added by blazer
+	SmpLength GetModSampleSize(SAMPLEINDEX nSample) const;
+	SmpLength GetModSampleLoopStart(SAMPLEINDEX nSample) const;
+	SmpLength GetModSampleLoopEnd(SAMPLEINDEX nSample) const;
+	uint16 GetModSampleVolume(SAMPLEINDEX nSample) const;
+	uint8 GetModSampleFineTune(SAMPLEINDEX nSample) const;
 	const char *GetInstrumentName(INSTRUMENTINDEX nInstr) const;
 	uint32 GetMusicSpeed() const { return m_PlayState.m_nMusicSpeed; }
 	TEMPO GetMusicTempo() const { return m_PlayState.m_nMusicTempo; }

@@ -361,12 +361,12 @@ struct player_data {
 
 	double current_time;
 	double frame_time;
-Queue patternPosBuffer; //added by blazer
-Queue trackPosBuffer; //added by blazer
-Queue posBuffer; //added by blazer
-Queue vumeterBuffer; //added by blazer
-Queue speedBuffer; //added by blazer
-Queue bpmBuffer; //added by blazer
+Queue patternPosBuffer;
+Queue trackPosBuffer;
+Queue posBuffer;
+Queue vumeterBuffer;
+Queue speedBuffer;
+Queue bpmBuffer;
 	int loop_count;
 	int sequence;
 	unsigned char sequence_control[XMP_MAX_MOD_LENGTH];
