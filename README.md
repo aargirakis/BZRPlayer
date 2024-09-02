@@ -1,22 +1,17 @@
 # BZR Player 2
 
-BZR Player 2 is an audio player for Windows with the primary goal being able to play a lot of different file formats.
-
-It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008.
-
-The last 1.x version was released 2019-Apr-08.
-
-This is the beginning of the new 2.x version which is coded pretty much from scratch.
-
+BZR Player 2 is an audio player for Windows with the primary goal being able to play a lot of different file formats.\
+It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008.\
+The last 1.x version was released 2019-Apr-08.\
+This is the beginning of the new 2.x version which is coded pretty much from scratch.\
 Please add features and bugs here on GitHub.
-
 
 ## How To Build
 
 ### Windows (#TODO msys2 gdb?):
 
 **MSYS2** with following packages (install as shown) is required:\
-`pacman -Syu mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg openssl-devel make`
+`pacman -S mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg openssl-devel make`
 
  - Open the MSYS2 **mingw32** command prompt
  - Go to your project dir (take in mind Unix-style paths are required)
