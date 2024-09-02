@@ -5,7 +5,7 @@
   *
   * Copyright 1996 Bernd Schmidt
   */
-#define EMSCRIPTEN 1
+
 #ifdef EMSCRIPTEN
 extern void uade_teardown (void);
 extern int uade_initialize (const char*);

@@ -430,7 +430,6 @@ void debug (void) {
 	if (feof(stdin) || ferror(stdin)) {
 	    quit_program = 1;
         fprintf(stderr, "quit_program feof or ferror \n");
-
 	    return;
 	}
     }

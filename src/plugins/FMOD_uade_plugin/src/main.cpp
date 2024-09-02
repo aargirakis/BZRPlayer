@@ -1,16 +1,6 @@
-﻿/*===============================================================================================
- codec_ym.dll
- Ver. 1.0
- by Andreas Argirakis 2008.
- FMOD input plugin
- Visit http://andreas.blazer.nu for latest version
- Built with ST-Sound, http://leonard.oxg.free.fr
-
-===============================================================================================*/
-#include "BaseSample.h"
+﻿#include "BaseSample.h"
 #include "FileLoader.h"
 //#define UNICODEHACK 1
-#define EMSCRIPTEN 1
 #include <string.h>
 #include <stdio.h>
 #include <iostream>

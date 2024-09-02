@@ -5,7 +5,6 @@
  * 2014, Juergen Wothke
  */
 
-#define EMSCRIPTEN 1
 #include <assert.h>
 
 #include <stdio.h>
@@ -48,7 +47,7 @@
 #include "amigamsg.h"
 #include "ossupport.h"
 #include "sysincludes.h"
-#include <winsock2.h> //blazer added (for ntohl etc.)
+#include <winsock2.h> // for ntohl etc.
 
 
 enum print_help {
@@ -63,8 +62,6 @@ void uade_notify_song_update(const char *info_text, const char *inf_mins, const 
 static 
 #endif
 //void change_subsong(int subsong);
-
-
 
 static int uade_calc_reloc_size(uae_u32 *src, uae_u32 *end);
 static int uade_get_u32(int addr);
@@ -1174,8 +1171,7 @@ int uade_reset(int sample_rate, char *basedir, char *songmodule)
 
 #ifdef EMSCRIPTEN  
 	snprintf(song.scorename, sizeof song.scorename, "%s/amigasrc/score/score", basedir);
-    //snprintf(song.modulename, sizeof song.modulename, "%s/%s", basedir, songmodule);
-    snprintf(song.modulename, sizeof song.modulename, "%s", songmodule);
+	snprintf(song.modulename, sizeof song.modulename, "%s", songmodule);
 	snprintf(song.playername, sizeof song.playername, "");
 //	fprintf(stderr, "song.modulename: %s [%s] %s\n", song.modulename, basedir, songmodule);
 	// resolve the needed player (for "custom" modules the module becomes the player)

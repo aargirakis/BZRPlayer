@@ -3,7 +3,7 @@
 
 #include <limits.h>
 #include <stdlib.h>
-#define EMSCRIPTEN 1
+
 
 #ifndef EMSCRIPTEN
 #include "uadeipc.h"

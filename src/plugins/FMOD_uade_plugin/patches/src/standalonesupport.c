@@ -88,23 +88,6 @@ int is_amiga_file_not_ready(void) {
 									
 
 /* opens file in amiga namespace */
-//struct AFILE * uade_open_amiga_file(char *aname, const char *playerdir)
-//{
-//    fprintf (stderr, "uade_open_amiga_file: (%s)\n", aname);
-//    struct AFILE *uo= uade_fopen(aname, "rb");
-//      if (uo->file == 0) {
-//        if (uo->async_status < 0) {
-//            last_file_not_ready=1;
-//        }
-//        quit_program = 1;
-//        uade_reboot = 1;
-
-//        fprintf (stderr, "uade: couldn't open file (%s)\n", aname);
-//      }
-//      return uo;
-//}
-
-/* opens file in amiga namespace */
 struct AFILE * uade_open_amiga_file(char *aname, const char *playerdir)
 {
 //fprintf(stderr, "amiga in: opening [%s] [%s]\n", aname, playerdir);
@@ -151,7 +134,7 @@ struct AFILE * uade_open_amiga_file(char *aname, const char *playerdir)
 	snprintf(dirname, sizeof(dirname), aname);	// e.g. railroad tycoon.dl
 //	snprintf(dirname, sizeof(real), "%s/%s", playerdir, aname);
   }
-  if(strlen(dirname)<=1)//hack, will sometimes be C from C: because of the code above, I'm too lazy to fix right now //blazer
+  if(strlen(dirname)<=1)//hack, will sometimes be C from C: because of the code above, I'm too lazy to fix right now
   {
       snprintf(dirname, sizeof(dirname), aname);	// e.g. railroad tycoon.dl
   }

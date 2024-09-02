@@ -34,6 +34,8 @@ download_and_patch(
 
 set(uade_data_path "/data/plugin/uade")
 add_compile_definitions(UADE_DATA_PATH="${uade_data_path}")
+add_compile_definitions(EMSCRIPTEN=1)
+add_compile_definitions(_UADE_STRSEP_H_) #TODO needed?
 
 set(FILENAME "uade.md5")
 set(FILE_URL "http://bzrplayer.blazer.nu/${FILENAME}")
@@ -78,8 +80,8 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/uade.c
         ${EXTERNAL_SOURCE_DIR}/src/uademain.c
         ${EXTERNAL_SOURCE_DIR}/src/unixatomic.c
-        src/flod/*.cpp
-        src/md5/*.c
+        src/flod/*.cpp #TODO
+        src/md5/*.c    #TODO all src/md5/*.* files (apart types.h) comes from xmms-sid (version from 0.8.96 to 0.8.99.2) that seem untraceable on the web: better upgrade to 0.9.2
         src/blazer.c
         src/main.cpp
 )
@@ -94,9 +96,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/frontends/common
         ${EXTERNAL_SOURCE_DIR}/src/include
         ${EXTERNAL_SOURCE_DIR}/src/machdep
-        src/flod
-        src/md5
-        src
+        src/flod  #TODO
+        src/md5  #TODO
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
@@ -116,7 +117,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${EXTERNAL_SOURCE_DIR}/players
         ${OUTPUT_DIR_PARENT}${uade_data_path}/players

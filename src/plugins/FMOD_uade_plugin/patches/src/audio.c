@@ -136,7 +136,6 @@ static void check_sound_buffers (void)
 
     //assert(uade_read_size > 0);
 
-
     bytes = ((intptr_t) sndbufpt) - ((intptr_t) sndbuffer);
 
     if (uade_audio_output) {

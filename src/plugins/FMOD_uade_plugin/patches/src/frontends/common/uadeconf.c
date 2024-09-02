@@ -26,7 +26,7 @@
 #include "songdb.h"
 #include "uadeutils.h"
 #include "support.h"
-#define EMSCRIPTEN 1
+
 int uade_set_silence_timeout(struct uade_config *uc, const char *value);
 static int uade_set_subsong_timeout(struct uade_config *uc, const char *value);
 static int uade_set_timeout(struct uade_config *uc, const char *value);
@@ -129,7 +129,6 @@ double uade_convert_to_double(const char *value, double def, double low,
 	if (*endptr == ',' || *endptr == '.') {
 		newvalue = strdup(value);
 		if (newvalue == NULL)
-            //uade_error("Out of memory\n");
 			fprintf(stderr, "Out of memory\n");
 
 		newseparator = (*endptr == ',') ? '.' : ',';
