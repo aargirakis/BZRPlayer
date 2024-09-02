@@ -1,47 +1,56 @@
-<h1>BZR Player 2</h1>
-BZR Player 2 is an audio player for Windows with the primary goal being able to play a lot of different file formats.
-It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008.
-The last 1.x version was released 2019-Apr-08.
-This is the beginning of the new 2.x version which is coded pretty much from scratch.
+# BZR Player 2
+
+BZR Player 2 is an audio player for Windows with the primary goal being able to play a lot of different file formats.\
+It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008.\
+The last 1.x version was released 2019-Apr-08.\
+This is the beginning of the new 2.x version which is coded pretty much from scratch.\
 Please add features and bugs here on GitHub.
-<br/>
 
-<h3>How To Build</h3>
-<h4>Windows (#TODO msys2 gdb?):</h4>
-<strong>MSYS2</strong> with following packages is required:<br/>
-<strong>mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg openssl-devel make</strong>
+## How To Build
 
-Open the MSYS2 <strong>mingw32.exe</strong> command prompt<br/>
-Go to your project dir (take in mind Unix-style paths are required)<br/>
-Inside the project directory create the cmake build directory with name <strong>cmake-build-[debug|release]</strong>,
-then enter it and execute:<br/>
-<strong>cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja .. && ninja</strong>
+### Windows (#TODO msys2 gdb?):
 
-build example:<br/>
-<strong>cd /c/BZRPlayer</strong><br/>
-<strong>mkdir cmake-build-release</strong><br/>
-<strong>cd cmake-build-release</strong><br/>
-<strong>cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja .. && ninja</strong>
-<br/><br/>
-<h4>Linux cross-compilation:</h4>
-Dockerized cross-compilation toolchain it is provided: just execute <strong>run.sh</strong> from the <strong>
-docker</strong> dir, eventually setting <strong>BUILD_TYPE=Release</strong> if needed.
-<br/>
-If you also want to run BZR2 after the build, then set <strong>RUN_BZR2=1</strong> (<strong>wine</strong> is required).
-<br/><br/>
+**MSYS2** with following packages (install as shown) is required:\
+`pacman -S mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg openssl-devel make`
+
+- Open the MSYS2 **mingw32.exe** command prompt
+- Go to your project dir (take in mind Unix-style paths are required)
+- Inside the project directory create the cmake build directory with name `cmake-build-[debug|release]`,
+- then enter it and execute:\
+  `cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja .. && ninja`
+
+#### build example:
+
+```
+cd /c/BZRPlayer
+mkdir cmake-build-release
+cd cmake-build-release
+cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja .. && ninja
+```
+
+### Linux cross-compilation:
+
+Dockerized cross-compilation toolchain is provided: just execute `run.sh` from the **
+docker** directory, eventually setting `BUILD_TYPE=Release` if needed.
+
+If you also want to run BZR2 after the build, then set `RUN_BZR2=1` (**wine** is required).
+
+----
 
 Official page is http://bzrplayer.blazer.nu
-<br/>
-<br/>
 
 ![bzr2 0 27](https://user-images.githubusercontent.com/10993634/201359947-2633341d-9ff6-4a59-bb9e-ce1794df9cba.png)
 
-<h3>SUPPORTED FORMATS</h3>
+----
 
-<b>Using Libsidplayfp</b><br/>
+## SUPPORTED FORMATS
+
+### Using Libsidplayfp
+
 Commodore 64 SID, PSID<br/>
 
-<b>Using Audio File Library</b><br/>
+### Using Audio File Library
+
 Amiga IFF/8SVX<br/>
 Audio Visual Research<br/>
 Berkeley/IRCAM/CARL<br/>
@@ -51,7 +60,8 @@ NIST SPHERE<br/>
 SampleVision<br/>
 Sun .au<br/>
 
-<b>Using ASAP</b><br/>
+### Using ASAP
+
 Atari systems using POKEY sound chip<br/>
 Chaos Music Composer<br/>
 Chaos Music Composer -3-4-<br/>
@@ -65,7 +75,8 @@ Theta Music Composer 1.x 4-channel<br/>
 Theta Music Composer 1.x 8-channel<br/>
 Theta Music Composer 2.x<br/>
 
-<b>Using Game Music Emu</b><br/>
+### Using Game Music Emu
+
 AY - ZX Spectrum, Amstrad CPC<br/>
 GBS - Nintendo Game Boyr<br/>
 GYM - Sega Genesis, Mega Drive<br/>
@@ -78,26 +89,33 @@ VGM - Video Game Music File<br/>
 VGZ - Compressed Video Game Music File<br/>
 RSN - RAR archive with SPC songs<br/>
 
-<b>Using HivelyTracker</b><br/>
+### Using HivelyTracker
+
 AHX<br/>
 HivelyTracker<br/>
 
-<b>Using KB Media Player</b><br/>
+### Using KB Media Player
+
 S98
 
-<b>Using Ken's Digital Music</b><br/>
+### Using Ken's Digital Music
+
 Ken's Digital Music
 
-<b>Using libpac</b><br/>
+### Using libpac
+
 SBStudio PAC
 
-<b>Using LibV2</b><br/>
+### Using LibV2
+
 Farbrausch V2M
 
-<b>Using Organya</b><br/>
+### Using Organya
+
 Organya<br/>
 
-<b>Using UADE</b><br/>
+### Using UADE
+
 ActionAmics<br/>
 Activision Pro (MartinWalker)<br/>
 Alcatraz_Packer<br/>
@@ -208,5 +226,6 @@ VoodooSupremeSynthesizer<br/>
 WallyBeben<br/>
 YM-2149<br/>
 
-<h3>SUPPORTED PACKERS</h3>
+### SUPPORTED PACKERS
+
 None right now
