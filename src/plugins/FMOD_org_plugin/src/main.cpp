@@ -74,14 +74,14 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION * __stdcall _FMODGetCodecDescriptio
 FMOD_RESULT F_CALLBACK orgopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo)
 {
     orgplugin *org = new orgplugin(codec);
-    org->info = (Info*)userexinfo->userdata;
+    org->info = (Info *) userexinfo->userdata;
     org->m_tune=0;
-    string sample_path = "plugin\\orgsamples";
     org->queueSize=18000;
     ifstream is;
     //is.imbue(std::locale("en_US.UTF8"));
     is.open (org->info->filename, ios::binary );
 
+    string sample_path = org->info->applicationPath + "/data/plugin/orgsamples"; //TODO
     org->m_tune = org_decoder_create( is, sample_path.c_str(), 1);
     is.close();
 

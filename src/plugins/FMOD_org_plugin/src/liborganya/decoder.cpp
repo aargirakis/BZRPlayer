@@ -232,7 +232,7 @@ uint8_t _org_decoder_load_samples(org_decoder_t *decoder, const char *resource_p
 		
 		// Files for the sample data are just <instrument>.dat. drums have 100 added, as noted above.
                 std::string dat_path = resource_path;
-                dat_path = dat_path +'\\';
+                dat_path = dat_path +'/';
                 dat_path += ZeroPadNumber(instrument);
 		dat_path += ".dat";
 
