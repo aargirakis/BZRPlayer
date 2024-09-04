@@ -36,7 +36,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_libsidplayfp "src/plugins/FMOD_libsidplayfp_plugin"
         plugin_libxmp "src/plugins/FMOD_libxmp_plugin"
         plugin_mdx "src/plugins/FMOD_MDX_plugin"
-        plugin_org "src/plugins/FMOD_org_plugin"                                  #TODO never worked ?
+        plugin_org "src/plugins/FMOD_org_plugin"
         plugin_pac "src/plugins/FMOD_pac_plugin"
         plugin_protrekkr "src/plugins/FMOD_protrekkr_plugin"
         plugin_s98 "src/plugins/FMOD_s98_plugin"                                  #TODO never worked ?
