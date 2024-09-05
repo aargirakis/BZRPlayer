@@ -15,10 +15,6 @@ if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
     add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-int-conversion>)
 endif ()
 
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    add_compile_options($<$<CONFIG:DEBUG>:$<$<COMPILE_LANGUAGE:C>:-O1>>) #TODO why dll linking on windows with debug build type fails with (default) -O0 flag ?
-endif ()
-
 set(LIB_NAME "wothke-uade-2.13")
 set(LIB_VERSION "6e96e16c30d7")
 set(LIB_COMMIT "${LIB_VERSION}94f8e739921da5b23f722dc53b2f")
@@ -64,10 +60,12 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/frontends/common/amifilemagic.c
         ${EXTERNAL_SOURCE_DIR}/src/frontends/common/eagleplayer.c
         ${EXTERNAL_SOURCE_DIR}/src/frontends/common/effects.c
+        ${EXTERNAL_SOURCE_DIR}/src/frontends/common/md5.c
         ${EXTERNAL_SOURCE_DIR}/src/frontends/common/songdb.c
         ${EXTERNAL_SOURCE_DIR}/src/frontends/common/songinfo.c
         ${EXTERNAL_SOURCE_DIR}/src/frontends/common/support.c
         ${EXTERNAL_SOURCE_DIR}/src/frontends/common/uadeconf.c
+        ${EXTERNAL_SOURCE_DIR}/src/frontends/common/vplist.c
         ${EXTERNAL_SOURCE_DIR}/src/md-support.c
         ${EXTERNAL_SOURCE_DIR}/src/memory.c
         ${EXTERNAL_SOURCE_DIR}/src/missing.c
