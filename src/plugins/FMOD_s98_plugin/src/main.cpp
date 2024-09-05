@@ -51,6 +51,7 @@ public:
         myBuffer=0;
         S98_Close(s98);
     }
+    FILE* fp;
     BYTE* myBuffer;
     Info* info;
     void* s98;
@@ -79,54 +80,40 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION * __stdcall _FMODGetCodecDescriptio
 #endif
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo)
 {
-    FMOD_RESULT       result;
-
     fcplugin *fc = new fcplugin(codec);
     fc->info = (Info*)userexinfo->userdata;
 
-    char* smallBuffer;
-    smallBuffer = new char[4];
-    unsigned int bytesread;
+    fc->fp = fopen(fc->info->filename.c_str(), "rb");
 
-    result = FMOD_CODEC_FILE_SEEK(codec,0,0);
-    result = FMOD_CODEC_FILE_READ(codec,smallBuffer,4,&bytesread);
-
-    if(bytesread!=4)
-    {
-        delete smallBuffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    if(smallBuffer[0]=='S' && smallBuffer[1]=='9' && smallBuffer[2]=='8' && smallBuffer[3]=='3')
-    {
-        fc->info->fileformat = "S98 V.3";
-    }
-    else if(smallBuffer[0]=='S' && smallBuffer[1]=='9' && smallBuffer[2]=='8' && smallBuffer[3]=='2')
-    {
-        fc->info->fileformat = "S98 V.2";
-    }
-    else if(smallBuffer[0]=='S' && smallBuffer[1]=='9' && smallBuffer[2]=='8' && smallBuffer[3]=='1')
-    {
-        fc->info->fileformat = "S98 V.1";
-    }
-    else if(smallBuffer[0]=='S' && smallBuffer[1]=='9' && smallBuffer[2]=='8' && smallBuffer[3]=='0')
-    {
-        fc->info->fileformat = "S98 V.0";
-    }
-    else
-    {
-        delete smallBuffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete smallBuffer;
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
     fc->myBuffer = new BYTE[filesize];
 
-    result = FMOD_CODEC_FILE_SEEK(codec,0,0);
-    result = FMOD_CODEC_FILE_READ(codec,smallBuffer,filesize,&bytesread);
+    // buffer will store the DWORD read from the file
+    fread(fc->myBuffer, 1, filesize, fc->fp);
+
+    if(fc->myBuffer[0]=='S' && fc->myBuffer[1]=='9' && fc->myBuffer[2]=='8' && fc->myBuffer[3]=='3')
+    {
+        fc->info->fileformat = "S98 V.3";
+    }
+    else if(fc->myBuffer[0]=='S' && fc->myBuffer[1]=='9' && fc->myBuffer[2]=='8' && fc->myBuffer[3]=='2')
+    {
+        fc->info->fileformat = "S98 V.2";
+    }
+    else if(fc->myBuffer[0]=='S' && fc->myBuffer[1]=='9' && fc->myBuffer[2]=='8' && fc->myBuffer[3]=='1')
+    {
+        fc->info->fileformat = "S98 V.1";
+    }
+    else if(fc->myBuffer[0]=='S' && fc->myBuffer[1]=='9' && fc->myBuffer[2]=='8' && fc->myBuffer[3]=='0')
+    {
+        fc->info->fileformat = "S98 V.0";
+    }
+    else
+    {
+        delete fc->myBuffer;
+        return FMOD_ERR_FORMAT;
+    }
 
     fc->s98info.dwSamplesPerSec=44100;
     fc->s98 = S98_OpenFromBuffer(fc->myBuffer, filesize,&fc->s98info);

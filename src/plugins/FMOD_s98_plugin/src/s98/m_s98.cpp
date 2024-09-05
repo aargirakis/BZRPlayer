@@ -4,7 +4,7 @@
 #include "kmp_pi.h"
 //#include "reg.h"
 
-#define USE_ZLIB 0
+#define USE_ZLIB 1
 
 #if USE_ZLIB
 #include "zlib.h"
@@ -582,7 +582,7 @@ bool s98File::OpenFromBuffer(const BYTE *Buffer, DWORD dwSize, SOUNDINFO *pInfo)
 		sps = SPS_LIMIT;
 		spsmode = SYNC_PER_SAMPLE;
 	}
-	/* Œ»Žž“_‚Å‚Í‚‰ð‘œ“xS98‚Í‘¶Ý‚µ‚È‚¢ */
+	/* ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Å‚Íï¿½ï¿½ð‘œ“xS98ï¿½Í‘ï¿½ï¿½Ý‚ï¿½ï¿½È‚ï¿½ */
 	if (spsmode == SAMPLE_PER_SYNC) return false;
 	CalcTime();
 	pInfo->dwSamplesPerSec = sample_rate;
@@ -598,7 +598,7 @@ bool s98File::OpenFromBuffer(const BYTE *Buffer, DWORD dwSize, SOUNDINFO *pInfo)
 		loopnum = default_loopnum;
 		pInfo->dwLength = playtime + (playtime - looptime) * (loopnum - 1) + FADEOUT_TIME;
 #if !FADEOUT_TIME
-		/* ’P‹ÈƒŠƒs[ƒgˆ—‚ÍŸˆ */
+		/* ï¿½Pï¿½Èƒï¿½ï¿½sï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Íï¿½ï¿½ï¿½ */
 		loopnum = 0;
 #endif
 	}

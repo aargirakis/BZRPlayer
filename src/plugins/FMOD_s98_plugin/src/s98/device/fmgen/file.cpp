@@ -1,8 +1,7 @@
 //	$Id: file.cpp,v 1.6 1999/12/28 11:14:05 cisc Exp $
 
 #include "headers.h"
-//#include "File.h"   //added by blazer for linux cross-compilation
-#include "file.h"     //added by blazer for linux cross-compilation
+#include "file.h"
 #ifdef __amigaos4__
 #include <proto/dos.h>
 #endif
