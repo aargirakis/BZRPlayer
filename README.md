@@ -94,7 +94,7 @@ RSN - RAR archive with SPC songs<br/>
 AHX<br/>
 HivelyTracker<br/>
 
-### Using KB Media Player
+### Using Mamiya's m_s98.kpi
 
 S98
 

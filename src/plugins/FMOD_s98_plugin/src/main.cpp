@@ -136,7 +136,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_
     codec->plugindata   = fc;                    /* user data value */
 
 
-    fc->info->plugin = "KbMedia Player";
+    fc->info->plugin = "m_s98.kpi";
     fc->info->setSeekable(true);
     return FMOD_OK;
 }

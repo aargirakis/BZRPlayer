@@ -118,7 +118,7 @@ void PSG::MakeEnvelopTable()
 		2,2, 2,0, 2,1, 2,3, 1,1, 1,3, 1,2, 1,0,
 	};
 	static uint8 table2[4] = {  0,  0, 31, 31 };
-    static int8 table3[4] = {  0,  1, -1,  0 }; //blazer changed to int8 from uint8 to compile
+	static int8 table3[4] = {  0,  1, -1,  0 };
 
 	uint* ptr = enveloptable[0];
 

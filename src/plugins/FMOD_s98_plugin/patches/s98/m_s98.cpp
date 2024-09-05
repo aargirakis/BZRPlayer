@@ -4,7 +4,7 @@
 #include "kmp_pi.h"
 //#include "reg.h"
 
-#define USE_ZLIB 1
+#define USE_ZLIB 0
 
 #if USE_ZLIB
 #include "zlib.h"
@@ -363,6 +363,7 @@ static int default_loopnum = LOOPNUM;
 bool s98File::OpenFromBuffer(const BYTE *Buffer, DWORD dwSize, SOUNDINFO *pInfo)
 {
 	int sample_rate = (pInfo->dwSamplesPerSec == 0) ? default_sample_rate : pInfo->dwSamplesPerSec;
+
 	Close();
 
 	DWORD dataofs, loopofs;
@@ -563,6 +564,7 @@ bool s98File::OpenFromBuffer(const BYTE *Buffer, DWORD dwSize, SOUNDINFO *pInfo)
 			devinfo += 16;
 		}
 	}
+
 	double dsps;
 	double sample_per_sec = (double)sample_rate;
 	sync_per_sec = ((double)timerinfo2) / ((double)timerinfo1);
@@ -584,7 +586,9 @@ bool s98File::OpenFromBuffer(const BYTE *Buffer, DWORD dwSize, SOUNDINFO *pInfo)
 	}
 	/* �����_�ł͍��𑜓xS98�͑��݂��Ȃ� */
 	if (spsmode == SAMPLE_PER_SYNC) return false;
+
 	CalcTime();
+
 	pInfo->dwSamplesPerSec = sample_rate;
 	pInfo->dwChannels = 2;
 	pInfo->dwBitsPerSample = 16;
@@ -611,7 +615,6 @@ bool s98File::OpenFromBuffer(const BYTE *Buffer, DWORD dwSize, SOUNDINFO *pInfo)
 	pInfo->dwLength = SyncToMsec(pInfo->dwLength);
 
 	Reset();
-
 	return true;
 }
 
