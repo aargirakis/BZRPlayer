@@ -14,7 +14,7 @@ set(LIB_FILENAME2 "${LIB_VERSION}.zip")
 set(LIB_URL "https://github.com/jgilje/${LIB_NAME}/archive/${LIB_FILENAME2}")
 set(LIB_SHA_256_HASH "a6ec966bc0fd95e1da43babe34aeff45f0b511664e51100907b5c25aae67b4d3")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 

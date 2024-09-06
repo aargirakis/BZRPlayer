@@ -24,7 +24,7 @@ set(LIB_URL "https://github.com/pete-gordon/${LIB_NAME}/archive/refs/tags/V${LIB
 set(LIB_SHA_256_HASH "22e5f98bf92502443510cacd9c3c1b8163063bf4108c215dce6d20a41d003e75")
 set(LIB_UNPACKED_DIR "${LIB_NAME_TAGGED}")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ${LIB_UNPACKED_DIR}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 

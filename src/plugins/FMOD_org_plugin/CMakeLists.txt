@@ -14,7 +14,7 @@ set(LIB_FILENAME "${LIB_UNPACKED_DIR}.zip")
 set(LIB_URL "https://www.cavestory.org/downloads/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "15d3f0851104c3b8dcb2d0fd600dac86c6afe98b7a3a16033d70dc2fcca9c8c8")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ${LIB_UNPACKED_DIR}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 

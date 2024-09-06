@@ -19,7 +19,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     list(APPEND MAKE_ARGS DEBUG=1)
 endif ()
 download_patch_and_make(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
         "${MAKE_ARGS}"
 )

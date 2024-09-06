@@ -16,7 +16,7 @@ set(LIB_FILENAME2 "v${LIB_VERSION}.tar.gz")
 set(LIB_URL "https://github.com/hitchhikr/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME2}")
 set(LIB_SHA_256_HASH "801deb0ac1781fbd0b6608b8c319b5dc7d36400e15401abeb8a559e3127914e2")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         "${CMAKE_CURRENT_SOURCE_DIR}/patches"
 )
 

@@ -24,7 +24,7 @@ set(LIB_URL "https://github.com/Zeinok/${LIB_NAME}/archive/${LIB_FILENAME2}")
 set(LIB_SHA_256_HASH "29c6eddc372624871c8b6ff63acaf4ef774ff248545c769d706c1bad036afda0")
 set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ${LIB_UNPACKED_DIR}
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
         ""
 )
 

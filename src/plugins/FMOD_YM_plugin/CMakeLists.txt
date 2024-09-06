@@ -14,7 +14,7 @@ set(LIB_FILENAME2 "${LIB_VERSION}.tar.gz")
 set(LIB_URL "https://github.com/cpcsdk/${LIB_NAME}/archive/${LIB_FILENAME2}")
 set(LIB_SHA_256_HASH "97aed95140622236c8d596b7b45313f9f14ffe0d1f47b8de8496eba2802ef0d6")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ""
 )
 

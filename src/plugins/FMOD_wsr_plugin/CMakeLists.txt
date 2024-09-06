@@ -18,7 +18,7 @@ set(LIB_FILENAME2 "v${LIB_VERSION}.tar.gz")
 set(LIB_URL "https://github.com/xbmc/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME2}")
 set(LIB_SHA_256_HASH "c84c49696939f950650ac05fbe6c0b9c6889003cea0cfb223d8045480ceb0a1a")
 download_and_patch(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} ""
+        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ""
 )
 
