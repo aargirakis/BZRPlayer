@@ -1,17 +1,15 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(app)
+project(app VERSION "${PROJECT_VERSION_PARENT}")
 
 set(CMAKE_CXX_STANDARD 14)
 
 #TODO original qmake flags to check: -fexceptions -mthreads -DUNICODE -D_UNICODE -DMINGW_HAS_SECURE_API=1
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(PROJECT_VERSION "${PROJECT_VERSION_PARENT}")
 configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/version.h.in
         ${CMAKE_CURRENT_SOURCE_DIR}/version.h
@@ -153,7 +151,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${CMAKE_CURRENT_SOURCE_DIR}/static/qtadvanceddocking.dll
 
         #TODO are this in the right place?
-        ${CMAKE_SOURCE_DIR}/src/plugins/FMOD_klystrack_plugin/src/x86/release/ksnd.dll
+        ${CMAKE_SOURCE_DIR}/src/plugins/plugin_klystrack/src/x86/release/ksnd.dll
         ${OUTPUT_DIR_PARENT}
 
         VERBATIM

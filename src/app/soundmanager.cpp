@@ -8,6 +8,8 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QApplication>
+#include "plugins.h"
+
 void SoundManager::Init(int device, QString outputfilename)
 {
     result = FMOD_System_Create(&system,FMOD_VERSION);
@@ -25,62 +27,62 @@ void SoundManager::Init(int device, QString outputfilename)
 
     }
 
-    loadPlugin("codec_klystrack.dll",99999);
+    loadPlugin(PLUGIN_DLL_klystrack,99999);
 
-    loadPlugin("codec_libsidplayfp.dll",0);
-    loadPlugin("codec_fc.dll",0);
-    loadPlugin("codec_libopenmpt.dll",0);
-    loadPlugin("codec_highly_experimental.dll",1);
-    loadPlugin("codec_highly_theoretical.dll",1);
-    loadPlugin("codec_lazyusf",1);
-    loadPlugin("codec_highly_quixotic.dll",1);
-    loadPlugin("codec_vio2sf.dll",1);
-    loadPlugin("codec_protrekkr.dll",1);
+    loadPlugin(PLUGIN_DLL_libsidplayfp,0);
+    loadPlugin(PLUGIN_DLL_libfc14audiodecoder,0);
+    loadPlugin(PLUGIN_DLL_libopenmpt,0);
+    loadPlugin(PLUGIN_DLL_highly_experimental,1);
+    loadPlugin(PLUGIN_DLL_highly_theoretical,1);
+    //loadPlugin("plugin_lazyusf",1);
+    loadPlugin(PLUGIN_DLL_highly_quixotic,1);
+    loadPlugin(PLUGIN_DLL_vio2sf,1);
+    loadPlugin(PLUGIN_DLL_protrekkr,1);
 
-    loadPlugin("codec_ahx.dll",1);
-    loadPlugin("codec_ym.dll",1);
-    loadPlugin("codec_flod.dll",1);
+    loadPlugin(PLUGIN_DLL_hivelytracker,1);
+    loadPlugin(PLUGIN_DLL_libstsound,1);
+    loadPlugin(PLUGIN_DLL_flod,1);
 
-    loadPlugin("codec_sndh-player.dll",1);
-    loadPlugin("codec_furnace.dll",1);
-    loadPlugin("codec_uade.dll",1);
-    //loadPlugin("codec_quartet.dll",1);
-
-
+    loadPlugin(PLUGIN_DLL_sndh_player,1);
+    loadPlugin(PLUGIN_DLL_furnace,1);
+    loadPlugin(PLUGIN_DLL_wothke_uade_2_13,1);
+    //loadPlugin("plugin_quartet.dll",1);
 
 
 
-    loadPlugin("codec_aac.dll",99999);
 
 
-    loadPlugin("codec_mdx.dll",99999);
-    loadPlugin("codec_zxtune.dll",99999);
-    loadPlugin("codec_vgmplay.dll",99999);
-    loadPlugin("codec_game.dll",99999);
+    loadPlugin(PLUGIN_DLL_faad2,99999);
 
 
-    loadPlugin("codec_asap.dll",99999);
-    loadPlugin("codec_org.dll",99999);
-    loadPlugin("codec_sunvox.dll",99999);
-
-    loadPlugin("codec_audiofile.dll",99999);
-    loadPlugin("codec_sc68.dll",99999);
-    loadPlugin("codec_s98.dll",99999);
-    loadPlugin("codec_kdm.dll",99999);
-
-    loadPlugin("codec_pac.dll",99999);
+    loadPlugin(PLUGIN_DLL_mdxmini,99999);
+    loadPlugin(PLUGIN_DLL_zxtune,99999);
+    loadPlugin(PLUGIN_DLL_vgmplay_legacy,99999);
+    loadPlugin(PLUGIN_DLL_game_music_emu,99999);
 
 
+    loadPlugin(PLUGIN_DLL_asap,99999);
+    loadPlugin(PLUGIN_DLL_organya_decoder,99999);
+    loadPlugin(PLUGIN_DLL_sunvox,99999);
 
-    loadPlugin("codec_libxmp.dll",99999);
-    loadPlugin("codec_adplug.dll",99999);
-    loadPlugin("codec_vgmstream.dll",99999);
-    loadPlugin("codec_wsr.dll",99999);
-    loadPlugin("codec_v2m.dll",99999);
-    loadPlugin("codec_jaytrax.dll",99999);
+    loadPlugin(PLUGIN_DLL_audiofile,99999);
+    loadPlugin(PLUGIN_DLL_sc68,99999);
+    loadPlugin(PLUGIN_DLL_tunes98_plug,99999);
+    loadPlugin(PLUGIN_DLL_kdm,99999);
+
+    loadPlugin(PLUGIN_DLL_libpac,99999);
 
 
-    //loadPlugin("codec_wavpack.dll",99999);
+
+    loadPlugin(PLUGIN_DLL_libxmp,99999);
+    loadPlugin(PLUGIN_DLL_adplug,99999);
+    loadPlugin(PLUGIN_DLL_vgmstream,99999);
+    loadPlugin(PLUGIN_DLL_audiodecoder_wsr,99999);
+    loadPlugin(PLUGIN_DLL_v2m_player,99999);
+    loadPlugin(PLUGIN_DLL_jaytrax,99999);
+
+
+    //loadPlugin("plugin_wavpack.dll",99999);
 
 
 

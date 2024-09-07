@@ -17,40 +17,40 @@ set(OUTPUT_DIR_PARENT "${CMAKE_BINARY_DIR}/output")
 
 set(SUBDIRECTORIES_BY_MODULES
         app "src/app"
-        plugin_aac "src/plugins/FMOD_aac_plugin"
-        plugin_adplug "src/plugins/FMOD_adplug_plugin"
-        plugin_ahx "src/plugins/FMOD_AHX_plugin"
-        plugin_asap "src/plugins/FMOD_ASAP_plugin"
-        plugin_audiofile "src/plugins/FMOD_audiofile_plugin"
-        plugin_fc "src/plugins/FMOD_FC_plugin"
-        plugin_flod "src/plugins/FMOD_Flod_plugin"
-        plugin_furnace "src/plugins/FMOD_furnace_plugin"
-        plugin_game "src/plugins/FMOD_Gamemusic_plugin"
-        plugin_highly_experimental "src/plugins/FMOD_Highly_Experimental_plugin"  #check cmake TODO
-        plugin_highly_quixotic "src/plugins/FMOD_Highly_Quixotic_plugin"          #check cmake TODO
-        plugin_highly_theoretical "src/plugins/FMOD_Highly_Theoretical_plugin"    #check cmake TODO
-        plugin_jaytrax "src/plugins/FMOD_jaytrax_plugin"
-        plugin_kdm "src/plugins/FMOD_kdm_plugin"
-        plugin_klystrack "src/plugins/FMOD_klystrack_plugin"                      #TODO never worked
-        plugin_libopenmpt "src/plugins/FMOD_libopenmpt_plugin"
-        plugin_libsidplayfp "src/plugins/FMOD_libsidplayfp_plugin"
-        plugin_libxmp "src/plugins/FMOD_libxmp_plugin"
-        plugin_mdx "src/plugins/FMOD_MDX_plugin"
-        plugin_org "src/plugins/FMOD_org_plugin"
-        plugin_pac "src/plugins/FMOD_pac_plugin"
-        plugin_protrekkr "src/plugins/FMOD_protrekkr_plugin"
-        plugin_s98 "src/plugins/FMOD_s98_plugin"                                  #check cmake TODO
-        plugin_sc68 "src/plugins/FMOD_sc68_plugin"                                #TODO seeking it is now supported (should be implemented into main.cpp) #TODO also track length seems supported (see DisplayInfo function in sc68.c)
-        plugin_sndh-player "src/plugins/FMOD_sndh_player_plugin"                  #check cmake TODO
-        plugin_sunvox "src/plugins/FMOD_sunvox_plugin"                            #TODO avoid archive.org url #TODO sv_unload_dll()?
-        plugin_uade "src/plugins/FMOD_uade_plugin"                                #TODO unfinished
-        plugin_v2m "src/plugins/FMOD_v2m_plugin"                                  #TODO seeking it is now supported (should be implemented into main.cpp). #TODO add v2mz support (see sources/v2m dir for example files)
-        plugin_vgmplay "src/plugins/FMOD_vgmplay_plugin"                          #check cmake TODO
-        plugin_vgmstream "src/plugins/FMOD_vgmstream_plugin"
-        plugin_vio2sf "src/plugins/FMOD_vio2sf_plugin"                            #check cmake TODO
-        plugin_wsr "src/plugins/FMOD_wsr_plugin"
-        plugin_ym "src/plugins/FMOD_YM_plugin"
-        plugin_zxtune "src/plugins/FMOD_zxtune_plugin"
+        plugin_adplug "src/plugins/plugin_adplug"
+        plugin_asap "src/plugins/plugin_asap"
+        plugin_audiodecoder.wsr "src/plugins/plugin_audiodecoder.wsr"
+        plugin_audiofile "src/plugins/plugin_audiofile"
+        plugin_faad2 "src/plugins/plugin_faad2"
+        plugin_flod "src/plugins/plugin_flod"
+        plugin_furnace "src/plugins/plugin_furnace"
+        plugin_game-music-emu "src/plugins/plugin_game-music-emu"
+        plugin_highly_experimental "src/plugins/plugin_highly_experimental"  #check cmake TODO
+        plugin_highly_quixotic "src/plugins/plugin_highly_quixotic"          #check cmake TODO
+        plugin_highly_theoretical "src/plugins/plugin_highly_theoretical"    #check cmake TODO
+        plugin_hivelytracker "src/plugins/plugin_hivelytracker"
+        plugin_jaytrax "src/plugins/plugin_jaytrax"
+        plugin_kdm "src/plugins/plugin_kdm"
+        plugin_klystrack "src/plugins/plugin_klystrack"                      #TODO never worked
+        plugin_libfc14audiodecoder "src/plugins/plugin_libfc14audiodecoder"
+        plugin_libopenmpt "src/plugins/plugin_libopenmpt"
+        plugin_libpac "src/plugins/plugin_libpac"
+        plugin_libsidplayfp "src/plugins/plugin_libsidplayfp"
+        plugin_libstsound "src/plugins/plugin_libstsound"
+        plugin_libxmp "src/plugins/plugin_libxmp"
+        plugin_mdxmini "src/plugins/plugin_mdxmini"
+        plugin_organya-decoder "src/plugins/plugin_organya-decoder"
+        plugin_protrekkr "src/plugins/plugin_protrekkr"
+        plugin_sc68 "src/plugins/plugin_sc68"                                #TODO seeking it is now supported (should be implemented into main.cpp) #TODO also track length seems supported (see DisplayInfo function in sc68.c)
+        plugin_sndh-player "src/plugins/plugin_sndh-player"                  #check cmake TODO
+        plugin_sunvox "src/plugins/plugin_sunvox"                            #TODO avoid archive.org url #TODO sv_unload_dll()?
+        plugin_tunes98_plug "src/plugins/plugin_tunes98_plug"                #check cmake TODO
+        plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO seeking it is now supported (should be implemented into main.cpp). #TODO add v2mz support (see sources/v2m dir for example files)
+        plugin_vgmplay-legacy "src/plugins/plugin_vgmplay-legacy"            #check cmake TODO
+        plugin_vgmstream "src/plugins/plugin_vgmstream"
+        plugin_vio2sf "src/plugins/plugin_vio2sf"                            #check cmake TODO
+        plugin_wothke-uade-2.13 "src/plugins/plugin_wothke-uade-2.13"        #TODO unfinished
+        plugin_zxtune "src/plugins/plugin_zxtune"
 )
 
 set(MODULES)
@@ -59,6 +59,12 @@ while (SUBDIRECTORIES_BY_MODULES)
     list(APPEND MODULES ${MODULE})
     add_subdirectory(${SUBDIRECTORY})
 endwhile ()
+
+configure_file(
+        ${CMAKE_SOURCE_DIR}/src/app/plugins.h.in
+        ${CMAKE_SOURCE_DIR}/src/app/plugins.h
+        @ONLY NEWLINE_STYLE UNIX
+)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     if (NOT DEFINED CPACK_EXECUTABLE)
@@ -114,6 +120,5 @@ endif ()
 
 #TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR_PARENT})
 #TODO too many baserow.h/baserow.cpp
-#TODO rename plugins with their original names
 #TODO manage plugin names/versions in settingswindow.cpp
 #TODO redundant queue.h & queue.c should be treated as external dependency like src/external/psflib
