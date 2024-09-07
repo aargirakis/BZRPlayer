@@ -4,13 +4,13 @@ include(ExternalProject)
 
 set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
 
-function(extract downloaded_file extract_to extract_to_parent_dir)
-    if (NOT extract_to_parent_dir)
-        set(extract_to ${extract_to}/..)
+function(unpack file_to_unpack unpack_to unpack_to_parent_dir)
+    if (NOT unpack_to_parent_dir)
+        set(unpack_to ${unpack_to}/..)
     endif ()
 
-    file(ARCHIVE_EXTRACT INPUT "${downloaded_file}" DESTINATION "${extract_to}")
-    set(EXTERNAL_SOURCE_DIR ${extract_to} PARENT_SCOPE)
+    file(ARCHIVE_EXTRACT INPUT "${file_to_unpack}" DESTINATION "${unpack_to}")
+    set(EXTERNAL_SOURCE_DIR ${unpack_to} PARENT_SCOPE)
 endfunction()
 
 function(patch_sources target_name patches_dir external_source_dir)
@@ -34,7 +34,18 @@ function(patch_sources target_name patches_dir external_source_dir)
     endif ()
 endfunction()
 
-function(download_patch_and_make target_name target_name_versioned target_filename target_url sha_256_hash extract_to_parent_dir target_unpacked_dir patches_dir make_args)
+function(unpack_and_patch file_to_unpack target_name_versioned unpack_to_parent_dir target_unpacked_dir patches_dir)
+    unpack("${file_to_unpack}" "${DEPENDENCIES_DIR}/${target_name_versioned}" ${unpack_to_parent_dir})
+
+    set(external_source_dir "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_unpacked_dir}")
+
+    patch_sources("${target_name_versioned}" "${patches_dir}" "${external_source_dir}")
+
+    set(external_source_dir "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_unpacked_dir}" PARENT_SCOPE)
+    set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
+endfunction()
+
+function(download_patch_and_make target_name target_name_versioned target_filename target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir make_args)
     message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
 
     set(downloaded_file "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_filename}")
@@ -44,11 +55,7 @@ function(download_patch_and_make target_name target_name_versioned target_filena
             EXPECTED_HASH SHA256=${sha_256_hash}
     )
 
-    extract("${downloaded_file}" "${DEPENDENCIES_DIR}/${target_name_versioned}" ${extract_to_parent_dir})
-
-    set(external_source_dir "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_unpacked_dir}")
-
-    patch_sources("${target_name_versioned}" "${patches_dir}" "${external_source_dir}")
+    unpack_and_patch("${downloaded_file}" "${target_name_versioned}" "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
 
     if (make_args)
         if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
@@ -64,7 +71,7 @@ function(download_patch_and_make target_name target_name_versioned target_filena
     endif ()
 
     ExternalProject_Add(  #TODO add update step & patch step with ExternalProject_Add
-            ${target_name}_ExternalProject_Add
+            ${target_name}_ExtProj
             #URL ${target_url}
             #URL_HASH SHA256=${sha_256_hash}
             SOURCE_DIR ${external_source_dir}
@@ -84,9 +91,9 @@ function(download_patch_and_make target_name target_name_versioned target_filena
     set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
 endfunction()
 
-function(download_and_patch target_name target_name_versioned target_filename target_url sha_256_hash extract_to_parent_dir target_unpacked_dir patches_dir)
+function(download_and_patch target_name target_name_versioned target_filename target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
     download_patch_and_make(
-            "${target_name}" "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${extract_to_parent_dir}" "${target_unpacked_dir}"
+            "${target_name}" "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}" "${target_unpacked_dir}"
             "${patches_dir}" ""
     )
 

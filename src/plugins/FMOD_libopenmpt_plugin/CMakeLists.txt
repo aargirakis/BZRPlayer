@@ -29,7 +29,7 @@ set(LIBOPENMPT_STATIC_FINAL "${LIBOPENMPT_STATIC}.final")
 
 add_custom_target(
         set_static_lib ALL
-        DEPENDS ${LIB_NAME}_ExternalProject_Add
+        DEPENDS ${LIB_NAME}_ExtProj
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${LIBOPENMPT_STATIC}" "${LIBOPENMPT_STATIC_FINAL}"
         WORKING_DIRECTORY ${EXTERNAL_SOURCE_DIR}
@@ -66,7 +66,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
-add_dependencies(${PROJECT_NAME} ${LIB_NAME}_ExternalProject_Add)
+add_dependencies(${PROJECT_NAME} ${LIB_NAME}_ExtProj)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "codec_${NAME}"

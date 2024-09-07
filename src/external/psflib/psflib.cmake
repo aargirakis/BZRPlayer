@@ -6,7 +6,7 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
 set(LIB_URL "https://gitlab.com/kode54/${LIB_NAME}/-/archive/${LIB_VERSION}/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "16cf2ffc3113c84edcb04e2980087626c70e1915c9597eeb0a5f70b36d30d1fd")
-if (NOT TARGET "${LIB_NAME}_ExternalProject_Add")
+if (NOT TARGET "${LIB_NAME}_ExtProj")
     download_and_patch(
             ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
             ""
