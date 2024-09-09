@@ -25,7 +25,7 @@ void SoundManager::Init(int device, QString outputfilename)
 
     }
 
-    //loadPlugin("codec_klystrack.dll",99999);
+    loadPlugin("codec_klystrack.dll",99999);
 
     loadPlugin("codec_libsidplayfp.dll",0);
     loadPlugin("codec_fc.dll",0);
