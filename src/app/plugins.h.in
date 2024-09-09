@@ -15,7 +15,7 @@
 #define PLUGIN_DLL_hivelytracker "@PLUGIN_DLL_hivelytracker@"
 #define PLUGIN_DLL_jaytrax "@PLUGIN_DLL_jaytrax@"
 #define PLUGIN_DLL_kdm "@PLUGIN_DLL_kdm@"
-#define PLUGIN_DLL_klystrack "@PLUGIN_DLL_klystrack@"
+#define PLUGIN_DLL_klystron "@PLUGIN_DLL_klystron@"
 #define PLUGIN_DLL_libfc14audiodecoder "@PLUGIN_DLL_libfc14audiodecoder@"
 #define PLUGIN_DLL_libopenmpt "@PLUGIN_DLL_libopenmpt@"
 #define PLUGIN_DLL_libpac "@PLUGIN_DLL_libpac@"

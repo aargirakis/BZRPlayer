@@ -1,9 +1,0 @@
-/.vscode/ipch
-/deps
-/objs.*
-/bin.*
-/tools/editor/deps
-/tools/editor/objs.*
-/tools/editor/bin.*
-/tools/bin
-/src/version.h

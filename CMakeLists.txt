@@ -31,7 +31,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_hivelytracker "src/plugins/plugin_hivelytracker"
         plugin_jaytrax "src/plugins/plugin_jaytrax"
         plugin_kdm "src/plugins/plugin_kdm"
-        plugin_klystrack "src/plugins/plugin_klystrack"                      #TODO reimplement
+        plugin_klystron "src/plugins/plugin_klystron"
         plugin_libfc14audiodecoder "src/plugins/plugin_libfc14audiodecoder"
         plugin_libopenmpt "src/plugins/plugin_libopenmpt"
         plugin_libpac "src/plugins/plugin_libpac"
@@ -103,7 +103,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             ${OUTPUT_DIR_PARENT}/BZRPlayerTest.exe
             ${OUTPUT_DIR_PARENT}/BZRPlayer.VisualElementsManifest.xml
             ${OUTPUT_DIR_PARENT}/fmod.dll
-            ${OUTPUT_DIR_PARENT}/ksnd.dll
             ${OUTPUT_DIR_PARENT}/LICENSE.txt
             ${OUTPUT_DIR_PARENT}/qtadvanceddocking.dll
             DESTINATION .

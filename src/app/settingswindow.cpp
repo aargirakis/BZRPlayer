@@ -328,7 +328,7 @@ settingsWindow::settingsWindow(QWidget *parent) :
     ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("kdm"));
 
     ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem(""));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("klystrack"));
+    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("klystron"));
 
     ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("1.0.3"));
     ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("libfc14audiodecoder"));

@@ -151,8 +151,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/static/qtadvanceddocking.dll
 
-        #TODO are this in the right place?
-        ${CMAKE_SOURCE_DIR}/src/plugins/plugin_klystrack/src/x86/release/ksnd.dll
         ${OUTPUT_DIR_PARENT}
 
         VERBATIM
