@@ -15,9 +15,16 @@ Please add features and bugs here on GitHub.
 
 - Open the MSYS2 **mingw32.exe** command prompt
 - Go to your project dir (take in mind Unix-style paths are required)
-- Inside the project directory create the cmake build directory with name `cmake-build-[debug|release]`,
-- then enter it and execute:\
-  `cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja .. && ninja`
+- Inside the project directory create the cmake build directory with name `cmake-build-[debug|release]` then enter it
+- For starting the configuration process execute:\
+  `cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja ..`
+- To build the project execute:\
+  `ninja`
+
+As result of the building process, in the chosen cmake build directory the `output` directory will be populated with
+binaries.\
+If the **Release** build type is selected, along with `output` also `output_release` directory will be created,
+containing the final archive release file
 
 #### build example:
 
