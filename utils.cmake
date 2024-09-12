@@ -34,7 +34,8 @@ function(patch_sources target_name patches_dir external_source_dir)
     endif ()
 endfunction()
 
-function(unpack_and_patch file_to_unpack target_name_versioned unpack_to_parent_dir target_unpacked_dir patches_dir)
+function(unpack_and_patch file_to_unpack target_name_versioned unpack_to_parent_dir
+        target_unpacked_dir patches_dir)
     unpack("${file_to_unpack}" "${DEPENDENCIES_DIR}/${target_name_versioned}" ${unpack_to_parent_dir})
 
     set(external_source_dir "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_unpacked_dir}")
@@ -45,7 +46,8 @@ function(unpack_and_patch file_to_unpack target_name_versioned unpack_to_parent_
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
 
-function(download_patch_and_make target_name target_name_versioned target_filename target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir make_args)
+function(download_patch_and_make target_name target_name_versioned target_filename
+        target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir make_args)
     message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
 
     set(downloaded_file "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_filename}")
@@ -55,7 +57,8 @@ function(download_patch_and_make target_name target_name_versioned target_filena
             EXPECTED_HASH SHA256=${sha_256_hash}
     )
 
-    unpack_and_patch("${downloaded_file}" "${target_name_versioned}" "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
+    unpack_and_patch("${downloaded_file}" "${target_name_versioned}" "${unpack_to_parent_dir}" "${target_unpacked_dir}"
+            "${patches_dir}")
 
     if (make_args)
         if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
@@ -91,10 +94,11 @@ function(download_patch_and_make target_name target_name_versioned target_filena
     set(EXTERNAL_SOURCE_DIR ${external_source_dir} PARENT_SCOPE)
 endfunction()
 
-function(download_and_patch target_name target_name_versioned target_filename target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
+function(download_and_patch target_name target_name_versioned target_filename target_url
+        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
     download_patch_and_make(
-            "${target_name}" "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}" "${target_unpacked_dir}"
-            "${patches_dir}" ""
+            "${target_name}" "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}"
+            "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}" ""
     )
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
