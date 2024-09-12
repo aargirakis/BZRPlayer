@@ -4,7 +4,7 @@ set(NAME "libopenmpt")
 project(plugin_${NAME} VERSION "0.7.6")
 set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
 
-find_package(ZLIB)
+find_package(ZLIB REQUIRED)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)

@@ -4,7 +4,7 @@ set(NAME "protrekkr")
 project(plugin_${NAME} VERSION "2.6.4")
 set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
 
-find_package(ZLIB)
+find_package(ZLIB REQUIRED)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)

@@ -4,7 +4,7 @@ set(NAME "highly_quixotic")
 project(plugin_${NAME})
 set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
 
-find_package(ZLIB)
+find_package(ZLIB REQUIRED)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
