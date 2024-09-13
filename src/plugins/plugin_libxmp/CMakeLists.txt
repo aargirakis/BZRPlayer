@@ -5,7 +5,7 @@ project(plugin_${NAME} VERSION "4.5.0")
 set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
     add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)

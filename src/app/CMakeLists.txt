@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 project(app VERSION "${PROJECT_VERSION_PARENT}")
 
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
 
 #TODO original qmake flags to check: -fexceptions -mthreads -DUNICODE -D_UNICODE -DMINGW_HAS_SECURE_API=1

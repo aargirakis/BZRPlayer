@@ -5,7 +5,7 @@ project(plugin_${NAME})
 set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION "2.1c")
