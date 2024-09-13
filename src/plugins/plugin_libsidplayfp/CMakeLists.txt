@@ -7,6 +7,10 @@ set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
 
+if (CMAKE_COMPILER_IS_GNUCC)
+    add_compile_options(-mfpmath=sse -msse2) # not needed for 64bit (already set by default)
+endif ()
+
 set(LIB1_NAME "${NAME}")
 set(LIB1_VERSION ${PROJECT_VERSION})
 set(LIB1_NAME_VERSIONED "${LIB1_NAME}-${LIB1_VERSION}")
