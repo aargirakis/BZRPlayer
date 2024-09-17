@@ -18,10 +18,10 @@ set(LIB_VERSION "83cc8653e06cb4ba8c17b0c3e24b9cce4e461cfd")
 set(LIB_REVISION "r100") # original sourceforge svn revision number
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION} (${LIB_REVISION})")
 set(LIB_FILENAME "${LIB_NAME}-${LIB_VERSION}.zip")
-set(LIB_FILENAME2 "${LIB_VERSION}.zip")
+set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
 # since sourceforge (https://sourceforge.net/p/sc68/code/HEAD) doesn't provide a stable/permanent tarball url,
 # an (outdated) github mirror it is used here
-set(LIB_URL "https://github.com/Zeinok/${LIB_NAME}/archive/${LIB_FILENAME2}")
+set(LIB_URL "https://github.com/Zeinok/${LIB_NAME}/archive/${LIB_FILENAME_URL}")
 set(LIB_SHA_256_HASH "29c6eddc372624871c8b6ff63acaf4ef774ff248545c769d706c1bad036afda0")
 set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
 download_and_patch(

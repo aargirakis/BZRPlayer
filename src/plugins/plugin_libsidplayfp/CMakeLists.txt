@@ -58,8 +58,9 @@ configure_file(
 set(LIB2_NAME "sidid")
 set(LIB2_VERSION "eba761121a3f1239d7cc16b59a64140dc7d483ff")
 set(LIB2_NAME_VERSIONED "${LIB2_NAME}-${LIB2_VERSION}")
-set(LIB2_FILENAME "${LIB2_VERSION}.zip")
-set(LIB2_URL "https://github.com/cadaver/${LIB2_NAME}/archive/${LIB2_FILENAME}")
+set(LIB2_FILENAME "${LIB2_NAME}-${LIB2_VERSION}.zip")
+set(LIB2_FILENAME_URL "${LIB2_VERSION}.zip")
+set(LIB2_URL "https://github.com/cadaver/${LIB2_NAME}/archive/${LIB2_FILENAME_URL}")
 set(LIB2_SHA_256_HASH "2ae065ef4c58c8b12210fd6d9e8543ebdc272ccd9996ab963ef3b464bc4b0ddc")
 download_and_patch(
         ${LIB2_NAME} ${LIB2_NAME_VERSIONED} ${LIB2_FILENAME} ${LIB2_URL} ${LIB2_SHA_256_HASH} false ""

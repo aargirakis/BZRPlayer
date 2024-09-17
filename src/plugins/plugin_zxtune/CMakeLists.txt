@@ -11,8 +11,8 @@ set(LIB_NAME "${NAME}")
 set(LIB_VERSION "r4110")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
-set(LIB_FILENAME2 "${LIB_VERSION}.tar.gz")
-set(LIB_URL "https://github.com/vitamin-caig/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME2}")
+set(LIB_FILENAME_URL "${LIB_VERSION}.tar.gz")
+set(LIB_URL "https://github.com/vitamin-caig/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
 set(LIB_SHA_256_HASH "23239c1caddf2d3d0c30f0d4d02ba8aae5e4c122e1c523f3f7989f16c589a1fa")
 download_and_patch(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""

@@ -21,8 +21,8 @@ set(LIB_VERSION "6e96e16c30d7")
 set(LIB_COMMIT "${LIB_VERSION}94f8e739921da5b23f722dc53b2f")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
-set(LIB_FILENAME2 "${LIB_COMMIT}.zip")
-set(LIB_URL "https://bitbucket.org/wothke/uade-2.13/get/${LIB_FILENAME2}")
+set(LIB_FILENAME_URL "${LIB_COMMIT}.zip")
+set(LIB_URL "https://bitbucket.org/wothke/uade-2.13/get/${LIB_FILENAME_URL}")
 set(LIB_SHA_256_HASH "1f0df2bc7ecb93212ca9c6ca4e76e93c266858dc04233a8d343b90f7b191c0ba")
 download_and_patch(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""

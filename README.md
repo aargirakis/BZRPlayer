@@ -42,6 +42,12 @@ setting `BUILD_TYPE=Release` if needed.
 
 If you also want to run BZR2 after the build, then set `RUN_BZR2=1` (**wine** is required).
 
+### Offline mode:
+
+By default, the cmake configuration stage will download all needed libraries and files. Add `-DOFFLINE_MODE=1` to cmake
+command for switching to offline mode.\
+Offline mode doesn't guarantee that the build will include the latest versions of the files with unmanaged version
+
 ----
 
 Official page is http://bzrplayer.blazer.nu

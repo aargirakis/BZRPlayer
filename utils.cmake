@@ -48,17 +48,22 @@ endfunction()
 
 function(download_patch_and_make target_name target_name_versioned target_filename
         target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir make_args)
-    message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
+    if (OFFLINE_MODE EQUAL 1)
+        unpack_and_patch("${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename}" "${target_name_versioned}"
+                "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
+    else ()
+        message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
 
-    set(downloaded_file "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_filename}")
+        set(downloaded_file "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_filename}")
 
-    file(
-            DOWNLOAD ${target_url} ${downloaded_file}
-            EXPECTED_HASH SHA256=${sha_256_hash}
-    )
+        file(
+                DOWNLOAD ${target_url} ${downloaded_file}
+                EXPECTED_HASH SHA256=${sha_256_hash}
+        )
 
-    unpack_and_patch("${downloaded_file}" "${target_name_versioned}" "${unpack_to_parent_dir}" "${target_unpacked_dir}"
-            "${patches_dir}")
+        unpack_and_patch("${downloaded_file}" "${target_name_versioned}" "${unpack_to_parent_dir}"
+                "${target_unpacked_dir}" "${patches_dir}")
+    endif ()
 
     if (make_args)
         if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
@@ -105,16 +110,20 @@ function(download_and_patch target_name target_name_versioned target_filename ta
 endfunction()
 
 function(download_to target_filename target_url sha_256_hash destination_path)
-    message(STATUS "Downloading '${target_filename}' at '${target_url}' to '${destination_path}'")
-
-    if ("${sha_256_hash}" STREQUAL "")
-        file(
-                DOWNLOAD ${target_url} ${destination_path}/${target_filename}
-        )
+    if (OFFLINE_MODE EQUAL 1)
+        file(COPY ${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename} DESTINATION ${destination_path})
     else ()
-        file(
-                DOWNLOAD ${target_url} ${destination_path}/${target_filename}
-                EXPECTED_HASH SHA256=${sha_256_hash}
-        )
+        message(STATUS "Downloading '${target_filename}' at '${target_url}' to '${destination_path}'")
+
+        if ("${sha_256_hash}" STREQUAL "")
+            file(
+                    DOWNLOAD ${target_url} ${destination_path}/${target_filename}
+            )
+        else ()
+            file(
+                    DOWNLOAD ${target_url} ${destination_path}/${target_filename}
+                    EXPECTED_HASH SHA256=${sha_256_hash}
+            )
+        endif ()
     endif ()
 endfunction()

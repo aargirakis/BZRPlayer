@@ -10,8 +10,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION "${PROJECT_VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "v${LIB_VERSION}.zip")
-set(LIB_URL "https://github.com/mistydemeo/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME}")
+set(LIB_FILENAME "${LIB_NAME}-${LIB_VERSION}.zip")
+set(LIB_FILENAME_URL "v${LIB_VERSION}.zip")
+set(LIB_URL "https://github.com/mistydemeo/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
 set(LIB_SHA_256_HASH "5377613b212020d79c478a04b24ded9e9a2365c8271e48973eb3360b434d9e60")
 download_and_patch(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""

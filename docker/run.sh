@@ -28,6 +28,7 @@ cd \"$BUILD_DIR\" && i686-w64-mingw32-cmake \
 -DCMAKE_PREFIX_PATH=/usr/i686-w64-mingw32 \
 -DCMAKE_BUILD_TYPE=\"$BUILD_TYPE\" \
 -DCPACK_EXECUTABLE=/usr/bin/cpack \
+-DOFFLINE_MODE=\"$OFFLINE_MODE\" \
 -G Ninja .. && ninja'"
 
   docker run --rm -v "$PROJECT_DIR:$PROJECT_DIR" --name "$CONTAINER_NAME" \

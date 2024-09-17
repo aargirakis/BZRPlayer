@@ -13,8 +13,8 @@ set(LIB_NAME "${NAME}")
 set(LIB_VERSION "${PROJECT_VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
-set(LIB_FILENAME2 "${LIB_VERSION}.zip")
-set(LIB_URL "https://github.com/vgmrips/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME2}")
+set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
+set(LIB_URL "https://github.com/vgmrips/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
 set(LIB_SHA_256_HASH "d660297110a90f04be034adc9ca8a374b000652d11690aa6813c526d7b067609")
 download_and_patch(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
