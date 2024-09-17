@@ -23,7 +23,7 @@ set(FILENAME "timedb.inc.h")
 #TODO https://sourceforge.net/p/sc68/code/710/tree/file68/src/timedb.inc.h?format=raw better using the versioned url?
 set(FILE_URL "https://sourceforge.net/p/sc68/code/HEAD/tree/file68/src/${FILENAME}?format=raw")
 set(DESTINATION_PATH "${EXTERNAL_SOURCE_DIR}")
-download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH})
+download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH} true "")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/AtariAudio/*.cpp

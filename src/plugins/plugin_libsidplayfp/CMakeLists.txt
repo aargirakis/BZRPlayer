@@ -85,7 +85,7 @@ set(EXTERNAL_SOURCE_DIR_3 "${EXTERNAL_SOURCE_DIR}")
 set(FILENAME "Songlengths.md5")
 set(FILE_URL "https://www.hvsc.c64.org/download/C64Music/DOCUMENTS/${FILENAME}")
 set(DESTINATION_PATH "${OUTPUT_DIR_PARENT}/user/plugin/sid")
-download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH})
+download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH} true "")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_1}/src/*.cpp

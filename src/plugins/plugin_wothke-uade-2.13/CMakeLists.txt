@@ -37,7 +37,7 @@ add_compile_definitions(_UADE_STRSEP_H_) #TODO needed?
 set(FILENAME "uade.md5")
 set(FILE_URL "http://bzrplayer.blazer.nu/${FILENAME}")
 set(DESTINATION_PATH "${OUTPUT_DIR_PARENT}${uade_data_path}")
-download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH})
+download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH} true "")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/compat/memmemrep.c

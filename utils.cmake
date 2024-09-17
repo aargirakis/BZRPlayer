@@ -4,6 +4,39 @@ include(ExternalProject)
 
 set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
 
+function(download_to target_filename target_url sha_256_hash
+        destination_path display_destination_path target_name_versioned)
+    if (OFFLINE_MODE EQUAL 1)
+        file(COPY ${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename} DESTINATION ${destination_path})
+    else ()
+        if (NOT target_name_versioned)
+            set(target_name_versioned "${target_filename}")
+        endif ()
+
+        if (display_destination_path)
+            message(STATUS "Downloading '${target_name_versioned}' at '${target_url}' to '${destination_path}'")
+        else ()
+            message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
+        endif ()
+
+        if ("${sha_256_hash}" STREQUAL "")
+            file(DOWNLOAD ${target_url} ${destination_path}/${target_filename} STATUS status)
+        else ()
+            file(
+                    DOWNLOAD ${target_url} ${destination_path}/${target_filename}
+                    EXPECTED_HASH SHA256=${sha_256_hash} STATUS status
+            )
+        endif ()
+
+        list(GET status 0 status_code)
+        list(GET status 1 error_message)
+
+        if (NOT status_code EQUAL 0)
+            message(FATAL_ERROR "Error downloading '${target_url}': ${error_message}")
+        endif ()
+    endif ()
+endfunction()
+
 function(unpack file_to_unpack unpack_to unpack_to_parent_dir)
     if (NOT unpack_to_parent_dir)
         set(unpack_to ${unpack_to}/..)
@@ -52,17 +85,10 @@ function(download_patch_and_make target_name target_name_versioned target_filena
         unpack_and_patch("${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename}" "${target_name_versioned}"
                 "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
     else ()
-        message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
-
-        set(downloaded_file "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_filename}")
-
-        file(
-                DOWNLOAD ${target_url} ${downloaded_file}
-                EXPECTED_HASH SHA256=${sha_256_hash}
-        )
-
-        unpack_and_patch("${downloaded_file}" "${target_name_versioned}" "${unpack_to_parent_dir}"
-                "${target_unpacked_dir}" "${patches_dir}")
+        download_to("${target_filename}" "${target_url}" "${sha_256_hash}" "${DEPENDENCIES_DIR}/${target_name_versioned}"
+                false "${target_name_versioned}")
+        unpack_and_patch("${DEPENDENCIES_DIR}/${target_name_versioned}/${target_filename}" "${target_name_versioned}"
+                "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
     endif ()
 
     if (make_args)
@@ -107,23 +133,4 @@ function(download_and_patch target_name target_name_versioned target_filename ta
     )
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
-endfunction()
-
-function(download_to target_filename target_url sha_256_hash destination_path)
-    if (OFFLINE_MODE EQUAL 1)
-        file(COPY ${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename} DESTINATION ${destination_path})
-    else ()
-        message(STATUS "Downloading '${target_filename}' at '${target_url}' to '${destination_path}'")
-
-        if ("${sha_256_hash}" STREQUAL "")
-            file(
-                    DOWNLOAD ${target_url} ${destination_path}/${target_filename}
-            )
-        else ()
-            file(
-                    DOWNLOAD ${target_url} ${destination_path}/${target_filename}
-                    EXPECTED_HASH SHA256=${sha_256_hash}
-            )
-        endif ()
-    endif ()
 endfunction()
