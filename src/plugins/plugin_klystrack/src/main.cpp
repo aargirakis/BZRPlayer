@@ -135,24 +135,22 @@ FMOD_RESULT F_CALLBACK klystronopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode,
     codec->numsubsounds = 0;                    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata   = klystron;                    /* user data value */
 
-//    klystron->songinfo = new KSongInfo();
-//    KSND_GetSongInfo(klystron->song,klystron->songinfo);
+    klystron->songinfo = new KSongInfo();
+    KSND_GetSongInfo(klystron->song,klystron->songinfo);
 
-//    info->title = klystron->songinfo->song_title;
-//    info->numInstruments = klystron->songinfo->n_instruments;
-//    info->numChannels = klystron->songinfo->n_channels;
-//    info->numPatterns = numPatternRows;
-//    cout << "2\n";
-//    flush(cout);
+    info->title = klystron->songinfo->song_title;
+    info->numInstruments = klystron->songinfo->n_instruments;
+    info->numChannels = klystron->songinfo->n_channels;
+    info->numPatterns = numPatternRows;
 
-//    if(info->numInstruments>0)
-//    {
-//        info->instruments = new string[info->numInstruments];
-//        for(int j = 0; j<info->numInstruments; j++)
-//        {
-//            info->instruments[j] = klystron->songinfo->instrument_name[j];
-//        }
-//    }
+    if(info->numInstruments>0)
+    {
+        info->instruments = new string[info->numInstruments];
+        for(int j = 0; j<info->numInstruments; j++)
+        {
+            info->instruments[j] = klystron->songinfo->instrument_name[j];
+        }
+    }
 
     KSND_PlaySong(klystron->player, klystron->song, 0);
 
