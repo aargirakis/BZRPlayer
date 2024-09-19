@@ -31,7 +31,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_hivelytracker "src/plugins/plugin_hivelytracker"
         plugin_jaytrax "src/plugins/plugin_jaytrax"
         plugin_kdm "src/plugins/plugin_kdm"
-        plugin_klystrack "src/plugins/plugin_klystrack"                      #TODO never worked
+        plugin_klystrack "src/plugins/plugin_klystrack"                      #TODO reimplement
         plugin_libfc14audiodecoder "src/plugins/plugin_libfc14audiodecoder"
         plugin_libopenmpt "src/plugins/plugin_libopenmpt"
         plugin_libpac "src/plugins/plugin_libpac"
