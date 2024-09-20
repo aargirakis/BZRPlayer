@@ -61,6 +61,10 @@
 #define PLUGIN_klystron_NAME "@PLUGIN_klystron_NAME@"
 #define PLUGIN_klystron_VERSION "@PLUGIN_klystron_VERSION@"
 
+#define PLUGIN_lazyusf2_DLL "@PLUGIN_lazyusf2_DLL@"
+#define PLUGIN_lazyusf2_NAME "@PLUGIN_lazyusf2_NAME@"
+#define PLUGIN_lazyusf2_VERSION "@PLUGIN_lazyusf2_VERSION@"
+
 #define PLUGIN_libfc14audiodecoder_DLL "@PLUGIN_libfc14audiodecoder_DLL@"
 #define PLUGIN_libfc14audiodecoder_NAME "@PLUGIN_libfc14audiodecoder_NAME@"
 #define PLUGIN_libfc14audiodecoder_VERSION "@PLUGIN_libfc14audiodecoder_VERSION@"

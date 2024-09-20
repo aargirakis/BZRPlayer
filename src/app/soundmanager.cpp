@@ -51,9 +51,10 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_highly_theoretical_DLL, 1);
     }
-
-    //loadPlugin("plugin_lazyusf",1);
-
+    if (PLUGIN_lazyusf2_DLL != "")
+    {
+        loadPlugin(PLUGIN_lazyusf2_DLL, 1);
+    }
     if (PLUGIN_highly_quixotic_DLL != "")
     {
         loadPlugin(PLUGIN_highly_quixotic_DLL, 1);

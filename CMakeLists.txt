@@ -32,6 +32,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_jaytrax "src/plugins/plugin_jaytrax"
         plugin_kdm "src/plugins/plugin_kdm"
         plugin_klystron "src/plugins/plugin_klystron"
+        plugin_lazyusf2 "src/plugins/plugin_lazyusf2"
         plugin_libfc14audiodecoder "src/plugins/plugin_libfc14audiodecoder"
         plugin_libopenmpt "src/plugins/plugin_libopenmpt"
         plugin_libpac "src/plugins/plugin_libpac"
