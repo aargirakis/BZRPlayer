@@ -1,10 +1,17 @@
 # BZR Player 2
 
-BZR Player 2 is an audio player for Windows with the primary goal being able to play a lot of different file formats.\
+BZR Player 2 (BZR2) is an audio player for Windows with the primary goal being able to play a lot of different file
+formats.\
 It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008.\
 The last 1.x version was released 2019-Apr-08.\
 This is the beginning of the new 2.x version which is coded pretty much from scratch.\
-Please add features and bugs here on GitHub.
+
+## Download binaries
+
+- Latest version: http://bzrplayer.blazer.nu/download.php
+- All versions archive: https://github.com/aargirakis/BZRPlayer/tree/binaries/binaries
+- Windows & Linux installers: https://github.com/aargirakis/BZRPlayer/blob/cmake/src/inst
+- AUR package: `bzr-player` https://aur.archlinux.org/packages/bzr-player
 
 ## How To Build
 
@@ -41,13 +48,36 @@ cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja .. && nin
 Dockerized cross-compilation toolchain is provided: just execute `run.sh` from the **docker** directory, eventually
 setting `BUILD_TYPE=Release` if needed.
 
-If you also want to run BZR2 after the build, then set `RUN_BZR2=1` (**wine** is required).
+If you also want to run BZR2 after the build, then set `RUN_BZR2=1` (**Wine** is required).
 
 ### Offline mode:
 
 By default, the cmake configuration stage will download all needed libraries and files. Add `-DOFFLINE_MODE=1` to cmake
 command for switching to offline mode.\
 Offline mode doesn't guarantee that the build will include the latest versions of the files with unmanaged version
+
+### Windows installer:
+
+Although the **BZR2 online installer for Windows** is scripted in **Nullsoft Scriptable Install System (NSIS)**, it can
+be only compiled using **WSL2** or cross-compiled on Linux since it contains Linux specific code (mostly the bash script
+for the XDG MIME types handling), also **MSYS2** it is currently not viable since **NSIS** package is broken and the
+required **NSIS** plugins are missing.
+
+**NSIS** (3.10 or newer) with following plugins (check AUR entries) is required:
+
+- [AccessControl](https://nsis.sourceforge.io/AccessControl_plug-in) `nsis-accesscontrol-bin`
+- [Inetc](https://nsis.sourceforge.io/Inetc_plug-in) `nsis-inetc-bin`
+- [NsArray](https://nsis.sourceforge.io/Arrays_in_NSIS) `nsis-nsarray-bin`
+- [Nsisunz](https://nsis.sourceforge.io/Nsisunz_plug-in) `nsis-nsisunz-bin`
+- [NsJSON](https://nsis.sourceforge.io/NsJSON_plug-in) `nsis-nsjson-bin`
+- [NsRichEdit](https://nsis.sourceforge.io/NsRichEdit_plug-in) `nsis-nsrichedit-bin`
+- [Registry](https://nsis.sourceforge.io/Registry_plug-in) `nsis-registry-bin`
+
+In order to build the Windows installer enter `src/inst/nsis` directory then execute: `makensis bzr2_setup.nsi`\
+As result of the building process (the Wine compatible) `bzr2_setup.exe` will be generated in the same directory.\
+Since it is a self-updating installer, the latest installer version check is done at runtime (based on
+`bzr2_setup.exe_latest` file content generated at compile-time).\
+It may be useful to disable it (for dev/test purposes) executing: `bzr2_setup.exe /skipInstallerUpdate2`
 
 ----
 
