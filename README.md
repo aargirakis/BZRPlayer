@@ -1,10 +1,9 @@
-# BZR Player 2
+# BZR Player 2 (BZR2)
 
-BZR Player 2 (BZR2) is an audio player for Windows with the primary goal being able to play a lot of different file
-formats.\
-It is developed in C++ and QT. The sound engine is based on FMOD. The first version was released 12-Apr-2008.\
-The last 1.x version was released 2019-Apr-08.\
-This is the beginning of the new 2.x version which is coded pretty much from scratch.\
+Audio player for **Windows** (**Wine** compatible) supporting a wide types of multi-platform **exotic** file formats,
+written in **C++** & **Qt5** with sound engine based on **FMOD**.\
+The first BZR version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version which is
+coded pretty much from scratch.
 
 ## Download binaries
 
@@ -81,7 +80,11 @@ It may be useful to disable it (for dev/test purposes) executing: `bzr2_setup.ex
 
 ----
 
-Official page is http://bzrplayer.blazer.nu
+Useful links:
+
+- [BZR2 website](http://bzrplayer.blazer.nu)
+- [Patreon](https://www.patreon.com/bzrplayer)
+- [Discord](https://discord.com/channels/893241318120239124/893241440174477382)
 
 ![bzr2 0 27](https://user-images.githubusercontent.com/10993634/201359947-2633341d-9ff6-4a59-bb9e-ce1794df9cba.png)
 
