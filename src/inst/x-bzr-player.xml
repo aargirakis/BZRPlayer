@@ -182,7 +182,7 @@
         <glob pattern="fp.*"/>
         <glob pattern="*.fp"/>
     </mime-type>
-    <mime-type type="audio/x-furnace">
+    <mime-type type="audio/x-fur">
         <comment>Furnace audio</comment>
         <generic-icon name="audio-x-generic"/>
         <magic>
