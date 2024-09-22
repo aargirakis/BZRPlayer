@@ -119,5 +119,6 @@ endif ()
 
 #TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR})
 #TODO too many baserow.h/baserow.cpp
-#TODO manage plugin names/versions in settingswindow.cpp
 #TODO redundant queue.h & queue.c should be treated as external dependency like src/external/psflib
+#TODO dynamic sorting of ui->tableWidgetPlugins entries in settingswindow.cpp
+#TODO centralize all info->plugin hardcoded values (like "uade" or "libsidplayfp") with plugins.h defines (check where they are referred in the code)

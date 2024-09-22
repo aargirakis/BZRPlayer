@@ -27,60 +27,150 @@ void SoundManager::Init(int device, QString outputfilename)
 
     }
 
-    loadPlugin(PLUGIN_DLL_klystron,99999);
+    if (PLUGIN_klystron_DLL != "")
+    {
+        loadPlugin(PLUGIN_klystron_DLL, 99999);
+    }
+    if (PLUGIN_libsidplayfp_DLL != "")
+    {
+        loadPlugin(PLUGIN_libsidplayfp_DLL, 0);
+    }
+    if (PLUGIN_libfc14audiodecoder_DLL != "")
+    {
+        loadPlugin(PLUGIN_libfc14audiodecoder_DLL, 0);
+    }
+    if (PLUGIN_libopenmpt_DLL != "")
+    {
+        loadPlugin(PLUGIN_libopenmpt_DLL, 0);
+    }
+    if (PLUGIN_highly_experimental_DLL != "")
+    {
+        loadPlugin(PLUGIN_highly_experimental_DLL, 1);
+    }
+    if (PLUGIN_highly_theoretical_DLL != "")
+    {
+        loadPlugin(PLUGIN_highly_theoretical_DLL, 1);
+    }
 
-    loadPlugin(PLUGIN_DLL_libsidplayfp,0);
-    loadPlugin(PLUGIN_DLL_libfc14audiodecoder,0);
-    loadPlugin(PLUGIN_DLL_libopenmpt,0);
-    loadPlugin(PLUGIN_DLL_highly_experimental,1);
-    loadPlugin(PLUGIN_DLL_highly_theoretical,1);
     //loadPlugin("plugin_lazyusf",1);
-    loadPlugin(PLUGIN_DLL_highly_quixotic,1);
-    loadPlugin(PLUGIN_DLL_vio2sf,1);
-    loadPlugin(PLUGIN_DLL_protrekkr,1);
 
-    loadPlugin(PLUGIN_DLL_hivelytracker,1);
-    loadPlugin(PLUGIN_DLL_libstsound,1);
-    loadPlugin(PLUGIN_DLL_flod,1);
+    if (PLUGIN_highly_quixotic_DLL != "")
+    {
+        loadPlugin(PLUGIN_highly_quixotic_DLL, 1);
+    }
+    if (PLUGIN_vio2sf_DLL != "")
+    {
+        loadPlugin(PLUGIN_vio2sf_DLL, 1);
+    }
+    if (PLUGIN_protrekkr_DLL != "")
+    {
+        loadPlugin(PLUGIN_protrekkr_DLL, 1);
+    }
+    if (PLUGIN_hivelytracker_DLL != "")
+    {
+        loadPlugin(PLUGIN_hivelytracker_DLL, 1);
+    }
+    if (PLUGIN_libstsound_DLL != "")
+    {
+        loadPlugin(PLUGIN_libstsound_DLL, 1);
+    }
+    if (PLUGIN_flod_DLL != "")
+    {
+        loadPlugin(PLUGIN_flod_DLL, 1);
+    }
+    if (PLUGIN_sndh_player_DLL != "")
+    {
+        loadPlugin(PLUGIN_sndh_player_DLL, 1);
+    }
+    if (PLUGIN_furnace_DLL != "")
+    {
+        loadPlugin(PLUGIN_furnace_DLL, 1);
+    }
+    if (PLUGIN_wothke_uade_2_13_DLL != "")
+    {
+        loadPlugin(PLUGIN_wothke_uade_2_13_DLL, 1);
+    }
 
-    loadPlugin(PLUGIN_DLL_sndh_player,1);
-    loadPlugin(PLUGIN_DLL_furnace,1);
-    loadPlugin(PLUGIN_DLL_wothke_uade_2_13,1);
     //loadPlugin("plugin_quartet.dll",1);
 
+    if (PLUGIN_faad2_DLL != "")
+    {
+        loadPlugin(PLUGIN_faad2_DLL, 99999);
+    }
+    if (PLUGIN_mdxmini_DLL != "")
+    {
+        loadPlugin(PLUGIN_mdxmini_DLL, 99999);
+    }
+    if (PLUGIN_zxtune_DLL != "")
+    {
+        loadPlugin(PLUGIN_zxtune_DLL, 99999);
+    }
+    if (PLUGIN_vgmplay_legacy_DLL != "")
+    {
+        loadPlugin(PLUGIN_vgmplay_legacy_DLL, 99999);
+    }
+    if (PLUGIN_game_music_emu_DLL != "")
+    {
+        loadPlugin(PLUGIN_game_music_emu_DLL, 99999);
+    }
+    if (PLUGIN_asap_DLL != "")
+    {
+        loadPlugin(PLUGIN_asap_DLL, 99999);
+    }
 
+    if (PLUGIN_organya_decoder_DLL != "")
+    {
+        loadPlugin(PLUGIN_organya_decoder_DLL, 99999);
+    }
+    if (PLUGIN_sunvox_DLL != "")
+    {
+        loadPlugin(PLUGIN_sunvox_DLL, 99999);
+    }
+    if (PLUGIN_audiofile_DLL != "")
+    {
+        loadPlugin(PLUGIN_audiofile_DLL, 99999);
+    }
+    if (PLUGIN_sc68_DLL != "")
+    {
+        loadPlugin(PLUGIN_sc68_DLL, 99999);
+    }
+    if (PLUGIN_tunes98_plug_DLL != "")
+    {
+        loadPlugin(PLUGIN_tunes98_plug_DLL, 99999);
+    }
+    if (PLUGIN_kdm_DLL != "")
+    {
+        loadPlugin(PLUGIN_kdm_DLL, 99999);
+    }
+    if (PLUGIN_libpac_DLL != "")
+    {
+        loadPlugin(PLUGIN_libpac_DLL, 99999);
+    }
 
-
-
-    loadPlugin(PLUGIN_DLL_faad2,99999);
-
-
-    loadPlugin(PLUGIN_DLL_mdxmini,99999);
-    loadPlugin(PLUGIN_DLL_zxtune,99999);
-    loadPlugin(PLUGIN_DLL_vgmplay_legacy,99999);
-    loadPlugin(PLUGIN_DLL_game_music_emu,99999);
-
-
-    loadPlugin(PLUGIN_DLL_asap,99999);
-    loadPlugin(PLUGIN_DLL_organya_decoder,99999);
-    loadPlugin(PLUGIN_DLL_sunvox,99999);
-
-    loadPlugin(PLUGIN_DLL_audiofile,99999);
-    loadPlugin(PLUGIN_DLL_sc68,99999);
-    loadPlugin(PLUGIN_DLL_tunes98_plug,99999);
-    loadPlugin(PLUGIN_DLL_kdm,99999);
-
-    loadPlugin(PLUGIN_DLL_libpac,99999);
-
-
-
-    loadPlugin(PLUGIN_DLL_libxmp,99999);
-    loadPlugin(PLUGIN_DLL_adplug,99999);
-    loadPlugin(PLUGIN_DLL_vgmstream,99999);
-    loadPlugin(PLUGIN_DLL_audiodecoder_wsr,99999);
-    loadPlugin(PLUGIN_DLL_v2m_player,99999);
-    loadPlugin(PLUGIN_DLL_jaytrax,99999);
-
+    if (PLUGIN_libxmp_DLL != "")
+    {
+        loadPlugin(PLUGIN_libxmp_DLL, 99999);
+    }
+    if (PLUGIN_adplug_DLL != "")
+    {
+        loadPlugin(PLUGIN_adplug_DLL, 99999);
+    }
+    if (PLUGIN_vgmstream_DLL != "")
+    {
+        loadPlugin(PLUGIN_vgmstream_DLL, 99999);
+    }
+    if (PLUGIN_audiodecoder_wsr_DLL != "")
+    {
+        loadPlugin(PLUGIN_audiodecoder_wsr_DLL, 99999);
+    }
+    if (PLUGIN_v2m_player_DLL != "")
+    {
+        loadPlugin(PLUGIN_v2m_player_DLL, 99999);
+    }
+    if (PLUGIN_jaytrax_DLL != "")
+    {
+        loadPlugin(PLUGIN_jaytrax_DLL, 99999);
+    }
 
     //loadPlugin("plugin_wavpack.dll",99999);
 

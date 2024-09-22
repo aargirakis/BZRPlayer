@@ -90,7 +90,7 @@ Useful links:
 
 ----
 
-## SUPPORTED FORMATS
+## SUPPORTED FORMATS (#TODO wrong & incomplete)
 
 ### Using Libsidplayfp
 

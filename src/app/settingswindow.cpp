@@ -10,6 +10,7 @@
 #include "various.h"
 #include <QDebug>
 #include <QFontDatabase>
+#include "plugins.h"
 
 settingsWindow::settingsWindow(QWidget *parent) :
     QDialog(parent),
@@ -286,106 +287,142 @@ settingsWindow::settingsWindow(QWidget *parent) :
     ui->tableWidgetPlugins->setRowCount(40);
     int row=0;
 
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2.3.3"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("AdPlug"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("5.2.0"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("ASAP"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.3.6"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("Audio File Library"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2.10.0"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("FAAD2"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("4.0"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("FLOD"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.6.3"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("Furnace"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.6.3"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("game-music-emu"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2014-02-28"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("Highly Experimental"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2022-01-31"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("Highly Quixotic"));
-
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2016-07-24"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("Highly Theoretical"));
-
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("1.9"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("hivelytracker"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2021-12-25"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("Jaytrax"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem(""));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("kdm"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem(""));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("klystron"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("1.0.3"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("libfc14audiodecoder"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.7.6"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("libopenmpt"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.9.0"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("libpac"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2.7.1"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("libsidplayfp"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem(""));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("LibV2"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("4.5.0"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("libxmp"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2.0"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("mdxmini"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem(""));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("org"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2.6.4"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("ProTrekkr"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem(""));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("s98"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2.2.1"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("sc68"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.7.4"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("SNDH-Player"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2.0"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("St-Sound"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("WebUADE 2.13"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("UADE"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("2017-08-12"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("vio2sf"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("0.40.9"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("VGMPlay"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("r1831"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("vgmstream"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem(""));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("wsr"));
-
-    ui->tableWidgetPlugins->setItem(row,1,new QTableWidgetItem("r4110"));
-    ui->tableWidgetPlugins->setItem(row++,0,new QTableWidgetItem("ZXTune"));
+    if (PLUGIN_adplug_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_adplug_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_adplug_NAME));
+    }
+    if (PLUGIN_asap_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_asap_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_asap_NAME));
+    }
+    if (PLUGIN_audiodecoder_wsr_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_audiodecoder_wsr_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_audiodecoder_wsr_NAME));
+    }
+    if (PLUGIN_audiofile_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_audiofile_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_audiofile_NAME));
+    }
+    if (PLUGIN_faad2_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_faad2_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_faad2_NAME));
+    }
+    if (PLUGIN_flod_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_flod_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_flod_NAME));
+    }
+    if (PLUGIN_furnace_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_furnace_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_furnace_NAME));
+    }
+    if (PLUGIN_game_music_emu_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_game_music_emu_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_game_music_emu_NAME));
+    }
+    if (PLUGIN_highly_experimental_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_highly_experimental_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_highly_experimental_NAME));
+    }
+    if (PLUGIN_highly_quixotic_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_highly_quixotic_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_highly_quixotic_NAME));
+    }
+    if (PLUGIN_highly_theoretical_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_highly_theoretical_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_highly_theoretical_NAME));
+    }
+    if (PLUGIN_hivelytracker_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_hivelytracker_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_hivelytracker_NAME));
+    }
+    if (PLUGIN_jaytrax_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_jaytrax_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_jaytrax_NAME));
+    }
+    if (PLUGIN_kdm_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_kdm_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_kdm_NAME));
+    }
+    if (PLUGIN_klystron_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_klystron_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_klystron_NAME));
+    }
+    if (PLUGIN_libfc14audiodecoder_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libfc14audiodecoder_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libfc14audiodecoder_NAME));
+    }
+    if (PLUGIN_libopenmpt_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libopenmpt_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libopenmpt_NAME));
+    }
+    if (PLUGIN_libpac_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libpac_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libpac_NAME));
+    }
+    if (PLUGIN_libsidplayfp_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libsidplayfp_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libsidplayfp_NAME));
+    }
+    if (PLUGIN_libstsound_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libstsound_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libstsound_NAME));
+    }
+    if (PLUGIN_libxmp_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libxmp_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libxmp_NAME));
+    }
+    if (PLUGIN_mdxmini_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_mdxmini_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_mdxmini_NAME));
+    }
+    if (PLUGIN_organya_decoder_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_organya_decoder_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_organya_decoder_NAME));
+    }
+    if (PLUGIN_protrekkr_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_protrekkr_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_protrekkr_NAME));
+    }
+    if (PLUGIN_sc68_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_sc68_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_sc68_NAME));
+    }
+    if (PLUGIN_sndh_player_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_sndh_player_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_sndh_player_NAME));
+    }
+    if (PLUGIN_sunvox_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_sunvox_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_sunvox_NAME));
+    }
+    if (PLUGIN_tunes98_plug_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_tunes98_plug_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_tunes98_plug_NAME));
+    }
+    if (PLUGIN_v2m_player_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_v2m_player_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_v2m_player_NAME));
+    }
+    if (PLUGIN_vgmplay_legacy_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vgmplay_legacy_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vgmplay_legacy_NAME));
+    }
+    if (PLUGIN_vgmstream_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vgmstream_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vgmstream_NAME));
+    }
+    if (PLUGIN_vio2sf_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vio2sf_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vio2sf_NAME));
+    }
+    if (PLUGIN_wothke_uade_2_13_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_wothke_uade_2_13_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_wothke_uade_2_13_NAME));
+    }
+    if (PLUGIN_zxtune_DLL != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_zxtune_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_zxtune_NAME));
+    }
 
     QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getSIDSongLengthDownloaded());
     if(mainWindow->getSIDSongLengthDownloaded()>0)
@@ -991,19 +1028,19 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item)
 {
     int row =item->row();
 
-    if(ui->tableWidgetPlugins->item(row,0)->text()=="libsidplayfp")
+    if(ui->tableWidgetPlugins->item(row,0)->text()==PLUGIN_libsidplayfp_NAME)
     {
         ui->groupBoxLibsid->setHidden(false);
         ui->groupBoxUADE->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
     }
-    else if(ui->tableWidgetPlugins->item(row,0)->text()=="UADE")
+    else if(ui->tableWidgetPlugins->item(row,0)->text()==PLUGIN_wothke_uade_2_13_NAME)
     {
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxUADE->setHidden(false);
     }
-    else if(ui->tableWidgetPlugins->item(row,0)->text()=="libopenmpt")
+    else if(ui->tableWidgetPlugins->item(row,0)->text()==PLUGIN_libopenmpt_NAME)
     {
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(false);

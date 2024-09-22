@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "sunvox")
+set(VERSION "2.1c")
 project(plugin_${NAME})
-set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_NAME "SunVox" PARENT_SCOPE)
+set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(LIB_NAME "${NAME}")
-set(LIB_VERSION "2.1c")
+set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME}_lib-${LIB_VERSION}.zip")
 set(LIB_URL "https://web.archive.org/web/20230329102810/https://warmplace.ru/soft/${LIB_NAME}/${LIB_FILENAME}")

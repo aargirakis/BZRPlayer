@@ -144,7 +144,7 @@ FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, F
         codec->plugindata   = sunvox;                    /* user data value */
 
 
-        info->plugin = "SunVox ";
+        info->plugin = "SunVox";
         info->title = sv_get_song_name(0);
         info->setSeekable(false);
         sv_play_from_beginning(0);

@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "tunes98_plug")
-project(plugin_${NAME} VERSION "1.2")
-set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(VERSION "1.2")
+project(plugin_${NAME})
+set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_NAME "TN_S98.tnplug" PARENT_SCOPE)
+set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
@@ -19,7 +22,7 @@ endif ()
 #TODO check if file format infos are already loaded into fc->s98 instead of doing a manual detection in main.cpp)
 
 set(LIB_NAME "${NAME}")
-set(LIB_VERSION ${PROJECT_VERSION})
+set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME}.lha")
 set(LIB_URL "https://www.a500.org/downloads/audio/tunenet/${LIB_FILENAME}")

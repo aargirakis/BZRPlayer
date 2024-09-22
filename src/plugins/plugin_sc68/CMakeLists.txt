@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "sc68")
+set(VERSION "83cc8653e06cb4ba8c17b0c3e24b9cce4e461cfd")
+string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
+set(REVISION "r100") # original sourceforge svn revision number
 project(plugin_${NAME})
-set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
+set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT} (${REVISION})" PARENT_SCOPE)
 
 find_package(ZLIB REQUIRED)
 
@@ -14,9 +19,9 @@ if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
 endif ()
 
 set(LIB_NAME "${NAME}")
-set(LIB_VERSION "83cc8653e06cb4ba8c17b0c3e24b9cce4e461cfd")
-set(LIB_REVISION "r100") # original sourceforge svn revision number
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION} (${LIB_REVISION})")
+set(LIB_VERSION "${VERSION}")
+set(LIB_VERSION_SHORT "${VERSION_SHORT}")
+set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION_SHORT} (${REVISION})")
 set(LIB_FILENAME "${LIB_NAME}-${LIB_VERSION}.zip")
 set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
 # since sourceforge (https://sourceforge.net/p/sc68/code/HEAD) doesn't provide a stable/permanent tarball url,

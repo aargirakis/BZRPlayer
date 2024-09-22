@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libfc14audiodecoder")
-project(plugin_${NAME} VERSION "1.0.3")
-set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(VERSION "1.0.3")
+project(plugin_${NAME})
+        set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+        set(PLUGIN_${NAME}_NAME "libfc14audiodecoder" PARENT_SCOPE)
+        set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(LIB_NAME "${NAME}")
-set(LIB_VERSION ${PROJECT_VERSION})
+set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.bz2")
 set(LIB_URL "https://src.fedoraproject.org/repo/pkgs/${LIB_NAME}/${LIB_FILENAME}/4df18b3f7eac9ec4ff8e53f7c9a017c3/${LIB_FILENAME}")

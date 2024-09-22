@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "organya-decoder")
-project(plugin_${NAME} VERSION "1.11")
-set(PLUGIN_DLL_${NAME} "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(VERSION "1.11")
+project(plugin_${NAME})
+set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_NAME "Organya decoder" PARENT_SCOPE)
+set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(LIB_NAME "${NAME}")
-set(LIB_VERSION ${PROJECT_VERSION})
+set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_UNPACKED_DIR "losnoco-foo_input_org-d713df1b6c8a")
 set(LIB_FILENAME "${LIB_UNPACKED_DIR}.zip")
