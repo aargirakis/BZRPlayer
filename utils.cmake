@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 include(ExternalProject)
+include(ProcessorCount)
 
 set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
 
@@ -101,7 +102,14 @@ function(download_patch_and_make target_name target_name_versioned target_filena
             set(make_command make)
         endif ()
 
-        set(make_command ${make_command} -j -l10 ${make_args}) #TODO -j -l10?
+        ProcessorCount(N)
+        if (N EQUAL 0)
+            set(N "")
+        else ()
+            math(EXPR N "${N}-1")
+        endif ()
+
+        set(make_command ${make_command} -j${N} ${make_args})
     endif ()
 
     ExternalProject_Add(  #TODO add update step & patch step with ExternalProject_Add
