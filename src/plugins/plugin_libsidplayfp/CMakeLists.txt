@@ -84,7 +84,7 @@ set(EXTERNAL_SOURCE_DIR_3 "${EXTERNAL_SOURCE_DIR}")
 
 set(FILENAME "Songlengths.md5")
 set(FILE_URL "https://www.hvsc.c64.org/download/C64Music/DOCUMENTS/${FILENAME}")
-set(DESTINATION_PATH "${OUTPUT_DIR_PARENT}/user/plugin/sid")
+set(DESTINATION_PATH "${OUTPUT_DIR}/user/plugin/sid")
 download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH} true "")
 
 file(GLOB SOURCES
@@ -131,7 +131,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         SUFFIX ".dll"
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR_PARENT}/data/plugin
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
 )
@@ -139,19 +139,19 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_2}/sidid.cfg
-        ${OUTPUT_DIR_PARENT}/data/plugin/sid/sidid.cfg
+        ${OUTPUT_DIR}/data/plugin/sid/sidid.cfg
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_3}/data/C64/basic-901226-01.bin
-        ${OUTPUT_DIR_PARENT}/data/plugin/sid/basic.bin
+        ${OUTPUT_DIR}/data/plugin/sid/basic.bin
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_3}/data/C64/chargen-901225-01.bin
-        ${OUTPUT_DIR_PARENT}/data/plugin/sid/characters.bin
+        ${OUTPUT_DIR}/data/plugin/sid/characters.bin
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_3}/data/C64/kernal-901227-03.bin
-        ${OUTPUT_DIR_PARENT}/data/plugin/sid/kernal.bin
+        ${OUTPUT_DIR}/data/plugin/sid/kernal.bin
 
         VERBATIM
 )

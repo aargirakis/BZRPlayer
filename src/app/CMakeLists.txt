@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(app VERSION "${PROJECT_VERSION_PARENT}")
+project(app VERSION "${BZR2_VERSION}")
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
@@ -62,7 +62,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "BZRPlayer"
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR_PARENT}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
         WIN32_EXECUTABLE true
@@ -112,7 +112,7 @@ foreach (DLL ${RUNTIME_DLLS})
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${DLL}"
-            ${OUTPUT_DIR_PARENT}
+            ${OUTPUT_DIR}
             VERBATIM
     )
 endforeach ()
@@ -126,32 +126,32 @@ else ()
 endif ()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR_PARENT}/platforms"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR}/platforms"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${QT_PLATFORMS_DIR}/qwindows.dll"
-        "${OUTPUT_DIR_PARENT}/platforms"
+        "${OUTPUT_DIR}/platforms"
         VERBATIM
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_SOURCE_DIR}/LICENSE
-        ${OUTPUT_DIR_PARENT}/LICENSE.txt
+        ${OUTPUT_DIR}/LICENSE.txt
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/lib/x86/fmod.dll
-        ${OUTPUT_DIR_PARENT}
+        ${OUTPUT_DIR}
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/static/data
-        ${OUTPUT_DIR_PARENT}/data
+        ${OUTPUT_DIR}/data
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayerTest.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/static/qtadvanceddocking.dll
 
-        ${OUTPUT_DIR_PARENT}
+        ${OUTPUT_DIR}
 
         VERBATIM
 )

@@ -36,7 +36,7 @@ add_compile_definitions(_UADE_STRSEP_H_) #TODO needed?
 
 set(FILENAME "uade.md5")
 set(FILE_URL "http://bzrplayer.blazer.nu/${FILENAME}")
-set(DESTINATION_PATH "${OUTPUT_DIR_PARENT}${uade_data_path}")
+set(DESTINATION_PATH "${OUTPUT_DIR}${uade_data_path}")
 download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH} true "")
 
 file(GLOB SOURCES
@@ -110,7 +110,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         SUFFIX ".dll"
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR_PARENT}/data/plugin
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
 )
@@ -118,23 +118,23 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${EXTERNAL_SOURCE_DIR}/players
-        ${OUTPUT_DIR_PARENT}${uade_data_path}/players
+        ${OUTPUT_DIR}${uade_data_path}/players
 
         #TODO where they come from?
         #TODO why MusicMaker-4V, MusicMaker-8V & onEscapee should overwrite the uade bundled ones?
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/dist/players
-        ${OUTPUT_DIR_PARENT}${uade_data_path}/players
+        ${OUTPUT_DIR}${uade_data_path}/players
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR}/amigasrc/score/score
-        ${OUTPUT_DIR_PARENT}${uade_data_path}/amigasrc/score/score
+        ${OUTPUT_DIR}${uade_data_path}/amigasrc/score/score
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR}/eagleplayer.conf
         ${EXTERNAL_SOURCE_DIR}/uade.conf
         ${EXTERNAL_SOURCE_DIR}/uaerc
-        ${OUTPUT_DIR_PARENT}${uade_data_path}
+        ${OUTPUT_DIR}${uade_data_path}
 
         VERBATIM
 )

@@ -41,7 +41,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         SUFFIX ".dll"
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR_PARENT}/data/plugin
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
 )
@@ -49,7 +49,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${EXTERNAL_SOURCE_DIR}/liborganya/samples
-        ${OUTPUT_DIR_PARENT}${org_data_path}
+        ${OUTPUT_DIR}${org_data_path}
 
         VERBATIM
 )

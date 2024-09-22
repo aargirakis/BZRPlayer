@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(bzr2 VERSION "2.0.73")
-set(PROJECT_VERSION_PARENT "${PROJECT_VERSION}")
+set(BZR2_VERSION "${PROJECT_VERSION}")
 
 include(${CMAKE_SOURCE_DIR}/utils.cmake)
 include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)
@@ -13,7 +13,7 @@ endif ()
 
 add_compile_options(-w) #TODO remove
 
-set(OUTPUT_DIR_PARENT "${CMAKE_BINARY_DIR}/output")
+set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/output")
 
 set(SUBDIRECTORIES_BY_MODULES
         app "src/app"
@@ -75,7 +75,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
     set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
-    set(CPACK_OUTPUT_FILE_PREFIX "${OUTPUT_DIR_PARENT}_release")
+    set(CPACK_OUTPUT_FILE_PREFIX "${OUTPUT_DIR}_release")
 
     install(
             FILES ${RUNTIME_DLLS}
@@ -84,27 +84,27 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 
     install(
             DIRECTORY
-            ${OUTPUT_DIR_PARENT}/data
-            ${OUTPUT_DIR_PARENT}/platforms
+            ${OUTPUT_DIR}/data
+            ${OUTPUT_DIR}/platforms
             DESTINATION .
     )
 
     install(
             DIRECTORY
-            ${OUTPUT_DIR_PARENT}/user/plugin/sid
+            ${OUTPUT_DIR}/user/plugin/sid
             DESTINATION user/plugin
             FILES_MATCHING PATTERN "Songlengths.md5"
     )
 
     install(
             FILES
-            ${OUTPUT_DIR_PARENT}/LICENSE.txt
-            ${OUTPUT_DIR_PARENT}/BZRPlayer.exe
-            ${OUTPUT_DIR_PARENT}/BZRPlayerTest.exe
-            ${OUTPUT_DIR_PARENT}/BZRPlayer.VisualElementsManifest.xml
-            ${OUTPUT_DIR_PARENT}/fmod.dll
-            ${OUTPUT_DIR_PARENT}/LICENSE.txt
-            ${OUTPUT_DIR_PARENT}/qtadvanceddocking.dll
+            ${OUTPUT_DIR}/LICENSE.txt
+            ${OUTPUT_DIR}/BZRPlayer.exe
+            ${OUTPUT_DIR}/BZRPlayerTest.exe
+            ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
+            ${OUTPUT_DIR}/fmod.dll
+            ${OUTPUT_DIR}/LICENSE.txt
+            ${OUTPUT_DIR}/qtadvanceddocking.dll
             DESTINATION .
     )
 
@@ -117,7 +117,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     )
 endif ()
 
-#TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR_PARENT})
+#TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR})
 #TODO too many baserow.h/baserow.cpp
 #TODO manage plugin names/versions in settingswindow.cpp
 #TODO redundant queue.h & queue.c should be treated as external dependency like src/external/psflib

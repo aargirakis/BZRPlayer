@@ -74,7 +74,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         SUFFIX ".dll"
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR_PARENT}/data/plugin
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
 )
@@ -82,6 +82,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${EXTERNAL_SOURCE_DIR}/file68/data68/Replay
-        ${OUTPUT_DIR_PARENT}${sc68_data_path}/Replay
+        ${OUTPUT_DIR}${sc68_data_path}/Replay
         VERBATIM
 )
