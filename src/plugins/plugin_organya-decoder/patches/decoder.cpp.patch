@@ -1,0 +1,158 @@
+--- liborganya/decoder.cpp	2018-01-30 05:38:35.000000000 +0100
++++ liborganya/decoder.cpp	2024-09-21 11:33:59.273196858 +0200
+@@ -7,11 +7,11 @@
+  *
+  */
+ 
+-#include <foobar2000.h>
++//#include <foobar2000.h>
+ #include <stdlib.h>
+ #include <math.h>
+ #include <limits.h>
+-
++#include <sstream>
+ #include "decoder.h"
+ #include "swap.h"
+ 
+@@ -43,7 +43,7 @@
+ 	}
+ 	else {
+ 		for (int i = 0; i < 16; i++) {
+-			if (0 == decoder->file->instruments[i].note_count) {
++            if (0 == decoder->file->instruments[i].note_count || decoder->state.tracks[i].muted) {
+ 				continue;
+ 			}
+ 			
+@@ -55,7 +55,7 @@
+ 	
+ 	// Update the notes, if neccessary
+ 	for (uint8_t i = 0; i < 16; i++) {
+-		if (0 == decoder->file->instruments[i].note_count) {
++        if (0 == decoder->file->instruments[i].note_count || decoder->state.tracks[i].muted) {
+ 			continue;
+ 		}
+ 		
+@@ -211,7 +211,7 @@
+ }
+ 
+ // Loads instrument samples for each track
+-uint8_t _org_decoder_load_samples(org_decoder_t *decoder, const char *resource_path, abort_callback & p_abort)
++uint8_t _org_decoder_load_samples(org_decoder_t *decoder, const char *resource_path)
+ {
+ 	// Set some sane initial values so we can return if there is an error and what was done can still be cleaned up. Caller could instead use the return value, but meh.
+ 	for (uint8_t i = 0; i < 16; i++) {
+@@ -231,23 +231,24 @@
+ 		}
+ 		
+ 		// Files for the sample data are just <instrument>.dat. drums have 100 added, as noted above.
+-		pfc::string8 dat_path = resource_path;
+-		dat_path.add_byte( '\\' );
+-		dat_path += pfc::format_int( instrument, 3 );
++		std::string dat_path = resource_path;
++		dat_path = dat_path +'/';
++		dat_path += ZeroPadNumber(instrument);
+ 		dat_path += ".dat";
+ 		
+ 		int16_t *wave = NULL;
+ 		size_t size = 0;
+-		service_ptr_t<file> fin;
+-		filesystem::g_open( fin, dat_path, filesystem::open_mode_read, p_abort );
++		ifstream fin;
++		fin.open(dat_path.c_str(), ios::binary);
+ 		
+ 		// Get the number of samples
+-		size = fin->get_size_ex( p_abort );
+-		
++		fin.seekg (0, ios::end);
++		size = fin.tellg();
++		fin.seekg (0, ios::beg);
+ 		// Allocate space for the PCM data and read it in.
+ 		wave = (int16_t *) malloc(size);
+ 		if ( !wave ) throw std::bad_alloc();
+-		fin->read_object( wave, size, p_abort );
++		fin.read((char*)wave,size*sizeof(int16_t));
+ 		
+ 		// PCM data is big endian. We want host.
+ 		for (int j = 0; j < size/2; j++) {
+@@ -280,6 +281,18 @@
+ 	return total_samples;
+ }
+ 
++int16_t org_decoder_vumeter_channel(org_decoder_t *decoder, size_t channel)
++{
++    return abs(decoder->state.tracks[channel].last_amp[0])+abs(decoder->state.tracks[channel].last_amp[1]);
++}
++
++void org_decoder_mute_channel(org_decoder_t *decoder, size_t channel, bool mute)
++{
++    decoder->state.tracks[channel].muted=mute;
++    //reset and fast forward to current position
++    org_decoder_seek_sample(decoder,decoder->state.current_sample);
++}
++
+ // Really might as well create a new decoder and throw away samples.
+ void org_decoder_seek_sample(org_decoder_t *decoder, size_t sample)
+ {
+@@ -325,16 +338,16 @@
+ }
+ 
+ // Returns the total samples the decoder will decode over its lifetime
+-org_decoder_t *org_decoder_create(service_ptr_t<file> & org_file, const char *resource_path, uint32_t loop_count, abort_callback & p_abort) {
++org_decoder_t *org_decoder_create(ifstream & org_file, const char *resource_path, uint32_t loop_count) {
+ 	// Allocate the decoder
+ 	org_decoder_t *decoder = ( org_decoder_t * ) calloc(1, sizeof(org_decoder_t));
+ 	if ( !decoder ) throw std::bad_alloc();
+ 
+-	try
+-	{
+-		// Parse the org file
+-		decoder->file = _org_file_create(org_file, p_abort);
+ 
++
++		// Parse the org file
++	decoder->file = _org_file_create(org_file);
++	if (decoder->file) {
+ 		// Set initial state
+ 		decoder->state.primed = 0;
+ 		decoder->state.current_beat = 0;
+@@ -345,7 +358,7 @@
+ 		decoder->state.current_loop = 1; // The first time through is the first loop.
+ 
+ 		// Load samples the decoder will use
+-		uint8_t samples_loaded = _org_decoder_load_samples(decoder, resource_path, p_abort);
++		uint8_t samples_loaded = _org_decoder_load_samples(decoder, resource_path);
+ 		if (16 != samples_loaded) {
+ 			org_decoder_destroy(decoder);
+ 
+@@ -375,10 +388,10 @@
+ 
+ 		return decoder;
+ 	}
+-	catch (...)
++    else
+ 	{
+ 		org_decoder_destroy(decoder);
+-		throw;
++        return NULL;
+ 	}
+ }
+ 
+@@ -400,4 +413,18 @@
+ 	free(decoder);
+ }
+ 
++std::string ZeroPadNumber(int num)
++{
++        stringstream ss;
+ 
++        // the number is converted to string with the help of stringstream
++        ss << num;
++        string ret;
++        ss >> ret;
++
++        // Append zero chars
++        int str_length = ret.length();
++        for (int i = 0; i < 3 - str_length; i++)
++                ret = "0" + ret;
++        return ret;
++}

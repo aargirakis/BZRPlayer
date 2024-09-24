@@ -54,18 +54,39 @@ function(patch_sources target_name patches_dir external_source_dir)
 
     message(STATUS "Patching '${target_name}'")
 
-    if (patches_dir)
-        execute_process(
-                COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-                ${patches_dir} ${external_source_dir}
-                RESULT_VARIABLE copy_result
-                ERROR_VARIABLE copy_error
-        )
+    file(GLOB PATCH_FILES "${patches_dir}/*.patch")
 
-        if (NOT ${copy_result} EQUAL 0)
-            message(FATAL_ERROR "Error patching '${target_name}': ${copy_error}")
+    foreach (PATCH_FILE ${PATCH_FILES})
+        if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+            set(PATCH_EXECUTABLE "${CMAKE_PREFIX_PATH}/../usr/bin/patch.exe")
+        else ()
+            set(PATCH_EXECUTABLE "patch")
+            execute_process(
+                    COMMAND lsdiff ${PATCH_FILE}
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    OUTPUT_VARIABLE FILE_TO_PATCH
+            )
+            execute_process(
+                    COMMAND dos2unix ${external_source_dir}/${FILE_TO_PATCH}
+                    ERROR_QUIET
+            )
         endif ()
-    endif ()
+
+        execute_process(
+                COMMAND ${PATCH_EXECUTABLE}
+                -ul -d ${external_source_dir}
+                -p0 -i ${PATCH_FILE}
+                RESULT_VARIABLE PATCH_RESULT
+                OUTPUT_VARIABLE PATCH_OUTPUT
+                ERROR_VARIABLE PATCH_ERROR
+        )
+        if (NOT PATCH_RESULT EQUAL 0)
+            message(FATAL_ERROR
+                    "Failed to apply patch '${PATCH_FILE}': ${PATCH_OUTPUT}"
+                    "${PATCH_ERROR}"
+            )
+        endif ()
+    endforeach ()
 endfunction()
 
 function(unpack_and_patch file_to_unpack target_name_versioned unpack_to_parent_dir

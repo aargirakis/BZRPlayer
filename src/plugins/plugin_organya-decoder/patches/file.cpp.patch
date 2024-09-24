@@ -1,0 +1,135 @@
+--- liborganya/file.cpp	2018-01-30 05:38:35.000000000 +0100
++++ liborganya/file.cpp	2024-09-21 11:33:59.273196858 +0200
+@@ -12,81 +12,84 @@
+ #include "swap.h"
+ 
+ // File reading helpers 
+-uint8_t _org_read_8(service_ptr_t<file> & fin, abort_callback & p_abort) {
++uint8_t _org_read_8(ifstream & fin) {
+ 	uint8_t i = 0;
+-	fin->read_object_t( i, p_abort );
++	fin.read((char*)&i,sizeof(uint8_t));
+ 	return i;
+ }
+ 
+-uint16_t _org_read_16(service_ptr_t<file> & fin, abort_callback & p_abort) {
++uint16_t _org_read_16(ifstream & fin) {
+ 	uint16_t i = 0;
+-	fin->read_object_t( i, p_abort );
++	fin.read((char*)&i,sizeof(uint16_t));
+ 	return org_ltoh_16(i);
+ }
+ 
+-uint32_t _org_read_32(service_ptr_t<file> & fin, abort_callback & p_abort) {
++uint32_t _org_read_32(ifstream & fin) {
+ 	uint32_t i = 0;
+-	fin->read_object_t( i, p_abort );
++	fin.read((char*)&i,sizeof(uint32_t));
+ 	return org_ltoh_32(i);
+ }
+ 
+ // Read the usual org header
+-void _org_read_header(org_header_t *header, service_ptr_t<file> & fin, abort_callback & p_abort)
++bool _org_read_header(org_header_t *header, ifstream & fin)
+ {
+ 	// Read the magic. All orgyana files start with Org-02.
+ 	int8_t buf[6];
+-	fin->read_object( buf, 6, p_abort );
++	fin.read((char*)&buf,sizeof(int8_t)*6);
+ 	if(0 != memcmp(buf, "Org-02", 6)) {
+-		throw exception_io_data( "Invalid Organya file signature" );
++		return false;
+ 	}
+ 	
+-	header->tempo = _org_read_16(fin, p_abort);
+-	header->steps_per_bar = _org_read_8(fin, p_abort);
+-	header->beats_per_step = _org_read_8(fin, p_abort);
+-	header->loop_start = _org_read_32(fin, p_abort);
+-	header->loop_end = _org_read_32(fin, p_abort);
++	header->tempo = _org_read_16(fin);
++	header->steps_per_bar = _org_read_8(fin);
++	header->beats_per_step = _org_read_8(fin);
++	header->loop_start = _org_read_32(fin);
++	header->loop_end = _org_read_32(fin);
++
++    return true;
+ }
+ 
+ // Read properties for the instrument
+-void _org_read_instrument(org_instrument_t *instrument, service_ptr_t<file> & fin, abort_callback & p_abort)
++void _org_read_instrument(org_instrument_t *instrument, ifstream & fin)
+ {
+-	instrument->pitch = _org_read_16(fin, p_abort);
+-	instrument->instrument = _org_read_8(fin, p_abort);
+-	instrument->disable_sustain = _org_read_8(fin, p_abort);
+-	instrument->note_count = _org_read_16(fin, p_abort);
++	instrument->pitch = _org_read_16(fin);
++	instrument->instrument = _org_read_8(fin);
++	instrument->disable_sustain = _org_read_8(fin);
++	instrument->note_count = _org_read_16(fin);
+ }
+ 
+ // Read properties for each note
+-void _org_read_notes(org_note_t notes[], service_ptr_t<file> & fin, uint16_t note_count, abort_callback & p_abort)
++void _org_read_notes(org_note_t notes[], ifstream & fin, uint16_t note_count)
+ {
+ 	for (uint16_t i = 0; i < note_count; i++) {
+-		notes[i].start = _org_read_32(fin, p_abort);
++		notes[i].start = _org_read_32(fin);
+ 	}
+ 	for (uint16_t i = 0; i < note_count; i++) {
+-		notes[i].key = _org_read_8(fin, p_abort);
++		notes[i].key = _org_read_8(fin);
+ 	}
+ 	for (uint16_t i = 0; i < note_count; i++) {
+-		notes[i].length = _org_read_8(fin, p_abort);
++		notes[i].length = _org_read_8(fin);
+ 	}
+ 	for (uint16_t i = 0; i < note_count; i++) {
+-		notes[i].volume = _org_read_8(fin, p_abort);
++		notes[i].volume = _org_read_8(fin);
+ 	}
+ 	for (uint16_t i = 0; i < note_count; i++) {
+-		notes[i].pan = _org_read_8(fin, p_abort);
++		notes[i].pan = _org_read_8(fin);
+ 	}
+ }
+ 
+ // Rather straightforward just follows the file format.
+-org_file_t *_org_file_create(service_ptr_t<file> & fin, abort_callback & p_abort) {
++org_file_t *_org_file_create(ifstream & fin) {
+ 	org_file_t *org = ( org_file_t * ) calloc(1, sizeof(org_file_t));
+ 	if ( !org ) throw std::bad_alloc();
+-	try
++	if(!_org_read_header(&org->header, fin))
+ 	{
+-		_org_read_header(&org->header, fin, p_abort);
+-
++		_org_file_destroy( org );
++		return NULL;
++    } else {
+ 		// Read instrument properties
+ 		for (uint8_t i = 0; i < 16; i++) {
+-			_org_read_instrument(&org->instruments[i], fin, p_abort);
++			_org_read_instrument(&org->instruments[i], fin);
+ 
+ 			// Allocate space for notes
+ 			if (org->instruments[i].note_count) {
+@@ -100,16 +103,11 @@
+ 
+ 		// Read notes for each instrument
+ 		for (uint8_t i = 0; i < 16; i++) {
+-			_org_read_notes(org->instruments[i].notes, fin, org->instruments[i].note_count, p_abort);
++			_org_read_notes(org->instruments[i].notes, fin, org->instruments[i].note_count);
+ 		}
+ 
+ 		return org;
+ 	}
+-	catch (...)
+-	{
+-		_org_file_destroy( org );
+-		throw;
+-	}
+ }
+ 
+ void _org_file_destroy(org_file_t *org) {

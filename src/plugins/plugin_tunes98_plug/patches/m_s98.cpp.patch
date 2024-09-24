@@ -1,0 +1,18 @@
+--- s98/m_s98.cpp	2007-11-26 21:34:26.000000000 +0100
++++ s98/m_s98.cpp	2024-09-21 11:33:59.369862290 +0200
+@@ -4,13 +4,13 @@
+ #include "kmp_pi.h"
+ //#include "reg.h"
+ 
+-#define USE_ZLIB 1
++#define USE_ZLIB 0
+ 
+ #if USE_ZLIB
+ #include "zlib.h"
+ #endif
+ 
+-#define SUPPORT_VGM 1
++#define SUPPORT_VGM 0
+ #define SUPPORT_MYM 1
+ 
+ #define KMPMODULE_PLUGIN_VERSION    10

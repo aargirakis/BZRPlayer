@@ -1,0 +1,36 @@
+--- liborganya/file.h	2018-01-30 05:38:35.000000000 +0100
++++ liborganya/file.h	2024-09-21 11:33:59.273196858 +0200
+@@ -8,7 +8,8 @@
+  */
+ 
+ #include <stdint.h>
+-#include <foobar2000.h>
++#include <fstream>
++using namespace std;
+ 
+ typedef struct {
+ 	uint16_t  tempo; // milliseconds per beat
+@@ -41,15 +42,15 @@
+ } org_file_t;
+ 
+ // File reading helpers
+-uint8_t _org_read_8(service_ptr_t<file> & fin, abort_callback & p_abort);
+-uint16_t _org_read_16(service_ptr_t<file> & fin, abort_callback & p_abort);
+-uint32_t _org_read_32(service_ptr_t<file> & fin, abort_callback & p_abort);
+-
+-void _org_read_header(org_header_t *header, service_ptr_t<file> & fin, abort_callback & p_abort); // Reads header data from a file. Returns 1 on success, 0 on fail
+-void _org_read_instrument(org_instrument_t *instrument, service_ptr_t<file> & fin, abort_callback & p_abort); // Reads instrument data from the file
+-void _org_read_notes(org_note_t notes[], service_ptr_t<file> & fin, uint16_t note_count, abort_callback & p_abort); // Reads note data from the file
++uint8_t _org_read_8(ifstream & fin);
++uint16_t _org_read_16(ifstream & fin);
++uint32_t _org_read_32(ifstream & fin);
++
++bool _org_read_header(org_header_t *header, ifstream & fin); // Reads header data from a file. Returns 1 on success, 0 on fail
++void _org_read_instrument(org_instrument_t *instrument, ifstream & fin); // Reads instrument data from the file
++void _org_read_notes(org_note_t notes[], ifstream & fin, uint16_t note_count); // Reads note data from the file
+ 
+ // Used by the decoder. Creates a org_file_t struct and parses the file passed in. Returns NULL on error.
+-org_file_t *_org_file_create(service_ptr_t<file> & fin, abort_callback & p_abort);
++org_file_t *_org_file_create(ifstream & fin);
+ // Cleans up
+ void _org_file_destroy(org_file_t *org);

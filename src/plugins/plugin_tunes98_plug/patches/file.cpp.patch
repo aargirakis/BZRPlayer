@@ -1,0 +1,11 @@
+--- s98/device/fmgen/file.cpp	2007-11-26 20:39:44.000000000 +0100
++++ s98/device/fmgen/file.cpp	2024-09-21 11:33:59.369862290 +0200
+@@ -1,7 +1,7 @@
+ //	$Id: file.cpp,v 1.6 1999/12/28 11:14:05 cisc Exp $
+ 
+ #include "headers.h"
+-#include "File.h"
++#include "file.h"
+ #ifdef __amigaos4__
+ #include <proto/dos.h>
+ #endif

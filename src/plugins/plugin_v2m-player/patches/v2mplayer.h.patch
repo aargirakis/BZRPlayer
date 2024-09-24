@@ -1,0 +1,21 @@
+--- src/v2mplayer.h	2022-05-12 13:30:32.000000000 +0200
++++ src/v2mplayer.h	2024-09-21 11:33:59.376528872 +0200
+@@ -15,6 +15,9 @@
+ /**  Type definitions                                                               **/
+ /**                                                                                 **/
+ /*************************************************************************************/
++typedef signed   long     sS32;
++typedef double            sF64;
++
+ 
+ #include <stdint.h>
+ #include <string.h>
+@@ -102,7 +105,7 @@
+     //
+     // returns: number of found song positions
+     //
+-    uint32_t CalcPositions(int32_t **a_dest);
++    uint32_t CalcPositions(sS32 **a_dest);
+ 
+     #endif
+ 

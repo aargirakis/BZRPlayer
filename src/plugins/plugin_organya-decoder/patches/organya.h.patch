@@ -1,0 +1,28 @@
+--- liborganya/organya.h	2018-01-30 05:38:35.000000000 +0100
++++ liborganya/organya.h	2024-09-21 11:33:59.273196858 +0200
+@@ -9,7 +9,8 @@
+ 
+ #include <stdio.h>
+ #include <stdint.h>
+-#include <foobar2000.h>
++#include <fstream>
++using namespace std;
+ 
+ typedef struct org_decoder_t org_decoder_t;
+ 
+@@ -17,7 +18,7 @@
+ // resource_path: the path to a directory containing the sample data files
+ // loop_count: number of times to loop the file. pass 0 to loop forever.
+ // returns NULL on error, otherwise a decoder to use with other functions
+-org_decoder_t *org_decoder_create(service_ptr_t<file> & org_file, const char *resource_path, uint32_t loop_count, abort_callback & p_abort);
++org_decoder_t *org_decoder_create(ifstream & org_file, const char *resource_path, uint32_t loop_count);
+ 
+ // buffer: where the decoder will put the generated samples.
+ // num_samples: the number of frames to decode. does not include channels or bits per sample.
+@@ -33,3 +34,6 @@
+ 
+ // clean up the decoder
+ void org_decoder_destroy(org_decoder_t *decoder);
++
++void org_decoder_mute_channel(org_decoder_t *decoder, size_t channel, bool mute);
++int16_t org_decoder_vumeter_channel(org_decoder_t *decoder, size_t channel);

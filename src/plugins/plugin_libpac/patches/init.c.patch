@@ -1,0 +1,11 @@
+--- src/init.c	2024-09-26 12:01:18.847374272 +0200
++++ src/init.c	2024-09-21 11:33:59.203197752 +0200
+@@ -58,7 +58,7 @@
+ 
+ const struct pac_sound pac_sound_init =
+ {
+-   /* "",        name */
++   "",       /*name*/
+    -1,       /* number */
+    8363,     /* middlec */
+    0,        /* finetune */

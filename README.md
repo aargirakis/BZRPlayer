@@ -17,8 +17,8 @@ coded pretty much from scratch.
 ### Windows (#TODO msys2 gdb?):
 
 **MSYS2** with following packages (install as shown) is required:\
-`pacman -S mingw-w64-i686-toolchain mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg openssl-devel
- make mingw-w64-i686-SDL2`
+`pacman -S make mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg mingw-w64-i686-SDL2
+mingw-w64-i686-toolchain openssl-devel patch`
 
 - Open the MSYS2 **mingw32.exe** command prompt
 - Go to your project dir (take in mind Unix-style paths are required)

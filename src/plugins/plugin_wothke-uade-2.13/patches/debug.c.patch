@@ -1,0 +1,10 @@
+--- src/debug.c	2014-09-16 19:11:24.000000000 +0200
++++ src/debug.c	2024-09-21 11:33:59.423194942 +0200
+@@ -429,6 +429,7 @@
+     while (fgets (input, 80, stdin) == NULL) {
+ 	if (feof(stdin) || ferror(stdin)) {
+ 	    quit_program = 1;
++        fprintf(stderr, "quit_program feof or ferror \n");
+ 	    return;
+ 	}
+     }

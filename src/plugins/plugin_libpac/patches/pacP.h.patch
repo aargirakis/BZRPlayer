@@ -1,0 +1,11 @@
+--- src/pacP.h	2024-09-26 12:01:18.730709480 +0200
++++ src/pacP.h	2024-09-21 11:33:59.203197752 +0200
+@@ -114,7 +114,7 @@
+ 
+ struct pac_sound
+ {
+-   /* char name[PAC_NAME_MAX+1]; */
++   char name[PAC_NAME_MAX+1];
+    int number;
+    long middlec;
+    int tune;

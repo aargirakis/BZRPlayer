@@ -34,6 +34,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/loaders/*.c
         ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/*.c
         ${EXTERNAL_SOURCE_DIR}/src/win32/*.c
+        src/queue.c
         src/main.cpp
 
         ${CMAKE_SOURCE_DIR}/src/plugins/plugin_flod/src/flod/BaseRow.cpp
@@ -56,6 +57,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard
         ${EXTERNAL_SOURCE_DIR}/src/win32
         ${EXTERNAL_SOURCE_DIR}/src/win32/sys
+        src
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc

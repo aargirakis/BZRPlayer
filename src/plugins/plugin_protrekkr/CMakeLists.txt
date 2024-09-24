@@ -24,7 +24,7 @@ download_and_patch(
         "${CMAKE_CURRENT_SOURCE_DIR}/patches"
 )
 
-add_compile_definitions(__REPLAYER__ __STAND_ALONE__ __WINAMP__)
+add_compile_definitions(BZR2 __STAND_ALONE__ __WINAMP__)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/*.cpp
@@ -49,6 +49,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/editors/include
         ${EXTERNAL_SOURCE_DIR}/src/files/include
         ${EXTERNAL_SOURCE_DIR}/src/include
+        src
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc

@@ -1,0 +1,331 @@
+--- src/files/files.cpp	2024-02-05 23:48:28.000000000 +0100
++++ src/files/files.cpp	2024-09-21 11:33:59.333196091 +0200
+@@ -31,7 +31,7 @@
+ 
+ // ------------------------------------------------------
+ // Includes
+-#include "../extralibs/zlib-1.2.3/zlib.h"
++#include "zlib.h"
+ 
+ #include "../include/ptk.h"
+ #include "include/files.h"
+@@ -41,21 +41,21 @@
+ #include "include/303s.h"
+ #include "include/synths.h"
+ #include "include/ptps.h"
+-#include "../ui/include/misc_draw.h"
+-#include "../samples/include/samples_pack.h"
+-#include "../editors/include/editor_synth.h"
+-#include "../editors/include/editor_diskio.h"
+-#include "../editors/include/editor_reverb.h"
+-#include "../editors/include/editor_instrument.h"
+-#include "../editors/include/editor_sequencer.h"
+-#include "../editors/include/editor_setup.h"
+-#include "../editors/include/editor_midi.h"
+-#include "../editors/include/editor_303.h"
+-#include "../editors/include/editor_sample.h"
+-#include "../editors/include/editor_fx_setup.h"
+-#include "../editors/include/editor_track_fx.h"
+-#include "../editors/include/editor_track.h"
+-#include "../editors/include/editor_pattern.h"
++// #include "../ui/include/misc_draw.h"
++// #include "../samples/include/samples_pack.h"
++// #include "../editors/include/editor_synth.h"
++// #include "../editors/include/editor_diskio.h"
++// #include "../editors/include/editor_reverb.h"
++// #include "../editors/include/editor_instrument.h"
++// #include "../editors/include/editor_sequencer.h"
++// #include "../editors/include/editor_setup.h"
++// #include "../editors/include/editor_midi.h"
++// #include "../editors/include/editor_303.h"
++// #include "../editors/include/editor_sample.h"
++// #include "../editors/include/editor_fx_setup.h"
++// #include "../editors/include/editor_track_fx.h"
++// #include "../editors/include/editor_track.h"
++// #include "../editors/include/editor_pattern.h"
+ 
+ #include "../../release/distrib/replay/lib/include/endianness.h"
+ 
+@@ -80,9 +80,9 @@
+ 
+ // ------------------------------------------------------
+ // Functions
+-int Read_Mod_Data(void *Datas, int Unit, int Length, FILE *Handle);
+-int Read_Mod_Data_Swap(void *Datas, int Unit, int Length, FILE *Handle);
+-short *Unpack_Sample(FILE *FileHandle, int Dest_Length, char Pack_Type, int BitRate);
++int Read_Mod_Data(void *Datas, int Unit, int Length, ReplayerFile& Handle);
++int Read_Mod_Data_Swap(void *Datas, int Unit, int Length, ReplayerFile& Handle);
++short *Unpack_Sample(ReplayerFile& FileHandle, int Dest_Length, char Pack_Type, int BitRate);
+ void Swap_Short_Buffer(short *buffer, int size);
+ short *Swap_New_Sample(short *buffer, int sample, int bank);
+ 
+@@ -148,9 +148,11 @@
+ 
+ }
+ 
++char replayerPtkName[20] = { 0 };
++
+ // ------------------------------------------------------
+ // Load a module file
+-int Load_Ptk(char *FileName)
++int Load_Ptk(ReplayerFile replayerFile)
+ {
+     int Ye_Old_Phony_Value;
+     int New_adsr = FALSE;
+@@ -192,17 +194,16 @@
+     int UnPacked_Size;
+     int Flanger_Bug = FALSE;
+     unsigned char *Packed_Module = NULL;
+-    FILE *in;
++    auto& in = replayerFile;
+ 
+     Mod_Simulate = LOAD_READ;
+     Mod_Mem_Pos = 0;
+     Mod_Memory = NULL;
+ 
+-    in = fopen(FileName, "rb");
+     Old_Ntk = FALSE;
+     Ntk_Beta = FALSE;
+ 
+-    if(in != NULL)
++    if (1)
+     {
+ 
+ #if !defined(__WINAMP__)
+@@ -325,7 +326,7 @@
+             }
+         }
+ 
+-        Read_Mod_Data(FileName, sizeof(char), 20, in);
++        Read_Mod_Data(replayerPtkName, sizeof(char), 20, in);
+         Read_Mod_Data(&nPatterns, sizeof(char), 1, in);
+ 
+         Songtracks = MAX_TRACKS;
+@@ -456,7 +457,7 @@
+         {
+             Read_Mod_Data(&nameins[swrite], sizeof(char), 20, in);
+             Read_Mod_Data(&Midiprg[swrite], sizeof(char), 1, in);
+-            
++
+             Read_Mod_Data(&Synthprg[swrite], sizeof(char), 1, in);
+ 
+             PARASynth[swrite].disto = 0;
+@@ -543,7 +544,7 @@
+         }
+ 
+ #if !defined(__WINAMP__)
+-        Status_Box("Loading song -> Track info, patterns and sequences...");   
++        Status_Box("Loading song -> Track info, patterns and sequences...");
+ #endif
+ 
+         Set_Default_Channels_Polyphony();
+@@ -756,9 +757,12 @@
+             }
+             Read_Mod_Data_Swap(&tb303engine[0].tbVolume, sizeof(float), 1, in);
+             Read_Mod_Data_Swap(&tb303engine[1].tbVolume, sizeof(float), 1, in);
++
++            if (in.pos > in.maxSize)
++                return(FALSE);
+         }
+ 
+-        fclose(in);
++        //fclose(in);
+ 
+         if(!New_Reverb)
+         {
+@@ -794,7 +798,7 @@
+ 
+ // ------------------------------------------------------
+ // Load and decode a packed sample
+-short *Unpack_Sample(FILE *FileHandle, int Dest_Length, char Pack_Type, int BitRate)
++short *Unpack_Sample(ReplayerFile& FileHandle, int Dest_Length, char Pack_Type, int BitRate)
+ {
+     int Packed_Length;
+ 
+@@ -955,7 +959,7 @@
+     int iswap_value;
+     short *svalue;
+     int *ivalue;
+-    
++
+     switch(Mod_Simulate)
+     {
+         case SAVE_WRITE:
+@@ -995,7 +999,7 @@
+ 
+ // ------------------------------------------------------
+ // Read data from a module file
+-int Read_Mod_Data(void *Datas, int Unit, int Length, FILE *Handle)
++int Read_Mod_Data(void *Datas, int Unit, int Length, ReplayerFile& Handle)
+ {
+     switch(Mod_Simulate)
+     {
+@@ -1013,7 +1017,7 @@
+ 
+ // ------------------------------------------------------
+ // Read data from a module file
+-int Read_Mod_Data_Swap(void *Datas, int Unit, int Length, FILE *Handle)
++int Read_Mod_Data_Swap(void *Datas, int Unit, int Length, ReplayerFile& Handle)
+ {
+     short svalue;
+     int ivalue;
+@@ -1090,16 +1094,9 @@
+ 
+ // ------------------------------------------------------
+ // Return the size of an opened file
+-int Get_File_Size(FILE *Handle)
++int Get_File_Size(ReplayerFile& Handle)
+ {
+-    int File_Size;
+-    int Current_Pos;
+-
+-    Current_Pos = ftell(Handle);
+-    fseek(Handle, 0, SEEK_END);
+-    File_Size = ftell(Handle);
+-    fseek(Handle, Current_Pos, SEEK_SET);
+-    return(File_Size);
++    return int(Handle.maxSize);
+ }
+ 
+ #if !defined(__WINAMP__)
+@@ -1134,7 +1131,7 @@
+ 
+     int twrite;
+     int tps_trk;
+-    
++
+     Mod_Length = 0;
+     Mod_Mem_Pos = 0;
+     Mod_Simulate = SAVE_WRITE;
+@@ -1334,11 +1331,11 @@
+                         rtrim_string(SampleName[swrite][slwrite], 64);
+                         Write_Mod_Data(SampleName[swrite][slwrite], sizeof(char), 64, in);
+                         Write_Mod_Data(&Basenote[swrite][slwrite], sizeof(char), 1, in);
+-                        
++
+                         Write_Mod_Data_Swap(&LoopStart[swrite][slwrite], sizeof(int), 1, in);
+                         Write_Mod_Data_Swap(&LoopEnd[swrite][slwrite], sizeof(int), 1, in);
+                         Write_Mod_Data(&LoopType[swrite][slwrite], sizeof(char), 1, in);
+-                        
++
+                         Write_Mod_Data_Swap(&Sample_Length[swrite][slwrite], sizeof(int), 1, in);
+                         Write_Mod_Data(&Finetune[swrite][slwrite], sizeof(char), 1, in);
+                         Write_Mod_Data_Swap(&Sample_Amplify[swrite][slwrite], sizeof(float), 1, in);
+@@ -1366,14 +1363,14 @@
+             }
+ 
+             // Writing mod properties
+-            int cvalue;   
++            int cvalue;
+             cvalue = compressor;
+             Write_Mod_Data_Swap(&cvalue, sizeof(int), 1, in);
+             Write_Mod_Data_Swap(&c_threshold, sizeof(int), 1, in);
+             Write_Mod_Data_Swap(&Beats_Per_Min, sizeof(int), 1, in);
+             Write_Mod_Data_Swap(&Ticks_Per_Beat, sizeof(int), 1, in);
+             Write_Mod_Data_Swap(&mas_vol, sizeof(float), 1, in);
+-           
++
+             Write_Mod_Data(&Comp_Flag, sizeof(char), 1, in);
+             Write_Mod_Data_Swap(&mas_comp_threshold_Master, sizeof(float), 1, in);
+             Write_Mod_Data_Swap(&mas_comp_ratio_Master, sizeof(float), 1, in);
+@@ -1487,7 +1484,7 @@
+ 
+                 for(i = 0; i < 32; i++)
+                 {
+-                    Save_303_Data(Write_Mod_Data, Write_Mod_Data_Swap, in, j, i); 
++                    Save_303_Data(Write_Mod_Data, Write_Mod_Data_Swap, in, j, i);
+                 }
+             }
+ 
+@@ -1520,7 +1517,7 @@
+     }
+     else
+     {
+-        if(!Simulate) Status_Box("Module save failed.");   
++        if(!Simulate) Status_Box("Module save failed.");
+     }
+ 
+     return(Mod_Length);
+@@ -1606,7 +1603,7 @@
+         {
+            time(&rawtime);
+            timeinfo = localtime(&rawtime);
+-           
++
+             fread(backup_mem, 1, backup_size, In);
+ 
+             sprintf(backup_savename,
+@@ -1642,7 +1639,7 @@
+ 
+     // Reset autosave counter
+     wait_AutoSave = 0;
+-    
++
+     if(!strlen(FileName))
+     {
+         sprintf(name, "Can't save module without a name...");
+@@ -1818,14 +1815,14 @@
+ 
+ // ------------------------------------------------------
+ // Read data from a file
+-int Read_Data(void *value, int size, int amount, FILE *handle)
++int Read_Data(void *value, int size, int amount, ReplayerFile& handle)
+ {
+-    return(fread(value, size, amount, handle));
++    return handle.Read(value, size, amount);
+ }
+ 
+ // ------------------------------------------------------
+ // Read data from a file taking care of the endianness
+-int Read_Data_Swap(void *value, int size, int amount, FILE *handle)
++int Read_Data_Swap(void *value, int size, int amount, ReplayerFile& handle)
+ {
+     short svalue;
+     int ivalue;
+@@ -1909,7 +1906,7 @@
+                     {
+                         patt_cmd[l] = Cur_Patt[PATTERN_FX + (l * 2)];
+                         patt_datas[l] = Cur_Patt[PATTERN_FXDATA + (l * 2)];
+-                    }                    
++                    }
+ 
+                     for(l = 0; l < Channels_Effects[k]; l++)
+                     {
+@@ -1953,7 +1950,7 @@
+                             case 0xd:
+                                 if(patt_datas[l] < MAX_ROWS) have_break = patt_datas[l];
+                                 break;
+-                        
++
+                             case 0x1f:
+                                 // Avoid looping the song when jumping
+                                 if(i == (Song_Length - 1) || patt_datas[l] <= i)
+@@ -1964,11 +1961,11 @@
+                                 // Was there a break already ?
+                                 if(have_break >= MAX_ROWS) have_break = 0;
+                                 break;
+-                        
++
+                             case 0xf:
+                                 Ticks = (float) patt_datas[l];
+                                 break;
+-    
++
+                             case 0xf0:
+                                 BPM = (float) patt_datas[l];
+                                 break;
+@@ -2043,12 +2040,12 @@
+ #if !defined(__WINAMP__)
+     if(SamplesSwap[Instr_Nbr])
+     {
+-        return(RawSamples_Swap[Instr_Nbr][Channel][Split]); 
++        return(RawSamples_Swap[Instr_Nbr][Channel][Split]);
+     }
+     else
+ #endif
+     {
+-        return(RawSamples[Instr_Nbr][Channel][Split]); 
++        return(RawSamples[Instr_Nbr][Channel][Split]);
+     }
+ }
+ 
