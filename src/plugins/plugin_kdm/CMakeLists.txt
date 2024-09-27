@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
+#TODO sources are from https://www.foobar2000.org/components/view/foo_input_kdm
+
 set(NAME "kdm")
 set(VERSION "")
 project(plugin_${NAME})
