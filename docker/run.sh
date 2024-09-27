@@ -23,7 +23,8 @@ if [ "$(docker ps -a -q -f name="$CONTAINER_NAME")" ]; then
 fi
 
 run_docker_build() {
-  local COMMAND_CONTAINER="mkdir -p $BUILD_DIR && chown -R devel:devel $BUILD_DIR && su devel -c '\
+  local COMMAND_CONTAINER="\
+mkdir -p $BUILD_DIR && chown -R devel:devel $BUILD_DIR && su devel -c '\
 cd \"$BUILD_DIR\" && i686-w64-mingw32-cmake \
 -DCMAKE_PREFIX_PATH=/usr/i686-w64-mingw32 \
 -DCMAKE_BUILD_TYPE=\"$BUILD_TYPE\" \
