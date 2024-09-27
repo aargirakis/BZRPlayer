@@ -22,11 +22,10 @@ mingw-w64-i686-toolchain openssl-devel patch`
 
 - Open the MSYS2 **mingw32.exe** command prompt
 - Go to your project dir (take in mind Unix-style paths are required)
-- Inside the project directory create the cmake build directory with name `cmake-build-[debug|release]` then enter it
 - For starting the configuration process execute:\
-  `cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja ..`
+  `cmake -S . -B cmake-build-[debug|release] -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja ..`
 - To build the project execute:\
-  `ninja`
+  `ninja -C cmake-build-[debug|release]`
 
 As result of the building process, in the chosen cmake build directory the `output` directory will be populated with
 binaries.\
@@ -37,9 +36,8 @@ containing the final archive release file
 
 ```
 cd /c/BZRPlayer
-mkdir cmake-build-release
-cd cmake-build-release
-cmake -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja .. && ninja
+cmake -S . -B cmake-build-release -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
+ninja -C cmake-build-release 
 ```
 
 ### Linux cross-compilation:
