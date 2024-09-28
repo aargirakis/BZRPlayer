@@ -57,8 +57,8 @@ Offline mode doesn't guarantee that the build will include the latest versions o
 
 Although the **BZR2 online installer for Windows** is scripted in **Nullsoft Scriptable Install System (NSIS)**, it can
 be only compiled using **WSL2** or cross-compiled on Linux since it contains Linux specific code (mostly the bash script
-for the XDG MIME types handling), also **MSYS2** it is currently not viable since **NSIS** package is broken and the
-required **NSIS** plugins are missing.
+for the XDG MIME types handling), also **MSYS2** it is currently not viable since the required **NSIS** plugins are
+currently still missing.
 
 **NSIS** (3.10 or newer) with following plugins (check AUR entries) is required:
 
