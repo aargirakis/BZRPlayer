@@ -186,7 +186,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        SUFFIX ".dll"
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
