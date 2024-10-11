@@ -138,10 +138,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${CMAKE_SOURCE_DIR}/LICENSE
         ${OUTPUT_DIR}/LICENSE.txt
 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/lib/x86/fmod.dll
-        ${OUTPUT_DIR}
-
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/static/data
         ${OUTPUT_DIR}/data

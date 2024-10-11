@@ -3,17 +3,17 @@ cmake_minimum_required(VERSION 3.28)
 project(bzr2 VERSION "2.0.73")
 set(BZR2_VERSION "${PROJECT_VERSION}")
 
-include(${CMAKE_SOURCE_DIR}/utils.cmake)
-include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)
-
 if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_TYPE STREQUAL "None")
     message(STATUS "CMAKE_BUILD_TYPE is 'None' or not set: forcing to 'Debug'")
     set(CMAKE_BUILD_TYPE "Debug")
 endif ()
 
-add_compile_options(-w) #TODO remove
-
 set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/output")
+
+include(${CMAKE_SOURCE_DIR}/utils.cmake)
+include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)
+
+add_compile_options(-w) #TODO remove
 
 set(SUBDIRECTORIES_BY_MODULES
         app "src/app"
