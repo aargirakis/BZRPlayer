@@ -110,7 +110,9 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 
     include(CPack)
 
-    add_custom_target(run_cpack ALL
+    add_custom_target(
+            cpack ALL
+            DEPENDS ${MODULES}
             COMMAND ${CPACK_EXECUTABLE}
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             DEPENDS ${MODULES}
