@@ -29,7 +29,7 @@ set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
 set(LIB_URL "https://bitbucket.org/wothke/uade-2.13/get/${LIB_FILENAME_URL}")
 set(LIB_SHA_256_HASH "1f0df2bc7ecb93212ca9c6ca4e76e93c266858dc04233a8d343b90f7b191c0ba")
 download_patch_and_add(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
+        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 

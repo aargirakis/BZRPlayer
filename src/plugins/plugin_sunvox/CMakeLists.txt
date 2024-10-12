@@ -18,8 +18,7 @@ set(LIB_URL "https://warmplace.ru/soft/${LIB_NAME}/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "9c57bb37b47182520995e9c154d5bc65bf0e02fdba03111602e01b7928879cfb")
 set(LIB_UNPACKED_DIR "sunvox_lib")
 download_patch_and_add(
-        ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
-        ""
+        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
 )
 
 file(GLOB SOURCES

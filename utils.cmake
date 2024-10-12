@@ -7,18 +7,18 @@ include(ProcessorCount)
 set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
 
 function(download_to target_filename target_url sha_256_hash
-        destination_path display_destination_path target_name_versioned)
+        destination_path display_destination_path target_name)
     if (OFFLINE_MODE EQUAL 1)
         file(COPY ${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename} DESTINATION ${destination_path})
     else ()
-        if (NOT target_name_versioned)
-            set(target_name_versioned "${target_filename}")
+        if (NOT target_name)
+            set(target_name "${target_filename}")
         endif ()
 
         if (display_destination_path)
-            message(STATUS "Downloading '${target_name_versioned}' at '${target_url}' to '${destination_path}'")
+            message(STATUS "Downloading '${target_name}' at '${target_url}' to '${destination_path}'")
         else ()
-            message(STATUS "Downloading '${target_name_versioned}' at '${target_url}'")
+            message(STATUS "Downloading '${target_name}' at '${target_url}'")
         endif ()
 
         if ("${sha_256_hash}" STREQUAL "")
@@ -90,36 +90,36 @@ function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
     endforeach ()
 endfunction()
 
-function(unpack_and_patch file_to_unpack target_name_versioned unpack_to_parent_dir
+function(unpack_and_patch file_to_unpack target_name unpack_to_parent_dir
         target_unpacked_dir patches_dir)
-    unpack("${file_to_unpack}" "${DEPENDENCIES_DIR}/${target_name_versioned}" ${unpack_to_parent_dir})
+    unpack("${file_to_unpack}" "${DEPENDENCIES_DIR}/${target_name}" ${unpack_to_parent_dir})
 
-    set(EXTERNAL_SOURCE_DIR "${DEPENDENCIES_DIR}/${target_name_versioned}/${target_unpacked_dir}")
+    set(EXTERNAL_SOURCE_DIR "${DEPENDENCIES_DIR}/${target_name}/${target_unpacked_dir}")
 
-    patch_sources("${target_name_versioned}" "${patches_dir}" "${EXTERNAL_SOURCE_DIR}")
+    patch_sources("${target_name}" "${patches_dir}" "${EXTERNAL_SOURCE_DIR}")
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
 
-function(download_and_patch target_name_versioned target_filename target_url
+function(download_and_patch target_name target_filename target_url
         sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
     if (OFFLINE_MODE EQUAL 1)
-        unpack_and_patch("${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename}" "${target_name_versioned}"
+        unpack_and_patch("${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename}" "${target_name}"
                 "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
     else ()
-        download_to("${target_filename}" "${target_url}" "${sha_256_hash}" "${DEPENDENCIES_DIR}/${target_name_versioned}"
-                false "${target_name_versioned}")
-        unpack_and_patch("${DEPENDENCIES_DIR}/${target_name_versioned}/${target_filename}" "${target_name_versioned}"
+        download_to("${target_filename}" "${target_url}" "${sha_256_hash}" "${DEPENDENCIES_DIR}/${target_name}"
+                false "${target_name}")
+        unpack_and_patch("${DEPENDENCIES_DIR}/${target_name}/${target_filename}" "${target_name}"
                 "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
     endif ()
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
 
-function(download_patch_and_add target_name target_name_versioned target_filename
-        target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
+function(download_patch_and_add target_name target_filename target_url
+        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
     download_and_patch(
-            "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
             "${target_unpacked_dir}" "${patches_dir}"
     )
 
@@ -134,10 +134,10 @@ function(download_patch_and_add target_name target_name_versioned target_filenam
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
 
-function(download_patch_and_make target_name target_name_versioned target_filename target_url
+function(download_patch_and_make target_name target_filename target_url
         sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir make_args)
     download_and_patch(
-            "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
             "${target_unpacked_dir}" "${patches_dir}"
     )
 
@@ -171,14 +171,14 @@ function(download_patch_and_make target_name target_name_versioned target_filena
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
 
-function(download_patch_and_cmake target_name target_name_versioned target_filename
-        target_url sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
+function(download_patch_and_cmake target_name target_filename target_url
+        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
     download_and_patch(
-            "${target_name_versioned}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
             "${target_unpacked_dir}" "${patches_dir}"
     )
 
-    set(FETCHCONTENT_BASE_DIR "${DEPENDENCIES_DIR}/${target_name_versioned}")
+    set(FETCHCONTENT_BASE_DIR "${DEPENDENCIES_DIR}/${target_name}")
 
     FetchContent_Declare(
             ${target_name}
