@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "sunvox")
-set(VERSION "2.1c")
+set(VERSION "2.1.1c")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "SunVox" PARENT_SCOPE)
@@ -14,8 +14,8 @@ set(LIB_NAME "${NAME}")
 set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME}_lib-${LIB_VERSION}.zip")
-set(LIB_URL "https://web.archive.org/web/20230329102810/https://warmplace.ru/soft/${LIB_NAME}/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "5856adc13bb0105b5d5b0422d2cbb5fb5c74831fd7f52412d922ed35cd17bbca")
+set(LIB_URL "https://warmplace.ru/soft/${LIB_NAME}/${LIB_FILENAME}")
+set(LIB_SHA_256_HASH "9c57bb37b47182520995e9c154d5bc65bf0e02fdba03111602e01b7928879cfb")
 set(LIB_UNPACKED_DIR "sunvox_lib")
 download_patch_and_add(
         ${LIB_NAME} ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
