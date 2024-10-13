@@ -18,31 +18,11 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.makefile.tar.gz")
 set(LIB_URL "https://lib.openmpt.org/files/${NAME}/src/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "36643c01ee48b43eabff54c5cffb395987edf71adcddf89a6511cb9c81431fb3")
-set(MAKE_ARGS CONFIG=mingw-w64 WINDOWS_ARCH=x86 OPENMPT123=0 TEST=0 EXAMPLES=0 SHARED_LIB=0 STATIC_LIB=1)
+set(LIB_MAKE_ARGS CONFIG=mingw-w64 WINDOWS_ARCH=x86 OPENMPT123=0 TEST=0 EXAMPLES=0 SHARED_LIB=0 STATIC_LIB=1)
+set(LIB_BUILD_BYPRODUCTS "bin/libopenmpt.a")
 download_patch_and_make(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches "${MAKE_ARGS}"
-)
-
-set(LIBOPENMPT_STATIC "${EXTERNAL_SOURCE_DIR}/bin/libopenmpt.a")
-set(LIBOPENMPT_STATIC_FINAL "${LIBOPENMPT_STATIC}.final")
-
-add_custom_target(
-        set_static_lib ALL
-        DEPENDS ${LIB_NAME_VERSIONED}_ExtProj
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${LIBOPENMPT_STATIC}" "${LIBOPENMPT_STATIC_FINAL}"
-        WORKING_DIRECTORY ${EXTERNAL_SOURCE_DIR}
-)
-
-add_library(${LIB_NAME}_static STATIC IMPORTED)
-
-add_dependencies(${LIB_NAME}_static set_static_lib)
-
-file(WRITE ${LIBOPENMPT_STATIC_FINAL} "")
-
-set_target_properties(${LIB_NAME}_static PROPERTIES
-        IMPORTED_LOCATION "${LIBOPENMPT_STATIC_FINAL}"
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches "${LIB_MAKE_ARGS}" ${LIB_BUILD_BYPRODUCTS}
 )
 
 file(GLOB SOURCES
@@ -54,11 +34,6 @@ file(GLOB SOURCES
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        ${LIB_NAME}_static
-        ZLIB::ZLIB
-)
-
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/libopenmpt
 
@@ -66,7 +41,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
-add_dependencies(${PROJECT_NAME} ${LIB_NAME_VERSIONED}_ExtProj)
+add_library(LIBOPENMPT_STATIC STATIC IMPORTED GLOBAL)
+
+set_target_properties(LIBOPENMPT_STATIC PROPERTIES
+        IMPORTED_LOCATION "${EXTERNAL_SOURCE_DIR}/${LIB_BUILD_BYPRODUCTS}"
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        LIBOPENMPT_STATIC
+        ZLIB::ZLIB
+)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

@@ -134,8 +134,9 @@ function(download_patch_and_add target_name target_filename target_url
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
 
-function(download_patch_and_make target_name target_filename target_url
-        sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir make_args)
+function(download_patch_and_make target_name target_filename target_url sha_256_hash
+        unpack_to_parent_dir target_unpacked_dir patches_dir make_args
+        build_byproducts)
     download_and_patch(
             "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
             "${target_unpacked_dir}" "${patches_dir}"
@@ -166,6 +167,7 @@ function(download_patch_and_make target_name target_filename target_url
             BUILD_COMMAND ${make_command}
             INSTALL_COMMAND ""
             BUILD_IN_SOURCE 1
+            BUILD_BYPRODUCTS ${EXTERNAL_SOURCE_DIR}/${build_byproducts}
     )
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
