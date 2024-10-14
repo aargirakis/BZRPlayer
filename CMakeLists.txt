@@ -99,12 +99,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 
     install(
             FILES
-            ${OUTPUT_DIR}/LICENSE.txt
             ${OUTPUT_DIR}/BZRPlayer.exe
             ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
             ${OUTPUT_DIR}/fmod.dll
-            ${OUTPUT_DIR}/LICENSE.txt
             ${OUTPUT_DIR}/libqt5advanceddocking.dll
+            ${OUTPUT_DIR}/LICENSE.txt
             DESTINATION .
     )
 
@@ -120,6 +119,6 @@ endif ()
 
 #TODO delete output dir (at the right stage) #file(REMOVE_RECURSE ${OUTPUT_DIR})
 #TODO too many baserow.h/baserow.cpp
-#TODO redundant queue.h & queue.c should be treated as external dependency like src/external/psflib
+#TODO redundant queue.h & queue.c should be treated as external dependency like src/external/psflib or, better, relace it with c++ std::queue
 #TODO dynamic sorting of ui->tableWidgetPlugins entries in settingswindow.cpp
 #TODO centralize all info->plugin hardcoded values (like "uade" or "libsidplayfp") with plugins.h defines (check where they are referred in the code)

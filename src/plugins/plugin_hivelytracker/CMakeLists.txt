@@ -35,7 +35,7 @@ download_patch_and_add(
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/Replayer_Windows/hvl_replay.c
         ${EXTERNAL_SOURCE_DIR}/Replayer_Windows/hvl_tables.c
-        src/queue.c
+        src/queue.c #TODO remove
         src/main.cpp
 
         ${CMAKE_SOURCE_DIR}/src/plugins/plugin_flod/src/flod/BaseRow.cpp
@@ -45,7 +45,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/Replayer_Windows
-        src
+        src  #TODO remove
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
