@@ -101,7 +101,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             FILES
             ${OUTPUT_DIR}/LICENSE.txt
             ${OUTPUT_DIR}/BZRPlayer.exe
-            ${OUTPUT_DIR}/BZRPlayerTest.exe
             ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
             ${OUTPUT_DIR}/fmod.dll
             ${OUTPUT_DIR}/LICENSE.txt

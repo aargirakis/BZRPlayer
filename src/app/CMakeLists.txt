@@ -145,12 +145,9 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${OUTPUT_DIR}/data
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayerTest.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml
 
         ${OUTPUT_DIR}
 
         VERBATIM
 )
-
-#TODO add BZRPlayerTest compilation
