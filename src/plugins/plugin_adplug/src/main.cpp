@@ -11,6 +11,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "info.h"
+#include "plugins.h"
+
 using namespace std;
 
 //CLogFile *LogFile;
@@ -220,7 +222,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     {
         info->instruments[j] = ad->player->getinstrument(j);
     }
-    info->plugin = "AdPlug";
+    info->plugin = PLUGIN_adplug;
+    info->pluginName = PLUGIN_adplug_NAME;
     info->setSeekable(true);
 
 

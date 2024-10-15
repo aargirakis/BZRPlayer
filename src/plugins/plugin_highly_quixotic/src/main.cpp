@@ -1,16 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
-
 #include "fmod_errors.h"
-
-
 #include "info.h"
 #include "main.h"
 #include "psflib.h"
 #include "Array.inl.h"
 #include "Array.h"
 #include "qsound.h"
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -332,7 +330,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
     ahx->info->fileformat = "Capcom QSound";
 
-    ahx->info->plugin = "highly_quixotic";
+    ahx->info->plugin = PLUGIN_highly_quixotic;
+    ahx->info->pluginName = PLUGIN_highly_quixotic_NAME;
 
     if(keyExists(ahx->m_tags,"title"))
     {

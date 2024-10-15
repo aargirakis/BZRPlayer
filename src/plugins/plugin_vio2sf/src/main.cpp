@@ -3,15 +3,12 @@
 #include <string>
 #include <zconf.h>
 #include <zlib.h>
-
 #include "fmod_errors.h"
-
-
 #include "info.h"
 #include "main.h"
 #include "psflib.h"
 #include "state.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -445,8 +442,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     codec->plugindata   = ahx;                    /* user data value */
 
     ahx->info->fileformat = "Nintendo DS";
-
-    ahx->info->plugin = "vio2sf";
+    ahx->info->plugin = PLUGIN_vio2sf;
+    ahx->info->pluginName = PLUGIN_vio2sf_NAME;
 
     if(keyExists(ahx->m_tags,"title"))
     {

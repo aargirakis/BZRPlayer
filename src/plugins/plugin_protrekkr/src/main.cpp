@@ -1,13 +1,10 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <string>
 #include "fmod_errors.h"
-
-
 #include "info.h"
 #include <iostream>
-
+#include "plugins.h"
 #include "../../release/distrib/replay/lib/include/replay.h"
 #include "../../src/files/include/files.h"
 
@@ -187,7 +184,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     info->numChannels=int(Songtracks);
     info->title = replayerPtkName;
     info->artist = artist;
-    info->plugin = "protrekkr";
+    info->plugin = PLUGIN_protrekkr;
+    info->pluginName = PLUGIN_protrekkr_NAME;
     info->fileformat ="Protrekkr";
     info->setSeekable(false);
 

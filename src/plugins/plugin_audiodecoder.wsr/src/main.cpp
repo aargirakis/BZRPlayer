@@ -6,6 +6,7 @@
 #include "fmod_errors.h"
 #include "types.h"
 #include <stdlib.h>
+
 extern "C" {
 #include "wsr_player.h"
 #include "ws_audio.h"
@@ -14,6 +15,7 @@ short* sample_buffer=NULL;
 
 #include "info.h"
 #include <iostream>
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -121,7 +123,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     codec->numsubsounds = 0;                    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata   = wsr;                    /* user data value */
 
-    info->plugin = "wsr";
+    info->plugin = PLUGIN_audiodecoder_wsr;
+    info->pluginName = PLUGIN_audiodecoder_wsr_NAME;
     info->fileformat ="Wonderswan";
     info->setSeekable(false);
     info->numSubsongs = 255;

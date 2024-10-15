@@ -4,7 +4,7 @@
 #include <iostream>
 #include "fmod_errors.h"
 #include "info.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -122,7 +122,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     info->songType = yminfo.pSongType;
     info->comments = yminfo.pSongComment;
     info->numSamples = 0;
-    info->plugin ="ST-Sound";
+	info->plugin = PLUGIN_libstsound;
+	info->pluginName = PLUGIN_libstsound_NAME;
 
 
     gp->gpwaveformat.channels     = 2;

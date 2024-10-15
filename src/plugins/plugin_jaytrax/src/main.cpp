@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <string>
@@ -12,6 +11,7 @@ extern "C" {
 
 #include "info.h"
 #include <iostream>
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -121,7 +121,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     codec->numsubsounds = 0;                    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata   = jaytrax;                    /* user data value */
 
-    info->plugin = "jaytrax";
+    info->plugin = PLUGIN_jaytrax;
+    info->pluginName = PLUGIN_jaytrax_NAME;
     info->fileformat ="Jaytrax";
     info->setSeekable(false);
 

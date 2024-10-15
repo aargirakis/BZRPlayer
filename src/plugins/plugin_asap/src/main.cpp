@@ -5,9 +5,8 @@
 #include <stdio.h>
 #include <iostream>
 #include "fmod_errors.h"
-
 #include "asap.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -138,7 +137,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
 
         info->fileformat = "Unknown ASAP";
-        info->plugin = "ASAP";
+        info->plugin = PLUGIN_asap;
+        info->pluginName = PLUGIN_asap_NAME;
         info->setSeekable(true);
 
         const char* modulext = ASAPInfo_GetOriginalModuleExt(tp->asap_info,tp->module, module_len);

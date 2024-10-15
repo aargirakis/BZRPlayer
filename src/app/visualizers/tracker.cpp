@@ -1,4 +1,7 @@
 #include "tracker.h"
+
+#include <plugins.h>
+
 #include "mainwindow.h"
 
 #include "qdebug.h"
@@ -67,7 +70,7 @@ void Tracker::init()
         m_render = false;
     }
 
-    if(m_info->plugin!="libxmp" && m_info->plugin!="HivelyTracker" && m_info->plugin!="libopenmpt" && m_info->plugin!="SunVox")
+    if(m_info->plugin!=PLUGIN_libxmp && m_info->plugin!=PLUGIN_hivelytracker && m_info->plugin!=PLUGIN_libopenmpt && m_info->plugin!=PLUGIN_sunvox)
     {
         m_trackerview = 0;
         m_render = false;
@@ -295,7 +298,7 @@ void Tracker::init()
     m_currentSpeed = -1;
     m_currentBPM = -1;
 
-    if(m_info->plugin=="libopenmpt" || m_info->plugin=="HivelyTracker" || m_info->plugin=="libxmp" || m_info->plugin=="SunVox")
+    if(m_info->plugin==PLUGIN_libopenmpt || m_info->plugin==PLUGIN_hivelytracker || m_info->plugin==PLUGIN_libxmp || m_info->plugin==PLUGIN_sunvox)
     {
          SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODPATTERN_INFO);
     }
@@ -388,7 +391,7 @@ void Tracker::paint(QPainter *painter, QPaintEvent *event)
     currentBPM = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_BPM);
 
     bool updateHively = false;
-    if(m_info->plugin=="HivelyTracker")
+    if(m_info->plugin==PLUGIN_hivelytracker)
     {
         for(unsigned int v = 0;v<m_info->modTrackPositions.size();v++)
         {
@@ -427,12 +430,12 @@ void Tracker::paint(QPainter *painter, QPaintEvent *event)
         m_currentSpeed = currentSpeed;
         m_currentBPM = currentBPM;
 
-        if(m_info->plugin=="libopenmpt" || m_info->plugin=="libxmp")
+        if(m_info->plugin==PLUGIN_libopenmpt || m_info->plugin==PLUGIN_libxmp)
         {
             m_info->modPatternRows = m_info->patterns[m_currentPattern].size() / m_info->numChannels;
         }
 
-        if(m_info->plugin=="HivelyTracker")
+        if(m_info->plugin==PLUGIN_hivelytracker)
         {
             m_currentTrackPositions = std::vector<unsigned char>(m_info->modTrackPositions.size());
             copy(m_info->modTrackPositions.begin(),m_info->modTrackPositions.end(),m_currentTrackPositions.begin()); //used where multiple patterns positions per position (ahx)
@@ -441,12 +444,12 @@ void Tracker::paint(QPainter *painter, QPaintEvent *event)
         unsigned int j=0;
         unsigned int i = 0;
         unsigned int outerLoopBreakValue=0;
-        if(m_info->plugin=="HivelyTracker")
+        if(m_info->plugin==PLUGIN_hivelytracker)
         {
             outerLoopBreakValue = m_info->modPatternRows;
         }
 
-        else if(m_info->plugin=="libopenmpt" || m_info->plugin=="libxmp")
+        else if(m_info->plugin==PLUGIN_libopenmpt || m_info->plugin==PLUGIN_libxmp)
         {
             i = 0;
             outerLoopBreakValue = m_info->patterns[m_currentPattern].size();
@@ -640,17 +643,17 @@ void Tracker::paint(QPainter *painter, QPaintEvent *event)
                 }
                 fontWidth = m_trackerview->fontWidth();
                 int k=0;
-                if(m_info->plugin=="HivelyTracker")
+                if(m_info->plugin==PLUGIN_hivelytracker)
                 {
                     k = m_info->modTrackPositions.at(chan)*m_info->modPatternRows;
                 }
-                else if(m_info->plugin=="libopenmpt" || m_info->plugin=="libxmp" || m_info->plugin=="SunVox")
+                else if(m_info->plugin==PLUGIN_libopenmpt || m_info->plugin==PLUGIN_libxmp || m_info->plugin==PLUGIN_sunvox)
                 {
                     k = chan;
                 }
 
                 BaseRow* row;
-                if(m_info->plugin=="libopenmpt" || m_info->plugin=="libxmp" || m_info->plugin=="SunVox")
+                if(m_info->plugin==PLUGIN_libopenmpt || m_info->plugin==PLUGIN_libxmp || m_info->plugin==PLUGIN_sunvox)
                 {
                     row = m_info->patterns[m_currentPattern][libxmpNotes];
                     libxmpNotes++;
@@ -1156,11 +1159,11 @@ void Tracker::paint(QPainter *painter, QPaintEvent *event)
                 painter->fillRect(m_trackerview->xOffsetRow(),height/2+yPixelPosition+m_trackerview->yOffsetRowHighlight(),m_trackerview->xOffsetRow()+numPixels-(m_trackerview->highlightBackgroundOffset()),1,QColor(0,0,0));
             }
             j++;
-            if(m_info->plugin=="libopenmpt" || m_info->plugin=="libxmp" || m_info->plugin=="SunVox")
+            if(m_info->plugin==PLUGIN_libopenmpt || m_info->plugin==PLUGIN_libxmp || m_info->plugin==PLUGIN_sunvox)
             {
                 i+=m_info->numChannels;
             }
-            else if(m_info->plugin=="HivelyTracker")
+            else if(m_info->plugin==PLUGIN_hivelytracker)
             {
                 i++;
             }

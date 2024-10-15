@@ -1,14 +1,12 @@
 #include "FC.h"
 #include "fc14audiodecoder.h"
-
 #include <string.h>
 #include <iostream>
 #include <stdio.h>
 #include "fmod_errors.h"
 #include <queue>
-
 #include "info.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE *codec);
@@ -150,7 +148,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_
         fc->info->fileformat = "Future Composer 1.4";
 	}
 
-    fc->info->plugin = "Future Composer Player";
+	fc->info->plugin = PLUGIN_libfc14audiodecoder;
+    fc->info->pluginName = PLUGIN_libfc14audiodecoder_NAME;
     fc->info->numUsedPatterns = fc14dec_get_used_patterns(fc->decoder);
     fc->info->numSndModSeqs = fc14dec_get_used_snd_mod_seqs(fc->decoder);
     fc->info->numVolModSeqs = fc14dec_get_used_vol_mod_seqs(fc->decoder);

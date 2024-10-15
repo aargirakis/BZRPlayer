@@ -629,7 +629,7 @@ bool SoundManager::LoadSound(QString filename)
     result = FMOD_System_CreateSound(system,filename.toStdString().c_str(), FMOD_ACCURATETIME|FMOD_CREATESTREAM|FMOD_MPEGSEARCH, &extrainfo1, &soundPlay);
     cout << "FMOD_System_CreateSound done\n";
     flush(cout);
-    cout << "plugin: " << m_Info1->plugin << "\n";
+    cout << "plugin: " << m_Info1->pluginName << "\n";
 
     FMOD_SOUND_TYPE type;
     FMOD_SOUND_FORMAT format;
@@ -639,7 +639,7 @@ bool SoundManager::LoadSound(QString filename)
     m_Info1->numChannelsStream = channels;
     if(result==FMOD_OK)
     {
-        if(m_Info1->plugin=="") //FMOD
+        if(m_Info1->plugin==0) //FMOD
         {
             m_Info1->fileformat=getFMODSoundFormat(soundPlay);
         }

@@ -8,6 +8,7 @@
 #include "sounddef.h"
 #include "libv2.h"
 #include "info.h"
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -148,7 +149,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
     info->fileformat = "Farbrausch V2M";
     info->setSeekable(false);
-	info->plugin = "v2m";
+	info->plugin = PLUGIN_v2m_player;
+	info->pluginName = PLUGIN_v2m_player_NAME;
 
 
     sS32* p;

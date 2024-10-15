@@ -3,16 +3,14 @@
 #include "BaseSample.h"
 #include "FileLoader.h"
 #include "Sample.h"
-
 #include <string.h>
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include "fmod_errors.h"
-
 #include "info.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE *codec);
@@ -239,7 +237,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_
 	codec->plugindata   = fc;                    /* user data value */
 	
         fc->info->fileformat = fc->player->format;
-        fc->info->plugin = "FLOD";
+        fc->info->plugin = PLUGIN_flod;
+        fc->info->pluginName = PLUGIN_flod_NAME;
         fc->info->setSeekable(false);
 
 

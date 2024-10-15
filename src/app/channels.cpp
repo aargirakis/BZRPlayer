@@ -2,6 +2,8 @@
 #include <QDebug>
 #include "channels.h"
 #include "mainwindow.h"
+#include "plugins.h"
+
 Channels::Channels(MainWindow *mw, QWidget *parent)
     : QWidget(parent)
 {
@@ -77,15 +79,15 @@ void Channels::updateChannels()
     {
         channels.at(i)->setChecked(true);
         if(i<numChannels &&
-           (SoundManager::getInstance().m_Info1->plugin=="ASAP" ||
-            SoundManager::getInstance().m_Info1->plugin=="Game Music Emu" ||
-            SoundManager::getInstance().m_Info1->plugin=="libsidplayfp" ||
-            SoundManager::getInstance().m_Info1->plugin=="libopenmpt" ||
-            SoundManager::getInstance().m_Info1->plugin=="HivelyTracker" ||
-            SoundManager::getInstance().m_Info1->plugin=="Future Composer Player" ||
-            SoundManager::getInstance().m_Info1->plugin=="furnace" ||
-            //SoundManager::getInstance().m_Info1->plugin=="sndh-player" ||
-            SoundManager::getInstance().m_Info1->plugin=="libxmp"))
+           (SoundManager::getInstance().m_Info1->plugin==PLUGIN_asap ||
+            SoundManager::getInstance().m_Info1->plugin==PLUGIN_game_music_emu ||
+            SoundManager::getInstance().m_Info1->plugin==PLUGIN_libsidplayfp ||
+            SoundManager::getInstance().m_Info1->plugin==PLUGIN_libopenmpt ||
+            SoundManager::getInstance().m_Info1->plugin==PLUGIN_hivelytracker ||
+            SoundManager::getInstance().m_Info1->plugin==PLUGIN_libfc14audiodecoder ||
+            SoundManager::getInstance().m_Info1->plugin==PLUGIN_furnace ||
+            // SoundManager::getInstance().m_Info1->plugin==PLUGIN_sndh_player ||
+            SoundManager::getInstance().m_Info1->plugin==PLUGIN_libxmp))
         {
             channels.at(i)->setVisible(true);
             channels.at(i)->update();
@@ -119,7 +121,7 @@ void Channels::muteAllChannels()
         channels.at(i)->setChecked(false);
     }
 
-    if(SoundManager::getInstance().m_Info1->plugin=="libopenmpt" || SoundManager::getInstance().m_Info1->plugin=="libxmp")
+    if(SoundManager::getInstance().m_Info1->plugin==PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin==PLUGIN_libxmp)
     {
         mask=0;
     }
@@ -137,7 +139,7 @@ void Channels::unmuteAllChannels()
         channels.at(i)->setChecked(true);
     }
 
-    if(SoundManager::getInstance().m_Info1->plugin=="libopenmpt" || SoundManager::getInstance().m_Info1->plugin=="libxmp")
+    if(SoundManager::getInstance().m_Info1->plugin=PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin==PLUGIN_libxmp)
     {
         mask=0;
     }
@@ -162,7 +164,7 @@ void Channels::muteChannels()
         }
     }
 
-    if(SoundManager::getInstance().m_Info1->plugin=="libopenmpt" || SoundManager::getInstance().m_Info1->plugin=="libxmp")
+    if(SoundManager::getInstance().m_Info1->plugin==PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin==PLUGIN_libxmp)
     {
         mask=0;
     }

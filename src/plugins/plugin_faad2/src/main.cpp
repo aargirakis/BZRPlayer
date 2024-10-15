@@ -1,13 +1,11 @@
 #include "neaacdec.h"
-
 #include <string.h>
 #include <algorithm>
 #include <iostream>
 #include <stdio.h>
 #include "fmod_errors.h"
 #include "info.h"
-
-
+#include "plugins.h"
 
 #ifdef WIN32
 #include <malloc.h>
@@ -230,8 +228,8 @@ FMOD_RESULT F_CALLBACK aacopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         fc->seek=-1;
 
 
-
-        fc->info->plugin = "FAAD2";
+        fc->info->plugin = PLUGIN_faad2;
+        fc->info->pluginName = PLUGIN_faad2_NAME;
         fc->info->fileformat="aac";
         fc->info->setSeekable(false);
     }

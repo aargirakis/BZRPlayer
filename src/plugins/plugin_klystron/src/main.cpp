@@ -11,10 +11,9 @@ extern "C" {
 }
 #endif
 
-
 #include "fmod_errors.h"
 #include "info.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK klystronopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK klystronclose(FMOD_CODEC_STATE *codec);
@@ -152,7 +151,8 @@ FMOD_RESULT F_CALLBACK klystronopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode,
     KSND_PlaySong(klystron->player, klystron->song, 0);
 
     info->fileformat = "Klystron";
-    info->plugin = "Klystron";
+    info->plugin = PLUGIN_klystron;
+    info->pluginName = PLUGIN_klystron_NAME;
     info->setSeekable(false);
 cout << "klystron open done\n";
 flush(cout);

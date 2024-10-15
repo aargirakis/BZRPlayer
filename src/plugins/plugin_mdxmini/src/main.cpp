@@ -1,12 +1,10 @@
 #include "mdxmini.h"
-
-
 #include <string.h>
 #include <iostream>
 #include <stdio.h>
 #include "fmod_errors.h"
 #include "info.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE *codec);
@@ -120,7 +118,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_
     mdx_get_title(&fc->data, title);
     fc->info->title = title;
     fc->info->fileformat = "MDX";
-    fc->info->plugin = "mdxmini";
+    fc->info->plugin = PLUGIN_mdxmini;
+    fc->info->pluginName = PLUGIN_mdxmini_NAME;
 
 
     fc->info->setSeekable(false);

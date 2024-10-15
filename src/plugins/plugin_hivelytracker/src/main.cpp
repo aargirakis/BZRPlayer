@@ -1,13 +1,13 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <string>
 #include "fmod_errors.h"
 #include "hvl_replay.h"
-
 #include "info.h"
 #include "BaseRow.h"
 #include <iostream>
+#include "plugins.h"
+
 static int samples_left = 0;
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -222,7 +222,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     }
 
     delete myBuffer;
-    ahx->info->plugin = "HivelyTracker";
+    ahx->info->plugin = PLUGIN_hivelytracker;
+    ahx->info->pluginName = PLUGIN_hivelytracker_NAME;
     ahx->info->setSeekable(true);
 
 

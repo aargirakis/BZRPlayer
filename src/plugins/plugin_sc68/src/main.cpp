@@ -7,6 +7,7 @@
 #include "info.h"
 #include "libsc68/sc68/sc68.h"
 #include "file68/sc68/rsc68.h"
+#include "plugins.h"
 
 //CLogFile *LogFile;
 
@@ -222,7 +223,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     gp->currentSubsong=1;
     sc68_play(gp->sc68, gp->currentSubsong,0);
 
-    info->plugin = "sc68";
+    info->plugin = PLUGIN_sc68;
+    info->pluginName = PLUGIN_sc68_NAME;
     info->fileformat = "SC68";
 
     if(!isSC68)

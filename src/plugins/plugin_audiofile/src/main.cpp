@@ -1,11 +1,10 @@
-
 #include <audiofile.h>
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
 #include "fmod_errors.h"
 #include "info.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE *codec);
@@ -177,7 +176,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_
 	codec->waveformat   = &(fc->fcwaveformat);
 	codec->numsubsounds = 0;                    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
 	codec->plugindata   = fc;                    /* user data value */
-    info->plugin="Audio File Library";
+	info->plugin = PLUGIN_audiofile;
+	info->pluginName = PLUGIN_audiofile_NAME;
     info->setSeekable(true);
 
 

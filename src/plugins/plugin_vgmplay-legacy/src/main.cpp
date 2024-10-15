@@ -8,6 +8,8 @@
 #include <math.h>
 #include "fmod.h"
 #include "info.h"
+#include "plugins.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -276,7 +278,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
             info->chips.append(PrintChipStr(CurChip, ChpType, ChpClk));
         }
 
-          info->plugin = "VGMPlay";
+          info->plugin = PLUGIN_vgmplay_legacy;
+          info->pluginName = PLUGIN_vgmplay_legacy_NAME;
           info->fileformat = "Video Game Music File";
           info->setSeekable(true);
 

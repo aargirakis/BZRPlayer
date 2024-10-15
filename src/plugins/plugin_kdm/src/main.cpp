@@ -4,11 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fmod_errors.h"
-
 #include "info.h"
-
 #include "kdmeng.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE *codec);
@@ -140,7 +138,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_
     codec->plugindata   = fc;                    /* user data value */
 
     fc->info->fileformat = "Ken's Digital Music";
-    fc->info->plugin = "Ken's Digital Music";
+    fc->info->plugin = PLUGIN_kdm;
+    fc->info->pluginName = PLUGIN_kdm_NAME;
     fc->info->setSeekable(true);
 
     int numSamples = fc->m_player->getNumwaves();

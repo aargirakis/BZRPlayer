@@ -1,4 +1,7 @@
 #include "trackerview.h"
+
+#include <plugins.h>
+
 #include "fmod_common.h"
 #include "qcoreevent.h"
 #include "qdebug.h"
@@ -40,7 +43,7 @@ void TrackerView::paintEvent(QPaintEvent *event)
     if(tracker)
     {
 
-        if((inited && tracker->m_render && SoundManager::getInstance().IsPlaying()) && (SoundManager::getInstance().m_Info1->plugin=="libopenmpt" || SoundManager::getInstance().m_Info1->plugin=="libxmp" || SoundManager::getInstance().m_Info1->plugin=="HivelyTracker" || SoundManager::getInstance().m_Info1->plugin=="SunVox"))
+        if((inited && tracker->m_render && SoundManager::getInstance().IsPlaying()) && (SoundManager::getInstance().m_Info1->plugin==PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin==PLUGIN_libxmp || SoundManager::getInstance().m_Info1->plugin==PLUGIN_hivelytracker || SoundManager::getInstance().m_Info1->plugin==PLUGIN_sunvox))
         {
             SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
             QPainter painter;
@@ -85,7 +88,7 @@ bool TrackerView::eventFilter(QObject *obj, QEvent *event)
                     }
                 }
 
-                if(SoundManager::getInstance().m_Info1->plugin=="libopenmpt")
+                if(SoundManager::getInstance().m_Info1->plugin==PLUGIN_libopenmpt)
                 {
                     //check where we clicked and toggle channels
 //                    int channel = tracker->m_trackerview->getChannelClicked(mouseEvent->pos().x(),mouseEvent->pos().y());

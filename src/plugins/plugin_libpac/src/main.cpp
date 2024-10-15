@@ -4,9 +4,9 @@
 #include <string>
 #include "fmod_errors.h"
 #include <pacP.h>
-
 #include "info.h"
 #include <iostream>
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -164,7 +164,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     info->numPatterns = pac_num_sheets(ahx->pac_module);
     info->numOrders = pac_num_positions(ahx->pac_module);
     info->title = pac_title(ahx->pac_module);
-    info->plugin = "libpac";
+    info->plugin = PLUGIN_libpac;
+    info->pluginName = PLUGIN_libpac_NAME;
     info->fileformat ="SBStudio PAC";
     info->setSeekable(true);
 

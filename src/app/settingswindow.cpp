@@ -287,6 +287,9 @@ settingsWindow::settingsWindow(QWidget *parent) :
     ui->tableWidgetPlugins->setRowCount(40);
     int row=0;
 
+    ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_fmod_VERSION));
+    ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_fmod_NAME));
+
     if (PLUGIN_adplug_DLL != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_adplug_VERSION));

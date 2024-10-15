@@ -21,6 +21,8 @@ download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
 )
 
+add_compile_definitions(SUNVOX_MAIN)
+
 file(GLOB SOURCES
         src/main.cpp
 )

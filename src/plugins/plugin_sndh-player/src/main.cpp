@@ -2,10 +2,10 @@
 #include <string.h>
 #include <string>
 #include <queue>
-
 #include "fmod_errors.h"
 #include "info.h"
 #include "SndhFile.h"
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -203,7 +203,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     codec->plugindata   = ahx;                    /* user data value */
 
     ahx->info->numChannels = 4;
-    ahx->info->plugin = "sndh-player";
+    ahx->info->plugin = PLUGIN_sndh_player;
+    ahx->info->pluginName = PLUGIN_sndh_player_NAME;
     ahx->info->fileformat = "SNDH";
     //ahx->info->waveformDisplay = new uint32_t[25600];
     //memset(ahx->info->waveformDisplay, 0, 25600 * sizeof(ahx->info->waveformDisplay));

@@ -2,6 +2,8 @@
 #include "qapplication.h"
 #include "qdebug.h"
 #include <math.h>
+#include <plugins.h>
+
 #include "qmessagebox.h"
 #include "qpainterpath.h"
 #include "qregularexpression.h"
@@ -227,7 +229,7 @@ void Scroller::paint(QPainter *painter, QPaintEvent *event)
     painter->setOpacity(1);
 
     bool stereoEnabled = true;
-    if (SoundManager::getInstance().m_Info1->plugin=="furnace" || SoundManager::getInstance().m_Info1->plugin=="Future Composer Player" || SoundManager::getInstance().m_Info1->plugin=="libopenmpt" || SoundManager::getInstance().m_Info1->plugin=="libxmp" || SoundManager::getInstance().m_Info1->plugin=="HivelyTracker" )
+    if (SoundManager::getInstance().m_Info1->plugin==PLUGIN_furnace || SoundManager::getInstance().m_Info1->plugin==PLUGIN_libfc14audiodecoder || SoundManager::getInstance().m_Info1->plugin==PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin==PLUGIN_libxmp || SoundManager::getInstance().m_Info1->plugin==PLUGIN_hivelytracker)
     {
         stereoEnabled=false;
     }

@@ -33,6 +33,7 @@
 #include "settingswindow.h"
 #include "visualizers/visualizerfullscreen.h"
 #include <fstream>
+#include <plugins.h>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QWheelEvent>
@@ -2244,7 +2245,7 @@ void MainWindow::PlaySong(int currentRow)
         QString artist="";
         if(pi.info->title!="")
         {
-            if(SoundManager::getInstance().m_Info1->plugin=="")
+            if(SoundManager::getInstance().m_Info1->plugin==0)
             {
                 filename=pi.info->title.c_str();
             }
@@ -2256,7 +2257,7 @@ void MainWindow::PlaySong(int currentRow)
 
         if(pi.info->artist!="")
         {
-            if(SoundManager::getInstance().m_Info1->plugin=="")
+            if(SoundManager::getInstance().m_Info1->plugin==0)
             {
                 artist = pi.info->artist.c_str();
             }
@@ -2267,7 +2268,7 @@ void MainWindow::PlaySong(int currentRow)
         }
         else if(pi.info->author!="")
         {
-            if(SoundManager::getInstance().m_Info1->plugin=="")
+            if(SoundManager::getInstance().m_Info1->plugin==0)
             {
                 artist = pi.info->author.c_str();
             }
@@ -2278,7 +2279,7 @@ void MainWindow::PlaySong(int currentRow)
         }
         else if(pi.info->composer!="")
         {
-            if(SoundManager::getInstance().m_Info1->plugin=="")
+            if(SoundManager::getInstance().m_Info1->plugin==0)
             {
                 artist = pi.info->composer.c_str();
             }
@@ -2468,7 +2469,7 @@ void MainWindow::updateInstruments()
 
     if(SoundManager::getInstance().m_Info1!=nullptr)
     {
-        if(SoundManager::getInstance().m_Info1->plugin == "libopenmpt")
+        if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt)
         {
             if(SoundManager::getInstance().m_Info1->numSamples>0)
             {
@@ -2535,7 +2536,7 @@ void MainWindow::updateInstruments()
             }
 
         }
-        else if(SoundManager::getInstance().m_Info1->plugin == "uade")
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_wothke_uade_2_13)
         {
             if(SoundManager::getInstance().m_Info1->numSamples>0)
             {
@@ -2569,32 +2570,7 @@ void MainWindow::updateInstruments()
                 }
             }
         }
-        else if(SoundManager::getInstance().m_Info1->plugin == "BSPlay")
-        {
-            if(SoundManager::getInstance().m_Info1->numSamples>0)
-            {
-                QStringList columnLabelsSamples;
-                columnLabelsSamples << tr("#") << tr("Name") << tr("Volume");
-                ui->samples->setColumnCount(columnLabelsSamples.size());
-                ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
-                ui->samples->setColumnWidth(0,sampleColumnNumberWidth);
-                ui->samples->setColumnWidth(1,sampleColumnNameWidth);
-                ui->samples->setColumnWidth(2,sampleColumnVolumeWidth);
-
-                ui->samples->horizontalHeaderItem(0)->setTextAlignment( Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(1)->setTextAlignment( Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(2)->setTextAlignment( Qt::AlignLeft);
-
-                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
-                for(int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++)
-                {
-                    ui->samples->setItem(j,0,new QTableWidgetItem(QString::number(j+1)));
-                    ui->samples->setItem(j,1,new QTableWidgetItem(SoundManager::getInstance().m_Info1->samples[j].c_str() ));
-                    ui->samples->setItem(j,2,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->samplesVolume[j])  ));
-                }
-            }
-        }
-        else if(SoundManager::getInstance().m_Info1->plugin == "libxmp" )
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp)
         {
             if(SoundManager::getInstance().m_Info1->numSamples>0)
             {
@@ -2663,7 +2639,7 @@ void MainWindow::updateInstruments()
                 }
             }
         }
-        else if(SoundManager::getInstance().m_Info1->plugin == "HivelyTracker")
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker)
         {
             if(SoundManager::getInstance().m_Info1->numInstruments>0)
             {
@@ -2693,7 +2669,7 @@ void MainWindow::updateInstruments()
             }
         }
 
-        else if(SoundManager::getInstance().m_Info1->plugin == "protrekkr")
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_protrekkr)
         {
             if(SoundManager::getInstance().m_Info1->numSamples>0)
             {
@@ -2737,7 +2713,7 @@ void MainWindow::updateInstruments()
             }
         }
 
-        else if(SoundManager::getInstance().m_Info1->plugin == "Future Composer Player")
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_libfc14audiodecoder)
         {
             if(SoundManager::getInstance().m_Info1->numSamples>0)
             {
@@ -2772,7 +2748,7 @@ void MainWindow::updateInstruments()
             }
         }
 
-        else if(SoundManager::getInstance().m_Info1->plugin == "ASAP")
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_asap)
         {
             if(SoundManager::getInstance().m_Info1->numInstruments>0)
             {
@@ -2794,7 +2770,7 @@ void MainWindow::updateInstruments()
                 }
             }
         }
-        else if(SoundManager::getInstance().m_Info1->plugin == "libpac")
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_libpac)
         {
             if(SoundManager::getInstance().m_Info1->numSamples>0)
             {
@@ -2845,7 +2821,7 @@ void MainWindow::updateInstruments()
 
             }
         }
-        else if(SoundManager::getInstance().m_Info1->plugin == "FLOD")
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_flod)
         {
             if(SoundManager::getInstance().m_Info1->numSamples>0)
             {
@@ -2877,7 +2853,7 @@ void MainWindow::updateInstruments()
 
             }
         }
-        else if(SoundManager::getInstance().m_Info1->plugin == "AdPlug")
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_adplug)
         {
             if(SoundManager::getInstance().m_Info1->numInstruments>0)
             {
@@ -2944,7 +2920,7 @@ void MainWindow::exportInstrument(QString format)
 
     int row = ui->samples->currentRow();
 
-    if(SoundManager::getInstance().m_Info1->plugin=="libxmp" &&  ui->samples->rowCount()>0 && SoundManager::getInstance().m_Info1->samplesSize[row]>0)
+    if(SoundManager::getInstance().m_Info1->plugin==PLUGIN_libxmp &&  ui->samples->rowCount()>0 && SoundManager::getInstance().m_Info1->samplesSize[row]>0)
     {
 
         QString defaultFileName = SoundManager::getInstance().m_Info1->samples[row].c_str();

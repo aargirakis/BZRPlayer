@@ -1,16 +1,13 @@
 #include "apps/libzxtune/zxtune.h"
 #include <sound/sound_parameters.h>
-
 #include <stdio.h>
 #include <iostream>
 #include <string>
-
 #include "info.h"
+#include "fmod_errors.h"
+#include "plugins.h"
 
 using namespace std;
-
-#include "fmod_errors.h"
-
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -308,7 +305,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     }
 
     zx->posAfterSeek=0;
-    zx->info->plugin = "ZXTune";
+    zx->info->plugin = PLUGIN_zxtune;
+    zx->info->pluginName = PLUGIN_zxtune_NAME;
     zx->info->setSeekable(true);
 
 //    cout << "zxtune length: " << msecDuration <<  endl;

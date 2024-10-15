@@ -8,13 +8,10 @@
 #include <stdexcept>
 #include <vector>
 #include <windows.h>
-
-
 #include <fmod_errors.h>
 #include "info.h"
-#define SUNVOX_MAIN
 #include "sunvox.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK sunvoxclose(FMOD_CODEC_STATE *codec);
@@ -143,8 +140,8 @@ FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, F
         codec->numsubsounds = 0;                    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
         codec->plugindata   = sunvox;                    /* user data value */
 
-
-        info->plugin = "SunVox";
+        info->plugin = PLUGIN_sunvox;
+        info->pluginName = PLUGIN_sunvox_NAME;
         info->title = sv_get_song_name(0);
         info->setSeekable(false);
         sv_play_from_beginning(0);

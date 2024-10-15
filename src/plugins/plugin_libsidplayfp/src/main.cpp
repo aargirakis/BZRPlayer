@@ -1,15 +1,5 @@
-/*===============================================================================================
- codec_sid.dll
- Ver. 1.21
- Copyright (c), Blazer Studios, 2007.
- Visit http://andreas.blazer.nu for latest version
- Built with Sidplay2, http://sidplay2.sourceforge.net
-
-===============================================================================================*/
-
-
 #include "fmod_errors.h"
-
+#include "plugins.h"
 #include "sidplayfp.h"
 #include "SidTune.h"
 #include "SidTuneInfo.h"
@@ -549,7 +539,8 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
 
     info->setSeekable(true);
-    info->plugin = "libsidplayfp";
+    info->plugin = PLUGIN_libsidplayfp;
+    info->pluginName = PLUGIN_libsidplayfp_NAME;
     info->fileformat = "C64 SID";
     return FMOD_OK;
 }

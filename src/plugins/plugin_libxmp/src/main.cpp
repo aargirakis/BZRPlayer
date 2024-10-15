@@ -4,12 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fmod.h"
-
 #include "info.h"
 #include "xmp.h"
 #include "BaseRow.h"
-
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE *codec);
@@ -351,7 +349,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_
 
     fc->subsong = 0;
     fc->info->fileformat = fc->mi.mod->type;
-    fc->info->plugin = "libxmp";
+    fc->info->plugin = PLUGIN_libxmp;
+    fc->info->pluginName = PLUGIN_libxmp_NAME;
     fc->info->setSeekable(true);
     fc->info->numSubsongs = fc->mi.num_sequences;
     //delete c;

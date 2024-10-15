@@ -1,16 +1,13 @@
 #include <gme.h>
 #include "Music_Emu.h"
 #include <blargg_endian.h>
-
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <string.h>
-
 #include "fmod.h"
-
-
 #include "info.h"
+#include "plugins.h"
 
 using namespace std;
 
@@ -311,7 +308,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
         info->system = gp->info->system;
         info->game = gp->info->game;
         info->dumper = gp->info->dumper;
-        info->plugin = "Game Music Emu";
+        info->plugin = PLUGIN_game_music_emu;
+        info->pluginName = PLUGIN_game_music_emu_NAME;
         info->setSeekable(true);
         info->numChannels = gme_voice_count(gp->emu);
         info->numSubsongs = (int) gme_track_count( gp->emu );

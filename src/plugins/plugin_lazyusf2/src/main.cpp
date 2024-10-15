@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
-
 #include "fmod_errors.h"
 #include "info.h"
 #include "main.h"
 #include "psflib.h"
 #include "usf.h"
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -263,7 +263,8 @@ cout << "usf ok\n";
     codec->numsubsounds = 0;                    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata   = ahx;                    /* user data value */
 
-    ahx->info->plugin = "lazyusf2";
+    ahx->info->plugin = PLUGIN_lazyusf2;
+    ahx->info->pluginName = PLUGIN_lazyusf2_NAME;
     ahx->info->fileformat = "N64";
 
     return FMOD_OK;

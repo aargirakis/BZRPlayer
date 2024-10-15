@@ -1,4 +1,7 @@
 #include "buttonoscilloscope.h"
+
+#include <plugins.h>
+
 #include "qevent.h"
 #include "qpainter.h"
 #include "qpainterpath.h"
@@ -45,9 +48,9 @@ if(SoundManager::getInstance().m_Info1 == nullptr)
     return;
 }
     //TODO refactor this shit
-    if(checked || SoundManager::getInstance().m_Info1->plugin=="sndh-player")
+    if(checked || SoundManager::getInstance().m_Info1->plugin==PLUGIN_sndh_player)
     {
-        if(SoundManager::getInstance().m_Info1->plugin=="sndh-player")
+        if(SoundManager::getInstance().m_Info1->plugin==PLUGIN_sndh_player)
         {
             QPainter painter(this);
             painter.setBrush(QBrush(backgroundColor));

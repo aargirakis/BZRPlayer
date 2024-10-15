@@ -10,6 +10,9 @@ unpack_and_patch(
 
 set(EXTERNAL_SOURCE_DIR_${LIB_NAME} "${EXTERNAL_SOURCE_DIR}/FMOD SoundSystem/FMOD Studio API Windows")
 
+add_compile_definitions(PLUGIN_${LIB_NAME}_NAME="FMOD")
+add_compile_definitions(PLUGIN_${LIB_NAME}_VERSION="${LIB_VERSION}")
+
 add_custom_target(
         copy-lib-${LIB_NAME} ALL
         COMMAND ${CMAKE_COMMAND} -E copy_if_different

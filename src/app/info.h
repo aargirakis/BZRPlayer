@@ -21,7 +21,7 @@ public:
 
     bool getSeekable() const
     {
-        if(plugin=="") return true;
+        if(plugin==0) return true;
         return seekable;
     }
 
@@ -77,7 +77,8 @@ public:
         instrumentsFilterSpeed=nullptr;
         instrumentsWavelen=nullptr;
         numSamples=0;
-        plugin="";
+        plugin=0;
+        pluginName="";
         system="";
         game="";
         dumper="";
@@ -287,7 +288,8 @@ public:
     float volumeAmplification;
 
     int numSamples;
-    string plugin;
+    unsigned char plugin;
+    string pluginName;
     string system;
     string game;
     string dumper;

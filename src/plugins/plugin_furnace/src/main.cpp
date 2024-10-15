@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
-
 #include "fmod_errors.h"
 #include "info.h"
 #include "engine.h"
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -178,7 +178,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     ahx->info->title = song.name;
     ahx->info->system = song.systemName;
     ahx->info->numChannels = ahx->m_engine->getTotalChannelCount();
-    ahx->info->plugin = "furnace";
+    ahx->info->plugin = PLUGIN_furnace;
+    ahx->info->pluginName = PLUGIN_furnace_NAME;
 
     return FMOD_OK;
 }

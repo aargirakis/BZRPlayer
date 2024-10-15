@@ -1,14 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
-
 #include "fmod_errors.h"
-
-
 #include "info.h"
 #include "main.h"
-
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
@@ -335,7 +331,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     codec->numsubsounds = 0;                    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata   = ahx;                    /* user data value */
 
-    ahx->info->plugin = "highly_experimental";
+    ahx->info->plugin = PLUGIN_highly_experimental;
+    ahx->info->pluginName = PLUGIN_highly_experimental_NAME;
     if(ahx->psfType==1)
     {
         ahx->ahxwaveformat.frequency    = 44100;

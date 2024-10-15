@@ -1,14 +1,14 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
-
 #include "organya.h"
 #include <list>
-
 #include "fmod_errors.h"
 #include "info.h"
 #include <algorithm>
 #include<iterator>
+#include "plugins.h"
+
 FMOD_RESULT F_CALLBACK orgopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK orgclose(FMOD_CODEC_STATE *codec);
 FMOD_RESULT F_CALLBACK orgread(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
@@ -100,7 +100,8 @@ FMOD_RESULT F_CALLBACK orgopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     codec->plugindata   = org;                    /* user data value */
 
     org->info->fileformat = "Organya";
-    org->info->plugin = "liborganya";
+    org->info->plugin = PLUGIN_organya_decoder;
+    org->info->pluginName = PLUGIN_organya_decoder_NAME;
     org->info->setSeekable(true);
     org->info->numChannels=16;
     org_decoder_seek_sample( org->m_tune, 0 );

@@ -11,12 +11,9 @@
 #include "libopenmpt.hpp"
 #include "libopenmpt_ext.hpp"
 #include "BaseRow.h"
-
-
 #include <fmod_errors.h>
 #include "info.h"
-
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK libopenmptclose(FMOD_CODEC_STATE *codec);
@@ -335,8 +332,8 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermod
         }
 
 
-
-        info->plugin = "libopenmpt";
+        info->plugin = PLUGIN_libopenmpt;
+        info->pluginName = PLUGIN_libopenmpt_NAME;
         info->setSeekable(true);
         //libopenmpt->vumeterBuffer = CreateQueue(22);
         return FMOD_OK;

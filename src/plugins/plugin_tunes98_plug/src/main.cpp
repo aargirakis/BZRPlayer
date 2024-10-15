@@ -3,10 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fmod_errors.h"
-
 #include "info.h"
 #include "kmp_pi.h"
-
+#include "plugins.h"
 
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE *codec);
@@ -135,8 +134,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_
     codec->numsubsounds = 0;                    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata   = fc;                    /* user data value */
 
-
-    fc->info->plugin = "m_s98.kpi";
+    fc->info->plugin = PLUGIN_tunes98_plug;
+    fc->info->pluginName = PLUGIN_tunes98_plug_NAME;
     fc->info->setSeekable(true);
     return FMOD_OK;
 }

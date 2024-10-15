@@ -9,6 +9,8 @@
 #include <iterator>
 #include "fmod_errors.h"
 #include "info.h"
+#include "plugins.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,6 +23,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
 unsigned int getLengthFromDatabase(const char*, int, const char*);
 int test_ac1d(unsigned char* data);
 int test_pru1(unsigned char* data);
@@ -411,7 +414,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
 
 
     gp->info->numSamples=0;
-    gp->info->plugin ="uade";
+    gp->info->plugin = PLUGIN_wothke_uade_2_13;
+    gp->info->pluginName = PLUGIN_wothke_uade_2_13_NAME;
     if(!acid)
     {
         gp->info->fileformat = "AC1D Packer";
