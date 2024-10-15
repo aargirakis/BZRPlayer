@@ -14,7 +14,7 @@ coded pretty much from scratch.
 
 ## How To Build
 
-### Windows (#TODO msys2 gdb?):
+### Windows (#TODO msys2 gdb?)
 
 **MSYS2** with following packages (install as shown) is required:\
 `pacman -S make mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg mingw-w64-i686-SDL2
@@ -32,7 +32,7 @@ binaries.\
 If the **Release** build type is selected, along with `output` also `output_release` directory will be created,
 containing the final archive release file
 
-#### build example:
+#### build example
 
 ```
 cd /c/BZRPlayer
@@ -40,20 +40,22 @@ cmake -S . -B cmake-build-release -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYP
 ninja -C cmake-build-release 
 ```
 
-### Linux cross-compilation:
+### Linux (cross-compilation)
 
-Dockerized cross-compilation toolchain is provided: just execute `run.sh` from the **docker** directory, eventually
-setting `BUILD_TYPE=Release` if needed.
+Dockerized cross-compilation toolchain is provided, just execute `run.sh` from the **docker** directory with following
+flags:
 
-If you also want to run BZR2 after the build, then set `RUN_BZR2=1` (**Wine** is required).
+- `CONFIG=1` for running the cmake configuration stage (Debug eventually setting `BUILD_TYPE=Release` if needed)
+- `BUILD=1` for building the project
+- `RUN_BZR2=1` for running built BZR2 (**Wine** is required)
 
-### Offline mode:
+### Offline mode
 
 By default, the cmake configuration stage will download all needed libraries and files. Add `-DOFFLINE_MODE=1` to cmake
-command for switching to offline mode.\
+command (or `OFFLINE_MODE=1` to `run.sh`) for switching to offline mode.\
 Offline mode doesn't guarantee that the build will include the latest versions of the files with unmanaged version
 
-### Windows installer:
+### Windows installer
 
 Although the **BZR2 online installer for Windows** is scripted in **Nullsoft Scriptable Install System (NSIS)**, it can
 be only compiled using **WSL2** or cross-compiled on Linux since it contains Linux specific code (mostly the bash script
@@ -78,7 +80,7 @@ It may be useful to disable it (for dev/test purposes) executing: `bzr2_setup.ex
 
 ----
 
-Useful links:
+#### Useful links:
 
 - [BZR2 website](http://bzrplayer.blazer.nu)
 - [Patreon](https://www.patreon.com/bzrplayer)

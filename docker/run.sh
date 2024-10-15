@@ -22,22 +22,30 @@ if [ "$(docker ps -a -q -f name="$CONTAINER_NAME")" ]; then
   docker rm -f "$CONTAINER_NAME"
 fi
 
-run_docker_build() {
-  local COMMAND_CONTAINER="\
-mkdir -p $BUILD_DIR && chown -R devel:devel $BUILD_DIR && su devel -c '\
-cd \"$BUILD_DIR\" && i686-w64-mingw32-cmake \
--DCMAKE_PREFIX_PATH=/usr/i686-w64-mingw32 \
--DCMAKE_BUILD_TYPE=\"$BUILD_TYPE\" \
--DCPACK_EXECUTABLE=/usr/bin/cpack \
--DOFFLINE_MODE=\"$OFFLINE_MODE\" \
--G Ninja .. && ninja'"
+CONTAINER_COMMAND="\
+mkdir -p $BUILD_DIR && \
+chown -R devel:devel $BUILD_DIR && \
+cd $BUILD_DIR"
 
-  docker run --rm -v "$PROJECT_DIR:$PROJECT_DIR" --name "$CONTAINER_NAME" \
-    $IMAGE_NAME bash -c "$COMMAND_CONTAINER"
-}
+if [ "$CONFIG" == 1 ]; then
+  CONTAINER_COMMAND="${CONTAINER_COMMAND} && \
+                                          su devel -c '\
+                                          i686-w64-mingw32-cmake \
+                                          -DCMAKE_PREFIX_PATH=/usr/i686-w64-mingw32 \
+                                          -DCMAKE_BUILD_TYPE=\"$BUILD_TYPE\" \
+                                          -DCPACK_EXECUTABLE=/usr/bin/cpack \
+                                          -DOFFLINE_MODE=\"$OFFLINE_MODE\" \
+                                          -G Ninja ..'"
+fi
 
-if run_docker_build && [ "$RUN_BZR2" == 1 ]; then
+if [ "$BUILD" == 1 ]; then
+  CONTAINER_COMMAND="${CONTAINER_COMMAND} && su devel -c 'ninja'"
+fi
 
+docker run --rm -v "$PROJECT_DIR:$PROJECT_DIR" --name "$CONTAINER_NAME" \
+  $IMAGE_NAME bash -c "$CONTAINER_COMMAND"
+
+if [ "$RUN_BZR2" == 1 ]; then
   for tmp_dir in "$XDG_RUNTIME_DIR" "$TMPDIR" "$(dirname "$(mktemp -u --tmpdir)")" "/tmp" "/var/tmp" "/var/cache"; do
     if [ -w "$tmp_dir" ]; then
       break
