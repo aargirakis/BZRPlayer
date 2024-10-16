@@ -111,7 +111,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 
     add_custom_target(
             cpack ALL
-            DEPENDS ${MODULES}
             COMMAND ${CPACK_EXECUTABLE}
             DEPENDS ${MODULES}
     )
