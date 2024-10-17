@@ -1,0 +1,11 @@
+--- cpp/core.cpp	2022-04-27 00:13:22.000000000 +0200
++++ cpp/core.cpp	2024-10-18 08:57:16.325377770 +0200
+@@ -59,7 +59,7 @@
+     setLogHook_.DisconnectAll();
+     setLogHook_.Connect(std::move(hook));
+     static auto wrapper =
+-      [](void* callbackData, EDiscordLogLevel level, char const* message) -> void {
++      [] DISCORD_CALLBACK (void* callbackData, EDiscordLogLevel level, char const* message) -> void {
+         auto cb(reinterpret_cast<decltype(setLogHook_)*>(callbackData));
+         if (!cb) {
+             return;
