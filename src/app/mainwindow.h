@@ -236,6 +236,7 @@ private slots:
     void on_buttonPlay_2_clicked();
 
     void timerProgress();
+    void discordUpdateActivity();
     void refreshInfo();
     void restoreLayout();
     void openSettings();
@@ -478,7 +479,7 @@ private:
     bool isUpdateCurrentRowToNextEnabled;
     QTimer* m_Timer;
     QTimer* m_TimerRefreshInfo;
-
+    QTimer* discordActivityTimer;
     bool playStarted;
     bool loaded;
     QMenu* popMenu;

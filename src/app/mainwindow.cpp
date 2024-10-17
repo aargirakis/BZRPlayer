@@ -33,6 +33,8 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include "about.h"
+#include "discord.h"
+#include "DiscordManager.h"
 
 #define NEZPLAYLISTSPLITTER "::<>::?<>"
 #define PLAYLISTFIELDSPLITTER "<><>::????"
@@ -44,6 +46,10 @@
 
 using namespace std;
 const QString MainWindow::VERSION = PROJECT_VERSION;
+
+Core* discordCore;
+Activity discordActivity;
+boolean isDiscordUpdateActivityEnabled;
 
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     QMainWindow(parent),
@@ -68,6 +74,14 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     if (!QDir(dataPath).exists()) {
         qFatal("Cannot find directory %s", dataPath.toStdString().c_str());
         QCoreApplication::exit(EXIT_FAILURE);
+    }
+
+    discordCore = init();
+    if (discordCore)
+    {
+        discordActivity.SetType(ActivityType::Listening); //currently has no effect (ready-only)
+        discordActivity.GetTimestamps().SetStart(NULL);
+        discordActivity.GetTimestamps().SetEnd(NULL);
     }
 
     bool instanceExists = false;
@@ -454,6 +468,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     currentSubsong = 1;
     buttonNextClicked = true;
 
+    discordActivityTimer = new QTimer(this);
+    connect( discordActivityTimer, SIGNAL(timeout()), this, SLOT(discordUpdateActivity()) );
+    discordActivityTimer->start(500);
 
     ui->positionSlider->setMaximum(0);
 
@@ -1364,6 +1381,25 @@ void MainWindow::timerProgress()
             ui->labelTimer_2->setText(timeToShow);
             ui->positionSlider->setValue(currentMsSubsong);
         }
+
+        if (discordCore)
+        {
+            QString title = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0).data().toString();
+            QString fileformat = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 1).data().toString();
+            QString artist = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 8).data().toString();
+            string activityDetails =
+                ((artist.isEmpty() ? title : title + " - " + artist) + " ["
+                    + fileformat + "]").
+                toStdString();
+            QString length = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 2).data().toString();
+            string state = msToNiceStringExact(currentMsSubsong, m_displayMilliseconds).toStdString() + "/" + length.
+                toStdString();
+
+            discordActivity.SetDetails(activityDetails.c_str());
+            discordActivity.SetState(state.c_str());
+            // activity.GetAssets().SetLargeImage("test1");
+            // activity.GetAssets().SetLargeText("test2");
+        }
     }
 
     if (playStarted)
@@ -1372,6 +1408,32 @@ void MainWindow::timerProgress()
             GetPaused()))
         {
             playNextSong(false);
+        }
+    }
+}
+
+void MainWindow::discordUpdateActivity()
+{
+    if (discordCore)
+    {
+        SoundManager& sm = SoundManager::getInstance();
+        if (sm.IsPlaying())
+        {
+            if (!sm.GetPaused())
+            {
+                isDiscordUpdateActivityEnabled=true;
+                updateActivity(discordActivity, discordCore);
+            }
+        }
+        else
+        {
+            if(isDiscordUpdateActivityEnabled)
+            {
+                discordActivity.SetDetails("");
+                discordActivity.SetState("");
+                updateActivity(discordActivity, discordCore);
+                isDiscordUpdateActivityEnabled=false;
+            }
         }
     }
 }
