@@ -1,0 +1,20 @@
+--- cpp/achievement_manager.cpp	2022-04-27 00:13:22.000000000 +0200
++++ cpp/achievement_manager.cpp	2024-10-18 08:51:38.007015658 +0200
+@@ -34,7 +34,7 @@
+                                             std::uint8_t percentComplete,
+                                             std::function<void(Result)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result) -> void {
+         std::unique_ptr<std::function<void(Result)>> cb(
+           reinterpret_cast<std::function<void(Result)>*>(callbackData));
+         if (!cb || !(*cb)) {
+@@ -50,7 +50,7 @@
+ 
+ void AchievementManager::FetchUserAchievements(std::function<void(Result)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result) -> void {
+         std::unique_ptr<std::function<void(Result)>> cb(
+           reinterpret_cast<std::function<void(Result)>*>(callbackData));
+         if (!cb || !(*cb)) {
