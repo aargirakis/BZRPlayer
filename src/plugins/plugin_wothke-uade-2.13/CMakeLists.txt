@@ -87,6 +87,8 @@ file(GLOB SOURCES
         src/md5/*.c    #TODO all src/md5/*.* files (apart types.h) comes from xmms-sid (version from 0.8.96 to 0.8.99.2) that seem untraceable on the web: better upgrade to 0.9.2
         src/blazer.c
         src/main.cpp
+
+        ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
 )
 
 list(REMOVE_ITEM SOURCES ${EXTERNAL_SOURCE_DIR}/compat/stdinttest.c)

@@ -29,6 +29,8 @@ file(GLOB SOURCES
         src/flod/trackers/PTVoice.cpp
         src/flod/whittaker/*.cpp
         src/main.cpp
+
+        ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

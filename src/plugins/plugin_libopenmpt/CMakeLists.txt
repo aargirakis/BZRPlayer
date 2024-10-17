@@ -29,7 +29,7 @@ file(GLOB SOURCES
         src/queue.c #TODO remove
         src/main.cpp
 
-        ${CMAKE_SOURCE_DIR}/src/plugins/plugin_flod/src/flod/BaseRow.cpp
+        ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
