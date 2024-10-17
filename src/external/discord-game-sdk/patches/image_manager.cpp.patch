@@ -1,0 +1,11 @@
+--- cpp/image_manager.cpp	2022-04-27 00:13:22.000000000 +0200
++++ cpp/image_manager.cpp	2024-10-18 08:58:17.485783829 +0200
+@@ -16,7 +16,7 @@
+                          std::function<void(Result, ImageHandle)> callback)
+ {
+     static auto wrapper =
+-      [](void* callbackData, EDiscordResult result, DiscordImageHandle handleResult) -> void {
++      [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result, DiscordImageHandle handleResult) -> void {
+         std::unique_ptr<std::function<void(Result, ImageHandle)>> cb(
+           reinterpret_cast<std::function<void(Result, ImageHandle)>*>(callbackData));
+         if (!cb || !(*cb)) {
