@@ -392,6 +392,10 @@ private slots:
 
     void refreshInfoNetworkStream();
 
+    void discordUpdateActivity();
+
+    void refreshInfo();
+
     void restoreLayout();
 
     void openSettings();
@@ -720,6 +724,7 @@ private:
     bool isUpdateCurrentRowToNextEnabled;
     QTimer *Timer;
     QTimer *TimerRefreshInfo;
+    QTimer *discordActivityTimer;
 
     bool playStarted;
     bool loaded;
