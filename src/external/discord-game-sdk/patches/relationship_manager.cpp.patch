@@ -1,0 +1,11 @@
+--- cpp/relationship_manager.cpp	2022-04-27 00:13:22.000000000 +0200
++++ cpp/relationship_manager.cpp	2024-10-18 09:06:15.919560749 +0200
+@@ -44,7 +44,7 @@
+ 
+ void RelationshipManager::Filter(std::function<bool(Relationship const&)> filter)
+ {
+-    static auto wrapper = [](void* callbackData, DiscordRelationship* relationship) -> bool {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, DiscordRelationship* relationship) -> bool {
+         auto cb(reinterpret_cast<std::function<bool(Relationship const&)>*>(callbackData));
+         if (!cb || !(*cb)) {
+             return {};
