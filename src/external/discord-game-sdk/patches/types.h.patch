@@ -1,0 +1,11 @@
+--- cpp/types.h	2022-04-27 00:13:22.000000000 +0200
++++ cpp/types.h	2024-10-17 18:51:40.299266652 +0200
+@@ -3,7 +3,7 @@
+ #include "ffi.h"
+ #include "event.h"
+ #ifdef _WIN32
+-#include <Windows.h>
++#include <windows.h>
+ #include <dxgi.h>
+ #endif
+ 

@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 project(app VERSION "${BZR2_VERSION}")
 
 include(${CMAKE_SOURCE_DIR}/src/external/qt-ads/qt-ads.cmake)
+include(${CMAKE_SOURCE_DIR}/src/external/discord-game-sdk/discord-game-sdk.cmake)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
@@ -51,6 +52,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
         ${EXTERNAL_SOURCE_DIR_qt-ads}/src
+        ${EXTERNAL_SOURCE_DIR_discord-game-sdk}/cpp
 )
 
 foreach (QT_MODULE ${QT_MODULES})
@@ -60,6 +62,7 @@ endforeach ()
 target_link_libraries(${PROJECT_NAME} PRIVATE
         -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86 -lfmod
         ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
+        ${EXTERNAL_SOURCE_DIR_discord-game-sdk}/lib/x86/discord_game_sdk.dll.lib
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
