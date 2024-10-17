@@ -1,0 +1,11 @@
+--- cpp/ffi.h	2022-04-27 00:13:22.000000000 +0200
++++ cpp/ffi.h	2024-10-17 18:50:19.006899196 +0200
+@@ -2,7 +2,7 @@
+ #define _DISCORD_GAME_SDK_H_
+ 
+ #ifdef _WIN32
+-#include <Windows.h>
++#include <windows.h>
+ #include <dxgi.h>
+ #endif
+ 

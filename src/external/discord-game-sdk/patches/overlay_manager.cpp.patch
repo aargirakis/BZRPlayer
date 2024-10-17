@@ -1,0 +1,56 @@
+--- cpp/overlay_manager.cpp	2022-04-27 00:13:22.000000000 +0200
++++ cpp/overlay_manager.cpp	2024-10-18 09:05:19.075738139 +0200
+@@ -49,7 +49,7 @@
+ 
+ void OverlayManager::SetLocked(bool locked, std::function<void(Result)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result) -> void {
+         std::unique_ptr<std::function<void(Result)>> cb(
+           reinterpret_cast<std::function<void(Result)>*>(callbackData));
+         if (!cb || !(*cb)) {
+@@ -65,7 +65,7 @@
+ void OverlayManager::OpenActivityInvite(ActivityActionType type,
+                                         std::function<void(Result)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result) -> void {
+         std::unique_ptr<std::function<void(Result)>> cb(
+           reinterpret_cast<std::function<void(Result)>*>(callbackData));
+         if (!cb || !(*cb)) {
+@@ -81,7 +81,7 @@
+ 
+ void OverlayManager::OpenGuildInvite(char const* code, std::function<void(Result)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result) -> void {
+         std::unique_ptr<std::function<void(Result)>> cb(
+           reinterpret_cast<std::function<void(Result)>*>(callbackData));
+         if (!cb || !(*cb)) {
+@@ -96,7 +96,7 @@
+ 
+ void OverlayManager::OpenVoiceSettings(std::function<void(Result)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result) -> void {
+         std::unique_ptr<std::function<void(Result)>> cb(
+           reinterpret_cast<std::function<void(Result)>*>(callbackData));
+         if (!cb || !(*cb)) {
+@@ -182,7 +182,7 @@
+   std::function<void(std::int32_t, std::int32_t, Rect*, std::uint32_t)>
+     onImeCompositionRangeChanged)
+ {
+-    static auto wrapper = [](void* callbackData,
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData,
+                              int32_t from,
+                              int32_t to,
+                              DiscordRect* bounds,
+@@ -205,7 +205,7 @@
+   std::function<void(Rect, Rect, bool)> onImeSelectionBoundsChanged)
+ {
+     static auto wrapper =
+-      [](void* callbackData, DiscordRect anchor, DiscordRect focus, bool isAnchorFirst) -> void {
++      [] DISCORD_CALLBACK (void* callbackData, DiscordRect anchor, DiscordRect focus, bool isAnchorFirst) -> void {
+         std::unique_ptr<std::function<void(Rect, Rect, bool)>> cb(
+           reinterpret_cast<std::function<void(Rect, Rect, bool)>*>(callbackData));
+         if (!cb || !(*cb)) {

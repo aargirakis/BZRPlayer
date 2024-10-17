@@ -1,0 +1,11 @@
+--- cpp/voice_manager.cpp	2022-04-27 00:13:22.000000000 +0200
++++ cpp/voice_manager.cpp	2024-10-18 09:10:38.175239171 +0200
+@@ -42,7 +42,7 @@
+ 
+ void VoiceManager::SetInputMode(InputMode inputMode, std::function<void(Result)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result) -> void {
+         std::unique_ptr<std::function<void(Result)>> cb(
+           reinterpret_cast<std::function<void(Result)>*>(callbackData));
+         if (!cb || !(*cb)) {
