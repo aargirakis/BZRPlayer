@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.28)
 
 project(app VERSION "${PROJECT_VERSION}")
 
+#TODO move?
+include(${CMAKE_SOURCE_DIR}/src/external/discord-game-sdk/discord-game-sdk.cmake)
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 23)
 set(QT_VERSION_MAJOR "6")
@@ -36,7 +39,10 @@ file(GLOB SOURCES
         settingswindow.ui
 
         BZRPlayer.rc
-        BZRPlayer.exe.manifest)
+        BZRPlayer.exe.manifest
+
+        #TODO select only needed
+        ${EXTERNAL_SOURCE_DIR_discord-game-sdk}/cpp/*.cpp)
 
 if (NOT WIN32)
     #TODO workaround
@@ -48,9 +54,13 @@ if (NOT WIN32)
     endif ()
 endif ()
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES}
+        # TODO
+        DiscordManager.h)
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${FMOD_API_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${FMOD_API_DIR}
+        ${EXTERNAL_SOURCE_DIR_discord-game-sdk}/cpp)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_VERSION="${PROJECT_VERSION}")
 
@@ -77,7 +87,7 @@ endforeach ()
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ads::qtadvanceddocking-qt${QT_VERSION_MAJOR}
         -L"${FMOD_DIR}" -lfmod
-)
+        ${EXTERNAL_SOURCE_DIR_discord-game-sdk}/lib/x86_64/discord_game_sdk.dll.lib)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME ${EXE_NAME}

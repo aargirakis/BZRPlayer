@@ -13,6 +13,8 @@
 #include "about.h"
 #include "dialogdeleteworkspace.h"
 #include "dialognewworkspace.h"
+#include "discord.h"
+#include "DiscordManager.h"
 #include "DraggableTableView.h"
 #include "mainwindow.h"
 #include "playlistmodel.h"
@@ -33,6 +35,10 @@
 
 using namespace std;
 const QString MainWindow::VERSION = PROJECT_VERSION;
+
+Core *discordCore;
+Activity discordActivity;
+bool isDiscordUpdateActivityEnabled;
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     setlocale(LC_ALL, ".UTF8");
@@ -67,6 +73,14 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     if (allowOnlyOneInstance && handleInstance()) {
         qDebug() << "Another instance is already running: exiting";
         exit(0);
+    }
+
+    discordCore = init();
+
+    if (discordCore) {
+        discordActivity.SetType(ActivityType::Listening); //currently has no effect (ready-only)
+        discordActivity.GetTimestamps().SetStart(NULL);
+        discordActivity.GetTimestamps().SetEnd(NULL);
     }
 
     // fonts needs to be added before the GUI
@@ -379,6 +393,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     playStarted = false;
     loaded = false;
     buttonNextClicked = true;
+
+    discordActivityTimer = new QTimer(this);
+    connect(discordActivityTimer, SIGNAL(timeout()), this, SLOT(discordUpdateActivity()));
+    discordActivityTimer->start(500);
 
     ui->positionSlider->setMaximum(0);
 
@@ -1083,6 +1101,30 @@ void MainWindow::timerProgress() {
             ui->labelTimer_2->setText(msToNiceStringExact(currentMs, displayMilliseconds));
             ui->positionSlider->setValue(static_cast<int>(currentMs));
         }
+
+        if (discordCore) {
+            QString title = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0).data().toString();
+            const QString fileFormat = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 1).data().
+                    toString();
+            const QString artist = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 8).data().
+                    toString();
+
+            //TODO
+            const string activityDetails =
+                    ((artist.isEmpty() ? title : title + " - " + artist) + " ["
+                     + fileFormat + "]").
+                    toStdString();
+
+            const QString length = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 2).data().
+                    toString();
+            const string state = msToNiceStringExact(currentMs, displayMilliseconds).toStdString() + "/" + length.
+                                 toStdString();
+
+            discordActivity.SetDetails(activityDetails.c_str());
+            discordActivity.SetState(state.c_str());
+            // activity.GetAssets().SetLargeImage("test1");
+            // activity.GetAssets().SetLargeText("test2");
+        }
     }
 
     if (playStarted) {
@@ -1098,6 +1140,28 @@ void MainWindow::timerProgress() {
 
         if (currentMs >= songLengthMs || (!sm.isPlaying() && !sm.isPaused())) {
             playNextSong(false);
+        }
+    }
+}
+
+void MainWindow::discordUpdateActivity() {
+    // TODO: != nullptr check?
+    if (!discordCore) {
+        return;
+    }
+
+    if (const SoundManager &sm = SoundManager::getInstance();
+        sm.isPlaying()) {
+        if (!sm.isPaused()) {
+            isDiscordUpdateActivityEnabled = true;
+            updateActivity(discordActivity, discordCore);
+        }
+    } else {
+        if (isDiscordUpdateActivityEnabled) {
+            discordActivity.SetDetails("");
+            discordActivity.SetState("");
+            updateActivity(discordActivity, discordCore);
+            isDiscordUpdateActivityEnabled = false;
         }
     }
 }

@@ -1,0 +1,11 @@
+--- cpp/user_manager.cpp	2022-04-27 00:13:22.000000000 +0200
++++ cpp/user_manager.cpp	2024-10-18 09:09:32.155787152 +0200
+@@ -42,7 +42,7 @@
+ 
+ void UserManager::GetUser(UserId userId, std::function<void(Result, User const&)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result, DiscordUser* user) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result, DiscordUser* user) -> void {
+         std::unique_ptr<std::function<void(Result, User const&)>> cb(
+           reinterpret_cast<std::function<void(Result, User const&)>*>(callbackData));
+         if (!cb || !(*cb)) {

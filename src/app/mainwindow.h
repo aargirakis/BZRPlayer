@@ -371,6 +371,8 @@ private slots:
 
     void timerProgress();
 
+    void discordUpdateActivity();
+
     void refreshInfo();
 
     void restoreLayout();
@@ -690,6 +692,7 @@ private:
     bool isUpdateCurrentRowToNextEnabled;
     QTimer *Timer;
     QTimer *TimerRefreshInfo;
+    QTimer *discordActivityTimer;
 
     bool playStarted;
     bool loaded;
