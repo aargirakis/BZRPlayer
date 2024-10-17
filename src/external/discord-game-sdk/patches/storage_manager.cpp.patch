@@ -1,0 +1,29 @@
+--- cpp/storage_manager.cpp	2022-04-27 00:13:22.000000000 +0200
++++ cpp/storage_manager.cpp	2024-10-18 09:07:29.370204029 +0200
+@@ -32,7 +32,7 @@
+                                std::function<void(Result, std::uint8_t*, std::uint32_t)> callback)
+ {
+     static auto wrapper =
+-      [](void* callbackData, EDiscordResult result, uint8_t* data, uint32_t dataLength) -> void {
++      [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result, uint8_t* data, uint32_t dataLength) -> void {
+         std::unique_ptr<std::function<void(Result, std::uint8_t*, std::uint32_t)>> cb(
+           reinterpret_cast<std::function<void(Result, std::uint8_t*, std::uint32_t)>*>(
+             callbackData));
+@@ -53,7 +53,7 @@
+   std::function<void(Result, std::uint8_t*, std::uint32_t)> callback)
+ {
+     static auto wrapper =
+-      [](void* callbackData, EDiscordResult result, uint8_t* data, uint32_t dataLength) -> void {
++      [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result, uint8_t* data, uint32_t dataLength) -> void {
+         std::unique_ptr<std::function<void(Result, std::uint8_t*, std::uint32_t)>> cb(
+           reinterpret_cast<std::function<void(Result, std::uint8_t*, std::uint32_t)>*>(
+             callbackData));
+@@ -80,7 +80,7 @@
+                                 std::uint32_t dataLength,
+                                 std::function<void(Result)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result) -> void {
+         std::unique_ptr<std::function<void(Result)>> cb(
+           reinterpret_cast<std::function<void(Result)>*>(callbackData));
+         if (!cb || !(*cb)) {

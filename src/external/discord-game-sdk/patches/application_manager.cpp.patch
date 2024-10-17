@@ -1,0 +1,29 @@
+--- cpp/application_manager.cpp	2022-04-27 00:13:22.000000000 +0200
++++ cpp/application_manager.cpp	2024-10-18 08:55:33.991422723 +0200
+@@ -13,7 +13,7 @@
+ 
+ void ApplicationManager::ValidateOrExit(std::function<void(Result)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result) -> void {
+         std::unique_ptr<std::function<void(Result)>> cb(
+           reinterpret_cast<std::function<void(Result)>*>(callbackData));
+         if (!cb || !(*cb)) {
+@@ -47,7 +47,7 @@
+ void ApplicationManager::GetOAuth2Token(std::function<void(Result, OAuth2Token const&)> callback)
+ {
+     static auto wrapper =
+-      [](void* callbackData, EDiscordResult result, DiscordOAuth2Token* oauth2Token) -> void {
++      [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result, DiscordOAuth2Token* oauth2Token) -> void {
+         std::unique_ptr<std::function<void(Result, OAuth2Token const&)>> cb(
+           reinterpret_cast<std::function<void(Result, OAuth2Token const&)>*>(callbackData));
+         if (!cb || !(*cb)) {
+@@ -62,7 +62,7 @@
+ 
+ void ApplicationManager::GetTicket(std::function<void(Result, char const*)> callback)
+ {
+-    static auto wrapper = [](void* callbackData, EDiscordResult result, char const* data) -> void {
++    static auto wrapper = [] DISCORD_CALLBACK (void* callbackData, EDiscordResult result, char const* data) -> void {
+         std::unique_ptr<std::function<void(Result, char const*)>> cb(
+           reinterpret_cast<std::function<void(Result, char const*)>*>(callbackData));
+         if (!cb || !(*cb)) {
