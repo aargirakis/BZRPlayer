@@ -1,6 +1,9 @@
 --- cpp/types.h	2022-04-27 00:13:22.000000000 +0200
-+++ cpp/types.h	2024-10-17 18:51:40.299266652 +0200
-@@ -3,7 +3,7 @@
++++ cpp/types.h	2024-10-18 09:16:38.021095726 +0200
+@@ -1,9 +1,10 @@
+ #pragma once
+ 
++#include <cstdint>
  #include "ffi.h"
  #include "event.h"
  #ifdef _WIN32
