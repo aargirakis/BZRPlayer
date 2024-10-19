@@ -124,7 +124,7 @@ function(download_patch_and_add target_name target_filename target_url
     )
 
     ExternalProject_Add(
-            ${target_name}_ExtProj
+            ${target_name}
             SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
             CONFIGURE_COMMAND ""
             BUILD_COMMAND ""
@@ -161,7 +161,7 @@ function(download_patch_and_make target_name target_filename target_url sha_256_
     set(make_command ${make_command} -j${N} ${make_args})
 
     ExternalProject_Add(
-            ${target_name}_ExtProj
+            ${target_name}
             SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
             CONFIGURE_COMMAND ""
             BUILD_COMMAND ${make_command}
