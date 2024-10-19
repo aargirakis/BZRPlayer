@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(LIB_NAME "fmod")
-set(LIB_VERSION "2.02.06")
+set(NAME "fmod")
+set(VERSION "2.02.06")
+set(PLUGIN_${NAME}_NAME "FMOD")
+set(PLUGIN_${NAME}_VERSION "${VERSION}")
+
+set(LIB_NAME "${NAME}")
+set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "FMOD SoundSystem ${LIB_VERSION}.zip")
 unpack_and_patch(
@@ -10,9 +15,6 @@ unpack_and_patch(
 
 set(EXTERNAL_SOURCE_DIR_${LIB_NAME} "${EXTERNAL_SOURCE_DIR}/FMOD SoundSystem/FMOD Studio API Windows")
 
-add_compile_definitions(PLUGIN_${LIB_NAME}_NAME="FMOD")
-add_compile_definitions(PLUGIN_${LIB_NAME}_VERSION="${LIB_VERSION}")
-
 add_custom_target(
         copy-lib-${LIB_NAME} ALL
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -20,4 +22,3 @@ add_custom_target(
         ${OUTPUT_DIR}
         VERBATIM
 )
- 

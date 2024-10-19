@@ -16,9 +16,9 @@ function(download_to target_filename target_url sha_256_hash
         endif ()
 
         if (display_destination_path)
-            message(STATUS "Downloading '${target_name}' at '${target_url}' to '${destination_path}'")
+            message(STATUS "Downloading ${target_name} ${target_url} to ${destination_path}")
         else ()
-            message(STATUS "Downloading '${target_name}' at '${target_url}'")
+            message(STATUS "Downloading ${target_name} ${target_url}")
         endif ()
 
         if ("${sha_256_hash}" STREQUAL "")
@@ -34,7 +34,7 @@ function(download_to target_filename target_url sha_256_hash
         list(GET status 1 error_message)
 
         if (NOT status_code EQUAL 0)
-            message(FATAL_ERROR "Error downloading '${target_url}': ${error_message}")
+            message(FATAL_ERROR "Error downloading ${target_url}: ${error_message}")
         endif ()
     endif ()
 endfunction()
@@ -53,7 +53,7 @@ function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
         return()
     endif ()
 
-    message(STATUS "Patching '${target_name}'")
+    message(STATUS "Patching ${target_name}")
 
     file(GLOB PATCH_FILES "${patches_dir}/*.patch")
 
@@ -83,7 +83,7 @@ function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
         )
         if (NOT PATCH_RESULT EQUAL 0)
             message(FATAL_ERROR
-                    "Failed to apply patch '${PATCH_FILE}': ${PATCH_OUTPUT}"
+                    "Failed to apply patch ${PATCH_FILE}: ${PATCH_OUTPUT}"
                     "${PATCH_ERROR}"
             )
         endif ()

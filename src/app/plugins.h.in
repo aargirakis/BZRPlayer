@@ -1,6 +1,9 @@
 #ifndef PLUGINS_H
 #define PLUGINS_H
 
+#define PLUGIN_fmod_NAME "@PLUGIN_fmod_NAME@"
+#define PLUGIN_fmod_VERSION "@PLUGIN_fmod_VERSION@"
+
 #define PLUGIN_adplug 1
 #define PLUGIN_adplug_DLL "@PLUGIN_adplug_DLL@"
 #define PLUGIN_adplug_NAME "@PLUGIN_adplug_NAME@"
