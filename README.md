@@ -14,18 +14,19 @@ coded pretty much from scratch.
 
 ## How To Build
 
-### Windows (#TODO msys2 gdb?)
+### Windows
 
-**MSYS2** with following packages (install as shown) is required:\
-`pacman -S make mingw-w64-i686-cmake mingw-w64-i686-qt5-base mingw-w64-i686-qt5-svg mingw-w64-i686-SDL2
-mingw-w64-i686-toolchain openssl-devel patch`
+**[MSYS2](https://www.msys2.org/)** with following packages is required:
 
-- Open the MSYS2 **mingw32.exe** command prompt
-- Go to your project dir (take in mind Unix-style paths are required)
-- For starting the configuration process execute:\
-  `cmake -S . -B cmake-build-[debug|release] -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=[Debug|Release] -G Ninja ..`
-- To build the project execute:\
-  `ninja -C cmake-build-[debug|release]`
+`make` `mingw-w64-i686-cmake` `mingw-w64-i686-qt5-base` `mingw-w64-i686-qt5-svg` `mingw-w64-i686-SDL2`
+`mingw-w64-i686-toolchain` `openssl-devel` `patch`
+
+From the MSYS2 **mingw32.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
+required), then start the configuration process executing:\
+`cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
+
+To build the project execute:\
+`ninja -C cmake-build`
 
 As result of the building process, in the chosen cmake build directory the `output` directory will be populated with
 binaries.\
@@ -36,8 +37,8 @@ containing the final archive release file
 
 ```
 cd /c/BZRPlayer
-cmake -S . -B cmake-build-release -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
-ninja -C cmake-build-release 
+cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
+ninja -C cmake-build 
 ```
 
 ### Linux (cross-compilation)
