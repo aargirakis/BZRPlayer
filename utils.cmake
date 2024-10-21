@@ -8,7 +8,7 @@ set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
 
 function(download_to target_filename target_url sha_256_hash
         destination_path display_destination_path target_name)
-    if (OFFLINE_MODE EQUAL 1)
+    if (OFFLINE_MODE EQUAL 1 OR "${target_url}" STREQUAL "")
         file(COPY ${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename} DESTINATION ${destination_path})
     else ()
         if (NOT target_name)
@@ -103,7 +103,7 @@ endfunction()
 
 function(download_and_patch target_name target_filename target_url
         sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
-    if (OFFLINE_MODE EQUAL 1)
+    if (OFFLINE_MODE EQUAL 1 OR "${target_url}" STREQUAL "")
         unpack_and_patch("${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename}" "${target_name}"
                 "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
     else ()
