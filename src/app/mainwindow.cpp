@@ -337,6 +337,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     ui->tableInfo->verticalHeader()->setDefaultSectionSize(infoRowHeight);
 
     QStringList columnLabelsInfo;
+    ui->tableInfo->horizontalHeader()->hide();
     columnLabelsInfo << "Name" << "Value";
     ui->tableInfo->setColumnCount(columnLabelsInfo.size());
     ui->tableInfo->setHorizontalHeaderLabels(columnLabelsInfo);
