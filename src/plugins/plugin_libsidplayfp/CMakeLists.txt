@@ -82,7 +82,7 @@ set(LIB3_NAME "vice")
 set(LIB3_VERSION "3.8")
 set(LIB3_NAME_VERSIONED "${LIB3_NAME}-${LIB3_VERSION}")
 set(LIB3_FILENAME "${LIB3_NAME_VERSIONED}.tar.gz")
-set(LIB3_URL "https://sourceforge.net/projects/${LIB3_NAME}-emu/files/releases/${LIB3_FILENAME}/download")
+set(LIB3_URL "https://sourceforge.net/projects/${LIB3_NAME}-emu/files/releases/${LIB3_FILENAME}")
 set(LIB3_SHA_256_HASH "1d7dc4d0f2bbcc2a871bb954ff4a5df63048dea9c16f5f1e9bc8260fa41a1004")
 download_patch_and_add(
         ${LIB3_NAME_VERSIONED} ${LIB3_FILENAME} ${LIB3_URL} ${LIB3_SHA_256_HASH} false "" ""
