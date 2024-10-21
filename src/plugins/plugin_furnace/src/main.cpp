@@ -21,7 +21,7 @@ FMOD_CODEC_DESCRIPTION tfmxcodec =
     "USF player plugin",// Name.
     0x00010000,                          // Version 0xAAAABBBB   A = major, B = minor.
     1,                                   // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS|FMOD_TIMEUNIT_MUTE_VOICE|FMOD_TIMEUNIT_SUBSONG|FMOD_TIMEUNIT_MODVUMETER,	              // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS|FMOD_TIMEUNIT_MUTE_VOICE|FMOD_TIMEUNIT_SUBSONG|FMOD_TIMEUNIT_MODVUMETER,                  // The time format we would like to accept into setposition/getposition.
     &open,                             // Open callback.
     &close,                            // Close callback.
     &read,                             // Read callback.
@@ -111,13 +111,14 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_SEEK(codec,0,0);
     result = FMOD_CODEC_FILE_READ(codec,buffer,4,&bytesread);
 
-    if((buffer[0]=='M' && buffer[1]=='T' && buffer[2]=='h' && buffer[3]=='d') || (buffer[0]=='R' && buffer[1]=='I' && buffer[2]=='F' && buffer[3]=='F')) //it's a midi file
-    {
-        delete[] buffer;
-        return FMOD_ERR_FORMAT;
-    }
 
-    if((buffer[0]=='O' && buffer[1]=='g' && buffer[2]=='g' && buffer[3]=='S')) //it's an ogg file
+    if(  (buffer[0]!=0x2d && buffer[1]!=0x46) //Doesn't start with "-F"
+      && (buffer[0]!=0x78 && buffer[1]!=0x01) //Not zlib no compression
+	  && (buffer[0]!=0x78 && buffer[1]!=0x5e) //Not zlib fast compression
+	  && (buffer[0]!=0x78 && buffer[1]!=0x9c) //Not zlib default compression
+	  && (buffer[0]!=0x78 && buffer[1]!=0xda) //Not zlib best compression
+  
+	)//it's not a Furnace file
     {
         delete[] buffer;
         return FMOD_ERR_FORMAT;
