@@ -216,6 +216,10 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo,PlaylistItem* playli
     {
         tableInfo->setItem(row++,1,new QTableWidgetItem(SoundManager::getInstance().m_Info1->pluginName.c_str()));
     }
+	
+    tableInfo->setItem(row,0,new QTableWidgetItem("Type"));
+    tableInfo->setItem(row++,1,new QTableWidgetItem(SoundManager::getInstance().m_Info1->fileformat.c_str()));
+
 
 
     if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_game_music_emu)
