@@ -21,7 +21,7 @@ FMOD_CODEC_DESCRIPTION tfmxcodec =
     "USF player plugin",// Name.
     0x00010000,                          // Version 0xAAAABBBB   A = major, B = minor.
     1,                                   // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS|FMOD_TIMEUNIT_MUTE_VOICE|FMOD_TIMEUNIT_SUBSONG|FMOD_TIMEUNIT_MODVUMETER,	              // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS|FMOD_TIMEUNIT_MUTE_VOICE|FMOD_TIMEUNIT_SUBSONG|FMOD_TIMEUNIT_MODVUMETER,                  // The time format we would like to accept into setposition/getposition.
     &open,                             // Open callback.
     &close,                            // Close callback.
     &read,                             // Read callback.
@@ -118,6 +118,16 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     }
 
     if((buffer[0]=='O' && buffer[1]=='g' && buffer[2]=='g' && buffer[3]=='S')) //it's an ogg file
+    {
+        delete[] buffer;
+        return FMOD_ERR_FORMAT;
+    }
+    if((buffer[0]=='f' && buffer[1]=='L' && buffer[2]=='a' && buffer[3]=='C')) //it's a FLAC file
+    {
+        delete[] buffer;
+        return FMOD_ERR_FORMAT;
+    }
+    if((buffer[0]=='S' && buffer[1]=='V' && buffer[2]=='O' && buffer[3]=='X')) //it's a Sunvox file
     {
         delete[] buffer;
         return FMOD_ERR_FORMAT;
