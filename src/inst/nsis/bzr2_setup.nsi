@@ -29,7 +29,7 @@ CRCCheck force
 !define SETUP_FILENAME "bzr2_setup.exe"
 !define SETUP_FILENAME_LATEST_VERSION "${SETUP_FILENAME}_latest"
 !define URL_REPO "https://raw.githubusercontent.com/aargirakis/BZRPlayer"
-!define URL_SETUP_MAIN "${URL_REPO}/cmake/src/inst/nsis"
+!define URL_SETUP_MAIN "${URL_REPO}/main/src/inst/nsis"
 !define URL_SETUP_LATEST_VERSION "${URL_SETUP_MAIN}/${SETUP_FILENAME_LATEST_VERSION}"
 !define URL_SETUP_EXE "${URL_SETUP_MAIN}/${SETUP_FILENAME}"
 !define LICENSE_FILE "../../../LICENSE"

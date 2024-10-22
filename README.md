@@ -9,7 +9,7 @@ coded pretty much from scratch.
 
 - Latest version: http://bzrplayer.blazer.nu/download.php
 - All versions archive: https://github.com/aargirakis/BZRPlayer/tree/binaries/binaries
-- Windows & Linux installers: https://github.com/aargirakis/BZRPlayer/blob/cmake/src/inst
+- Windows & Linux installers: https://github.com/aargirakis/BZRPlayer/blob/main/src/inst
 - AUR package: `bzr-player` https://aur.archlinux.org/packages/bzr-player
 
 ## How To Build
