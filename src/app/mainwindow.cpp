@@ -850,7 +850,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
         ui->Debug->moveCursor(QTextCursor::StartOfLine);
 
 
-        resetAll();
+        on_buttonStop_clicked();
         updateButtons();
 //        if(tableWidgetPlaylists[currentPlaylist]->item(currentRow,0))
 //        {
@@ -1476,7 +1476,7 @@ void MainWindow::playNextSong(bool forceNext)
     if(!tableWidgetPlaylists.contains(currentPlaylist))
     {
         //This happens if a song is playing and that playlist is deleted while playing
-        resetAll();
+        on_buttonStop_clicked();
         currentRow=0;
         currentPlaylist = "Default.m3u";
         ui->listWidget->setCurrentRow(0);
@@ -1490,7 +1490,7 @@ void MainWindow::playNextSong(bool forceNext)
         }
         else
         {
-            resetAll();
+            on_buttonStop_clicked();
         }
     }
     else if(Playmode==normal || Playmode==repeatPlaylist || forceNext)
@@ -1498,7 +1498,7 @@ void MainWindow::playNextSong(bool forceNext)
         if(tableWidgetPlaylists[currentPlaylist]->model()->rowCount()==0)
         {
             addDebugText("Playlist is empty.");
-            resetAll();
+            on_buttonStop_clicked();
         }
         else
         {
@@ -1530,7 +1530,7 @@ void MainWindow::playNextSong(bool forceNext)
                 else
                 {
                     addDebugText("No more songs in playlist.");
-                    resetAll();
+                    on_buttonStop_clicked();
                 }
 
             }
@@ -1547,7 +1547,7 @@ void MainWindow::playNextSong(bool forceNext)
                     if(Playmode==normal)
                     {
                         addDebugText("No more songs in playlist.");
-                        resetAll();
+                        on_buttonStop_clicked();
 
                     }
                     else
@@ -3640,6 +3640,10 @@ void MainWindow::on_buttonPrev_clicked()
         playPrevSong();
     }
 }
+void MainWindow::setOutputDeviceSetting(int outputDevice)
+{
+    m_outputDevice = outputDevice;
+}
 void MainWindow::setOutputDevice(int outputDevice,QString fullPath)
 {
     {
@@ -5374,7 +5378,10 @@ void MainWindow::changeStyleSheetColor()
 
 void MainWindow::on_buttonStop_clicked()
 {
+	
     resetAll();
+	SoundManager::getInstance().ShutDown();
+    SoundManager::getInstance().Init(FMOD_OUTPUTTYPE_NOSOUND,""); //Set sound device to silent
 }
 void MainWindow::resetAll()
 {
