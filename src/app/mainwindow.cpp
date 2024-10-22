@@ -427,7 +427,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
         }
 
         SoundManager& sm = SoundManager::getInstance();
-        sm.Init(2,""); //Set sound device to silent
+        sm.Init(FMOD_OUTPUTTYPE_NOSOUND,""); //Set sound device to silent
 
 
         fileInfoParser = new FileInfoParser();
