@@ -111,23 +111,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_SEEK(codec,0,0);
     result = FMOD_CODEC_FILE_READ(codec,buffer,4,&bytesread);
 
-    if((buffer[0]=='M' && buffer[1]=='T' && buffer[2]=='h' && buffer[3]=='d') || (buffer[0]=='R' && buffer[1]=='I' && buffer[2]=='F' && buffer[3]=='F')) //it's a midi file
-    {
-        delete[] buffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    if((buffer[0]=='O' && buffer[1]=='g' && buffer[2]=='g' && buffer[3]=='S')) //it's an ogg file
-    {
-        delete[] buffer;
-        return FMOD_ERR_FORMAT;
-    }
-    if((buffer[0]=='f' && buffer[1]=='L' && buffer[2]=='a' && buffer[3]=='C')) //it's a FLAC file
-    {
-        delete[] buffer;
-        return FMOD_ERR_FORMAT;
-    }
-    if((buffer[0]=='S' && buffer[1]=='V' && buffer[2]=='O' && buffer[3]=='X')) //it's a Sunvox file
+    if((buffer[0]!='x' && buffer[1]!='œ' ) && (buffer[0]!='-' && buffer[1]!='F' ))//it's not a Furnace file
     {
         delete[] buffer;
         return FMOD_ERR_FORMAT;
