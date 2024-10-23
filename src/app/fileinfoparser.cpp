@@ -422,6 +422,16 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo,PlaylistItem* playli
         tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->modPatternRows)));
         tableInfo->setItem(row++,0,new QTableWidgetItem("Pattern Length"));
     }
+	else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_klystron)
+    {
+        tableInfo->setItem(row,1,new QTableWidgetItem(SoundManager::getInstance().m_Info1->title.c_str()));
+        tableInfo->setItem(row++,0,new QTableWidgetItem("Title"));
+        tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));
+        tableInfo->setItem(row++,0,new QTableWidgetItem("Channels"));
+        tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numPatterns)));
+        tableInfo->setItem(row++,0,new QTableWidgetItem("Pattern Rows"));
+
+    }
     else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace)
     {
         tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));

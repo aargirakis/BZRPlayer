@@ -2746,7 +2746,28 @@ void MainWindow::updateInstruments()
                 }
             }
         }
+        else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_klystron)
+        {
+            if(SoundManager::getInstance().m_Info1->numInstruments>0)
+            {
+                QStringList columnLabelsInstruments;
+                columnLabelsInstruments << tr("#") << tr("Name");
+                ui->instruments->setColumnCount(columnLabelsInstruments.size());
+                ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
+                ui->instruments->setColumnWidth(0,instrumentColumnNumberWidth);
+                ui->instruments->setColumnWidth(1,instrumentColumnNameWidth);
 
+                ui->instruments->horizontalHeaderItem(0)->setTextAlignment( Qt::AlignLeft);
+                ui->instruments->horizontalHeaderItem(1)->setTextAlignment( Qt::AlignLeft);
+
+                ui->instruments->setRowCount(SoundManager::getInstance().m_Info1->numInstruments);
+                for(int j = 0; j < SoundManager::getInstance().m_Info1->numInstruments; j++)
+                {
+                    ui->instruments->setItem(j,0,new QTableWidgetItem(QString::number(j+1)));
+                    ui->instruments->setItem(j,1,new QTableWidgetItem(SoundManager::getInstance().m_Info1->instruments[j].c_str()));
+                }
+            }
+        }
         else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_asap)
         {
             if(SoundManager::getInstance().m_Info1->numInstruments>0)
