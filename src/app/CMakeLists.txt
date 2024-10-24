@@ -58,15 +58,13 @@ foreach (QT_MODULE ${QT_MODULES})
 endforeach ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86 -lfmod
+        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod
         ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "BZRPlayer"
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
         WIN32_EXECUTABLE true
 )
 
@@ -78,9 +76,9 @@ List(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
         ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
         ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
-        ${CMAKE_PREFIX_PATH}/bin/libcrypto-3.dll        #TODO needed?
+        ${CMAKE_PREFIX_PATH}/bin/libcrypto-3-x64.dll
         ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
-        ${CMAKE_PREFIX_PATH}/bin/libgcc_s_dw2-1.dll
+        ${CMAKE_PREFIX_PATH}/bin/libgcc_s_seh-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
         ${CMAKE_PREFIX_PATH}/bin/libgraphite2.dll
         ${CMAKE_PREFIX_PATH}/bin/libharfbuzz-0.dll
@@ -89,7 +87,7 @@ List(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll
         ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll
         ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll
-        ${CMAKE_PREFIX_PATH}/bin/libssl-3.dll
+        ${CMAKE_PREFIX_PATH}/bin/libssl-3-x64.dll
         ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll
         ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libzstd.dll
@@ -151,3 +149,5 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         VERBATIM
 )
+
+#TODO check all runtime dlls and remove unneeded ones
