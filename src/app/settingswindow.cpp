@@ -654,7 +654,7 @@ void settingsWindow::on_buttonOK_clicked()
 {
     if(ui->comboBox->itemData(ui->comboBox->currentIndex()).toInt()!=mainWindow->getOutputDevice())
     {
-        mainWindow->setOutputDevice(ui->comboBox->itemData(ui->comboBox->currentIndex()).toInt(),"");
+        mainWindow->setOutputDeviceSetting(ui->comboBox->itemData(ui->comboBox->currentIndex()).toInt());
     }
     bool checkedResetVolume = ui->checkBoxResetVolume->checkState()==Qt::Checked ? true : false;
     bool checkedSystrayOnQuit = ui->checkBoxSystrayOnQuit->checkState()==Qt::Checked ? true : false;

@@ -90,6 +90,7 @@ public:
     void restoreFromTray();
     void SaveSettings();
     void setOutputDevice(int outputDevice, QString);
+	void setOutputDeviceSetting(int outputDevice);
     int getOutputDevice();
     void setResetVolume(bool resetVolume);
     bool getResetVolume();

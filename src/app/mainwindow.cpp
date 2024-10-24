@@ -3663,6 +3663,10 @@ void MainWindow::on_buttonPrev_clicked()
         playPrevSong();
     }
 }
+void MainWindow::setOutputDeviceSetting(int outputDevice)
+{
+    m_outputDevice = outputDevice;
+}
 void MainWindow::setOutputDevice(int outputDevice,QString fullPath)
 {
     {
