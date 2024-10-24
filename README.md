@@ -16,12 +16,12 @@ coded pretty much from scratch.
 
 **[MSYS2](https://www.msys2.org/)** with following packages is required:
 
-`make` `mingw-w64-i686-cmake` `mingw-w64-i686-qt5-base` `mingw-w64-i686-qt5-svg` `mingw-w64-i686-SDL2`
-`mingw-w64-i686-toolchain` `openssl-devel` `patch`
-
-From the MSYS2 **mingw32.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
+`make` `mingw-w64-x86_64-cmake` `mingw-w64-x86_64-qt5-base` `mingw-w64-x86_64-qt5-svg` `mingw-w64-x86_64-SDL2`
+`mingw-w64-x86_64-toolchain` `openssl-devel` `patch`
+#TODO switch to ucrt64?
+From the MSYS2 **mingw64.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
 required), then start the configuration process executing:\
-`cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
+`cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw64 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
 
 To build the project execute:\
 `ninja -C cmake-build`
@@ -35,7 +35,7 @@ containing the final archive release file
 
 ```
 cd /c/BZRPlayer
-cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
+cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw64 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
 ninja -C cmake-build 
 ```
 
