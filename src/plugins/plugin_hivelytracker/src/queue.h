@@ -12,7 +12,7 @@
 #define Error(Str)        FatalError(Str)
 #define FatalError(Str)   fprintf(stderr, "%s\n", Str), exit(1)
 
-typedef int ElementType;
+typedef uintptr_t ElementType;
 
 #ifndef _Queue_h
 

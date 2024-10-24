@@ -10,7 +10,7 @@
 #     download, install and configure BZR2 using wine, also providing the way to remove it
 #
 #     handle multiple BZR2 versions (useful for testing purposes) in separated
-#     wine prefixes at ~/.bzr-player/<version>-<wine arch>
+#     wine prefixes at ~/.bzr-player/<version>
 #
 #     also install icons and generates an XDG desktop entry for launching the player,
 #     eventually associated to supported MIME types
@@ -35,7 +35,6 @@ main() {
     cat install mktemp realpath sed sort sudo uname unzip update-desktop-database update-mime-database wget wine
     xdg-desktop-menu xdg-icon-resource xdg-mime xrdb
   )
-  winearch_default="win32"
   force_reinstall_default="n"
   url_latest_version="http://bzrplayer.blazer.nu/latest-version.php"
   urls_download=(
@@ -94,9 +93,9 @@ main() {
 setup() {
   check_bzr2_latest_version
   get_bzr2_version
-  check_arch
-  get_winearch
 
+  bzr2_wineprefix_dir="$bzr2_wineprefix_dir_unversioned/$bzr2_version"
+  bzr2_dir="$bzr2_wineprefix_dir/drive_c/Program Files/$bzr2_name"
   bzr2_exe="$bzr2_dir/$bzr2_exe_filename"
   bzr2_launcher="$bzr2_wineprefix_dir/$bzr2_launcher_filename"
   bzr2_desktop="$bzr2_wineprefix_dir/$bzr2_desktop_filename"
@@ -110,8 +109,7 @@ setup() {
   if [ -f "$bzr2_exe" ]; then
     is_already_installed=true
 
-    echo -e "\nBZR2 ${bold}$bzr2_version${bold_reset} ${bold}$winearch${bold_reset} installation detected at \
-${bold}$bzr2_wineprefix_dir${bold_reset}"
+    echo -e "\nBZR2 ${bold}$bzr2_version${bold_reset} installation detected at ${bold}$bzr2_wineprefix_dir${bold_reset}"
     get_force_reinstall
   else
     is_already_installed=false
@@ -151,7 +149,7 @@ ${bold}$bzr2_wineprefix_dir${bold_reset}"
     setup_mime_types
   fi
 
-  echo -e "\nAll done, enjoy ${bold}BZR2 $bzr2_version $winearch${bold_reset}!"
+  echo -e "\nAll done, enjoy ${bold}BZR2 $bzr2_version${bold_reset}!"
 }
 
 check_requirements() {
@@ -271,38 +269,6 @@ get_bzr2_version() {
   done
 
   bzr2_version="${input,,}"
-}
-
-check_arch() {
-  if [ "$(uname -m)" == "x86_64" ]; then
-    winearch_default="win64"
-  fi
-}
-
-get_winearch() {
-  while :; do
-    local input
-    input=$(show_message_and_read_input "select the 32/64 bit ${bold}win32${bold_reset} or ${bold}win64${bold_reset} \
-wine environment (multilib pkgs could be required)" ${winearch_default})
-
-    case $input in
-    win32)
-      bzr2_wineprefix_dir="$bzr2_wineprefix_dir_unversioned/$bzr2_version-$input"
-      bzr2_dir="$bzr2_wineprefix_dir/drive_c/Program Files/$bzr2_name"
-      break
-      ;;
-    win64)
-      bzr2_wineprefix_dir="$bzr2_wineprefix_dir_unversioned/$bzr2_version-$input"
-      bzr2_dir="$bzr2_wineprefix_dir/drive_c/Program Files (x86)/$bzr2_name"
-      break
-      ;;
-    *)
-      echo -e "\n$invalid_value_inserted_message"
-      ;;
-    esac
-  done
-
-  winearch="$input"
 }
 
 is_ge_than() {
@@ -584,18 +550,11 @@ setup_bzr2() {
   sudo -u "$USER" unzip -oq "$bzr2_zip" -d "$bzr2_dir"
 
   # disable wine crash dialog (winetricks nocrashdialog)
-  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEARCH="$winearch" WINEDLLOVERRIDES="mscoree=" \
+  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEDLLOVERRIDES="mscoree=" \
     wine reg add "HKEY_CURRENT_USER\Software\Wine\WineDbg" /v ShowCrashDialog /t REG_DWORD /d 0 /f
 
   # disable wine debugger (winetricks autostart_winedbg=disabled)
-
-  # win32
-  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEARCH="$winearch" WINEDLLOVERRIDES="mscoree=" \
-    wine reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\AeDebug" \
-    /v Debugger /t REG_SZ /d "false" /f
-
-  # win64
-  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEARCH="$winearch" WINEDLLOVERRIDES="mscoree=" \
+  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEDLLOVERRIDES="mscoree=" \
     wine reg add "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\AeDebug" \
     /v Debugger /t REG_SZ /d "false" /f
 }
@@ -626,13 +585,13 @@ in wine"
 
   dpi_to_set='0x'$(printf '%x\n' "$dpi_to_set")
 
-  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEARCH="$winearch" WINEDLLOVERRIDES="mscoree=" \
+  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEDLLOVERRIDES="mscoree=" \
     wine reg add "HKEY_CURRENT_USER\Control Panel\Desktop" /v LogPixels /t REG_DWORD /d "$dpi_to_set" /f
 
-  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEARCH="$winearch" WINEDLLOVERRIDES="mscoree=" \
+  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEDLLOVERRIDES="mscoree=" \
     wine reg add "HKEY_CURRENT_USER\Software\Wine\Fonts" /v LogPixels /t REG_DWORD /d "$dpi_to_set" /f
 
-  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEARCH="$winearch" WINEDLLOVERRIDES="mscoree=" \
+  sudo -u "$USER" WINEDEBUG=-all WINEPREFIX="$bzr2_wineprefix_dir" WINEDLLOVERRIDES="mscoree=" \
     wine reg add "HKEY_CURRENT_CONFIG\Software\Fonts" /v LogPixels /t REG_DWORD /d "$dpi_to_set" /f
 }
 
@@ -659,7 +618,6 @@ setup_launcher_script() {
 set -e
 
 export WINEPREFIX="$bzr2_wineprefix_dir"
-export WINEARCH="$winearch"
 export WINEDLLOVERRIDES="mscoree=" # disable mono
 
 wine "$bzr2_exe"

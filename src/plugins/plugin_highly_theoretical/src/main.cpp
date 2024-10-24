@@ -244,7 +244,7 @@ private:
 extern "C" {
 #endif
 
-__declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
+F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 {
     return &codecDescription;
 }
@@ -403,14 +403,14 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
     sega_enable_dsp(plugin->m_segaState, 1);
     sega_enable_dsp_dynarec(plugin->m_segaState, 0);
     uint32_t start = *reinterpret_cast<uint32_t*>(plugin->m_loaderState.data);
-    size_t length = plugin->m_loaderState.data_size;
+    uint32_t length = plugin->m_loaderState.data_size;
     const size_t maxLength = (plugin->psfType == 0x12) ? 0x800000 : 0x80000;
     if ((start + (length - 4)) > maxLength)
     {
         length = maxLength - start + 4;
     }
 
-    sega_upload_program(plugin->m_segaState, plugin->m_loaderState.data, (uint32_t)length);
+    sega_upload_program(plugin->m_segaState, plugin->m_loaderState.data, length);
 
     return FMOD_OK;
 }
@@ -432,4 +432,7 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
         plugin->info->numSubsongs = 1;
         return FMOD_OK;
     }
+
+    /* TODO crash (both 32/64bit) when running in debug mode due to missing return statement:
+     * TODO however, adding it will break track lengths */
 }

@@ -144,7 +144,7 @@ public:
 extern "C" {
 #endif
 
-__declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
+F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 {
     return &codecDescription;
 }
@@ -225,7 +225,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 {
     auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
     auto* osc = new uint32_t[18000];
-    memset(osc, 0, 18000 * sizeof(osc));
+    memset(osc, 0, 18000 * sizeof(*osc));
     plugin->sndh->AudioRender(static_cast<int16_t*>(buffer), size, osc);
     plugin->oscBuffer.push(osc);
     plugin->info->waveformDisplay = plugin->oscBuffer.front();

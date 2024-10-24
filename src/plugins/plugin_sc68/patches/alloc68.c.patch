@@ -1,0 +1,10 @@
+--- file68/src/alloc68.c	2025-01-27 16:33:50.900469000 +0100
++++ file68/src/alloc68.c	2025-01-27 16:33:38.530620000 +0100
+@@ -38,6 +38,7 @@
+ 
+ /* Default malloc. */
+ #if defined(HAVE_MALLOC) && !defined(DEFAULT_MALLOC)
++#include <malloc.h>
+ # define DEFAULT_MALLOC malloc_uint
+ static void * malloc_uint(unsigned int sz)
+ {

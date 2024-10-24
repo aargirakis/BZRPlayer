@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.28)
 
 project(bzr2 VERSION "2.0.75")
 
+if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message(WARNING "Only x64 build is supported")
+    return()
+endif ()
+
 if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_TYPE STREQUAL "None")
     message(STATUS "CMAKE_BUILD_TYPE is 'None' or not set: forcing to 'Debug'")
     set(CMAKE_BUILD_TYPE "Debug")

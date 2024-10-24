@@ -1,5 +1,5 @@
---- src/uade.c	2019-06-21 15:52:56.000000000 +0200
-+++ src/uade.c	2025-02-26 14:50:04.554401862 +0100
+--- src/uade.c	2019-06-21 14:52:56.000000000 +0200
++++ src/uade.c	2025-03-04 19:08:09.472282500 +0100
 @@ -47,6 +47,7 @@
  #include "amigamsg.h"
  #include "ossupport.h"
@@ -40,7 +40,7 @@
  
  static void add_ep_option(const char *s)
  {
-@@ -226,8 +236,38 @@
+@@ -226,8 +236,39 @@
    return ((int) offset);
  }
  
@@ -63,6 +63,7 @@
  #ifdef EMSCRIPTEN
 -struct uade_sample_data sample_data= {.alloclen=0, .buflen= 0, .buf= 0, .is_new = 0};
 +struct uade_sample_data sample_data= {0, 0, 0, 0};
++int cfgfile_load_file (struct uae_prefs *p, FILE *fh);
 +
 +int get_samples(void* buffer)
 +{
@@ -80,7 +81,7 @@
  struct uade_sample_data * get_new_samples() {
  	if (sample_data.is_new != 0) {
  		return &sample_data;
-@@ -268,6 +308,7 @@
+@@ -268,6 +309,7 @@
  	if (uade_test_silence(sndbuffer, bytes, &_state)) {
  	  fprintf(stderr, "silence detected (%d seconds)\n", _state.config.silence_timeout);
  		quit_program = 1;
@@ -88,7 +89,7 @@
  	}
    
    // signal that we have a new buffer full of sample data.. somebody should better go and fetch it..
-@@ -355,6 +396,16 @@
+@@ -355,6 +397,16 @@
  char _meta_data_ready= 0;
  #endif
  
@@ -105,7 +106,7 @@
  void uade_get_amiga_message(void)
  {
    uae_u8 *ptr;
-@@ -404,6 +455,9 @@
+@@ -404,6 +456,9 @@
  	snprintf(inf_maxs, sizeof inf_maxs, "%d", maxs);
  	snprintf(inf_curs, sizeof inf_curs, "%d", curs);
  
@@ -115,7 +116,7 @@
  //fprintf(stderr, "amiga song info: %d %d %d\n", mins, curs, maxs);
  	
  	// easier to use JavaScript to parse that info_text crap
-@@ -546,6 +600,7 @@
+@@ -546,6 +601,7 @@
  #ifndef EMSCRIPTEN
      if ((file = uade_open_amiga_file((char *) nameptr, uade_player_dir))) {
  #else
@@ -123,7 +124,7 @@
  	uo= uade_open_amiga_file((char *) nameptr, uade_player_dir);
      if ((file = uo->file)) {
  #endif
-@@ -554,9 +609,12 @@
+@@ -554,9 +610,12 @@
        fclose(file); file = NULL;
        uade_put_long(0x20C, len);
        uade_send_debug("load success: %s ptr 0x%x size 0x%x", nameptr, dst, len);
@@ -136,7 +137,7 @@
      }
      break;
  
-@@ -573,6 +631,7 @@
+@@ -573,6 +632,7 @@
  #ifndef EMSCRIPTEN
      if ((file = uade_open_amiga_file((char *) nameptr, uade_player_dir))) {
  #else
@@ -144,7 +145,7 @@
  	uo= uade_open_amiga_file((char *) nameptr, uade_player_dir);
      if ((file = uo->file)) {
  #endif
-@@ -603,6 +662,7 @@
+@@ -603,6 +663,7 @@
  #ifndef EMSCRIPTEN
      if ((file = uade_open_amiga_file((char *) nameptr, uade_player_dir))) {
  #else
@@ -152,7 +153,7 @@
  	uo= uade_open_amiga_file((char *) nameptr, uade_player_dir);
      if ((file = uo->file)) {
  #endif
-@@ -834,7 +894,11 @@
+@@ -834,7 +895,11 @@
  #ifdef EMSCRIPTEN
    snprintf(optionsfile, PATH_MAX, "%s/uaerc", basedir);
    FILE *f= uade_fopen(optionsfile, "r")->file;
@@ -165,7 +166,7 @@
  
      if (cfgfile_load_file (&currprefs, f) == 0) {
        fprintf(stderr, "uadecore: Could not load uaerc (%s).\n", optionsfile);
-@@ -1199,6 +1263,7 @@
+@@ -1199,6 +1264,7 @@
  
    bytesread = uade_safe_load(vaddr, file, maxlen);
    fclose(file);
@@ -173,7 +174,7 @@
    return bytesread;
  }
  
-@@ -1215,7 +1280,9 @@
+@@ -1215,7 +1281,9 @@
  	// initial start sequence (base for uade_reset)
  	uade_reboot = 1;
  	quit_program = 0;
@@ -184,7 +185,7 @@
  	if (uade_main(basedir) < 0) return -1;	
  	/*
  	* until here the setup should correspond to what m68k_go did before loop - one loop would then 
-@@ -1294,7 +1361,7 @@
+@@ -1294,7 +1362,7 @@
  
  #ifdef EMSCRIPTEN  
  	snprintf(song.scorename, sizeof song.scorename, "%s/amigasrc/score/score", basedir);
@@ -193,7 +194,7 @@
  	snprintf(song.playername, sizeof song.playername, "");
  	//fprintf(stderr, "song.modulename: %s [%s] %s\n", song.modulename, basedir, songmodule);
  	// resolve the needed player (for "custom" modules the module becomes the player)
-@@ -1394,6 +1461,7 @@
+@@ -1394,6 +1462,7 @@
  
    /* load the module if available */
    if (song.modulename[0]) {
@@ -201,7 +202,7 @@
      bytesread = uade_safe_load_name(modaddr, song.modulename, "module", uade_highmem - modaddr);
  #ifdef EMSCRIPTEN
  	if (bytesread <1) { 
-@@ -1576,6 +1644,16 @@
+@@ -1576,6 +1645,16 @@
  #endif
  }
  
@@ -218,7 +219,7 @@
  
  static void uade_put_long(int addr, int val)
  {
-@@ -1702,7 +1780,7 @@
+@@ -1702,7 +1781,7 @@
    }
  #else
    quit_program= 1;	// end and let client decide how he wants to proceed
@@ -227,7 +228,7 @@
    fprintf(stderr, "%s ended: %s\n", strrchr(song.modulename,'/'), reason);
  #endif
    /* if audio_output is zero (and thus the client is waiting for the first
-@@ -1739,3 +1817,11 @@
+@@ -1739,3 +1818,11 @@
    fprintf(stderr, "uadecore: Invalid string at 0x%x.\n", address);
    return 0;
  }

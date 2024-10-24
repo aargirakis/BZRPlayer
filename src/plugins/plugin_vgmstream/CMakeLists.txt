@@ -57,6 +57,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )

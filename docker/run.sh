@@ -30,8 +30,8 @@ cd $BUILD_DIR"
 if [ "$CONFIG" == 1 ]; then
   CONTAINER_COMMAND="${CONTAINER_COMMAND} && \
                                           su devel -c '\
-                                          i686-w64-mingw32-cmake \
-                                          -DCMAKE_PREFIX_PATH=/usr/i686-w64-mingw32 \
+                                          x86_64-w64-mingw32-cmake \
+                                          -DCMAKE_PREFIX_PATH=/usr/x86_64-w64-mingw32 \
                                           -DCMAKE_BUILD_TYPE=\"$BUILD_TYPE\" \
                                           -DCPACK_EXECUTABLE=/usr/bin/cpack \
                                           -DOFFLINE_MODE=\"$OFFLINE_MODE\" \

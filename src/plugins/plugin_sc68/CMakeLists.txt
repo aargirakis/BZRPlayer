@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "sc68")
-set(VERSION "83cc8653e06cb4ba8c17b0c3e24b9cce4e461cfd")
+set(VERSION "a3eac9974c8d261e2e8cd8bdc0872e05269f8659")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
-set(REVISION "r100") # original sourceforge svn revision number
+set(REVISION "r106") # original sourceforge svn revision number
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -14,10 +14,6 @@ find_package(ZLIB REQUIRED)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
-    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
-endif ()
-
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION "${VERSION}")
 set(LIB_VERSION_SHORT "${VERSION_SHORT}")
@@ -27,14 +23,17 @@ set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
 # since sourceforge (https://sourceforge.net/p/sc68/code/HEAD) doesn't provide a stable/permanent tarball url,
 # an (outdated) github mirror it is used here
 set(LIB_URL "https://github.com/Zeinok/${LIB_NAME}/archive/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "29c6eddc372624871c8b6ff63acaf4ef774ff248545c769d706c1bad036afda0")
+set(LIB_SHA_256_HASH "67a7bed2b4bff56eae543bb90c4f44bb08544ef0e5752b6eb3f1eb569ccf2104")
 set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
+        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
 set(SC68_DATA_PATH "${DATA_PLUGINS_DIR}/sc68")
 add_compile_definitions(SC68_DATA_PATH="${SC68_DATA_PATH}")
+add_compile_definitions(HAVE_FREE)
+add_compile_definitions(HAVE_MALLOC)
 add_compile_definitions(HAVE_STDINT_H)
 add_compile_definitions(HAVE_ZLIB_H)
 add_compile_definitions(PACKAGE_BUGREPORT="")
@@ -43,7 +42,7 @@ add_compile_definitions(PACKAGE_URL="")
 add_compile_definitions(PACKAGE_VERNUM)
 
 file(GLOB SOURCES
-        ${EXTERNAL_SOURCE_DIR}/file68/*.c
+        ${EXTERNAL_SOURCE_DIR}/file68/src/*.c
         ${EXTERNAL_SOURCE_DIR}/libsc68/*.c
         ${EXTERNAL_SOURCE_DIR}/libsc68/emu68/*.c
         ${EXTERNAL_SOURCE_DIR}/libsc68/io68/*.c
@@ -78,8 +77,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

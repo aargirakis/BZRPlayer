@@ -32,8 +32,7 @@ download_patch_and_add(
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
 
 add_compile_definitions(
-        EMU_COMPILE EMU_LITTLE_ENDIAN
-        LSB_FIRST C68K_NO_JUMP_TABLE NO_DYNAREC
+        EMU_COMPILE EMU_LITTLE_ENDIAN HAVE_STDINT_H LSB_FIRST C68K_NO_JUMP_TABLE NO_DYNAREC
 )
 
 include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
@@ -66,6 +65,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )

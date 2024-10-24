@@ -114,7 +114,7 @@ RequestExecutionLevel admin
 OutFile "${SETUP_FILENAME}"
 Name "$title"
 Caption "${CAPTION_VERSIONED}"
-InstallDir "$PROGRAMFILES32\${NAME}"
+InstallDir "$PROGRAMFILES64\${NAME}"
 InstallDirRegKey HKLM "Software\${PUBLISHER}\${NAME}" "InstallDir"
 ShowInstDetails show
 ShowUninstDetails show

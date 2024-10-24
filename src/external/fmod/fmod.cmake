@@ -18,7 +18,7 @@ set(EXTERNAL_SOURCE_DIR_${LIB_NAME} "${EXTERNAL_SOURCE_DIR}/FMOD SoundSystem/FMO
 add_custom_target(
         copy-lib-${LIB_NAME} ALL
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${EXTERNAL_SOURCE_DIR_${LIB_NAME}}/api/core/lib/x86/fmod.dll
+        ${EXTERNAL_SOURCE_DIR_${LIB_NAME}}/api/core/lib/x64/fmod.dll
         ${OUTPUT_DIR}
         VERBATIM
 )

@@ -49,7 +49,7 @@ include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
 
 file(GLOB SOURCES                                                        #TODO remove unnecessary
 
-        #    ${EXTERNAL_SOURCE_DIR_${NAME}}/r4300/x86/*.c #TODO for DYNAREC
+        #    ${EXTERNAL_SOURCE_DIR_${NAME}}/r4300/x86_64/*.c #TODO for DYNAREC
 
         ${EXTERNAL_SOURCE_DIR_${NAME}}/ai/*.c
         ${EXTERNAL_SOURCE_DIR_${NAME}}/api/*.c
@@ -75,7 +75,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE #TODO remove unnecessary
 
-        #    ${EXTERNAL_SOURCE_DIR_${NAME}}/r4300/x86 #TODO for DYNAREC
+        #    ${EXTERNAL_SOURCE_DIR_${NAME}}/r4300/x86_64 #TODO for DYNAREC
 
         ${EXTERNAL_SOURCE_DIR_${NAME}}
         ${EXTERNAL_SOURCE_DIR_${NAME}}/ai
@@ -109,6 +109,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )

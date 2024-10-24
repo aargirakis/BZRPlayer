@@ -6,6 +6,7 @@
 #include "MyEndian.h" //added by blazer
 #include <iostream> //for cout
 #include <fstream>
+#include <cstdint>
 using namespace std;
 #define _inline inline //added by blazer
 #define min(a, b)  (((a) < (b)) ? (a) : (b)) //added by blazer
@@ -228,7 +229,7 @@ long kdmeng::loadwaves ( const char * refdir)
         if (!(snd = (char *)malloc(totsndbytes+2))) return(0);
         for(int i=0;i<MAXWAVES;i++)
         {
-            wavoffs[i] += ((long)snd);
+            wavoffs[i] += ((int64_t)snd);
         }
         for(int i=0;i<totsndbytes;i++)
         {

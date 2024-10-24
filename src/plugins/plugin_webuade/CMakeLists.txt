@@ -11,11 +11,6 @@ set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
-    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
-    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-int-conversion>)
-endif ()
-
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION "${VERSION}")
 set(LIB_VERSION_SHORT "${VERSION_SHORT}")
@@ -79,7 +74,7 @@ file(GLOB SOURCES
         src/flod/*.cpp #TODO
         src/md5/*.c    #TODO all src/md5/*.* files (apart types.h) comes from xmms-sid (version from 0.8.96 to 0.8.99.2) that seem untraceable on the web: better upgrade to 0.9.2
         src/main.cpp
-        src/util.c
+        src/strsep.c
 
         ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
 )
@@ -92,6 +87,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/frontends/common
         ${EXTERNAL_SOURCE_DIR}/src/include
         ${EXTERNAL_SOURCE_DIR}/src/machdep
+        src
         src/flod  #TODO
         src/md5  #TODO
 
@@ -100,15 +96,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86 -lfmod -lws2_32
+        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod -lws2_32
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

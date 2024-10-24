@@ -16,12 +16,12 @@ coded pretty much from scratch.
 
 **[MSYS2](https://www.msys2.org/)** with following packages is required:
 
-`make` `mingw-w64-i686-cmake` `mingw-w64-i686-qt5-base` `mingw-w64-i686-qt5-svg` `mingw-w64-i686-SDL2`
-`mingw-w64-i686-toolchain` `openssl-devel` `patch`
+`make` `mingw-w64-ucrt-x86_64-cmake` `mingw-w64-ucrt-x86_64-qt5-base` `mingw-w64-ucrt-x86_64-qt5-svg`
+`mingw-w64-ucrt-x86_64-SDL2` `mingw-w64-ucrt-x86_64-toolchain` `openssl-devel` `patch`
 
-From the MSYS2 **mingw32.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
+From the MSYS2 **ucrt64.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
 required), then start the configuration process executing:\
-`cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
+`cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
 
 To build the project execute:\
 `ninja -C cmake-build`
@@ -35,7 +35,7 @@ containing the final archive release file
 
 ```
 cd /c/BZRPlayer
-cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
+cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
 ninja -C cmake-build 
 ```
 
@@ -43,24 +43,24 @@ ninja -C cmake-build
 
 These are the settings for any IDE that supports CMake:
 
-- set the toolchain to **<MSYS2_dir>\mingw32**\
-  (e.g. `C:\msys64\mingw32`)
+- set the toolchain to **<MSYS2_dir>\ucrt64**\
+  (e.g. `C:\msys64\ucrt64`)
 
 
 - set the CMake command with following flags:\
-  **-DCMAKE_PREFIX_PATH="<MSYS2_dir>/mingw32" -G "Ninja"**\
-  (e.g. `-DCMAKE_PREFIX_PATH="c:/msys64/mingw32" -G "Ninja"`)
+  **-DCMAKE_PREFIX_PATH="<MSYS2_dir>/ucrt64" -G "Ninja"**\
+  (e.g. `-DCMAKE_PREFIX_PATH="c:/msys64/ucrt64" -G "Ninja"`)
 
 
-- set additional environment variables **MSYSTEM=MINGW32** and **PATH=<MSYS2_dir>/usr/bin**\
-  (e.g. `MSYSTEM=MINGW32;PATH=c:/msys64/usr/bin`)
+- set additional environment variables **MSYSTEM=UCRT64** and **PATH=<MSYS2_dir>/usr/bin**\
+  (e.g. `MSYSTEM=UCRT64;PATH=c:/msys64/usr/bin`)
 
 
 - set the CMake application runner to build **All targets** with `app` as executable
 
 
-- (optional) set CMake executable to **<MSYS2_dir>\mingw32\bin\cmake.exe**\
-  (e.g. `C:\msys64\mingw32\bin\cmake.exe`)
+- (optional) set CMake executable to **<MSYS2_dir>\ucrt64\bin\cmake.exe**\
+  (e.g. `C:\msys64\ucrt64\bin\cmake.exe`)
 
 ### Linux (cross-compilation)
 

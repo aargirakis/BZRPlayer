@@ -87,7 +87,7 @@ public:
 extern "C" {
 #endif
 
-__declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
+F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 {
     return &codecDescription;
 }
@@ -159,16 +159,13 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     memset(&plugin->init68, 0, sizeof(plugin->init68));
 
-    // Set debug message handler (optionnal).
-    //init68.debug = (debugmsg68_t)vfprintf;
-    //init68.debug_cookie = stderr;
-
     sc68_init(&plugin->init68);
 
     string path = info->applicationPath + SC68_DATA_PATH;
     rsc68_set_share(path.c_str());
 
     memset(&plugin->create68, 0, sizeof(plugin->create68));
+    plugin->create68.emu68_debug = 1; // avoids sc68 crash
     plugin->sc68 = sc68_create(&plugin->create68);
 
     if (sc68_load_mem(plugin->sc68, (signed short*)myBuffer, filesize) < 0)

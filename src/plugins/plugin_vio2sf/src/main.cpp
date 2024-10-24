@@ -387,7 +387,7 @@ private:
 extern "C" {
 #endif
 
-__declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
+F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 {
     return &codecDescription;
 }
@@ -546,8 +546,9 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 {
     auto* plugin = static_cast<pluginVio2sf*>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_MS)
-    {
+    //TODO if uncommented makes bzr2 64bit crashing when non-debugging
+    // if (lengthtype == FMOD_TIMEUNIT_MS)
+    // {
         if (plugin->m_length > 0)
         {
             *length = plugin->m_length;
@@ -558,5 +559,5 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
         }
         plugin->info->numSubsongs = 1;
         return FMOD_OK;
-    }
+    // }
 }

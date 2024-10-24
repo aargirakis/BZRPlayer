@@ -1,0 +1,10 @@
+--- src/include/ossupport.h	2014-09-16 19:11:24.000000000 +0200
++++ src/include/ossupport.h	2025-01-26 17:27:52.721648176 +0100
+@@ -10,4 +10,6 @@
+ #include <string.h>
+ #endif
+ 
+-
++#include "strsep.h"
++#include "strlrep.h"
++#include "memmemrep.h"
