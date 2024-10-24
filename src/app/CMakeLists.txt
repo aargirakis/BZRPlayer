@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 14)
 #TODO original qmake flags to check: -fexceptions -mthreads -DUNICODE -D_UNICODE -DMINGW_HAS_SECURE_API=1
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
+#set(CMAKE_AUTORCC ON) #TODO
 set(CMAKE_AUTOUIC ON)
 
 configure_file(
@@ -42,7 +42,7 @@ file(GLOB SOURCES
         mainwindow.ui
         settingswindow.ui
 
-        BZRPlayer.rc
+    #    BZRPlayer.rc #TODO
         BZRPlayer.exe.manifest
 )
 
@@ -58,15 +58,13 @@ foreach (QT_MODULE ${QT_MODULES})
 endforeach ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86 -lfmod
+        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod64
         ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "BZRPlayer"
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
         WIN32_EXECUTABLE true
 )
 
