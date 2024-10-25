@@ -109,15 +109,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86 -lfmod -lws2_32
+        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod -lws2_32
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

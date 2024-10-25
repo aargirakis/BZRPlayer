@@ -52,6 +52,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )
