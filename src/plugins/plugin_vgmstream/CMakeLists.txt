@@ -10,6 +10,10 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-incompatible-pointer-types>)
+endif ()
+
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
@@ -47,6 +51,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )
