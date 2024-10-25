@@ -12,6 +12,8 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fpermissive>)
+
 file(GLOB SOURCES
         src/src/*.cpp
         src/main.cpp
@@ -30,6 +32,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )

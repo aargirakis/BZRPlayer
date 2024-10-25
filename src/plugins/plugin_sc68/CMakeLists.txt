@@ -16,6 +16,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
     add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
+    #TODO
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-incompatible-pointer-types>)
 endif ()
 
 set(LIB_NAME "${NAME}")
@@ -78,8 +80,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
