@@ -47,15 +47,15 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_mdxmini "src/plugins/plugin_mdxmini"
         plugin_organya-decoder "src/plugins/plugin_organya-decoder"
         plugin_protrekkr "src/plugins/plugin_protrekkr"
-        plugin_sc68 "src/plugins/plugin_sc68"                                #TODO seeking it is now supported (should be implemented into main.cpp) #TODO also track length seems supported (see DisplayInfo function in sc68.c)
+        plugin_sc68 "src/plugins/plugin_sc68"                                #TODO crash with amd64 #TODO seeking it is now supported (should be implemented into main.cpp) #TODO also track length seems supported (see DisplayInfo function in sc68.c)
         plugin_sndh-player "src/plugins/plugin_sndh-player"                  #check cmake TODO
         plugin_sunvox_lib "src/plugins/plugin_sunvox_lib"                    #TODO add sv_unload_dll() (see sunvox_lib README)
         plugin_tunes98_plug "src/plugins/plugin_tunes98_plug"                #check cmake TODO
         plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO seeking it is now supported (should be implemented into main.cpp). #TODO add v2mz support (see sources/v2m dir for example files)
         plugin_vgmplay-legacy "src/plugins/plugin_vgmplay-legacy"            #check cmake TODO
         plugin_vgmstream "src/plugins/plugin_vgmstream"
-        plugin_vio2sf "src/plugins/plugin_vio2sf"                            #check cmake TODO
-        plugin_wothke-uade-2.13 "src/plugins/plugin_wothke-uade-2.13"        #TODO unfinished
+        plugin_vio2sf "src/plugins/plugin_vio2sf"                            #TODO crash with amd64 (when non-debugging) #check cmake TODO
+        plugin_wothke-uade-2.13 "src/plugins/plugin_wothke-uade-2.13"        #TODO crash with amd64 (when non-debugging) #TODO unfinished
         plugin_zxtune "src/plugins/plugin_zxtune"
 )
 

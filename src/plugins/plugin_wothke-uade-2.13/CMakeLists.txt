@@ -1,5 +1,16 @@
 cmake_minimum_required(VERSION 3.28)
 
+#TODO crash only when running (non-debugging) with this stacktrace:
+#TODO main.cpp: open (bzr2)
+#TODO uade.c: uade_reset
+#TODO uade.c: get_player_name
+#TODO eagleplayer.c: uade_is_our_file
+#TODO eagleplayer.c: analyze_file_format
+#TODO eagleplayer.c: load_playerstore
+#TODO eagleplayer.c: read_eagleplayer_conf
+#TODO support.c: read_and_split_lines
+
+
 set(NAME "wothke-uade-2.13")
 set(VERSION "6e96e16c30d794f8e739921da5b23f722dc53b2f")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
@@ -97,15 +108,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86 -lfmod -lws2_32
+        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod -lws2_32
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

@@ -10,10 +10,6 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
 
-if (CMAKE_COMPILER_IS_GNUCC)
-    add_compile_options(-mfpmath=sse -msse2) # not needed for 64bit (already set by default)
-endif ()
-
 set(LIB1_NAME "${NAME}")
 set(LIB1_VERSION "${VERSION}")
 set(LIB1_NAME_VERSIONED "${LIB1_NAME}-${LIB1_VERSION}")
@@ -143,8 +139,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
-        COMPILE_FLAGS "-m32"
-        LINK_FLAGS "-m32"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
