@@ -5,12 +5,15 @@ class BaseStep;
 class BaseRow;
 class D2Sample;
 class AmigaChannel;
+
 class D2Voice
 {
-friend class D2Player;
+    friend class D2Player;
+
 public:
     D2Voice(int index);
     void initialize();
+
 private:
     int index;
     D2Voice* next;

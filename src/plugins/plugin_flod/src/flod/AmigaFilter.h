@@ -2,6 +2,7 @@
 #define AMIGAFILTER_H
 
 class Sample;
+
 class AmigaFilter
 {
 public:
@@ -9,10 +10,11 @@ public:
 
     enum
     {
-            AUTOMATIC = 0,
-            FORCE_ON = 1,
-            FORCE_OFF = -1
+        AUTOMATIC = 0,
+        FORCE_ON = 1,
+        FORCE_OFF = -1
     };
+
     int active;
     int filter;
     void initialize();
@@ -34,9 +36,7 @@ private:
     double r2;
     double r3;
     double r4;
-	int model;
-
-
+    int model;
 };
 
 #endif // AMIGAFILTER_H

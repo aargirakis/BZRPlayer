@@ -4,9 +4,11 @@
 
 class DWSong
 {
-friend class DWPlayer;
+    friend class DWPlayer;
+
 public:
     DWSong();
+
 private:
     int speed;
     int delay;

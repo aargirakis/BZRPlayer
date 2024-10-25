@@ -4,9 +4,8 @@
 
 class MEDPatternView : public AbstractPatternView
 {
-
 public:
-    MEDPatternView(Tracker *parent, unsigned int channels, int scale);
+    MEDPatternView(Tracker* parent, unsigned int channels, int scale);
     ~MEDPatternView();
     BitmapFont infoFont();
     QString effect(BaseRow* row);
@@ -16,11 +15,9 @@ public:
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);
 
-
 private:
 
 private slots:
-
 };
 
 #endif // MEDPATTERNVIEW_H

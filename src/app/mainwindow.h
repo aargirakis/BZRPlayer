@@ -1,9 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include <QTimer>
-#include <QTableWidgetItem>
 #include <QListWidgetItem>
 #include <QSystemTrayIcon>
 #include <QDomElement>
@@ -16,25 +14,26 @@
 #include "playlistitem.h"
 #include "channels.h"
 #include "qtcpserver.h"
-#include "soundmanager.h"
 #include "visualizers/trackerfullscreen.h"
 #include "visualizers/visualizerfullscreen.h"
 
 using namespace std;
-namespace Ui {
-class MainWindow;
+
+namespace Ui
+{
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    #define SWAP16(value) \
+#define SWAP16(value) \
     ( \
         (((uint16_t)((value) & 0x00FF)) << 8) | \
         (((uint16_t)((value) & 0xFF00)) >> 8)   \
     )
 
-    #define SWAP32(value) \
+#define SWAP32(value) \
     ( \
         (((uint32_t)((value) & 0x000000FF)) << 24) | \
         (((uint32_t)((value) & 0x0000FF00)) <<  8) | \
@@ -44,24 +43,27 @@ class MainWindow : public QMainWindow
 
 public:
     enum playmode
-    {   normal = 0,
+    {
+        normal = 0,
         repeatPlaylist = 1,
         repeatSong = 2
     };
+
     enum dropWidget
     {
         DropIgnore = 0,
         DropToPlaylist = 1,
         DropToPlaylists = 2
     };
-    bool eventFilter(QObject *obj, QEvent *event);
-    explicit MainWindow(int argc, char *argv[], QWidget *parent = nullptr);
+
+    bool eventFilter(QObject* obj, QEvent* event);
+    explicit MainWindow(int argc, char* argv[], QWidget* parent = nullptr);
     ~MainWindow();
     bool getChannelEnabled(int index);
     void setChannelEnabled(int index, bool enable);
     QString getVersion();
 
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
 
 
     QByteArray defaultGeometry;
@@ -69,7 +71,7 @@ public:
     QByteArray dockingState;
 
     QAction* workspaceSeparator;
-    Channels *channels;
+    Channels* channels;
 
 
     void swapColumns(QTableView* tableview);
@@ -81,7 +83,7 @@ public:
     void DeleteWorkspace(QString workspace);
     void CreateNewWorkspace(QString filename);
     void DownloadFile();
-    void setPosition(int offset=0);
+    void setPosition(int offset = 0);
     Effect* getEffect();
     void resetAll();
     void resetToDefaultColors();
@@ -90,7 +92,7 @@ public:
     void restoreFromTray();
     void SaveSettings();
     void setOutputDevice(int outputDevice, QString);
-	void setOutputDeviceSetting(int outputDevice);
+    void setOutputDeviceSetting(int outputDevice);
     int getOutputDevice();
     void setResetVolume(bool resetVolume);
     bool getResetVolume();
@@ -157,31 +159,31 @@ public:
 
     QString createPlaylist(QString);
 
-    unsigned int getFontSize(QRect , QFont , QString);
+    unsigned int getFontSize(QRect, QFont, QString);
 
-    const QString &getColorMain() const;
-    const QString &getColorMainHover() const;
-    const QString &getColorMedium() const;
-    const QString &getColorBackground() const;
-    const QString &getColorBehindBackground() const;
-    const QString &getColorMainText() const;
-    const QString &getColorSelection() const;
-    const QString &getColorButton() const;
-    const QString &getColorButtonHover() const;
-    const QString &getColorDimmedText() const;
+    const QString& getColorMain() const;
+    const QString& getColorMainHover() const;
+    const QString& getColorMedium() const;
+    const QString& getColorBackground() const;
+    const QString& getColorBehindBackground() const;
+    const QString& getColorMainText() const;
+    const QString& getColorSelection() const;
+    const QString& getColorButton() const;
+    const QString& getColorButtonHover() const;
+    const QString& getColorDimmedText() const;
 
-    const QString &getColorVisualizerTop() const;
-    const QString &getColorVisualizerBottom() const;
-    const QString &getColorVisualizerMiddle() const;
-    const QString &getColorVisualizerPeakColor() const;
-    const QString &getColorVisualizerBackground() const;
-    const QString &getScrollerReflectionColor() const;
+    const QString& getColorVisualizerTop() const;
+    const QString& getColorVisualizerBottom() const;
+    const QString& getColorVisualizerMiddle() const;
+    const QString& getColorVisualizerPeakColor() const;
+    const QString& getColorVisualizerBackground() const;
+    const QString& getScrollerReflectionColor() const;
 
     bool isOnlyOneInstanceEnabled() const;
     FileDownloader* filedownloader;
     qint64 SIDSongLengthDownloadedEpoch;
 
-    QMap<QString,QPixmap> icons;
+    QMap<QString, QPixmap> icons;
 
 
     QString colorMain;
@@ -205,14 +207,11 @@ public:
     QString colorDimmedText;
     QString colorDimmedTextOld;
 
-
 protected:
-
-    void closeEvent(QCloseEvent *event) override;
-    void changeEvent(QEvent *event) override;
+    void closeEvent(QCloseEvent* event) override;
+    void changeEvent(QEvent* event) override;
 
 private slots:
-
     void downloadComplete();
     void sendSocketMsg();
     void getSocketData();
@@ -258,15 +257,15 @@ private slots:
     void clearLogWindow();
 
     //drag'n'drop
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dropEvent(QDropEvent* event);
+    void dragMoveEvent(QDragMoveEvent* event);
 
     void on_positionSlider_sliderReleased();
     void on_volumeSlider_sliderMoved();
     void on_volumeSlider_sliderPressed();
 
-    void on_playlist_itemDoubleClicked(const QModelIndex &);
+    void on_playlist_itemDoubleClicked(const QModelIndex&);
 
 
     void on_buttonNext_clicked();
@@ -276,9 +275,9 @@ private slots:
 
     void on_pushButtonNewPlaylist_clicked();
 
-    void on_listWidget_itemClicked(QListWidgetItem *item);
+    void on_listWidget_itemClicked(QListWidgetItem* item);
 
-    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
+    void on_listWidget_itemDoubleClicked(QListWidgetItem* item);
 
     void on_checkBoxShuffle_clicked();
 
@@ -290,7 +289,7 @@ private slots:
 
     void on_volumeSlider_sliderMoved(int position);
 
-    void on_playlist_doubleClicked(const QModelIndex &index);
+    void on_playlist_doubleClicked(const QModelIndex& index);
 
     void on_volumeSlider_valueChanged(int value);
 
@@ -321,9 +320,6 @@ private slots:
     void on_buttonStop_clicked();
 
 private:
-
-
-
     QString SIDSongPathDownloaded;
     QString SIDSongLengthFrequency;
     FileInfoParser* fileInfoParser;
@@ -335,9 +331,9 @@ private:
     dropWidget DropWidget;
     static const string ID3V1_GENRES[];
     static const QString VERSION;
-    QTcpServer *tcpServer;
-    QTcpSocket *tcpClient;
-    QTcpSocket *tcpServerConnection;
+    QTcpServer* tcpServer;
+    QTcpSocket* tcpClient;
+    QTcpSocket* tcpServerConnection;
 
     int refreshInfoTimer;
 
@@ -360,12 +356,12 @@ private:
 
     VisualizerFullScreen* visualizerFullScreen;
     TrackerFullScreen* trackerFullScreen;
-    QMap<QString,QTableView*> tableWidgetPlaylists;
+    QMap<QString, QTableView*> tableWidgetPlaylists;
 
     QString windowTitle;
     QString currentPlaylist;
     QString selectedPlaylist;
-    QSystemTrayIcon *m_Tray;
+    QSystemTrayIcon* m_Tray;
 
     //tray actions
     QAction* nextAction;
@@ -376,7 +372,7 @@ private:
     QAction* muteAction;
     QAction* quitAction;
 
-    QMenu *trayIconMenu;
+    QMenu* trayIconMenu;
 
 
     QString colorVisualizerTop;
@@ -424,17 +420,18 @@ private:
     void highlightPlaylistItem(QString playlist, int currentRow);
     bool initializeSocket();
     void createMenuWindowTabs();
-    void checkCommandLine(int argc, char *argv[]);
-    void savePlayList(QString filename,QString newFilename);
+    void checkCommandLine(int argc, char* argv[]);
+    void savePlayList(QString filename, QString newFilename);
     vector<PlaylistItem*> getPlayListEntriesM3U(QString filename);
     void updateInstruments();
     QStringList getFilesRecursive(QString, QString = "", bool = true);
-    bool addSong(QList<QUrl> urls, int, QString,bool);
-    void addSong(QStringList filenames,int, QString,bool);
+    bool addSong(QList<QUrl> urls, int, QString, bool);
+    void addSong(QStringList filenames, int, QString, bool);
 
     void resetShuffle(QString);
 
-    void addPlaylistEntry(QTableView* table, int rowPosition, QString filename, QString fileFormat, QString length, int subsong, QString fullPath, int lengthInt, QString artist);
+    void addPlaylistEntry(QTableView* table, int rowPosition, QString filename, QString fileFormat, QString length,
+                          int subsong, QString fullPath, int lengthInt, QString artist);
     void getLength();
     void loadPlugin(string filename);
     bool loadSound(QString fullPath);
@@ -451,11 +448,11 @@ private:
     void createThePopupMenuInstruments();
     void createThePopupMenuChannels();
     void exportInstrument(QString);
-    void iffWriteChunkHeader(FILE *f, char *chunkName, uint32_t chunkLen);
-    void iffWriteUint32(FILE *f, uint32_t value);
-    void iffWriteUint16(FILE *f, uint16_t value);
-    void iffWriteUint8(FILE *f, const uint8_t value);
-    void iffWriteChunkData(FILE *f, const void *data, size_t length);
+    void iffWriteChunkHeader(FILE* f, char* chunkName, uint32_t chunkLen);
+    void iffWriteUint32(FILE* f, uint32_t value);
+    void iffWriteUint16(FILE* f, uint16_t value);
+    void iffWriteUint8(FILE* f, const uint8_t value);
+    void iffWriteChunkData(FILE* f, const void* data, size_t length);
     unsigned int getLengthFromSIDDatabase(QString sidfilename, int subsong);
 
     int currentSubsong;
@@ -467,7 +464,7 @@ private:
 
     QMap<QString, QVector<unsigned int>> m_ShufflePlayed;
     QMap<QString, QVector<unsigned int>> m_ShuffleToBePlayed;
-    QMap<QString,int> m_iCurrentShufflePosition;
+    QMap<QString, int> m_iCurrentShufflePosition;
 
     QString currentPlayingFilepath;
     int currentRow;
@@ -476,7 +473,7 @@ private:
 
     bool playStarted;
     bool loaded;
-    QMenu *popMenu;
+    QMenu* popMenu;
     QAction* restoreLayoutAction;
     QAction* openSettingsAction;
     QAction* addFolderAction;
@@ -529,9 +526,8 @@ private:
     void ERRCHECK(FMOD_RESULT);
 
 
-
-    int               key;
-    unsigned int      version;
+    int key;
+    unsigned int version;
 };
 
 #endif // MAINWINDOW_H

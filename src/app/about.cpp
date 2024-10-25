@@ -2,7 +2,7 @@
 #include "playlistmodel.h"
 #include "ui_about.h"
 
-about::about(QWidget *parent) :
+about::about(QWidget* parent) :
     QDialog(parent),
     ui(new Ui::about)
 {
@@ -10,7 +10,6 @@ about::about(QWidget *parent) :
     ui->setupUi(this);
     mainWindow = static_cast<MainWindow*>(this->parent());
     setVersion(mainWindow->getVersion());
-
 }
 
 about::~about()
@@ -28,4 +27,3 @@ void about::on_pushButton_clicked()
 {
     close();
 }
-

@@ -4,11 +4,13 @@
 #include "qevent.h"
 #include "qpixmap.h"
 #include "effect.h"
+
 class Parallax : public Effect
 {
 public:
     Parallax();
-    void paint(QPainter *painter, QPaintEvent *event);
+    void paint(QPainter* painter, QPaintEvent* event);
+
 private:
     bool inited;
     QPixmap tile1;

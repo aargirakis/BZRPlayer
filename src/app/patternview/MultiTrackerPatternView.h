@@ -4,9 +4,8 @@
 
 class MultiTrackerPatternView : public AbstractPatternView
 {
-
 public:
-    MultiTrackerPatternView(Tracker *parent, unsigned int channels, int scale);
+    MultiTrackerPatternView(Tracker* parent, unsigned int channels, int scale);
     ~MultiTrackerPatternView();
     QString note(BaseRow* row);
     QString rowNumber(int rowNumber);
@@ -16,11 +15,11 @@ public:
 
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);
+
 private:
 
 
 private slots:
-
 };
 
 #endif // MULTITRACKERPATTERNVIEW_H

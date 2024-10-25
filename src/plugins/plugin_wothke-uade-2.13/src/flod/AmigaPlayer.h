@@ -3,8 +3,10 @@
 #include <string>
 #include <vector>
 #include "Amiga.h"
+
 class BaseSample;
 class BaseRow;
+
 class AmigaPlayer
 {
 public:
@@ -13,7 +15,7 @@ public:
     std::string m_title;
     std::string format;
     Amiga* amiga;
- 
+
     int getVersion();
 
     virtual int load(void* data, unsigned int length);
@@ -22,14 +24,13 @@ public:
     virtual bool getTitle(std::string& title);
 
     virtual void setVersion(int version);
-protected:
 
+protected:
     std::vector<BaseSample*> samples;
 
     int m_version;
     int m_variant;
     int m_totalSongs;
- 
 };
 
 #endif // AMIGAPLAYER_H

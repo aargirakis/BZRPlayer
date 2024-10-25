@@ -3,7 +3,9 @@
 #include <string>
 #include <QString>
 #include "info.h"
+
 using namespace std;
+
 typedef struct
 {
     QString year;
@@ -37,7 +39,7 @@ struct Equalizer
     float eq16000;
 };
 
-inline const char * const BoolToString();
+inline const char* const BoolToString();
 
 QString groupDigits(int number);
 unsigned int stringTimeToMs(QString strTime);

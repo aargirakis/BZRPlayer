@@ -2,12 +2,15 @@
 #define JBSONG_H
 
 #include <vector>
+
 class JBSong
 {
     friend class JBPlayer;
+
 public:
     JBSong();
     ~JBSong();
+
 private:
     int speed;
 

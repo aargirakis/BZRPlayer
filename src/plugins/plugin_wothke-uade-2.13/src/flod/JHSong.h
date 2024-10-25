@@ -4,8 +4,10 @@
 class JHSong
 {
     friend class JHPlayer;
+
 public:
     JHSong();
+
 private:
     int pointer;
     int speed;

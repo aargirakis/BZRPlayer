@@ -5,16 +5,18 @@
 class BDSample : public BaseSample
 {
     friend class BDPlayer;
+
 public:
     BDSample();
+
 private:
-      int word14;
-      int word16;
-      int word18;
-      int word20;
-      int word22;
-      int word24;
-      int word26;
+    int word14;
+    int word16;
+    int word18;
+    int word20;
+    int word22;
+    int word24;
+    int word26;
 };
 
 #endif // BDSAMPLE_H

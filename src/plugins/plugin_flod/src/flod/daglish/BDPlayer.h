@@ -14,23 +14,23 @@ public:
     BDPlayer(Amiga* amiga);
     ~BDPlayer();
     int load(void* data, unsigned long int _length);
-private:
 
+private:
     void setSample(BDVoice* voice, int counter);
     void fx(BDVoice* voice);
     std::vector<int> songs;
-	std::vector<int> banks;
+    std::vector<int> banks;
     int patterns;
-	std::vector<BDVoice*> voices;
+    std::vector<BDVoice*> voices;
     std::vector<BDSample*> samples;
 
-      int commands;
-      int periods;
-      int fadeStep;
-      int complete;
+    int commands;
+    int periods;
+    int fadeStep;
+    int complete;
 
     unsigned int position;
-	unsigned char *stream;
+    unsigned char* stream;
     unsigned long int length;
 
 
@@ -40,7 +40,6 @@ private:
     unsigned char getSubsongsCount();
     void selectSong(unsigned char);
     std::vector<BaseSample*> getSamples();
-
 };
 
 #endif // BDPLAYER_H

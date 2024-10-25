@@ -1,9 +1,8 @@
 #include "dialognewworkspace.h"
 #include "mainwindow.h"
-#include "channels.h"
 #include "ui_dialognewworkspace.h"
 
-DialogNewWorkspace::DialogNewWorkspace(QWidget *parent) :
+DialogNewWorkspace::DialogNewWorkspace(QWidget* parent) :
     QDialog(parent),
     ui(new Ui::DialogNewWorkspace)
 {
@@ -26,10 +25,9 @@ void DialogNewWorkspace::on_buttonCancel_clicked()
 void DialogNewWorkspace::on_buttonSave_clicked()
 {
     MainWindow* mw = static_cast<MainWindow*>(this->parent());
-    if(!ui->lineEditNewWorkspace->text().isEmpty())
+    if (!ui->lineEditNewWorkspace->text().isEmpty())
     {
         mw->CreateNewWorkspace(ui->lineEditNewWorkspace->text());
         close();
     }
 }
-

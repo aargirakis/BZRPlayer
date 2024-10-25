@@ -7,12 +7,14 @@ class Album;
 class AlbumGrid : public QListWidget
 {
     Q_OBJECT
+
 public:
-    AlbumGrid(QWidget *parent= nullptr);
+    AlbumGrid(QWidget* parent = nullptr);
     void AddAlbum(Album*);
     void Filter(QString);
+
 private:
-    QHash<QString,Album*> albumsMap;
+    QHash<QString, Album*> albumsMap;
     QList<QListWidgetItem*> itemsList;
 };
 

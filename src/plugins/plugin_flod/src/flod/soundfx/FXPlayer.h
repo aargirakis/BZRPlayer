@@ -4,6 +4,7 @@
 #include <list>
 #include "AmigaPlayer.h"
 #include "Amiga.h"
+
 class FXVoice;
 class BaseRow;
 class BaseSample;
@@ -17,15 +18,15 @@ public:
         SOUNDFX_18 = 2,
         SOUNDFX_19 = 3,
         SOUNDFX_20 = 4
-
     };
+
     FXPlayer(Amiga* amiga);
     ~FXPlayer();
     void setNTSC(int value);
     int load(void* data, unsigned long int length);
     void setVersion(int value);
-private:
 
+private:
     int magicTempoNumber;
     std::list<int> trackPosBuffer;
     std::list<int> patternPosBuffer;

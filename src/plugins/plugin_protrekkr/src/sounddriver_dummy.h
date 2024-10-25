@@ -1,9 +1,7 @@
 #ifndef _SOUNDDRIVER_DUMMY_H_
 #define _SOUNDDRIVER_DUMMY_H_
 
-#include <memory.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #define STDCALL
 #define FALSE 0
@@ -16,7 +14,10 @@ typedef int8_t int8;
 
 static constexpr int AUDIO_Latency = 0;
 
-inline void AUDIO_ResetTimer(void) {}
+inline void AUDIO_ResetTimer(void)
+{
+}
+
 inline int AUDIO_GetSamples(void) { return 0; }
 
 #endif

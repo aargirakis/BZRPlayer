@@ -1,8 +1,5 @@
 #pragma once
 
-#include <assert.h>
-#include <stdint.h>
-
 #ifndef NOMINMAX
 #   define NOMINMAX
 #endif

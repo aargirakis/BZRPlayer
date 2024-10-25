@@ -1,14 +1,17 @@
 #ifndef FXVOICE_H
 #define FXVOICE_H
-#include <vector>
 #include "AmigaPlayer.h"
 #include "Amiga.h"
+
 class BaseSample;
+
 class FXVoice
 {
     friend class FXPlayer;
+
 public:
     FXVoice(int index);
+
 private:
     void initialize();
 

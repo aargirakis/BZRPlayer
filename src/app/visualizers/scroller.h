@@ -9,7 +9,7 @@ class Scroller : public Effect
 {
 public:
     Scroller(QWidget* parent);
-    void paint(QPainter *painter, QPaintEvent *event);
+    void paint(QPainter* painter, QPaintEvent* event);
 
     void setVumeterWidth(double);
     void setSinusSpeed(double);
@@ -31,8 +31,8 @@ public:
     void setRasterBarsEnabled(bool);
     void setPrinterEnabled(bool);
     void setVUMeterEnabled(bool);
-   void setCustomScrolltextEnabled(bool);
-   void setCustomScrolltext(QString);
+    void setCustomScrolltextEnabled(bool);
+    void setCustomScrolltext(QString);
     void setScrollerReflectionColor(QColor);
 
     void setNumberOfStars(int);
@@ -109,11 +109,12 @@ public:
     QWidget* parent;
 
 private:
-
     double counterRasterBar;
     double sineAngleRasterBar;
     bool isStopping;
-    struct Star {
+
+    struct Star
+    {
         double x;
         double y;
         double z;
@@ -123,10 +124,11 @@ private:
     };
 
     //3d cube
-    void transform3DPointsTo2DPoints (std::vector<Point3D> points, Point3D* axisRotations, std::vector<Point2D>* TransformedPointsArray);
+    void transform3DPointsTo2DPoints(std::vector<Point3D> points, Point3D* axisRotations,
+                                     std::vector<Point2D>* TransformedPointsArray);
     std::vector<Point3D> pointsArray;
     std::vector<int*> facesArray;
-    int *edgesArray;
+    int* edgesArray;
     Point3D* cubeAxisRotations;
     Point3D* rotationSpeed;
     int focalLength;
@@ -136,7 +138,8 @@ private:
     Star* stars;
     bool hasInited;
 
-    struct Peak {
+    struct Peak
+    {
         int currentY;
         int timeLeftStill;
         int currentSpeedDrop;
@@ -166,14 +169,13 @@ private:
     qreal scaleY;
 
 
-
-    void paintStars(QPainter *painter, QPaintEvent *event);
-    void paintScroller(QPainter *painter, QPaintEvent *event);
-    void paintVUMeters(QPainter *painter, QPaintEvent *event, bool stereo);
-    void paintRasterBars(QPainter *painter, QPaintEvent *event);
-    void paint3dCube(QPainter *painter, QPaintEvent *event);
-    void createRasterBar(QPainter *painter, int offset, int numBars);
-    void printText(QPainter *painter, QPaintEvent *event);
+    void paintStars(QPainter* painter, QPaintEvent* event);
+    void paintScroller(QPainter* painter, QPaintEvent* event);
+    void paintVUMeters(QPainter* painter, QPaintEvent* event, bool stereo);
+    void paintRasterBars(QPainter* painter, QPaintEvent* event);
+    void paint3dCube(QPainter* painter, QPaintEvent* event);
+    void createRasterBar(QPainter* painter, int offset, int numBars);
+    void printText(QPainter* painter, QPaintEvent* event);
     bool setBitmapFont(QString);
     bool setBitmapFontPrinter(QString);
     void reset();
@@ -222,7 +224,6 @@ private:
     QPixmap m_CharacterMapPrinter;
 
 
-
     int m_scrollSpeed;
     int m_Amplitude;
     QString bitmapFontCharset;
@@ -230,7 +231,7 @@ private:
     QString m_bitmapFont;
     QString m_bitmapFontPrinter;
     double sinusSpeed;
-    double  sinusFrequency;
+    double sinusFrequency;
 
 
     double reflectionOpacity;
@@ -239,7 +240,6 @@ private:
     double fadeOpacityPrinterText;
     int fadeDirectionPrinterText;
     int fadeWait;
-
 };
 
 #endif // SCROLLER_H

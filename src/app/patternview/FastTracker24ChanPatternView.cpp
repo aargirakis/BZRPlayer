@@ -1,9 +1,8 @@
 #include "FastTracker24ChanPatternView.h"
 
-FastTracker24ChanPatternView::FastTracker24ChanPatternView(Tracker *parent, unsigned int channels, int scale)
-                            :FastTracker2PatternView(parent,channels,scale)
+FastTracker24ChanPatternView::FastTracker24ChanPatternView(Tracker* parent, unsigned int channels, int scale)
+    : FastTracker2PatternView(parent, channels, scale)
 {
-
     m_font = QFont("Fasttracker 2 16px");
     m_font.setPixelSize(8);
     m_fontWidth = 16;
@@ -30,7 +29,7 @@ FastTracker24ChanPatternView::FastTracker24ChanPatternView(Tracker *parent, unsi
     m_fontWidthEffects = 8;
     m_fontWidthParameters = 8;
     m_fontWidthSeparatorNote = 8;
-    m_SeparatorNote="''";
+    m_SeparatorNote = "''";
     m_RowLength = 40;
 
     m_xChannelStart = 28;
@@ -40,16 +39,18 @@ FastTracker24ChanPatternView::FastTracker24ChanPatternView(Tracker *parent, unsi
 
 FastTracker24ChanPatternView::~FastTracker24ChanPatternView()
 {
-
 }
+
 int FastTracker24ChanPatternView::fontWidthRownumber()
 {
     return m_fontWidthRownumber;
 }
+
 QFont FastTracker24ChanPatternView::fontRownumber()
 {
     return m_fontRownumber;
 }
+
 BitmapFont FastTracker24ChanPatternView::bitmapFontRownumber()
 {
     return m_bitmapFontRownumber;

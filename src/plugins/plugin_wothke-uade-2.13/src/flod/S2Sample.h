@@ -5,8 +5,10 @@
 class S2Sample : public BaseSample
 {
     friend class S2Player;
+
 public:
     S2Sample();
+
 private:
     int negStart;
     int negLen;

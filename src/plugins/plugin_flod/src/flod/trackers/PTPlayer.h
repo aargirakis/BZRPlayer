@@ -8,12 +8,13 @@
 class BaseRow;
 class BaseSample;
 class PTVoice;
+
 class PTPlayer : public AmigaPlayer
 {
 public:
     enum
     {
-        ULTIMATE_SOUNDTRACKER  = 1,
+        ULTIMATE_SOUNDTRACKER = 1,
         DOC_SOUNDTRACKER_9 = 2,
         MASTER_SOUNDTRACKER = 3,
         DOC_SOUNDTRACKER_20 = 4,
@@ -23,13 +24,15 @@ public:
         PROTRACKER_10 = 8,
         NOISETRACKER_20 = 9,
         PROTRACKER_11 = 10,
-        PROTRACKER_12  = 11,
+        PROTRACKER_12 = 11,
         FASTTRACKER_10 = 12
     };
+
     PTPlayer(Amiga* amiga);
     ~PTPlayer();
     int load(void* data, unsigned long int _length);
     void setVersion(int);
+
 private:
     std::list<int> trackPosBuffer;
     std::list<int> patternPosBuffer;

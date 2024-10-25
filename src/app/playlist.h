@@ -2,10 +2,12 @@
 #define PLAYLIST_H
 
 #include "playlistitem.h"
+
 class Playlist
 {
 public:
     Playlist();
+
 private:
     vector<PlaylistItem*> playListitems;
     QString name;

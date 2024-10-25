@@ -4,9 +4,8 @@
 
 class GenericPatternView : public AbstractPatternView
 {
-
 public:
-    GenericPatternView(Tracker *parent, unsigned int channels, int scale);
+    GenericPatternView(Tracker* parent, unsigned int channels, int scale);
     ~GenericPatternView();
 
     void paintAbove(QPainter* painter, int height, int currentRow);
@@ -15,7 +14,6 @@ public:
 private:
 
 private slots:
-
 };
 
 #endif // GENERICPATTERNVIEW_H

@@ -4,9 +4,8 @@
 
 class ProTracker1PatternView : public AbstractPatternView
 {
-
 public:
-    ProTracker1PatternView(Tracker *parent, unsigned int channels, int scale);
+    ProTracker1PatternView(Tracker* parent, unsigned int channels, int scale);
     ~ProTracker1PatternView();
     QFont currentRowFont();
     BitmapFont currentRowBitmapFont();
@@ -16,7 +15,6 @@ public:
 private:
 
 private slots:
-
 };
 
 #endif // PROTRACKER1PATTERNVIEW_H

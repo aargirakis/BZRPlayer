@@ -4,9 +4,8 @@
 
 class NoiseTrackerPatternView : public AbstractPatternView
 {
-
 public:
-    NoiseTrackerPatternView(Tracker *parent, unsigned int channels, int scale);
+    NoiseTrackerPatternView(Tracker* parent, unsigned int channels, int scale);
     ~NoiseTrackerPatternView();
     QFont currentRowFont();
     BitmapFont currentRowBitmapFont();
@@ -16,7 +15,6 @@ public:
 private:
 
 private slots:
-
 };
 
 #endif // NOISETRACKERPATTERNVIEW_H

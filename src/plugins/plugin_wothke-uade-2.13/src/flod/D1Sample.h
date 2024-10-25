@@ -2,29 +2,32 @@
 #define D1SAMPLE_H
 #include "BaseSample.h"
 #include <vector>
+
 class D1Sample : public BaseSample
 {
     friend class D1Player;
+
 public:
     D1Sample();
+
 private:
     int loop;
-    int synth      ;
-    int attackStep ;
+    int synth;
+    int attackStep;
     int attackDelay;
-    int decayStep  ;
-    int decayDelay ;
+    int decayStep;
+    int decayDelay;
     int releaseStep;
     int releaseDelay;
-    int sustain    ;
+    int sustain;
     std::vector<unsigned char> arpeggio;
-    signed char pitchBend  ;
-    int portamento ;
+    signed char pitchBend;
+    int portamento;
     std::vector<signed char> table;
-    int tableDelay ;
+    int tableDelay;
     int vibratoWait;
     int vibratoStep;
-   int  vibratoLen;
+    int vibratoLen;
 };
 
 #endif // D1SAMPLE_H

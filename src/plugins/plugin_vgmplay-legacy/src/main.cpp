@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
@@ -23,57 +22,60 @@ extern "C" {
 using namespace std;
 
 
-
-FMOD_RESULT handle_error( const char* str )
+FMOD_RESULT handle_error(const char* str)
 {
-        if ( str )
-        {
-                return FMOD_ERR_INTERNAL;
-        }
-        else
-                return FMOD_OK;
+    if (str)
+    {
+        return FMOD_ERR_INTERNAL;
+    }
+    else
+        return FMOD_OK;
 }
-FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
-FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec);
-FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
-FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
+
+FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
+FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec);
+FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
+FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
 
 FMOD_CODEC_DESCRIPTION gamecodec =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD Game Music Player Plugin",			// Name.
-    0x00012300,                         // Version 0xAAAABBBB   A = major, B = minor.
-    1,                                  // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS,					// The time format we would like to accept into setposition/getposition.
-    &open,                           // Open callback.
-    &close,                          // Close callback.
-    &read,                           // Read callback.
-    0,                      // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setposition,                    // Setposition callback.
-    0,                    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0                                // Sound create callback (don't need it)
+    "FMOD Game Music Player Plugin", // Name.
+    0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
+    1, // Force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
+    &open, // Open callback.
+    &close, // Close callback.
+    &read, // Read callback.
+    0,
+    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
+    &setposition, // Setposition callback.
+    0,
+    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
+    0 // Sound create callback (don't need it)
 };
+
 class gameplugin
 {
-        FMOD_CODEC_STATE *_codec;
+    FMOD_CODEC_STATE* _codec;
 
-        public:
-        gameplugin(FMOD_CODEC_STATE *codec)
-        {
-                _codec = codec;
-                //LogFile = new CLogFile("gameemu.log");
-                memset(&gpwaveformat, 0, sizeof(gpwaveformat));
-        }
+public:
+    gameplugin(FMOD_CODEC_STATE* codec)
+    {
+        _codec = codec;
+        //LogFile = new CLogFile("gameemu.log");
+        memset(&gpwaveformat, 0, sizeof(gpwaveformat));
+    }
 
-        ~gameplugin()
-        {
-                //delete some stuff
-                //gme_delete( emu );
-        }
-        //Music_Emu* emu;
-        FMOD_CODEC_WAVEFORMAT gpwaveformat;
+    ~gameplugin()
+    {
+        //delete some stuff
+        //gme_delete( emu );
+    }
 
+    //Music_Emu* emu;
+    FMOD_CODEC_WAVEFORMAT gpwaveformat;
 };
 
 /*
@@ -85,7 +87,7 @@ class gameplugin
 extern "C" {
 #endif
 
-__declspec(dllexport) FMOD_CODEC_DESCRIPTION * __stdcall _FMODGetCodecDescription()
+__declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
     return &gamecodec;
 }
@@ -97,7 +99,7 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION * __stdcall _FMODGetCodecDescriptio
 
 static string msToNiceStringExact(unsigned int lenms)
 {
-    string songLength="";
+    string songLength = "";
 
     int ms;
     int sec;
@@ -108,25 +110,25 @@ static string msToNiceStringExact(unsigned int lenms)
     string strMin;
     string strHour;
 
-    unsigned int length=lenms/1000;
+    unsigned int length = lenms / 1000;
 
-    ms=lenms%1000;
-    sec=length%60;
-    min=length/60%60;
-    hour=length/3600;
+    ms = lenms % 1000;
+    sec = length % 60;
+    min = length / 60 % 60;
+    hour = length / 3600;
     stringstream ss2;
     stringstream ss3;
     stringstream ss4;
     stringstream ss5;
 
-    if(ms<10)
+    if (ms < 10)
         ss2 << "00" << ms;
-    else if(ms<100)
+    else if (ms < 100)
         ss2 << "0" << ms;
     else
         ss2 << ms;
 
-    if(sec<10 && (min>0 || hour>0))
+    if (sec < 10 && (min > 0 || hour > 0))
         ss3 << "0" << sec;
     else
         ss3 << sec;
@@ -136,30 +138,31 @@ static string msToNiceStringExact(unsigned int lenms)
 
     ss4 << min;
     ss4 >> strMin;
-    if(hour>0)
+    if (hour > 0)
     {
         ss5 << hour;
         ss5 >> strHour;
-        songLength = strHour + ":" + strMin + ":" + strSec+ "." + strMs;
+        songLength = strHour + ":" + strMin + ":" + strSec + "." + strMs;
     }
-    else if(min>0)
+    else if (min > 0)
     {
-        songLength = strMin + ":" + strSec+ "." + strMs;
+        songLength = strMin + ":" + strSec + "." + strMs;
     }
     else
     {
-        songLength =  strSec+ "." + strMs;
+        songLength = strSec + "." + strMs;
     }
-    if(lenms==0xffffffff)
+    if (lenms == 0xffffffff)
     {
-        songLength="??:??";
+        songLength = "??:??";
     }
     return songLength;
 }
+
 static string PrintChipStr(UINT8 ChipID, UINT8 SubType, UINT32 Clock)
 {
     string chips;
-    if (! Clock)
+    if (!Clock)
         return "";
 
     if (ChipID == 0x00 && (Clock & 0x80000000))
@@ -177,199 +180,193 @@ static string PrintChipStr(UINT8 ChipID, UINT8 SubType, UINT32 Clock)
 
     return chips;
 }
-FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo)
+
+FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
+    FMOD_RESULT result;
+    gameplugin* gp = new gameplugin(codec);
 
 
-        FMOD_RESULT       result;
-        gameplugin *gp = new gameplugin(codec);
+    Info* info = (Info*)userexinfo->userdata;
 
 
-        Info* info = (Info*)userexinfo->userdata;
-
-
-        VGMPlay_Init();
-        if (! OpenVGMFile(info->filename.c_str()))
+    VGMPlay_Init();
+    if (!OpenVGMFile(info->filename.c_str()))
+    {
+        if (GetGZFileLength(info->filename.c_str()) == 0xFFFFFFFF)
         {
-            if (GetGZFileLength(info->filename.c_str()) == 0xFFFFFFFF)
-            {
-                return FMOD_ERR_FORMAT;	// file not found
-            }
-            else
-            {
-                return FMOD_ERR_FORMAT;	// file invalid
-            }
+            return FMOD_ERR_FORMAT; // file not found
         }
-
-
-        int freq = 44100;
-
-        gp->gpwaveformat.format       = FMOD_SOUND_FORMAT_PCM16;
-        gp->gpwaveformat.channels     = 2;
-        gp->gpwaveformat.frequency    = freq;
-        gp->gpwaveformat.pcmblocksize   = (16 >> 3) * gp->gpwaveformat.channels;
-        gp->gpwaveformat.lengthpcm = 0xffffffff;
-
-        codec->waveformat   = &(gp->gpwaveformat);
-        codec->numsubsounds = 0;                    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-        codec->plugindata   = gp;                    /* user data value */
-
-
-        VGM_HEADER header;
-        GD3_TAG tag;
-        GetVGMFileInfo(info->filename.c_str(),&header,&tag);
-
-
-        wstring title_ws( tag.strTrackNameE );
-        string title_s(title_ws.begin(),title_ws.end());
-        info->title=title_s;
-
-        wstring artist_ws( tag.strAuthorNameE );
-        string artist_s(artist_ws.begin(),artist_ws.end());
-        info->artist = artist_s;
-
-        wstring system_ws( tag.strSystemNameE );
-        string system_s(system_ws.begin(),system_ws.end());
-        info->system = system_s;
-
-        wstring game_ws( tag.strGameNameE );
-        string game_s(game_ws.begin(),game_ws.end());
-        info->game = game_s;
-
-        wstring comments_ws( tag.strNotes );
-        string comments_s(comments_ws.begin(),comments_ws.end());
-        info->comments = comments_s;
-
-        wstring date_ws( tag.strReleaseDate );
-        string date_s(date_ws.begin(),date_ws.end());
-        info->date = date_s;
-
-
-        wstring dumper_ws( tag.strCreator );
-        string dumper_s(dumper_ws.begin(),dumper_ws.end());
-        info->dumper = dumper_s;
-
-        info->version=tag.lngVersion;
-
-
-        INT16 VolMod;
-        if (header.bytVolumeModifier <= VOLUME_MODIF_WRAP)
-            VolMod = header.bytVolumeModifier;
-        else if (header.bytVolumeModifier == (VOLUME_MODIF_WRAP + 0x01))
-            VolMod = VOLUME_MODIF_WRAP - 0x100;
         else
-            VolMod = header.bytVolumeModifier - 0x100;
-
-
-        info->gain=pow(2.0, VolMod / (double)0x20);
-
-
-
-
-        UINT8 CurChip;
-        UINT8 ChpType;
-        UINT32 ChpClk;
-
-        for (CurChip = 0x00; CurChip < CHIP_COUNT; CurChip ++)
         {
-            ChpClk = GetChipClock(&header, CurChip, &ChpType);
-            if (ChpClk && GetChipClock(&header, 0x80 | CurChip, NULL))
-                ChpClk |= 0x40000000;
-            info->chips.append(PrintChipStr(CurChip, ChpType, ChpClk));
+            return FMOD_ERR_FORMAT; // file invalid
         }
-
-          info->plugin = PLUGIN_vgmplay_legacy;
-          info->pluginName = PLUGIN_vgmplay_legacy_NAME;
-          info->fileformat = "Video Game Music File";
-          info->setSeekable(true);
+    }
 
 
-          UINT32 trackLen;
-          if(header.lngLoopSamples)
-          {
-              trackLen=header.lngTotalSamples;
-              gp->gpwaveformat.lengthpcm = header.lngTotalSamples+(header.lngLoopSamples);
-          }
-          else
-          {
-              trackLen=header.lngTotalSamples;
-              gp->gpwaveformat.lengthpcm = header.lngTotalSamples;
-          }
+    int freq = 44100;
 
-          double trackLenMs;
-          trackLenMs = (double)trackLen/44.1;
-          info->loopInfo.append(msToNiceStringExact(trackLenMs));
+    gp->gpwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    gp->gpwaveformat.channels = 2;
+    gp->gpwaveformat.frequency = freq;
+    gp->gpwaveformat.pcmblocksize = (16 >> 3) * gp->gpwaveformat.channels;
+    gp->gpwaveformat.lengthpcm = 0xffffffff;
 
-          if(!header.lngLoopSamples)
-          {
-              info->loopInfo.append(" (no loop)");
-          }
-          else
-          {
-              UINT32 introLen = header.lngTotalSamples-header.lngLoopSamples;
+    codec->waveformat = &(gp->gpwaveformat);
+    codec->numsubsounds = 0;
+    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
+    codec->plugindata = gp; /* user data value */
 
-              if (introLen < 30000)
-              {
-                  info->loopInfo.append(" (looped)");
-              }
-              else
-              {
-                  double intro_ms = (double)introLen/44.1;
-                  double loop_ms = (double)header.lngLoopSamples/44.1;
-                  info->loopInfo.append(" (");
-                  info->loopInfo.append(msToNiceStringExact(intro_ms));
-                  info->loopInfo.append(" intro and ");
-                  info->loopInfo.append(msToNiceStringExact(loop_ms));
-                  info->loopInfo.append(" loop)");
-              }
 
-          }
+    VGM_HEADER header;
+    GD3_TAG tag;
+    GetVGMFileInfo(info->filename.c_str(), &header, &tag);
 
-          VGMPlay_Init2();
-          PlayVGM();
-        return FMOD_OK;
 
-}
+    wstring title_ws(tag.strTrackNameE);
+    string title_s(title_ws.begin(), title_ws.end());
+    info->title = title_s;
 
-FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE *codec)
-{
-        StopVGM();
-        VGMPlay_Deinit();
-        gameplugin* gp = (gameplugin*)codec->plugindata;
-        delete (gameplugin*)codec->plugindata;
-        //delete LogFile;
+    wstring artist_ws(tag.strAuthorNameE);
+    string artist_s(artist_ws.begin(), artist_ws.end());
+    info->artist = artist_s;
+
+    wstring system_ws(tag.strSystemNameE);
+    string system_s(system_ws.begin(), system_ws.end());
+    info->system = system_s;
+
+    wstring game_ws(tag.strGameNameE);
+    string game_s(game_ws.begin(), game_ws.end());
+    info->game = game_s;
+
+    wstring comments_ws(tag.strNotes);
+    string comments_s(comments_ws.begin(), comments_ws.end());
+    info->comments = comments_s;
+
+    wstring date_ws(tag.strReleaseDate);
+    string date_s(date_ws.begin(), date_ws.end());
+    info->date = date_s;
+
+
+    wstring dumper_ws(tag.strCreator);
+    string dumper_s(dumper_ws.begin(), dumper_ws.end());
+    info->dumper = dumper_s;
+
+    info->version = tag.lngVersion;
+
+
+    INT16 VolMod;
+    if (header.bytVolumeModifier <= VOLUME_MODIF_WRAP)
+        VolMod = header.bytVolumeModifier;
+    else if (header.bytVolumeModifier == (VOLUME_MODIF_WRAP + 0x01))
+        VolMod = VOLUME_MODIF_WRAP - 0x100;
+    else
+        VolMod = header.bytVolumeModifier - 0x100;
+
+
+    info->gain = pow(2.0, VolMod / (double)0x20);
+
+
+    UINT8 CurChip;
+    UINT8 ChpType;
+    UINT32 ChpClk;
+
+    for (CurChip = 0x00; CurChip < CHIP_COUNT; CurChip++)
+    {
+        ChpClk = GetChipClock(&header, CurChip, &ChpType);
+        if (ChpClk && GetChipClock(&header, 0x80 | CurChip, NULL))
+            ChpClk |= 0x40000000;
+        info->chips.append(PrintChipStr(CurChip, ChpType, ChpClk));
+    }
+
+    info->plugin = PLUGIN_vgmplay_legacy;
+    info->pluginName = PLUGIN_vgmplay_legacy_NAME;
+    info->fileformat = "Video Game Music File";
+    info->setSeekable(true);
+
+
+    UINT32 trackLen;
+    if (header.lngLoopSamples)
+    {
+        trackLen = header.lngTotalSamples;
+        gp->gpwaveformat.lengthpcm = header.lngTotalSamples + (header.lngLoopSamples);
+    }
+    else
+    {
+        trackLen = header.lngTotalSamples;
+        gp->gpwaveformat.lengthpcm = header.lngTotalSamples;
+    }
+
+    double trackLenMs;
+    trackLenMs = (double)trackLen / 44.1;
+    info->loopInfo.append(msToNiceStringExact(trackLenMs));
+
+    if (!header.lngLoopSamples)
+    {
+        info->loopInfo.append(" (no loop)");
+    }
+    else
+    {
+        UINT32 introLen = header.lngTotalSamples - header.lngLoopSamples;
+
+        if (introLen < 30000)
+        {
+            info->loopInfo.append(" (looped)");
+        }
+        else
+        {
+            double intro_ms = (double)introLen / 44.1;
+            double loop_ms = (double)header.lngLoopSamples / 44.1;
+            info->loopInfo.append(" (");
+            info->loopInfo.append(msToNiceStringExact(intro_ms));
+            info->loopInfo.append(" intro and ");
+            info->loopInfo.append(msToNiceStringExact(loop_ms));
+            info->loopInfo.append(" loop)");
+        }
+    }
+
+    VGMPlay_Init2();
+    PlayVGM();
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read)
+FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-        gameplugin* gp = (gameplugin*)codec->plugindata;
+    StopVGM();
+    VGMPlay_Deinit();
+    gameplugin* gp = (gameplugin*)codec->plugindata;
+    delete (gameplugin*)codec->plugindata;
+    //delete LogFile;
+    return FMOD_OK;
+}
 
-        int RetSamples = FillBuffer((WAVE_16BS*)buffer, size);
+FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+{
+    gameplugin* gp = (gameplugin*)codec->plugindata;
 
-        *read=size;
+    int RetSamples = FillBuffer((WAVE_16BS*)buffer, size);
+
+    *read = size;
 
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
+FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-        gameplugin* gp = (gameplugin*)codec->plugindata;
+    gameplugin* gp = (gameplugin*)codec->plugindata;
 
-        if(postype==FMOD_TIMEUNIT_MS)
-        {
-
-            UINT32 u = (UINT32)(position * 44.1);
-            //I'm not sure why the above seems to work...
-            //The one below will overflow and other shit
-            //UINT32 u = (UINT32)((position * 44100 * 2) / 1000);
-            //cout << "position: " << position << " ms / " << u << " samples\n";
-            SeekVGM(false,u);
-        }
-        else
-        {
-                return FMOD_ERR_UNSUPPORTED;
-        }
-return FMOD_OK;
+    if (postype == FMOD_TIMEUNIT_MS)
+    {
+        UINT32 u = (UINT32)(position * 44.1);
+        //I'm not sure why the above seems to work...
+        //The one below will overflow and other shit
+        //UINT32 u = (UINT32)((position * 44100 * 2) / 1000);
+        //cout << "position: " << position << " ms / " << u << " samples\n";
+        SeekVGM(false, u);
+    }
+    else
+    {
+        return FMOD_ERR_UNSUPPORTED;
+    }
+    return FMOD_OK;
 }
-

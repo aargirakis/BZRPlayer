@@ -6,6 +6,7 @@
 class JBSong;
 class BaseSample;
 class JBVoice;
+
 class JBPlayer : public AmigaPlayer
 {
 public:
@@ -15,25 +16,25 @@ public:
     int oldLoader(void* data, unsigned long int _length);
     unsigned char getSubsongsCount();
     void selectSong(unsigned char subsong);
-private:
 
-	std::vector<JBSong*> songs;
-	std::vector<BaseSample*> samples;
-	std::vector<JBVoice*> voices;
-	int command;
-	int periods;
-	int ptrack;
-	int pblock;
-	int vtrack;
-	int vblock;
-	int transpose;
-	int waveDir;
-	int wavePos;
-	int waveLower;
-	int waveUpper;
-	int complete;
+private:
+    std::vector<JBSong*> songs;
+    std::vector<BaseSample*> samples;
+    std::vector<JBVoice*> voices;
+    int command;
+    int periods;
+    int ptrack;
+    int pblock;
+    int vtrack;
+    int vblock;
+    int transpose;
+    int waveDir;
+    int wavePos;
+    int waveLower;
+    int waveUpper;
+    int complete;
     unsigned int position;
-	unsigned char *stream;
+    unsigned char* stream;
     bool oldProcess;
 
     int fx(JBVoice*, int);
@@ -41,8 +42,6 @@ private:
     void initialize();
     void printData();
     std::vector<BaseSample*> getSamples();
-
-
 };
 
 #endif // JBPLAYER_H

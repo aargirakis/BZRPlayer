@@ -2,79 +2,76 @@
 #include "PTVoice.h"
 #include "BaseRow.h"
 #include "BaseSample.h"
-
 #include "AmigaChannel.h"
 #include <iostream>
 #include "MyEndian.h"
 #include <sstream>
 #include <string.h>
-#include <stdlib.h>     /* strtol */
-
 
 using namespace std;
 
 const int PTPlayer::FUNKREP[16] =
 {
-    0,5,6,7,8,10,11,13,16,19,22,26,32,43,64,128
+    0, 5, 6, 7, 8, 10, 11, 13, 16, 19, 22, 26, 32, 43, 64, 128
 };
 
 const int PTPlayer::PERIODS[592] =
 {
-    856,808,762,720,678,640,604,570,538,508,480,453,
-    428,404,381,360,339,320,302,285,269,254,240,226,
-    214,202,190,180,170,160,151,143,135,127,120,113,0,
-    850,802,757,715,674,637,601,567,535,505,477,450,
-    425,401,379,357,337,318,300,284,268,253,239,225,
-    213,201,189,179,169,159,150,142,134,126,119,113,0,
-    844,796,752,709,670,632,597,563,532,502,474,447,
-    422,398,376,355,335,316,298,282,266,251,237,224,
-    211,199,188,177,167,158,149,141,133,125,118,112,0,
-    838,791,746,704,665,628,592,559,528,498,470,444,
-    419,395,373,352,332,314,296,280,264,249,235,222,
-    209,198,187,176,166,157,148,140,132,125,118,111,0,
-    832,785,741,699,660,623,588,555,524,495,467,441,
-    416,392,370,350,330,312,294,278,262,247,233,220,
-    208,196,185,175,165,156,147,139,131,124,117,110,0,
-    826,779,736,694,655,619,584,551,520,491,463,437,
-    413,390,368,347,328,309,292,276,260,245,232,219,
-    206,195,184,174,164,155,146,138,130,123,116,109,0,
-    820,774,730,689,651,614,580,547,516,487,460,434,
-    410,387,365,345,325,307,290,274,258,244,230,217,
-    205,193,183,172,163,154,145,137,129,122,115,109,0,
-    814,768,725,684,646,610,575,543,513,484,457,431,
-    407,384,363,342,323,305,288,272,256,242,228,216,
-    204,192,181,171,161,152,144,136,128,121,114,108,0,
-    907,856,808,762,720,678,640,604,570,538,508,480,
-    453,428,404,381,360,339,320,302,285,269,254,240,
-    226,214,202,190,180,170,160,151,143,135,127,120,0,
-    900,850,802,757,715,675,636,601,567,535,505,477,
-    450,425,401,379,357,337,318,300,284,268,253,238,
-    225,212,200,189,179,169,159,150,142,134,126,119,0,
-    894,844,796,752,709,670,632,597,563,532,502,474,
-    447,422,398,376,355,335,316,298,282,266,251,237,
-    223,211,199,188,177,167,158,149,141,133,125,118,0,
-    887,838,791,746,704,665,628,592,559,528,498,470,
-    444,419,395,373,352,332,314,296,280,264,249,235,
-    222,209,198,187,176,166,157,148,140,132,125,118,0,
-    881,832,785,741,699,660,623,588,555,524,494,467,
-    441,416,392,370,350,330,312,294,278,262,247,233,
-    220,208,196,185,175,165,156,147,139,131,123,117,0,
-    875,826,779,736,694,655,619,584,551,520,491,463,
-    437,413,390,368,347,328,309,292,276,260,245,232,
-    219,206,195,184,174,164,155,146,138,130,123,116,0,
-    868,820,774,730,689,651,614,580,547,516,487,460,
-    434,410,387,365,345,325,307,290,274,258,244,230,
-    217,205,193,183,172,163,154,145,137,129,122,115,0,
-    862,814,768,725,684,646,610,575,543,513,484,457,
-    431,407,384,363,342,323,305,288,272,256,242,228,
-    216,203,192,181,171,161,152,144,136,128,121,114,0
+    856, 808, 762, 720, 678, 640, 604, 570, 538, 508, 480, 453,
+    428, 404, 381, 360, 339, 320, 302, 285, 269, 254, 240, 226,
+    214, 202, 190, 180, 170, 160, 151, 143, 135, 127, 120, 113, 0,
+    850, 802, 757, 715, 674, 637, 601, 567, 535, 505, 477, 450,
+    425, 401, 379, 357, 337, 318, 300, 284, 268, 253, 239, 225,
+    213, 201, 189, 179, 169, 159, 150, 142, 134, 126, 119, 113, 0,
+    844, 796, 752, 709, 670, 632, 597, 563, 532, 502, 474, 447,
+    422, 398, 376, 355, 335, 316, 298, 282, 266, 251, 237, 224,
+    211, 199, 188, 177, 167, 158, 149, 141, 133, 125, 118, 112, 0,
+    838, 791, 746, 704, 665, 628, 592, 559, 528, 498, 470, 444,
+    419, 395, 373, 352, 332, 314, 296, 280, 264, 249, 235, 222,
+    209, 198, 187, 176, 166, 157, 148, 140, 132, 125, 118, 111, 0,
+    832, 785, 741, 699, 660, 623, 588, 555, 524, 495, 467, 441,
+    416, 392, 370, 350, 330, 312, 294, 278, 262, 247, 233, 220,
+    208, 196, 185, 175, 165, 156, 147, 139, 131, 124, 117, 110, 0,
+    826, 779, 736, 694, 655, 619, 584, 551, 520, 491, 463, 437,
+    413, 390, 368, 347, 328, 309, 292, 276, 260, 245, 232, 219,
+    206, 195, 184, 174, 164, 155, 146, 138, 130, 123, 116, 109, 0,
+    820, 774, 730, 689, 651, 614, 580, 547, 516, 487, 460, 434,
+    410, 387, 365, 345, 325, 307, 290, 274, 258, 244, 230, 217,
+    205, 193, 183, 172, 163, 154, 145, 137, 129, 122, 115, 109, 0,
+    814, 768, 725, 684, 646, 610, 575, 543, 513, 484, 457, 431,
+    407, 384, 363, 342, 323, 305, 288, 272, 256, 242, 228, 216,
+    204, 192, 181, 171, 161, 152, 144, 136, 128, 121, 114, 108, 0,
+    907, 856, 808, 762, 720, 678, 640, 604, 570, 538, 508, 480,
+    453, 428, 404, 381, 360, 339, 320, 302, 285, 269, 254, 240,
+    226, 214, 202, 190, 180, 170, 160, 151, 143, 135, 127, 120, 0,
+    900, 850, 802, 757, 715, 675, 636, 601, 567, 535, 505, 477,
+    450, 425, 401, 379, 357, 337, 318, 300, 284, 268, 253, 238,
+    225, 212, 200, 189, 179, 169, 159, 150, 142, 134, 126, 119, 0,
+    894, 844, 796, 752, 709, 670, 632, 597, 563, 532, 502, 474,
+    447, 422, 398, 376, 355, 335, 316, 298, 282, 266, 251, 237,
+    223, 211, 199, 188, 177, 167, 158, 149, 141, 133, 125, 118, 0,
+    887, 838, 791, 746, 704, 665, 628, 592, 559, 528, 498, 470,
+    444, 419, 395, 373, 352, 332, 314, 296, 280, 264, 249, 235,
+    222, 209, 198, 187, 176, 166, 157, 148, 140, 132, 125, 118, 0,
+    881, 832, 785, 741, 699, 660, 623, 588, 555, 524, 494, 467,
+    441, 416, 392, 370, 350, 330, 312, 294, 278, 262, 247, 233,
+    220, 208, 196, 185, 175, 165, 156, 147, 139, 131, 123, 117, 0,
+    875, 826, 779, 736, 694, 655, 619, 584, 551, 520, 491, 463,
+    437, 413, 390, 368, 347, 328, 309, 292, 276, 260, 245, 232,
+    219, 206, 195, 184, 174, 164, 155, 146, 138, 130, 123, 116, 0,
+    868, 820, 774, 730, 689, 651, 614, 580, 547, 516, 487, 460,
+    434, 410, 387, 365, 345, 325, 307, 290, 274, 258, 244, 230,
+    217, 205, 193, 183, 172, 163, 154, 145, 137, 129, 122, 115, 0,
+    862, 814, 768, 725, 684, 646, 610, 575, 543, 513, 484, 457,
+    431, 407, 384, 363, 342, 323, 305, 288, 272, 256, 242, 228,
+    216, 203, 192, 181, 171, 161, 152, 144, 136, 128, 121, 114, 0
 };
 
 const int PTPlayer::VIBRATO[32] =
 {
-    0, 24, 49, 74, 97,120,141,161,180,197,212,224,
-    235,244,250,253,255,253,250,244,235,224,212,197,
-    180,161,141,120, 97, 74, 49, 24
+    0, 24, 49, 74, 97, 120, 141, 161, 180, 197, 212, 224,
+    235, 244, 250, 253, 255, 253, 250, 244, 235, 224, 212, 197,
+    180, 161, 141, 120, 97, 74, 49, 24
 };
 const char* PTPlayer::NOTES[38] =
 {
@@ -83,31 +80,33 @@ const char* PTPlayer::NOTES[38] =
     "C-3", "C#3", "D-3", "D#3", "E-3", "F-3", "F#3", "G-3", "G#3", "A-3", "A#3", "B-3",
     "---", "---"
 };
-PTPlayer::PTPlayer(Amiga* amiga):AmigaPlayer(amiga)
+
+PTPlayer::PTPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
     trackPosBuffer = std::list<int>();
     patternPosBuffer = std::list<int>();
     track = std::vector<int>(128);
-    samples    = std::vector<BaseSample*>(32);
+    samples = std::vector<BaseSample*>(32);
 }
+
 PTPlayer::~PTPlayer()
 {
     track.clear();
     trackPosBuffer.clear();
     patternPosBuffer.clear();
-    for(unsigned int i = 0; i < voices.size(); i++)
+    for (unsigned int i = 0; i < voices.size(); i++)
     {
-        if(voices[i]) delete voices[i];
+        if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for(unsigned int i = 0; i < samples.size(); i++)
+    for (unsigned int i = 0; i < samples.size(); i++)
     {
-        if(samples[i]) delete samples[i];
+        if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for(unsigned int i = 0; i < patterns.size(); i++)
+    for (unsigned int i = 0; i < patterns.size(); i++)
     {
-        if(patterns[i]) delete patterns[i];
+        if (patterns[i]) delete patterns[i];
     }
     patterns.clear();
 }
@@ -123,17 +122,16 @@ void PTPlayer::setNTSC(bool value)
 
 void PTPlayer::initialize()
 {
-
     AmigaPlayer::initialize();
 
-    tempo        = 125;
-    speed        = 6;
-    trackPos     = 0;
-    patternPos   = 0;
+    tempo = 125;
+    speed = 6;
+    trackPos = 0;
+    patternPos = 0;
     patternBreak = 0;
     patternDelay = 0;
-    breakPos     = 0;
-    jumpFlag     = 0;
+    breakPos = 0;
+    jumpFlag = 0;
 
     restartCopy = 0; //this is not really used?
     ntsc = m_ntsc;
@@ -144,66 +142,76 @@ void PTPlayer::initialize()
     do
     {
         voice->initialize();
-        voice->channel   = amiga->channels[voice->index];
-        voice->sample  = samples[0];
+        voice->channel = amiga->channels[voice->index];
+        voice->sample = samples[0];
     }
     while (voice = voice->next);
-
 }
+
 void PTPlayer::setVersion(int value)
 {
     if ((m_version < SOUNDTRACKER_24 && value > DOC_SOUNDTRACKER_20) ||
-            (m_version > DOC_SOUNDTRACKER_20 && value < SOUNDTRACKER_24)) return;
+        (m_version > DOC_SOUNDTRACKER_20 && value < SOUNDTRACKER_24))
+        return;
 
-    if (value < ULTIMATE_SOUNDTRACKER) {
+    if (value < ULTIMATE_SOUNDTRACKER)
+    {
         value = ULTIMATE_SOUNDTRACKER;
-    } else if (value > FASTTRACKER_10) {
+    }
+    else if (value > FASTTRACKER_10)
+    {
         value = FASTTRACKER_10;
     }
 
     m_version = value;
 
-    if (value >= PROTRACKER_10) {
+    if (value >= PROTRACKER_10)
+    {
         vibratoDepth = 6;
-    } else {
+    }
+    else
+    {
         vibratoDepth = 7;
     }
 
     //maybe FastTracker uses restart too?
-    if (value == NOISETRACKER_11 || value == NOISETRACKER_20) {
+    if (value == NOISETRACKER_11 || value == NOISETRACKER_20)
+    {
         restart = restartCopy;
-    } else {
+    }
+    else
+    {
         restart = 0;
     }
 }
 
 int PTPlayer::load(void* data, unsigned long int _length)
 {
-    unsigned char *stream = static_cast<unsigned char*>(data);
+    unsigned char* stream = static_cast<unsigned char*>(data);
 
     if (_length < 2106) return -1;
-    if(
-            !(stream[1080]=='M' && stream[1081]=='.' && stream[1082]=='K' && stream[1083]=='.') &&
-            !(stream[1080]=='M' && stream[1081]=='!' && stream[1082]=='K' && stream[1083]=='!'))
+    if (
+        !(stream[1080] == 'M' && stream[1081] == '.' && stream[1082] == 'K' && stream[1083] == '.') &&
+        !(stream[1080] == 'M' && stream[1081] == '!' && stream[1082] == 'K' && stream[1083] == '!'))
     {
-
-        char id[5] = {stream[1080],stream[1081],stream[1082],stream[1083]};
+        char id[5] = {stream[1080], stream[1081], stream[1082], stream[1083]};
         string str_id = id;
         unsigned found = str_id.find("CH");
-        if (found!=std::string::npos)
+        if (found != std::string::npos)
         {
             //std::string id = std::string(stream[1082]) + std::string(stream[1083]);
-            int value = strtol (id,NULL,10);
+            int value = strtol(id,NULL, 10);
             if (value < 2 || value > 32) return -1;
             m_channels = value;
             m_version = FASTTRACKER_10;
         }
-        else {
+        else
+        {
             return -1;
         }
-
     }
-    else {
+    else
+    {
         m_version = PROTRACKER_10;
     }
 
@@ -217,25 +225,27 @@ int PTPlayer::load(void* data, unsigned long int _length)
     BaseRow* row;
     position = 0;
     const int STRING_LENGTH = 20;
-    for(int j = 0;j<STRING_LENGTH;j++)
+    for (int j = 0; j < STRING_LENGTH; j++)
     {
-        if(!stream[position+j])
+        if (!stream[position + j])
         {
             break;
         }
-        m_title+=stream[position+j];
+        m_title += stream[position + j];
     }
-    position+=STRING_LENGTH;
+    position += STRING_LENGTH;
 
 
     position = 42;
 
 
+    for (int i = 1; i < 32; ++i)
+    {
+        value = readEndian(stream[position], stream[position + 1]);
+        position += 2;
 
-    for (int i = 1; i < 32; ++i) {
-        value = readEndian(stream[position],stream[position+1]);position+=2;
-
-        if (!value) {
+        if (!value)
+        {
             samples[i] = 0;
             position += 28;
             continue;
@@ -245,23 +255,27 @@ int PTPlayer::load(void* data, unsigned long int _length)
         position -= 24;
 
         const int STRING_LENGTH_SAMPLE = 22;
-        for(int j = 0;j<STRING_LENGTH_SAMPLE;j++)
+        for (int j = 0; j < STRING_LENGTH_SAMPLE; j++)
         {
-            if(!stream[position+j])
+            if (!stream[position + j])
             {
                 break;
             }
-            sample->name+=stream[position+j];
+            sample->name += stream[position + j];
         }
-        position+=STRING_LENGTH_SAMPLE;
+        position += STRING_LENGTH_SAMPLE;
 
         sample->length = value << 1;
         position += 2;
 
-        sample->finetune = stream[position] * 37;position++;
-        sample->volume   = stream[position];position++;
-        sample->loopPtr  = readEndian(stream[position],stream[position+1]) << 1; position+=2;
-        sample->repeat   = readEndian(stream[position],stream[position+1]) << 1; position+=2;
+        sample->finetune = stream[position] * 37;
+        position++;
+        sample->volume = stream[position];
+        position++;
+        sample->loopPtr = readEndian(stream[position], stream[position + 1]) << 1;
+        position += 2;
+        sample->repeat = readEndian(stream[position], stream[position + 1]) << 1;
+        position += 2;
 
         position += 22;
         sample->pointer = size;
@@ -271,27 +285,33 @@ int PTPlayer::load(void* data, unsigned long int _length)
 
 
     position = 950;
-    length =  stream[position];position++;
+    length = stream[position];
+    position++;
     position++;
 
-    for (int i = 0; i < 128; ++i) {
-        value =  stream[position] * patternLen;position++;
+    for (int i = 0; i < 128; ++i)
+    {
+        value = stream[position] * patternLen;
+        position++;
         track[i] = value;
         if (value > higher) higher = value;
     }
 
     position = 1084;
     higher += patternLen;
-    patterns    = std::vector<BaseRow*>(higher);
+    patterns = std::vector<BaseRow*>(higher);
 
-    for (int i = 0; i < higher; ++i) {
+    for (int i = 0; i < higher; ++i)
+    {
         row = new BaseRow();
-        row->step = value = readEndian(stream[position],stream[position+1],stream[position+2],stream[position+3]);position+=4;
+        row->step = value = readEndian(stream[position], stream[position + 1], stream[position + 2],
+                                       stream[position + 3]);
+        position += 4;
 
-        row->note   = (value >> 16) & 0x0fff;
-        row->effect = (value >>  8) & 0x0f;
+        row->note = (value >> 16) & 0x0fff;
+        row->effect = (value >> 8) & 0x0f;
         row->sample = (value >> 24) & 0xf0 | (value >> 12) & 0x0f;
-        row->param  = value & 0xff;
+        row->param = value & 0xff;
         int j = 0;
         for (j = 0; j < 37; ++j)
             if (row->note >= PERIODS[j]) break;
@@ -299,10 +319,10 @@ int PTPlayer::load(void* data, unsigned long int _length)
         row->noteText = NOTES[j];
 
 
-
         if (row->sample > 31 || !samples[row->sample]) row->sample = 0;
 
-        if (m_version != FASTTRACKER_10) {
+        if (m_version != FASTTRACKER_10)
+        {
             if (row->effect == 15 && row->param > 31) m_version = PROTRACKER_11;
 
             if (row->effect == 8) m_version = PROTRACKER_12;
@@ -310,19 +330,22 @@ int PTPlayer::load(void* data, unsigned long int _length)
         patterns[i] = row;
     }
 
-    amiga->store(stream, size,position,_length);
+    amiga->store(stream, size, position, _length);
 
-    for (int i = 1; i < 32; ++i) {
+    for (int i = 1; i < 32; ++i)
+    {
         sample = samples[i];
         if (!sample) continue;
 
-        if (sample->loopPtr || sample->repeat > 4) {
+        if (sample->loopPtr || sample->repeat > 4)
+        {
             sample->length = sample->loopPtr + sample->repeat;
             sample->loopPtr += sample->pointer;
-        } else {
-            sample->repeat  = 4;
+        }
+        else
+        {
+            sample->repeat = 4;
             sample->loopPtr = amiga->memory.size();
-
         }
 
         size = sample->pointer + 2;
@@ -331,10 +354,10 @@ int PTPlayer::load(void* data, unsigned long int _length)
 
     sample = new BaseSample();
     sample->pointer = sample->loopPtr = amiga->memory.size();
-    sample->length  = sample->repeat  = 4;
+    sample->length = sample->repeat = 4;
     samples[0] = sample;
 
-    voices    = std::vector<PTVoice*>(m_channels);
+    voices = std::vector<PTVoice*>(m_channels);
     voices[0] = new PTVoice(0);
 
     for (int i = 1; i < m_channels; ++i)
@@ -343,7 +366,7 @@ int PTPlayer::load(void* data, unsigned long int _length)
     }
 
 
-    switch(m_version)
+    switch (m_version)
     {
     case PROTRACKER_10:
         format = "ProTracker 1.0";
@@ -364,11 +387,10 @@ int PTPlayer::load(void* data, unsigned long int _length)
 
     //printData();
     return 1;
-
 }
+
 void PTPlayer::process()
 {
-
     int value = 0;
     int pattern = 0;
 
@@ -377,22 +399,27 @@ void PTPlayer::process()
     BaseSample* sample;
 
     PTVoice* voice = voices[0];
-    if(trackPosBuffer.size()==22)
+    if (trackPosBuffer.size() == 22)
     {
         trackPosBuffer.pop_front();
         patternPosBuffer.pop_front();
     }
 
-    trackPosBuffer.push_back(patternPos/m_channels);
-    patternPosBuffer.push_back(track[trackPos]/patternLen);
+    trackPosBuffer.push_back(patternPos / m_channels);
+    patternPosBuffer.push_back(track[trackPos] / patternLen);
 
-    if (!tick) {
-        if (patternDelay) {
+    if (!tick)
+    {
+        if (patternDelay)
+        {
             fx();
-        } else {
+        }
+        else
+        {
             pattern = track[trackPos] + patternPos;
 
-            do {
+            do
+            {
                 chan = voice->channel;
                 voice->enabled = 0;
 
@@ -402,37 +429,48 @@ void PTPlayer::process()
                 }
 
                 row = patterns[int(voice->index + pattern)];
-                voice->step   = row->step;
+                voice->step = row->step;
                 voice->effect = row->effect;
-                voice->param  = row->param;
+                voice->param = row->param;
 
-                if (row->sample) {
+                if (row->sample)
+                {
                     sample = voice->sample = samples[row->sample];
 
-                    voice->pointer  = sample->pointer;
-                    voice->length   = sample->length;
-                    voice->loopPtr  = sample->loopPtr;
+                    voice->pointer = sample->pointer;
+                    voice->length = sample->length;
+                    voice->loopPtr = sample->loopPtr;
                     voice->funkWave = sample->loopPtr;
-                    voice->repeat   = sample->repeat;
+                    voice->repeat = sample->repeat;
                     voice->finetune = sample->finetune;
-                    voice->volume   = sample->volume;
+                    voice->volume = sample->volume;
 
                     chan->setVolume(sample->volume);
-
-                } else {
+                }
+                else
+                {
                     sample = voice->sample;
                 }
 
-                if (!row->note) {
+                if (!row->note)
+                {
                     moreFx(voice);
                     continue;
-                } else {
-                    if ((voice->step & 0x0ff0) == 0x0e50) {
+                }
+                else
+                {
+                    if ((voice->step & 0x0ff0) == 0x0e50)
+                    {
                         voice->finetune = (voice->param & 0x0f) * 37;
-                    } else if (voice->effect == 3 || voice->effect == 5) {
-                        if (row->note == voice->period) {
+                    }
+                    else if (voice->effect == 3 || voice->effect == 5)
+                    {
+                        if (row->note == voice->period)
+                        {
                             voice->portaPeriod = 0;
-                        } else {
+                        }
+                        else
+                        {
                             int i = voice->finetune;
                             value = i + 37;
 
@@ -443,7 +481,8 @@ void PTPlayer::process()
 
                             if (i == value) value--;
 
-                            if (i > 0) {
+                            if (i > 0)
+                            {
                                 value = (voice->finetune / 37) & 8;
                                 if (value) i--;
                             }
@@ -453,7 +492,9 @@ void PTPlayer::process()
                         }
                         moreFx(voice);
                         continue;
-                    } else if (voice->effect == 9) {
+                    }
+                    else if (voice->effect == 9)
+                    {
                         moreFx(voice);
                     }
                 }
@@ -466,7 +507,8 @@ void PTPlayer::process()
 
                 voice->period = PERIODS[int(voice->finetune + i)];
 
-                if ((voice->step & 0x0ff0) == 0x0ed0) {
+                if ((voice->step & 0x0ff0) == 0x0ed0)
+                {
                     if (voice->funkSpeed) updateFunk(voice);
                     extendedFx(voice);
                     continue;
@@ -477,31 +519,34 @@ void PTPlayer::process()
 
                 chan->setEnabled(0);
                 chan->pointer = voice->pointer;
-                chan->length  = voice->length;
+                chan->length = voice->length;
                 chan->setPeriod(voice->period);
 
                 voice->enabled = 1;
                 moreFx(voice);
-
             }
             while (voice = voice->next);
 
             voice = voices[0];
 
-            do {
+            do
+            {
                 chan = voice->channel;
                 if (voice->enabled) chan->setEnabled(1);
 
                 chan->pointer = voice->loopPtr;
-                chan->length  = voice->repeat;
+                chan->length = voice->repeat;
             }
             while (voice = voice->next);
         }
-    } else {
+    }
+    else
+    {
         fx();
     }
 
-    if (++tick == speed) {
+    if (++tick == speed)
+    {
         tick = 0;
         patternPos += m_channels;
 
@@ -510,28 +555,30 @@ void PTPlayer::process()
             if (--patternDelay) patternPos -= m_channels;
         }
 
-        if (patternBreak) {
+        if (patternBreak)
+        {
             patternBreak = 0;
             patternPos = breakPos;
             breakPos = 0;
         }
 
-        if (patternPos == patternLen || jumpFlag) {
+        if (patternPos == patternLen || jumpFlag)
+        {
             patternPos = breakPos;
             breakPos = 0;
             jumpFlag = 0;
 
-            if (++trackPos == length) {
+            if (++trackPos == length)
+            {
                 trackPos = 0;
                 amiga->setComplete(1);
             }
         }
     }
-
 }
+
 void PTPlayer::fx()
 {
-
     PTVoice* voice = voices[0];
     AmigaChannel* chan;
     int value = 0;
@@ -539,20 +586,24 @@ void PTPlayer::fx()
     int slide = 0;
     int wave = 0;
     int i = 0;
-    do {
+    do
+    {
         chan = voice->channel;
         if (voice->funkSpeed) updateFunk(voice);
 
-        if (!(voice->step & 0x0fff)) {
+        if (!(voice->step & 0x0fff))
+        {
             chan->setPeriod(voice->period);
             continue;
         }
 
-        switch (voice->effect) {
-        case 0:   //arpeggio
+        switch (voice->effect)
+        {
+        case 0: //arpeggio
             value = tick % 3;
 
-            if (!value) {
+            if (!value)
+            {
                 chan->setPeriod(voice->period);
                 continue;
             }
@@ -565,49 +616,60 @@ void PTPlayer::fx()
 
             for (; i < pos; ++i)
             {
-                if (voice->period >= PERIODS[i]) {
+                if (voice->period >= PERIODS[i])
+                {
                     chan->setPeriod(PERIODS[int(i + value)]);
                     break;
                 }
             }
             break;
-        case 1:   //portamento up
+        case 1: //portamento up
             voice->period -= voice->param;
             if (voice->period < 113) voice->period = 113;
             chan->setPeriod(voice->period);
             break;
-        case 2:   //portamento down
+        case 2: //portamento down
             voice->period += voice->param;
             if (voice->period > 856) voice->period = 856;
             chan->setPeriod(voice->period);
             break;
-        case 3:   //tone portamento
-        case 5:   //tone portamento + volume slide
-            if (voice->effect == 5) {
+        case 3: //tone portamento
+        case 5: //tone portamento + volume slide
+            if (voice->effect == 5)
+            {
                 slide = 1;
-            } else if (voice->param){
+            }
+            else if (voice->param)
+            {
                 voice->portaSpeed = voice->param;
                 voice->param = 0;
             }
 
-            if (voice->portaPeriod) {
-                if (voice->portaDir) {
+            if (voice->portaPeriod)
+            {
+                if (voice->portaDir)
+                {
                     voice->period -= voice->portaSpeed;
 
-                    if (voice->period <= voice->portaPeriod) {
+                    if (voice->period <= voice->portaPeriod)
+                    {
                         voice->period = voice->portaPeriod;
                         voice->portaPeriod = 0;
                     }
-                } else {
+                }
+                else
+                {
                     voice->period += voice->portaSpeed;
 
-                    if (voice->period >= voice->portaPeriod) {
+                    if (voice->period >= voice->portaPeriod)
+                    {
                         voice->period = voice->portaPeriod;
                         voice->portaPeriod = 0;
                     }
                 }
 
-                if (voice->glissando) {
+                if (voice->glissando)
+                {
                     i = voice->finetune;
                     pos = i + 37;
 
@@ -618,16 +680,21 @@ void PTPlayer::fx()
 
                     if (i == value) i--;
                     chan->setPeriod(PERIODS[i]);
-                } else {
+                }
+                else
+                {
                     chan->setPeriod(voice->period);
                 }
             }
             break;
-        case 4:   //vibrato
-        case 6:   //vibrato + volume slide
-            if (voice->effect == 6) {
+        case 4: //vibrato
+        case 6: //vibrato + volume slide
+            if (voice->effect == 6)
+            {
                 slide = 1;
-            } else if (voice->param) {
+            }
+            else if (voice->param)
+            {
                 value = voice->param & 0x0f;
                 if (value) voice->vibratoParam = (voice->vibratoParam & 0xf0) | value;
                 value = voice->param & 0xf0;
@@ -637,15 +704,19 @@ void PTPlayer::fx()
             pos = (voice->vibratoPos >> 2) & 31;
             wave = voice->vibratoWave & 3;
 
-            if (wave) {
+            if (wave)
+            {
                 value = 255;
                 pos <<= 3;
 
-                if (wave == 1) {
+                if (wave == 1)
+                {
                     if (voice->vibratoPos > 127) value -= pos;
                     else value = pos;
                 }
-            } else {
+            }
+            else
+            {
                 value = VIBRATO[pos];
             }
             value = ((voice->vibratoParam & 0x0f) * value) >> vibratoDepth;
@@ -663,10 +734,11 @@ void PTPlayer::fx()
             voice->vibratoPos = (voice->vibratoPos + value) & 255;
 
             break;
-        case 7:   //tremolo
+        case 7: //tremolo
             chan->setPeriod(voice->period);
 
-            if (voice->param) {
+            if (voice->param)
+            {
                 value = voice->param & 0x0f;
                 if (value) voice->tremoloParam = (voice->tremoloParam & 0xf0) | value;
                 value = voice->param & 0xf0;
@@ -676,15 +748,19 @@ void PTPlayer::fx()
             pos = (voice->tremoloPos >> 2) & 31;
             wave = voice->tremoloWave & 3;
 
-            if (wave) {
+            if (wave)
+            {
                 value = 255;
                 pos <<= 3;
 
-                if (wave == 1) {
+                if (wave == 1)
+                {
                     if (voice->tremoloPos > 127) value -= pos;
                     else value = pos;
                 }
-            } else {
+            }
+            else
+            {
                 value = VIBRATO[pos];
             }
 
@@ -696,19 +772,20 @@ void PTPlayer::fx()
             value = (voice->tremoloParam >> 2) & 60;
             voice->tremoloPos = (voice->tremoloPos + value) & 255;
             break;
-        case 8:   //set panning
+        case 8: //set panning
             std::cout << "Fx Set Panning\n";
             break;
-        case 10:  //volume slide
+        case 10: //volume slide
             chan->setPeriod(voice->period);
             slide = 1;
             break;
-        case 14:  //extended effects
+        case 14: //extended effects
             extendedFx(voice);
             break;
         }
 
-        if (slide) {
+        if (slide)
+        {
             slide = 0;
             value = voice->param >> 4;
 
@@ -720,38 +797,42 @@ void PTPlayer::fx()
 
             chan->setVolume(voice->volume);
         }
-
     }
     while (voice = voice->next);
 }
+
 void PTPlayer::moreFx(PTVoice* voice)
 {
     int value = 0;
     if (voice->funkSpeed) updateFunk(voice);
 
-    switch (voice->effect) {
-    case 9:   //sample offset
+    switch (voice->effect)
+    {
+    case 9: //sample offset
         if (voice->param) voice->offset = voice->param;
         value = voice->offset << 8;
 
-        if (value >= voice->length) {
+        if (value >= voice->length)
+        {
             voice->length = 2;
-        } else {
+        }
+        else
+        {
             voice->pointer += value;
-            voice->length  -= value;
+            voice->length -= value;
         }
         break;
-    case 11:  //position jump
+    case 11: //position jump
         trackPos = voice->param - 1;
         breakPos = 0;
         jumpFlag = 1;
         break;
-    case 12:  //set volume
+    case 12: //set volume
         voice->volume = voice->param;
         if (voice->volume > 64) voice->volume = 64;
         voice->channel->setVolume(voice->volume);
         break;
-    case 13:  //pattern break
+    case 13: //pattern break
         breakPos = ((voice->param >> 4) * 10) + (voice->param & 0x0f);
 
         if (breakPos > 63) breakPos = 0;
@@ -759,10 +840,10 @@ void PTPlayer::moreFx(PTVoice* voice)
 
         jumpFlag = 1;
         break;
-    case 14:  //extended effects
+    case 14: //extended effects
         extendedFx(voice);
         break;
-    case 15:  //set speed
+    case 15: //set speed
         if (!voice->param) return;
 
         if (voice->param < 32) speed = voice->param;
@@ -782,17 +863,21 @@ void PTPlayer::updateFunk(PTVoice* voice)
     if (voice->funkPos < 128) return;
     voice->funkPos = 0;
 
-    if (m_version == PROTRACKER_10) {
+    if (m_version == PROTRACKER_10)
+    {
         p1 = voice->pointer + (voice->sample->length - voice->repeat);
         p2 = voice->funkWave + voice->repeat;
 
-        if (p2 > p1) {
+        if (p2 > p1)
+        {
             p2 = voice->loopPtr;
             voice->channel->length = voice->repeat;
         }
         voice->funkWave = p2;
         voice->channel->pointer = p2;
-    } else {
+    }
+    else
+    {
         p1 = voice->loopPtr + voice->repeat;
         p2 = voice->funkWave + 1;
 
@@ -802,59 +887,63 @@ void PTPlayer::updateFunk(PTVoice* voice)
     }
 }
 
-void PTPlayer::extendedFx(PTVoice *voice)
+void PTPlayer::extendedFx(PTVoice* voice)
 {
-
     AmigaChannel* chan = voice->channel;
     int effect = voice->param >> 4;
     int param = voice->param & 0x0f;
     int len = 0;
     int i = 0;
 
-    switch (effect) {
-    case 0:   //set filter
+    switch (effect)
+    {
+    case 0: //set filter
         amiga->filter->active = param;
         break;
-    case 1:   //fine portamento up
+    case 1: //fine portamento up
         if (tick) return;
         voice->period -= param;
         if (voice->period < 113) voice->period = 113;
         chan->setPeriod(voice->period);
         break;
-    case 2:   //fine portamento down
+    case 2: //fine portamento down
         if (tick) return;
         voice->period += param;
         if (voice->period > 856) voice->period = 856;
         chan->setPeriod(voice->period);
         break;
-    case 3:   //glissando control
+    case 3: //glissando control
         voice->glissando = param;
         break;
-    case 4:   //vibrato control
+    case 4: //vibrato control
         voice->vibratoWave = param;
         break;
-    case 5:   //set finetune
+    case 5: //set finetune
         voice->finetune = param * 37;
         break;
-    case 6:   //pattern loop
+    case 6: //pattern loop
         if (tick) return;
 
-        if (param) {
+        if (param)
+        {
             if (voice->loopCtr) voice->loopCtr--;
             else voice->loopCtr = param;
 
-            if (voice->loopCtr) {
+            if (voice->loopCtr)
+            {
                 breakPos = voice->loopPos << 2;
                 patternBreak = 1;
             }
-        } else {
+        }
+        else
+        {
             voice->loopPos = patternPos >> 2;
         }
         break;
-    case 7:   //tremolo control
+    case 7: //tremolo control
         voice->tremoloWave = param;
         break;
-    case 8:   //karplus strong
+    case 8: //karplus strong
         len = voice->length - 2;
 
         for (i = voice->loopPtr; i < len;)
@@ -864,57 +953,57 @@ void PTPlayer::extendedFx(PTVoice *voice)
 
         amiga->memory[++i] = (amiga->memory[i] + amiga->memory[0]) * 0.5;
         break;
-    case 9:   //retrig note
+    case 9: //retrig note
         if (tick || !param || !voice->period) return;
         if (tick % param) return;
 
         chan->setEnabled(0);
         chan->pointer = voice->pointer;
-        chan->length  = voice->length;
-        chan->delay   = 30;
+        chan->length = voice->length;
+        chan->delay = 30;
 
         chan->setEnabled(1);
         chan->pointer = voice->loopPtr;
-        chan->length  = voice->repeat;
+        chan->length = voice->repeat;
         chan->setPeriod(voice->period);
         break;
-    case 10:  //fine volume up
+    case 10: //fine volume up
         if (tick) return;
         voice->volume += param;
         if (voice->volume > 64) voice->volume = 64;
         chan->setVolume(voice->volume);
         break;
-    case 11:  //fine volume down
+    case 11: //fine volume down
         if (tick) return;
         voice->volume -= param;
         if (voice->volume < 0) voice->volume = 0;
         chan->setVolume(voice->volume);
         break;
-    case 12:  //note cut
+    case 12: //note cut
         if (tick == param)
         {
             voice->volume = 0;
             chan->setVolume(0);
         }
         break;
-    case 13:  //note delay
+    case 13: //note delay
         if (tick != param || !voice->period) return;
 
         chan->setEnabled(0);
         chan->pointer = voice->pointer;
-        chan->length  = voice->length;
-        chan->delay   = 30;
+        chan->length = voice->length;
+        chan->delay = 30;
 
         chan->setEnabled(1);
         chan->pointer = voice->loopPtr;
-        chan->length  = voice->repeat;
+        chan->length = voice->repeat;
         chan->setPeriod(voice->period);
         break;
-    case 14:  //pattern delay
+    case 14: //pattern delay
         if (tick || patternDelay) return;
-        patternDelay = +param+1;
+        patternDelay = +param + 1;
         break;
-    case 15:  //funk repeat | invert loop
+    case 15: //funk repeat | invert loop
         if (tick) return;
         voice->funkSpeed = param;
         if (param) updateFunk(voice);
@@ -943,38 +1032,43 @@ void PTPlayer::printData()
     //        std::cout << "Track [" << i << "]"<< track[i] << "\n";
     //    }
 }
+
 std::vector<BaseSample*> PTPlayer::getSamples()
 {
-    std::vector<BaseSample*>samp (samples.size()-1);
-    for(int i =1; i< samples.size() ; i++)
+    std::vector<BaseSample*> samp(samples.size() - 1);
+    for (int i = 1; i < samples.size(); i++)
     {
-        samp[i-1] = samples[i];
-        if(!samp[i-1])
+        samp[i - 1] = samples[i];
+        if (!samp[i - 1])
         {
-            samp[i-1] = new BaseSample();
+            samp[i - 1] = new BaseSample();
         }
     }
     return samp;
 }
+
 bool PTPlayer::getTitle(std::string& title)
 {
     title = m_title;
     return true;
 }
+
 unsigned int PTPlayer::getCurrentRow()
 {
     return trackPosBuffer.front();
 }
+
 unsigned int PTPlayer::getCurrentPattern()
 {
     return patternPosBuffer.front();
 }
+
 void PTPlayer::getModRows(std::vector<BaseRow*>& vect)
 {
     std::vector<BaseRow*> patts(patterns.size());
-    for(int i =0; i< patterns.size() ; i++)
+    for (int i = 0; i < patterns.size(); i++)
     {
         patts[i] = dynamic_cast<BaseRow*>(patterns[i]);
     }
-    vect=patts;
+    vect = patts;
 }

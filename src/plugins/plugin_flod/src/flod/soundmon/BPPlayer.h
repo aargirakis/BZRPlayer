@@ -4,10 +4,12 @@
 #include <list>
 #include "AmigaPlayer.h"
 #include "Amiga.h"
+
 class BaseStep;
 class BaseRow;
 class BPSample;
 class BPVoice;
+
 class BPPlayer : public AmigaPlayer
 {
 public:
@@ -17,11 +19,12 @@ public:
         BPSOUNDMON_V2 = 2,
         BPSOUNDMON_V3 = 3
     };
+
     BPPlayer(Amiga* amiga);
     ~BPPlayer();
     int load(void* data, unsigned long int _length);
-private:
 
+private:
     std::list<int> trackPosBuffer;
     std::list<int> patternPosBuffer;
     std::vector<BaseStep*> tracks;

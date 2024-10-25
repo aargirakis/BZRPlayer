@@ -8,18 +8,16 @@ class BaseRow;
 class S2Sample;
 class S2Voice;
 class S2Instrument;
+
 class S2Player : public AmigaPlayer
 {
 public:
-
     S2Player(Amiga* amiga);
     ~S2Player();
     int load(void* data, unsigned long int _length);
     std::vector<BaseSample*> getSamples();
+
 private:
-
-
-
     std::vector<BaseStep*> tracks;
     std::vector<BaseRow*> patterns;
     std::vector<S2Instrument*> instruments;
@@ -37,12 +35,7 @@ private:
     int arpeggioPos;
 
 
-
     static const int PERIODS[73];
-
-
-
-
 };
 
 #endif // S2PLAYER_H

@@ -6,12 +6,15 @@ class BaseRow;
 class S2Sample;
 class S2Instrument;
 class AmigaChannel;
+
 class S2Voice
 {
-friend class S2Player;
+    friend class S2Player;
+
 public:
     S2Voice(int index);
     void initialize();
+
 private:
     int index;
     S2Voice* next;

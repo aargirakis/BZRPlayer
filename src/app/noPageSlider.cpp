@@ -2,105 +2,114 @@
 #include <QStyleOptionSlider>
 #include "noPageSlider.h"
 
-NoPageSlider::NoPageSlider(QWidget *parent)
+NoPageSlider::NoPageSlider(QWidget* parent)
     : QSlider(parent)
 {
-	defValue = 0;
-	snapDefault = false;
-	snapDistance = 10; //this is currently in "values", should be in mouse distance
+    defValue = 0;
+    snapDefault = false;
+    snapDistance = 10; //this is currently in "values", should be in mouse distance
 }
-void NoPageSlider::keyPressEvent(QKeyEvent *e)
+
+void NoPageSlider::keyPressEvent(QKeyEvent* e)
 {
-	e->ignore();
+    e->ignore();
     return;
 }
-void NoPageSlider::mouseDoubleClickEvent( QMouseEvent * e )
+
+void NoPageSlider::mouseDoubleClickEvent(QMouseEvent* e)
 {
-    if ( e->button() == Qt::RightButton )
+    if (e->button() == Qt::RightButton)
     {
         setSliderPosition(defaultValue());
     }
 }
-void NoPageSlider::mousePressEvent(QMouseEvent *e)
+
+void NoPageSlider::mousePressEvent(QMouseEvent* e)
 {
     if (maximum() == minimum() ||
-        (e->button() != Qt::LeftButton)  ||
-        (e->buttons() ^ e->button())) {
+        (e->button() != Qt::LeftButton) ||
+        (e->buttons() ^ e->button()))
+    {
         e->ignore();
         return;
     }
     e->accept();
-	int realValue = valueFromPoint(e->pos());
-	if(snapToDefault())
-	{
-		if(abs(realValue-defaultValue())<snapDistance)
-		{
-			realValue = defaultValue();
-		}
-	}
-	setSliderPosition(realValue);
+    int realValue = valueFromPoint(e->pos());
+    if (snapToDefault())
+    {
+        if (abs(realValue - defaultValue()) < snapDistance)
+        {
+            realValue = defaultValue();
+        }
+    }
+    setSliderPosition(realValue);
     setSliderDown(true);
 }
 
-void NoPageSlider::mouseReleaseEvent(QMouseEvent * e)
+void NoPageSlider::mouseReleaseEvent(QMouseEvent* e)
 {
-    if (e->button() != Qt::LeftButton) {
+    if (e->button() != Qt::LeftButton)
+    {
         e->ignore();
         return;
     }
     e->accept();
-	int realValue = valueFromPoint(e->pos());
-	if(snapToDefault())
-	{
-		if(abs(realValue-defaultValue())<snapDistance)
-		{
-			realValue = defaultValue();
-		}
-	}
-	setSliderPosition(realValue);
+    int realValue = valueFromPoint(e->pos());
+    if (snapToDefault())
+    {
+        if (abs(realValue - defaultValue()) < snapDistance)
+        {
+            realValue = defaultValue();
+        }
+    }
+    setSliderPosition(realValue);
     setSliderDown(false);
 }
 
-void NoPageSlider::mouseMoveEvent(QMouseEvent * e)
+void NoPageSlider::mouseMoveEvent(QMouseEvent* e)
 {
-    if (!hasTracking() || !(e->buttons() & Qt::LeftButton)) {
+    if (!hasTracking() || !(e->buttons() & Qt::LeftButton))
+    {
         e->ignore();
         return;
     }
     e->accept();
     //d->doNotEmit = true;
-	int realValue = valueFromPoint(e->pos());
-	if(snapToDefault())
-	{
-		if(abs(realValue-defaultValue())<snapDistance)
-		{
-			realValue = defaultValue();
-		}
-	}
-	setSliderPosition(realValue);
+    int realValue = valueFromPoint(e->pos());
+    if (snapToDefault())
+    {
+        if (abs(realValue - defaultValue()) < snapDistance)
+        {
+            realValue = defaultValue();
+        }
+    }
+    setSliderPosition(realValue);
 
     emit sliderMoved(value());
     //d->doNotEmit = false;
 }
 
-int NoPageSlider::valueFromPoint(const QPoint &p)
+int NoPageSlider::valueFromPoint(const QPoint& p)
 {
     QStyleOptionSlider opt = getStyleOption();
     QRect gr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this);
     QRect sr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
-    
-	int sliderMin, sliderMax, sliderLength, point;
 
-    if (orientation() == Qt::Horizontal) {
+    int sliderMin, sliderMax, sliderLength, point;
+
+    if (orientation() == Qt::Horizontal)
+    {
         sliderLength = sr.width();
-        sliderMin = gr.x()+sliderLength/2;
-        sliderMax = gr.right() - sliderLength/2 + 1;
-		point = p.x();
-    } else {
+        sliderMin = gr.x() + sliderLength / 2;
+        sliderMax = gr.right() - sliderLength / 2 + 1;
+        point = p.x();
+    }
+    else
+    {
         sliderLength = sr.height();
-        sliderMin = gr.y()+sliderLength/2;
-        sliderMax = gr.bottom() - sliderLength/2 + 1;
-		point = p.y();
+        sliderMin = gr.y() + sliderLength / 2;
+        sliderMax = gr.bottom() - sliderLength / 2 + 1;
+        point = p.y();
     }
     return QStyle::sliderValueFromPosition(minimum(), maximum(), point - sliderMin,
                                            sliderMax - sliderMin, opt.upsideDown);
@@ -117,9 +126,9 @@ QStyleOptionSlider NoPageSlider::getStyleOption() const
     opt.minimum = minimum();
     opt.tickPosition = (QSlider::TickPosition)tickPosition();
     opt.tickInterval = tickInterval();
-    opt.upsideDown = (orientation() == Qt::Horizontal) ?
-                     (invertedAppearance() != (opt.direction == Qt::RightToLeft))
-                     : (!invertedAppearance());
+    opt.upsideDown = (orientation() == Qt::Horizontal)
+                         ? (invertedAppearance() != (opt.direction == Qt::RightToLeft))
+                         : (!invertedAppearance());
     opt.direction = Qt::LeftToRight; // we use the upsideDown option instead
     opt.sliderPosition = pos().x();
     opt.sliderValue = value();

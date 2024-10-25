@@ -1,6 +1,8 @@
 #ifndef SAMPLE_H
 #define SAMPLE_H
-class Sample {
+
+class Sample
+{
 public:
     Sample();
     double l;

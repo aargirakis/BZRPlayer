@@ -3,18 +3,20 @@
 #include <vector>
 #include "AmigaPlayer.h"
 #include "Amiga.h"
+
 class BaseStep;
 class BaseRow;
 class D2Sample;
 class D2Voice;
+
 class D2Player : public AmigaPlayer
 {
 public:
     D2Player(Amiga* amiga);
     ~D2Player();
     int load(void* data, unsigned long int length);
-private:
 
+private:
     std::vector<BaseStep*> tracks;
     std::vector<BaseRow*> patterns;
     std::vector<D2Sample*> samples;
@@ -27,8 +29,6 @@ private:
     void initialize();
     void printData();
     std::vector<BaseSample*> getSamples();
-
-
 };
 
 #endif // D2PLAYER_H

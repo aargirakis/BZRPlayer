@@ -118,4 +118,3 @@ endif ()
 
 #TODO redundant queue.h & queue.c should be treated as external dependency like src/external/psflib or, better, relace it with c++ std::queue
 #TODO dynamic sorting of ui->tableWidgetPlugins entries in settingswindow.cpp
-#TODO overall code reformat & cleanup

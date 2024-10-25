@@ -1,9 +1,9 @@
 #include "AmigaPlayer.h"
 #include <iostream>
 #include <vector>
+
 AmigaPlayer::AmigaPlayer(Amiga* amiga)
 {
-
     m_version = 0;
     m_variant = 0;
     this->amiga = amiga;
@@ -13,22 +13,21 @@ AmigaPlayer::AmigaPlayer(Amiga* amiga)
 AmigaPlayer::~AmigaPlayer()
 {
     delete amiga;
-
 }
 
 int AmigaPlayer::load(void* data, unsigned int length)
 {
-  amiga->reset();
-  amiga->setup();
-  m_version = 0;
-  m_variant = 0;
-  return 0;
+    amiga->reset();
+    amiga->setup();
+    m_version = 0;
+    m_variant = 0;
+    return 0;
 }
+
 int AmigaPlayer::getVersion()
 {
     return m_version;
 }
-
 
 
 std::vector<BaseSample*> AmigaPlayer::getSamples()
@@ -38,12 +37,11 @@ std::vector<BaseSample*> AmigaPlayer::getSamples()
 
 bool AmigaPlayer::getTitle(std::string& title)
 {
-    title ="";
+    title = "";
     return false;
 }
 
 
 void AmigaPlayer::setVersion(int version)
 {
-
 }

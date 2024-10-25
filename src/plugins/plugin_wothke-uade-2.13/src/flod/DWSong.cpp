@@ -2,6 +2,6 @@
 
 DWSong::DWSong()
 {
-    speed=0;
-    delay=0;
+    speed = 0;
+    delay = 0;
 }

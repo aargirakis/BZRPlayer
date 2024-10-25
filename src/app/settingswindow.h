@@ -3,10 +3,11 @@
 
 #include <QDialog>
 #include "mainwindow.h"
-namespace Ui {
-class MainWindow;
-class settingsWindow;
 
+namespace Ui
+{
+    class MainWindow;
+    class settingsWindow;
 }
 
 class settingsWindow : public QDialog
@@ -14,14 +15,13 @@ class settingsWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit settingsWindow(QWidget *parent = nullptr);
+    explicit settingsWindow(QWidget* parent = nullptr);
     ~settingsWindow();
 
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject* obj, QEvent* event);
     void changeStyleSheetColor();
 
 private slots:
-
     void downloadComplete();
 
     void on_sliderResetVolumeToValue_sliderMoved(int position);
@@ -41,11 +41,10 @@ private slots:
     void on_checkBoxReverb_toggled(bool checked);
 
 
-
     void on_buttonOK_clicked();
 
 
-    void on_comboBoxReverb_textActivated(const QString &arg1);
+    void on_comboBoxReverb_textActivated(const QString& arg1);
 
 
     void on_buttonBrowseSonglengths_clicked();
@@ -53,7 +52,7 @@ private slots:
 
     void on_buttonPlugins_clicked();
 
-    void on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item);
+    void on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item);
 
     void on_buttonBrowseSonglengthsOld_clicked();
 
@@ -98,7 +97,6 @@ private slots:
     void on_sliderSinusSpeed_valueChanged(int value);
 
     void on_sliderScrollSpeed_valueChanged(int value);
-
 
 
     void on_buttonColorVUMeterPeak_clicked();
@@ -162,7 +160,7 @@ private slots:
 
     void on_sliderStarSpeed_valueChanged(int value);
 
-    void on_comboBoxStarsDirection_textActivated(const QString &arg1);
+    void on_comboBoxStarsDirection_textActivated(const QString& arg1);
 
     void on_checkBoxSinusFontScaling_toggled(bool checked);
 
@@ -178,7 +176,7 @@ private slots:
 
     void on_checkBoxAspectRatio_toggled(bool checked);
 
-    void on_comboBoxSidSongFileUpdateFrequency_textActivated(const QString &arg1);
+    void on_comboBoxSidSongFileUpdateFrequency_textActivated(const QString& arg1);
 
     void on_buttonDownloadSIDLength_clicked();
 
@@ -225,11 +223,8 @@ private:
     void updateCheckBoxes();
 
 
-
-
-    MainWindow *mainWindow;
-    Ui::settingsWindow *ui;
-
+    MainWindow* mainWindow;
+    Ui::settingsWindow* ui;
 };
 
 #endif // SETTINGSWINDOW_H

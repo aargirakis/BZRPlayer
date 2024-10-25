@@ -1,67 +1,62 @@
 #include "visualizer.h"
 #include "soundmanager.h"
-#include "visualizers/parallax.h"
 #include "visualizers/scroller.h"
 #include <QtOpenGL>
-#include <QGLWidget>
-Visualizer::Visualizer(QWidget *parent)
+
+Visualizer::Visualizer(QWidget* parent)
     : QOpenGLWidget(parent)
 {
     //Antialiasing, for example if we draw circles
     QSurfaceFormat format;
     format.setSamples(4);
     setFormat(format);
-    currentEffect=0;
+    currentEffect = 0;
     stoppingCounter = 0;
-    isStopping=false;
+    isStopping = false;
     effects.append(new Scroller(parent));
-
 }
 
 void Visualizer::init()
 {
-    isStopping=false;
+    isStopping = false;
 }
+
 void Visualizer::stop()
 {
-//    isStopping=true;
-//    stoppingCounter = 0;
-//    effects.at(currentEffect)->stop();
+    //    isStopping=true;
+    //    stoppingCounter = 0;
+    //    effects.at(currentEffect)->stop();
 }
 
-void Visualizer::paintEvent(QPaintEvent *event)
+void Visualizer::paintEvent(QPaintEvent* event)
 {
-
-
-    if(SoundManager::getInstance().IsPlaying())
+    if (SoundManager::getInstance().IsPlaying())
     {
-
         SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
         QPainter painter;
         painter.begin(this);
 
-        QRect rect(0,0,width(),height());
+        QRect rect(0, 0, width(), height());
         painter.fillRect(rect, effects.at(currentEffect)->getColorVisualizerBackground());
 
-        effects.at(currentEffect)->paint(&painter,event);
+        effects.at(currentEffect)->paint(&painter, event);
         painter.end();
     }
     else if (isStopping)
     {
-
         update();
 
         QPainter painter;
         painter.begin(this);
-        painter.setOpacity(float(stoppingCounter/300.0));
+        painter.setOpacity(float(stoppingCounter / 300.0));
         //painter.setRenderHint(QPainter::Antialiasing);
         //painter.setRenderHint(QPainter::SmoothPixmapTransform);
         painter.fillRect(event->rect(), backgroundColor);
 
         painter.end();
-        if(stoppingCounter==300)
+        if (stoppingCounter == 300)
         {
-            isStopping=false;
+            isStopping = false;
         }
         stoppingCounter++;
     }
@@ -75,7 +70,6 @@ void Visualizer::paintEvent(QPaintEvent *event)
 }
 
 
-
 Effect* Visualizer::getEffect()
 {
     return effects.at(currentEffect);
@@ -84,5 +78,5 @@ Effect* Visualizer::getEffect()
 
 void Visualizer::setBackgroundColor(QColor newColor)
 {
-    backgroundColor=newColor;
+    backgroundColor = newColor;
 }

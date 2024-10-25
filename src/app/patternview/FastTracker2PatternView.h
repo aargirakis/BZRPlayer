@@ -4,9 +4,8 @@
 
 class FastTracker2PatternView : public AbstractPatternView
 {
-
 public:
-    FastTracker2PatternView(Tracker *parent, unsigned int channels, int scale);
+    FastTracker2PatternView(Tracker* parent, unsigned int channels, int scale);
     ~FastTracker2PatternView();
     QFont fontEffects();
     int fontWidthEffects();
@@ -20,9 +19,9 @@ public:
     QFont fontParameters();
     QFont fontInstrument();
     int fontWidthParameters();
-    QString note(BaseRow *row);
-    QString effect(BaseRow *row);
-    QString volume(BaseRow *row);
+    QString note(BaseRow* row);
+    QString effect(BaseRow* row);
+    QString volume(BaseRow* row);
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);
 
@@ -30,8 +29,8 @@ private:
 
 protected:
     static const char* NOTES[121];
-private slots:
 
+private slots:
 };
 
 #endif // FASTTRACKER2PATTERNVIEW_H

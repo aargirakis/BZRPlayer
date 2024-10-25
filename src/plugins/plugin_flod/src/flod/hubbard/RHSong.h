@@ -1,12 +1,15 @@
 #ifndef RHSONG_H
 #define RHSONG_H
 #include <vector>
+
 class RHSong
 {
-friend class RHPlayer;
+    friend class RHPlayer;
+
 public:
     RHSong();
-     ~RHSong();
+    ~RHSong();
+
 private:
     int speed;
     std::vector<int> tracks;

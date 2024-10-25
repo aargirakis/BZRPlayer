@@ -2,11 +2,14 @@
 #define S1SAMPLE_H
 #include "BaseSample.h"
 #include <vector>
+
 class S1Sample : public BaseSample
 {
     friend class S1Player;
+
 public:
     S1Sample();
+
 private:
     int waveform;
     std::vector<int> arpeggio;

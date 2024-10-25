@@ -1,9 +1,9 @@
 #ifndef BITMAPFONT_H
 #define BITMAPFONT_H
-#include <QString>
 #include <QBitmap>
 #include <QMap>
 #include <QPoint>
+
 class BitmapFont
 {
 public:
@@ -20,9 +20,7 @@ public:
     QMap<QChar, int> m_characterWidths;
 
 private:
-
 };
-
 
 
 #endif // BITMAPFONT_H

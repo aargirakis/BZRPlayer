@@ -4,9 +4,8 @@
 
 class DigiBoosterProPatternView : public AbstractPatternView
 {
-
 public:
-    DigiBoosterProPatternView(Tracker *parent, unsigned int channels, int scale);
+    DigiBoosterProPatternView(Tracker* parent, unsigned int channels, int scale);
     ~DigiBoosterProPatternView();
     QFont currentRowFont();
     BitmapFont currentRowBitmapFont();
@@ -16,11 +15,9 @@ public:
     QString effect(BaseRow* row);
     QString effect2(BaseRow* row);
 
-
 private:
 
 private slots:
-
 };
 
 #endif // DIGIBOOSTERPROPATTERNVIEW_H

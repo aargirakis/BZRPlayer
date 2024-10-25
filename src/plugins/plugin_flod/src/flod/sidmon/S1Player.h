@@ -3,6 +3,7 @@
 #include <vector>
 #include "AmigaPlayer.h"
 #include "Amiga.h"
+
 class BaseRow;
 class S1Sample;
 class S1Voice;
@@ -11,35 +12,33 @@ class BaseStep;
 class S1Player : public AmigaPlayer
 {
 public:
-
     S1Player(Amiga* amiga);
     ~S1Player();
     int load(void* data, unsigned long int _length);
+
 private:
-
-
     std::vector<int> tracksPtr;
     std::vector<BaseStep*> tracks;
     std::vector<int> patternsPtr;
     std::vector<BaseRow*> patterns;
     std::vector<S1Sample*> samples;
     std::vector<int> waveLists;
-    int speedDef  ;
-    int trackLen  ;
+    int speedDef;
+    int trackLen;
     int patternDef;
-    int mix1Speed ;
-    int mix2Speed ;
-    int mix1Dest  ;
-    int mix2Dest  ;
+    int mix1Speed;
+    int mix2Speed;
+    int mix1Dest;
+    int mix2Dest;
     int mix1Source1;
     int mix1Source2;
     int mix2Source1;
     int mix2Source2;
-    int doFilter  ;
+    int doFilter;
     int doReset;
     std::vector<S1Voice*> voices;
-    int trackPos  ;
-    int trackEnd  ;
+    int trackPos;
+    int trackEnd;
     int patternPos;
     int patternEnd;
     int patternLen;
@@ -61,7 +60,6 @@ private:
         SIDMON_11E0 = 0x11e0,
         SIDMON_125A = 0x125a,
         SIDMON_1444 = 0x1444
-
     };
 
     static const int EMBEDDED[3];
@@ -71,8 +69,6 @@ private:
     void initialize();
     std::vector<BaseSample*> getSamples();
     void printData();
-
-
 };
 
 #endif // S1PLAYER_H

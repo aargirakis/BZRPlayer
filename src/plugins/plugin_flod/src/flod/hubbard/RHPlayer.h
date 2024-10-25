@@ -3,6 +3,7 @@
 #include <vector>
 #include "AmigaPlayer.h"
 #include "Amiga.h"
+
 class RHSong;
 class RHVoice;
 class RHSample;
@@ -10,12 +11,12 @@ class RHSample;
 class RHPlayer : public AmigaPlayer
 {
 public:
-
     RHPlayer(Amiga* amiga);
     ~RHPlayer();
     int load(void* data, unsigned long int _length);
+
 private:
-    unsigned char *stream;
+    unsigned char* stream;
     std::vector<RHSong*> songs;
     std::vector<RHSample*> samples;
     RHSong* song;
@@ -33,8 +34,6 @@ private:
     void selectSong(unsigned char);
     std::vector<BaseSample*> getSamples();
     void printData();
-
-
 };
 
 #endif // RHPLAYER_H

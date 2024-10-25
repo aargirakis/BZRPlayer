@@ -2,24 +2,27 @@
 #define JBVOICE_H
 
 class AmigaChannel;
+
 class JBVoice
 {
-friend class JBPlayer;
+    friend class JBPlayer;
+
 public:
     JBVoice(int index);
     void initialize();
+
 private:
     int index;
     JBVoice* next;
-	JBVoice* prev;
+    JBVoice* prev;
     AmigaChannel* channel;
 
     int track;
-	int trackLen;
-	int trackLoop;
-	int trackPos;
-	int patternPos;
-	int loopCounter;
+    int trackLen;
+    int trackLoop;
+    int trackPos;
+    int patternPos;
+    int loopCounter;
     int loopPos;
     int flags;
     int state;
@@ -29,19 +32,19 @@ private:
     int sample1;
     int sample2;
     int volume;
-	int volumeMod;
-	int volCounter;
-	int volPointer;
+    int volumeMod;
+    int volCounter;
+    int volPointer;
     int volPos;
-	int periodMod;
-	int slidePointer;
-	int slidePos;
-	int slideStep;
-	int slideLimit;
-	int slideValue;
-	int portaCounter;
-	int portaStep;
-	int portaPeriod;
+    int periodMod;
+    int slidePointer;
+    int slidePos;
+    int slideStep;
+    int slideLimit;
+    int slideValue;
+    int portaCounter;
+    int portaStep;
+    int portaPeriod;
 };
 
 #endif // JBVOICE_H

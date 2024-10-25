@@ -2,9 +2,11 @@
 #define S1SAMPLE_H
 #include "BaseSample.h"
 #include <vector>
+
 class S1Sample : public BaseSample
 {
     friend class S1Player;
+
 public:
     S1Sample();
 
@@ -22,7 +24,6 @@ public:
     signed char pitchFall;
 
 private:
-
 };
 
 #endif // S2SAMPLE_H

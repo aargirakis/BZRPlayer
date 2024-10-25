@@ -2,18 +2,20 @@
 #define QLISTWIDGETCUSTOM_H
 
 #include <QListWidget>
-#include <QObject>
 #include <QWidget>
 
 class QListWidgetCustom : public QListWidget
 {
 public:
-    explicit QListWidgetCustom(QWidget *parent = 0);
-    ~QListWidgetCustom(){}
-protected:
-    void dragMoveEvent(QDragMoveEvent *event) override;
-};
+    explicit QListWidgetCustom(QWidget* parent = 0);
 
+    ~QListWidgetCustom()
+    {
+    }
+
+protected:
+    void dragMoveEvent(QDragMoveEvent* event) override;
+};
 
 
 #endif // QLISTWIDGETCUSTOM_H

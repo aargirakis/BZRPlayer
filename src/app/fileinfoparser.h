@@ -3,11 +3,13 @@
 
 #include "playlistitem.h"
 #include <QTableWidget>
+
 class FileInfoParser
 {
 public:
     FileInfoParser();
-    void updateFileInfo(QTableWidget*,PlaylistItem*);
+    void updateFileInfo(QTableWidget*, PlaylistItem*);
+
 private:
     static const string ID3V1_GENRES[];
 };

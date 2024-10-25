@@ -1,14 +1,9 @@
 #ifndef ABSTRACTPATTERNVIEW_H
 #define ABSTRACTPATTERNVIEW_H
-#include <iostream> //only for cout
-#include <QWidget>
-#include <QBitmap>
-#include <QPen>
 #include <QPainter>
-#include <QMap>
-#include <QPoint>
 #include "BaseRow.h"
 #include "bitmapfont.h"
+
 class Tracker;
 class AbstractPatternView
 {

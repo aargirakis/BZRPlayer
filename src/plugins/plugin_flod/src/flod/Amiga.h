@@ -2,20 +2,25 @@
 #define AMIGA_H
 #include <vector>
 #include "AmigaFilter.h"
+
 class AmigaPlayer;
 class AmigaFilter;
 class AmigaChannel;
 class Sample;
+
 class Amiga
 {
     friend class AmigaPlayer;
+
 public:
     Amiga();
+
     enum
     {
-            MODEL_A500 = 0,
-            MODEL_A1200 = 1
+        MODEL_A500 = 0,
+        MODEL_A1200 = 1
     };
+
     ~Amiga();
     AmigaPlayer* player;
     AmigaFilter* filter;
@@ -27,8 +32,8 @@ public:
     int loopLen;
     void setComplete(int value);
     void setVolume(int value);
-    int store(void* data, unsigned long int len, unsigned int& position, unsigned long int datalength, int ptr=-1);
-    void mixer(void *_stream, unsigned long int length);
+    int store(void* data, unsigned long int len, unsigned int& position, unsigned long int datalength, int ptr = -1);
+    void mixer(void* _stream, unsigned long int length);
     int isCompleted();
     void setModel(int);
     void setFilter(int filterType);
@@ -44,7 +49,6 @@ private:
     void reset();
     bool memoryFixed;
     void setup();
-
 };
 
 #endif // AMIGA_H

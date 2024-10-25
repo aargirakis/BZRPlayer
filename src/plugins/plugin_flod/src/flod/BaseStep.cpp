@@ -2,7 +2,7 @@
 
 BaseStep::BaseStep()
 {
-      pattern=0;
-      transpose=0;
-      soundTrans=0;
+    pattern = 0;
+    transpose = 0;
+    soundTrans = 0;
 }

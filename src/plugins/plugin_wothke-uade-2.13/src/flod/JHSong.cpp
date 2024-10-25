@@ -2,7 +2,7 @@
 
 JHSong::JHSong()
 {
-	pointer=0;
-	speed=0;
-    length=0;
+    pointer = 0;
+    speed = 0;
+    length = 0;
 }

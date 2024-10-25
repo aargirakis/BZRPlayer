@@ -4,7 +4,7 @@
 #include "ui_dialogdeleteworkspace.h"
 #include <QMessageBox>
 
-DialogDeleteWorkspace::DialogDeleteWorkspace(QWidget *parent) :
+DialogDeleteWorkspace::DialogDeleteWorkspace(QWidget* parent) :
     QDialog(parent),
     ui(new Ui::DialogDeleteWorkspace)
 {
@@ -12,7 +12,7 @@ DialogDeleteWorkspace::DialogDeleteWorkspace(QWidget *parent) :
     ui->setupUi(this);
 
     QDir directory(QApplication::applicationDirPath() + "/user/layouts");
-    QStringList workspaces = directory.entryList(QStringList() << "*.ini",QDir::Files);
+    QStringList workspaces = directory.entryList(QStringList() << "*.ini", QDir::Files);
     foreach(QString filename, workspaces)
     {
         QFileInfo fileInfo(filename);
@@ -35,9 +35,9 @@ void DialogDeleteWorkspace::on_buttonCancel_clicked()
 
 void DialogDeleteWorkspace::on_buttonDelete_clicked()
 {
-    QString fileName= ui->comboBoxWorkspace->currentText() + ".ini";
+    QString fileName = ui->comboBoxWorkspace->currentText() + ".ini";
     bool removed = QFile::remove(QApplication::applicationDirPath() + "/user/layouts/" + fileName);
-    if(removed)
+    if (removed)
     {
         MainWindow* mw = static_cast<MainWindow*>(this->parent());
         mw->DeleteWorkspace(ui->comboBoxWorkspace->currentText());
@@ -46,7 +46,6 @@ void DialogDeleteWorkspace::on_buttonDelete_clicked()
     }
     else
     {
-        QMessageBox::critical(this, "Error","Couldn't delete layout.");
+        QMessageBox::critical(this, "Error", "Couldn't delete layout.");
     }
 }
-

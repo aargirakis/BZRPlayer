@@ -1,7 +1,6 @@
 #include "albumgrid.h"
 #include "album.h"
 #include <QApplication>
-#include <QGraphicsDropShadowEffect>
 
 AlbumGrid::AlbumGrid(QWidget *parent) : QListWidget(parent)
 {

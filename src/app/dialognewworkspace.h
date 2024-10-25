@@ -3,8 +3,9 @@
 
 #include <QDialog>
 
-namespace Ui {
-class DialogNewWorkspace;
+namespace Ui
+{
+    class DialogNewWorkspace;
 }
 
 class DialogNewWorkspace : public QDialog
@@ -12,7 +13,7 @@ class DialogNewWorkspace : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogNewWorkspace(QWidget *parent = nullptr);
+    explicit DialogNewWorkspace(QWidget* parent = nullptr);
     ~DialogNewWorkspace();
 
 private slots:
@@ -21,7 +22,7 @@ private slots:
     void on_buttonSave_clicked();
 
 private:
-    Ui::DialogNewWorkspace *ui;
+    Ui::DialogNewWorkspace* ui;
 };
 
 #endif // DIALOGNEWWORKSPACE_H

@@ -2,8 +2,10 @@
 #define AMIGAPLAYER_H
 #include <string>
 #include "Amiga.h"
+
 class BaseSample;
 class BaseRow;
+
 class AmigaPlayer
 {
 public:
@@ -19,14 +21,14 @@ public:
     virtual void setNTSC(bool value);
     void stereoSeparation(double value);
     void setVolume(double value);
-	void mute(int index);
+    void mute(int index);
     int play();
     void pause();
     void stop();
-    void mixer(void *_stream, unsigned long int length);
+    void mixer(void* _stream, unsigned long int length);
     int getChannels();
     int getVersion();
-	double getVolume();
+    double getVolume();
     virtual void process();
     virtual void initialize();
     virtual void reset();
@@ -40,9 +42,10 @@ public:
     virtual unsigned char getSubsongsCount();
     virtual void selectSong(unsigned char);
     virtual void setVersion(int version);
+
 protected:
-//    Sound* sound;
-//    SoundChannel* soundChan;
+    //    Sound* sound;
+    //    SoundChannel* soundChan;
     int soundPos;
     int ntsc;
     int speed;
@@ -50,7 +53,7 @@ protected:
     int sampleRate;
     unsigned short tempo;
     std::vector<BaseSample*> samples;
-	double m_volume;
+    double m_volume;
     bool m_ntsc;
     int m_channels;
     int m_flags;
@@ -59,9 +62,6 @@ protected:
     int m_variant;
     int m_songNumber;
     int m_totalSongs;
-
-
-
 };
 
 #endif // AMIGAPLAYER_H

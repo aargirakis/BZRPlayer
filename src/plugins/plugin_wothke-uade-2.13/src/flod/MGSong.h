@@ -4,11 +4,14 @@
 #include <vector>
 
 class BaseStep;
+
 class MGSong
 {
-friend class MGPlayer;
+    friend class MGPlayer;
+
 public:
     MGSong();
+
 private:
     std::string title;
     int speed;

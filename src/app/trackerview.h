@@ -9,18 +9,20 @@
 class TrackerView : public QOpenGLWidget
 {
     Q_OBJECT
+
 public:
-    explicit TrackerView(QWidget *parent = 0);
+    explicit TrackerView(QWidget* parent = 0);
     void init();
-    void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent* event);
     bool inited;
     Tracker* getTracker();
     void setBackgroundColor(QColor newColor);
+
 private:
     Tracker* tracker;
 
 
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject* obj, QEvent* event);
     QColor backgroundColor;
 };
 

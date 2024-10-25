@@ -3,22 +3,21 @@
 #include <vector>
 #include "AmigaPlayer.h"
 #include "Amiga.h"
+
 class BaseStep;
 class BaseRow;
 class S2Sample;
 class S2Voice;
 class S2Instrument;
+
 class S2Player : public AmigaPlayer
 {
 public:
-
     S2Player(Amiga* amiga);
     ~S2Player();
     int load(void* data, unsigned long int _length);
+
 private:
-
-
-
     std::vector<BaseStep*> tracks;
     std::vector<BaseRow*> patterns;
     std::vector<S2Instrument*> instruments;
@@ -36,14 +35,12 @@ private:
     int arpeggioPos;
 
 
-
     static const int PERIODS[73];
 
     void process();
     void initialize();
     void printData();
     std::vector<BaseSample*> getSamples();
-
 };
 
 #endif // S2PLAYER_H

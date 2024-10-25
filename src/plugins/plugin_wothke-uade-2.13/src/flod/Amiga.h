@@ -1,22 +1,25 @@
 #ifndef AMIGA_H
 #define AMIGA_H
 #include <vector>
-//#include "AmigaFilter.h" //added by blazer for linux cross-compilation
-#include "amigafilter.h" //added by blazer for linux cross-compilation
+
 class AmigaPlayer;
 class AmigaFilter;
 class AmigaChannel;
 class Sample;
+
 class Amiga
 {
     friend class AmigaPlayer;
+
 public:
     Amiga();
+
     enum
     {
-            MODEL_A500 = 0,
-            MODEL_A1200 = 1
+        MODEL_A500 = 0,
+        MODEL_A1200 = 1
     };
+
     ~Amiga();
     AmigaPlayer* player;
     AmigaFilter* filter;
@@ -28,7 +31,7 @@ public:
     int loopLen;
     void setComplete(int value);
     void setVolume(int value);
-    int store(void* data, unsigned long int len, unsigned int& position, unsigned long int datalength, int ptr=-1);
+    int store(void* data, unsigned long int len, unsigned int& position, unsigned long int datalength, int ptr = -1);
 
     int isCompleted();
     void setModel(int);
@@ -45,7 +48,6 @@ private:
     void reset();
     bool memoryFixed;
     void setup();
-
 };
 
 #endif // AMIGA_H

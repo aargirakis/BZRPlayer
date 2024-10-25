@@ -3,6 +3,7 @@
 #include <vector>
 #include "AmigaPlayer.h"
 #include "Amiga.h"
+
 class FESong;
 class FEVoice;
 class FESample;
@@ -10,16 +11,15 @@ class FESample;
 class FEPlayer : public AmigaPlayer
 {
 public:
-
     FEPlayer(Amiga* amiga);
     ~FEPlayer();
     int load(void* data, unsigned long int _length);
-private:
 
+private:
     unsigned int position;
     std::vector<FESong*> songs;
-    std::vector<FESample*>samples;
-    signed char *patterns;
+    std::vector<FESample*> samples;
+    signed char* patterns;
     FESong* song;
     std::vector<FEVoice*> voices;
     int complete;
@@ -33,8 +33,6 @@ private:
     void printData();
 
     static const int PERIODS[72];
-
-
 };
 
 #endif // FEPlayer_H
