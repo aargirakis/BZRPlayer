@@ -131,21 +131,14 @@ void Channels::muteAllChannels()
 void Channels::unmuteAllChannels()
 {
     unsigned int numChannels = SoundManager::getInstance().m_Info1->numChannels;
-    unsigned int mask = 0;
     QString maskStr = "";
     for (int i = 0; i < numChannels; i++)
     {
-        mask |= 0 << i;
         maskStr += "1";
         channels.at(i)->setChecked(true);
     }
 
-    if (SoundManager::getInstance().m_Info1->plugin = PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin
-        == PLUGIN_libxmp)
-    {
-        mask = 0;
-    }
-    SoundManager::getInstance().MuteChannels(mask, maskStr);
+    SoundManager::getInstance().MuteChannels(0, maskStr);
 }
 
 void Channels::muteChannels()
