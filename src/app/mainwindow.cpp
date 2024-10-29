@@ -4771,7 +4771,7 @@ void MainWindow::createTrayMenu()
     m_Tray = new QSystemTrayIcon(this);
     QIcon trayIcon;
 
-    trayIcon = QIcon(":/bzr/resources/icon.png");
+    trayIcon = QIcon(":/bzr/static/data/resources/icon.png");
     m_Tray->setIcon(trayIcon);
     m_Tray->setToolTip(PROJECT_NAME);
 

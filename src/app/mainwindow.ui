@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
-    <normaloff>:/bzr/resources/icon.png</normaloff>:/bzr/resources/icon.png</iconset>
+    <normaloff>:/bzr/static/data/resources/icon.png</normaloff>:/bzr/static/data/resources/icon.png</iconset>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
