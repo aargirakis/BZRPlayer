@@ -82,6 +82,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         ui->setupUi(this);
 
         setWindowTitle(PROJECT_NAME_VERSIONED);
+        windowTitle = PROJECT_NAME_VERSIONED;
         srand(time(NULL));
 
         ads::CDockManager::setConfigFlags(ads::CDockManager::DefaultOpaqueConfig);
@@ -870,10 +871,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
         //        }
         checkCommandLine(argc, argv);
-    }
-    else
-    {
-        //only one instance allowed!
     }
 }
 
@@ -2279,12 +2276,12 @@ void MainWindow::PlaySong(int currentRow)
         if (artist != "")
         {
             ui->labelFilename->setText(artist + " - " + filename);
-            windowTitle = artist + " - " + filename + " - BZR Player " + VERSION;
+            windowTitle = artist + " - " + filename + " - zzBZR Player " + VERSION;
         }
         else
         {
             ui->labelFilename->setText(filename);
-            windowTitle = filename + " - BZR Player " + VERSION;
+            windowTitle = filename + " - zzBZR Player " + VERSION;
         }
         if (!this->isVisible())
         {
