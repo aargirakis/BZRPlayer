@@ -66,7 +66,6 @@ public:
     qreal getScaleX();
     qreal getScaleY();
 
-
     void setVumeterOpacity(int);
     int getVumeterOpacity();
     int getRasterbarsOpacity();
@@ -180,7 +179,7 @@ private:
     bool setBitmapFontPrinter(QString);
     void reset();
     void initialize3dCube();
-
+	void updateBottomY();
 
     int previousWidth;
     int previousHeight;

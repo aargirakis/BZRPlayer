@@ -1046,6 +1046,34 @@ void Scroller::setScrollText(QString text)
     }
     m_scrollText = replaceIllegalLetters(m_scrollText);
     letters = spacesNeeded + 1; //Added one because some fontsizes will popup into the screen otherwise
+	updateBottomY();
+}
+//Find the approximate bottom Y of the current scroll - with it's settings - 
+//so we could place the reflection floor on the right place - without scroller is active
+void Scroller::updateBottomY()
+{
+	for (int n = 0; n < letters; n++)
+	{
+		// Draw each vertical column of pixel data, per character
+		for (int xC = 0; xC < fontWidth; xC += fontScaleX)
+		{
+			int y;
+			if (!sinusFontScalingEnabled)
+			{
+				y = (sin(((x[n] + xC) * sinusFrequency) + (sineAngle)) * m_Amplitude) * fontScaleY;
+			}
+			else
+			{
+				y = (sin(((x[n] + xC) * sinusFrequency) + (sineAngle)) * m_Amplitude);
+				y = y * fontScaleY;
+			}
+
+			if (y > bottomY)
+			{
+				bottomY = y;
+			}
+		}
+	}
 }
 
 QString Scroller::replaceIllegalLetters(QString text)
