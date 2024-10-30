@@ -48,6 +48,7 @@ main() {
   download_tries=2
   bzr2_zip_dir_default="binaries"
   bzr2_xml_dir_default="."
+  bzr2_xml_url="https://github.com/aargirakis/BZRPlayer/raw/refs/heads/main/src/inst/x-bzr-player.xml"
   mime_types_supported=(
     application/ogg audio/flac audio/midi audio/mp2 audio/mpeg audio/prs.sid audio/vnd.wave audio/x-adlib-ims
     audio/x-adlib-raw audio/x-ahx audio/x-aon audio/x-amf audio/x-cust audio/x-ddmf audio/x-deflemask audio/x-dsmi-amf
@@ -75,7 +76,7 @@ main() {
   bzr2_desktop_filename="$bzr2_pkgname.desktop"
 
   check_requirements
-  check_setup_files
+  set_temp_dir
 
   icon_sizes=(16 32 48 64 128 256 512)
   icons_hicolor_path="/usr/share/icons/hicolor"
@@ -129,7 +130,10 @@ ${bold}$bzr2_wineprefix_dir${bold_reset}"
   fi
 
   get_dpi
-  get_mime_types_association
+
+  if set_bzr2_xml; then
+    get_mime_types_association
+  fi
 
   if ! $is_already_installed || [ "$force_reinstall" = y ]; then
     if [ "$force_reinstall" = y ]; then
@@ -161,14 +165,17 @@ check_requirements() {
   done
 }
 
-check_setup_files() {
-  local bzr2_xml_dir
-  bzr2_xml_dir=$(realpath -s "$bzr2_xml_dir_default")
-  bzr2_xml="$bzr2_xml_dir/$bzr2_xml_filename"
+set_temp_dir() {
+  for tmp_dir in "$XDG_RUNTIME_DIR" "$TMPDIR" "$(dirname "$(mktemp -u --tmpdir)")" "/tmp" "/var/tmp" "/var/cache"; do
+    if [ -w "$tmp_dir" ]; then
+      temp_dir="$tmp_dir"
+      break
+    fi
+  done
 
-  if [ ! -f "$bzr2_xml" ]; then
-    echo -e "\nfile ${bold}$bzr2_xml${bold_reset} not found"
-    exit 1
+  if [ -z "$temp_dir" ]; then
+    temp_dir="$HOME"
+    echo -e "\nunable to find a writable temp directory: ${bold}$temp_dir${bold_reset} will be used"
   fi
 }
 
@@ -336,22 +343,7 @@ bzr2_zip_sanity_check() {
 }
 
 download_bzr2() {
-  local download_dir
-  for tmp_dir in "$XDG_RUNTIME_DIR" "$TMPDIR" "$(dirname "$(mktemp -u --tmpdir)")" "/tmp" "/var/tmp" "/var/cache"; do
-    if [ -w "$tmp_dir" ]; then
-      download_dir="$tmp_dir"
-      break
-    fi
-  done
-
-  local download_dir_msg
-  if [ -z "$download_dir" ]; then
-    download_dir_msg="unable to find a writable temp directory: "
-    download_dir="$HOME"
-  fi
-
-  download_dir_msg+="release archive will be downloaded to ${bold}$download_dir${bold_reset}"
-  echo -e "\n$download_dir_msg"
+  echo -e "\nrelease archive will be downloaded to ${bold}$temp_dir${bold_reset}"
 
   while :; do
     for ((i = 0; i < ${#urls_download[@]}; i++)); do
@@ -366,13 +358,13 @@ download_bzr2() {
       echo -en "\ndownloading ${bold}$bzr2_zip_filename${bold_reset} from $url_download$query_string... "
 
       set +e
-      wget -q --tries=$download_tries -P "$download_dir" -O "$download_dir/$bzr2_zip_filename" \
+      wget -q --tries=$download_tries -P "$temp_dir" -O "$temp_dir/$bzr2_zip_filename" \
         "$url_download$query_string"
 
       local wget_result=$?
       set -e
 
-      bzr2_zip="$download_dir/$bzr2_zip_filename"
+      bzr2_zip="$temp_dir/$bzr2_zip_filename"
 
       if [ $wget_result -eq 0 ] && unzip -tq "$bzr2_zip" >/dev/null 2>&1; then
         set +e
@@ -387,7 +379,6 @@ download_bzr2() {
       else
         echo -n "FAIL"
       fi
-      is_download_url_fallback=true
     done
 
     echo -e "\n\nunable to download the release archive"
@@ -473,6 +464,30 @@ get_size_of_longer_array_entry() {
   done
 
   echo "$longer_size"
+}
+
+set_bzr2_xml() {
+  bzr2_xml="$(realpath -s "$bzr2_xml_dir_default")/$bzr2_xml_filename"
+
+  if [ ! -f "$bzr2_xml" ]; then
+    echo -e "\nfile ${bold}$bzr2_xml${bold_reset} not found: ${bold}$bzr2_xml_filename${bold_reset} will be downloaded to ${bold}$temp_dir${bold_reset}:"
+    echo -en "downloading ${bold}$bzr2_xml_filename${bold_reset} from $bzr2_xml_url... "
+    set +e
+    wget -q --tries=$download_tries -P "$temp_dir" -O "$temp_dir/$bzr2_xml_filename" \
+      "$bzr2_xml_url"
+
+    local wget_result=$?
+    set -e
+
+    if [ $wget_result -eq 0 ]; then
+      bzr2_xml="$temp_dir/$bzr2_xml_filename"
+      echo "OK"
+      return 0
+    fi
+
+    echo -e "FAIL: ${bold}MIME types association will be skipped${bold_reset}"
+    return 1
+  fi
 }
 
 get_mime_types_association() {
