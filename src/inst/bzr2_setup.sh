@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # NAME
-#     bzr2_setup.sh - distribution-agnostic BZR Player 2.x (BZR2) linux installer
+#     bzr2_setup.sh - distribution-agnostic BZR Player 2.x (BZR2) linux online installer
 #
 # SYNOPSIS
 #     ./bzr2_setup.sh
@@ -42,7 +42,8 @@ main() {
   url_latest_version="http://bzrplayer.blazer.nu/latest-version.php"
   urls_download=(
     "http://bzrplayer.blazer.nu/getFile.php?id="
-    "https://raw.githubusercontent.com/aargirakis/BZRPlayer/binaries/binaries/"
+    "https://github.com/aargirakis/BZRPlayer/releases/download"
+    "https://raw.githubusercontent.com/aargirakis/BZRPlayer/binaries_archive/binaries"
   )
   download_tries=2
   bzr2_zip_dir_default="binaries"
@@ -353,13 +354,14 @@ download_bzr2() {
   echo -e "\n$download_dir_msg"
 
   while :; do
-    local is_download_url_fallback=false
-    for url_download in "${urls_download[@]}"; do
-      if [ $is_download_url_fallback = true ]; then
-        local query_string="$bzr2_zip_filename"
-      else
-        local query_string="$bzr2_version"
-      fi
+    for ((i = 0; i < ${#urls_download[@]}; i++)); do
+      local url_download="${urls_download[$i]}"
+
+      case $i in
+      0) local query_string="$bzr2_version" ;;
+      1) local query_string="/$bzr2_version/$bzr2_zip_filename" ;;
+      2) local query_string="/$bzr2_zip_filename" ;;
+      esac
 
       echo -en "\ndownloading ${bold}$bzr2_zip_filename${bold_reset} from $url_download$query_string... "
 

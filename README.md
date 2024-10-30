@@ -7,9 +7,7 @@ coded pretty much from scratch.
 
 ## Download binaries
 
-- Latest version: http://bzrplayer.blazer.nu/download.php
-- All versions archive: https://github.com/aargirakis/BZRPlayer/tree/binaries/binaries
-- Windows & Linux installers: https://github.com/aargirakis/BZRPlayer/blob/main/src/inst
+- Windows & Linux online installers: https://github.com/aargirakis/BZRPlayer/blob/main/src/inst
 - AUR package: `bzr-player` https://aur.archlinux.org/packages/bzr-player
 
 ## How To Build
@@ -56,7 +54,7 @@ By default, the cmake configuration stage will download all needed libraries and
 command (or `OFFLINE_MODE=1` to `run.sh`) for switching to offline mode.\
 Offline mode doesn't guarantee that the build will include the latest versions of the files with unmanaged version
 
-### Windows installer
+### Windows online installer
 
 Although the **BZR2 online installer for Windows** is scripted in **Nullsoft Scriptable Install System (NSIS)**, it can
 be only compiled using **WSL2** or cross-compiled on Linux since it contains Linux specific code (mostly the bash script

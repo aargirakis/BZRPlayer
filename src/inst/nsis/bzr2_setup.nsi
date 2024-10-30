@@ -46,7 +46,7 @@ CRCCheck force
 !define URL_LATEST_VERSION "${URL_MAIN}/latest-version.php"
 !define URL_CHANGELOG "${URL_MAIN}/versions_json.php"
 !define URL_BINARY_ZIP "${URL_MAIN}/getFile.php?id=$version"
-!define URL_BINARY_ZIP_FALLBACK "${URL_REPO}/binaries/binaries"
+!define URL_BINARY_ZIP_FALLBACK "https://github.com/aargirakis/BZRPlayer/releases/download/$version"
 !define CHANGELOG_FILE_JSON "$TEMP\changelog.json"
 !define CHANGELOG_FILE_RTF "$TEMP\changelog.rtf"
 !define DESCRIPTION "Audio player supporting a wide types of multi-platform exotic file formats"
