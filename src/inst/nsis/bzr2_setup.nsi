@@ -49,7 +49,7 @@ CRCCheck force
 !define URL_BINARY_ZIP_FALLBACK "https://github.com/aargirakis/BZRPlayer/releases/download/$version"
 !define CHANGELOG_FILE_JSON "$TEMP\changelog.json"
 !define CHANGELOG_FILE_RTF "$TEMP\changelog.rtf"
-!define DESCRIPTION "Audio player supporting a wide types of multi-platform exotic file formats"
+!define DESCRIPTION "Audio player supporting a wide array of multi-platform exotic file formats"
 !define CAPTION "$title Setup"
 !define CAPTION_VERSIONED "${CAPTION} (v${SETUP_LATEST_VERSION})"
 !define DIR_SETTINGS "$INSTDIR\user"

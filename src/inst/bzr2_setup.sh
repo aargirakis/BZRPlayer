@@ -701,7 +701,7 @@ setup_desktop_entry() {
 Type=Application
 Name=$bzr2_name
 GenericName=Audio player
-Comment=Audio player supporting a wide types of multi-platform exotic file formats
+Comment=Audio player supporting a wide array of multi-platform exotic file formats
 Exec=$bzr2_launcher %U
 Icon=$bzr2_pkgname
 Terminal=false
