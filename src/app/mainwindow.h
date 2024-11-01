@@ -468,6 +468,7 @@ private:
 
     QString currentPlayingFilepath;
     int currentRow;
+    bool isUpdateCurrentRowToNextEnabled;
     QTimer* m_Timer;
     QTimer* m_TimerRefreshInfo;
 

@@ -170,6 +170,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
 
         currentRow = 0;
+        isUpdateCurrentRowToNextEnabled = true;
         ui->visualizer->init();
         ui->trackerView->init();
 
@@ -1499,7 +1500,8 @@ void MainWindow::playNextSong(bool forceNext)
     }
     else if (Playmode == repeatSong && !forceNext)
     {
-        if (tableWidgetPlaylists[currentPlaylist]->model()->rowCount() > 0)
+        if (tableWidgetPlaylists[currentPlaylist]->model()->rowCount() > 0 &&
+            currentRow != tableWidgetPlaylists[currentPlaylist]->model()->rowCount())
         {
             PlaySong(currentRow);
         }
@@ -1552,27 +1554,41 @@ void MainWindow::playNextSong(bool forceNext)
                 if (currentRow < tableWidgetPlaylists[currentPlaylist]->model()->rowCount() - 1)
                 {
                     removeHighlight();
-                    currentRow++;
+                    if (isUpdateCurrentRowToNextEnabled)
+                    {
+                        currentRow++;
+                    }
                     PlaySong(currentRow);
                 }
                 else
                 {
-                    if (Playmode == normal)
+                    if (Playmode == normal || Playmode == repeatSong)
                     {
-                        addDebugText("No more songs in playlist.");
-                        on_buttonStop_clicked();
+                        if (isUpdateCurrentRowToNextEnabled)
+                        {
+                            addDebugText("No more songs in playlist.");
+                            on_buttonStop_clicked();
+                        }
+                        else
+                        {
+                            PlaySong(currentRow);
+                        }
                     }
                     else
                     {
                         addDebugText("Repeat playlist.");
                         removeHighlight();
-                        currentRow = 0;
+                        if (isUpdateCurrentRowToNextEnabled)
+                        {
+                            currentRow = 0;
+                        }
                         PlaySong(currentRow);
                     }
                 }
             }
         }
     }
+    isUpdateCurrentRowToNextEnabled = true;
 }
 
 void MainWindow::highlightPlaylistItem(QString playlist, int row)
@@ -1596,8 +1612,8 @@ void MainWindow::resetShuffle(QString playlist)
         m_ShuffleToBePlayed[playlist].push_back(e);
     }
 
-    //    //TODO this sometimes crash (always for s98 files fore some reason!?)
-    if (tableWidgetPlaylists[playlist]->model()->rowCount() > 0)
+    if (tableWidgetPlaylists[playlist]->model()->rowCount() > 0 &&
+        currentRow < tableWidgetPlaylists[playlist]->model()->rowCount() - 1)
     {
         m_ShufflePlayed[playlist].push_back(currentRow);
         m_ShuffleToBePlayed[playlist].remove(currentRow);
@@ -2099,6 +2115,7 @@ void MainWindow::on_buttonPlay_2_clicked()
         }
     }
     updateButtons();
+    isUpdateCurrentRowToNextEnabled = true;
 }
 
 
@@ -2155,6 +2172,7 @@ void MainWindow::on_playlist_itemDoubleClicked(const QModelIndex& index)
     currentRow = index.row();
 
     PlaySong(currentRow);
+    isUpdateCurrentRowToNextEnabled = true;
 }
 
 void MainWindow::PlaySong(int currentRow)
@@ -3386,6 +3404,9 @@ void MainWindow::clearPlaylist()
     tableWidgetPlaylists[selectedPlaylist]->model()->removeRows(
         0, tableWidgetPlaylists[selectedPlaylist]->model()->rowCount());
 
+    on_buttonStop_clicked();
+    isUpdateCurrentRowToNextEnabled = false;
+
     if (selectedPlaylist == currentPlaylist)
     {
         resetShuffle(currentPlaylist);
@@ -3417,13 +3438,16 @@ void MainWindow::deleteFilesInPlaylist()
         addDebugText("Removing items from playlist: " + QString::number(idx.row()));
     }
 
-
     std::sort(selectedRowsIdx.begin(), selectedRowsIdx.end());
+
+    int currentRowPreDelete = currentRow;
+
     for (int idx = selectedRowsIdx.size() - 1; idx >= 0; idx--)
     {
         tableWidgetPlaylists[selectedPlaylist]->model()->removeRow(selectedRowsIdx.at(idx));
         rowDeleted = true;
-        if (currentRow >= selectedRowsIdx.at(idx) && currentRow != 0)
+
+        if (selectedRowsIdx.at(idx) < currentRow && currentRow != 0)
         {
             currentRow--;
         }
@@ -3433,6 +3457,24 @@ void MainWindow::deleteFilesInPlaylist()
     if (rowDeleted)
     {
         addDebugText("Row(s) in playlist deleted.");
+
+        if (tableWidgetPlaylists[selectedPlaylist]->model()->rowCount() == 0)
+        {
+            on_buttonStop_clicked();
+            isUpdateCurrentRowToNextEnabled = false;
+        }
+        else
+        {
+            for (int idx = selectedRowsIdx.size() - 1; idx >= 0; idx--)
+            {
+                if (selectedRowsIdx.at(idx) == currentRowPreDelete)
+                {
+                    on_buttonStop_clicked();
+                    isUpdateCurrentRowToNextEnabled = false;
+                    break;
+                }
+            }
+        }
 
         if (selectedPlaylist == currentPlaylist)
         {
@@ -3698,25 +3740,20 @@ void MainWindow::playPrevSong()
 
 
         PlaySong(currentRow);
+        isUpdateCurrentRowToNextEnabled = true;
     }
 }
 
 void MainWindow::on_buttonNext_clicked()
 {
-    if (loaded)
-    {
-        buttonNextClicked = true;
-        playNextSong(true);
-    }
+    buttonNextClicked = true;
+    playNextSong(true);
 }
 
 void MainWindow::on_buttonPrev_clicked()
 {
-    if (loaded)
-    {
-        buttonNextClicked = false;
-        playPrevSong();
-    }
+    buttonNextClicked = false;
+    playPrevSong();
 }
 
 void MainWindow::setOutputDeviceSetting(int outputDevice)
