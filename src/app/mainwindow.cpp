@@ -2276,14 +2276,15 @@ void MainWindow::PlaySong(int currentRow)
         if (artist != "")
         {
             ui->labelFilename->setText(artist + " - " + filename);
-            windowTitle = artist + " - " + filename + " - zzBZR Player " + VERSION;
+            windowTitle = artist + " - " + filename + " - " + PROJECT_NAME_VERSIONED;
         }
         else
         {
             ui->labelFilename->setText(filename);
-            windowTitle = filename + " - zzBZR Player " + VERSION;
+            windowTitle = filename + " - " + PROJECT_NAME_VERSIONED;
         }
-        if (!this->isVisible())
+
+        if (isMinimized() || !this->isVisible())
         {
             this->setWindowTitle(windowTitle);
         }
@@ -2296,7 +2297,6 @@ void MainWindow::PlaySong(int currentRow)
         {
             m_Tray->setToolTip(windowTitle);
         }
-
 
         QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
         if (pi.info->title != "")
