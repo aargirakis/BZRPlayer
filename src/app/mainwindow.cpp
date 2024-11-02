@@ -43,6 +43,8 @@
 #define PLAYLISTFIELDSPLITTER "<><>::????"
 #define PROJECT_NAME "BZR Player"
 #define PROJECT_NAME_VERSIONED PROJECT_NAME " " PROJECT_VERSION
+#define PLAYLIST_DEFAULT "Default"
+#define PLAYLIST_DEFAULT_FILENAME PLAYLIST_DEFAULT ".m3u"
 
 using namespace std;
 const QString MainWindow::VERSION = PROJECT_VERSION;
@@ -227,9 +229,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         m_normalizeFadeTime = settings.value("normalizefadetime", 5000).toInt();
         m_normalizeThreshold = settings.value("normalizethreshold", 10).toInt();
         m_normalizeMaxAmp = settings.value("normalizemaxamp", 20).toInt();
-        currentPlaylist = settings.value("currentPlaylist", "Default").toString();
+        currentPlaylist = settings.value("currentPlaylist", PLAYLIST_DEFAULT).toString();
         currentRow = settings.value("currentRow", -1).toInt();
-        selectedPlaylist = settings.value("selectedPlaylist", "Default").toString();
+        selectedPlaylist = settings.value("selectedPlaylist", PLAYLIST_DEFAULT).toString();
         m_reverbEnabled = settings.value("reverbenabled", false).toBool();
         m_reverbPreset = settings.value("reverbpreset", "Generic").toString();
         m_ignoreSuffix = settings.value("ignoresuffix", "psflib;psf2lib;dsflib").toString();
@@ -492,14 +494,14 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
         if (!QFileInfo::exists(
             QApplication::applicationDirPath() + QDir::separator() + "user/playlists" + QDir::separator() +
-            "Default.m3u"))
+            PLAYLIST_DEFAULT_FILENAME))
         {
-            playlists.append("Default.m3u");
+            playlists.append(PLAYLIST_DEFAULT_FILENAME);
         }
-        //Remove "Default.m3u" and the put it first in playlists
+        //Remove PLAYLIST_DEFAULT_FILENAME and the put it first in playlists
         playlists.append(directory.entryList(QStringList() << "*.m3u" << "*.M3U" << "*.m3u8" << "*.M3U8", QDir::Files));
-        playlists.removeOne("Default.m3u");
-        playlists.insert(0, "Default.m3u");
+        playlists.removeOne(PLAYLIST_DEFAULT_FILENAME);
+        playlists.insert(0, PLAYLIST_DEFAULT_FILENAME);
 
         addDebugText(
             "Loading " + QString::number(playlists.count()) + " playlists from " + QApplication::applicationDirPath() +
@@ -559,7 +561,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
             //There was no existing default playlist
             if (!QFileInfo::exists(
                 QApplication::applicationDirPath() + QDir::separator() + "user/playlists" + QDir::separator() +
-                "Default.m3u") && filename == "Default.m3u")
+                PLAYLIST_DEFAULT_FILENAME) && filename == PLAYLIST_DEFAULT_FILENAME)
             {
                 swapColumns(tableWidgetPlaylists[f.fileName()]);
             }
@@ -576,7 +578,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
             QListWidgetItem* newItem = new QListWidgetItem;
             newItem->setText(f.fileName());
-            if (f.fileName() == "Default.m3u")
+            if (f.fileName() == PLAYLIST_DEFAULT_FILENAME)
             {
                 QFont fontItalic = newItem->font();
                 fontItalic.setItalic(true);
@@ -601,7 +603,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
             QApplication::applicationDirPath() + QDir::separator() + "user/playlists" + QDir::separator() +
             currentPlaylist))
         {
-            currentPlaylist = "Default.m3u";
+            currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
         }
         addDebugText("currentPlaylist: " + currentPlaylist);
         QList<QListWidgetItem*> items = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
@@ -885,7 +887,7 @@ void MainWindow::checkCommandLine(int argc, char* argv[])
         {
             urls.append(QUrl().fromLocalFile(item));
         }
-        addSong(urls, 0, "Default.m3u", false);
+        addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
 
 
         if ((m_bAllowOnlyOneInstanceEnabled && !m_enqueueItems) || !m_bAllowOnlyOneInstanceEnabled)
@@ -893,7 +895,7 @@ void MainWindow::checkCommandLine(int argc, char* argv[])
             on_listWidget_itemClicked(ui->listWidget->item(0));
             QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
             l.at(0)->setForeground(QColor(colorMainText.left(7)));
-            currentPlaylist = "Default.m3u";
+            currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
             removeHighlight();
             currentRow = tableWidgetPlaylists[currentPlaylist]->model()->rowCount() - 1;
             PlaySong(currentRow);
@@ -1488,7 +1490,7 @@ void MainWindow::playNextSong(bool forceNext)
         //This happens if a song is playing and that playlist is deleted while playing
         on_buttonStop_clicked();
         currentRow = 0;
-        currentPlaylist = "Default.m3u";
+        currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
         ui->listWidget->setCurrentRow(0);
         on_listWidget_itemClicked(ui->listWidget->currentItem());
     }
@@ -3163,7 +3165,7 @@ void MainWindow::clearLogWindow()
 
 void MainWindow::renamePlaylist()
 {
-    if (ui->listWidget->currentItem()->text() != "Default.m3u")
+    if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME)
     {
         bool ok;
         QString oldName = ui->listWidget->currentItem()->text();
@@ -3343,7 +3345,7 @@ void MainWindow::deleteAllPlaylists()
     for (int rowNumber = ui->listWidget->count() - 1; rowNumber >= 0; rowNumber--)
     {
         ui->listWidget->setCurrentRow(rowNumber);
-        if (ui->listWidget->currentItem()->text() != "Default.m3u")
+        if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME)
         {
             QString playlistToDelete = QApplication::applicationDirPath() + QDir::separator() + "user/playlists" +
                 QDir::separator() + ui->listWidget->currentItem()->text();
@@ -3359,7 +3361,7 @@ void MainWindow::deleteAllPlaylists()
 
 void MainWindow::deletePlaylist()
 {
-    if (ui->listWidget->currentItem()->text() != "Default.m3u")
+    if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME)
     {
         int rowNumber = ui->listWidget->currentRow();
         rowNumber--;
@@ -5702,14 +5704,14 @@ void MainWindow::getSocketData()
                     //                playSong();
 
                     addDebugText("count: " + QString::number(list.count()));
-                    //addSong(list,0,"Default.m3u",false);
-                    addSong(urls, 0, "Default.m3u", false);
+                    //addSong(list,0,PLAYLIST_DEFAULT_FILENAME,false);
+                    addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
 
                     if ((m_bAllowOnlyOneInstanceEnabled && !m_enqueueItems) || !m_bAllowOnlyOneInstanceEnabled)
                     {
                         QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
                         l.at(0)->setForeground(QColor(colorMainText.left(7)));
-                        currentPlaylist = "Default.m3u";
+                        currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
                         on_listWidget_itemClicked(ui->listWidget->item(0));
                         removeHighlight();
                         currentRow = tableWidgetPlaylists[currentPlaylist]->model()->rowCount() - 1;
