@@ -25,8 +25,7 @@ FMOD_CODEC_DESCRIPTION tfmxcodec =
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    0,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
+    &getlength,   // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
     0,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
@@ -47,13 +46,25 @@ public:
 
     ~ahxplugin()
     {
-        //delete some stuff
+        if (m_lazyState)
+        {
+            usf_shutdown(m_lazyState);
+            delete[] m_lazyState;
+        }
     }
 
     static int InfoMetaPSF(void* context, const char* name, const char* value)
     {
         auto* This = reinterpret_cast<ahxplugin*>(context);
-        if (!_strnicmp(name, "replaygain_", sizeof("replaygain_") - 1))
+		if (!_stricmp(name, "_enablecompare"))
+        {
+            This->m_loaderState.enablecompare = 1;
+        }
+        else if (!_stricmp(name, "_enablefifofull"))
+        {
+            This->m_loaderState.enablefifofull = 1;
+        }
+        else if (!_strnicmp(name, "replaygain_", sizeof("replaygain_") - 1))
         {
         }
         else if (!_stricmp(name, "length"))
@@ -102,7 +113,10 @@ public:
                     length *= 1000;
 
                 if (length > 0)
+				{
                     This->m_length = length;
+					
+				}
             }
         }
         else if (!_stricmp(name, "fade"))
@@ -170,15 +184,11 @@ public:
     uint64_t m_length;
     uint8_t* m_lazyState = nullptr;
 
-    struct LoaderState
-    {
-        uint8_t* data = nullptr;
-        size_t data_size = 0;
-
-        void Clear() { new(this) LoaderState(); }
-
-        ~LoaderState() { Clear(); }
-    } m_loaderState = {};
+        struct LoaderState
+        {
+            uint32_t enablecompare = 0;
+            uint32_t enablefifofull = 0;
+        } m_loaderState;
 
     const psf_file_callbacks m_psfFileSystem = {
         "\\/|:",
@@ -212,33 +222,37 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+{	
     FMOD_RESULT result;
-    unsigned int filesize;
-    unsigned int bytesread;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    //    if (filesize < 8 || filesize > 1024*2048) //(2 mb)biggest sndh on modland is 1150960 bytes, don't know real max
-    //    {
-    //        return FMOD_ERR_FORMAT;
-    //    }
-
     ahxplugin* ahx = new ahxplugin(codec);
-
     ahx->info = (Info*)userexinfo->userdata;
+	
+	unsigned int bytesread;
 
-
+    uint8_t* buffer;
+    buffer = new uint8_t[4];
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    result = FMOD_CODEC_FILE_READ(codec, buffer, 4, &bytesread);
 
-
-    ahx->m_length = 0xffffffff;
-    auto psfType = psf_load(ahx->info->filename.c_str(), &ahx->m_psfFileSystem, 0, nullptr, nullptr, ahx->InfoMetaPSF,
+    if ((buffer[0] == 'M' && buffer[1] == 'T' && buffer[2] == 'h' && buffer[3] == 'd') || (buffer[0] == 'R' && buffer[1]
+        == 'I' && buffer[2] == 'F' && buffer[3] == 'F')) //it's a midi file
+    {
+        delete[] buffer;
+        return FMOD_ERR_FORMAT;
+    }
+	delete[] buffer;
+	
+    auto psfType = psf_load(ahx->info->filename.c_str(), &ahx->m_psfFileSystem, 0x21, nullptr, nullptr, ahx->InfoMetaPSF,
                             ahx, 0, nullptr, nullptr);
     if (psfType == 0x21)
     {
         auto extPos = ahx->info->filename.find_last_of('.');
         if (extPos == std::string::npos || _stricmp(ahx->info->filename.c_str() + extPos + 1, "usflib") != 0)
         {
-            ahx->m_lazyState = new uint8_t[usf_get_state_size()];
+			if (ahx->m_lazyState == nullptr)
+			{
+				ahx->m_lazyState = new uint8_t[usf_get_state_size()];
+			}
             usf_clear(ahx->m_lazyState);
             if (psf_load(ahx->info->filename.c_str(), &ahx->m_psfFileSystem, uint8_t(psfType), ahx->UsfLoad, ahx,
                          nullptr, nullptr, 0, nullptr, nullptr) >= 0)
@@ -258,13 +272,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     {
         return FMOD_ERR_FORMAT;
     }
-    cout << "usf ok\n";
 
     int freq = 44100;
     int channels = 2;
 
 
-    ahx->ahxwaveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
+    ahx->ahxwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
     ahx->ahxwaveformat.channels = channels;
     ahx->ahxwaveformat.frequency = freq;
     ahx->ahxwaveformat.pcmblocksize = 2;
@@ -280,6 +293,42 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     ahx->info->pluginName = PLUGIN_lazyusf2_NAME;
     ahx->info->fileformat = "N64";
 
+    if (keyExists(ahx->m_tags, "title"))
+    {
+        ahx->info->title = ahx->m_tags["title"];
+    }
+    if (keyExists(ahx->m_tags, "artist"))
+    {
+        ahx->info->artist = ahx->m_tags["artist"];
+    }
+    if (keyExists(ahx->m_tags, "game"))
+    {
+        ahx->info->game = ahx->m_tags["game"];
+    }
+    if (keyExists(ahx->m_tags, "copyright"))
+    {
+        ahx->info->copyright = ahx->m_tags["copyright"];
+    }
+    if (keyExists(ahx->m_tags, "psfby"))
+    {
+        ahx->info->ripper = ahx->m_tags["psfby"];
+    }
+    if (keyExists(ahx->m_tags, "year"))
+    {
+        ahx->info->date = ahx->m_tags["year"];
+    }
+    if (keyExists(ahx->m_tags, "volume"))
+    {
+        ahx->info->volumeAmplificationStr = ahx->m_tags["volume"];
+    }
+    if (keyExists(ahx->m_tags, "genre"))
+    {
+        ahx->info->system = ahx->m_tags["genre"];
+    }
+    if (keyExists(ahx->m_tags, "comment"))
+    {
+        ahx->info->comments = ahx->m_tags["comment"];
+    }
     return FMOD_OK;
 }
 
@@ -293,24 +342,38 @@ FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-
-    *read = size;
+	ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+	usf_render_resampled(ahx->m_lazyState, (short*)buffer, size, ahx->ahxwaveformat.frequency);
+	*read = size;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
     ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
-        return FMOD_OK;
-    }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
-        //ahx->m_subsongIndex = position;
-        //ahx->sndh->InitSubSong(ahx->m_subsongIndex+1);
-        return FMOD_OK;
-    }
+	usf_shutdown(ahx->m_lazyState);
+    usf_clear(ahx->m_lazyState);
+	psf_load(ahx->info->filename.c_str(), &ahx->m_psfFileSystem, 0x21, ahx->UsfLoad, ahx, nullptr, nullptr, 0, nullptr, nullptr);
+	usf_set_hle_audio(ahx->m_lazyState, 1);
+	usf_set_compare(ahx->m_lazyState, ahx->m_loaderState.enablecompare);
+	usf_set_fifo_full(ahx->m_lazyState, ahx->m_loaderState.enablefifofull);
     return FMOD_OK;
+}
+FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
+{
+    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+
+    if (lengthtype == FMOD_TIMEUNIT_MS)
+    {
+        if (ahx->m_length > 0)
+        {
+            *length = ahx->m_length;
+        }
+        else
+        {
+            *length = 0xffffffff;
+        }
+        ahx->info->numSubsongs = 1;
+        return FMOD_OK;
+    }
 }
