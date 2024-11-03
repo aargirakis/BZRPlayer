@@ -48,7 +48,6 @@ public:
 
     ~jaytraxplugin()
     {
-        delete[] myBuffer;
     }
 
     FMOD_CODEC_WAVEFORMAT jaytraxwaveformat;
@@ -95,13 +94,16 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, jaytrax->myBuffer, filesize, &bytesread);
 
-    jaytrax->jay = jaytrax_init();
+    
 
     if (jxsfile_readSongMem(jaytrax->myBuffer, filesize, &jaytrax->song) != 0)
     {
+		delete[] jaytrax->myBuffer;
         return FMOD_ERR_FORMAT;
     }
+	delete[] jaytrax->myBuffer;
 
+	jaytrax->jay = jaytrax_init();
     jaytrax->jay->song = jaytrax->song;
 
     jaytrax_changeSubsong(jaytrax->jay, 0);
@@ -129,10 +131,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
     jaytraxplugin* jaytrax = (jaytraxplugin*)codec->plugindata;
-    //jaytrax_free(jaytrax->jay);
-
+	if(jaytrax!=nullptr)
+	{
+		jaytrax_free(jaytrax->jay);
+	}
     delete jaytrax;
-
     return FMOD_OK;
 }
 
