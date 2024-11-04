@@ -166,7 +166,7 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
     if (postype == FMOD_TIMEUNIT_MS)
     {
         fcplugin* fc = (fcplugin*)codec->plugindata;
-        //S98_SetPosition(fc->s98, position);
+        S98_SetPosition(fc->s98, position);
         return FMOD_OK;
     }
     else
