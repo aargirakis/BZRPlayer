@@ -153,6 +153,8 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
         string emulate_amiga_filter = "1";
         string amiga_filter = "auto";
         string dither = "1";
+        //string play_at_end = "stop";
+        string play_at_end = "continue";
 
 
         if (!useDefaults)
@@ -230,16 +232,15 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
         std::map<std::string, std::string> ctls
         {
             {"seek.sync_samples", "1"},
-            {"play.at_end", "stop"},
+            {"play.at_end", play_at_end},
             {"render.resampler.emulate_amiga", emulate_amiga_filter},
             {"render.resampler.emulate_amiga_type", amiga_filter},
-            {"dither", dither},
-            /*{ "play.at_end", "fadeout" },*/
+            {"dither", dither}
         };
         libopenmpt->mod = nullptr;
         libopenmpt->mod = new openmpt::module_ext(libopenmpt->myBuffer, filesize, std::clog, ctls);
 
-
+        libopenmpt->mod->set_repeat_count(0); //TODO for testing purposes only (not needed, since it is by default)
         libopenmpt->mod->set_render_param(openmpt::module::RENDER_STEREOSEPARATION_PERCENT, stereo_separation);
         libopenmpt->mod->set_render_param(openmpt::module::RENDER_INTERPOLATIONFILTER_LENGTH, interpolation_filter);
 
