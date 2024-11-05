@@ -94,14 +94,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, jaytrax->myBuffer, filesize, &bytesread);
 
-    
-
-    if (jxsfile_readSongMem(jaytrax->myBuffer, filesize, &jaytrax->song) != 0)
+    bool isErr = jxsfile_readSongMem(jaytrax->myBuffer, filesize, &jaytrax->song) != 0;
+    delete[] jaytrax->myBuffer;
+    if (isErr)
     {
-		delete[] jaytrax->myBuffer;
         return FMOD_ERR_FORMAT;
     }
-	delete[] jaytrax->myBuffer;
 
 	jaytrax->jay = jaytrax_init();
     jaytrax->jay->song = jaytrax->song;
