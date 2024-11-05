@@ -281,7 +281,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->tableWidgetPlugins->setColumnWidth(0, 135);
     ui->tableWidgetPlugins->setColumnWidth(1, 65);
 
-    ui->tableWidgetPlugins->setRowCount(40);
+    ui->tableWidgetPlugins->setRowCount(PLUGINS_COUNT);
     int row = 0;
 
     ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_fmod_VERSION));

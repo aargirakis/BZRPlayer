@@ -1,6 +1,8 @@
 #ifndef PLUGINS_H
 #define PLUGINS_H
 
+#define PLUGINS_COUNT ( PLUGIN_zxtune + 1 )
+
 #define PLUGIN_fmod_NAME "@PLUGIN_fmod_NAME@"
 #define PLUGIN_fmod_VERSION "@PLUGIN_fmod_VERSION@"
 
