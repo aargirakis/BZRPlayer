@@ -1924,7 +1924,8 @@ void MainWindow::addSong(QStringList filenames, int row, QString playlistName, b
         }
 
         addDebugText("Added " + filenameFullPath);
-        if (filenameFullPath.endsWith(".m3u", Qt::CaseInsensitive) || filenameFullPath.endsWith(".m3u8"))
+        if (filenameFullPath.endsWith(".m3u", Qt::CaseInsensitive) || filenameFullPath.endsWith(
+            ".m3u8", Qt::CaseInsensitive))
         {
             if (createNewPlaylist)
             {
@@ -1932,11 +1933,7 @@ void MainWindow::addSong(QStringList filenames, int row, QString playlistName, b
                 playlistName = createPlaylist(filename);
             }
 
-            vector<PlaylistItem*> playlistEntries;
-            if (filenameFullPath.endsWith(".m3u", Qt::CaseInsensitive) || filenameFullPath.endsWith(".m3u8"))
-            {
-                playlistEntries = getPlayListEntriesM3U(filenameFullPath);
-            }
+            vector<PlaylistItem*> playlistEntries = getPlayListEntriesM3U(filenameFullPath);
 
             for (unsigned int e = 0; e < playlistEntries.size(); e++)
             {
