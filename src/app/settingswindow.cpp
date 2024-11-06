@@ -18,6 +18,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
     setWindowFlags(windowFlags().setFlag(Qt::WindowContextHelpButtonHint, false));
     ui->setupUi(this);
     mainWindow = static_cast<MainWindow*>(this->parent());
+	connect(ui->textEditCustomScrolltext, SIGNAL(textChanged()), this, SLOT(updateScrollText()));
 
 
     //    QRect geo;
@@ -202,8 +203,8 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderStarSpeed->setValue(mainWindow->getEffect()->getStarSpeed());
     ui->checkBoxStarsEnabled->setChecked(mainWindow->getEffect()->getStarsEnabled());
     ui->checkBoxScrollerEnabled->setChecked(mainWindow->getEffect()->getScrollerEnabled());
-    ui->checkBoxCustomScrolltextEnabled->setChecked(mainWindow->getEffect()->getCustomScrolltextEnabled());
     ui->textEditCustomScrolltext->setText(mainWindow->getEffect()->getCustomScrolltext());
+	ui->checkBoxCustomScrolltextEnabled->setChecked(mainWindow->getEffect()->getCustomScrolltextEnabled());
     ui->checkBoxPrinterEnabled->setChecked(mainWindow->getEffect()->getPrinterEnabled());
     ui->checkBoxVUMeterEnabled->setChecked(mainWindow->getEffect()->getVUMeterEnabled());
     ui->checkBoxSinusFontScaling->setChecked(mainWindow->getEffect()->getSinusFontScalingEnabled());
@@ -659,16 +660,13 @@ void settingsWindow::on_buttonOK_clicked()
     mainWindow->setSystrayOnQuitEnabled(checkedSystrayOnQuit);
     mainWindow->setIgnoreSuffix(ui->lineEditIgnoreSuffix->text());
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
-    mainWindow->getEffect()->setCustomScrolltext(ui->textEditCustomScrolltext->toPlainText());
-
+	updateScrollText();
     saveSidplaySettings();
     saveUADESettings();
     savelibopenmptSettings();
     mainWindow->SaveSettings();
-    if (mainWindow->getEffect()->getCustomScrolltextEnabled())
-    {
-        mainWindow->getEffect()->setScrollText(mainWindow->getEffect()->getCustomScrolltext());
-    }
+	
+
     close();
 }
 
@@ -2298,10 +2296,17 @@ void settingsWindow::on_checkBoxCustomScrolltextEnabled_toggled(bool checked)
     {
         ui->checkBoxCustomScrolltextEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    mainWindow->getEffect()->setCustomScrolltextEnabled(checkedCustomScrolltextEnabled);
+	mainWindow->getEffect()->setCustomScrolltextEnabled(checkedCustomScrolltextEnabled);
+	updateScrollText();
     ui->textEditCustomScrolltext->setEnabled(checkedCustomScrolltextEnabled);
+	
 }
-
+void settingsWindow::updateScrollText()
+{
+	mainWindow->getEffect()->setCustomScrolltext(ui->textEditCustomScrolltext->toPlainText());
+	mainWindow->updateScrollText();
+}
+	
 void settingsWindow::updateCheckBoxes()
 {
     if (ui->checkBoxCustomScrolltextEnabled->isChecked())

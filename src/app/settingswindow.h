@@ -22,6 +22,9 @@ public:
     void changeStyleSheetColor();
 
 private slots:
+
+	void updateScrollText();
+
     void downloadComplete();
 
     void on_sliderResetVolumeToValue_sliderMoved(int position);

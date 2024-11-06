@@ -2156,7 +2156,67 @@ void MainWindow::on_playlist_itemDoubleClicked(const QModelIndex& index)
 
     PlaySong(currentRow);
 }
+void MainWindow::updateScrollText()
+{
+	if(loaded)
+	{
+		if (ui->visualizer->getEffect()->getCustomScrolltextEnabled())
+		{
+			//TODO this will only be blank after program start
+			ui->visualizer->getEffect()->setScrollText(ui->visualizer->getEffect()->getCustomScrolltext());
+		}
+		else
+		{
+			QString visualizerText = "";visualizerText = QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->artist.c_str());
+			if (!visualizerText.isEmpty())
+			{
+				visualizerText += " ";
+			}
 
+			visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->game.c_str());
+			if (!visualizerText.isEmpty())
+			{
+				visualizerText += " ";
+			}
+
+			visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->comments.c_str());
+			if (!visualizerText.isEmpty())
+			{
+				visualizerText += " ";
+			}
+
+			visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->copyright.c_str());
+			if (!visualizerText.isEmpty())
+			{
+				visualizerText += " ";
+			}
+
+			visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->date.c_str());
+			if (!visualizerText.isEmpty())
+			{
+				visualizerText += " ";
+			}
+
+			if (SoundManager::getInstance().m_Info1->instruments != nullptr)
+			{
+				for (int i = 0; i < SoundManager::getInstance().m_Info1->numInstruments; i++)
+				{
+					visualizerText += QString::fromLocal8Bit(
+						SoundManager::getInstance().m_Info1->instruments[i].c_str()) + QString(" ");
+				}
+			}
+			if (SoundManager::getInstance().m_Info1->samples != nullptr)
+			{
+				for (int i = 0; i < SoundManager::getInstance().m_Info1->numSamples; i++)
+				{
+					visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->samples[i].c_str()) +
+						QString(" ");
+				}
+			}
+			ui->visualizer->getEffect()->setScrollText(visualizerText);
+		}
+	}
+}
 void MainWindow::PlaySong(int currentRow)
 {
     QString fullPath = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 4).data().toString();
@@ -2364,7 +2424,6 @@ void MainWindow::PlaySong(int currentRow)
         tableWidgetPlaylists[currentPlaylist]->update();
 
 
-        QString visualizerText = "";
         QString printerText = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0).data().toString();
         //        if(printerText.isEmpty())
         //        {
@@ -2372,60 +2431,8 @@ void MainWindow::PlaySong(int currentRow)
         //        }
 
 
-        if (ui->visualizer->getEffect()->getCustomScrolltextEnabled())
-        {
-            ui->visualizer->getEffect()->setScrollText(ui->visualizer->getEffect()->getCustomScrolltext());
-        }
-        else
-        {
-            visualizerText = QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->artist.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
-
-            visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->game.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
-
-            visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->comments.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
-
-            visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->copyright.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
-
-            visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->date.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
-
-            if (SoundManager::getInstance().m_Info1->instruments != nullptr)
-            {
-                for (int i = 0; i < SoundManager::getInstance().m_Info1->numInstruments; i++)
-                {
-                    visualizerText += QString::fromLocal8Bit(
-                        SoundManager::getInstance().m_Info1->instruments[i].c_str()) + QString(" ");
-                }
-            }
-            if (SoundManager::getInstance().m_Info1->samples != nullptr)
-            {
-                for (int i = 0; i < SoundManager::getInstance().m_Info1->numSamples; i++)
-                {
-                    visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->samples[i].c_str()) +
-                        QString(" ");
-                }
-            }
-            ui->visualizer->getEffect()->setScrollText(visualizerText);
-        }
+		updateScrollText();
+        
 
         ui->visualizer->getEffect()->setPrinterText(printerText);
     }

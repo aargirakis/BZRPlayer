@@ -1045,7 +1045,14 @@ void Scroller::setScrollText(QString text)
         m_scrollText = spaces + QString(text.toUpper()).trimmed();
     }
     m_scrollText = replaceIllegalLetters(m_scrollText);
-    letters = spacesNeeded + 1; //Added one because some fontsizes will popup into the screen otherwise
+    letters = spacesNeeded + 2; //Added some extra because some fontsizes will popup into the screen otherwise
+	for (int n = 0; n < letters; n++)
+	{
+		int charPos;
+		charPos = bitmapFontCharset.indexOf(m_scrollText.at(n));
+		chars[n] = charPos;
+		x[n] = n * fontWidth;
+	}
 	updateBottomY();
 }
 //Find the approximate bottom Y of the current scroll - with it's settings - 
@@ -1299,14 +1306,6 @@ bool Scroller::setScrollerFont(QString font)
         sineAngle = 0;
         bottomY = 0;
         setScrollText(m_scrollText);
-
-        for (int n = 0; n < letters; n++)
-        {
-            int charPos;
-            charPos = bitmapFontCharset.indexOf(m_scrollText.at(n));
-            chars[n] = charPos;
-            x[n] = n * fontWidth;
-        }
 
         return true;
     }
