@@ -181,7 +181,7 @@ public:
     FMOD_CODEC_WAVEFORMAT ahxwaveformat;
     Info* info;
     std::unordered_map<std::string, std::string> m_tags;
-    uint64_t m_length;
+    uint64_t m_length=0;
     uint8_t* m_lazyState = nullptr;
 
         struct LoaderState
