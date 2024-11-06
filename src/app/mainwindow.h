@@ -125,6 +125,7 @@ public:
     void setSystrayOnQuitEnabled(bool enabled);
     void createTrayMenu();
     void setScrolltext(QString text);
+    void updateScrollText();
 
     void setAllowOnlyOneInstanceEnabled(bool enabled);
 

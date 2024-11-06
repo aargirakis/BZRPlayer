@@ -334,7 +334,7 @@ void Scroller::printText(QPainter* painter, QPaintEvent* event)
 
 void Scroller::paintScroller(QPainter* painter, QPaintEvent* event)
 {
-    if (m_scrollText.isEmpty()) return;
+    if (m_scrollText.trimmed().isEmpty()) return;
     // Sine
     for (int n = 0; n < letters; n++)
     {
@@ -471,8 +471,8 @@ void Scroller::createRasterBar(QPainter* painter, int offset, int numBars)
     int WIDTH = originalWidth;
     double amp = (HEIGHT / 2) - (rasterBarHeight / 2);
     double y = (((originalHeight / 2) - numBars) + ((sin(
-            counterRasterBar + offset / double(numBars * rasterBarsVerticalSpacing * 0.05) + (sineAngleRasterBar)) *
-        amp)))
+                counterRasterBar + offset / double(numBars * rasterBarsVerticalSpacing * 0.05) + (sineAngleRasterBar)) *
+            amp)))
         + numBars - (rasterBarHeight / 2);
 
 
@@ -1031,49 +1031,60 @@ int Scroller::getRasterBarsHeight()
 void Scroller::setScrollText(QString text)
 {
     int pixelsPerCharacter = fontWidth;
-    int spacesNeeded = (originalWidth / pixelsPerCharacter) + 1;
+    int spacesNeeded = (originalWidth / pixelsPerCharacter) + 3;
+    //Added some extra because some fontsizes will popup into the screen otherwise
     QString spaces = " ";
     spaces = spaces.repeated(spacesNeeded);
 
 
     if (QString(text.toUpper()).trimmed().isEmpty())
     {
-        m_scrollText = "";
+        m_scrollText = spaces;
     }
     else
     {
         m_scrollText = spaces + QString(text.toUpper()).trimmed();
     }
     m_scrollText = replaceIllegalLetters(m_scrollText);
-    letters = spacesNeeded + 1; //Added one because some fontsizes will popup into the screen otherwise
-	updateBottomY();
+
+    letters = spacesNeeded;
+    for (int n = 0; n < letters; n++)
+    {
+        int charPos;
+        charPos = bitmapFontCharset.indexOf(m_scrollText.at(n));
+
+        chars[n] = charPos;
+        x[n] = n * fontWidth;
+    }
+    updateBottomY();
 }
-//Find the approximate bottom Y of the current scroll - with it's settings - 
+
+//Find the approximate bottom Y of the current scroll - with it's settings -
 //so we could place the reflection floor on the right place - without scroller is active
 void Scroller::updateBottomY()
 {
-	for (int n = 0; n < letters; n++)
-	{
-		// Draw each vertical column of pixel data, per character
-		for (int xC = 0; xC < fontWidth; xC += fontScaleX)
-		{
-			int y;
-			if (!sinusFontScalingEnabled)
-			{
-				y = (sin(((x[n] + xC) * sinusFrequency) + (sineAngle)) * m_Amplitude) * fontScaleY;
-			}
-			else
-			{
-				y = (sin(((x[n] + xC) * sinusFrequency) + (sineAngle)) * m_Amplitude);
-				y = y * fontScaleY;
-			}
+    for (int n = 0; n < letters; n++)
+    {
+        // Draw each vertical column of pixel data, per character
+        for (int xC = 0; xC < fontWidth; xC += fontScaleX)
+        {
+            int y;
+            if (!sinusFontScalingEnabled)
+            {
+                y = (sin(((x[n] + xC) * sinusFrequency) + (sineAngle)) * m_Amplitude) * fontScaleY;
+            }
+            else
+            {
+                y = (sin(((x[n] + xC) * sinusFrequency) + (sineAngle)) * m_Amplitude);
+                y = y * fontScaleY;
+            }
 
-			if (y > bottomY)
-			{
-				bottomY = y;
-			}
-		}
-	}
+            if (y > bottomY)
+            {
+                bottomY = y;
+            }
+        }
+    }
 }
 
 QString Scroller::replaceIllegalLetters(QString text)
@@ -1299,14 +1310,6 @@ bool Scroller::setScrollerFont(QString font)
         sineAngle = 0;
         bottomY = 0;
         setScrollText(m_scrollText);
-
-        for (int n = 0; n < letters; n++)
-        {
-            int charPos;
-            charPos = bitmapFontCharset.indexOf(m_scrollText.at(n));
-            chars[n] = charPos;
-            x[n] = n * fontWidth;
-        }
 
         return true;
     }

@@ -24,6 +24,8 @@ public:
     void setUiLineEditHvscSonglengthTextForcingRelativePaths(const QString& text);
 
 private slots:
+    void updateScrollText();
+
     void downloadHvscSonglengthsComplete();
 
     void on_sliderResetVolumeToValue_sliderMoved(int position);
