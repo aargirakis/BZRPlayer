@@ -887,6 +887,9 @@ void MainWindow::checkCommandLine(int argc, char* argv[])
         {
             urls.append(QUrl().fromLocalFile(item));
         }
+
+        const int rowCountBeforeAddSong = tableWidgetPlaylists[currentPlaylist]->model()->rowCount();
+
         addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
 
 
@@ -897,7 +900,7 @@ void MainWindow::checkCommandLine(int argc, char* argv[])
             l.at(0)->setForeground(QColor(colorMainText.left(7)));
             currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
             removeHighlight();
-            currentRow = tableWidgetPlaylists[currentPlaylist]->model()->rowCount() - 1;
+            currentRow = rowCountBeforeAddSong;
             PlaySong(currentRow);
         }
     }
@@ -5700,6 +5703,8 @@ void MainWindow::getSocketData()
                     //                ui.sliderProgress->setEnabled(true);
                     //                playSong();
 
+                    const int rowCountBeforeAddSong = tableWidgetPlaylists[currentPlaylist]->model()->rowCount();
+
                     addDebugText("count: " + QString::number(list.count()));
                     //addSong(list,0,PLAYLIST_DEFAULT_FILENAME,false);
                     addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
@@ -5711,7 +5716,7 @@ void MainWindow::getSocketData()
                         currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
                         on_listWidget_itemClicked(ui->listWidget->item(0));
                         removeHighlight();
-                        currentRow = tableWidgetPlaylists[currentPlaylist]->model()->rowCount() - 1;
+                        currentRow = rowCountBeforeAddSong;
                         PlaySong(currentRow);
                     }
                 }
