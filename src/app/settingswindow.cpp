@@ -475,7 +475,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->labelSIDSongLengthDownloaded->setText("Never downloaded official Songlengths.md5");
     }
 
-
+    ui->tableWidgetPlugins->sortItems(0);
     ui->tableWidgetPlugins->setRowCount(row);
     ui->fontWidget->setVisible(false);
     ui->fontWidgetPrinter->setVisible(false);
