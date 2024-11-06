@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 #TODO sources are from https://www.foobar2000.org/components/view/foo_input_kdm
 
 set(NAME "kdm")
-set(VERSION "")
+set(VERSION "-")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "Ken's Digital Music" PARENT_SCOPE)
