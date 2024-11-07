@@ -106,9 +106,8 @@ public:
     string songlengthfile;
     string songlengthfileOld;
     unsigned int seekPosition;
-    bool mute1;
-    bool mute2;
-    bool mute3;
+    bool mute[9];
+
     bool songlengthDataBaseEnabled;
 
 
@@ -170,9 +169,11 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     m->kernal = 0;
     m->basic = 0;
     m->chargen = 0;
-    m->mute1 = false;
-    m->mute2 = false;
-    m->mute3 = false;
+	for(int i=0;i<9;i++)
+	{
+		m->mute[i]=false;
+	}
+
     m->seekPosition = 0;
 
 
@@ -456,7 +457,7 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     codec->plugindata = m; //user data value
 
 
-    info->numChannels = 3;
+    info->numChannels = 3*s->sidChips();
     if (s->numberOfInfoStrings() == 3)
     {
         info->title = s->infoString(0);
@@ -564,9 +565,11 @@ FMOD_RESULT F_CALLBACK sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     if (m->player->timeMs() >= m->seekPosition)
     {
         m->player->fastForward(100);
-        m->player->mute(0, 0, m->mute1);
-        m->player->mute(0, 1, m->mute2);
-        m->player->mute(0, 2, m->mute3);
+		for(int i=0;i<9;i++)
+		{
+			m->player->mute(0, i, m->mute[i]);
+		}
+
     }
     *read = size;
 
@@ -581,9 +584,10 @@ FMOD_RESULT F_CALLBACK sidsetposition(FMOD_CODEC_STATE* codec, int subsound, uns
     {
         if (position > m->player->timeMs())
         {
-            m->player->mute(0, 0, true);
-            m->player->mute(0, 1, true);
-            m->player->mute(0, 2, true);
+			for(int i=0;i<9;i++)
+			{
+				m->player->mute(0, i, true);
+			}
             m->seekPosition = position;
             m->player->fastForward(3000);
         }
@@ -593,9 +597,10 @@ FMOD_RESULT F_CALLBACK sidsetposition(FMOD_CODEC_STATE* codec, int subsound, uns
         }
         else if (position <= m->player->timeMs())
         {
-            m->player->mute(0, 0, true);
-            m->player->mute(0, 1, true);
-            m->player->mute(0, 2, true);
+			for(int i=0;i<9;i++)
+			{
+				m->player->mute(0, i, true);
+			}
             m->seekPosition = position;
             m->player->load(m->tune);
             m->player->fastForward(3000);
@@ -611,27 +616,15 @@ FMOD_RESULT F_CALLBACK sidsetposition(FMOD_CODEC_STATE* codec, int subsound, uns
     }
     else if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
-        m->mute1 = false;
-        m->mute2 = false;
-        m->mute3 = false;
+		for(int i=0;i<9;i++)
+		{
+			m->mute[i]=false;
+		}
         //position is a mask
         for (int i = 0; i < m->info->numChannels; i++)
         {
-            m->player->mute(0, i, (position >> i & 1));
-            if (i == 0 && (position >> i & 1))
-            {
-                m->mute1 = true;
-            }
-            else if (i == 1 && (position >> i & 1))
-            {
-                m->mute2 = true;
-            }
-            else if (i == 2 && (position >> i & 1))
-            {
-                m->mute3 = true;
-            }
-
-            //cout << "mute " << i << ": " << (position >> i & 1)<< "\n";
+            m->player->mute(i / 3, i % 3, (position >> i & 1));
+            m->mute[i] = position >> i & 1;
         }
         return FMOD_OK;
     }
