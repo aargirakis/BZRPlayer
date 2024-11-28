@@ -38,6 +38,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_libpac "src/plugins/plugin_libpac"
         plugin_libsidplayfp "src/plugins/plugin_libsidplayfp"
         plugin_libstsound "src/plugins/plugin_libstsound"
+        plugin_libvgm "src/plugins/plugin_libvgm"                            #check cmake TODO
         plugin_libxmp "src/plugins/plugin_libxmp"
         plugin_mdxmini "src/plugins/plugin_mdxmini"
         plugin_organya-decoder "src/plugins/plugin_organya-decoder"
@@ -47,7 +48,6 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_sunvox_lib "src/plugins/plugin_sunvox_lib"                    #TODO add sv_unload_dll() (see sunvox_lib README)
         plugin_tunes98_plug "src/plugins/plugin_tunes98_plug"                #check cmake TODO
         plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO seeking it is now supported (should be implemented into main.cpp). #TODO add v2mz support (see sources/v2m dir for example files)
-        plugin_vgmplay-legacy "src/plugins/plugin_vgmplay-legacy"            #check cmake TODO
         plugin_vgmstream "src/plugins/plugin_vgmstream"
         plugin_vio2sf "src/plugins/plugin_vio2sf"                            #check cmake TODO
         plugin_wothke-uade-2.13 "src/plugins/plugin_wothke-uade-2.13"        #TODO unfinished
