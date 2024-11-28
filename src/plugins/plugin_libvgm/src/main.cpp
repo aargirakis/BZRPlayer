@@ -12,9 +12,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "chips/mamedef.h"	// for (U)INTxx types
-#include "VGMPlay.h"
-#include "VGMPlay_Intf.h"
+//#include "chips/mamedef.h"	// for (U)INTxx types
+//#include "VGMPlay.h"
+//#include "VGMPlay_Intf.h"
+#include "stdtype.h"
 #ifdef __cplusplus
 }
 #endif
@@ -41,7 +42,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_vgmplay_legacy_NAME, // Name.
+    PLUGIN_libvgm_NAME, // Name.
     0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
@@ -279,8 +280,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         info->chips.append(PrintChipStr(CurChip, ChpType, ChpClk));
     }
 
-    info->plugin = PLUGIN_vgmplay_legacy;
-    info->pluginName = PLUGIN_vgmplay_legacy_NAME;
+    info->plugin = PLUGIN_libvgm;
+    info->pluginName = PLUGIN_libvgm_NAME;
     info->fileformat = "Video Game Music File";
     info->setSeekable(true);
 

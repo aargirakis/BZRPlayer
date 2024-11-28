@@ -108,61 +108,61 @@
 #define PLUGIN_libstsound_NAME "@PLUGIN_libstsound_NAME@"
 #define PLUGIN_libstsound_VERSION "@PLUGIN_libstsound_VERSION@"
 
-#define PLUGIN_libxmp 21
+#define PLUGIN_libvgm 21
+#define PLUGIN_libvgm_LIB "@PLUGIN_libvgm_LIB@"
+#define PLUGIN_libvgm_NAME "@PLUGIN_libvgm_NAME@"
+#define PLUGIN_libvgm_VERSION "@PLUGIN_libvgm_VERSION@"
+
+#define PLUGIN_libxmp 22
 #define PLUGIN_libxmp_LIB "@PLUGIN_libxmp_LIB@"
 #define PLUGIN_libxmp_NAME "@PLUGIN_libxmp_NAME@"
 #define PLUGIN_libxmp_VERSION "@PLUGIN_libxmp_VERSION@"
 
-#define PLUGIN_mdxmini 22
+#define PLUGIN_mdxmini 23
 #define PLUGIN_mdxmini_LIB "@PLUGIN_mdxmini_LIB@"
 #define PLUGIN_mdxmini_NAME "@PLUGIN_mdxmini_NAME@"
 #define PLUGIN_mdxmini_VERSION "@PLUGIN_mdxmini_VERSION@"
 
-#define PLUGIN_organya_decoder 23
+#define PLUGIN_organya_decoder 24
 #define PLUGIN_organya_decoder_LIB "@PLUGIN_organya-decoder_LIB@"
 #define PLUGIN_organya_decoder_NAME "@PLUGIN_organya-decoder_NAME@"
 #define PLUGIN_organya_decoder_VERSION "@PLUGIN_organya-decoder_VERSION@"
 
-#define PLUGIN_protrekkr 24
+#define PLUGIN_protrekkr 25
 #define PLUGIN_protrekkr_LIB "@PLUGIN_protrekkr_LIB@"
 #define PLUGIN_protrekkr_NAME "@PLUGIN_protrekkr_NAME@"
 #define PLUGIN_protrekkr_VERSION "@PLUGIN_protrekkr_VERSION@"
 
-#define PLUGIN_sc68 25
+#define PLUGIN_sc68 26
 #define PLUGIN_sc68_LIB "@PLUGIN_sc68_LIB@"
 #define PLUGIN_sc68_NAME "@PLUGIN_sc68_NAME@"
 #define PLUGIN_sc68_VERSION "@PLUGIN_sc68_VERSION@"
 
-#define PLUGIN_sndh_player 26
+#define PLUGIN_sndh_player 27
 #define PLUGIN_sndh_player_LIB "@PLUGIN_sndh-player_LIB@"
 #define PLUGIN_sndh_player_NAME "@PLUGIN_sndh-player_NAME@"
 #define PLUGIN_sndh_player_VERSION "@PLUGIN_sndh-player_VERSION@"
 
-#define PLUGIN_sunvox_lib 27
+#define PLUGIN_sunvox_lib 28
 #define PLUGIN_sunvox_lib_LIB "@PLUGIN_sunvox_lib_LIB@"
 #define PLUGIN_sunvox_lib_NAME "@PLUGIN_sunvox_lib_NAME@"
 #define PLUGIN_sunvox_lib_VERSION "@PLUGIN_sunvox_lib_VERSION@"
 
-#define PLUGIN_tunes98_plug 28
+#define PLUGIN_tunes98_plug 29
 #define PLUGIN_tunes98_plug_LIB "@PLUGIN_tunes98_plug_LIB@"
 #define PLUGIN_tunes98_plug_NAME "@PLUGIN_tunes98_plug_NAME@"
 #define PLUGIN_tunes98_plug_VERSION "@PLUGIN_tunes98_plug_VERSION@"
 
-#define PLUGIN_uade 29
+#define PLUGIN_uade 30
 #define PLUGIN_uade_LIB "@PLUGIN_uade_LIB@"
 #define PLUGIN_uade_NAME "@PLUGIN_uade_NAME@"
 #define PLUGIN_uade_VERSION "@PLUGIN_uade_VERSION@"
 #define PLUGIN_uade_DIR "@PLUGIN_uade_DIR@"
 
-#define PLUGIN_v2m_player 30
+#define PLUGIN_v2m_player 31
 #define PLUGIN_v2m_player_LIB "@PLUGIN_v2m-player_LIB@"
 #define PLUGIN_v2m_player_NAME "@PLUGIN_v2m-player_NAME@"
 #define PLUGIN_v2m_player_VERSION "@PLUGIN_v2m-player_VERSION@"
-
-#define PLUGIN_vgmplay_legacy 31
-#define PLUGIN_vgmplay_legacy_LIB "@PLUGIN_vgmplay-legacy_LIB@"
-#define PLUGIN_vgmplay_legacy_NAME "@PLUGIN_vgmplay-legacy_NAME@"
-#define PLUGIN_vgmplay_legacy_VERSION "@PLUGIN_vgmplay-legacy_VERSION@"
 
 #define PLUGIN_vgmstream 32
 #define PLUGIN_vgmstream_LIB "@PLUGIN_vgmstream_LIB@"

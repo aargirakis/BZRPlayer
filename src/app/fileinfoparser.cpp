@@ -396,7 +396,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         case PLUGIN_uade:
             addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5.c_str());
             break;
-        case PLUGIN_vgmplay_legacy:
+        case PLUGIN_libvgm:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
             addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
             addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));

@@ -509,10 +509,10 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_v2m_player_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_v2m_player_NAME));
     }
-    if (PLUGIN_vgmplay_legacy_LIB != "")
+    if (PLUGIN_libvgm_LIB != "")
     {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vgmplay_legacy_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vgmplay_legacy_NAME));
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libvgm_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libvgm_NAME));
     }
     if (PLUGIN_vgmstream_LIB != "")
     {
