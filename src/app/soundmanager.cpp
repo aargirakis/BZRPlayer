@@ -97,10 +97,9 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_zxtune_LIB, 99999);
     }
-
-    if (PLUGIN_vgmplay_legacy_LIB != "")
+    if (PLUGIN_libvgm_LIB != "")
     {
-        loadPlugin(PLUGIN_vgmplay_legacy_LIB, 99999);
+        loadPlugin(PLUGIN_libvgm_LIB, 99999);
     }
     if (PLUGIN_game_music_emu_LIB != "")
     {
