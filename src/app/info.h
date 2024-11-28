@@ -46,9 +46,6 @@ public:
         comments = "";
         date = "";
         fade = "";
-        chips = "";
-        loopInfo = "";
-        version = 0;
         samples = nullptr;
         samplesSize = nullptr;
         samplesLoopStart = nullptr;
@@ -81,9 +78,12 @@ public:
         numSamples = 0;
         plugin = 0;
         pluginName = "";
+        allowedFields = nullptr;
         system = "";
         game = "";
+        genre = "";
         dumper = "";
+        emulator = "";
         songPlayer = "";
         songType = "";
         author = "";
@@ -99,7 +99,7 @@ public:
         address = 0;
         turboSound = false;
         clockSpeed = 0;
-        sidChip = "";
+        chips = "";
         numPatterns = 0;
         numTracksteps = 0;
         numMacros = 0;
@@ -121,7 +121,6 @@ public:
         instrumentsRingMod = nullptr;
         instrumentsSyncSource = nullptr;
         playerFrequency = 0;
-        gain = 0;
         chipFrequency = 0;
         stereoType = 0;
         bitRate = 0;
@@ -242,9 +241,6 @@ public:
     string comments;
     string date;
     string fade;
-    string chips;
-    string loopInfo;
-    unsigned int version;
     string* samples;
     unsigned char** samplesData;
     unsigned int* samplesSize;
@@ -281,7 +277,6 @@ public:
     unsigned char* instrumentsVolume2;
     char* instrumentsNumber;
     float playerFrequency;
-    float gain;
     float chipFrequency;
     int stereoType;
     int bitRate;
@@ -298,9 +293,12 @@ public:
     int numSamples;
     unsigned char plugin;
     string pluginName;
+    const vector<string> *allowedFields;
     string system;
     string game;
+    string genre;
     string dumper;
+    string emulator;
     string songPlayer;
     string songType;
     string author;
@@ -316,7 +314,7 @@ public:
     bool turboSound;
 
     int clockSpeed;
-    string sidChip;
+    string chips;
     int numPatterns;
     int numTracksteps;
     int numMacros;

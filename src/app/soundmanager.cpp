@@ -189,17 +189,9 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_klystron_LIB, 99999);
     }
-    if (PLUGIN_vgmplay_legacy_LIB != "")
-    {
-        loadPlugin(PLUGIN_vgmplay_legacy_LIB, 99999);
-    }
     if (PLUGIN_libkss_LIB != "")
     {
         loadPlugin(PLUGIN_libkss_LIB, 99999);
-    }
-    if (PLUGIN_game_music_emu_LIB != "")
-    {
-        loadPlugin(PLUGIN_game_music_emu_LIB, 99999);
     }
     if (PLUGIN_asap_LIB != "")
     {
@@ -221,10 +213,6 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_sc68_LIB, 99999);
     }
-    if (PLUGIN_tunes98_plug_LIB != "")
-    {
-        loadPlugin(PLUGIN_tunes98_plug_LIB, 99999);
-    }
     if (PLUGIN_kdm_LIB != "")
     {
         loadPlugin(PLUGIN_kdm_LIB, 99999);
@@ -244,6 +232,14 @@ void SoundManager::loadPluginChain() {
     if (PLUGIN_adplug_LIB != "")
     {
         loadPlugin(PLUGIN_adplug_LIB, 99999);
+    }
+    if (PLUGIN_libvgm_LIB != "")
+    {
+        loadPlugin(PLUGIN_libvgm_LIB, 99999);
+    }
+    if (PLUGIN_game_music_emu_LIB != "")
+    {
+        loadPlugin(PLUGIN_game_music_emu_LIB, 99999);
     }
     if (PLUGIN_audiodecoder_wsr_LIB != "")
     {

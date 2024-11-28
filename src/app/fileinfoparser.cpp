@@ -263,7 +263,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
             addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->genre));
             addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
             addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
@@ -274,7 +274,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
             addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->genre));
             addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
             addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
@@ -285,7 +285,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
             addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->genre));
             addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
             addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
@@ -308,7 +308,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
             addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->genre));
             addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
             addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
@@ -341,7 +341,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addSidCompatibility(tableInfo, &row);
             addInfo(tableInfo, &row, "Song Speed",
                     "$" + QString::number(SoundManager::getInstance().m_Info1->songSpeed, 16));
-            addInfo(tableInfo, &row, "SID Chip", SoundManager::getInstance().m_Info1->sidChip.c_str());
+            addInfo(tableInfo, &row, "SID Chip", SoundManager::getInstance().m_Info1->chips.c_str());
             addInfo(tableInfo, &row, "Load Address",
                     "$" + QString::number(SoundManager::getInstance().m_Info1->loadAddr, 16));
             addInfo(tableInfo, &row, "Init Address",
@@ -396,28 +396,39 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         case PLUGIN_uade:
             addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5.c_str());
             break;
-        case PLUGIN_vgmplay_legacy:
-            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-            addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-            addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
-            addInfo(tableInfo, &row, "Release date", SoundManager::getInstance().m_Info1->date.c_str());
-            addInfo(tableInfo, &row, "Dumper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper));
-            addInfo(tableInfo, &row, "Chips used",
-                    QString(SoundManager::getInstance().m_Info1->chips.c_str()).left(
-                        QString(SoundManager::getInstance().m_Info1->chips.c_str()).length() - 2));
-            addInfo(tableInfo, &row, "Version",
-                    QString::number(SoundManager::getInstance().m_Info1->version >> 8) + "." +
-                    QString::number(SoundManager::getInstance().m_Info1->version & 0xFF));
-            addInfo(tableInfo, &row, "Gain", QString::number(SoundManager::getInstance().m_Info1->gain, 'f', 2));
-            addInfo(tableInfo, &row, "Length", SoundManager::getInstance().m_Info1->loopInfo.c_str());
-            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+        case PLUGIN_libvgm:
+            for (const string &field: *SoundManager::getInstance().m_Info1->allowedFields) {
+                if (field == "TITLE")
+                    addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+                if (field == "ARTIST")
+                    addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+                if (field == "GAME")
+                    addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+                if (field == "SYSTEM")
+                    addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+                if (field == "EMULATOR")
+                    addInfo(tableInfo, &row, "Emulator",
+                            fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->emulator));
+                if (field == "CHIPS")
+                    addInfo(tableInfo, &row, "Chips", SoundManager::getInstance().m_Info1->chips.c_str());
+                if (field == "DATE")
+                    addInfo(tableInfo, &row, "Date", SoundManager::getInstance().m_Info1->date.c_str());
+                if (field == "GENRE")
+                    addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->genre));
+                if (field == "ENCODED_BY")
+                    addInfo(tableInfo, &row, "Dumper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper));
+                if (field == "COPYRIGHT" || field == "PUBLISHER")
+                    addInfo(tableInfo, &row, "Copyright",
+                            fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+                if (field == "COMMENT")
+                    addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            }
             break;
         case PLUGIN_vio2sf:
             addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
             addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->genre));
             addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
             addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
@@ -454,7 +465,9 @@ void FileInfoParser::addInfo(QTableWidget *tableInfo, int *row, const QString &l
 }
 
 void FileInfoParser::addMultilineInfo(QTableWidget *tableInfo, int *row, const QString &label, const string &value) {
-    if (!value.empty()) {
+    if (value.empty()) {
+        addInfo(tableInfo, row, label, "");
+    } else {
         QString text = fromUtf8OrLatin1(value);
         auto *plainText = new QPlainTextEdit(text);
         plainText->setReadOnly(true);

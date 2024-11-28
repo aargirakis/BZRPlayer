@@ -457,7 +457,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
             sidModel = "Unknown";
     }
 
-    info->sidChip = std::format("{} (x{})", sidModel, s->sidChips());
+    info->chips = std::format("{} (x{})", sidModel, s->sidChips());
 
     switch (s->compatibility())
     {

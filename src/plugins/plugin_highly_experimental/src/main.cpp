@@ -394,7 +394,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
     if (keyExists(plugin->m_tags, "genre"))
     {
-        plugin->info->system = plugin->m_tags["genre"];
+        plugin->info->genre = plugin->m_tags["genre"];
     }
     if (keyExists(plugin->m_tags, "comment"))
     {
