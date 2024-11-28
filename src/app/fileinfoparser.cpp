@@ -90,7 +90,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
         addInfo(tableInfo, &row, "MD5 Old", SoundManager::getInstance().m_Info1->md5Old.c_str());
     }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_vgmplay_legacy)
+    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libvgm)
     {
         addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
         addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));

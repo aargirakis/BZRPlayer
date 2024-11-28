@@ -167,10 +167,9 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_zxtune_LIB, 99999);
     }
-
-    if (PLUGIN_vgmplay_legacy_LIB != "")
+    if (PLUGIN_libvgm_LIB != "")
     {
-        loadPlugin(PLUGIN_vgmplay_legacy_LIB, 99999);
+        loadPlugin(PLUGIN_libvgm_LIB, 99999);
     }
     if (PLUGIN_libkss_LIB != "")
     {
