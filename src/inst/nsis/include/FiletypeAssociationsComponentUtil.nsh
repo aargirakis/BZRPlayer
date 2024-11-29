@@ -12,6 +12,17 @@ _____________________________________________________________________________
       !insertmacro addSectionContent .ahx
     SectionEnd
   SectionGroupEnd
+  SectionGroup "Aegis SONIX audio"
+    Section ".smus"
+      !insertmacro addSectionContent .smus
+    SectionEnd
+    Section ".snx"
+      !insertmacro addSectionContent .snx
+    SectionEnd
+    Section ".tiny"
+      !insertmacro addSectionContent .tiny
+    SectionEnd
+  SectionGroupEnd
   SectionGroup "Amiga SoundTracker audio"
     Section ".669"
       !insertmacro addSectionContent .669

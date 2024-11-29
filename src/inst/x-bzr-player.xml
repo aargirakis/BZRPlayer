@@ -666,6 +666,25 @@
         <glob pattern="*.snd"/>
         <glob pattern="*.sndh"/>
     </mime-type>
+    <mime-type type="audio/x-sonix">
+        <comment>Aegis SONIX audio</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="FORM" offset="0">
+                <match type="string" value="SMUSSHDR" offset="8">
+                    <match type="string" value="NAME" offset="24">
+                        <match type="string" value="SNX1" offset="34:58"/>
+                    </match>
+                </match>
+            </match>
+        </magic>
+        <glob pattern="smus.*"/>
+        <glob pattern="snx.*"/>
+        <glob pattern="tiny.*"/>
+        <glob pattern="*.smus"/>
+        <glob pattern="*.snx"/>
+        <glob pattern="*.tiny"/>
+    </mime-type>
     <mime-type type="audio/x-soundmon">
         <comment>SoundMon audio</comment>
         <generic-icon name="audio-x-generic"/>
