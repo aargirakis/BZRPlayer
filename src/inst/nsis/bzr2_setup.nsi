@@ -6,7 +6,6 @@
 #TODO add comments
 #TODO try to do not hardcode addSectionContent macro inside addFiletypeAssociationsComponentContent (but add only to
 #those really checked
-#TODO MUI_PAGE_FINISH runs bzr2 as admin?
 #TODO cleanup all garbage files when quit running bzr2 or when quit from uninstaller (also in silent mode)
 
 #TODO add "isPortable" checkbox/flag that when checked don't touch the registry but add ".portable" file to $INSTDIR\user with version string
@@ -38,7 +37,7 @@ CRCCheck force
 !define NAME_SHORT "BZR2"
 !define NAME_UNVERSIONED "BZR Player"
 !define NAME "${NAME_UNVERSIONED} 2"
-!define WINDOW_CLASS_NAME "Qt5152QWindowIcon"
+!define WINDOW_CLASS_NAME "Qt51516QWindowIcon"
 !define WINDOW_PROGRAM_NAME "BZRPlayer"
 !define EXE_FILENAME "BZRPlayer.exe"
 !define VERSION_FILENAME "bzr2_version_latest"
@@ -677,7 +676,7 @@ Function .onGUIEnd
   delete "$PLUGINSDIR"
 
   ${if} $isRunButtonChecked == 1
-    Exec '"$INSTDIR\${EXE_FILENAME}"'
+    Exec '"$WINDIR\explorer.exe" "$INSTDIR\${EXE_FILENAME}"'
 
     loop:
     FindWindow $0 "${WINDOW_CLASS_NAME}" "" "${WINDOW_PROGRAM_NAME}"
