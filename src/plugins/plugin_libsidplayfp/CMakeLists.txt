@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libsidplayfp")
-set(VERSION "2.7.1")
+set(VERSION "2.12.0")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -19,7 +19,7 @@ set(LIB1_VERSION "${VERSION}")
 set(LIB1_NAME_VERSIONED "${LIB1_NAME}-${LIB1_VERSION}")
 set(LIB1_FILENAME "${LIB1_NAME_VERSIONED}.tar.gz")
 set(LIB1_URL "https://github.com/${LIB1_NAME}/${LIB1_NAME}/releases/download/v${LIB1_VERSION}/${LIB1_FILENAME}")
-set(LIB1_SHA_256_HASH "416df16c09b0ab058c21adc1792abfac8524a27b0dac0034afc040057f6346ba")
+set(LIB1_SHA_256_HASH "bc4f4fa203dcf0736fe48c23dce9aa0db825370e5941e7595e4851efe6937cdc")
 download_patch_and_add(
         ${LIB1_NAME_VERSIONED} ${LIB1_FILENAME} ${LIB1_URL} ${LIB1_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB1_NAME}
@@ -27,8 +27,8 @@ download_patch_and_add(
 
 set(EXTERNAL_SOURCE_DIR_1 "${EXTERNAL_SOURCE_DIR}")
 
-add_compile_definitions(HAVE_CONFIG_H=1)
-add_compile_definitions(HAVE_CXX17=1)
+add_compile_definitions(HAVE_CONFIG_H)
+add_compile_definitions(HAVE_CXX14)
 set(PACKAGE ${GIT_REPO_NAME})
 set(VERSION ${LIB1_VERSION})
 set(PACKAGE_URL "https://github.com/${GIT_REPO_NAME}/${GIT_REPO_NAME}/")
@@ -63,13 +63,13 @@ configure_file(
 )
 
 set(LIB2_NAME "sidid")
-set(LIB2_VERSION "eba761121a3f1239d7cc16b59a64140dc7d483ff")
+set(LIB2_VERSION "56ba876ad30cbdd4ea7e330df7f9bb19ec899ed4")
 string(SUBSTRING ${LIB2_VERSION} 0 12 LIB2_VERSION_SHORT)
 set(LIB2_NAME_VERSIONED "${LIB2_NAME}-${LIB2_VERSION_SHORT}")
 set(LIB2_FILENAME "${LIB2_NAME}-${LIB2_VERSION}.zip")
 set(LIB2_FILENAME_URL "${LIB2_VERSION}.zip")
 set(LIB2_URL "https://github.com/cadaver/${LIB2_NAME}/archive/${LIB2_FILENAME_URL}")
-set(LIB2_SHA_256_HASH "2ae065ef4c58c8b12210fd6d9e8543ebdc272ccd9996ab963ef3b464bc4b0ddc")
+set(LIB2_SHA_256_HASH "c2ede25e575623dd55f3ab8da771127e7e51f784db604915ef80ea049c9cf710")
 set(LIB2_UNPACKED_DIR "${LIB2_NAME}-${LIB2_VERSION}")
 download_patch_and_add(
         ${LIB2_NAME_VERSIONED} ${LIB2_FILENAME} ${LIB2_URL} ${LIB2_SHA_256_HASH} true ${LIB2_UNPACKED_DIR}
@@ -111,6 +111,10 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_1}/src/utils/STILview/*.cpp
         ${EXTERNAL_SOURCE_DIR_2}/sidid.c
         src/main.cpp
+)
+
+list(REMOVE_ITEM SOURCES
+        ${EXTERNAL_SOURCE_DIR_1}/src/builders/residfp-builder/residfp/resample/test.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
