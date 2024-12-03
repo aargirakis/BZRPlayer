@@ -16,9 +16,9 @@ coded pretty much from scratch.
 
 **[MSYS2](https://www.msys2.org/)** with following packages is required:
 
-`make` `mingw-w64-ucrt-x86_64-cmake` `mingw-w64-ucrt-x86_64-qt5-base` `mingw-w64-ucrt-x86_64-qt5-svg`
-`mingw-w64-ucrt-x86_64-SDL2` `mingw-w64-ucrt-x86_64-toolchain` `openssl-devel` `patch`
-#TODO switch to ucrt64?
+`make` `mingw-w64-clang-x86_64-cmake` `mingw-w64-clang-x86_64-qt5-base` `mingw-w64-clang-x86_64-qt5-svg`
+`mingw-w64-clang-x86_64-SDL2` `mingw-w64-clang-x86_64-toolchain` `openssl-devel` `patch`
+
 From the MSYS2 **mingw64.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
 required), then start the configuration process executing:\
 `cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw64 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
