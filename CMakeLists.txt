@@ -19,6 +19,8 @@ include(${CMAKE_SOURCE_DIR}/utils.cmake)
 include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)
 
 add_compile_options(-w) #TODO remove
+#add_compile_options(-fsanitize=address) #TODO
+#add_link_options(-fsanitize=address)    #TODO
 
 set(SUBDIRECTORIES_BY_MODULES
         app "src/app"
