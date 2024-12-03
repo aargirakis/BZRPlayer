@@ -15,7 +15,7 @@ BUILD_TYPE_LOWCASE="$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')"
 BUILD_DIR="$PROJECT_DIR/cmake-build-$BUILD_TYPE_LOWCASE"
 
 if [ -z "$(docker images -q "$IMAGE_NAME" 2>/dev/null)" ]; then
-  docker build -t "$IMAGE_NAME" .
+  docker build --no-cache -t "$IMAGE_NAME" .
 fi
 
 if [ "$(docker ps -a -q -f name="$CONTAINER_NAME")" ]; then
