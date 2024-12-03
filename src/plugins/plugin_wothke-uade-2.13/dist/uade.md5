@@ -4011,7 +4011,7 @@ e8dc6e6c7836405836c831ccb9105c89=01:25.178 00:04.846 01:06.728 00:53.949
  ; Delitracker Custom\Ben Daglish\terramex.cus
 22a4c36865ab0cfea88c757e833e4ffc=03:13.993
  ; Delitracker Custom\Bill Williams\king of chicago.cus
-2aea3361d45a254de1ff3a8883d59b34=00:59 00:08 00:03 00:05 00:06 00:08 00:09 00:06 00:06 00:06 00:14 00:14 00:19 00:14 00:09 00:10 00:13 00:16 00:06 00:07 00:30 01:04 01:44 00:07 00:46 01:04 01:23 00:28 01:37 00:12 00:02 01:25 00:26 01:36 00:15 01:51 01:51
+2aea3361d45a254de1ff3a8883d59b34=00:59.374 00:06.05 00:11.081 00:09.39 00:03.51 00:05.112 00:06.05 00:14.81 00:10.183 00:10.525 00:10.213 00:10.4 00:14.52 00:10.23 00:06.37 00:07.68 00:07.183 00:13.405 00:06.26 00:05.53 00:28.485 01:41.41 01:42.88 00:45.46 00:45.8 01:21.463 01:21.452 01:51.92 01:35.316 00:11.025 00:11.024 01:21.775 01:11.163 01:34.915 01:34.925 01:51.90 01:51.25
  ; Delitracker Custom\Bill Williams\knights of the crystallion.cus
 74ee7dfdd537416220bcb9160f3dca5e=00:05 00:20 01:44 00:25 00:19 00:11 00:12 00:18 00:11 00:14 00:12 00:14 00:09 00:01 00:01 00:01 00:01 00:01 00:01 00:01 00:01 00:01 00:01
  ; Delitracker Custom\Bill Williams\mind walker.cus
@@ -8043,4 +8043,234 @@ a94e52f94ca5497738bf7e73d2bc41e5=02:41.818 02:41.818
  ; menu.pru2
 2b81a5dd01b613429fd47cb7d5641403=01:27.88 01:27.88 01:27.88
  ; Xenon II title.dw
-0502dccad42a3c911b41fe7c00385a4a=03:33.53 
+0502dccad42a3c911b41fe7c00385a4a=03:33.53
+ ; Audio Sculpture\Darren Ithell\daisy.adsc
+9fede43eef0a0731b99473b18b897fa4=06:05.620
+ ; Audio Sculpture\- unknown\popelich-brutalo.adsc
+ca2387736c7604f2ac98d69a9d08b1df=00:25.599
+ ; Audio Sculpture\- unknown\turtle-ready.adsc
+4e0d5adc22c7e097be3cbdef43f5925f=00:51.2
+ ; Audio Sculpture\- unknown\turtle-title.adsc
+aeb081295f081d3790918e520b353d91=04:29.760
+ ; Digital Sound Studio\- unknown\doxtro 3.dss
+2caec4f20b2dc0dfb3ae19da2c009f6c=00:54.86
+ ; Digital Sound Studio\- unknown\floor13 music.dss
+be890d47e62aa9d7b7619a29c8a84e6b=02:03.01
+ ; Digital Sound Studio\- unknown\megabass.dss
+c3057e084293d20b62c52a04f8841883=04:22.04
+ ; Digital Sound Studio\- unknown\noname.dss
+cdd96b462f4b45cfd6a90cb270321047=02:18.17
+ ; Digital Sound Studio\- unknown\noname2.dss
+11ed383b520122fafd0fc21bcc0e1c84=04:18.65
+ ; Digital Sound Studio\- unknown\noname3.dss
+faf807de0259ad6d2ea4a9e6a36089af=03:04.40
+ ; Digital Sound Studio\- unknown\tracker demo.dss
+4c9c794a699a32dacd7bf118ebe23fe6=03:31.02
+ ; Digital Sound Studio\- unknown\zrigash.dss
+d43f331b9f91018ec4f3b316f7540e33=05:52.18
+ ; Digital Sound Studio\- unknown\zriinj.dss
+d65b8f5b54385ea66cd8ac771726addc=06:23.88
+ ; Digital Sound Studio\- unknown\zrimay.dss
+95c7126ed5b5218e79e99ed43b541593=03:58.04
+ ; Digital Sound Studio\- unknown\zritrs.dss
+7cf2a1808f0b1c9c5522ed02789125e2=06:31.95
+ ; Digital Sound Studio\ADT\coop-The Conqueror\color.dss
+1638caff4b2994a9652ae555399c48d7=01:22.68
+ ; Digital Sound Studio\Baby\accapela.dss
+8dad6c0fabe8a369a14a8feb6691c727=01:06.02
+ ; Digital Sound Studio\Baby\africa.dss
+b029356e0a190159c7f01131b8b20297=02:00.73
+ ; Digital Sound Studio\Baby\caraibes.dss
+c052aea5c038fe32261043edbda2a481=02:38.68
+ ; Digital Sound Studio\Baby\digging.dss
+7376ba4237635f43a1e4c353e86ffb95=02:07.22
+ ; Digital Sound Studio\Baby\funkey board.dss
+1a5ce4f07d8eafca62f67397f9e22508=02:37.31
+ ; Digital Sound Studio\Baby\funky.dss
+2858f18297e0cb3af367ef0b0e6ab45a=02:16.72
+ ; Digital Sound Studio\Baby\guitar time.dss
+456e8e025423b172e655e223d1ea3f83=02:19.25
+ ; Digital Sound Studio\Baby\something strange.dss
+562f0494b10159c55b51842863b4392b=01:04.86
+ ; Digital Sound Studio\Liquid Jesus\binary reality.dss
+7343e38909add206078c1d4261f0f3b3=06:12.97
+ ; Digital Sound Studio\Paula\chicken delivery.dss
+311f50180a4232cb538c55865013b9f4=02:20.92
+ ; Digital Sound Studio\Paula\chowder chickens.dss
+990cbc2e276156646b81e99b4506a28c=01.11.79
+ ; Digital Sound Studio\Paula\funkyclarinet.dss
+500b65081f64c2d223e4cc34e4276f53=01:39.97
+ ; Digital Sound Studio\Paula\googleplex.dss
+ccb1cbab6da491824053dc5dcaef6f61=01:25.52
+ ; Digital Sound Studio\Paula\moreopium!!.dss
+8f3b14428013e61b479669f42fdc1348=04:19.38
+ ; Digital Sound Studio\Paula\trouble ride.dss
+3bc2dd6252d2dd29e4f662ff806da02c=02.20:91
+ ; Digital Sound Studio\Paula\yo! look at this.dss
+7d353ac9ac03af2ccdad6ce4ce94b3cd=01:29.23
+ ; Digital Sound Studio\Tipsy\hetup.dss
+eef6e31e1371067ccb51e278f84b325b=04:00.91
+ ; Digital Mugician\- unknown\eat my house.dmu
+e5d38e62f4d3f5dfd569663ae64c6fe4=01:30.36 00:03.92
+ ; Digital Mugician\- unknown\editorsong.dmu
+47155de33e6fcdcfda9b46074c47cfdb=02:30.05
+ ; Digital Mugician\- unknown\flight.dmu
+b607dbdf82d57e38906e1fa7b2696b26=00:44.87
+ ; Digital Mugician\- unknown\flowershop.dmu
+1d402be94c75a2063484eebf72600bbe=00:30.79
+ ; Digital Mugician\- unknown\fresh shit.dmu
+a371a017df2df6550e4c26cd06b5439b=01:01.55
+ ; Digital Mugician\- unknown\happyhour.dmu
+8ee40b65ddfb491327dfe77c9c49abd1=01:16.86
+ ; Digital Mugician\- unknown\interest.dmu
+61724aca0e3bffbdc2f68fcb2365ad14=00:09.05
+ ; Digital Mugician\- unknown\jetset2.dmu
+bd0d54e21a699e9dba9e6b4b32426b2e=00:10.31
+ ; Digital Mugician\- unknown\langoliers.dmu
+46bfbaa5fdd445771d0f8d485a03750b=01:12.09
+ ; Digital Mugician\- unknown\loadermusik.dmu
+e436178268dd4eb2c025bc988657f56d=02:52.89 00:11.61
+ ; Digital Mugician\- unknown\magneticfieldsii.dmu
+eff0782d3bd31ffe957b8b9a890e3c55=01:50.17
+ ; Digital Mugician\- unknown\magneticfieldsiv.dmu
+afec8330f4bcf702da9c38cdb50184f7=01:25.05
+ ; Digital Mugician\- unknown\meditating.dmu
+248719fac923c7ac034a694fc3d1d770=01:11.75
+ ; Digital Mugician\- unknown\odetometin.dmu
+e52d9697dfeef19cf173eecbc01ff96d=00:34.63
+ ; Digital Mugician\- unknown\shadow.dmu
+6fc0e46f87eec1f34514f039423c558a=00:46.15
+ ; Digital Mugician\- unknown\small demo.dmu
+6e5358f9690ba064bfed3c2bf724de94=01:24.55
+ ; Digital Mugician\- unknown\songtiment.dmu
+4c954f287a39155d743b860b22fe6e9c=00:30.79
+ ; Digital Mugician\- unknown\statistics.dmu
+bca445de95152a347271ee1baaadbfb9=00:30.80
+ ; Digital Mugician\- unknown\swingingonit.dmu
+b9c29752e65fc5974882ffebd0485288=00:09.03
+ ; Digital Mugician\- unknown\treat.dmu
+619164ed6edade2d3d0d5af4cc9a3625=00:09.04
+ ; Digital Mugician\- unknown\trickortreat.dmu
+d7c061b5ca4245244a42656aaa4e835c=00:09.04
+ ; Digital Mugician\Andrew Drake\agravain.dmu
+2179360e004179a3f3cb4de4960d324e=01:42.48 00:46.15 00:06.42 00:13.49
+ ; Digital Mugician\Lynxx\panic & treacl.dmu
+cc079399b2db6cfe9e937bb365567700=03:45.45
+ ; Digital Mugician\Noogman\001.dmu
+73d521dce4fc0229149fbdd9b5322702=01:32.24
+ ; Digital Mugician\Noogman\002.dmu
+74024ca8e879ca4716f659ef7d730159=04:21.21
+ ; Digital Mugician\Noogman\003.dmu
+a62a2a4197701ac1ce6d5b0df33d12d9=05:17.54
+ ; Digital Mugician\Noogman\004.dmu
+e044c014d69cea119813c7cbddb76c1c=02:20.88
+ ; Digital Mugician\Noogman\005.dmu
+f23ff7068662eb398cdf069346e489a3=03:35.12
+ ; Digital Mugician\Noogman\006.dmu
+3ad3b127b886a85b0b14ba1fb6632f7c=02:01.75
+ ; Digital Mugician\Noogman\007.dmu
+876e1ff19d644931ef7983d48e2a23c9=00:30.80
+ ; Digital Mugician\Noogman\008.dmu
+d9be60042cd968c6bc47ed46c798e946=01:01.53
+ ; Digital Mugician\Noogman\009.dmu
+5fecd350907977ab37bb23c75a667c43=03:04.41
+ ; Digital Mugician\Noogman\010.dmu
+759cf4f392e1af3a701af4bb022ac258=03:45.46
+ ; Digital Mugician\Ramon\ferry teel.dmu
+019f9e826fea4fca0cd59aa2497101ae=01:01.53
+ ; Digital Mugician\Ramon\guitar fever.dmu
+8981150b126fdae1e75ffb8b4f2f26b2=1:48.90
+ ; Digital Mugician\Ramon\hoi-level-1.dmu
+3c310c125ee24c0cf359c1f7550393e0=02:37.54 00:02.79 00:03.01
+ ; Digital Mugician\Ramon\hoi-level-2.dmu
+71be51d31fa888835f38b7ab0fc66dfa=03:53.07 00:02.81 00:03.19 01:16.88
+ ; Digital Mugician\Ramon\hoi-level-3.dmu
+6a97e03284cbf7cd72aa8e984d56cde8=03:28.46 00:03.69 00:03.97 01:21.99
+ ; Digital Mugician\Ramon\hoi-level-4.dmu
+999aefdba33ccd9b00379fc6bb67f493=03:35.14 00:02.71 00:04.07
+ ; Digital Mugician\Ramon\hoi-level-5.dmu
+97e4a038ca58e826d49d65fbd26b3ba9=02:07.33 00:02.99 00:03.23 00:06.80
+ ; Digital Mugician\Ramon\hoi-title.dmu
+d1ebfaa7e580dfd1b4c1ce454c2a4ced=03:57.89
+ ; Digital Mugician\Ramon\moonchild.dmu
+f610f2c21be557eb0c539f346d978bc9=03:27.50 03:27.45
+ ; Digital Mugician\Ramon\mugician-demo.dmu
+a14980df5e40d1ac13a0d4add633f69e=02:30.10
+ ; Digital Mugician\Ramon\mugician-intro.dmu
+aa601e18171b021e340923df6eda8f15=01:39.97
+ ; Digital Mugician\Ramon\peanut power game.dmu
+a8568c818a9a4ea58913740bc6a4fd43=00:35.93 00:01.53 00:04.83 00:19.28 00:04.37
+ ; Digital Mugician\Rhino\a little bit of galway.dmu
+c9d3ee7acb8fd1358a40dc3ed6865350=01:01.55
+ ; Digital Mugician\Rhino\borobodur end.dmu
+53d609b0ca7de6c7b26aa1a8cdd93f31=02:33.79 00:09.65
+ ; Digital Mugician\Rhino\borobodur glory.dmu
+af18dd4d642e5adc1de1dab91218be4b=00:38.51
+ ; Digital Mugician\Rhino\borobodur ingame1.dmu
+5b8a4e14464b977a52131a8835416fb3=02:41.53 00:28.86 00:19.28 00:15.46 00:04.05 00:00
+ ; Digital Mugician\Rhino\borobodur ingame2.dmu
+7e61d86c9d05d6d1b89dd180d953c791=03:21.80 00:03.27 01:04.09
+ ; Digital Mugician\Rhino\borobodur ingame3.dmu
+a72104c5bdcb718c827e9e2806af2f2b=03:08.26 01:03.44 00:02.85 00:10.33
+ ; Digital Mugician\Rhino\borobodur ingame4.dmu
+c134cd48fd624c37aad1e21cc5dcc2e8=00:05.15 02:46.48 00:03.94 00:03.92
+ ; Digital Mugician\Rhino\borobodur madprofessor.dmu
+ba5b68a39d3336645f459d742602f8f4=00:46.17 00:15.46 00:07.15
+ ; Digital Mugician\Rhino\borobodur rustig.dmu
+cc18c6e3099f8506b643312d4dfa0972=01:29.73
+ ; Digital Mugician\Rhino\bump'n'burn-results.dmu
+c5819d01a3a8049021d3c6ea35bf4768=00:46.20 00:53.86
+ ; Digital Mugician\Rhino\bump'n'burn-title.dmu
+7993469d5fe14171c1ef0132cb47dbe8=03:05.86 00:43.28
+ ; Digital Mugician\Rhino\bump'n'burn-walk-o-death.dmu
+dc4cb4c31ff0d61f30ac009d7d30c117=00:44.92 00:44.90 01:02.83 00:53.85 00:35.29 01:02.83 00:46.17 01:10.47
+ ; Digital Mugician\Rhino\fastchords.dmu
+0c5b4d15c1212144947b4799afddd94f=00:30.84 00:10.31
+ ; Digital Mugician\Rhino\filtofiel.dmu
+02837a9972263223b9aa01a19fb9d367=01:42.53
+ ; Digital Mugician\Rhino\maximus-mouse-level-1.dmu
+16c36a6d725b27848c86f1d6769217fa=00:38.57 00:05.01 00:05.51
+ ; Digital Mugician\Rhino\maximus-mouse-level-2.dmu
+f241fb132161dab17b5ca9f939d5d432=01:01.55 00:03.87 00:04.42
+ ; Digital Mugician\Rhino\maximus-mouse-level-3.dmu
+9657ee4424fba309b25b6c24d89d8da5=01:36.18 00:03.09 00:05.15 00:04.53
+ ; Digital Mugician\Rhino\maximustitle.dmu
+3ac3807f8157fe79accc156caee2b330=00:38.53 03:24.88 00:44.88 00:07.75
+ ; Digital Mugician\Rhino\reinelein.dmu
+ce6d259249524695eab8183808837923=01:43.55 00:11.61
+ ; Digital Mugician\Rhino\seashore.dmu
+4b594b8cfff6950e00dd382c5814a00f=00:19.18
+ ; Digital Mugician\Rhino\subsongs-part-2.dmu
+acc6e545e33076083432ca984d8b91e8=01:09.20 02:02.97 00:05.84 01:31.92 00:20.55 01:09.20
+ ; Digital Mugician\Rhino\wintercamp-level 1.dmu
+056da58885c9928404c26c0a6f187513=01:01.55 00:03.87 00:04.44 00:03.10
+ ; Digital Mugician\Rhino\wintercamp-level 2.dmu
+0799210d9fb8cba0accda9ea18185caa=00:38.53 00:05.03 00:05.51
+ ; Digital Mugician\Rhino\wintercamp-level 3.dmu
+8bee8634a418eae047fec4029572282e=00:57.14 00:04.41 00:03.97
+ ; Digital Mugician\Rhino\wintercamp-level 4 & 6.dmu
+ce7e40c613f2a86f5b0ea9161c2058b0=01:01.53 00:03.97 00:04.51 00:03.10 01:11.75 00:44.90
+ ; Digital Mugician\Rhino\wintercamp-level 5.dmu
+4dcfbeba5869c1548080eb4939c9f74f=00:03.73 00:03.94
+ ; Digital Mugician\Rhino\wintercamp-level 7.dmu
+5a5d29933e7b9e3c056357f44c5db00c=01:36.12 00:03.11 00:05.17 00:04.53
+ ; Digital Mugician\Rhino\wintercamp-level 8.dmu
+9d83f42c217fac9acbedeebf4bd3df2a=01:36.12 00:03.11 00:05.17 00:04.53 01:11.75 00:44.90
+ ; Digital Mugician\Rhino\wintercamp-title.dmu
+15aeba1d1d1b5f079da3243f170e917e=00:38.53 00:44.90 00:07.78
+ ; Digital Mugician\Superted\believe.dmu
+990896f5c278f2d1cd0a886a5e7a14bf=01:24.60 00:10.33
+ ; Digital Mugician\Yodelking\dreaming.dmu
+41ba95589c112cc80eae38aba307f5f5=00:07.80
+ ; Digital Mugician\Yodelking\only one way.dmu
+3e0bb4774f2924499e9806bec6466e01=00:15.51
+ ; Digital Mugician 2\- unknown\7voicedemo.mug
+818a3aa1e0d70ba0873fdd684b031c9b=01:10.08
+ ; Digital Mugician 2\- unknown\snickle.mug
+c0fc923cc2bbac4f560ce2be56b08d8b=00:27.76
+ ; Digital Mugician 2\Ramon\cockwise.mug
+5370b9f05edb93fc5d17f8236dc0603f=01:40.88
+ ; Digital Mugician 2\Ramon\hoi-intro.mug
+508e6528decbf4e000f2e46abcffeca0=03:27.22
+ ; Digital Mugician 2\Rhino\borobodur title.mug
+4ec32fe51f5ec09045a43cc2c6857a27=03:42.06 
