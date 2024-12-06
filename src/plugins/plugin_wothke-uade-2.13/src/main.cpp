@@ -87,9 +87,9 @@ public:
     int no_filter;
     int silence_timeout;
     bool silence_timeout_enabled;
-    bool songlengths_enabled;
+    bool uade_songlengths_enabled;
     int currentSubsong;
-    string songlengthpath;
+    string uade_songlengthspath;
     string basefilename;
 };
 
@@ -298,7 +298,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     gp->no_filter = 1;
     gp->silence_timeout = 5;
     gp->silence_timeout_enabled = true;
-    gp->songlengths_enabled = true;
+    gp->uade_songlengths_enabled = true;
     if (!useDefaults)
     {
         while (getline(ifs, line))
@@ -352,19 +352,19 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                         gp->silence_timeout_enabled = false;
                     }
                 }
-                else if (word.compare("songlengths_path") == 0)
+                else if (word.compare("uade_songlengths_path") == 0)
                 {
-                    gp->songlengthpath = value;
+                    gp->uade_songlengthspath = value;
                 }
-                else if (word.compare("songlengths_enabled") == 0)
+                else if (word.compare("uade_songlengths_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        gp->songlengths_enabled = true;
+                        gp->uade_songlengths_enabled = true;
                     }
                     else
                     {
-                        gp->songlengths_enabled = false;
+                        gp->uade_songlengths_enabled = false;
                     }
                 }
             }
@@ -372,9 +372,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         ifs.close();
     }
 
-    if (gp->songlengthpath.empty() || gp->songlengthpath == "/uade.md5")
+    if (gp->uade_songlengthspath.empty() || gp->uade_songlengthspath == "/uade.md5")
     {
-        gp->songlengthpath = gp->info->applicationPath + UADE_DATA_PATH + "/uade.md5";
+        gp->uade_songlengthspath = gp->info->applicationPath + UADE_DATA_PATH + "/uade.md5";
     }
 
     uade_state* state;
@@ -572,12 +572,12 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
         }
 
         int songLength;
-        if (gp->songlengths_enabled)
+        if (gp->uade_songlengths_enabled)
         {
 #ifdef UNICODEHACK
-            songLength = getLengthFromDatabase(TEMPFILENAME,sub,gp->songlengthpath.c_str());
+            songLength = getLengthFromDatabase(TEMPFILENAME,sub,gp->uade_songlengthspath.c_str());
 #else
-            songLength = getLengthFromDatabase(gp->info->filename.c_str(), sub, gp->songlengthpath.c_str());
+            songLength = getLengthFromDatabase(gp->info->filename.c_str(), sub, gp->uade_songlengthspath.c_str());
 #endif
         }
         else
@@ -696,7 +696,7 @@ unsigned int getLengthFromDatabase(const char* sidfilename, int subsong, const c
     if (ifs.fail())
     {
         //The file could not be opened
-        cout << "Couldn't open sid lenghts file: " << filename << "\n";
+        cout << "Couldn't open UADE songlengths file: " << filename << "\n";
         return 0;
     }
 

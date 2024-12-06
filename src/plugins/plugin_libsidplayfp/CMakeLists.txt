@@ -90,10 +90,22 @@ download_patch_and_add(
 
 set(EXTERNAL_SOURCE_DIR_3 "${EXTERNAL_SOURCE_DIR}")
 
-set(FILENAME "Songlengths.md5")
-set(FILE_URL "https://www.hvsc.c64.org/download/C64Music/DOCUMENTS/${FILENAME}")
-set(DESTINATION_PATH "${OUTPUT_DIR}/user/plugin/sid")
-download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH} true "")
+set(HVSC_SONGLENGTHS_FILENAME "Songlengths.md5")
+set(PLUGIN_DATA_DIR "${DATA_PLUGINS_DIR}/sid")
+set(PLUGIN_USER_DIR "${USER_PLUGINS_DIR}/sid")
+set(HVSC_SONGLENGTHS_DATA_PATH "${PLUGIN_DATA_DIR}/${HVSC_SONGLENGTHS_FILENAME}")
+set(HVSC_SONGLENGTHS_USER_PATH "${PLUGIN_USER_DIR}/${HVSC_SONGLENGTHS_FILENAME}")
+set(PLUGIN_${NAME}_USER_DIR "${PLUGIN_USER_DIR}" PARENT_SCOPE)
+set(PLUGIN_${NAME}_HVSC_SONGLENGTHS_DATA_PATH "${HVSC_SONGLENGTHS_DATA_PATH}" PARENT_SCOPE)
+set(PLUGIN_${NAME}_HVSC_SONGLENGTHS_USER_PATH "${HVSC_SONGLENGTHS_USER_PATH}" PARENT_SCOPE)
+add_compile_definitions(PLUGIN_DATA_DIR="${PLUGIN_DATA_DIR}")
+add_compile_definitions(HVSC_SONGLENGTHS_DATA_PATH="${HVSC_SONGLENGTHS_DATA_PATH}")
+add_compile_definitions(HVSC_SONGLENGTHS_USER_PATH="${HVSC_SONGLENGTHS_USER_PATH}")
+
+set(HVSC_SONGLENGTHS_URL "https://www.hvsc.c64.org/download/C64Music/DOCUMENTS/${HVSC_SONGLENGTHS_FILENAME}")
+set(PLUGIN_${NAME}_HVSC_SONGLENGTHS_URL "${HVSC_SONGLENGTHS_URL}" PARENT_SCOPE)
+set(DESTINATION_PATH "${OUTPUT_DIR}${PLUGIN_DATA_DIR}")
+download_to(${HVSC_SONGLENGTHS_FILENAME} ${HVSC_SONGLENGTHS_URL} "" ${DESTINATION_PATH} true "")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_1}/src/*.cpp
@@ -142,27 +154,36 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
 )
 
+set(SIDID_CFG_DATA_PATH "${DATA_PLUGINS_DIR}/sid/sidid.cfg")
+set(BASIC_BIN_DATA_PATH "${DATA_PLUGINS_DIR}/sid/basic.bin")
+set(CHARACTERS_BIN_DATA_PATH "${DATA_PLUGINS_DIR}/sid/characters.bin")
+set(KERNAL_BIN_DATA_PATH "${DATA_PLUGINS_DIR}/sid/kernal.bin")
+add_compile_definitions(SIDID_CFG_DATA_PATH="${SIDID_CFG_DATA_PATH}")
+add_compile_definitions(BASIC_BIN_DATA_PATH="${BASIC_BIN_DATA_PATH}")
+add_compile_definitions(CHARACTERS_BIN_DATA_PATH="${CHARACTERS_BIN_DATA_PATH}")
+add_compile_definitions(KERNAL_BIN_DATA_PATH="${KERNAL_BIN_DATA_PATH}")
+
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_2}/sidid.cfg
-        ${OUTPUT_DIR}/data/plugin/sid/sidid.cfg
+        ${OUTPUT_DIR}${SIDID_CFG_DATA_PATH}
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_3}/data/C64/basic-901226-01.bin
-        ${OUTPUT_DIR}/data/plugin/sid/basic.bin
+        ${OUTPUT_DIR}${BASIC_BIN_DATA_PATH}
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_3}/data/C64/chargen-901225-01.bin
-        ${OUTPUT_DIR}/data/plugin/sid/characters.bin
+        ${OUTPUT_DIR}${CHARACTERS_BIN_DATA_PATH}
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_3}/data/C64/kernal-901227-03.bin
-        ${OUTPUT_DIR}/data/plugin/sid/kernal.bin
+        ${OUTPUT_DIR}${KERNAL_BIN_DATA_PATH}
 
         VERBATIM
 )
