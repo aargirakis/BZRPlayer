@@ -228,17 +228,18 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderRasterbarsOpacity->setValue(mainWindow->getEffect()->getRasterbarsOpacity());
     forceUpdateToSliders();
 
+    if (PLUGIN_libsidplayfp_DLL != "")
+    {
+        ui->comboBoxHvscSonglengthsUpdateFrequency->installEventFilter(this);
+        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("At every start", "At every start");
+        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("Daily", "Daily");
+        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("Weekly", "Weekly");
+        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("Monthly", "Monthly");
+        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("Never", "Never");
 
-    ui->comboBoxSidSongFileUpdateFrequency->installEventFilter(this);
-    ui->comboBoxSidSongFileUpdateFrequency->addItem("At every start", "At every start");
-    ui->comboBoxSidSongFileUpdateFrequency->addItem("Daily", "Daily");
-    ui->comboBoxSidSongFileUpdateFrequency->addItem("Weekly", "Weekly");
-    ui->comboBoxSidSongFileUpdateFrequency->addItem("Monthly", "Monthly");
-    ui->comboBoxSidSongFileUpdateFrequency->addItem("Never", "Never");
-
-    index = ui->comboBoxSidSongFileUpdateFrequency->findData(mainWindow->getSIDSongLengthFrequency());
-    ui->comboBoxSidSongFileUpdateFrequency->setCurrentIndex(index);
-
+        index = ui->comboBoxHvscSonglengthsUpdateFrequency->findData(mainWindow->getHvscSonglengthsFrequency());
+        ui->comboBoxHvscSonglengthsUpdateFrequency->setCurrentIndex(index);
+    }
 
     int extensionPos = mainWindow->getEffect()->getFont().lastIndexOf('.');
     QString thumb(mainWindow->getEffect()->getFont().left(extensionPos) + ".thumb.png");
@@ -247,8 +248,11 @@ settingsWindow::settingsWindow(QWidget* parent) :
     QString thumbP(mainWindow->getEffect()->getPrinterFont().left(extensionPos) + ".thumb.png");
     ui->buttonPrinterFontImage->setIcon(QIcon(thumbP));
 
+    if (PLUGIN_libsidplayfp_DLL != "")
+    {
+        loadSidplaySettings();
+    }
 
-    loadSidplaySettings();
     loadUADESettings();
     loadlibopenmptSettings();
 
@@ -463,16 +467,19 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_zxtune_NAME));
     }
 
-    QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getSIDSongLengthDownloaded());
-    if (mainWindow->getSIDSongLengthDownloaded() > 0)
+    if (PLUGIN_libsidplayfp_DLL != "")
     {
-        ui->labelSIDSongLengthDownloaded->setText(
-            "Downloaded official Songlengths.md5 to " + mainWindow->getSIDSongPathDownloaded() + " at " + qdt.toString(
-                "yyyy-MM-dd hh:mm:ss"));
-    }
-    else
-    {
-        ui->labelSIDSongLengthDownloaded->setText("Never downloaded official Songlengths.md5");
+        QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getHvscSonglengthsDownloaded());
+        if (mainWindow->getHvscSonglengthsDownloaded() > 0)
+        {
+            ui->labelHvscSonglengthsDownloaded->setText(
+                "Downloaded HVSC Songlengths.md5 to " + mainWindow->getHvscSonglengthsPathDownloaded() + " at " +
+                qdt.toString("yyyy-MM-dd hh:mm:ss"));
+        }
+        else
+        {
+            ui->labelHvscSonglengthsDownloaded->setText("Never downloaded HVSC Songlengths.md5");
+        }
     }
 
     ui->tableWidgetPlugins->sortItems(0);
@@ -632,7 +639,7 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
             obj == ui->comboBoxResamplingOpenMPT ||
             obj == ui->comboBoxDitherOpenMPT ||
             obj == ui->SliderStereoSeparationOpenMPT ||
-            obj == ui->comboBoxSidSongFileUpdateFrequency ||
+            obj == ui->comboBoxHvscSonglengthsUpdateFrequency ||
             obj == ui->sliderSilenceTimeOut
         )
     )
@@ -661,7 +668,11 @@ void settingsWindow::on_buttonOK_clicked()
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
     mainWindow->getEffect()->setCustomScrolltext(ui->textEditCustomScrolltext->toPlainText());
 
-    saveSidplaySettings();
+    if (PLUGIN_libsidplayfp_DLL != "")
+    {
+        saveSidplaySettings();
+    }
+
     saveUADESettings();
     savelibopenmptSettings();
     mainWindow->SaveSettings();
@@ -681,9 +692,9 @@ void settingsWindow::on_comboBoxReverb_textActivated(const QString& arg1)
 }
 
 
-void settingsWindow::on_buttonBrowseSonglengths_clicked()
+void settingsWindow::on_buttonBrowseHvscSonglengths_clicked()
 {
-    QString startFolder = ui->lineEditSonglength->text();
+    QString startFolder = ui->lineEditHvscSonglength->text();
     if (startFolder.startsWith("/"))
     {
         startFolder = QApplication::applicationDirPath() + startFolder;
@@ -691,7 +702,7 @@ void settingsWindow::on_buttonBrowseSonglengths_clicked()
     QString file = QFileDialog::getOpenFileName(this, "Choose your Songlengths.md5", startFolder, "*.md5");
     if (!file.isEmpty())
     {
-        ui->lineEditSonglength->setText(file);
+        setUiLineEditHvscSonglengthTextForcingRelativePaths(file);
     }
 }
 
@@ -830,7 +841,7 @@ void settingsWindow::loadUADESettings()
                         ui->checkBoxSilenceTimeout->setChecked(false);
                     }
                 }
-                else if (word.compare("songlengths_enabled") == 0)
+                else if (word.compare("uade_songlengths_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
@@ -846,7 +857,7 @@ void settingsWindow::loadUADESettings()
                 {
                     ui->sliderSilenceTimeOut->setValue(atoi(value.c_str()));
                 }
-                else if (word.compare("songlengths_path") == 0)
+                else if (word.compare("uade_songlengths_path") == 0)
                 {
                     if (value == "")
                     {
@@ -877,9 +888,9 @@ void settingsWindow::loadSidplaySettings()
     }
     //Hack, because "toggled" means changing value,
     //so just to be sure, set it to both values so
-    //that on_checkBoxSIDSonglengthsEnabled_toggled is called
-    ui->checkBoxSIDSonglengthsEnabled->setChecked(false);
-    ui->checkBoxSIDSonglengthsEnabled->setChecked(true);
+    //that on_checkBoxHvscSonglengthsEnabled_toggled is called
+    ui->checkBoxHvscSonglengthsEnabled->setChecked(false);
+    ui->checkBoxHvscSonglengthsEnabled->setChecked(true);
     if (!useDefaults)
     {
         while (getline(ifs, line))
@@ -890,26 +901,27 @@ void settingsWindow::loadSidplaySettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("songlengths_path") == 0)
+                if (word.compare("hvsc_songlengths_path") == 0)
                 {
                     if (value == "")
                     {
-                        ui->lineEditSonglength->setText("/user/plugin/sid/Songlengths.md5");
+                        setUiLineEditHvscSonglengthTextForcingRelativePaths(
+                            PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH);
                     }
                     else
                     {
-                        ui->lineEditSonglength->setText(value.c_str());
+                        setUiLineEditHvscSonglengthTextForcingRelativePaths(value.c_str());
                     }
                 }
-                else if (word.compare("songlengths_enabled") == 0)
+                else if (word.compare("hvsc_songlengths_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        ui->checkBoxSIDSonglengthsEnabled->setChecked(true);
+                        ui->checkBoxHvscSonglengthsEnabled->setChecked(true);
                     }
                     else
                     {
-                        ui->checkBoxSIDSonglengthsEnabled->setChecked(false);
+                        ui->checkBoxHvscSonglengthsEnabled->setChecked(false);
                     }
                 }
             }
@@ -918,9 +930,9 @@ void settingsWindow::loadSidplaySettings()
     }
     else
     {
-        ui->checkBoxSIDSonglengthsEnabled->setChecked(false);
-        ui->checkBoxSIDSonglengthsEnabled->setChecked(true);
-        ui->lineEditSonglength->setText("/user/plugin/sid/Songlengths.md5");
+        ui->checkBoxHvscSonglengthsEnabled->setChecked(false);
+        ui->checkBoxHvscSonglengthsEnabled->setChecked(true);
+        setUiLineEditHvscSonglengthTextForcingRelativePaths(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH);
     }
 }
 
@@ -931,14 +943,14 @@ void settingsWindow::saveSidplaySettings()
     ofstream ofs(filename.c_str());
     string line;
 
-    QString songlengthsEnabled;
-    if (ui->checkBoxSIDSonglengthsEnabled->isChecked())
+    QString hvscSonglengthsEnabled;
+    if (ui->checkBoxHvscSonglengthsEnabled->isChecked())
     {
-        songlengthsEnabled = "true";
+        hvscSonglengthsEnabled = "true";
     }
     else
     {
-        songlengthsEnabled = "false";
+        hvscSonglengthsEnabled = "false";
     }
 
     if (ofs.fail())
@@ -947,8 +959,8 @@ void settingsWindow::saveSidplaySettings()
         return;
     }
 
-    ofs << "songlengths_enabled=" << songlengthsEnabled.toStdString().c_str() << "\n";
-    ofs << "songlengths_path=" << ui->lineEditSonglength->text().toStdString().c_str() << "\n";
+    ofs << "hvsc_songlengths_enabled=" << hvscSonglengthsEnabled.toStdString().c_str() << "\n";
+    ofs << "hvsc_songlengths_path=" << ui->lineEditHvscSonglength->text().toStdString().c_str() << "\n";
     ofs.close();
 }
 
@@ -1029,21 +1041,21 @@ void settingsWindow::saveUADESettings()
     {
         silenceTimeoutEnabled = "false";
     }
-    QString songlengthsEnabled;
+    QString uadeSonglengthsEnabled;
     if (ui->checkBoxSongLengthUADE->isChecked())
     {
-        songlengthsEnabled = "true";
+        uadeSonglengthsEnabled = "true";
     }
     else
     {
-        songlengthsEnabled = "false";
+        uadeSonglengthsEnabled = "false";
     }
-    ofs << "songlengths_path=" << ui->lineEditUADESonglength->text().toStdString().c_str() << "\n";
+    ofs << "uade_songlengths_path=" << ui->lineEditUADESonglength->text().toStdString().c_str() << "\n";
     ofs << "led_forced=" << filter.toStdString().c_str() << "\n";
     ofs << "no_filter=" << filterEmulated.toStdString().c_str() << "\n";
     ofs << "silence_timeout=" << ui->sliderSilenceTimeOut->value() << "\n";
     ofs << "silence_timeout_enabled=" << silenceTimeoutEnabled.toStdString().c_str() << "\n";
-    ofs << "songlengths_enabled=" << songlengthsEnabled.toStdString().c_str() << "\n";
+    ofs << "uade_songlengths_enabled=" << uadeSonglengthsEnabled.toStdString().c_str() << "\n";
     ofs.close();
 }
 
@@ -1203,6 +1215,21 @@ void settingsWindow::changeStyleSheetColor()
     ui->groupBoxLibOpenMPT->setStyleSheet(stylesheet);
 }
 
+void settingsWindow::setUiLineEditHvscSonglengthTextForcingRelativePaths(const QString& text)
+{
+    if (text.compare(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH) == 0)
+    {
+        ui->lineEditHvscSonglength->setText(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+    }
+    else if (text.compare(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH) == 0)
+    {
+        ui->lineEditHvscSonglength->setText(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH);
+    }
+    else
+    {
+        ui->lineEditHvscSonglength->setText(text);
+    }
+}
 
 void settingsWindow::on_buttonMainColor_clicked()
 {
@@ -2120,29 +2147,29 @@ void settingsWindow::on_checkBoxAspectRatio_toggled(bool checked)
 }
 
 
-void settingsWindow::on_comboBoxSidSongFileUpdateFrequency_textActivated(const QString& arg1)
+void settingsWindow::on_comboBoxHvscSonglengthsUpdateFrequency_textActivated(const QString& arg1)
 {
-    QString selected = ui->comboBoxSidSongFileUpdateFrequency->itemData(
-        ui->comboBoxSidSongFileUpdateFrequency->currentIndex()).toString();
-    mainWindow->setSIDSongLengthFrequency(selected);
+    QString selected = ui->comboBoxHvscSonglengthsUpdateFrequency->itemData(
+        ui->comboBoxHvscSonglengthsUpdateFrequency->currentIndex()).toString();
+    mainWindow->setHvscSonglengthsFrequency(selected);
 }
 
 
-void settingsWindow::on_buttonDownloadSIDLength_clicked()
+void settingsWindow::on_buttonDownloadHvscSonglengths_clicked()
 {
-    QUrl imageUrl("https://www.hvsc.c64.org/download/C64Music/DOCUMENTS/Songlengths.md5");
+    QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
     mainWindow->filedownloader = new FileDownloader(imageUrl, this);
-    ui->buttonDownloadSIDLength->setEnabled(true);
-    ui->buttonDownloadSIDLength->setText("Downloading...");
+    ui->buttonDownloadHvscSonglengths->setEnabled(true);
+    ui->buttonDownloadHvscSonglengths->setText("Downloading...");
 
-    connect(mainWindow->filedownloader, SIGNAL(downloaded()), this, SLOT(downloadComplete()));
+    connect(mainWindow->filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
 }
 
-void settingsWindow::downloadComplete()
+void settingsWindow::downloadHvscSonglengthsComplete()
 {
     if (mainWindow->filedownloader->downloadedData().size() > 0)
     {
-        QFile file(QApplication::applicationDirPath() + QDir::separator() + "user/plugin/sid/Songlengths.md5");
+        QFile file(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
         if (file.open(QIODevice::ReadWrite))
         {
             QTextStream stream(&file);
@@ -2152,21 +2179,20 @@ void settingsWindow::downloadComplete()
             QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
                                QSettings::IniFormat);
             qint64 seconds = QDateTime::currentDateTime().toSecsSinceEpoch();
-            settings.setValue("libsidplayfp/timesidsonglengthdownloaded", seconds);
-            settings.setValue("libsidplayfp/sidsongpath",
-                              QApplication::applicationDirPath() + QDir::separator() +
-                              "user/plugin/sid/Songlengths.md5");
-            mainWindow->SIDSongLengthDownloadedEpoch = seconds;
+            settings.setValue("libsidplayfp/timehvscsonglengthsdownloaded", seconds);
+            settings.setValue("libsidplayfp/hvscsonglengthspath",
+                              QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+            mainWindow->HvscSonglengthsDownloadedEpoch = seconds;
             mainWindow->addDebugText(
                 "Downloaded " + mainWindow->filedownloader->getUrl().toString() + " to " + file.fileName());
-            mainWindow->setSIDSongPathDownloaded(
-                QApplication::applicationDirPath() + QDir::separator() + "user/plugin/sid/Songlengths.md5");
-            QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getSIDSongLengthDownloaded());
-            ui->labelSIDSongLengthDownloaded->setText(
-                "Downloaded official Songlengths.md5 to " + mainWindow->getSIDSongPathDownloaded() + " at " + qdt.
+            mainWindow->setHvscSonglengthsPathDownloaded(
+                QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+            QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getHvscSonglengthsDownloaded());
+            ui->labelHvscSonglengthsDownloaded->setText(
+                "Downloaded HVSC Songlengths.md5 to " + mainWindow->getHvscSonglengthsPathDownloaded() + " at " + qdt.
                 toString("yyyy-MM-dd hh:mm:ss"));
-            ui->buttonDownloadSIDLength->setEnabled(true);
-            ui->buttonDownloadSIDLength->setText("Download now");
+            ui->buttonDownloadHvscSonglengths->setEnabled(true);
+            ui->buttonDownloadHvscSonglengths->setText("Download now");
         }
         else
         {
@@ -2389,13 +2415,13 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxSongLengthUADE->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxSIDSonglengthsEnabled->isChecked())
+    if (ui->checkBoxHvscSonglengthsEnabled->isChecked())
     {
-        ui->checkBoxSIDSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxSIDSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
     if (ui->checkBoxOnlyOneInstance->isChecked())
     {
@@ -2519,18 +2545,18 @@ void settingsWindow::on_checkBoxSongLengthUADE_toggled(bool checked)
 }
 
 
-void settingsWindow::on_checkBoxSIDSonglengthsEnabled_toggled(bool checked)
+void settingsWindow::on_checkBoxHvscSonglengthsEnabled_toggled(bool checked)
 {
-    ui->labelSidSongFilePath->setEnabled(checked);
-    ui->lineEditSonglength->setEnabled(checked);
-    ui->buttonBrowseSonglengths->setEnabled(checked);
-    if (ui->checkBoxSIDSonglengthsEnabled->isChecked())
+    ui->labelHvscSonglengthsFilePath->setEnabled(checked);
+    ui->lineEditHvscSonglength->setEnabled(checked);
+    ui->buttonBrowseHvscSonglengths->setEnabled(checked);
+    if (ui->checkBoxHvscSonglengthsEnabled->isChecked())
     {
-        ui->checkBoxSIDSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxSIDSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
 }
 
