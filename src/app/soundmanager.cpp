@@ -621,7 +621,7 @@ bool SoundManager::LoadSound(QString filename)
     FMOD_CREATESOUNDEXINFO extrainfo1;
     memset(&extrainfo1, 0, sizeof(FMOD_CREATESOUNDEXINFO));
     extrainfo1.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-    string dls = m_Info1->applicationPath + +"/data/plugin/fmod/gm.dls";
+    string dls = m_Info1->applicationPath + "/data/plugin/fmod/gm.dls";
     extrainfo1.dlsname = dls.c_str();
     extrainfo1.userdata = m_Info1;
 
