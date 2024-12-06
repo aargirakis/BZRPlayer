@@ -33,8 +33,8 @@ download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
 )
 
-set(sc68_data_path "/data/plugin/sc68")
-add_compile_definitions(FILE68_SHARED_PATH="${sc68_data_path}")
+set(SC68_DATA_PATH "/data/plugin/sc68")
+add_compile_definitions(SC68_DATA_PATH="${SC68_DATA_PATH}")
 add_compile_definitions(HAVE_STDINT_H)
 add_compile_definitions(HAVE_ZLIB_H)
 add_compile_definitions(PACKAGE_BUGREPORT="")
@@ -85,6 +85,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${EXTERNAL_SOURCE_DIR}/file68/data68/Replay
-        ${OUTPUT_DIR}${sc68_data_path}/Replay
+        ${OUTPUT_DIR}${SC68_DATA_PATH}/Replay
         VERBATIM
 )

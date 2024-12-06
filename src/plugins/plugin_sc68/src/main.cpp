@@ -165,7 +165,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     sc68_init(&gp->init68);
 
-    string path = info->applicationPath + FILE68_SHARED_PATH;
+    string path = info->applicationPath + SC68_DATA_PATH;
     rsc68_set_share(path.c_str());
 
     memset(&gp->create68, 0, sizeof(gp->create68));

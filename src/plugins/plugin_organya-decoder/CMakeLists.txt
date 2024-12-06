@@ -22,8 +22,8 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-set(org_data_path "/data/plugin/orgsamples")
-add_compile_definitions(ORG_DATA_PATH="${org_data_path}")
+set(ORG_DATA_PATH "/data/plugin/orgsamples")
+add_compile_definitions(ORG_DATA_PATH="${ORG_DATA_PATH}")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/liborganya/*.c
@@ -51,7 +51,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${EXTERNAL_SOURCE_DIR}/liborganya/samples
-        ${OUTPUT_DIR}${org_data_path}
+        ${OUTPUT_DIR}${ORG_DATA_PATH}
 
         VERBATIM
 )
