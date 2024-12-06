@@ -1172,51 +1172,6 @@ QPushButton:hover
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEditSonglengthOld">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>140</y>
-      <width>281</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="cursorMoveStyle">
-     <enum>Qt::LogicalMoveStyle</enum>
-    </property>
-    <property name="clearButtonEnabled">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelSidSongFilePathOld">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>136</y>
-      <width>271</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Songlengths path for C64-SIDs old format:</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="buttonBrowseSonglengthsOld">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>141</y>
-      <width>75</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="labelSIDSongLengthDownloaded">
     <property name="geometry">
      <rect>

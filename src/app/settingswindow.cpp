@@ -910,17 +910,6 @@ void settingsWindow::loadSidplaySettings()
                         ui->lineEditSonglength->setText(value.c_str());
                     }
                 }
-                else if (word.compare("songlengths_path_old") == 0)
-                {
-                    if (value == "")
-                    {
-                        ui->lineEditSonglengthOld->setText("/user/plugin/sid/Songlengths.txt");
-                    }
-                    else
-                    {
-                        ui->lineEditSonglengthOld->setText(value.c_str());
-                    }
-                }
                 else if (word.compare("songlengths_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
@@ -941,7 +930,6 @@ void settingsWindow::loadSidplaySettings()
         ui->checkBoxSIDSonglengthsEnabled->setChecked(false);
         ui->checkBoxSIDSonglengthsEnabled->setChecked(true);
         ui->lineEditSonglength->setText("/user/plugin/sid/Songlengths.md5");
-        ui->lineEditSonglengthOld->setText("/user/plugin/sid/Songlengths.txt");
     }
 }
 
@@ -970,7 +958,6 @@ void settingsWindow::saveSidplaySettings()
 
     ofs << "songlengths_enabled=" << songlengthsEnabled.toStdString().c_str() << "\n";
     ofs << "songlengths_path=" << ui->lineEditSonglength->text().toStdString().c_str() << "\n";
-    ofs << "songlengths_path_old=" << ui->lineEditSonglengthOld->text().toStdString().c_str() << "\n";
     ofs.close();
 }
 
@@ -1099,20 +1086,6 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
 }
 
-
-void settingsWindow::on_buttonBrowseSonglengthsOld_clicked()
-{
-    QString startFolder = ui->lineEditSonglengthOld->text();
-    if (startFolder.startsWith("/"))
-    {
-        startFolder = QApplication::applicationDirPath() + startFolder;
-    }
-    QString file = QFileDialog::getOpenFileName(this, "Choose your Songlengths.txt", startFolder, "*.txt");
-    if (!file.isEmpty())
-    {
-        ui->lineEditSonglengthOld->setText(file);
-    }
-}
 
 void settingsWindow::changeStyleSheetColor()
 {
@@ -2559,10 +2532,7 @@ void settingsWindow::on_checkBoxSIDSonglengthsEnabled_toggled(bool checked)
 {
     ui->labelSidSongFilePath->setEnabled(checked);
     ui->lineEditSonglength->setEnabled(checked);
-    ui->labelSidSongFilePathOld->setEnabled(checked);
-    ui->lineEditSonglengthOld->setEnabled(checked);
     ui->buttonBrowseSonglengths->setEnabled(checked);
-    ui->buttonBrowseSonglengthsOld->setEnabled(checked);
     if (ui->checkBoxSIDSonglengthsEnabled->isChecked())
     {
         ui->checkBoxSIDSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);

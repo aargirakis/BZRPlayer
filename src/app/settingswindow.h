@@ -54,8 +54,6 @@ private slots:
 
     void on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item);
 
-    void on_buttonBrowseSonglengthsOld_clicked();
-
     void on_buttonMainColor_clicked();
 
     void on_buttonAppearance_clicked();

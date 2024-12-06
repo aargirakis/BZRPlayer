@@ -104,7 +104,6 @@ public:
     char* basic;
     char* chargen;
     string songlengthfile;
-    string songlengthfileOld;
     unsigned int seekPosition;
     bool mute[9];
 
@@ -373,10 +372,6 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
                 {
                     m->songlengthfile = value;
                 }
-                else if (word.compare("songlengths_path_old") == 0)
-                {
-                    m->songlengthfileOld = value;
-                }
                 else if (word.compare("songlengths_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
@@ -396,10 +391,6 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     if (m->songlengthfile.empty() || m->songlengthfile == "/user/plugin/sid/Songlengths.md5")
     {
         m->songlengthfile = m->info->applicationPath + "/user/plugin/sid/Songlengths.md5";
-    }
-    if (m->songlengthfileOld.empty() || m->songlengthfile == "/user/plugin/sid/Songlengths.txt")
-    {
-        m->songlengthfileOld = m->info->applicationPath + "/user/plugin/sid/Songlengths.txt";
     }
 
 
@@ -651,16 +642,11 @@ FMOD_RESULT F_CALLBACK sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS)
     {
         string databasefile = m->songlengthfile;
-        string databasefileOld = m->songlengthfileOld;
         const SidTuneInfo* s = m->tune->getInfo();
         unsigned int sidLength = 0;
         if (m->songlengthDataBaseEnabled)
         {
             sidLength = getLengthFromSIDDatabase(databasefile, true, m->info->filename, s->currentSong());
-            if (sidLength == 0)
-            {
-                sidLength = getLengthFromSIDDatabase(databasefileOld, false, m->info->filename, s->currentSong());
-            }
         }
         *length = sidLength;
 
