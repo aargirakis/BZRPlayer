@@ -33,7 +33,7 @@ download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
 )
 
-set(SC68_DATA_PATH "/data/plugin/sc68")
+set(SC68_DATA_PATH "${DATA_PLUGINS_DIR}/sc68")
 add_compile_definitions(SC68_DATA_PATH="${SC68_DATA_PATH}")
 add_compile_definitions(HAVE_STDINT_H)
 add_compile_definitions(HAVE_ZLIB_H)
@@ -77,7 +77,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
 )

@@ -217,10 +217,13 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
             ui->checkBoxLoop->setCheckState(Qt::Checked);
         }
 
-
-        SIDSongLengthDownloadedEpoch = settings.value("libsidplayfp/timesidsonglengthdownloaded", 0).toLongLong();
-        SIDSongPathDownloaded = settings.value("libsidplayfp/sidsongpath", "").toString();
-        SIDSongLengthFrequency = settings.value("libsidplayfp/updateFrequency", "Weekly").toString();
+        if (PLUGIN_libsidplayfp_DLL != "")
+        {
+            HvscSonglengthsDownloadedEpoch = settings.value("libsidplayfp/timehvscsonglengthsdownloaded", 0).
+                                                      toLongLong();
+            HvscSonglengthsPathDownloaded = settings.value("libsidplayfp/hvscsonglengthspath", "").toString();
+            HvscSonglengthsFrequency = settings.value("libsidplayfp/updateFrequency", "Weekly").toString();
+        }
 
         ui->checkBoxShuffle->setChecked(settings.value("shuffle", false).toBool());
 
@@ -481,10 +484,10 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         {
             QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user/plugin");
         }
-        QDir pathDir4(QApplication::applicationDirPath() + QDir::separator() + "user/plugin/sid");
+        QDir pathDir4(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
         if (!pathDir4.exists())
         {
-            QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user/plugin/sid");
+            QDir().mkdir(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
         }
         QDir pathDir5(QApplication::applicationDirPath() + QDir::separator() + "user/plugin/config");
         if (!pathDir5.exists())
@@ -642,30 +645,35 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         }
 
 
-        QUrl imageUrl("https://www.hvsc.c64.org/download/C64Music/DOCUMENTS/Songlengths.md5");
+        QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
         filedownloader = new FileDownloader(imageUrl, this);
 
         qint64 currentSeconds = QDateTime::currentDateTime().toSecsSinceEpoch();
 
-        if (SIDSongLengthFrequency == "Never")
+        if (PLUGIN_libsidplayfp_DLL != "")
         {
-            //Do nothing
-        }
-        else if (SIDSongLengthFrequency == "At every start")
-        {
-            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadComplete()));
-        }
-        else if (SIDSongLengthFrequency == "Daily" && (currentSeconds - SIDSongLengthDownloadedEpoch >= 86400))
-        {
-            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadComplete()));
-        }
-        else if (SIDSongLengthFrequency == "Weekly" && (currentSeconds - SIDSongLengthDownloadedEpoch >= 604800))
-        {
-            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadComplete()));
-        }
-        else if (SIDSongLengthFrequency == "Monthly" && (currentSeconds - SIDSongLengthDownloadedEpoch >= 2629743))
-        {
-            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadComplete()));
+            if (HvscSonglengthsFrequency == "Never")
+            {
+                //Do nothing
+            }
+            else if (HvscSonglengthsFrequency == "At every start")
+            {
+                connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+            }
+            else if (HvscSonglengthsFrequency == "Daily" && (currentSeconds - HvscSonglengthsDownloadedEpoch >= 86400))
+            {
+                connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+            }
+            else if (HvscSonglengthsFrequency == "Weekly" && (currentSeconds - HvscSonglengthsDownloadedEpoch >=
+                604800))
+            {
+                connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+            }
+            else if (HvscSonglengthsFrequency == "Monthly" && (currentSeconds - HvscSonglengthsDownloadedEpoch >=
+                2629743))
+            {
+                connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+            }
         }
 
         connect(ui->samples->horizontalHeader(), &QHeaderView::sectionResized,
@@ -3915,24 +3923,24 @@ int MainWindow::getPlaylistRowHeight()
     return playlistRowHeight;
 }
 
-qint64 MainWindow::getSIDSongLengthDownloaded()
+qint64 MainWindow::getHvscSonglengthsDownloaded()
 {
-    return SIDSongLengthDownloadedEpoch;
+    return HvscSonglengthsDownloadedEpoch;
 }
 
-QString MainWindow::getSIDSongLengthFrequency()
+QString MainWindow::getHvscSonglengthsFrequency()
 {
-    return SIDSongLengthFrequency;
+    return HvscSonglengthsFrequency;
 }
 
-QString MainWindow::getSIDSongPathDownloaded()
+QString MainWindow::getHvscSonglengthsPathDownloaded()
 {
-    return SIDSongPathDownloaded;
+    return HvscSonglengthsPathDownloaded;
 }
 
-void MainWindow::setSIDSongPathDownloaded(QString path)
+void MainWindow::setHvscSonglengthsPathDownloaded(QString path)
 {
-    SIDSongPathDownloaded = path;
+    HvscSonglengthsPathDownloaded = path;
 }
 
 int MainWindow::getPlaylistsRowHeight()
@@ -4087,7 +4095,10 @@ void MainWindow::SaveSettings()
         settings.setValue(QString("playlist_") + i.key(), i.value()->horizontalHeader()->saveState());
     }
 
-    settings.setValue(QString("libsidplayfp/updateFrequency"), SIDSongLengthFrequency);
+    if (PLUGIN_libsidplayfp_DLL != "")
+    {
+        settings.setValue(QString("libsidplayfp/updateFrequency"), HvscSonglengthsFrequency);
+    }
 }
 
 
@@ -5885,11 +5896,11 @@ void MainWindow::CreateNewWorkspace(QString filename)
     });
 }
 
-void MainWindow::downloadComplete()
+void MainWindow::downloadHvscSonglengthsComplete()
 {
     if (filedownloader->downloadedData().size() > 0)
     {
-        QFile file(QApplication::applicationDirPath() + QDir::separator() + "user/plugin/sid/Songlengths.md5");
+        QFile file(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
         if (file.open(QIODevice::ReadWrite))
         {
             QTextStream stream(&file);
@@ -5899,12 +5910,21 @@ void MainWindow::downloadComplete()
             QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
                                QSettings::IniFormat);
             qint64 seconds = QDateTime::currentDateTime().toSecsSinceEpoch();
-            settings.setValue("libsidplayfp/timesidsonglengthdownloaded", seconds);
-            settings.setValue("libsidplayfp/sidsongpath",
-                              QApplication::applicationDirPath() + QDir::separator() +
-                              "user/plugin/sid/Songlengths.md5");
-            SIDSongPathDownloaded = QApplication::applicationDirPath() + "user/plugin/sid/Songlengths.md5";
-            SIDSongLengthDownloadedEpoch = seconds;
+
+            if (getHvscSonglengthsPathDownloaded().toStdString().compare(
+                QApplication::applicationDirPath().toStdString() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH))
+            {
+                settingsWindow settingsWindow(this);
+                settingsWindow.setUiLineEditHvscSonglengthTextForcingRelativePaths(
+                    PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+                settingsWindow.saveSidplaySettings();
+            }
+
+            settings.setValue("libsidplayfp/timehvscsonglengthsdownloaded", seconds);
+            settings.setValue("libsidplayfp/hvscsonglengthspath",
+                              QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+            HvscSonglengthsPathDownloaded = QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH;
+            HvscSonglengthsDownloadedEpoch = seconds;
             addDebugText("Downloaded " + filedownloader->getUrl().toString() + " to " + file.fileName());
         }
         else
@@ -5918,9 +5938,9 @@ void MainWindow::downloadComplete()
     }
 }
 
-void MainWindow::setSIDSongLengthFrequency(QString freq)
+void MainWindow::setHvscSonglengthsFrequency(QString freq)
 {
-    SIDSongLengthFrequency = freq;
+    HvscSonglengthsFrequency = freq;
 }
 
 //Swaps columns so that artist column is first for default and new playlists

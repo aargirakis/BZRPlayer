@@ -22,7 +22,7 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-set(ORG_DATA_PATH "/data/plugin/orgsamples")
+set(ORG_DATA_PATH "${DATA_PLUGINS_DIR}/orgsamples")
 add_compile_definitions(ORG_DATA_PATH="${ORG_DATA_PATH}")
 
 file(GLOB SOURCES
@@ -43,7 +43,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
 )

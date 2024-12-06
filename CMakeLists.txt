@@ -8,7 +8,13 @@ if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_
     set(CMAKE_BUILD_TYPE "Debug")
 endif ()
 
+set(DATA_DIR "/data")
+set(USER_DIR "/user")
+set(DATA_PLUGINS_DIR "${DATA_DIR}/plugin")
+set(USER_PLUGINS_DIR "${USER_DIR}/plugin")
 set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/output")
+set(OUTPUT_DATA_DIR "${OUTPUT_DIR}${DATA_DIR}")
+set(OUTPUT_DATA_PLUGINS_DIR "${OUTPUT_DIR}${DATA_PLUGINS_DIR}")
 
 include(${CMAKE_SOURCE_DIR}/utils.cmake)
 include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)
@@ -85,16 +91,9 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 
     install(
             DIRECTORY
-            ${OUTPUT_DIR}/data
+            ${OUTPUT_DATA_DIR}
             ${OUTPUT_DIR}/platforms
             DESTINATION .
-    )
-
-    install(
-            DIRECTORY
-            ${OUTPUT_DIR}/user/plugin/sid
-            DESTINATION user/plugin
-            FILES_MATCHING PATTERN "Songlengths.md5"
     )
 
     install(

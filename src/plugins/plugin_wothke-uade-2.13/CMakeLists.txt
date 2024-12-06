@@ -29,7 +29,7 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-set(UADE_DATA_PATH "/data/plugin/uade")
+set(UADE_DATA_PATH "${DATA_PLUGINS_DIR}/uade")
 add_compile_definitions(UADE_DATA_PATH="${UADE_DATA_PATH}")
 add_compile_definitions(EMSCRIPTEN=1)
 
@@ -103,7 +103,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
 )

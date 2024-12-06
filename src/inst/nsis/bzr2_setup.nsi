@@ -6,7 +6,7 @@
 #those really checked
 #TODO cleanup all garbage files when quit running bzr2 or when quit from uninstaller (also in silent mode)
 
-#TODO add "isPortable" checkbox/flag that when checked don't touch the registry but add ".portable" file to $INSTDIR\user with version string
+#TODO add "isPortable" checkbox/flag that when checked don't touch the registry but add ".portable" file to ${DIR_SETTINGS_USER} with version string
 #if the invoked installer.exe dir have ".portable" & bzrplayer.exe files then pre-set its checkbox by default (and put "wasPortable" flag to true)
 #in "isPortable" mode $INSTDIR will pre-set by default to the same of the installer.exe if "wasPortable" is true
 #add a command line param for forcing "isPortable" true
@@ -49,7 +49,7 @@ CRCCheck force
 !define DESCRIPTION "Audio player supporting a wide array of multi-platform exotic file formats"
 !define CAPTION "$title Setup"
 !define CAPTION_VERSIONED "${CAPTION} (v${SETUP_LATEST_VERSION})"
-!define DIR_SETTINGS "$INSTDIR\user"
+!define DIR_SETTINGS_USER "$INSTDIR\user"
 
 var title
 var version
@@ -91,6 +91,23 @@ var releaseArchiveFileDir
 #TODO avoid associating multiple times the same extension but from different filetypes
 !macro addSectionContent ext
   !insertmacro AssociateExtensionMacro "${ext}"
+!macroend
+
+!macro createDirSettingsUserWithWritePermissions
+  CreateDirectory "${DIR_SETTINGS_USER}"
+
+  setDirPermissions:
+  AccessControl::GrantOnFile "${DIR_SETTINGS_USER}" "(BU)" "GenericRead + GenericWrite"
+  Pop $0
+  ${If} $0 == error
+    Pop $0
+    DetailPrint "AccessControl error: $0"
+    MessageBox MB_ABORTRETRYIGNORE|MB_ICONEXCLAMATION "Unable to set permissions for directory$\r$\n${DIR_SETTINGS_USER}:\
+    $\r$\n'$0'$\r$\n" /SD IDABORT IDRETRY setDirPermissions IDIGNORE afterSetDirPermissions
+    quit
+  ${EndIf}
+
+  afterSetDirPermissions:
 !macroend
 
 RequestExecutionLevel admin
@@ -189,18 +206,8 @@ Section "!${NAME} (required)"
   unpackOk:
   CopyFiles "$ExePath" "$INSTDIR\install.exe"
 
-  setDirPermissions:
-  AccessControl::GrantOnFile "${DIR_SETTINGS}" "(BU)" "GenericRead + GenericWrite"
-  Pop $0
-  ${If} $0 == error
-    Pop $0
-    DetailPrint "AccessControl error: $0"
-    MessageBox MB_ABORTRETRYIGNORE|MB_ICONEXCLAMATION "Unable to set permissions for directory$\r$\n${DIR_SETTINGS}:\
-    $\r$\n'$0'$\r$\n" /SD IDABORT IDRETRY setDirPermissions IDIGNORE afterSetDirPermissions
-    quit
-  ${EndIf}
+  !insertmacro createDirSettingsUserWithWritePermissions
 
-  afterSetDirPermissions:
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
   WriteRegStr HKLM "Software\${PUBLISHER}\${NAME}" "ApplicationName" "${NAME}"
@@ -287,7 +294,8 @@ Section ""
 SectionEnd
 
 Section /o "Delete Preferences"
-  RMDir /r "$INSTDIR\user"
+  RMDir /r "${DIR_SETTINGS_USER}"
+  !insertmacro createDirSettingsUserWithWritePermissions
 SectionEnd
 
 Function .onInit
@@ -767,7 +775,7 @@ Section "un.${NAME}"
 SectionEnd
 
 Section /o "un.Preferences"
-  RMDir /r "$INSTDIR\user"
+  RMDir /r "${DIR_SETTINGS_USER}"
   RMDir "$INSTDIR"
 SectionEnd
 

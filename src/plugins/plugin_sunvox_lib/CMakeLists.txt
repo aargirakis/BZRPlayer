@@ -39,7 +39,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/data/plugin
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         COMPILE_FLAGS "-m32"
         LINK_FLAGS "-m32"
 )
@@ -47,6 +47,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR}/${LIB_NAME}/windows/lib_x86/sunvox.dll
-        ${OUTPUT_DIR}/data/plugin
+        ${OUTPUT_DATA_PLUGINS_DIR}
         VERBATIM
 )

@@ -141,7 +141,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/static/data
-        ${OUTPUT_DIR}/data
+        ${OUTPUT_DATA_DIR}
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml

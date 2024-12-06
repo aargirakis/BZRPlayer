@@ -1127,7 +1127,7 @@ QPushButton:hover
    <property name="checkable">
     <bool>false</bool>
    </property>
-   <widget class="QPushButton" name="buttonBrowseSonglengths">
+   <widget class="QPushButton" name="buttonBrowseHvscSonglengths">
     <property name="geometry">
      <rect>
       <x>600</x>
@@ -1143,7 +1143,7 @@ QPushButton:hover
      <string>...</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelSidSongFilePath">
+   <widget class="QLabel" name="labelHvscSonglengthsFilePath">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -1153,10 +1153,10 @@ QPushButton:hover
      </rect>
     </property>
     <property name="text">
-     <string>Songlengths path for C64-SIDs:</string>
+     <string>HVSC Songlengths path:</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEditSonglength">
+   <widget class="QLineEdit" name="lineEditHvscSonglength">
     <property name="geometry">
      <rect>
       <x>310</x>
@@ -1172,7 +1172,7 @@ QPushButton:hover
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="labelSIDSongLengthDownloaded">
+   <widget class="QLabel" name="labelHvscSonglengthsDownloaded">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -1188,7 +1188,7 @@ font-size:10px;
 }</string>
     </property>
     <property name="text">
-     <string>Downloaded official Songlengths.md5</string>
+     <string>Downloaded HVSC Songlengths.md5</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1197,20 +1197,20 @@ font-size:10px;
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="labelSidSongFileUpdateFrequency">
+   <widget class="QLabel" name="labelHvscSonglengthsUpdateFrequency">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>175</y>
-      <width>201</width>
+      <width>231</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Check for songlenghts update:</string>
+     <string>Check for HVSC Songlengths update:</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBoxSidSongFileUpdateFrequency">
+   <widget class="QComboBox" name="comboBoxHvscSonglengthsUpdateFrequency">
     <property name="geometry">
      <rect>
       <x>310</x>
@@ -1223,7 +1223,7 @@ font-size:10px;
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="buttonDownloadSIDLength">
+   <widget class="QPushButton" name="buttonDownloadHvscSonglengths">
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -1239,7 +1239,7 @@ font-size:10px;
      <string>Download now</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelSidSongLengthDatabase">
+   <widget class="QLabel" name="labelHvscSonglengthsDatabase">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -1249,10 +1249,10 @@ font-size:10px;
      </rect>
     </property>
     <property name="text">
-     <string>Song Length Database</string>
+     <string>HVSC Songlengths Database</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBoxSIDSonglengthsEnabled">
+   <widget class="QCheckBox" name="checkBoxHvscSonglengthsEnabled">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -4575,7 +4575,7 @@ QPushButton:hover
      </rect>
     </property>
     <property name="text">
-     <string>Songlengths path for UADE songs:</string>
+     <string>UADE Songlengths path:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEditUADESonglength">
@@ -4623,7 +4623,7 @@ QPushButton:hover
      </rect>
     </property>
     <property name="text">
-     <string>Song Length Database</string>
+     <string>UADE Songlengths Database</string>
     </property>
    </widget>
   </widget>

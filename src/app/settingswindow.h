@@ -20,9 +20,11 @@ public:
 
     bool eventFilter(QObject* obj, QEvent* event);
     void changeStyleSheetColor();
+    void saveSidplaySettings();
+    void setUiLineEditHvscSonglengthTextForcingRelativePaths(const QString& text);
 
 private slots:
-    void downloadComplete();
+    void downloadHvscSonglengthsComplete();
 
     void on_sliderResetVolumeToValue_sliderMoved(int position);
 
@@ -47,7 +49,7 @@ private slots:
     void on_comboBoxReverb_textActivated(const QString& arg1);
 
 
-    void on_buttonBrowseSonglengths_clicked();
+    void on_buttonBrowseHvscSonglengths_clicked();
     void on_buttonGeneral_clicked();
 
     void on_buttonPlugins_clicked();
@@ -174,9 +176,9 @@ private slots:
 
     void on_checkBoxAspectRatio_toggled(bool checked);
 
-    void on_comboBoxSidSongFileUpdateFrequency_textActivated(const QString& arg1);
+    void on_comboBoxHvscSonglengthsUpdateFrequency_textActivated(const QString& arg1);
 
-    void on_buttonDownloadSIDLength_clicked();
+    void on_buttonDownloadHvscSonglengths_clicked();
 
     void on_sliderNumberOfRasterBars_valueChanged(int value);
 
@@ -205,14 +207,13 @@ private slots:
 
     void on_sliderNowPlayingFontSize_valueChanged(int value);
 
-    void on_checkBoxSIDSonglengthsEnabled_toggled(bool checked);
+    void on_checkBoxHvscSonglengthsEnabled_toggled(bool checked);
 
 private:
     void updateColorButtons();
 
 
     void loadSidplaySettings();
-    void saveSidplaySettings();
     void saveUADESettings();
     void savelibopenmptSettings();
     void loadUADESettings();

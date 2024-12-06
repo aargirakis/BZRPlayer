@@ -103,11 +103,11 @@ public:
     char* kernal;
     char* basic;
     char* chargen;
-    string songlengthfile;
+    string hvscSonglengthsFile;
     unsigned int seekPosition;
     bool mute[9];
 
-    bool songlengthDataBaseEnabled;
+    bool hvscSonglengthsDataBaseEnabled;
 
 
     FMOD_CODEC_WAVEFORMAT sidwaveformat;
@@ -209,9 +209,9 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     m->player = new sidplayfp();
 
-    string kernal_filename = info->applicationPath + "/data/plugin/sid/kernal.bin";
-    string basic_filename = info->applicationPath + "/data/plugin/sid/basic.bin";
-    string characters_filename = info->applicationPath + "/data/plugin/sid/characters.bin";
+    string kernal_filename = info->applicationPath + KERNAL_BIN_DATA_PATH;
+    string basic_filename = info->applicationPath + BASIC_BIN_DATA_PATH;
+    string characters_filename = info->applicationPath + CHARACTERS_BIN_DATA_PATH;
 
     m->kernal = m->loadRom(kernal_filename.c_str(), 8192);
     m->basic = m->loadRom(basic_filename.c_str(), 8192);
@@ -231,7 +231,7 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
 
     //read sidid
-    string sidid_filename = info->applicationPath + "/data/plugin/sid/sidid.cfg";
+    string sidid_filename = info->applicationPath + SIDID_CFG_DATA_PATH;
     if (!readconfig(sidid_filename.c_str()))
     {
         std::string myString(identify(myBuffer, filesize), MAX_PATHNAME);
@@ -262,7 +262,7 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     bool forceSidModel = false;
     bool forcec64Model = false;
 
-    m->songlengthDataBaseEnabled = true;
+    m->hvscSonglengthsDataBaseEnabled = true;
 
     if (!useDefaults)
     {
@@ -368,19 +368,19 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
                         filter = false;
                     }
                 }
-                else if (word.compare("songlengths_path") == 0)
+                else if (word.compare("hvsc_songlengths_path") == 0)
                 {
-                    m->songlengthfile = value;
+                    m->hvscSonglengthsFile = value;
                 }
-                else if (word.compare("songlengths_enabled") == 0)
+                else if (word.compare("hvsc_songlengths_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        m->songlengthDataBaseEnabled = true;
+                        m->hvscSonglengthsDataBaseEnabled = true;
                     }
                     else
                     {
-                        m->songlengthDataBaseEnabled = false;
+                        m->hvscSonglengthsDataBaseEnabled = false;
                     }
                 }
             }
@@ -388,9 +388,13 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-    if (m->songlengthfile.empty() || m->songlengthfile == "/user/plugin/sid/Songlengths.md5")
+    if (m->hvscSonglengthsFile.empty())
     {
-        m->songlengthfile = m->info->applicationPath + "/user/plugin/sid/Songlengths.md5";
+        m->hvscSonglengthsFile = m->info->applicationPath + HVSC_SONGLENGTHS_DATA_PATH;
+    }
+    else if (m->hvscSonglengthsFile == HVSC_SONGLENGTHS_DATA_PATH || m->hvscSonglengthsFile == HVSC_SONGLENGTHS_USER_PATH)
+    {
+        m->hvscSonglengthsFile = m->info->applicationPath + m->hvscSonglengthsFile;
     }
 
 
@@ -641,10 +645,10 @@ FMOD_RESULT F_CALLBACK sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS)
     {
-        string databasefile = m->songlengthfile;
+        string databasefile = m->hvscSonglengthsFile;
         const SidTuneInfo* s = m->tune->getInfo();
         unsigned int sidLength = 0;
-        if (m->songlengthDataBaseEnabled)
+        if (m->hvscSonglengthsDataBaseEnabled)
         {
             sidLength = getLengthFromSIDDatabase(databasefile, true, m->info->filename, s->currentSong());
         }
@@ -720,7 +724,7 @@ unsigned int getLengthFromSIDDatabase(string databasefile, bool newDatabaseVersi
             int j = line.find_first_of("=");
             if (j == -1)
             {
-                cout << "Error in SID songlengths file!!\n";
+                cout << "Error in HVSC Songlengths file!\n";
                 flush(cout);
                 return 0;
             }
@@ -750,7 +754,7 @@ unsigned int getLengthFromSIDDatabase(string databasefile, bool newDatabaseVersi
 
             if (k == -1)
             {
-                std::cout << "error in SID songlengths file!\n";
+                std::cout << "Error in HVSC Songlengths file!\n";
                 flush(cout);
                 return 0;
             }

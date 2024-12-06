@@ -75,11 +75,11 @@ public:
 
 
     void swapColumns(QTableView* tableview);
-    void setSIDSongLengthFrequency(QString);
-    void setSIDSongPathDownloaded(QString);
-    QString getSIDSongLengthFrequency();
-    QString getSIDSongPathDownloaded();
-    qint64 getSIDSongLengthDownloaded();
+    void setHvscSonglengthsFrequency(QString);
+    void setHvscSonglengthsPathDownloaded(QString);
+    QString getHvscSonglengthsFrequency();
+    QString getHvscSonglengthsPathDownloaded();
+    qint64 getHvscSonglengthsDownloaded();
     void DeleteWorkspace(QString workspace);
     void CreateNewWorkspace(QString filename);
     void DownloadFile();
@@ -183,7 +183,7 @@ public:
 
     bool isOnlyOneInstanceEnabled() const;
     FileDownloader* filedownloader;
-    qint64 SIDSongLengthDownloadedEpoch;
+    qint64 HvscSonglengthsDownloadedEpoch;
 
     QMap<QString, QPixmap> icons;
 
@@ -214,7 +214,7 @@ protected:
     void changeEvent(QEvent* event) override;
 
 private slots:
-    void downloadComplete();
+    void downloadHvscSonglengthsComplete();
     void sendSocketMsg();
     void getSocketData();
     void acceptConnection();
@@ -322,8 +322,8 @@ private slots:
     void on_buttonStop_clicked();
 
 private:
-    QString SIDSongPathDownloaded;
-    QString SIDSongLengthFrequency;
+    QString HvscSonglengthsPathDownloaded;
+    QString HvscSonglengthsFrequency;
     FileInfoParser* fileInfoParser;
     void LoadWorkspaces();
     void updateButtons();
