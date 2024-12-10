@@ -38,11 +38,6 @@ add_compile_definitions(UADE_DATA_PATH="${UADE_DATA_PATH}")
 add_compile_definitions(EMSCRIPTEN=1)
 add_compile_definitions(_UADE_STRSEP_H_) #TODO needed?
 
-set(FILENAME "uade.md5")
-set(FILE_URL "http://bzrplayer.blazer.nu/${FILENAME}")
-set(DESTINATION_PATH "${OUTPUT_DIR}${UADE_DATA_PATH}")
-download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH} true "")
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/compat/memmemrep.c
         ${EXTERNAL_SOURCE_DIR}/compat/strlrep.c
@@ -141,5 +136,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${EXTERNAL_SOURCE_DIR}/uaerc
         ${OUTPUT_DIR}${UADE_DATA_PATH}
 
+        VERBATIM
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/dist/uade.md5
+        ${OUTPUT_DIR}${UADE_DATA_PATH}
         VERBATIM
 )
