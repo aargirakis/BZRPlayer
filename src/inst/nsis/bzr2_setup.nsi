@@ -37,8 +37,6 @@ CRCCheck force
 !define NAME_SHORT "BZR2"
 !define NAME_UNVERSIONED "BZR Player"
 !define NAME "${NAME_UNVERSIONED} 2"
-!define WINDOW_CLASS_NAME "Qt51516QWindowIcon"
-!define WINDOW_PROGRAM_NAME "BZRPlayer"
 !define EXE_FILENAME "BZRPlayer.exe"
 !define VERSION_FILENAME "bzr2_version_latest"
 !define URL_MAIN "http://bzrplayer.blazer.nu"
@@ -62,19 +60,29 @@ var mruListContent
 !include FileFunc.nsh
 !include MUI2.nsh
 !include nsArray.nsh
+!include nsProcess.nsh
 !include Registry.nsh
 !include WinVer.nsh
 !include include\FiletypeAssociationsComponentUtil.nsh
 !include include\FiletypeAssociationsUtil.nsh
 
 !macro DetectRunningBzr2
-    loop:
-    FindWindow $0 "${WINDOW_CLASS_NAME}" "" "${WINDOW_PROGRAM_NAME}"
-    IsWindow $0 0 notRunning
-    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "${NAME} is running. Please close it first" /SD IDCANCEL IDRETRY loop
-    quit
+  loop:
+  ${nsProcess::FindProcess} "${EXE_FILENAME}" $0
+  Pop $0
 
-    notRunning:
+  ${If} $0 == 603
+    goto notRunning
+  ${EndIf}
+
+  ${If} $0 == 0
+    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "${NAME_UNVERSIONED} is running. Please close it first" /SD IDCANCEL IDRETRY loop
+    abort
+  ${EndIf}
+
+  MessageBox MB_OK|MB_ICONEXCLAMATION "Unable to detect if ${NAME_UNVERSIONED} is running. Make sure it is closed before proceeding" /SD IDOK
+
+  notRunning:
 !macroend
 
 #TODO avoid associating multiple times the same extension but from different filetypes
@@ -678,10 +686,11 @@ Function .onGUIEnd
   ${if} $isRunButtonChecked == 1
     Exec '"$WINDIR\explorer.exe" "$INSTDIR\${EXE_FILENAME}"'
 
+    # ensures bzr2 opening on foreground
     loop:
-    FindWindow $0 "${WINDOW_CLASS_NAME}" "" "${WINDOW_PROGRAM_NAME}"
-    IsWindow $0 0 loop
-    System::Call "User32::SetForegroundWindow(i) b ($0)"
+    ${nsProcess::FindProcess} "${EXE_FILENAME}" $0
+    Pop $0
+    IntCmp $0 603 loop
   ${EndIf}
 FunctionEnd
 
