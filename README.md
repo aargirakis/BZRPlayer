@@ -68,6 +68,7 @@ currently still missing.
 - [NsArray](https://nsis.sourceforge.io/Arrays_in_NSIS) `nsis-nsarray-bin`
 - [Nsisunz](https://nsis.sourceforge.io/Nsisunz_plug-in) `nsis-nsisunz-bin`
 - [NsJSON](https://nsis.sourceforge.io/NsJSON_plug-in) `nsis-nsjson-bin`
+- [NsProcess](https://nsis.sourceforge.io/NsProcess_plugin) `nsis-nsprocess-bin`
 - [NsRichEdit](https://nsis.sourceforge.io/NsRichEdit_plug-in) `nsis-nsrichedit-bin`
 - [Registry](https://nsis.sourceforge.io/Registry_plug-in) `nsis-registry-bin`
 
