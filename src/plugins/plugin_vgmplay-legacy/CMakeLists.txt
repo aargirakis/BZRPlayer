@@ -23,6 +23,7 @@ download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
 )
 
+add_compile_definitions(DISABLE_HW_SUPPORT)
 #add_compile_definitions(ENABLE_ALL_CORES) #TODO
 
 file(GLOB SOURCES
@@ -97,7 +98,6 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/chips/ymf271.c
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/chips/ymf278b.c
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/chips/ymz280b.c
-        ${EXTERNAL_SOURCE_DIR}/VGMPlay/pt_ioctl.c
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/VGMPlay.c
         src/main.cpp
 )
