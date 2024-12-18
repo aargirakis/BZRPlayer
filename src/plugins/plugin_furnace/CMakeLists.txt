@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "furnace")
-set(VERSION "0.6.3")
+set(VERSION "0.6.7")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "Furnace" PARENT_SCOPE)
@@ -15,10 +15,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(LIB1_NAME "${NAME}")
 set(LIB1_VERSION "${VERSION}")
 set(LIB1_NAME_VERSIONED "${LIB1_NAME}-${LIB1_VERSION}")
-set(LIB1_FILENAME "${LIB1_NAME_VERSIONED}.zip")
-set(LIB1_FILENAME_URL "v${LIB1_VERSION}.zip")
+set(LIB1_FILENAME "${LIB1_NAME_VERSIONED}.tar.gz")
+set(LIB1_FILENAME_URL "v${LIB1_VERSION}.tar.gz")
 set(LIB1_URL "https://github.com/tildearrow/${LIB1_NAME}/archive/refs/tags/${LIB1_FILENAME_URL}")
-set(LIB1_SHA_256_HASH "34415b19c9fff8300fdb41bd24a349c8852be7336e6286bee368b48b6b770e4e")
+set(LIB1_SHA_256_HASH "94180a50ff9009c7d29f93c2ea64363ecea0f88e8eea3709221cb1a6e5e7b808")
 download_patch_and_add(
         ${LIB1_NAME_VERSIONED} ${LIB1_FILENAME} ${LIB1_URL} ${LIB1_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches/${LIB1_NAME}
@@ -65,6 +65,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_1}/extern/adpcm-xq-s/*.c
         ${EXTERNAL_SOURCE_DIR_1}/extern/emu2413/*.c
         ${EXTERNAL_SOURCE_DIR_1}/extern/ESFMu/*.c
+        ${EXTERNAL_SOURCE_DIR_1}/extern/itcompress/compression.c
         ${EXTERNAL_SOURCE_DIR_1}/extern/Nuked-OPLL/*.c
         ${EXTERNAL_SOURCE_DIR_1}/extern/Nuked-PSG/*.c
         ${EXTERNAL_SOURCE_DIR_1}/extern/opl/*.c
@@ -101,6 +102,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/effect/*.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/engine.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/export.cpp
+        ${EXTERNAL_SOURCE_DIR_1}/src/engine/exportDef.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/export/*.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/fileOps/*.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/fileOpsIns.cpp
