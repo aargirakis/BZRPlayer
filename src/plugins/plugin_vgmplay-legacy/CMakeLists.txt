@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "vgmplay-legacy")
-set(VERSION "0.40.9")
+set(VERSION "0.40.9.1")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "VGMPlay" PARENT_SCOPE)
@@ -18,7 +18,7 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
 set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
 set(LIB_URL "https://github.com/vgmrips/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "d660297110a90f04be034adc9ca8a374b000652d11690aa6813c526d7b067609")
+set(LIB_SHA_256_HASH "c797f4ac00dd9b390b3323fc2d584924eca2625b09bca9c0f8ade771ff4a681d")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
 )
