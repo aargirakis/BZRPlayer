@@ -108,11 +108,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec, buffer, 4, &bytesread);
 
 
-    if ((buffer[0] != 0x2d && buffer[1] != 0x46) //Doesn't start with "-F"
-        && (buffer[0] != 0x78 && buffer[1] != 0x01) //Not zlib no compression
-        && (buffer[0] != 0x78 && buffer[1] != 0x5e) //Not zlib fast compression
-        && (buffer[0] != 0x78 && buffer[1] != 0x9c) //Not zlib default compression
-        && (buffer[0] != 0x78 && buffer[1] != 0xda) //Not zlib best compression
+    if ((buffer[0] != '-' || buffer[1] != 'F') //Doesn't start with "-F"
+        && (buffer[0] != '.' || buffer[1] != 'D') //Doesn't start with ".D"
+        && (buffer[0] != 0x78 || buffer[1] != 0x01) //Not zlib no compression
+        && (buffer[0] != 0x78 || buffer[1] != 0x5e) //Not zlib fast compression
+        && (buffer[0] != 0x78 || buffer[1] != 0x9c) //Not zlib default compression
+        && (buffer[0] != 0x78 || buffer[1] != 0xda) //Not zlib best compression
 
     ) //it's not a Furnace file
     {
