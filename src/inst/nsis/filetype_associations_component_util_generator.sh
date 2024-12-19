@@ -9,8 +9,6 @@
 # SYNOPSIS
 #     ./filetype_associations_component_util_generator.sh
 #
-# AUTHOR
-#     Ciro Scognamiglio
 
 set -e
 

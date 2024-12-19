@@ -7,8 +7,6 @@
 # SYNOPSIS
 #     ./test_samples.sh
 #
-# AUTHOR
-#     Ciro Scognamiglio
 
 set -e
 

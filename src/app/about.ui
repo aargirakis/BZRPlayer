@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>747</width>
-    <height>431</height>
+    <height>374</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -54,7 +54,7 @@ QLineEdit {
     <rect>
      <x>20</x>
      <y>10</y>
-     <width>181</width>
+     <width>171</width>
      <height>61</height>
     </rect>
    </property>
@@ -75,12 +75,15 @@ QLineEdit {
    <property name="text">
     <string>BZR Player</string>
    </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
   </widget>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
      <x>605</x>
-     <y>382</y>
+     <y>326</y>
      <width>121</width>
      <height>29</height>
     </rect>
@@ -127,9 +130,9 @@ QPushButton:hover
   <widget class="QLabel" name="labelVersion">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>60</y>
-     <width>151</width>
+     <x>61</x>
+     <y>59</y>
+     <width>80</width>
      <height>21</height>
     </rect>
    </property>
@@ -142,14 +145,17 @@ QPushButton:hover
    <property name="text">
     <string>x.y.z</string>
    </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
   </widget>
   <widget class="QTextBrowser" name="textBrowser">
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>60</y>
+     <y>30</y>
      <width>511</width>
-     <height>321</height>
+     <height>291</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -157,17 +163,15 @@ QPushButton:hover
    </property>
    <property name="html">
     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; font-size:14px; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14px;&quot;&gt;BZR Player is an audio player supporting a wide array of multi-platform exotic file formats, written in C++ and Qt5 with a sound engine based on FMOD. The first version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version which is coded pretty much from scratch.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://discord.gg/feEBce8cFe&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Discord&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://www.facebook.com/BZRPlayer&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Facebook&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/aargirakis/BZRPlayer&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Github&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://www.patreon.com/bzrplayer&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Patreon&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://twitter.com/BZRPlayer&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Twitter&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://bzrplayer.blazer.nu&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Website&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14px;&quot;&gt;Thanks to all my patreons and donors, without you I wouldn't have come so far: Alex, bagpipes, Bruce J. Batiste, Bruno Levenez, Chris Huber, Ciro Scognamiglio, Der Rattenfänger von Hameln, Ken Shigros, Olivier Krumm, Fabrice Debarge, Morgan Johansson, Peter Olsen.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://bzrplayer.blazer.nu&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Website&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:14px;&quot;&gt;    &lt;/span&gt;&lt;a href=&quot;https://github.com/aargirakis/BZRPlayer&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Github&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:14px;&quot;&gt;    &lt;/span&gt;&lt;a href=&quot;https://discord.gg/feEBce8cFe&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Discord&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://www.patreon.com/bzrplayer&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Patreon&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:14px;&quot;&gt;    &lt;/span&gt;&lt;a href=&quot;https://www.facebook.com/BZRPlayer&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Facebook&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:14px;&quot;&gt;    &lt;/span&gt;&lt;a href=&quot;https://twitter.com/BZRPlayer&quot;&gt;&lt;span style=&quot; font-size:14px; text-decoration: underline; color:#009379;&quot;&gt;Twitter&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14px;&quot;&gt;&lt;br /&gt;Thanks to all my supporters, without you I wouldn't have come so far:&lt;br /&gt;Alex, bagpipes, Bruce J. Batiste, Bruno Levenez, Chris Huber, Der Rattenfänger von Hameln, Ken Shigros, Olivier Krumm, Fabrice Debarge, Morgan Johansson, Peter Olsen.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="openExternalLinks">
     <bool>true</bool>
@@ -176,8 +180,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>120</y>
+     <x>46</x>
+     <y>93</y>
      <width>111</width>
      <height>111</height>
     </rect>
@@ -190,6 +194,12 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="scaledContents">
     <bool>true</bool>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QTableView" name="tableView">
@@ -215,6 +225,40 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="gridStyle">
     <enum>Qt::NoPen</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelDevs">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>214</y>
+     <width>181</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="lineWidth">
+    <number>1</number>
+   </property>
+   <property name="midLineWidth">
+    <number>0</number>
+   </property>
+   <property name="text">
+    <string>by&lt;br/&gt;Andreas &quot;**Blazer**&quot; Argirakis&lt;br/&gt;Ciro Scognamiglio</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::MarkdownText</enum>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>
