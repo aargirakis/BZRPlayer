@@ -225,7 +225,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 {
     ahxplugin* ahx = (ahxplugin*)codec->plugindata;
     uint32_t* osc = new uint32_t[18000];
-    memset(osc, 0, 18000 * sizeof(osc));
+    memset(osc, 0, 18000 * sizeof(*osc));
     ahx->sndh->AudioRender((int16_t*)buffer, size, osc);
     ahx->oscBuffer.push(osc);
     ahx->info->waveformDisplay = ahx->oscBuffer.front();
