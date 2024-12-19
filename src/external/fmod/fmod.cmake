@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "fmod")
-set(VERSION "2.02.06")
+set(VERSION "2.02.26")
 set(PLUGIN_${NAME}_NAME "FMOD")
 set(PLUGIN_${NAME}_VERSION "${VERSION}")
 
