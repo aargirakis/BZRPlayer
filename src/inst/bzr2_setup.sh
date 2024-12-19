@@ -18,8 +18,6 @@
 # NOTES
 #     - versions older than 2.0.19 are not supported
 #
-# AUTHOR
-#     Ciro Scognamiglio
 
 set -e
 
@@ -650,8 +648,6 @@ setup_launcher_script() {
 #     ./bzr-player.sh file1 file2 dir1 dir2
 #         run BZR2 with selected files and/or directories as arguments
 #
-# AUTHOR
-#     Ciro Scognamiglio
 
 set -e
 

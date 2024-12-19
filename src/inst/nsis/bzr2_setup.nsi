@@ -1,5 +1,3 @@
-# AUTHOR: Ciro Scognamiglio
-
 #TODO add md5 zip check
 #TODO tighten vars scope
 #TODO add UAC Publisher (verisign)

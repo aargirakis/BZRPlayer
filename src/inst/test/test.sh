@@ -7,8 +7,6 @@
 # SYNOPSIS
 #     ./test.sh [-h|--help|--show-passed] target [MIME type]
 #
-# AUTHOR
-#     Ciro Scognamiglio
 
 set -e
 
