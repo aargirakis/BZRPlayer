@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "sndh-player")
-set(VERSION "0.74")
+set(VERSION "0.78")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "SNDH-Archive-Player" PARENT_SCOPE)
@@ -16,17 +16,17 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
 set(LIB_FILENAME_URL "v${LIB_VERSION}.zip")
 set(LIB_URL "https://github.com/arnaud-carre/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "e54d569c364b6040c85af75902d49b8c724743597e2aeeba357d6aa9e52fc438")
+set(LIB_SHA_256_HASH "9edc6976f2140bbab390a376e0c1213b50ba2ae2da9ae074ecea00b431f2bfad")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-set(FILENAME "timedb.inc.h")
-#TODO https://sourceforge.net/p/sc68/code/710/tree/file68/src/timedb.inc.h?format=raw better using the versioned url?
-set(FILE_URL "https://sourceforge.net/p/sc68/code/HEAD/tree/file68/src/${FILENAME}?format=raw")
-set(DESTINATION_PATH "${EXTERNAL_SOURCE_DIR}")
-download_to(${FILENAME} ${FILE_URL} "" ${DESTINATION_PATH} true "")
+set(TIMEDB_FILENAME "timedb.inc.h")
+set(TIMEDB_VERSION "713")
+set(TIMEDB_FILE_URL "https://sourceforge.net/p/sc68/code/${TIMEDB_VERSION}/tree/file68/src/${TIMEDB_FILENAME}?format=raw")
+set(TIMEDB_DESTINATION_PATH "${EXTERNAL_SOURCE_DIR}")
+download_to(${TIMEDB_FILENAME} ${TIMEDB_FILE_URL} "" ${TIMEDB_DESTINATION_PATH} true "")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/AtariAudio/*.cpp
