@@ -26,7 +26,6 @@ download_patch_and_make(
 )
 
 file(GLOB SOURCES
-        src/queue.c #TODO remove
         src/main.cpp
 
         ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp

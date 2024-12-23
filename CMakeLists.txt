@@ -116,4 +116,4 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     )
 endif ()
 
-#TODO redundant queue.h & queue.c should be treated as external dependency like src/external/psflib or, better, relace it with c++ std::queue
+#TODO queue.h & queue.c (in hivelytracker & libxmp plugins) should be replaced by c++ std::queue (as in plugin_libopenmpt's main.cpp)
