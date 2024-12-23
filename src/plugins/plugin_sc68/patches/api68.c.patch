@@ -1,0 +1,11 @@
+--- libsc68/src/api68.c	2016-12-20 00:25:27.000000000 +0100
++++ libsc68/src/api68.c	2025-01-27 15:22:38.844245357 +0100
+@@ -119,7 +119,7 @@
+ /* Atari-ST trap emulator (see trap.s)
+  */
+ static u8 trap_func[] = {
+-#include "sc68/trap68.h"
++//#include "sc68/trap68.h"
+ };
+ 
+ /* Atari-ST trap categories
