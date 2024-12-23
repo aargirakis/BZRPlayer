@@ -3,7 +3,7 @@
 #include "fmod_errors.h"
 #include "info.h"
 #include "libsc68/sc68/sc68.h"
-#include "file68/sc68/rsc68.h"
+#include "file68/sc68/file68_rsc.h"
 #include "plugins.h"
 
 //CLogFile *LogFile;
