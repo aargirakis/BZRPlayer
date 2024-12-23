@@ -1,6 +1,6 @@
 #include <cstring>
 #include "libsc68/sc68/sc68.h"
-#include "file68/sc68/rsc68.h"
+#include "file68/sc68/file68_rsc.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
@@ -82,14 +82,28 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     const auto plugin = new pluginSc68(codec);
 
-    sc68_init(&plugin->init68);
+    // plugin->init68.debug_clr_mask = 0;
+    // plugin->init68.debug_set_mask = 0;
+
+    if (sc68_init(&plugin->init68) < 0) {
+        delete plugin;
+        return FMOD_ERR_FORMAT; //TODO proper error type
+    }
 
     const auto info = static_cast<Info *>(userexinfo->userdata);
 
     const string path = info->dataPath + SC68_DATA_DIR;
     rsc68_set_share(path.c_str());
 
+    plugin->create68.emu68_debug = 1; // avoids sc68 crash
+
+    plugin->create68.sampling_rate = 44100; //TODO
     plugin->sc68 = sc68_create(&plugin->create68);
+
+    if (!plugin->sc68) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
 
     if (sc68_load_mem(plugin->sc68, info->fileBuffer, info->filesize) < 0) {
         delete plugin;
@@ -100,10 +114,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     // but seeking is so slow (like slowly winding it up, audible so it's pretty useless
     //int* seek = 0;
     //api68_seek(plugin->sc68, position,seek);
-    if (sc68_play(plugin->sc68, info->currentSubsong + 1, 0) < 0) {
+    if (sc68_play(plugin->sc68, 1, SC68_DEF_LOOP) < 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
+
+    // int rate = sc68_cntl(plugin->sc68, SC68_GET_SPR);
+    // /* Safety net */
+    // if (rate <= 8000)
+    //     rate = sc68_cntl(plugin->sc68, SC68_SET_SPR, 8000);
+    // else if (rate > 48000)
+    //     rate = sc68_cntl(plugin->sc68, SC68_SET_SPR, 48000);
 
     // needed for grabbing the disk name: use plugin->info.album instead for newer sc68 versions
     if (sc68_music_info(plugin->sc68, &plugin->info, 0, nullptr) < 0) {
@@ -120,7 +141,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.frequency = 44100; //TODO
     plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
@@ -133,12 +154,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     info->pluginName = PLUGIN_sc68_NAME;
     info->fileFormat = "SC68";
 
-    info->author = plugin->info.author;
-    info->composer = plugin->info.composer;
+    info->author = "";
+    info->composer = "";
     info->replay = plugin->info.replay;
-    info->hardware = plugin->info.hwname;
+    info->hardware = "";
     info->title = plugin->info.title;
-    info->rate = static_cast<int>(plugin->info.rate);
+    info->rate = 44100; //TODO
     info->address = static_cast<int>(plugin->info.addr);
     info->converter = plugin->info.converter ? plugin->info.converter : "";
     info->ripper = plugin->info.ripper ? plugin->info.ripper : "";
@@ -156,10 +177,26 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginSc68 *>(codec->plugindata);
 
-    if (sc68_process(plugin->sc68, buffer, static_cast<int>(plugin->waveformat.pcmblocksize)) == SC68_MIX_ERROR) {
+    int n = plugin->waveformat.pcmblocksize;
+
+    if (sc68_process(plugin->sc68, buffer, &n) == SC68_ERROR) {
         //cout << "FMOD_ERR_FORMAT play" << endl;
-        //return FMOD_ERR_FORMAT;
+        return FMOD_ERR_FORMAT;
     }
+
+    // if (code == SC68_ERROR) {
+    //     sc68a_error = TRUE;
+    //     continue;
+    // }
+    // if (code & SC68_END) {
+    //     sc68a_eof = TRUE;
+    //     continue;
+    // }
+    // if (code & SC68_CHANGE) {
+    //     sc68a_eof = TRUE;
+    //     continue;
+    // }
+
 
     *read = plugin->waveformat.pcmblocksize;
     return FMOD_OK;
@@ -178,12 +215,12 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginSc68 *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        if (plugin->info.time_ms > 0xfffff || plugin->info.time_ms == 0)
+        if (-1 > 0xfffff || -1 == 0)
         // if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
         {
             *length = -1;
         } else {
-            *length = plugin->info.time_ms;
+            *length = -1;
         }
 
         return FMOD_OK;
