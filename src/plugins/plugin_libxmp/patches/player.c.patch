@@ -1,5 +1,5 @@
 --- src/player.c	2021-06-10 02:24:24.000000000 +0200
-+++ src/player.c	2024-09-21 11:33:59.269863567 +0200
++++ src/player.c	2024-12-23 10:43:16.860567916 +0100
 @@ -1509,6 +1509,21 @@
  	if (libxmp_mixer_on(ctx, rate, format, m->c4rate) < 0)
  		return -XMP_ERROR_INTERNAL;
@@ -51,7 +51,7 @@
 +    Enqueue(p->row,p->trackPosBuffer);
 +    Enqueue(mod->xxo[p->pos],p->patternPosBuffer);
 +    Enqueue(p->pos,p->posBuffer);
-+    Enqueue(vumeters,p->vumeterBuffer);
++    Enqueue((ElementType) vumeters,p->vumeterBuffer);
 +	Enqueue(p->speed,p->speedBuffer);
 +	Enqueue(p->bpm,p->bpmBuffer);
 +
@@ -145,7 +145,7 @@
 +        int i = 0;
 +        for(i=0;i<chn;i++)
 +        {
-+            unsigned char* test = Front(p->vumeterBuffer);
++            unsigned char* test = (unsigned char*) Front(p->vumeterBuffer);
 +            volumes[i]=test[i];
 +        }
 +    }
