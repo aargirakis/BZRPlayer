@@ -12,13 +12,13 @@
 -void Load_Reverb_Data(int (*Read_Function)(void *, int ,int, FILE *),
 -                      int (*Read_Function_Swap)(void *, int ,int, FILE *),
 -                      FILE *in, int New);
-+void Load_Reverb_Data(int (*Read_Function)(void *, int ,int, ReplayerFile&),
-+                      int (*Read_Function_Swap)(void *, int ,int, ReplayerFile&),
-+                      ReplayerFile& in, int New);
++void Load_Reverb_Data(int (*Read_Function)(void *, int ,int, CustomFile&),
++                      int (*Read_Function_Swap)(void *, int ,int, CustomFile&),
++                      CustomFile& in, int New);
  void Save_Reverb_Data(int (*Write_Function)(void *, int ,int, FILE *),
                        int (*Write_Function_Swap)(void *, int ,int, FILE *),
 -                      FILE *in);
-+                      ReplayerFile& in);
++                      CustomFile& in);
  void Load_Reverb(char *FileName);
  void Save_Reverb(void);
  void Load_Old_Reverb_Presets(int Type);

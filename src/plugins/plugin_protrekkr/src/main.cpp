@@ -15,7 +15,7 @@ char style[20];
 char SampleName[128][16][64];
 char Midiprg[128];
 char nameins[128][20];
-extern char replayerPtkName[20];
+extern char customPtkName[20];
 extern Uint8* Mod_Memory;
 int Chan_Midi_Prg[MAX_TRACKS];
 char Chan_History_State[256][MAX_TRACKS];
@@ -183,7 +183,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     info->numSamples = 128;
     info->numInstruments = 128;
     info->numChannels = int(Songtracks);
-    info->title = replayerPtkName;
+    info->title = customPtkName;
     info->artist = artist;
     info->plugin = PLUGIN_protrekkr;
     info->pluginName = PLUGIN_protrekkr_NAME;

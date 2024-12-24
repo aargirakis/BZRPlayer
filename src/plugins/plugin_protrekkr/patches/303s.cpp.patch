@@ -7,9 +7,9 @@
 -void Load_303_Data(int (*Read_Function)(void *, int ,int, FILE *),
 -                   int (*Read_Function_Swap)(void *, int ,int, FILE *),
 -                   FILE *in, int unit, int pattern)
-+void Load_303_Data(int (*Read_Function)(void *, int ,int, ReplayerFile&),
-+                   int (*Read_Function_Swap)(void *, int ,int, ReplayerFile&),
-+                   ReplayerFile& in, int unit, int pattern)
++void Load_303_Data(int (*Read_Function)(void *, int ,int, CustomFile&),
++                   int (*Read_Function_Swap)(void *, int ,int, CustomFile&),
++                   CustomFile& in, int unit, int pattern)
  {
      int i;
  

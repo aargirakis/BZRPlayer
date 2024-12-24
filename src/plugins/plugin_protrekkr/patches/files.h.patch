@@ -4,9 +4,9 @@
  extern gear303 tb303engine[2];
  extern para303 tb303[2];
  
-+struct ReplayerFile
++struct CustomFile
 +{
-+    ReplayerFile(const uint8_t* data, size_t size) : buf(data), maxSize(size) {}
++    CustomFile(const uint8_t* data, size_t size) : buf(data), maxSize(size) {}
 +    const uint8_t* buf;
 +    size_t maxSize;
 +    size_t pos = 0;
@@ -39,7 +39,7 @@
  // ------------------------------------------------------
  // Functions
 -int Load_Ptk(char *FileName);
-+int Load_Ptk(ReplayerFile replayerFile);
++int Load_Ptk(CustomFile customFile);
  int Save_Ptk(char *FileName, int NewFormat, int Simulate, Uint8 *Memory);
  void Backup_Module(char *FileName);
  int Pack_Module(char *FileName);
@@ -48,7 +48,7 @@
  Uint8 *Pack_Data(Uint8 *Memory, int *Len);
  Uint8 *Depack_Data(Uint8 *Memory, int Size, int size_out);
 -int Get_File_Size(FILE *Handle);
-+int Get_File_Size(ReplayerFile& Handle);
++int Get_File_Size(CustomFile& Handle);
  int Calc_Length(void);
  void Reset_Song_Length(void);
  void Clear_Input(void);
@@ -57,8 +57,8 @@
  void Init_Tracker_Context_After_ModLoad(void);
 -int Read_Data(void *value, int size, int amount, FILE *handle);
 -int Read_Data_Swap(void *value, int size, int amount, FILE *handle);
-+int Read_Data(void *value, int size, int amount, ReplayerFile& handle);
-+int Read_Data_Swap(void *value, int size, int amount, ReplayerFile& handle);
++int Read_Data(void *value, int size, int amount, CustomFile& handle);
++int Read_Data_Swap(void *value, int size, int amount, CustomFile& handle);
  int Write_Data(void *value, int size, int amount, FILE *handle);
  int Write_Data_Swap(void *value, int size, int amount, FILE *handle);
  void Swap_Sample(short *buffer, int sample, int bank);

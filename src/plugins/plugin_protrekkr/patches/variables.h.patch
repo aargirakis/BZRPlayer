@@ -1,18 +1,16 @@
 --- src/include/variables.h	2024-02-05 23:48:28.000000000 +0100
 +++ src/include/variables.h	2024-09-26 12:41:44.794560150 +0200
-@@ -36,9 +36,9 @@
+@@ -36,9 +36,7 @@
  
  // ------------------------------------------------------
  // Includes
 -#include <SDL/SDL.h>
-+//#include <SDL/SDL.h>
  
 -#include "../support/include/main.h"
-+//#include "../support/include/main.h"
  #include "../../release/distrib/replay/lib/include/replay.h"
  
  // ------------------------------------------------------
-@@ -375,21 +375,27 @@
+@@ -407,16 +405,20 @@
  extern int resty;
  extern int rs_coef;
  
@@ -26,11 +24,14 @@
  
 +#if !defined(BZR2)
  extern SDL_Surface *PFONT;
+ extern SDL_Surface *PFONT_DOUBLE;
  extern SDL_Surface *FONT;
  extern SDL_Surface *FONT_LOW;
 +#endif
  
  extern int gui_action;
+ extern int gui_action_external;
+@@ -424,7 +426,9 @@
  extern int gui_action_metronome;
  extern char teac;
  
@@ -40,9 +41,9 @@
  
  extern int fluzy;
  
-@@ -438,8 +444,10 @@
- extern float *Scope_Dats[MAX_TRACKS];
- extern float *Scope_Dats_LeftRight[2];
+@@ -475,8 +479,10 @@
+ extern float *VuMeters_Dats_L[MAX_TRACKS];
+ extern float *VuMeters_Dats_R[MAX_TRACKS];
  
 +#if !defined(BZR2)
  extern SDL_Surface *SKIN303;

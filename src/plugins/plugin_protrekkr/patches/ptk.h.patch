@@ -1,28 +1,26 @@
---- src/include/ptk.h	2024-02-05 23:48:28.000000000 +0100
-+++ src/include/ptk.h	2024-09-26 12:41:44.784560295 +0200
-@@ -34,14 +34,14 @@
- 
+--- src/include/ptk.h	2024-12-13 17:17:53.000000000 +0100
++++ src/include/ptk.h	2024-12-24 19:15:58.940921972 +0100
+@@ -34,15 +34,12 @@
+
  // ------------------------------------------------------
  // Includes
 -#include "../support/include/main.h"
--
-+//#include "../support/include/main.h"
 +#include <cstdio>
+
  #include "../samples/wav/include/riff.h"
  #include "../samples/aiff/include/aiff.h"
  #include "../include/variables.h"
- 
+
 -#include "../ui/include/misc_draw.h"
+-#include "../ui/include/draw_primitives.h"
 -#include "../ui/include/requesters.h"
-+//#include "../ui/include/misc_draw.h"
-+//#include "../ui/include/requesters.h"
- 
+
  #include "../files/include/files.h"
  #include "../files/include/files_list.h"
-@@ -51,24 +51,24 @@
+@@ -52,24 +49,8 @@
  #include "../files/include/midi_cfg.h"
  #include "../files/include/patterns.h"
- 
+
 -#include "../editors/include/editor_setup.h"
 -#include "../editors/include/editor_midi.h"
 -#include "../editors/include/editor_303.h"
@@ -37,35 +35,18 @@
 -#include "../editors/include/editor_pattern.h"
 -#include "../editors/include/editor_sample.h"
 -#include "../editors/include/patterns_blocks.h"
-+// #include <editors/include/editor_setup.h>
-+// #include <editors/include/editor_midi.h>
-+// #include <editors/include/editor_303.h>
-+// #include <editors/include/editor_fx_setup.h>
-+// #include <editors/include/editor_synth.h>
-+// #include <editors/include/editor_track_fx.h>
-+// #include <editors/include/editor_diskio.h>
-+// #include <editors/include/editor_reverb.h>
-+// #include <editors/include/editor_sequencer.h>
-+// #include <editors/include/editor_track.h>
-+// #include <editors/include/editor_instrument.h>
-+// #include <editors/include/editor_pattern.h>
-+// #include <editors/include/editor_sample.h>
-+// #include <editors/include/patterns_blocks.h>
- 
+
 -#include "../support/include/timer.h"
-+//#include "../support/include/timer.h"
- 
+
 -#include "../midi/include/midi.h"
-+//#include "../midi/include/midi.h"
  
  #include "../../release/distrib/replay/lib/include/endianness.h"
  #include "../../release/distrib/replay/lib/include/replay.h"
-@@ -87,8 +87,10 @@
+@@ -88,7 +69,9 @@
  };
  
  extern list <skin_file> skin_files;
 +#if !defined(BZR2)
- extern SDL_Surface *POINTER;
  extern REQUESTER Exit_Requester;
 +#endif
  

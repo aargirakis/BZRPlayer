@@ -1,6 +1,6 @@
---- release/distrib/replay/lib/include/replay.h	2024-02-05 23:48:28.000000000 +0100
-+++ release/distrib/replay/lib/include/replay.h	2024-09-21 11:33:59.329862801 +0200
-@@ -37,27 +37,28 @@
+--- release/distrib/replay/lib/include/replay.h	2024-12-24 19:47:28.592674094 +0100
++++ release/distrib/replay/lib/include/replay.h	2024-12-24 19:59:16.340277784 +0100
+@@ -37,31 +37,7 @@
  #include "tb_303.h"
  #include "cubic_spline.h"
  #include "spline.h"
@@ -12,7 +12,9 @@
 -#include "../sounddriver/include/sounddriver_netbsd.h"
 -#elif defined(__LINUX__)
 -#include "../sounddriver/include/sounddriver_linux.h"
--#elif defined(__MACOSX__)
+-#elif defined(__MACOSX_PPC__)
+-#include "../sounddriver/include/sounddriver_macosx.h"
+-#elif defined(__MACOSX_X86__)
 -#include "../sounddriver/include/sounddriver_macosx.h"
 -#elif defined(__AROS__) || defined(__MORPHOS__)
 -#include "../sounddriver/include/sounddriver_aros.h"
@@ -20,32 +22,13 @@
 -#include "../sounddriver/include/sounddriver_aos4.h"
 -#elif defined(__PSP__)
 -#include "../sounddriver/include/sounddriver_psp.h"
+-#elif defined(__PSVITA__)
+-#include "../sounddriver/include/sounddriver_psvita.h"
 -#elif defined(__HAIKU__)
 -#include "../sounddriver/include/sounddriver_haiku.h"
 -#else
--#error "Can't work without a sound driver !"
+-#error "No sound driver defined !"
 -#endif
-+//#if defined(__WIN32__)
-+//#include "../sounddriver/include/sounddriver_windows.h"
-+//#elif defined(__FREEBSD__)
-+//#include "../sounddriver/include/sounddriver_freebsd.h"
-+//#elif defined(__NETBSD__)
-+//#include "../sounddriver/include/sounddriver_netbsd.h"
-+//#elif defined(__LINUX__)
-+//#include "../sounddriver/include/sounddriver_linux.h"
-+//#elif defined(__MACOSX__)
-+//#include "../sounddriver/include/sounddriver_macosx.h"
-+//#elif defined(__AROS__) || defined(__MORPHOS__)
-+//#include "../sounddriver/include/sounddriver_aros.h"
-+//#elif defined(__AMIGAOS4__)
-+//#include "../sounddriver/include/sounddriver_aos4.h"
-+//#elif defined(__PSP__)
-+//#include "../sounddriver/include/sounddriver_psp.h"
-+//#elif defined(__HAIKU__)
-+//#include "../sounddriver/include/sounddriver_haiku.h"
-+//#else
-+//#error "Can't work without a sound driver !"
-+//#endif
 +#include "sounddriver_dummy.h"
  #include "samples_unpack.h"
  #include "ptkreplay.h"
