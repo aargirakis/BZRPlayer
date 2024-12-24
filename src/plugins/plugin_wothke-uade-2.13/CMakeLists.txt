@@ -11,10 +11,6 @@ set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10)
-    add_compile_options($<$<COMPILE_LANGUAGE:C>:-fcommon>)
-endif ()
-
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
     add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
     add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-int-conversion>)
@@ -36,7 +32,6 @@ download_patch_and_add(
 set(UADE_DATA_PATH "/data/plugin/uade")
 add_compile_definitions(UADE_DATA_PATH="${UADE_DATA_PATH}")
 add_compile_definitions(EMSCRIPTEN=1)
-add_compile_definitions(_UADE_STRSEP_H_) #TODO needed?
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/compat/memmemrep.c
@@ -80,13 +75,11 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/unixatomic.c
         src/flod/*.cpp #TODO
         src/md5/*.c    #TODO all src/md5/*.* files (apart types.h) comes from xmms-sid (version from 0.8.96 to 0.8.99.2) that seem untraceable on the web: better upgrade to 0.9.2
-        src/blazer.c
         src/main.cpp
+        src/util.c
 
         ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
 )
-
-list(REMOVE_ITEM SOURCES ${EXTERNAL_SOURCE_DIR}/compat/stdinttest.c)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 

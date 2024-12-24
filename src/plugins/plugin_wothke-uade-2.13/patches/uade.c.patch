@@ -1,5 +1,5 @@
 --- src/uade.c	2014-09-16 19:11:24.000000000 +0200
-+++ src/uade.c	2024-09-21 11:33:59.423194942 +0200
++++ src/uade.c	2024-12-24 09:23:26.851801912 +0100
 @@ -47,6 +47,7 @@
  #include "amigamsg.h"
  #include "ossupport.h"
@@ -17,15 +17,6 @@
  
  static int uade_calc_reloc_size(uae_u32 *src, uae_u32 *end);
  static int uade_get_u32(int addr);
-@@ -101,7 +102,7 @@
- struct uade_ipc uadeipc;
- #else 
- // code adapted from uade123.c: uses EaglePlayer to determine the player name used for a song
--struct uade_state _state;
-+//struct uade_state _state; // place in uade.h
- #endif
- 
- int uade_audio_skip;
 @@ -130,6 +131,14 @@
  static size_t epoptionsize;
  

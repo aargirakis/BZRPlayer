@@ -1,5 +1,5 @@
 --- src/include/uade.h	2014-09-16 19:11:24.000000000 +0200
-+++ src/include/uade.h	2024-09-21 11:33:59.423194942 +0200
++++ src/include/uade.h	2024-12-24 09:23:26.851801912 +0100
 @@ -38,8 +38,11 @@
  };
  
@@ -14,11 +14,10 @@
  struct uade_sample_data *get_new_samples(void);
  
  #endif
-@@ -50,6 +53,11 @@
+@@ -50,6 +53,10 @@
  void uade_get_amiga_message(void);
  void uade_handle_r_state(void);
  #ifdef EMSCRIPTEN
-+struct uade_state _state; // was in uade.c
 +struct uade_state* get_uade_state(void);
 +void set_uade_state(struct uade_state* state);
 +int get_max_subsongs();
