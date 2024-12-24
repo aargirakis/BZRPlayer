@@ -1,15 +1,11 @@
---- src/files/include/synths.h	2024-02-05 23:48:28.000000000 +0100
-+++ src/files/include/synths.h	2024-09-21 11:33:59.333196091 +0200
-@@ -41,9 +41,9 @@
- 
- // ------------------------------------------------------
- // Functions
+--- src/files/include/synths.h	2025-01-27 21:00:24.894516050 +0100
++++ src/files/include/synths.h	2025-01-27 21:00:24.887849461 +0100
+@@ -46,7 +46,7 @@
+                        int (*Read_Function_Swap)(void *, int ,int, FILE *),
+                        FILE *in,
+ #else
 -void Read_Synth_Params(int (*Read_Function)(void *, int ,int, FILE *),
--                       int (*Read_Function_Swap)(void *, int ,int, FILE *),
--                       FILE *in,
-+void Read_Synth_Params(int (*Read_Function)(void *, int ,int, ReplayerFile&),
-+                       int (*Read_Function_Swap)(void *, int ,int, ReplayerFile&),
-+                       ReplayerFile& in,
-                        int idx,
-                        int read_disto,
-                        int read_lfo_adsr,
++void Read_Synth_Params(int (*Read_Function)(void *, int ,int, CustomFile &),
+                        int (*Read_Function_Swap)(void *, int ,int, CustomFile &),
+                        CustomFile &in,
+ #endif

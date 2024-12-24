@@ -1,28 +1,24 @@
-#include <stdio.h>
-#include <string.h>
 #include <string>
 #include "fmod_errors.h"
 #include "info.h"
 #include <iostream>
 #include "plugins.h"
-#include "../../release/distrib/replay/lib/include/replay.h"
 #include "../../src/files/include/files.h"
 
 int AUDIO_Play_Flag;
-
 char artist[20];
 char style[20];
 char SampleName[128][16][64];
-char Midiprg[128];
-char nameins[128][20];
-extern char replayerPtkName[20];
+int Midiprg[MAX_INSTRS];
+char nameins[MAX_INSTRS][20];
+extern char customPtkName[20];
 extern Uint8* Mod_Memory;
 int Chan_Midi_Prg[MAX_TRACKS];
-char Chan_History_State[256][MAX_TRACKS];
+char Chan_History_State[256][16];
+int done = 0;
 
-int done = 0; // set to TRUE if decoding has finished
 Uint32 STDCALL Mixer(Uint8* Buffer, Uint32 Len);
-// Reset the channels polyphonies  to their default state
+
 void Set_Default_Channels_Polyphony(void)
 {
     int i;
@@ -85,7 +81,7 @@ public:
 
     FMOD_CODEC_WAVEFORMAT ahxwaveformat;
     uint8_t* buffer;
-    unsigned int filesize;
+    size_t filesize;
     bool loaded = false;
 };
 
@@ -182,8 +178,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     info->numSamples = 128;
     info->numInstruments = 128;
-    info->numChannels = int(Songtracks);
-    info->title = replayerPtkName;
+    info->numChannels = int(Song_Tracks);
+    info->title = customPtkName;
     info->artist = artist;
     info->plugin = PLUGIN_protrekkr;
     info->pluginName = PLUGIN_protrekkr_NAME;

@@ -1,24 +1,12 @@
---- src/files/include/reverbs.h	2024-02-05 23:48:28.000000000 +0100
-+++ src/files/include/reverbs.h	2024-09-21 11:33:59.333196091 +0200
-@@ -37,16 +37,16 @@
+--- src/files/include/reverbs.h	2025-01-27 16:42:25.000000000 +0100
++++ src/files/include/reverbs.h	2025-01-27 19:52:45.649157458 +0100
+@@ -37,7 +37,9 @@
  #include "files.h"
  #include "files_list.h"
  #include "../../editors/include/editor_reverb.h"
--#include "../../ui/include/misc_draw.h"
-+//#include "../../ui/include/misc_draw.h"
++#if !defined(BZR2)
+ #include "../../ui/include/misc_draw.h"
++#endif
  
  // ------------------------------------------------------
  // Functions
--void Load_Reverb_Data(int (*Read_Function)(void *, int ,int, FILE *),
--                      int (*Read_Function_Swap)(void *, int ,int, FILE *),
--                      FILE *in, int New);
-+void Load_Reverb_Data(int (*Read_Function)(void *, int ,int, ReplayerFile&),
-+                      int (*Read_Function_Swap)(void *, int ,int, ReplayerFile&),
-+                      ReplayerFile& in, int New);
- void Save_Reverb_Data(int (*Write_Function)(void *, int ,int, FILE *),
-                       int (*Write_Function_Swap)(void *, int ,int, FILE *),
--                      FILE *in);
-+                      ReplayerFile& in);
- void Load_Reverb(char *FileName);
- void Save_Reverb(void);
- void Load_Old_Reverb_Presets(int Type);

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "protrekkr")
-set(VERSION "2.6.4")
+set(VERSION "2.8.0")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "ProTrekkr" PARENT_SCOPE)
@@ -18,7 +18,7 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_FILENAME_URL "v${LIB_VERSION}.tar.gz")
 set(LIB_URL "https://github.com/hitchhikr/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "801deb0ac1781fbd0b6608b8c319b5dc7d36400e15401abeb8a559e3127914e2")
+set(LIB_SHA_256_HASH "fb8ea4f0bc122416767414fa360349b0f2fd2396eae5791ec8e4355ddb31b6be")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
