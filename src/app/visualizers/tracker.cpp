@@ -69,7 +69,7 @@ void Tracker::init()
     }
 
     if (m_info->plugin != PLUGIN_libxmp && m_info->plugin != PLUGIN_hivelytracker && m_info->plugin != PLUGIN_libopenmpt
-        && m_info->plugin != PLUGIN_sunvox)
+        && m_info->plugin != PLUGIN_sunvox_lib)
     {
         m_trackerview = 0;
         m_render = false;
@@ -308,7 +308,7 @@ void Tracker::init()
     m_currentBPM = -1;
 
     if (m_info->plugin == PLUGIN_libopenmpt || m_info->plugin == PLUGIN_hivelytracker || m_info->plugin == PLUGIN_libxmp
-        || m_info->plugin == PLUGIN_sunvox)
+        || m_info->plugin == PLUGIN_sunvox_lib)
     {
         SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODPATTERN_INFO);
     }
@@ -653,14 +653,14 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                     k = m_info->modTrackPositions.at(chan) * m_info->modPatternRows;
                 }
                 else if (m_info->plugin == PLUGIN_libopenmpt || m_info->plugin == PLUGIN_libxmp || m_info->plugin ==
-                    PLUGIN_sunvox)
+                    PLUGIN_sunvox_lib)
                 {
                     k = chan;
                 }
 
                 BaseRow* row;
                 if (m_info->plugin == PLUGIN_libopenmpt || m_info->plugin == PLUGIN_libxmp || m_info->plugin ==
-                    PLUGIN_sunvox)
+                    PLUGIN_sunvox_lib)
                 {
                     row = m_info->patterns[m_currentPattern][libxmpNotes];
                     libxmpNotes++;
@@ -1199,7 +1199,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             }
             j++;
             if (m_info->plugin == PLUGIN_libopenmpt || m_info->plugin == PLUGIN_libxmp || m_info->plugin ==
-                PLUGIN_sunvox)
+                PLUGIN_sunvox_lib)
             {
                 i += m_info->numChannels;
             }

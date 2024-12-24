@@ -141,10 +141,10 @@
 #define PLUGIN_sndh_player_NAME "@PLUGIN_sndh-player_NAME@"
 #define PLUGIN_sndh_player_VERSION "@PLUGIN_sndh-player_VERSION@"
 
-#define PLUGIN_sunvox 28
-#define PLUGIN_sunvox_DLL "@PLUGIN_sunvox_DLL@"
-#define PLUGIN_sunvox_NAME "@PLUGIN_sunvox_NAME@"
-#define PLUGIN_sunvox_VERSION "@PLUGIN_sunvox_VERSION@"
+#define PLUGIN_sunvox_lib 28
+#define PLUGIN_sunvox_lib_DLL "@PLUGIN_sunvox_lib_DLL@"
+#define PLUGIN_sunvox_lib_NAME "@PLUGIN_sunvox_lib_NAME@"
+#define PLUGIN_sunvox_lib_VERSION "@PLUGIN_sunvox_lib_VERSION@"
 
 #define PLUGIN_tunes98_plug 29
 #define PLUGIN_tunes98_plug_DLL "@PLUGIN_tunes98_plug_DLL@"

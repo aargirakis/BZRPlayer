@@ -44,7 +44,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_protrekkr "src/plugins/plugin_protrekkr"
         plugin_sc68 "src/plugins/plugin_sc68"                                #TODO seeking it is now supported (should be implemented into main.cpp) #TODO also track length seems supported (see DisplayInfo function in sc68.c)
         plugin_sndh-player "src/plugins/plugin_sndh-player"                  #check cmake TODO
-        plugin_sunvox "src/plugins/plugin_sunvox"                            #TODO sv_unload_dll()?
+        plugin_sunvox_lib "src/plugins/plugin_sunvox_lib"                    #TODO add sv_unload_dll() (see sunvox_lib README)
         plugin_tunes98_plug "src/plugins/plugin_tunes98_plug"                #check cmake TODO
         plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO seeking it is now supported (should be implemented into main.cpp). #TODO add v2mz support (see sources/v2m dir for example files)
         plugin_vgmplay-legacy "src/plugins/plugin_vgmplay-legacy"            #check cmake TODO

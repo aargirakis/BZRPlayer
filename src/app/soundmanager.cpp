@@ -119,9 +119,9 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_organya_decoder_DLL, 99999);
     }
-    if (PLUGIN_sunvox_DLL != "")
+    if (PLUGIN_sunvox_lib_DLL != "")
     {
-        loadPlugin(PLUGIN_sunvox_DLL, 99999);
+        loadPlugin(PLUGIN_sunvox_lib_DLL, 99999);
     }
     if (PLUGIN_audiofile_DLL != "")
     {
