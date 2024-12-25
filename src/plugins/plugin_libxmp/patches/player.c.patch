@@ -1,6 +1,6 @@
---- src/player.c	2021-06-10 02:24:24.000000000 +0200
-+++ src/player.c	2024-12-23 10:43:16.860567916 +0100
-@@ -1509,6 +1509,21 @@
+--- src/player.c	2023-06-15 22:11:10.000000000 +0200
++++ src/player.c	2024-12-25 11:51:36.825803303 +0100
+@@ -1795,6 +1795,21 @@
  	if (libxmp_mixer_on(ctx, rate, format, m->c4rate) < 0)
  		return -XMP_ERROR_INTERNAL;
  
@@ -22,7 +22,7 @@
  	p->master_vol = 100;
  	p->smix_vol = 100;
  	p->gvol = m->volbase;
-@@ -1732,6 +1747,35 @@
+@@ -2020,6 +2035,35 @@
  
  	libxmp_mixer_softmixer(ctx);
  
@@ -58,7 +58,7 @@
  	return 0;
  }
  
-@@ -1804,7 +1848,12 @@
+@@ -2092,7 +2136,12 @@
  
  	if (ctx->state < XMP_STATE_PLAYING)
  		return;
@@ -72,7 +72,7 @@
  	ctx->state = XMP_STATE_LOADED;
  
  #ifndef LIBXMP_CORE_PLAYER
-@@ -1871,10 +1920,52 @@
+@@ -2159,10 +2208,52 @@
  		info->num_rows = 0;
  	}
  
@@ -128,7 +128,7 @@
  	info->total_time = p->scan[p->sequence].time;
  	info->frame_time = p->frame_time * 1000;
  	info->time = p->current_time;
-@@ -1926,3 +2017,25 @@
+@@ -2214,3 +2305,26 @@
  		}
  	}
  }
@@ -140,12 +140,13 @@
 +    struct xmp_module *mod = &m->mod;
 +    int chn;
 +    chn = mod->chn;
-+    if(!IsEmpty(p->vumeterBuffer))
++
++	unsigned char* test = (unsigned char*) Front(p->vumeterBuffer);
++
++    if(test != 0)
 +    {
-+        int i = 0;
-+        for(i=0;i<chn;i++)
++        for(int i=0;i<chn;i++)
 +        {
-+            unsigned char* test = (unsigned char*) Front(p->vumeterBuffer);
 +            volumes[i]=test[i];
 +        }
 +    }

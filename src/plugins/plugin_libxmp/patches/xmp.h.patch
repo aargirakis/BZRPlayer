@@ -4,7 +4,7 @@
  LIBXMP_EXPORT int         xmp_smix_channel_pan (xmp_context, int, int);
  LIBXMP_EXPORT int         xmp_smix_load_sample (xmp_context, int, const char *);
  LIBXMP_EXPORT int         xmp_smix_release_sample (xmp_context, int);
-+LIBXMP_EXPORT void        xmp_get_channel_volumes  (xmp_context, unsigned char*);
++LIBXMP_EXPORT void        xmp_get_channel_volumes (xmp_context, unsigned char*);
  
  #ifdef __cplusplus
  }
