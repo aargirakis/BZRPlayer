@@ -37,11 +37,13 @@ CRCCheck force
 !define NAME "${NAME_UNVERSIONED} 2"
 !define EXE_FILENAME "BZRPlayer.exe"
 !define VERSION_FILENAME "bzr2_version_latest"
+!define RELEASE_ARCHIVE_FILENAME_UNVERSIONED "BZR-Player-"
+!define RELEASE_ARCHIVE_FILE_PATH "$releaseArchiveFileDir\$releaseArchiveFilename"
 !define URL_MAIN "http://bzrplayer.blazer.nu"
 !define URL_LATEST_VERSION "${URL_MAIN}/latest-version.php"
 !define URL_CHANGELOG "${URL_MAIN}/versions_json.php"
-!define URL_BINARY_ZIP "${URL_MAIN}/getFile.php?id=$version"
-!define URL_BINARY_ZIP_FALLBACK "https://github.com/aargirakis/BZRPlayer/releases/download/$version"
+!define URL_RELEASE_ARCHIVE "${URL_MAIN}/getFile.php?id=$version"
+!define URL_RELEASE_ARCHIVE_FALLBACK "https://github.com/aargirakis/BZRPlayer/releases/download/$version"
 !define CHANGELOG_FILE_JSON "$TEMP\changelog.json"
 !define CHANGELOG_FILE_RTF "$TEMP\changelog.rtf"
 !define DESCRIPTION "Audio player supporting a wide array of multi-platform exotic file formats"
@@ -54,6 +56,8 @@ var version
 var i
 var letter
 var mruListContent
+var localReleaseArchivePath
+var releaseArchiveFileDir
 
 !include FileFunc.nsh
 !include MUI2.nsh
@@ -61,6 +65,7 @@ var mruListContent
 !include nsProcess.nsh
 !include Registry.nsh
 !include WinVer.nsh
+!include WordFunc.nsh
 !include include\FiletypeAssociationsComponentUtil.nsh
 !include include\FiletypeAssociationsUtil.nsh
 
@@ -148,30 +153,37 @@ page custom changelog
 Section "!${NAME} (required)"
   SectionIn RO
 
-  var /global zipFilename
-  StrCpy $zipFilename "BZR-Player-$version.zip"
+  var /global releaseArchiveFilename
 
-  inetc::get /RESUME "" /QUESTION "" "${URL_BINARY_ZIP}" "$TEMP\$zipFilename"
+  ${If} $localReleaseArchivePath != ""
+    goto beforeUnpacking
+  ${EndIf}
+
+  StrCpy $releaseArchiveFilename "${RELEASE_ARCHIVE_FILENAME_UNVERSIONED}$version.zip"
+
+  inetc::get /RESUME "" /QUESTION "" "${URL_RELEASE_ARCHIVE}" "${RELEASE_ARCHIVE_FILE_PATH}"
   Pop $0
-  StrCmp $0 "OK" downloadZipOk
+  StrCmp $0 "OK" downloadReleaseArchiveOk
   DetailPrint "$0"
-  inetc::get /RESUME "" /QUESTION "" "${URL_BINARY_ZIP_FALLBACK}/$zipFilename" "$TEMP\$zipFilename"
+  inetc::get /RESUME "" /QUESTION "" "${URL_RELEASE_ARCHIVE_FALLBACK}/$releaseArchiveFilename" "${RELEASE_ARCHIVE_FILE_PATH}"
   Pop $0
-  StrCmp $0 "OK" downloadZipOk
+  StrCmp $0 "OK" downloadReleaseArchiveOk
   DetailPrint "$0"
-  MessageBox MB_OK|MB_ICONEXCLAMATION "Error downloading $zipFilename:$\r$\n'$0'$\r$\nInstallation aborted" /SD IDOK
+  MessageBox MB_OK|MB_ICONEXCLAMATION "Error downloading $releaseArchiveFilename:$\r$\n'$0'$\r$\nInstallation aborted" /SD IDOK
   quit
 
-  downloadZipOk:
-  DetailPrint "$zipFilename successufully downloaded"
+  downloadReleaseArchiveOk:
+  DetailPrint "$releaseArchiveFilename successufully downloaded"
+
+  beforeUnpacking:
   !insertmacro DetectRunningBzr2
   SetOutPath "$INSTDIR"
 
-  nsisunz::UnzipToLog "$TEMP\$zipFilename" "$INSTDIR"
+  nsisunz::UnzipToLog "${RELEASE_ARCHIVE_FILE_PATH}" "$INSTDIR"
   Pop $0
   StrCmp $0 "success" unpackOk
   DetailPrint "$0"
-  MessageBox MB_OK|MB_ICONEXCLAMATION "Error unpacking $zipFilename:$\r$\n'$0'$\r$\nInstallation aborted" /SD IDOK
+  MessageBox MB_OK|MB_ICONEXCLAMATION "Error unpacking $releaseArchiveFilename:$\r$\n'$0'$\r$\nInstallation aborted" /SD IDOK
   abort
 
   unpackOk:
@@ -279,10 +291,43 @@ Section /o "Delete Preferences"
 SectionEnd
 
 Function .onInit
+  ClearErrors
+  ${GetOptions} $CMDLINE "/localReleaseArchivePath=" $localReleaseArchivePath
+
+  ${If} $localReleaseArchivePath != ""
+    IfFileExists $localReleaseArchivePath 0 localReleaseArchiveFileNotFound
+    ${GetParent} "$localReleaseArchivePath" $releaseArchiveFileDir
+    ${GetFileName} "$localReleaseArchivePath" $releaseArchiveFilename
+
+    #TODO a regex should be used here
+    ${WordFind} "$releaseArchiveFilename" "${RELEASE_ARCHIVE_FILENAME_UNVERSIONED}" "E+1}" $version
+    IfErrors localReleaseArchiveFilenameNotValid
+    ${WordFind} "$version" ".zip" "E+1{" $version
+    IfErrors localReleaseArchiveFilenameNotValid
+    ${WordFind} "$version" "2." "E+1}" $R0
+    IfErrors localReleaseArchiveFilenameNotValid
+    StrCmp $R0 "" localReleaseArchiveFilenameNotValid
+    StrCpy $title "${NAME_UNVERSIONED} $version"
+    goto localReleaseArchivePathCheckEnd
+
+    localReleaseArchiveFileNotFound:
+    MessageBox MB_ICONSTOP "Invalid local release archive path provided:$\r$\nfile not found" IDOK quit
+
+    localReleaseArchiveFilenameNotValid:
+    MessageBox MB_ICONSTOP "Invalid local release archive filename provided" IDOK quit
+
+    quit:
+    quit
+
+    localReleaseArchivePathCheckEnd:
+  ${Else}
+    StrCpy $releaseArchiveFileDir "$TEMP"
+    StrCpy $title "${NAME}"
+  ${EndIf}
+
   var /global skipInstallerUpdate
   ClearErrors
   ${GetOptions} $CMDLINE "/skipInstallerUpdate" $skipInstallerUpdate
-  StrCpy $title "${NAME}"
 FunctionEnd
 
 Function skipInstallerUpdateCheck
@@ -312,10 +357,6 @@ Function updateInstallerItself
       Pop $0
       ${If} $0 == "OK"
         DetailPrint "latest installer version successfully downloaded"
-
-        #TODO remove
-        #CopyFiles "$ExePath" "$TEMP\${SETUP_FILENAME}"
-
         Exec '"$TEMP\${SETUP_FILENAME}" /skipInstallerUpdate 1'
         quit
       ${Else}
@@ -338,6 +379,10 @@ Function updateInstallerItself
 FunctionEnd
 
 Function checkLatestVersion
+  ${If} $localReleaseArchivePath != ""
+    goto end
+  ${EndIf}
+
   var /global latestVersionAlreadyChecked
 
   ${If} $latestVersionAlreadyChecked != 1
@@ -382,7 +427,7 @@ Function checkLatestVersion
     ${EndIf}
 
     end:
-    var /global isNewVersionFound #showChangelog
+    var /global isNewVersionFound
     ${If} "$version" != ""
     ${AndIf} "$version" != "$alreadyInstalledVersion"
       StrCpy $isNewVersionFound 1
@@ -394,6 +439,10 @@ Function checkLatestVersion
 FunctionEnd
 
 Function changelog
+  ${If} $localReleaseArchivePath != ""
+    goto end
+  ${EndIf}
+
   ${If} "$isNewVersionFound" != 1
     abort
   ${EndIf}
@@ -678,8 +727,11 @@ FunctionEnd
 Function .onGUIEnd
   delete "${CHANGELOG_FILE_JSON}"
   delete "${CHANGELOG_FILE_RTF}"
-  delete "$TEMP\$zipFilename"
   delete "$PLUGINSDIR"
+
+  ${If} $localReleaseArchivePath == ""
+    delete "${RELEASE_ARCHIVE_FILE_PATH}"
+  ${EndIf}
 
   ${if} $isRunButtonChecked == 1
     Exec '"$WINDIR\explorer.exe" "$INSTDIR\${EXE_FILENAME}"'

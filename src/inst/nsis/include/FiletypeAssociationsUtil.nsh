@@ -1,5 +1,4 @@
 !include StrFunc.nsh
-!include WordFunc.nsh
 
 ${StrCase}
 

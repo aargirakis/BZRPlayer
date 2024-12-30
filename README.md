@@ -76,7 +76,11 @@ In order to build the Windows installer enter `src/inst/nsis` directory then exe
 As result of the building process (the Wine compatible) `bzr2_setup.exe` will be generated in the same directory.\
 Since it is a self-updating installer, the latest installer version check is done at runtime (based on
 `bzr2_setup.exe_latest` file content generated at compile-time).\
-It may be useful to disable it (for dev/test purposes) executing: `bzr2_setup.exe /skipInstallerUpdate2`
+Useful flags for dev/testing purposes:
+
+- `skipInstallerUpdate2` skip latest installer's version check/download: `bzr2_setup.exe /skipInstallerUpdate2`
+- `localReleaseArchivePath` install BZR2 from a local release archive:
+  `bzr2_setup.exe /localBinaryPath="<path_to_release_archive_file>"`
 
 ----
 
