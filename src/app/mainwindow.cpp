@@ -3221,6 +3221,7 @@ void MainWindow::renamePlaylist()
             QTableView* newTableWidget = tableWidgetPlaylists[oldName];
             tableWidgetPlaylists.remove(oldName);
             tableWidgetPlaylists.insert(newName, newTableWidget);
+            DockWidgetPlaylist->setWindowTitle(newName);
         }
     }
 }
