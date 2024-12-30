@@ -2296,12 +2296,12 @@ void MainWindow::PlaySong(int currentRow)
         if (artist != "")
         {
             ui->labelFilename->setText(artist + " - " + filename);
-            windowTitle = artist + " - " + filename + " - " + PROJECT_NAME_VERSIONED;
+            windowTitle = artist + " - " + filename + " - " + PROJECT_NAME;
         }
         else
         {
             ui->labelFilename->setText(filename);
-            windowTitle = filename + " - " + PROJECT_NAME_VERSIONED;
+            windowTitle = filename + " - " + PROJECT_NAME;
         }
 
         if (isMinimized() || !this->isVisible())
