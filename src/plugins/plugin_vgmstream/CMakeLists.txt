@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "vgmstream")
-set(VERSION "r1951")
+set(VERSION "r1980")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -20,7 +20,7 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_FILENAME_URL "${LIB_VERSION}.tar.gz")
 set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "d70df729a6a6c5b75a648374fac78c2a27ec6858716da80543f71958d2500065")
+set(LIB_SHA_256_HASH "6b095f8159726c4a4a323c75d837c6092e56d026e60a98c4a30ce3d8d0911f56")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
 )
