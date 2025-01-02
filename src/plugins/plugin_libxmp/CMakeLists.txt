@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libxmp")
-set(VERSION "4.6.0")
+set(VERSION "4.6.1")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "Libxmp" PARENT_SCOPE)
@@ -15,27 +15,31 @@ set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/releases/download/${LIB_NAME_VERSIONED}/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "2d3c45fe523b50907e89e60f9a3b7f4cc9aab83ec9dbba7743eaffbcdcb35ea6")
+set(LIB_SHA_256_HASH "af605e72c83b24abaf03269347e24ebc3fc06cd7b495652a2c619c1f514bc5cb")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-add_compile_definitions(BUILDING_DLL=1)
+add_compile_definitions(BUILDING_DLL)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c
         ${EXTERNAL_SOURCE_DIR}/src/depackers/*.c
+        ${EXTERNAL_SOURCE_DIR}/src/depackers/lhasa/*.c
         ${EXTERNAL_SOURCE_DIR}/src/loaders/*.c
         ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/*.c
-        ${EXTERNAL_SOURCE_DIR}/src/win32/*.c
-        src/queue.c #TODO remove
+        src/queue.c #TODO remove (and the queue.h include in common.h.patch)
         src/main.cpp
 
         ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
 )
 
 list(REMOVE_ITEM SOURCES
+        ${EXTERNAL_SOURCE_DIR}/src/depackers/lhasa/bit_stream_reader.c
+        ${EXTERNAL_SOURCE_DIR}/src/depackers/lhasa/lh_new_decoder.c
+        ${EXTERNAL_SOURCE_DIR}/src/depackers/lhasa/pma_common.c
+        ${EXTERNAL_SOURCE_DIR}/src/depackers/lhasa/tree_decode.c
         ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/pm.c
         ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/pm20.c
         ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/pm40.c
@@ -48,10 +52,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/include
         ${EXTERNAL_SOURCE_DIR}/src
         ${EXTERNAL_SOURCE_DIR}/src/depackers
+        ${EXTERNAL_SOURCE_DIR}/src/depackers/lhasa
         ${EXTERNAL_SOURCE_DIR}/src/loaders
         ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard
-        ${EXTERNAL_SOURCE_DIR}/src/win32
-        ${EXTERNAL_SOURCE_DIR}/src/win32/sys
         src #TODO remove
 
         ${CMAKE_SOURCE_DIR}/src/app

@@ -1,14 +1,6 @@
---- include/xmp.h	2021-06-10 02:24:24.000000000 +0200
-+++ include/xmp.h	2024-09-21 11:33:59.266530277 +0200
-@@ -4,6 +4,7 @@
- #ifdef __cplusplus
- extern "C" {
- #endif
-+#include "queue.h"
- 
- #define XMP_VERSION "4.5.0"
- #define XMP_VERCODE 0x040500
-@@ -381,6 +382,7 @@
+--- include/xmp.h	2025-01-01 01:11:02.000000000 +0100
++++ include/xmp.h	2025-01-02 13:28:59.929886000 +0100
+@@ -399,6 +400,7 @@
  LIBXMP_EXPORT int         xmp_smix_channel_pan (xmp_context, int, int);
  LIBXMP_EXPORT int         xmp_smix_load_sample (xmp_context, int, const char *);
  LIBXMP_EXPORT int         xmp_smix_release_sample (xmp_context, int);

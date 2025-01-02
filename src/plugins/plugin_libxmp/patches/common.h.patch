@@ -1,6 +1,14 @@
---- src/common.h	2021-06-10 02:24:24.000000000 +0200
-+++ src/common.h	2024-09-21 11:33:59.266530277 +0200
-@@ -361,7 +361,12 @@
+--- src/common.h	2025-01-01 01:11:02.000000000 +0100
++++ src/common.h	2025-01-02 15:15:35.288619702 +0100
+@@ -26,6 +26,7 @@
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <string.h>
++#include "queue.h"
+ #include "xmp.h"
+ 
+ #undef  LIBXMP_EXPORT_VAR
+@@ -556,7 +557,12 @@
  
  	double current_time;
  	double frame_time;
