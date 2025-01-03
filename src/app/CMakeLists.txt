@@ -7,7 +7,6 @@ include(${CMAKE_SOURCE_DIR}/src/external/qt-ads/qt-ads.cmake)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
 
-#TODO original qmake flags to check: -fexceptions -mthreads -DUNICODE -D_UNICODE -DMINGW_HAS_SECURE_API=1
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -78,7 +77,7 @@ List(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
         ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
         ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
-        ${CMAKE_PREFIX_PATH}/bin/libcrypto-3.dll        #TODO needed?
+        ${CMAKE_PREFIX_PATH}/bin/libcrypto-3.dll
         ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
         ${CMAKE_PREFIX_PATH}/bin/libgcc_s_dw2-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
