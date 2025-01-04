@@ -7,6 +7,22 @@
 #include "kdmeng.h"
 #include "plugins.h"
 
+/* TODO: std::string ReplayKen::GetInfo() const
+    {
+        std::string info;
+        info = "2 channels\n";
+        if (m_mediaType.ext == eExtension::_kdm)
+            info += "Ken's Digital Music";
+        else if (m_mediaType.ext == eExtension::_ksm)
+            info += "Ken's Adlib Music";
+        else if (m_mediaType.ext == eExtension::_sm)
+            info += "Ken's CT-640 Music";
+        else
+            info += "Ken's 4-note Music";
+        info += "\nKen Silverman";
+        return info;
+    } */
+
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);

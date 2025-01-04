@@ -424,10 +424,10 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_jaytrax_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_jaytrax_NAME));
     }
-    if (PLUGIN_kdm_LIB != "")
+    if (PLUGIN_webken_LIB != "")
     {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_kdm_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_kdm_NAME));
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_webken_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_webken_NAME));
     }
     if (PLUGIN_klystron_LIB != "")
     {

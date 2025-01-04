@@ -62,7 +62,6 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_highly_theoretical "src/plugins/plugin_highly_theoretical"    #check cmake TODO
         plugin_hivelytracker "src/plugins/plugin_hivelytracker"
         plugin_jaytrax "src/plugins/plugin_jaytrax"
-        plugin_kdm "src/plugins/plugin_kdm"                                  #TODO audio overdrive issue (check kdmeng.cpp)
         plugin_klystron "src/plugins/plugin_klystron"
         plugin_lazyusf2 "src/plugins/plugin_lazyusf2"
         plugin_libkss "src/plugins/plugin_libkss"
@@ -82,7 +81,8 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO seeking it is now supported (should be implemented into main.cpp). #TODO add v2mz support (see sources/v2m dir for example files)
         plugin_vgmplay-legacy "src/plugins/plugin_vgmplay-legacy"            #check cmake TODO
         plugin_vgmstream "src/plugins/plugin_vgmstream"
-        plugin_vio2sf "src/plugins/plugin_vio2sf"                            #check cmake TODO
+        plugin_vio2sf "src/plugins/plugin_vio2sf"
+        plugin_webken "src/plugins/plugin_webken"
         plugin_zxtune "src/plugins/plugin_zxtune"
 )
 
