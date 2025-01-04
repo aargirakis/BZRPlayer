@@ -4,8 +4,24 @@
 #include <cstdio>
 #include "fmod_errors.h"
 #include "info.h"
-#include "kdmeng.h"
+#include "../ken/KDMENG.c"
 #include "plugins.h"
+
+/* TODO: std::string ReplayKen::GetInfo() const
+    {
+        std::string info;
+        info = "2 channels\n";
+        if (m_mediaType.ext == eExtension::_kdm)
+            info += "Ken's Digital Music";
+        else if (m_mediaType.ext == eExtension::_ksm)
+            info += "Ken's Adlib Music";
+        else if (m_mediaType.ext == eExtension::_sm)
+            info += "Ken's CT-640 Music";
+        else
+            info += "Ken's 4-note Music";
+        info += "\nKen Silverman";
+        return info;
+    } */
 
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec);
@@ -17,7 +33,7 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_kdm_NAME, // Name.
+    PLUGIN_webken_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     0, // Don't force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
@@ -47,13 +63,11 @@ public:
     {
         //delete some stuff
         delete[] myBuffer;
-        delete m_player;
         myBuffer = 0;
     }
 
     signed short* myBuffer;
     Info* info;
-    kdmeng* m_player;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -107,17 +121,13 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
 
-    plugin->m_player = new kdmeng(44100, 2, 2);
+    initkdmeng();
 
-    unsigned found = plugin->info->filename.find_last_of("/\\");
+    int length = kdmload (plugin->info->filename.data());
 
-    long length = plugin->m_player->load((signed short*)plugin->myBuffer, filesize,
-                                     plugin->info->filename.substr(0, found + 1).c_str());
-
-    if (!length)
+    if (length < 0)
     {
         delete plugin->myBuffer;
-        delete plugin->m_player;
         return FMOD_ERR_FORMAT;
     }
 
@@ -136,59 +146,12 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     codec->plugindata = plugin; /* user data value */
 
     plugin->info->fileformat = "Ken's Digital Music";
-    plugin->info->plugin = PLUGIN_kdm;
-    plugin->info->pluginName = PLUGIN_kdm_NAME;
+    plugin->info->plugin = PLUGIN_webken;
+    plugin->info->pluginName = PLUGIN_webken_NAME;
     plugin->info->setSeekable(true);
 
-    int numSamples = plugin->m_player->getNumwaves();
-    int numTracks = plugin->m_player->getNumtracks();
-    plugin->info->numSamples = numSamples;
-    plugin->info->numPatterns = numTracks;
 
-
-    if (numSamples > 0)
-    {
-        plugin->info->samplesSize = new unsigned int[numSamples];
-        plugin->info->samplesLoopStart = new unsigned int[numSamples];
-        plugin->info->samplesLoopLength = new unsigned int[numSamples];
-        plugin->info->samplesFineTune = new signed int[numSamples];
-        plugin->info->samples = new string[numSamples];
-        char* c = new char[17];
-        for (int j = 0; j < numSamples; j++)
-        {
-            plugin->info->samplesSize[j] = plugin->m_player->getInstsize(j);
-            plugin->info->samplesLoopStart[j] = plugin->m_player->getInstrepstart(j);
-            plugin->info->samplesLoopLength[j] = plugin->m_player->getInstreplength(j);
-            plugin->info->samplesFineTune[j] = plugin->m_player->getInstfinetune(j);
-            plugin->m_player->getInstname(j, c);
-            plugin->info->samples[j] = c;
-        }
-        delete c;
-    }
-
-    if (numTracks > 0)
-    {
-        plugin->info->instruments = new string[numTracks];
-        plugin->info->instrumentsNumber = new char[numTracks];
-        plugin->info->instrumentsQuantize = new char[numTracks];
-        plugin->info->instrumentsVolume1 = new unsigned char[numTracks];
-        plugin->info->instrumentsVolume2 = new unsigned char[numTracks];
-
-
-        char* c = new char[17];
-        for (int j = 0; j < numTracks; j++)
-        {
-            int instrIdx = plugin->m_player->getTrackInstrument(j);
-            plugin->info->instrumentsNumber[j] = instrIdx + 1;
-            plugin->info->instruments[j] = plugin->info->samples[instrIdx];
-            plugin->info->instrumentsQuantize[j] = plugin->m_player->getTrackQuantize(j);
-            plugin->info->instrumentsVolume1[j] = plugin->m_player->getTrackVolume1(j);
-            plugin->info->instrumentsVolume2[j] = plugin->m_player->getTrackVolume2(j);
-        }
-        delete c;
-    }
-
-    plugin->m_player->musicon();
+    kdmmusicon ();
 
     return FMOD_OK;
 }
@@ -202,7 +165,7 @@ FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto plugin = static_cast<pluginKdm*>(codec->plugindata);
-    plugin->m_player->rendersound(buffer, size << 2);
+    kdmrendersound(buffer, size << 2);
     *read = size;
 
     return FMOD_OK;
@@ -212,6 +175,6 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
                                      FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginKdm*>(codec->plugindata);
-    plugin->m_player->seek(position);
+    kdmseek (position);
     return FMOD_OK;
 }
