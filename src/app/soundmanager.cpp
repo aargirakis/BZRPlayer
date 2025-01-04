@@ -213,8 +213,8 @@ void SoundManager::loadPluginChain() {
         loadPlugin(PLUGIN_sc68_LIB, 0);
     }
 
-    if (PLUGIN_kdm_LIB != "") {
-        loadPlugin(PLUGIN_kdm_LIB, 0);
+    if (PLUGIN_webken_LIB != "") {
+        loadPlugin(PLUGIN_webken_LIB, 0);
     }
 
     if (PLUGIN_libpac_LIB != "" && isFormatPac(fileBuffer, filesize)) {

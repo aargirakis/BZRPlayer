@@ -4,6 +4,22 @@
 #include "info.h"
 #include "plugins.h"
 
+/* TODO: std::string ReplayKen::GetInfo() const
+    {
+        std::string info;
+        info = "2 channels\n";
+        if (m_mediaType.ext == eExtension::_kdm)
+            info += "Ken's Digital Music";
+        else if (m_mediaType.ext == eExtension::_ksm)
+            info += "Ken's Adlib Music";
+        else if (m_mediaType.ext == eExtension::_sm)
+            info += "Ken's CT-640 Music";
+        else
+            info += "Ken's 4-note Music";
+        info += "\nKen Silverman";
+        return info;
+    } */
+
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
@@ -16,7 +32,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_kdm_NAME, // name.
+    PLUGIN_webken_NAME, // name.
     0x00010000, // version 0xAAAABBBB   A = major, B = minor.
     0, // whether or not force everything using this codec to be a stream
     // the time formats we would like to accept into setposition/getposition
@@ -102,8 +118,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     codec->plugindata = plugin; // user data value
 
     plugin->info->fileFormat = "Ken's Digital Music";
-    plugin->info->plugin = PLUGIN_kdm;
-    plugin->info->pluginName = PLUGIN_kdm_NAME;
+    plugin->info->plugin = PLUGIN_webken;
+    plugin->info->pluginName = PLUGIN_webken;
     plugin->info->setSeekable(true);
 
     const int numSamples = plugin->player->getNumwaves();
