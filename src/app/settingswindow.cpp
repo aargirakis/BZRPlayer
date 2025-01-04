@@ -444,9 +444,9 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_jaytrax_NAME));
     }
 
-    if (PLUGIN_kdm_LIB != "") {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_kdm_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_kdm_NAME));
+    if (PLUGIN_webken_LIB != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_webken_LIB));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_webken_LIB));
     }
 
     if (PLUGIN_klystron_LIB != "") {
