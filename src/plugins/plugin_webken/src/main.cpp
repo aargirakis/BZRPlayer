@@ -7,6 +7,22 @@
 #include "kdmeng.h"
 #include "plugins.h"
 
+/* TODO: std::string ReplayKen::GetInfo() const
+    {
+        std::string info;
+        info = "2 channels\n";
+        if (m_mediaType.ext == eExtension::_kdm)
+            info += "Ken's Digital Music";
+        else if (m_mediaType.ext == eExtension::_ksm)
+            info += "Ken's Adlib Music";
+        else if (m_mediaType.ext == eExtension::_sm)
+            info += "Ken's CT-640 Music";
+        else
+            info += "Ken's 4-note Music";
+        info += "\nKen Silverman";
+        return info;
+    } */
+
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec);
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
@@ -17,7 +33,7 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_kdm_NAME, // Name.
+    PLUGIN_webken_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     0, // Don't force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
@@ -136,8 +152,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     codec->plugindata = plugin; /* user data value */
 
     plugin->info->fileformat = "Ken's Digital Music";
-    plugin->info->plugin = PLUGIN_kdm;
-    plugin->info->pluginName = PLUGIN_kdm_NAME;
+    plugin->info->plugin = PLUGIN_webken;
+    plugin->info->pluginName = PLUGIN_webken_NAME;
     plugin->info->setSeekable(true);
 
     int numSamples = plugin->m_player->getNumwaves();

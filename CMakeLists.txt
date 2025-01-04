@@ -63,7 +63,6 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_highly_theoretical "src/plugins/plugin_highly_theoretical"    #check cmake TODO
         plugin_hivelytracker "src/plugins/plugin_hivelytracker"
         plugin_jaytrax "src/plugins/plugin_jaytrax"
-        plugin_kdm "src/plugins/plugin_kdm"                                  #TODO audio overdrive issue (check kdmeng.cpp)
         plugin_klystron "src/plugins/plugin_klystron"
         plugin_lazyusf2 "src/plugins/plugin_lazyusf2"
         plugin_libfc14audiodecoder "src/plugins/plugin_libfc14audiodecoder"
@@ -83,6 +82,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_vgmplay-legacy "src/plugins/plugin_vgmplay-legacy"            #check cmake TODO
         plugin_vgmstream "src/plugins/plugin_vgmstream"
         plugin_vio2sf "src/plugins/plugin_vio2sf"                            #check cmake TODO
+        plugin_webken "src/plugins/plugin_webken"
         plugin_webuade "src/plugins/plugin_webuade"        #TODO unfinished
         plugin_zxtune "src/plugins/plugin_zxtune"
 )
