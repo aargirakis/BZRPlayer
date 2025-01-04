@@ -7,6 +7,22 @@
 #include "kdmeng.h"
 #include "plugins.h"
 
+/* TODO: std::string ReplayKen::GetInfo() const
+    {
+        std::string info;
+        info = "2 channels\n";
+        if (m_mediaType.ext == eExtension::_kdm)
+            info += "Ken's Digital Music";
+        else if (m_mediaType.ext == eExtension::_ksm)
+            info += "Ken's Adlib Music";
+        else if (m_mediaType.ext == eExtension::_sm)
+            info += "Ken's CT-640 Music";
+        else
+            info += "Ken's 4-note Music";
+        info += "\nKen Silverman";
+        return info;
+    } */
+
 FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
 FMOD_RESULT F_CALL fcclose(FMOD_CODEC_STATE* codec);
 FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
@@ -76,7 +92,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 #ifdef __cplusplus
 }
 #endif
-FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
+FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
 
@@ -193,13 +209,13 @@ FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREA
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL fcclose(FMOD_CODEC_STATE* codec)
+FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 {
     delete static_cast<pluginKdm*>(codec->plugindata);
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto plugin = static_cast<pluginKdm*>(codec->plugindata);
     plugin->m_player->rendersound(buffer, size << 2);
@@ -208,7 +224,7 @@ FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int si
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginKdm*>(codec->plugindata);
