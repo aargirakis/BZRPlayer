@@ -135,9 +135,9 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_tunes98_plug_DLL, 99999);
     }
-    if (PLUGIN_kdm_DLL != "")
+    if (PLUGIN_webken_DLL != "")
     {
-        loadPlugin(PLUGIN_kdm_DLL, 99999);
+        loadPlugin(PLUGIN_webken_DLL, 99999);
     }
     if (PLUGIN_libpac_DLL != "")
     {
