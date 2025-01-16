@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "sndh-player")
-set(VERSION "0.78")
+set(VERSION "0.79")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "SNDH-Archive-Player" PARENT_SCOPE)
@@ -16,7 +16,7 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
 set(LIB_FILENAME_URL "v${LIB_VERSION}.zip")
 set(LIB_URL "https://github.com/arnaud-carre/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "9edc6976f2140bbab390a376e0c1213b50ba2ae2da9ae074ecea00b431f2bfad")
+set(LIB_SHA_256_HASH "9291b3279f448b7674fe0c0df3fce90ba9a92cc7dca794b0f8e20f0ccd226933")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
