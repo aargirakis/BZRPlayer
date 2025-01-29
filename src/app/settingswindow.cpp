@@ -261,6 +261,10 @@ settingsWindow::settingsWindow(QWidget* parent) :
     {
         loadSidplaySettings();
     }
+    if (PLUGIN_libxmp_DLL != "")
+    {
+        loadLibxmpSettings();
+    }
 
     loadUADESettings();
     loadlibopenmptSettings();
@@ -682,6 +686,10 @@ void settingsWindow::on_buttonOK_clicked()
     {
         saveSidplaySettings();
     }
+    if (PLUGIN_libxmp_DLL != "")
+    {
+        saveLibxmpSettings();
+    }
 
     saveUADESettings();
     savelibopenmptSettings();
@@ -728,6 +736,7 @@ void settingsWindow::loadlibopenmptSettings()
     }
     //defaults
     ui->SliderStereoSeparationOpenMPT->setValue(100);
+    ui->checkBoxContinuousPlaybackOpenMPT->setChecked(false);
     ui->checkBoxFilterOpenMPT->setChecked(true);
     int index = ui->comboBoxFilterOpenMPT->findData("auto");
     ui->comboBoxFilterOpenMPT->setCurrentIndex(index);
@@ -748,6 +757,8 @@ void settingsWindow::loadlibopenmptSettings()
                 if (word.compare("stereo_separation") == 0)
                 {
                     ui->SliderStereoSeparationOpenMPT->setValue(atoi(value.c_str()));
+                } else if (word.compare("continuous_playback") == 0) {
+                    ui->checkBoxContinuousPlaybackOpenMPT->setChecked(value.compare("true") == 0);
                 }
                 else if (word.compare("emulate_amiga_filter") == 0)
                 {
@@ -774,6 +785,41 @@ void settingsWindow::loadlibopenmptSettings()
                 {
                     int index = ui->comboBoxDitherOpenMPT->findData(value.c_str());
                     ui->comboBoxDitherOpenMPT->setCurrentIndex(index);
+                }
+            }
+        }
+        ifs.close();
+    }
+}
+
+void settingsWindow::loadLibxmpSettings()
+{
+    //read config from disk
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libxmp.cfg";
+    ifstream ifs(filename.c_str());
+    string line;
+    bool useDefaults = false;
+    if (ifs.fail())
+    {
+        //The file could not be opened
+        useDefaults = true;
+    }
+    //defaults
+    ui->checkBoxContinuousPlaybackLibxmp->setChecked(false);
+
+    if (!useDefaults)
+    {
+        while (getline(ifs, line))
+        {
+            int i = line.find_first_of("=");
+
+            if (i != -1)
+            {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word.compare("continuous_playback") == 0)
+                {
+                    ui->checkBoxContinuousPlaybackLibxmp->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -899,6 +945,8 @@ void settingsWindow::loadSidplaySettings()
     //that on_checkBoxHvscSonglengthsEnabled_toggled is called
     ui->checkBoxHvscSonglengthsEnabled->setChecked(false);
     ui->checkBoxHvscSonglengthsEnabled->setChecked(true);
+
+    ui->checkBoxSIDContinuousPlayback->setChecked(false);
     if (!useDefaults)
     {
         while (getline(ifs, line))
@@ -931,6 +979,8 @@ void settingsWindow::loadSidplaySettings()
                     {
                         ui->checkBoxHvscSonglengthsEnabled->setChecked(false);
                     }
+                } else if (word.compare("continuous_playback") == 0) {
+                    ui->checkBoxSIDContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -951,38 +1001,20 @@ void settingsWindow::saveSidplaySettings()
     ofstream ofs(filename.c_str());
     string line;
 
-    QString hvscSonglengthsEnabled;
-    if (ui->checkBoxHvscSonglengthsEnabled->isChecked())
-    {
-        hvscSonglengthsEnabled = "true";
-    }
-    else
-    {
-        hvscSonglengthsEnabled = "false";
-    }
-
     if (ofs.fail())
     {
         //The file could not be opened
         return;
     }
 
-    ofs << "hvsc_songlengths_enabled=" << hvscSonglengthsEnabled.toStdString().c_str() << "\n";
+    ofs << "hvsc_songlengths_enabled=" << (ui->checkBoxHvscSonglengthsEnabled->isChecked()?"true":"false") << "\n";
     ofs << "hvsc_songlengths_path=" << ui->lineEditHvscSonglength->text().toStdString().c_str() << "\n";
+    ofs << "continuous_playback=" << (ui->checkBoxSIDContinuousPlayback->isChecked()?"true":"false") << "\n";
     ofs.close();
 }
 
 void settingsWindow::savelibopenmptSettings()
 {
-    QString filterOpenMPT;
-    if (ui->checkBoxFilterOpenMPT->isChecked())
-    {
-        filterOpenMPT = "true";
-    }
-    else
-    {
-        filterOpenMPT = "false";
-    }
     //save config to disk
     string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
     ofstream ofs(filename.c_str());
@@ -994,11 +1026,28 @@ void settingsWindow::savelibopenmptSettings()
         return;
     }
     ofs << "stereo_separation=" << ui->SliderStereoSeparationOpenMPT->value() << "\n";
+    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackOpenMPT->isChecked()?"true":"false") << "\n";
     ofs << "interpolation_filter=" << ui->comboBoxResamplingOpenMPT->currentData().toString().toStdString().c_str() <<
         "\n";
     ofs << "amiga_filter=" << ui->comboBoxFilterOpenMPT->currentData().toString().toStdString().c_str() << "\n";
     ofs << "dither=" << ui->comboBoxDitherOpenMPT->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "emulate_amiga_filter=" << filterOpenMPT.toStdString().c_str() << "\n";
+    ofs << "emulate_amiga_filter=" << (ui->checkBoxFilterOpenMPT->isChecked()?"true":"false") << "\n";
+    ofs.close();
+}
+
+void settingsWindow::saveLibxmpSettings()
+{
+    //save config to disk
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libxmp.cfg";
+    ofstream ofs(filename.c_str());
+    string line;
+
+    if (ofs.fail())
+    {
+        //The file could not be opened
+        return;
+    }
+    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackLibxmp->isChecked() ? "true" : "false") << "\n";
     ofs.close();
 }
 
@@ -1031,39 +1080,12 @@ void settingsWindow::saveUADESettings()
         filter = "off";
     }
 
-    QString filterEmulated;
-    if (ui->checkBoxFilterEnabled->isChecked())
-    {
-        filterEmulated = "false";
-    }
-    else
-    {
-        filterEmulated = "true";
-    }
-    QString silenceTimeoutEnabled;
-    if (ui->checkBoxSilenceTimeout->isChecked())
-    {
-        silenceTimeoutEnabled = "true";
-    }
-    else
-    {
-        silenceTimeoutEnabled = "false";
-    }
-    QString uadeSonglengthsEnabled;
-    if (ui->checkBoxSongLengthUADE->isChecked())
-    {
-        uadeSonglengthsEnabled = "true";
-    }
-    else
-    {
-        uadeSonglengthsEnabled = "false";
-    }
     ofs << "uade_songlengths_path=" << ui->lineEditUADESonglength->text().toStdString().c_str() << "\n";
     ofs << "led_forced=" << filter.toStdString().c_str() << "\n";
-    ofs << "no_filter=" << filterEmulated.toStdString().c_str() << "\n";
+    ofs << "no_filter=" << (ui->checkBoxFilterEnabled->isChecked()?"false":"true") << "\n";
     ofs << "silence_timeout=" << ui->sliderSilenceTimeOut->value() << "\n";
-    ofs << "silence_timeout_enabled=" << silenceTimeoutEnabled.toStdString().c_str() << "\n";
-    ofs << "uade_songlengths_enabled=" << uadeSonglengthsEnabled.toStdString().c_str() << "\n";
+    ofs << "silence_timeout_enabled=" << (ui->checkBoxSilenceTimeout->isChecked()?"true":"false") << "\n";
+    ofs << "uade_songlengths_enabled=" << (ui->checkBoxSongLengthUADE->isChecked()?"true":"false") << "\n";
     ofs.close();
 }
 
@@ -1071,28 +1093,39 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
 {
     int row = item->row();
 
-    if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME)
+    if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME)
     {
-        ui->groupBoxLibsid->setHidden(false);
+        ui->groupBoxLibOpenMPT->setHidden(false);
+        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxUADE->setHidden(true);
+    }
+    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME)
+    {
         ui->groupBoxLibOpenMPT->setHidden(true);
+        ui->groupBoxLibsid->setHidden(false);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxUADE->setHidden(true);
+    }
+    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME)
+    {
+        ui->groupBoxLibOpenMPT->setHidden(true);
+        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(false);
+        ui->groupBoxUADE->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_wothke_uade_2_13_NAME)
     {
-        ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxUADE->setHidden(false);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME)
-    {
         ui->groupBoxLibsid->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(false);
-        ui->groupBoxUADE->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxUADE->setHidden(false);
     }
     else
     {
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxUADE->setHidden(true);
     }
 }
@@ -1221,6 +1254,17 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxLibOpenMPT->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxLibxmp->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxLibxmp->setStyleSheet(stylesheet);
 }
 
 void settingsWindow::setUiLineEditHvscSonglengthTextForcingRelativePaths(const QString& text)
@@ -1381,8 +1425,9 @@ void settingsWindow::on_buttonVisualizer_clicked()
     ui->scrollArea->setHidden(true);
     ui->scrollAreaAppearance->setHidden(true);
     ui->tableWidgetPlugins->setHidden(true);
-    ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
+    ui->groupBoxLibsid->setHidden(true);
+    ui->groupBoxLibxmp->setHidden(true);
     ui->groupBoxUADE->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(false);
 }
@@ -1394,9 +1439,10 @@ void settingsWindow::on_buttonGeneral_clicked()
     ui->scrollAreaAppearance->setHidden(true);
     ui->tableWidgetPlugins->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(true);
-    ui->groupBoxUADE->setHidden(true);
-    ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
+    ui->groupBoxLibsid->setHidden(true);
+    ui->groupBoxLibxmp->setHidden(true);
+    ui->groupBoxUADE->setHidden(true);
 }
 
 
@@ -1413,10 +1459,11 @@ void settingsWindow::on_buttonAppearance_clicked()
     ui->scrollArea->setHidden(true);
     ui->scrollAreaAppearance->setHidden(false);
     ui->tableWidgetPlugins->setHidden(true);
-    ui->groupBoxUADE->setHidden(true);
-    ui->groupBoxLibsid->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
+    ui->groupBoxLibsid->setHidden(true);
+    ui->groupBoxLibxmp->setHidden(true);
+    ui->groupBoxUADE->setHidden(true);
 }
 
 void settingsWindow::on_buttonColorVUMeterTop_clicked()
@@ -1885,6 +1932,11 @@ void settingsWindow::on_SliderStereoSeparationOpenMPT_valueChanged(int value)
     ui->labelStereoSeparationOpenMPT->setText(QString::number(value / 2) + " %");
 }
 
+void settingsWindow::on_checkBoxContinuousPlaybackOpenMPT_toggled()
+{
+    ui->checkBoxContinuousPlaybackOpenMPT->setIcon(
+        mainWindow->icons[(ui->checkBoxContinuousPlaybackOpenMPT->isChecked() ? "checkbox-on" : "checkbox-off")]);
+}
 
 void settingsWindow::on_checkBoxEnqueueItems_toggled(bool checked)
 {
@@ -2398,6 +2450,10 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxVUMeterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
+
+    ui->checkBoxContinuousPlaybackOpenMPT->setIcon(
+        mainWindow->icons[ui->checkBoxContinuousPlaybackOpenMPT->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
     if (ui->checkBoxFilterOpenMPT->isChecked())
     {
         ui->checkBoxFilterOpenMPT->setIcon(mainWindow->icons["checkbox-on"]);
@@ -2438,6 +2494,13 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
+
+    ui->checkBoxSIDContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxSIDContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
+    ui->checkBoxContinuousPlaybackLibxmp->setIcon(
+        mainWindow->icons[ui->checkBoxContinuousPlaybackLibxmp->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
     if (ui->checkBoxOnlyOneInstance->isChecked())
     {
         ui->checkBoxOnlyOneInstance->setIcon(mainWindow->icons["checkbox-on"]);
@@ -2565,6 +2628,7 @@ void settingsWindow::on_checkBoxHvscSonglengthsEnabled_toggled(bool checked)
     ui->labelHvscSonglengthsFilePath->setEnabled(checked);
     ui->lineEditHvscSonglength->setEnabled(checked);
     ui->buttonBrowseHvscSonglengths->setEnabled(checked);
+    ui->checkBoxSIDContinuousPlayback->setEnabled(checked);
     if (ui->checkBoxHvscSonglengthsEnabled->isChecked())
     {
         ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
@@ -2575,6 +2639,11 @@ void settingsWindow::on_checkBoxHvscSonglengthsEnabled_toggled(bool checked)
     }
 }
 
+void settingsWindow::on_checkBoxSIDContinuousPlayback_toggled()
+{
+    ui->checkBoxSIDContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxSIDContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
+}
 
 void settingsWindow::on_checkBoxFilterOpenMPT_toggled(bool checked)
 {
@@ -2593,6 +2662,11 @@ void settingsWindow::on_checkBoxFilterOpenMPT_toggled(bool checked)
     }
 }
 
+void settingsWindow::on_checkBoxContinuousPlaybackLibxmp_toggled()
+{
+    ui->checkBoxContinuousPlaybackLibxmp->setIcon(
+        mainWindow->icons[(ui->checkBoxContinuousPlaybackLibxmp->isChecked() ? "checkbox-on" : "checkbox-off")]);
+}
 
 void settingsWindow::on_checkBoxOnlyOneInstance_clicked()
 {

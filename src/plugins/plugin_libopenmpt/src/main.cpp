@@ -80,6 +80,7 @@ public:
     Info* info;
     openmpt::module_ext* mod;
     FMOD_CODEC_WAVEFORMAT waveformat;
+    bool isContinuousPlaybackActive;
 };
 
 #ifdef __cplusplus
@@ -153,7 +154,7 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
         string emulate_amiga_filter = "1";
         string amiga_filter = "auto";
         string dither = "1";
-
+        plugin->isContinuousPlaybackActive = false;
 
         if (!useDefaults)
         {
@@ -168,6 +169,11 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
                     if (word.compare("stereo_separation") == 0)
                     {
                         stereo_separation = atoi(value.c_str());
+                    }
+                    else if (word.compare("continuous_playback") == 0)
+                    {
+                        plugin->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare(
+                            "true") == 0;
                     }
                     else if (word.compare("interpolation_filter") == 0)
                     {
@@ -230,16 +236,15 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
         std::map<std::string, std::string> ctls
         {
             {"seek.sync_samples", "1"},
-            {"play.at_end", "stop"},
+            {"play.at_end", plugin->isContinuousPlaybackActive ? "continue" : "stop"},
             {"render.resampler.emulate_amiga", emulate_amiga_filter},
             {"render.resampler.emulate_amiga_type", amiga_filter},
-            {"dither", dither},
-            /*{ "play.at_end", "fadeout" },*/
+            {"dither", dither}
         };
         plugin->mod = nullptr;
         plugin->mod = new openmpt::module_ext(plugin->myBuffer, filesize, std::clog, ctls);
 
-
+        plugin->mod->set_repeat_count(0); //it is 0 by default, and ignored with "continue" play mode
         plugin->mod->set_render_param(openmpt::module::RENDER_STEREOSEPARATION_PERCENT, stereo_separation);
         plugin->mod->set_render_param(openmpt::module::RENDER_INTERPOLATIONFILTER_LENGTH, interpolation_filter);
 
@@ -385,7 +390,14 @@ FMOD_RESULT F_CALLBACK libopenmptgetlength(FMOD_CODEC_STATE* codec, unsigned int
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS || lengthtype ==
         FMOD_TIMEUNIT_MUTE_VOICE)
     {
-        *length = plugin->mod->get_duration_seconds() * 1000;
+        if (plugin->isContinuousPlaybackActive)
+        {
+            *length = 0xffffffff;
+        }
+        else
+        {
+            *length = plugin->mod->get_duration_seconds() * 1000;
+        }
         return FMOD_OK;
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)

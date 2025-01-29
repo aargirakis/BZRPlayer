@@ -150,6 +150,8 @@ private slots:
 
     void on_SliderStereoSeparationOpenMPT_valueChanged(int value);
 
+    void on_checkBoxContinuousPlaybackOpenMPT_toggled();
+
     void on_checkBoxEnqueueItems_toggled(bool checked);
 
     void on_checkBoxVUMeterEnabled_toggled(bool checked);
@@ -200,6 +202,7 @@ private slots:
 
     void on_checkBoxFilterOpenMPT_toggled(bool checked);
 
+    void on_checkBoxContinuousPlaybackLibxmp_toggled();
 
     void on_checkBoxOnlyOneInstance_clicked();
 
@@ -211,6 +214,8 @@ private slots:
 
     void on_checkBoxHvscSonglengthsEnabled_toggled(bool checked);
 
+    void on_checkBoxSIDContinuousPlayback_toggled();
+
 private:
     void updateColorButtons();
 
@@ -220,6 +225,8 @@ private:
     void savelibopenmptSettings();
     void loadUADESettings();
     void loadlibopenmptSettings();
+    void loadLibxmpSettings();
+    void saveLibxmpSettings();
     void forceUpdateToSliders();
     void updateCheckBoxes();
 

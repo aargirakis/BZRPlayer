@@ -36,7 +36,7 @@ public:
     void SetPosition(unsigned int positon, FMOD_TIMEUNIT timeunit);
     void SetVolume(float volume);
     void SetMute(bool mute);
-    bool LoadSound(QString filename);
+    bool LoadSound(QString filename, bool isPlayModeRepeatSongEnabled);
     const char* getFMODSoundFormat(FMOD_SOUND* sound);
     void setReverbEnabled(bool);
     void setReverbPreset(QString preset);

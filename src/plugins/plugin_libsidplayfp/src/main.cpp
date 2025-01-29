@@ -108,6 +108,7 @@ public:
     bool mute[9];
 
     bool hvscSonglengthsDataBaseEnabled;
+    bool isContinuousPlaybackActive;
 
 
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -237,6 +238,7 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     bool forcec64Model = false;
 
     plugin->hvscSonglengthsDataBaseEnabled = true;
+    plugin->isContinuousPlaybackActive = false;
 
     if (!useDefaults)
     {
@@ -356,6 +358,10 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
                     {
                         plugin->hvscSonglengthsDataBaseEnabled = false;
                     }
+                }
+                else if (word.compare("continuous_playback") == 0)
+                {
+                    plugin->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare("true") == 0;
                 }
             }
         }
@@ -620,7 +626,7 @@ FMOD_RESULT F_CALLBACK sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* lengt
         string databasefile = plugin->hvscSonglengthsFile;
         const SidTuneInfo* s = plugin->tune->getInfo();
         unsigned int sidLength = 0;
-        if (plugin->hvscSonglengthsDataBaseEnabled)
+        if (plugin->hvscSonglengthsDataBaseEnabled && !plugin->isContinuousPlaybackActive)
         {
             sidLength = getLengthFromSIDDatabase(databasefile, true, plugin->info->filename, s->currentSong());
         }

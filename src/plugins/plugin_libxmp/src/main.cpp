@@ -80,6 +80,7 @@ public:
     unsigned int subsong;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
+    bool isContinuousPlaybackActive;
 };
 
 /*
@@ -167,6 +168,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     int channels = 2;
     int interpolation = XMP_INTERP_LINEAR;
     int stereoSeparation = 70;
+    plugin->isContinuousPlaybackActive = false;
+
     if (!useDefaults)
     {
         while (getline(ifs, line))
@@ -210,6 +213,11 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
                 else if (word.compare("stereo_separation") == 0)
                 {
                     stereoSeparation = atoi(value.c_str());
+                }
+                else if (word.compare("continuous_playback") == 0)
+                {
+                    plugin->isContinuousPlaybackActive =
+                        plugin->info->isPlayModeRepeatSongEnabled && value.compare("true") == 0;
                 }
             }
         }
@@ -364,7 +372,7 @@ FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginLibxmp*>(codec->plugindata);
-    xmp_play_buffer(plugin->xmp, buffer, size << 2, 1);
+    xmp_play_buffer(plugin->xmp, buffer, size << 2, plugin->isContinuousPlaybackActive ? 0 : 1);
 
     *read = size;
     return FMOD_OK;
@@ -416,7 +424,7 @@ FMOD_RESULT F_CALLBACK fcgetlength(FMOD_CODEC_STATE* codec, unsigned int* length
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
-        *length = plugin->fi.total_time;
+        *length = plugin->isContinuousPlaybackActive ? 0xffffffff : plugin->fi.total_time;
         return FMOD_OK;
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)

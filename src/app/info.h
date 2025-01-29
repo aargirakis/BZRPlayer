@@ -342,6 +342,8 @@ public:
     unsigned int modPatternRestart;
     unsigned char* modVUMeters;
 
+    bool isPlayModeRepeatSongEnabled;
+
 private:
     bool seekable;
 };

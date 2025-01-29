@@ -606,7 +606,7 @@ bool SoundManager::isChannelMuted(unsigned int channel)
     return muted;
 }
 
-bool SoundManager::LoadSound(QString filename)
+bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
 {
     Stop();
     Release();
@@ -618,6 +618,7 @@ bool SoundManager::LoadSound(QString filename)
     m_Info1->applicationPath = QCoreApplication::applicationDirPath().toStdString();
     m_Info1->tempPath = QDir::tempPath().toStdString();
     m_Info1->filename = filename.toLatin1().toStdString();
+    m_Info1->isPlayModeRepeatSongEnabled = isPlayModeRepeatSongEnabled;
     FMOD_CREATESOUNDEXINFO extrainfo1;
     memset(&extrainfo1, 0, sizeof(FMOD_CREATESOUNDEXINFO));
     extrainfo1.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);

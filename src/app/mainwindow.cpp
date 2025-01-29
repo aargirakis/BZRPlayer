@@ -1666,7 +1666,7 @@ bool MainWindow::loadSound(QString fullPath)
     QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0);
     tableWidgetPlaylists[currentPlaylist]->scrollTo(index);
     repaint();
-    bool loadOK = sm.LoadSound(fullPath);
+    bool loadOK = sm.LoadSound(fullPath, Playmode == repeatSong);
 
     if (loadOK)
     {
