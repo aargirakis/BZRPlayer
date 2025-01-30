@@ -119,6 +119,11 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->comboBox->addItem("ASIO 2.0", FMOD_OUTPUTTYPE_ASIO);
     ui->comboBox->addItem("Windows Sonic", FMOD_OUTPUTTYPE_WINSONIC);
 
+    ui->comboBoxDefaultPlaymode->addItem("Last used", -1);
+    ui->comboBoxDefaultPlaymode->addItem("Repeat disabled", mainWindow->playmode::normal);
+    ui->comboBoxDefaultPlaymode->addItem("Repeat all", mainWindow->playmode::repeatPlaylist);
+    ui->comboBoxDefaultPlaymode->addItem("Repeat one", mainWindow->playmode::repeatSong);
+
     int index = ui->comboBox->findData(mainWindow->getOutputDevice());
     ui->comboBox->setCurrentIndex(index);
 
@@ -158,6 +163,9 @@ settingsWindow::settingsWindow(QWidget* parent) :
 
     ui->checkBoxResetVolume->setChecked(mainWindow->getResetVolume());
     ui->sliderResetVolumeToValue->setValue(mainWindow->getResetVolumeValue());
+
+    int comboBoxDefaultPlaymodeIndex = ui->comboBoxDefaultPlaymode->findData(mainWindow->getDefaultPlaymode());
+    ui->comboBoxDefaultPlaymode->setCurrentIndex(comboBoxDefaultPlaymodeIndex);
 
     ui->checkBoxNormalizer->setChecked(mainWindow->getNormalizeEnabled());
     mainWindow->
@@ -656,6 +664,7 @@ void settingsWindow::on_buttonOK_clicked()
     bool checkedSystrayOnQuit = ui->checkBoxSystrayOnQuit->checkState() == Qt::Checked ? true : false;
     mainWindow->setResetVolume(checkedResetVolume);
     mainWindow->setResetVolumeValue(ui->sliderResetVolumeToValue->value());
+    mainWindow->setDefaultPlaymode(ui->comboBoxDefaultPlaymode->currentData().toInt());
     mainWindow->setSystrayOnQuitEnabled(checkedSystrayOnQuit);
     mainWindow->setIgnoreSuffix(ui->lineEditIgnoreSuffix->text());
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());

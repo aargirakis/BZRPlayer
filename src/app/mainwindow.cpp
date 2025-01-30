@@ -199,7 +199,11 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
         lastDir = settings.value("lastOpenedDir", "/").toString();
 
-        Playmode = static_cast<playmode>(settings.value("playmode", 0).toInt());
+        m_defaultPlaymode = settings.value("default_playmode", -1).toInt();
+        Playmode = static_cast<playmode>(m_defaultPlaymode == -1
+                                             ? settings.value("playmode", 0).toInt()
+                                             : m_defaultPlaymode);
+
         if (Playmode == normal)
         {
             ui->checkBoxLoop->setCheckState(Qt::Unchecked);
@@ -3789,6 +3793,16 @@ bool MainWindow::getResetVolume()
     return m_resetVolume;
 }
 
+void MainWindow::setDefaultPlaymode(int defaultPlaymode)
+{
+    m_defaultPlaymode = defaultPlaymode;
+}
+
+int MainWindow::getDefaultPlaymode()
+{
+    return m_defaultPlaymode;
+}
+
 void MainWindow::setReverbPreset(QString name)
 {
     SoundManager::getInstance().setReverbPreset(name);
@@ -3948,7 +3962,9 @@ void MainWindow::SaveSettings()
     settings.setValue("outputdevice", m_outputDevice);
     settings.setValue("volume", ui->volumeSlider->value());
     settings.setValue("shuffle", ui->checkBoxShuffle->isChecked());
-    settings.setValue("playmode", static_cast<int>(Playmode));
+
+    settings.setValue("default_playmode", m_defaultPlaymode);
+    settings.setValue("playmode", m_defaultPlaymode == -1 ? Playmode : m_defaultPlaymode);
 
     settings.setValue("resetvolume", m_resetVolume);
     settings.setValue("resetvolumevalue", m_resetVolumeValue);

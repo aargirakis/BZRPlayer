@@ -97,6 +97,8 @@ public:
     void setResetVolume(bool resetVolume);
     bool getResetVolume();
     int getResetVolumeValue();
+    void setDefaultPlaymode(int defaultPlaymode);
+    int getDefaultPlaymode();
     int getPlaylistRowHeight();
     int getPlaylistsRowHeight();
     int getNowPlayingFontSize();
@@ -510,6 +512,7 @@ private:
     bool m_resetVolume;
     bool m_muteVolume;
     int m_resetVolumeValue;
+    int m_defaultPlaymode;
 
     bool m_systrayOnQuitEnabled;
     bool m_reverbEnabled;
