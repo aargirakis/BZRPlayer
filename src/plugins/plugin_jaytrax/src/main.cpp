@@ -48,13 +48,13 @@ public:
 
     ~jaytraxplugin()
     {
-        delete[] myBuffer;
     }
 
     FMOD_CODEC_WAVEFORMAT jaytraxwaveformat;
     JT1Player* jay;
     JT1Song* song;
     uint8_t* myBuffer;
+    unsigned int length;
 };
 
 /*
@@ -95,13 +95,14 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, jaytrax->myBuffer, filesize, &bytesread);
 
-    jaytrax->jay = jaytrax_init();
-
-    if (jxsfile_readSongMem(jaytrax->myBuffer, filesize, &jaytrax->song) != 0)
+    bool isErr = jxsfile_readSongMem(jaytrax->myBuffer, filesize, &jaytrax->song) != 0;
+    delete[] jaytrax->myBuffer;
+    if (isErr)
     {
         return FMOD_ERR_FORMAT;
     }
 
+	jaytrax->jay = jaytrax_init();
     jaytrax->jay->song = jaytrax->song;
 
     jaytrax_changeSubsong(jaytrax->jay, 0);
@@ -129,10 +130,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
     jaytraxplugin* jaytrax = (jaytraxplugin*)codec->plugindata;
-    //jaytrax_free(jaytrax->jay);
-
+	if(jaytrax!=nullptr)
+	{
+		jaytrax_free(jaytrax->jay);
+	}
     delete jaytrax;
-
     return FMOD_OK;
 }
 
@@ -157,10 +159,13 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
         //        jaytrax_continueSong(jaytrax->jay);
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
+    if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        if (position < 0) position = 0;
-        jaytrax_changeSubsong(jaytrax->jay, position);
+        jaytrax->jay->subsongNr = position;
+        jaytrax->length = (jaytrax_getLength(jaytrax->jay, position, 1,
+                                             jaytrax->jaytraxwaveformat.frequency) /
+            jaytrax->jaytraxwaveformat.frequency) * 1000.0;
+
         return FMOD_OK;
     }
 }
@@ -178,10 +183,7 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
-        *length = (jaytrax_getLength(jaytrax->jay, jaytrax->jay->subsongNr, 1, jaytrax->jaytraxwaveformat.frequency) /
-            jaytrax->jaytraxwaveformat.frequency) * 1000.0;
-        cout << "length: " << jaytrax_getLength(jaytrax->jay, jaytrax->jay->subsongNr, 1,
-                                                jaytrax->jaytraxwaveformat.frequency) << "\n";
+        *length = jaytrax->length;
     }
     return FMOD_OK;
 }
