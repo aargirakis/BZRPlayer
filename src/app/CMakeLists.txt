@@ -70,10 +70,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 foreach (QT_MODULE ${QT_MODULES})
-    List(APPEND RUNTIME_DLLS ${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll)
+    list(APPEND RUNTIME_DLLS ${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll)
 endforeach ()
 
-List(APPEND RUNTIME_DLLS
+list(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
         ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
         ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
@@ -96,15 +96,18 @@ List(APPEND RUNTIME_DLLS
 )
 
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    List(APPEND RUNTIME_DLLS
+    list(APPEND RUNTIME_DLLS
             ${CMAKE_PREFIX_PATH}/bin/libdouble-conversion.dll
-            ${CMAKE_PREFIX_PATH}/bin/libicudt75.dll
-            ${CMAKE_PREFIX_PATH}/bin/libicuin75.dll
-            ${CMAKE_PREFIX_PATH}/bin/libicuuc75.dll
             ${CMAKE_PREFIX_PATH}/bin/libmd4c.dll
     )
+    file(GLOB RUNTIME_DLLS_VERSIONED
+            ${CMAKE_PREFIX_PATH}/bin/libicudt*.dll
+            ${CMAKE_PREFIX_PATH}/bin/libicuin*.dll
+            ${CMAKE_PREFIX_PATH}/bin/libicuuc*.dll
+    )
+    list(APPEND RUNTIME_DLLS ${RUNTIME_DLLS_VERSIONED})
 else ()
-    List(APPEND RUNTIME_DLLS
+    list(APPEND RUNTIME_DLLS
             ${CMAKE_PREFIX_PATH}/bin/libssp-0.dll
     )
 endif ()
