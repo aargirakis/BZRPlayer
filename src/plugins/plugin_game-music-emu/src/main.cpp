@@ -190,52 +190,16 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     result = FMOD_CODEC_FILE_READ(codec, header, 4, &bytesread);
 
-    switch (get_be32(header))
+    gme_type_t file_type = gme_identify_extension(gme_identify_header(header));
+
+    // sap format is played by plugin_asap
+    if (!file_type || file_type->extension_ == std::string(gme_sap_type->extension_))
     {
-    case BLARGG_4CHAR('N', 'E', 'S', 'M'):
-        gp->emu = gme_new_emu(gme_nsf_type, freq);
-        info->fileformat = "Nintendo NSF";
-        break;
-    case BLARGG_4CHAR('N', 'S', 'F', 'E'):
-        gp->emu = gme_new_emu(gme_nsfe_type, freq);
-        info->fileformat = "Nintendo Extended NSF";
-        break;
-    case BLARGG_4CHAR('S', 'N', 'E', 'S'):
-        gp->emu = gme_new_emu(gme_spc_type, freq);
-        info->fileformat = "Super Nintendo SPC700";
-        break;
-    case BLARGG_4CHAR('Z', 'X', 'A', 'Y'):
-        gp->emu = gme_new_emu(gme_ay_type, freq);
-        info->fileformat = "AY ZX Spectrum/Amstrad CPC";
-        break;
-    case BLARGG_4CHAR('G', 'B', 'S', 0x01):
-        gp->emu = gme_new_emu(gme_gbs_type, freq);
-        info->fileformat = "Game Boy";
-        break;
-    case BLARGG_4CHAR('G', 'Y', 'M', 'X'):
-        gp->emu = gme_new_emu(gme_gym_type, freq);
-        info->fileformat = "GYM Sega Genesis/Mega Drive";
-        break;
-    case BLARGG_4CHAR('H', 'E', 'S', 'M'):
-        gp->emu = gme_new_emu(gme_hes_type, freq);
-        info->fileformat = "HES NEC TurboGrafx-16/PC Engine";
-        break;
-    case BLARGG_4CHAR('K', 'S', 'C', 'C'):
-    case BLARGG_4CHAR('K', 'S', 'S', 'X'):
-        gp->emu = gme_new_emu(gme_kss_type, freq);
-        info->fileformat = "KSS MSX Home Computer/Z80";
-        break;
-    //case BLARGG_4CHAR('S','A','P',0x0D):
-    //gp->emu = gme_new_emu(gme_sap_type, freq);
-    //info->fileformat="SAP Atari";
-    //break;
-    case BLARGG_4CHAR('V', 'g', 'm', ' '):
-        gp->emu = gme_new_emu(gme_vgm_type, freq);
-        info->fileformat = "Video Game Music File";
-        break;
-    default:
         return FMOD_ERR_FORMAT;
     }
+
+    info->fileformat = file_type->system;
+    gp->emu = gme_new_emu(file_type, freq);
 
     /* Allocate space for buffer. */
     signed short* myBuffer = new signed short[filesize];
