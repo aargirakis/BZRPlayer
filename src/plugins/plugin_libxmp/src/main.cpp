@@ -17,10 +17,10 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
                                      FMOD_TIMEUNIT postype);
 FMOD_RESULT F_CALLBACK fcgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 
-FMOD_CODEC_DESCRIPTION fccodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD FLOD plugin", // Name.
+    PLUGIN_libxmp_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     0, // Don't force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_SUBSONG_MS |
@@ -93,14 +93,9 @@ public:
 extern "C" {
 #endif
 
-//__declspec(dllexport) FMOD_CODEC_DESCRIPTION* F_STDCALL _FMODGetCodecDescription()
-//{
-//    return &fccodec;
-//}
-
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &fccodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus
@@ -158,7 +153,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 
 
     //read config from disk
-    string filename = fc->info->applicationPath + "/data/plugin/config/libxmp.cfg";
+    string filename = fc->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/libxmp.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;

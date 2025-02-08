@@ -718,7 +718,7 @@ void settingsWindow::on_buttonBrowseHvscSonglengths_clicked()
 void settingsWindow::loadlibopenmptSettings()
 {
     //read config from disk
-    string filename = QApplication::applicationDirPath().toStdString() + "/user/plugin/config/libopenmpt.cfg";
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -785,7 +785,7 @@ void settingsWindow::loadlibopenmptSettings()
 void settingsWindow::loadUADESettings()
 {
     //read config from disk
-    string filename = QApplication::applicationDirPath().toStdString() + "/user/plugin/config/uade.cfg";
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/uade.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -886,7 +886,7 @@ void settingsWindow::loadUADESettings()
 void settingsWindow::loadSidplaySettings()
 {
     //read config from disk
-    string filename = QApplication::applicationDirPath().toStdString() + "/user/plugin/config/libsidplayfp.cfg";
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -948,7 +948,7 @@ void settingsWindow::loadSidplaySettings()
 void settingsWindow::saveSidplaySettings()
 {
     //save config to disk
-    string filename = QApplication::applicationDirPath().toStdString() + "/user/plugin/config/libsidplayfp.cfg";
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
     ofstream ofs(filename.c_str());
     string line;
 
@@ -985,7 +985,7 @@ void settingsWindow::savelibopenmptSettings()
         filterOpenMPT = "false";
     }
     //save config to disk
-    string filename = QApplication::applicationDirPath().toStdString() + "/user/plugin/config/libopenmpt.cfg";
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
     ofstream ofs(filename.c_str());
     string line;
 
@@ -1006,7 +1006,7 @@ void settingsWindow::savelibopenmptSettings()
 void settingsWindow::saveUADESettings()
 {
     //save config to disk
-    string filename = QApplication::applicationDirPath().toStdString() + "/user/plugin/config/uade.cfg";
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/uade.cfg";
     ofstream ofs(filename.c_str());
     string line;
 

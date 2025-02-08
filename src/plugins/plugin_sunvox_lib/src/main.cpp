@@ -19,10 +19,10 @@ FMOD_RESULT F_CALLBACK sunvoxsetposition(FMOD_CODEC_STATE* codec, int subsound, 
 FMOD_RESULT F_CALLBACK sunvoxgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 
 
-FMOD_CODEC_DESCRIPTION sunvoxcodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD sunvox plugin", // Name.
+    PLUGIN_sunvox_lib_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_SUBSONG_MS |
@@ -67,7 +67,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &sunvoxcodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus
@@ -76,7 +76,7 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    if (sv_load_dll2(TEXT("data/plugin/sunvox.dll")))
+    if (sv_load_dll2((static_cast<string>(&DATA_PLUGINS_DIR[1]) + "/sunvox.dll").c_str()))
         return FMOD_ERR_FORMAT;
     FMOD_RESULT result;
 

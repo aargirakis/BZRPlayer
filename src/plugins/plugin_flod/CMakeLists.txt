@@ -10,6 +10,8 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
+add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
+
 file(GLOB SOURCES
         src/flod/*.cpp
         src/flod/brooke/*.cpp

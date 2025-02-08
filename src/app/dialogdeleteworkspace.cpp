@@ -11,7 +11,7 @@ DialogDeleteWorkspace::DialogDeleteWorkspace(QWidget* parent) :
     setWindowFlags(windowFlags().setFlag(Qt::WindowContextHelpButtonHint, false));
     ui->setupUi(this);
 
-    QDir directory(QApplication::applicationDirPath() + "/user/layouts");
+    QDir directory(QApplication::applicationDirPath() + USER_LAYOUTS_DIR);
     QStringList workspaces = directory.entryList(QStringList() << "*.ini", QDir::Files);
     foreach(QString filename, workspaces)
     {
@@ -36,7 +36,7 @@ void DialogDeleteWorkspace::on_buttonCancel_clicked()
 void DialogDeleteWorkspace::on_buttonDelete_clicked()
 {
     QString fileName = ui->comboBoxWorkspace->currentText() + ".ini";
-    bool removed = QFile::remove(QApplication::applicationDirPath() + "/user/layouts/" + fileName);
+    bool removed = QFile::remove(QApplication::applicationDirPath() + USER_LAYOUTS_DIR + "/" + fileName);
     if (removed)
     {
         MainWindow* mw = static_cast<MainWindow*>(this->parent());

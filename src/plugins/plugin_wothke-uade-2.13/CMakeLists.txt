@@ -31,6 +31,7 @@ download_patch_and_add(
 
 set(UADE_DATA_PATH "${DATA_PLUGINS_DIR}/uade")
 add_compile_definitions(UADE_DATA_PATH="${UADE_DATA_PATH}")
+add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
 add_compile_definitions(EMSCRIPTEN=1)
 
 file(GLOB SOURCES

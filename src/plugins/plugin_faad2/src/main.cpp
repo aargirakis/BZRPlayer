@@ -50,10 +50,10 @@ FMOD_RESULT F_CALLBACK aacread(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 FMOD_RESULT F_CALLBACK aacsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
-FMOD_CODEC_DESCRIPTION aaccodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "VGM Stream plugin", // Name.
+    PLUGIN_faad2_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     0, // Don't force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
@@ -127,7 +127,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &aaccodec;
+    return &codecDescription;
 }
 
 

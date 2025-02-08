@@ -22,6 +22,7 @@ download_patch_and_add(
 )
 
 add_compile_definitions(SUNVOX_MAIN)
+add_compile_definitions(DATA_PLUGINS_DIR="${DATA_PLUGINS_DIR}")
 
 file(GLOB SOURCES
         src/main.cpp

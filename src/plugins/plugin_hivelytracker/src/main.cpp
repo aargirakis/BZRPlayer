@@ -25,10 +25,10 @@ void ERRCHECK(FMOD_RESULT result)
     }
 }
 
-FMOD_CODEC_DESCRIPTION tfmxcodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "TFMX player plugin", // Name.
+    PLUGIN_hivelytracker_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW |
@@ -89,7 +89,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &tfmxcodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus

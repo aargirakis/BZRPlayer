@@ -16,10 +16,10 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
 FMOD_RESULT F_CALLBACK fcgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 FMOD_RESULT F_CALLBACK fcgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
 
-FMOD_CODEC_DESCRIPTION fccodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD Future Composer player plugin", // Name.
+    PLUGIN_libfc14audiodecoder_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     0, // Don't force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODVUMETER,
@@ -74,7 +74,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &fccodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus

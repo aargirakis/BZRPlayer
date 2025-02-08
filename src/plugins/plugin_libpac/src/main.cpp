@@ -15,10 +15,10 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 
 
-FMOD_CODEC_DESCRIPTION tfmxcodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "TFMX player plugin", // Name.
+    PLUGIN_libpac_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL, // The time format we would like to accept into setposition/getposition.
@@ -71,7 +71,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &tfmxcodec;
+    return &codecDescription;
 }
 
 

@@ -37,10 +37,10 @@ unsigned int getLengthFromSIDDatabase(string databasefile, bool newDatabaseVersi
 string md5_new;
 string md5_old;
 
-FMOD_CODEC_DESCRIPTION sidcodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD Sid player plugin", // Name.
+    PLUGIN_libsidplayfp_NAME, // Name.
     0x00012100, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_SUBSONG_MS,
@@ -124,7 +124,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &sidcodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus
@@ -239,7 +239,7 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
 
     //read config from disk
-    string filename = info->applicationPath + "/user/plugin/config/libsidplayfp.cfg";
+    string filename = info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
     ifstream ifs(filename.c_str());
     string line;
 

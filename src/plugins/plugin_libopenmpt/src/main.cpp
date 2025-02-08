@@ -21,10 +21,10 @@ FMOD_RESULT F_CALLBACK libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsou
 FMOD_RESULT F_CALLBACK libopenmptgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 
 
-FMOD_CODEC_DESCRIPTION libopenmptcodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD libopenmpt plugin", // Name.
+    PLUGIN_libopenmpt_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_SUBSONG_MS |
@@ -88,7 +88,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &libopenmptcodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus
@@ -137,7 +137,7 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
 
 
         //read config from disk
-        string filename = libopenmpt->info->applicationPath + "/user/plugin/config/libopenmpt.cfg";
+        string filename = libopenmpt->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
         ifstream ifs(filename.c_str());
         string line;
         bool useDefaults = false;

@@ -10,10 +10,10 @@ FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec);
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
-FMOD_CODEC_DESCRIPTION gamecodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD YM Plugin", // Name.
+    PLUGIN_libstsound_NAME, // Name.
     0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
@@ -58,7 +58,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &gamecodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus

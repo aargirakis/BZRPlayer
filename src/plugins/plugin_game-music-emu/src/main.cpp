@@ -36,10 +36,10 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
-FMOD_CODEC_DESCRIPTION gamecodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD Game Music Player Plugin", // Name.
+    PLUGIN_game_music_emu_NAME, // Name.
     0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_TEMPO | FMOD_TIMEUNIT_MUTE_VOICE,
@@ -90,7 +90,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &gamecodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus
@@ -108,7 +108,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     //Info* info = new Info();
     Info* info = (Info*)userexinfo->userdata;
-    string filename = info->applicationPath + "/user/plugin/config/gameemu.cfg";
+    string filename = info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/gameemu.cfg";
     ifstream ifs(filename.c_str());
     string line;
     unsigned int filesize;

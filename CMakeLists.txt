@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(bzr2 VERSION "2.0.74")
-set(BZR2_VERSION "${PROJECT_VERSION}")
 
 if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_TYPE STREQUAL "None")
     message(STATUS "CMAKE_BUILD_TYPE is 'None' or not set: forcing to 'Debug'")
@@ -9,12 +8,18 @@ if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_
 endif ()
 
 set(DATA_DIR "/data")
+set(PLATFORMS_DIR "/platforms")
 set(USER_DIR "/user")
 set(DATA_PLUGINS_DIR "${DATA_DIR}/plugin")
+set(DATA_PLUGINS_FMOD_DIR "${DATA_PLUGINS_DIR}/fmod")
+set(USER_LAYOUTS_DIR "${USER_DIR}/layouts")
+set(USER_PLAYLISTS_DIR "${USER_DIR}/playlists")
 set(USER_PLUGINS_DIR "${USER_DIR}/plugin")
+set(USER_PLUGINS_CONFIG_DIR "${USER_PLUGINS_DIR}/config")
 set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/output")
 set(OUTPUT_DATA_DIR "${OUTPUT_DIR}${DATA_DIR}")
 set(OUTPUT_DATA_PLUGINS_DIR "${OUTPUT_DIR}${DATA_PLUGINS_DIR}")
+set(OUTPUT_PLATFORMS_DIR "${OUTPUT_DIR}${PLATFORMS_DIR}")
 
 include(${CMAKE_SOURCE_DIR}/utils.cmake)
 include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)

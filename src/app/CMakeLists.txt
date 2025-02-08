@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(app VERSION "${BZR2_VERSION}")
+project(app VERSION "${PROJECT_VERSION}")
 
 include(${CMAKE_SOURCE_DIR}/src/external/qt-ads/qt-ads.cmake)
 
@@ -13,11 +13,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/version.h.in
-        ${CMAKE_CURRENT_SOURCE_DIR}/version.h
-        @ONLY NEWLINE_STYLE UNIX
-)
-configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest.in
         ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest
         @ONLY NEWLINE_STYLE UNIX
@@ -27,6 +22,16 @@ set(QT_VERSION_MAJOR "5")
 set(QT_MODULES Core Gui Network OpenGL Svg Widgets Xml)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
+
+add_compile_definitions(PROJECT_VERSION="${PROJECT_VERSION}")
+add_compile_definitions(DATA_DIR="${DATA_DIR}")
+add_compile_definitions(USER_DIR="${USER_DIR}")
+add_compile_definitions(DATA_PLUGINS_DIR="${DATA_PLUGINS_DIR}")
+add_compile_definitions(DATA_PLUGINS_FMOD_DIR="${DATA_PLUGINS_FMOD_DIR}")
+add_compile_definitions(USER_LAYOUTS_DIR="${USER_LAYOUTS_DIR}")
+add_compile_definitions(USER_PLAYLISTS_DIR="${USER_PLAYLISTS_DIR}")
+add_compile_definitions(USER_PLUGINS_DIR="${USER_PLUGINS_DIR}")
+add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
 
 file(GLOB SOURCES
         *.cpp
@@ -130,10 +135,10 @@ else ()
 endif ()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR}/platforms"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_PLATFORMS_DIR}"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${QT_PLATFORMS_DIR}/qwindows.dll"
-        "${OUTPUT_DIR}/platforms"
+        "${OUTPUT_PLATFORMS_DIR}"
         VERBATIM
 )
 

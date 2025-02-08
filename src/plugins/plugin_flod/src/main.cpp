@@ -18,10 +18,10 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
                                      FMOD_TIMEUNIT postype);
 FMOD_RESULT F_CALLBACK fcgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 
-FMOD_CODEC_DESCRIPTION fccodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD FLOD plugin", // Name.
+    PLUGIN_flod_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     0, // Don't force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN |
@@ -78,7 +78,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &fccodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus
@@ -127,7 +127,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     result = FMOD_CODEC_FILE_READ(codec, fc->myBuffer, filesize, &bytesread);
     //read config from disk
 
-    string filename = fc->info->applicationPath + "/user/plugin/config/flod.cfg";
+    string filename = fc->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/flod.cfg";
     ifstream ifs(filename.c_str());
     string line;
     int force = 0;

@@ -8,18 +8,13 @@
 #include "qscreen.h"
 #include "qsortfilterproxymodel.h"
 #include "ui_mainwindow.h"
-#include "fmod.hpp"
 #include "fmod_errors.h"
 #include "info.h"
-#include "noPageSlider.h"
 #include "various.h"
 #include <QMimeData>
-#include <QFileInfo>
 #include <QFontDatabase>
 #include <QFont>
-#include <QDir>
 #include <QDragEnterEvent>
-#include <QCloseEvent>
 #include <QFileDialog>
 #include <QDebug>
 #include <QMessageBox>
@@ -37,7 +32,6 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include "about.h"
-#include "version.h"
 
 #define NEZPLAYLISTSPLITTER "::<>::?<>"
 #define PLAYLISTFIELDSPLITTER "<><>::????"
@@ -468,40 +462,40 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
         ui->positionSlider->setMaximum(0);
 
-        QDir pathDir(QApplication::applicationDirPath() + QDir::separator() + "user");
+        QDir pathDir(QApplication::applicationDirPath() + USER_DIR);
         if (!pathDir.exists())
         {
             QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user");
         }
 
-        QDir pathDir2(QApplication::applicationDirPath() + QDir::separator() + "user/playlists");
+        QDir pathDir2(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
         if (!pathDir2.exists())
         {
-            QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user/playlists");
+            QDir().mkdir(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
         }
-        QDir pathDir3(QApplication::applicationDirPath() + QDir::separator() + "user/plugin");
+        QDir pathDir3(QApplication::applicationDirPath() + USER_PLUGINS_DIR);
         if (!pathDir3.exists())
         {
-            QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user/plugin");
+            QDir().mkdir(QApplication::applicationDirPath() + USER_PLUGINS_DIR);
         }
         QDir pathDir4(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
         if (!pathDir4.exists())
         {
             QDir().mkdir(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
         }
-        QDir pathDir5(QApplication::applicationDirPath() + QDir::separator() + "user/plugin/config");
+        QDir pathDir5(QApplication::applicationDirPath() + USER_PLUGINS_CONFIG_DIR);
         if (!pathDir5.exists())
         {
-            QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user/plugin/config");
+            QDir().mkdir(QApplication::applicationDirPath() + USER_PLUGINS_CONFIG_DIR);
         }
 
 
-        QDir directory(QApplication::applicationDirPath() + QDir::separator() + "user/playlists");
+        QDir directory(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
 
         QStringList playlists;
 
         if (!QFileInfo::exists(
-            QApplication::applicationDirPath() + QDir::separator() + "user/playlists" + QDir::separator() +
+            QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
             PLAYLIST_DEFAULT_FILENAME))
         {
             playlists.append(PLAYLIST_DEFAULT_FILENAME);
@@ -513,7 +507,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
         addDebugText(
             "Loading " + QString::number(playlists.count()) + " playlists from " + QApplication::applicationDirPath() +
-            QDir::separator() + "user/playlists");
+            USER_PLAYLISTS_DIR);
 
 
         changeStyleSheetColor();
@@ -568,7 +562,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
             //There was no existing default playlist
             if (!QFileInfo::exists(
-                QApplication::applicationDirPath() + QDir::separator() + "user/playlists" + QDir::separator() +
+                QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
                 PLAYLIST_DEFAULT_FILENAME) && filename == PLAYLIST_DEFAULT_FILENAME)
             {
                 swapColumns(tableWidgetPlaylists[f.fileName()]);
@@ -597,7 +591,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
             ui->listWidget->insertItem(ui->listWidget->count(), newItem);
             ui->listWidget->setItemDelegate(new MyItemDelegate(this));
             QUrl u = QUrl::fromLocalFile(
-                QDir::separator() + QApplication::applicationDirPath() + QDir::separator() + "user/playlists" + "/" + f.
+                QDir::separator() + QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + f.
                 fileName());
             QList<QUrl> ql;
             ql.append(u);
@@ -608,7 +602,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         }
 
         if (!QFileInfo::exists(
-            QApplication::applicationDirPath() + QDir::separator() + "user/playlists" + QDir::separator() +
+            QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
             currentPlaylist))
         {
             currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
@@ -3216,10 +3210,10 @@ void MainWindow::renamePlaylist()
                 suffix++;
                 newName = newOrgFilename + " (" + QString::number(suffix) + ").m3u";
             }
-            QDir directory("user/playlists");
-            QString playlistNewName = QApplication::applicationDirPath() + QDir::separator() + "user/playlists" +
+            QDir directory(USER_PLAYLISTS_DIR);
+            QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
                 QDir::separator() + newName;
-            QString playlistOldName = QApplication::applicationDirPath() + QDir::separator() + "user/playlists" +
+            QString playlistOldName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
                 QDir::separator() + oldName;
             QFile oldFile(playlistOldName);
             oldFile.rename(playlistNewName);
@@ -3259,10 +3253,10 @@ void MainWindow::savePlaylistAs()
             suffix++;
             newName = newOrgFilename + " (" + QString::number(suffix) + ").m3u";
         }
-        QDir directory("user/playlists");
-        QString playlistNewName = QApplication::applicationDirPath() + QDir::separator() + "user/playlists" +
+        QDir directory(USER_PLAYLISTS_DIR);
+        QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
             QDir::separator() + newName;
-        QString playlistOldName = QApplication::applicationDirPath() + QDir::separator() + "user/playlists" +
+        QString playlistOldName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
             QDir::separator() + oldName;
 
         savePlayList(playlistOldName, playlistNewName);
@@ -3318,7 +3312,7 @@ void MainWindow::savePlaylistAs()
                 SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
 
         QUrl u = QUrl::fromLocalFile(
-            QDir::separator() + QApplication::applicationDirPath() + QDir::separator() + "user/playlists" + "/" +
+            QDir::separator() + QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" +
             newName);
         QList<QUrl> ql;
         ql.append(u);
@@ -3365,9 +3359,9 @@ void MainWindow::savePlayList(QString path, QString newPath)
 void MainWindow::savePlaylist()
 {
     savePlayList(
-        QApplication::applicationDirPath() + QDir::separator() + "user/playlists/" + ui->listWidget->currentItem()->
+        QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + ui->listWidget->currentItem()->
         text(),
-        QApplication::applicationDirPath() + QDir::separator() + "user/playlists/" + ui->listWidget->currentItem()->
+        QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + ui->listWidget->currentItem()->
         text());
 }
 
@@ -3378,7 +3372,7 @@ void MainWindow::deleteAllPlaylists()
         ui->listWidget->setCurrentRow(rowNumber);
         if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME)
         {
-            QString playlistToDelete = QApplication::applicationDirPath() + QDir::separator() + "user/playlists" +
+            QString playlistToDelete = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
                 QDir::separator() + ui->listWidget->currentItem()->text();
             addDebugText("Deleting playlist " + playlistToDelete);
             QFile::remove(playlistToDelete);
@@ -3397,7 +3391,7 @@ void MainWindow::deletePlaylist()
         int rowNumber = ui->listWidget->currentRow();
         rowNumber--;
 
-        QString playlistToDelete = QApplication::applicationDirPath() + QDir::separator() + "user/playlists" +
+        QString playlistToDelete = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
             QDir::separator() + ui->listWidget->currentItem()->text();
         addDebugText("Deleting playlist " + playlistToDelete);
         QFile::remove(playlistToDelete);
@@ -4657,8 +4651,8 @@ void MainWindow::quit()
 
     for (auto e : tableWidgetPlaylists.keys())
     {
-        savePlayList(QApplication::applicationDirPath() + QDir::separator() + "user/playlists/" + e,
-                     QApplication::applicationDirPath() + QDir::separator() + "user/playlists/" + e);
+        savePlayList(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + e,
+                     QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + e);
     }
 
     QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
@@ -5840,7 +5834,7 @@ void MainWindow::LoadWorkspaces()
     QAction* restore = ui->menuRestore_Layout->actions().first();
     workspaceSeparator = ui->menuRestore_Layout->insertSeparator(restore);
 
-    QDir directory(QApplication::applicationDirPath() + "/user/layouts");
+    QDir directory(QApplication::applicationDirPath() + USER_LAYOUTS_DIR);
     QStringList workspaces = directory.entryList(QStringList() << "*.ini", QDir::Files);
     QAction* action;
     foreach(QString filename, workspaces)
@@ -5875,7 +5869,7 @@ void MainWindow::DeleteWorkspace(QString workspace)
 
 void MainWindow::slot_LoadWorkspace(QString filename)
 {
-    QSettings settings(QApplication::applicationDirPath() + "/user/layouts/" + filename, QSettings::IniFormat);
+    QSettings settings(QApplication::applicationDirPath() + USER_LAYOUTS_DIR + "/" + filename, QSettings::IniFormat);
     if (!m_DockManager->restoreState(settings.value("dockingState").toByteArray()))
     {
         QMessageBox::critical(this, "Error", "Couldn't load layout.");
@@ -5885,7 +5879,7 @@ void MainWindow::slot_LoadWorkspace(QString filename)
 void MainWindow::CreateNewWorkspace(QString filename)
 {
     QString fileNameAndExtension = filename + ".ini";
-    QSettings settings(QApplication::applicationDirPath() + "/user/layouts/" + fileNameAndExtension,
+    QSettings settings(QApplication::applicationDirPath() + USER_LAYOUTS_DIR + "/" + fileNameAndExtension,
                        QSettings::IniFormat);
     settings.setValue("dockingState", m_DockManager->saveState());
     QAction* action = new QAction(filename);

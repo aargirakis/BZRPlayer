@@ -37,7 +37,6 @@ download_patch_and_add(
 
 set(EXTERNAL_SOURCE_DIR_2 "${EXTERNAL_SOURCE_DIR}")
 
-set(VERSION "${PROJECT_VERSION}")
 configure_file(
         ${EXTERNAL_SOURCE_DIR_1}/src/version.h.in
         ${EXTERNAL_SOURCE_DIR_1}/src/version.h
@@ -55,6 +54,8 @@ configure_file(
         ${EXTERNAL_SOURCE_DIR_2}/src/binio.h
         @ONLY NEWLINE_STYLE UNIX
 )
+
+add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_1}/src/*.c

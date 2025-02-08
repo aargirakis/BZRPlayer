@@ -22,6 +22,7 @@ download_patch_and_add(
 )
 
 add_compile_definitions(BUILDING_DLL)
+add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c

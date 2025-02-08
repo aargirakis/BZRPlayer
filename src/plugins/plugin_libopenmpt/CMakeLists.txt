@@ -27,6 +27,8 @@ download_patch_and_make(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches "${LIB_MAKE_ARGS}" ${LIB_BUILD_BYPRODUCTS}
 )
 
+add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
+
 file(GLOB SOURCES
         src/main.cpp
 

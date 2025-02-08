@@ -27,6 +27,8 @@ download_patch_and_add(
 
 set(EXTERNAL_SOURCE_DIR_1 "${EXTERNAL_SOURCE_DIR}")
 
+add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
+
 add_compile_definitions(HAVE_CONFIG_H)
 add_compile_definitions(HAVE_CXX14)
 set(PACKAGE ${GIT_REPO_NAME})

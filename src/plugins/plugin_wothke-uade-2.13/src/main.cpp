@@ -42,10 +42,10 @@ FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* positi
 #ifdef UNICODEHACK
 const char TEMPFILENAME[] = "tempfile.tmp";
 #endif
-FMOD_CODEC_DESCRIPTION gamecodec =
+FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    "FMOD UADE Plugin", // Name.
+    PLUGIN_wothke_uade_2_13_NAME, // Name.
     0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG, // The time format we would like to accept into setposition/getposition.
@@ -99,7 +99,7 @@ extern "C" {
 
 __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription()
 {
-    return &gamecodec;
+    return &codecDescription;
 }
 
 #ifdef __cplusplus
@@ -281,7 +281,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     //read config from disk
-    string filename = gp->info->applicationPath + "/user/plugin/config/uade.cfg";
+    string filename = gp->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/uade.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
