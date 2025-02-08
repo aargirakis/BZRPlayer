@@ -2,10 +2,10 @@
 #include "AmigaFilter.h"
 #include "BaseSample.h"
 #include "FileLoader.h"
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
@@ -34,23 +34,23 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &fcsetposition, // Setposition callback.
     &fcgetposition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class fcplugin
+class pluginFlod
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    fcplugin(FMOD_CODEC_STATE* codec)
+    pluginFlod(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&fcwaveformat, 0, sizeof(fcwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
         player = 0;
         //decoder=NULL;
     }
 
-    ~fcplugin()
+    ~pluginFlod()
     {
         //delete some stuf
         delete[] myBuffer;
@@ -63,7 +63,7 @@ public:
     signed short* myBuffer;
     Info* info;
 
-    FMOD_CODEC_WAVEFORMAT fcwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -88,8 +88,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 {
     FMOD_RESULT result;
 
-    fcplugin* fc = new fcplugin(codec);
-    fc->info = (Info*)userexinfo->userdata;
+    auto plugin = new pluginFlod(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     unsigned int bytesread;
     unsigned int filesize;
@@ -121,13 +121,13 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     {
         return FMOD_ERR_FORMAT;
     }
-    fc->myBuffer = new signed short[filesize];
+    plugin->myBuffer = new signed short[filesize];
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, fc->myBuffer, filesize, &bytesread);
+    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
     //read config from disk
 
-    string filename = fc->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/flod.cfg";
+    string filename = plugin->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/flod.cfg";
     ifstream ifs(filename.c_str());
     string line;
     int force = 0;
@@ -204,18 +204,18 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
         ifs.close();
     }
 
-    FileLoader* fileLoader = new FileLoader();
+    auto fileLoader = new FileLoader();
 
     fileLoader->setForcePlayer(forcePlayer);
 
-    fc->player = fileLoader->load((signed short*)fc->myBuffer, filesize, fc->info->filename.c_str());
+    plugin->player = fileLoader->load((signed short*)plugin->myBuffer, filesize, plugin->info->filename.c_str());
 
 
-    if (!fc->player)
+    if (!plugin->player)
     {
         //delete some stuf
-        delete[] fc->myBuffer;
-        if (fc->player) delete fc->player;
+        delete[] plugin->myBuffer;
+        if (plugin->player) delete plugin->player;
         delete fileLoader;
         return FMOD_ERR_FORMAT;
     }
@@ -224,58 +224,58 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     delete fileLoader;
 
 
-    fc->info = (Info*)userexinfo->userdata;
-    //fc->player->play();
-    fc->player->setVersion(force);
-    fc->player->setNTSC(clockspeedNTSC);
-    fc->player->amiga->setModel(model1200);
-    fc->player->amiga->setFilter(filter);
-    fc->fcwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    fc->fcwaveformat.channels = 2;
-    fc->fcwaveformat.frequency = 44100;
-    fc->fcwaveformat.pcmblocksize = (16 >> 3) * fc->fcwaveformat.channels;
-    fc->fcwaveformat.lengthpcm = 0xffffffff;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    //plugin->player->play();
+    plugin->player->setVersion(force);
+    plugin->player->setNTSC(clockspeedNTSC);
+    plugin->player->amiga->setModel(model1200);
+    plugin->player->amiga->setFilter(filter);
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
-    codec->waveformat = &(fc->fcwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = fc; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    fc->info->fileformat = fc->player->format;
-    fc->info->plugin = PLUGIN_flod;
-    fc->info->pluginName = PLUGIN_flod_NAME;
-    fc->info->setSeekable(false);
+    plugin->info->fileformat = plugin->player->format;
+    plugin->info->plugin = PLUGIN_flod;
+    plugin->info->pluginName = PLUGIN_flod_NAME;
+    plugin->info->setSeekable(false);
 
 
-    fc->info->hasTitle = true;
-    fc->info->numChannels = fc->player->getChannels();
-    fc->player->getTitle(fc->info->title);
-    std::vector<BaseSample*> samples = fc->player->getSamples();
+    plugin->info->hasTitle = true;
+    plugin->info->numChannels = plugin->player->getChannels();
+    plugin->player->getTitle(plugin->info->title);
+    std::vector<BaseSample*> samples = plugin->player->getSamples();
     if (samples.size() > 0)
     {
-        fc->info->numSamples = samples.size();
-        fc->info->samples = new string[fc->info->numSamples];
-        fc->info->samplesSize = new unsigned int[fc->info->numSamples];
-        //            fc->info->samplesLoopStart = new unsigned int[fc->info->numSamples];
-        //            fc->info->samplesLoopLength = new unsigned int[fc->info->numSamples];
-        fc->info->samplesVolume = new unsigned short[fc->info->numSamples];
+        plugin->info->numSamples = samples.size();
+        plugin->info->samples = new string[plugin->info->numSamples];
+        plugin->info->samplesSize = new unsigned int[plugin->info->numSamples];
+        //            plugin->info->samplesLoopStart = new unsigned int[plugin->info->numSamples];
+        //            plugin->info->samplesLoopLength = new unsigned int[plugin->info->numSamples];
+        plugin->info->samplesVolume = new unsigned short[plugin->info->numSamples];
 
         //            int loopStart = 0;
-        for (int j = 0; j < fc->info->numSamples; j++)
+        for (int j = 0; j < plugin->info->numSamples; j++)
         {
             if (samples[j])
             {
-                fc->info->samples[j] = samples[j]->name;
-                fc->info->samplesSize[j] = samples[j]->length;
-                ////                    fc->info->samplesLoopLength[j] = samples[j]->length-samples[j]->repeat;
-                ////                    fc->info->samplesLoopStart[j] = samples[j]->repeat;
-                fc->info->samplesVolume[j] = samples[j]->volume;
+                plugin->info->samples[j] = samples[j]->name;
+                plugin->info->samplesSize[j] = samples[j]->length;
+                ////                    plugin->info->samplesLoopLength[j] = samples[j]->length-samples[j]->repeat;
+                ////                    plugin->info->samplesLoopStart[j] = samples[j]->repeat;
+                plugin->info->samplesVolume[j] = samples[j]->volume;
             }
         }
     }
     else
     {
-        fc->info->numSamples = 0;
+        plugin->info->numSamples = 0;
     }
 
     return FMOD_OK;
@@ -283,18 +283,18 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 {
-    delete (fcplugin*)codec->plugindata;
+    delete static_cast<pluginFlod*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
-    if (fc->player->amiga->isCompleted())
+    auto plugin = static_cast<pluginFlod*>(codec->plugindata);
+    if (plugin->player->amiga->isCompleted())
     {
         return FMOD_ERR_FILE_COULDNOTSEEK;
     }
-    fc->player->mixer(buffer, size >> 2);
+    plugin->player->mixer(buffer, size >> 2);
     *read = size >> 2;
 
     return FMOD_OK;
@@ -303,17 +303,17 @@ FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned in
 FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginFlod*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        fc->player->play();
+        plugin->player->play();
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        fc->player->selectSong(position);
-        fc->player->play();
+        plugin->player->selectSong(position);
+        plugin->player->play();
         return FMOD_OK;
     }
     return FMOD_OK;
@@ -321,16 +321,16 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
 
 FMOD_RESULT F_CALLBACK fcgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginFlod*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS || lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
-        *length = fc->fcwaveformat.lengthpcm;
+        *length = plugin->waveformat.lengthpcm;
         return FMOD_OK;
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
-        *length = fc->player->getSubsongsCount();
+        *length = plugin->player->getSubsongsCount();
         return FMOD_OK;
     }
 
@@ -342,24 +342,24 @@ FMOD_RESULT F_CALLBACK fcgetlength(FMOD_CODEC_STATE* codec, unsigned int* length
 
 FMOD_RESULT F_CALLBACK fcgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginFlod*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MODROW)
     {
-        *position = fc->player->getCurrentRow();
+        *position = plugin->player->getCurrentRow();
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MODPATTERN)
     {
-        *position = fc->player->getCurrentPattern();
+        *position = plugin->player->getCurrentPattern();
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO)
     {
         //set the mod pattern (notes etc.) in the info struct and just return 0
-        fc->player->getModRows(fc->info->modRows);
+        plugin->player->getModRows(plugin->info->modRows);
 
-        //const std::vector<AmigaRow*>& b = fc->player->getModRows();
+        //const std::vector<AmigaRow*>& b = plugin->player->getModRows();
         *position = 0;
         return FMOD_OK;
     }

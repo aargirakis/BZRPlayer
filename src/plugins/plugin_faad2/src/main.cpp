@@ -1,8 +1,8 @@
 #include "neaacdec.h"
-#include <string.h>
+#include <cstring>
 #include <algorithm>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
@@ -60,12 +60,12 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &aacopen, // Open callback.
     &aacclose, // Close callback.
     &aacread, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &aacsetposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
 
@@ -92,18 +92,18 @@ static int get_AAC_format(aacinfo* x)
 }
 
 
-class aacplugin
+class pluginFaad2
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    aacplugin(FMOD_CODEC_STATE* codec)
+    pluginFaad2(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&fcwaveformat, 0, sizeof(fcwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~aacplugin()
+    ~pluginFaad2()
     {
         //delete some stuff
     }
@@ -113,7 +113,7 @@ public:
     aacinfo* x;
     int seek;
 
-    FMOD_CODEC_WAVEFORMAT fcwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -138,35 +138,35 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    aacplugin* fc = new aacplugin(codec);
+    pluginFaad2* plugin = new pluginFaad2(codec);
 
-    fc->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    fc->fcwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    fc->fcwaveformat.channels = 2;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
 
 
-    fc->fcwaveformat.lengthpcm = 0xffffffff;
-    // codec->filesize;// / aacwaveformat.blockalign;   /* bytes converted to PCM samples */;
+    plugin->waveformat.lengthpcm = 0xffffffff;
+    // codec->filesize;// / waveformat.blockalign;   /* bytes converted to PCM samples */;
 
-    codec->waveformat = &(fc->fcwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
 
     unsigned int readBytes = 0;
     FMOD_RESULT r;
 
-    std::string extension = fc->info->filename.substr(fc->info->filename.length() - 3, fc->info->filename.length());
+    std::string extension = plugin->info->filename.substr(plugin->info->filename.length() - 3, plugin->info->filename.length());
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     if (extension.compare("aac"))
     {
         return FMOD_ERR_FORMAT;
     }
-    aacinfo* x = new aacinfo;
+    auto x = new aacinfo;
     if (!x) return FMOD_ERR_INTERNAL;
     memset(x, 0, sizeof(aacinfo));
 
-    codec->plugindata = fc; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
     //rewind file pointer
     r = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
@@ -217,11 +217,11 @@ FMOD_RESULT F_CALLBACK aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         x->fbuflen += readBytes;
 
         long byt = NeAACDecInit(x->neaac, x->fbuf, x->fbuflen, &x->sr, &x->nch);
-        fc->fcwaveformat.frequency = x->sr;
-        fc->fcwaveformat.channels = x->nch;
-        fc->fcwaveformat.pcmblocksize = 512 * fc->fcwaveformat.channels; /* 2 = 16bit pcm */
-        fc->fcwaveformat.lengthpcm = 0xffffffff;
-        // codec->filesize;// / aacwaveformat.blockalign;   /* bytes converted to PCM samples */;
+        plugin->waveformat.frequency = x->sr;
+        plugin->waveformat.channels = x->nch;
+        plugin->waveformat.pcmblocksize = 512 * plugin->waveformat.channels; /* 2 = 16bit pcm */
+        plugin->waveformat.lengthpcm = 0xffffffff;
+        // codec->filesize;// / waveformat.blockalign;   /* bytes converted to PCM samples */;
 
         if (byt < 0)
             return FMOD_ERR_INTERNAL;
@@ -235,38 +235,38 @@ FMOD_RESULT F_CALLBACK aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         config->outputFormat = FAAD_FMT_16BIT;
         config->defSampleRate = 44100;
         NeAACDecSetConfiguration(x->neaac, config);
-        fc->x = x;
-        fc->seek = -1;
+        plugin->x = x;
+        plugin->seek = -1;
 
 
-        fc->info->plugin = PLUGIN_faad2;
-        fc->info->pluginName = PLUGIN_faad2_NAME;
-        fc->info->fileformat = "aac";
-        fc->info->setSeekable(false);
+        plugin->info->plugin = PLUGIN_faad2;
+        plugin->info->pluginName = PLUGIN_faad2_NAME;
+        plugin->info->fileformat = "aac";
+        plugin->info->setSeekable(false);
     }
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK aacclose(FMOD_CODEC_STATE* codec)
 {
-    aacplugin* fc = (aacplugin*)codec->plugindata;
-    //    NeAACDecClose(fc->x->neaac);
-    //    delete (aacplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginFaad2*>(codec->plugindata);
+    //    NeAACDecClose(plugin->x->neaac);
+    //    delete static_cast<pluginFaad2*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK aacread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    aacplugin* fc = (aacplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginFaad2*>(codec->plugindata);
     memset(buffer, 0, size);
 
-    if (size < fc->fcwaveformat.pcmblocksize)
+    if (size < plugin->waveformat.pcmblocksize)
     {
         *read = size;
         return FMOD_OK;
     }
 
-    aacinfo* x = fc->x;
+    aacinfo* x = plugin->x;
     if (!x || !read)
         return FMOD_ERR_INTERNAL;
 
@@ -323,7 +323,7 @@ FMOD_RESULT F_CALLBACK aacread(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 FMOD_RESULT F_CALLBACK aacsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype)
 {
-    aacplugin* fc = (aacplugin*)codec->plugindata;
-    fc->seek = 0;
+    auto plugin = static_cast<pluginFaad2*>(codec->plugindata);
+    plugin->seek = 0;
     return FMOD_OK;
 }

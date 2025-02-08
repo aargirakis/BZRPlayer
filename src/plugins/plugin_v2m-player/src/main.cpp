@@ -1,5 +1,5 @@
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 #include <string>
 #include <algorithm>
 #include "fmod_errors.h"
@@ -25,26 +25,26 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class v2mplugin
+class pluginV2mPlayer
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    v2mplugin(FMOD_CODEC_STATE* codec)
+    pluginV2mPlayer(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&v2mwaveformat, 0, sizeof(v2mwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~v2mplugin()
+    ~pluginV2mPlayer()
     {
         //delete some stuff
 
@@ -55,7 +55,7 @@ public:
 
     V2MPlayer* player;
     uint8_t* convertedSong;
-    FMOD_CODEC_WAVEFORMAT v2mwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -79,7 +79,7 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    Info* info = (Info*)userexinfo->userdata;
+    Info* info = static_cast<Info*>(userexinfo->userdata);
     FMOD_RESULT result;
 
     string filename_lowercase = info->filename;
@@ -102,7 +102,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     unsigned int bytesread;
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
-    v2mplugin* v2m = new v2mplugin(codec);
+    auto* plugin = new pluginV2mPlayer(codec);
 
 
     sdInit();
@@ -118,31 +118,31 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     int converted_length;
-    ConvertV2M(myBuffer, filesize, &v2m->convertedSong, &converted_length);
+    ConvertV2M(myBuffer, filesize, &plugin->convertedSong, &converted_length);
     delete [] myBuffer;
 
 
-    v2m->player = new V2MPlayer();
-    v2m->player->Init();
-    if (!v2m->player->Open(v2m->convertedSong))
+    plugin->player = new V2MPlayer();
+    plugin->player->Init();
+    if (!plugin->player->Open(plugin->convertedSong))
     {
         return FMOD_ERR_FORMAT;
     }
 
 
-    v2m->v2mwaveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
-    v2m->v2mwaveformat.channels = 2;
-    v2m->v2mwaveformat.frequency = 44100;
-    v2m->v2mwaveformat.pcmblocksize = 4096;
-    v2m->v2mwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = 4096;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
-    //cout << "length:" << v2m->player->Length() << "\n";
+    //cout << "length:" << plugin->player->Length() << "\n";
     //flush(cout);
 
-    codec->waveformat = &v2m->v2mwaveformat;
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = v2m; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
     info->fileformat = "Farbrausch V2M";
     info->setSeekable(false);
@@ -151,7 +151,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     sS32* p;
-    int pos = v2m->player->CalcPositions(&p);
+    int pos = plugin->player->CalcPositions(&p);
 
     //    for(int i = 0;i<=pos;i++)
     //    {
@@ -180,38 +180,38 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     delete[] p;
 
 
-    v2m->v2mwaveformat.lengthpcm = ((1000 + length) * 2 / 1000.0) * v2m->v2mwaveformat.frequency;
+    plugin->waveformat.lengthpcm = ((1000 + length) * 2 / 1000.0) * plugin->waveformat.frequency;
     //add one extra second for reverb
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    v2mplugin* v2m = (v2mplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginV2mPlayer*>(codec->plugindata);
 
-    if (v2m)
+    if (plugin)
     {
-        v2m->player->Stop();
-        v2m->player->Close();
+        plugin->player->Stop();
+        plugin->player->Close();
     }
-    delete v2m;
+    delete plugin;
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    v2mplugin* v2m = (v2mplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginV2mPlayer*>(codec->plugindata);
 
-    v2m->player->Render((float*)buffer, v2m->v2mwaveformat.pcmblocksize);
+    plugin->player->Render(static_cast<float*>(buffer), plugin->waveformat.pcmblocksize);
 
-    if (size < v2m->v2mwaveformat.pcmblocksize)
+    if (size < plugin->waveformat.pcmblocksize)
     {
         *read = size;
     }
     else
     {
-        *read = v2m->v2mwaveformat.pcmblocksize;
+        *read = plugin->waveformat.pcmblocksize;
     }
 
     return FMOD_OK;
@@ -220,7 +220,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    v2mplugin* v2m = (v2mplugin*)codec->plugindata;
-    v2m->player->Play(position);
+    auto* plugin = static_cast<pluginV2mPlayer*>(codec->plugindata);
+    plugin->player->Play(position);
     return FMOD_OK;
 }

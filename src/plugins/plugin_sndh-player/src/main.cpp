@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include <queue>
 #include "fmod_errors.h"
@@ -30,28 +30,28 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &setposition, // Setposition callback.
     &getposition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class ahxplugin
+class pluginSndhPlayer
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    ahxplugin(FMOD_CODEC_STATE* codec)
+    pluginSndhPlayer(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&ahxwaveformat, 0, sizeof(ahxwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~ahxplugin()
+    ~pluginSndhPlayer()
     {
         delete sndh;
         //delete some stuff
     }
 
 
-    FMOD_CODEC_WAVEFORMAT ahxwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     Info* info;
     SndhFile* sndh;
     queue<uint32_t*> oscBuffer;
@@ -166,9 +166,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
-    ahxplugin* ahx = new ahxplugin(codec);
+    auto* plugin = new pluginSndhPlayer(codec);
 
-    ahx->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
     int freq = 44100;
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
@@ -176,64 +176,64 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     buffer = new uint8_t[filesize];
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, buffer, filesize, &bytesread);
-    ahx->sndh = new SndhFile();
-    bool ok = ahx->sndh->Load(buffer, filesize, freq);
-    if (!ok || !ahx->sndh->IsLoaded())
+    plugin->sndh = new SndhFile();
+    bool ok = plugin->sndh->Load(buffer, filesize, freq);
+    if (!ok || !plugin->sndh->IsLoaded())
     {
         delete[] buffer;
         return FMOD_ERR_FORMAT;
     }
 
     delete[] buffer;
-    ahx->BuildHash(ahx->sndh);
-    ahx->sndh->InitSubSong(1);
+    plugin->BuildHash(plugin->sndh);
+    plugin->sndh->InitSubSong(1);
 
 
     int channels = 1;
 
 
-    ahx->ahxwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    ahx->ahxwaveformat.channels = channels;
-    ahx->ahxwaveformat.frequency = freq;
-    ahx->ahxwaveformat.pcmblocksize = (16 >> 3) * ahx->ahxwaveformat.channels;
-    ahx->ahxwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = channels;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
 
-    codec->waveformat = &ahx->ahxwaveformat;
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = ahx; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    ahx->info->numChannels = 4;
-    ahx->info->plugin = PLUGIN_sndh_player;
-    ahx->info->pluginName = PLUGIN_sndh_player_NAME;
-    ahx->info->fileformat = "SNDH";
-    //ahx->info->waveformDisplay = new uint32_t[25600];
-    //memset(ahx->info->waveformDisplay, 0, 25600 * sizeof(ahx->info->waveformDisplay));
+    plugin->info->numChannels = 4;
+    plugin->info->plugin = PLUGIN_sndh_player;
+    plugin->info->pluginName = PLUGIN_sndh_player_NAME;
+    plugin->info->fileformat = "SNDH";
+    //plugin->info->waveformDisplay = new uint32_t[25600];
+    //memset(plugin->info->waveformDisplay, 0, 25600 * sizeof(plugin->info->waveformDisplay));
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
 
-    delete ahx;
+    delete plugin;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    uint32_t* osc = new uint32_t[18000];
+    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
+    auto* osc = new uint32_t[18000];
     memset(osc, 0, 18000 * sizeof(osc));
-    ahx->sndh->AudioRender((int16_t*)buffer, size, osc);
-    ahx->oscBuffer.push(osc);
-    ahx->info->waveformDisplay = ahx->oscBuffer.front();
-    if (ahx->oscBuffer.size() >= 60)
+    plugin->sndh->AudioRender(static_cast<int16_t*>(buffer), size, osc);
+    plugin->oscBuffer.push(osc);
+    plugin->info->waveformDisplay = plugin->oscBuffer.front();
+    if (plugin->oscBuffer.size() >= 60)
     {
-        uint32_t* o = ahx->oscBuffer.front();
+        uint32_t* o = plugin->oscBuffer.front();
         delete[] o;
-        ahx->oscBuffer.pop();
+        plugin->oscBuffer.pop();
     }
     *read = size;
     return FMOD_OK;
@@ -241,15 +241,15 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS)
     {
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        ahx->m_subsongIndex = position;
-        ahx->sndh->InitSubSong(ahx->m_subsongIndex + 1);
+        plugin->m_subsongIndex = position;
+        plugin->sndh->InitSubSong(plugin->m_subsongIndex + 1);
         return FMOD_OK;
     }
     return FMOD_OK;
@@ -257,53 +257,53 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
         SndhFile::SubSongInfo subsongInfo;
-        ahx->sndh->GetSubsongInfo(ahx->m_subsongIndex + 1, subsongInfo);
+        plugin->sndh->GetSubsongInfo(plugin->m_subsongIndex + 1, subsongInfo);
 
         if (subsongInfo.musicAuthor != nullptr)
         {
-            ahx->info->artist = subsongInfo.musicAuthor;
+            plugin->info->artist = subsongInfo.musicAuthor;
         }
         if (subsongInfo.musicName != nullptr)
         {
-            ahx->info->title = subsongInfo.musicName;
+            plugin->info->title = subsongInfo.musicName;
         }
         if (subsongInfo.ripper != nullptr)
         {
-            ahx->info->ripper = subsongInfo.ripper;
+            plugin->info->ripper = subsongInfo.ripper;
         }
         if (subsongInfo.converter != nullptr)
         {
-            ahx->info->converter = subsongInfo.converter;
+            plugin->info->converter = subsongInfo.converter;
         }
         if (subsongInfo.year != nullptr)
         {
-            ahx->info->date = subsongInfo.year;
+            plugin->info->date = subsongInfo.year;
         }
 
-        ahx->info->clockSpeed = subsongInfo.playerTickRate;
+        plugin->info->clockSpeed = subsongInfo.playerTickRate;
         unsigned int ticks = subsongInfo.playerTickCount;
         if (ticks == 0)
         {
-            ticks = ahx->GetTickCountFromSc68();
+            ticks = plugin->GetTickCountFromSc68();
         }
-        unsigned int milliseconds = (ticks * subsongInfo.samplePerTick) / (ahx->ahxwaveformat.frequency / 1000);
+        unsigned int milliseconds = (ticks * subsongInfo.samplePerTick) / (plugin->waveformat.frequency / 1000);
         *length = milliseconds;
     }
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
-        *length = ahx->sndh->GetSubsongCount();
+        *length = plugin->sndh->GetSubsongCount();
     }
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_WAVEFORM)
     {

@@ -24,25 +24,25 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class zxtuneplugin
+class pluginZxtune
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    zxtuneplugin(FMOD_CODEC_STATE* codec)
+    pluginZxtune(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
     }
 
-    ~zxtuneplugin()
+    ~pluginZxtune()
     {
         //delete some stuff
         ZXTune_CloseModule(module);
@@ -53,7 +53,7 @@ public:
     ZXTuneHandle player;
     Info* info;
     int posAfterSeek;
-    FMOD_CODEC_WAVEFORMAT zxwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -77,7 +77,7 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
-    zxtuneplugin* zx = new zxtuneplugin(codec);
+    auto* plugin = new pluginZxtune(codec);
 
     unsigned int bytesread;
     unsigned int filesize;
@@ -106,217 +106,217 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     ZXTuneHandle data = ZXTune_CreateData(myBuffer, filesize);
 
-    zx->module = ZXTune_OpenModule(data);
-    zx->player = ZXTune_CreatePlayer(zx->module);
+    plugin->module = ZXTune_OpenModule(data);
+    plugin->player = ZXTune_CreatePlayer(plugin->module);
 
 
     delete [] myBuffer;
-    if (!zx->player)
+    if (!plugin->player)
     {
         return FMOD_ERR_FORMAT;
     }
 
 
-    zx->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     ZXTuneModuleInfo zxinfo;
-    ZXTune_GetModuleInfo(zx->module, &zxinfo);
+    ZXTune_GetModuleInfo(plugin->module, &zxinfo);
 
-    cout << "Title: " << ZXTune_GetInfo(zx->player, "Title") << "\n";
-    //    cout << "Author: " << ZXTune_GetInfo(zx->player,"Author") << "\n";
-    //    cout << "Program: " << ZXTune_GetInfo(zx->player,"Program") << "\n";
-    //    cout << "Computer: " << ZXTune_GetInfo(zx->player,"Computer") << "\n";
-    //    cout << "Date: " << ZXTune_GetInfo(zx->player,"Date") << "\n";
-    //    cout << "Comment: " << ZXTune_GetInfo(zx->player,"Comment") << "\n";
-    //    cout << "Version: " << ZXTune_GetInfo(zx->player,"Version") << "\n";
-    //    cout << "CRC: " << ZXTune_GetInfo(zx->player,"CRC") << "\n";
-    //    cout << "FixedCRC: " << ZXTune_GetInfo(zx->player,"FixedCRC") << "\n";
-    //    cout << "FixedCRC: " << ZXTune_GetInfo(zx->player,"FixedCRC") << "\n";
-    //    cout << "Size: " << ZXTune_GetInfo(zx->player,"Size") << "\n";
-    //    cout << "Content: " << ZXTune_GetInfo(zx->player,"Content") << "\n";
-    //    cout << "Container: " << ZXTune_GetInfo(zx->player,"Container") << "\n";
-    //    cout << "Subpath: " << ZXTune_GetInfo(zx->player,"Subpath") << "\n";
-    //    cout << "Extension: " << ZXTune_GetInfo(zx->player,"Extension") << "\n";
-    //    cout << "Filename: " << ZXTune_GetInfo(zx->player,"Filename") << "\n";
-    //    cout << "Path: " << ZXTune_GetInfo(zx->player,"Path") << "\n";
-    //    cout << "Fullpath: " << ZXTune_GetInfo(zx->player,"Fullpath") << "\n";
-
-
-    zx->info->numChannels = zxinfo.Channels;
-    zx->info->numOrders = zxinfo.Positions;
-    zx->info->loopPosition = zxinfo.LoopPosition;
-    zx->info->loopFrame = zxinfo.LoopFrame;
-    zx->info->numPatterns = zxinfo.Patterns;
-    zx->info->numFrames = zxinfo.Frames;
-    zx->info->initialTempo = zxinfo.InitialTempo;
-    //    zx->info->title = ZXTune_GetInfo(zx->player,"Title");
-    //    zx->info->author = ZXTune_GetInfo(zx->player,"Author");
-    //    zx->info->replay = ZXTune_GetInfo(zx->player,"Program");
-    //    zx->info->comments = ZXTune_GetInfo(zx->player,"Comment");
+    cout << "Title: " << ZXTune_GetInfo(plugin->player, "Title") << "\n";
+    //    cout << "Author: " << ZXTune_GetInfo(plugin->player,"Author") << "\n";
+    //    cout << "Program: " << ZXTune_GetInfo(plugin->player,"Program") << "\n";
+    //    cout << "Computer: " << ZXTune_GetInfo(plugin->player,"Computer") << "\n";
+    //    cout << "Date: " << ZXTune_GetInfo(plugin->player,"Date") << "\n";
+    //    cout << "Comment: " << ZXTune_GetInfo(plugin->player,"Comment") << "\n";
+    //    cout << "Version: " << ZXTune_GetInfo(plugin->player,"Version") << "\n";
+    //    cout << "CRC: " << ZXTune_GetInfo(plugin->player,"CRC") << "\n";
+    //    cout << "FixedCRC: " << ZXTune_GetInfo(plugin->player,"FixedCRC") << "\n";
+    //    cout << "FixedCRC: " << ZXTune_GetInfo(plugin->player,"FixedCRC") << "\n";
+    //    cout << "Size: " << ZXTune_GetInfo(plugin->player,"Size") << "\n";
+    //    cout << "Content: " << ZXTune_GetInfo(plugin->player,"Content") << "\n";
+    //    cout << "Container: " << ZXTune_GetInfo(plugin->player,"Container") << "\n";
+    //    cout << "Subpath: " << ZXTune_GetInfo(plugin->player,"Subpath") << "\n";
+    //    cout << "Extension: " << ZXTune_GetInfo(plugin->player,"Extension") << "\n";
+    //    cout << "Filename: " << ZXTune_GetInfo(plugin->player,"Filename") << "\n";
+    //    cout << "Path: " << ZXTune_GetInfo(plugin->player,"Path") << "\n";
+    //    cout << "Fullpath: " << ZXTune_GetInfo(plugin->player,"Fullpath") << "\n";
 
 
-    zx->zxwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    zx->zxwaveformat.channels = 2;
-    zx->zxwaveformat.frequency = 44100;
-    zx->zxwaveformat.pcmblocksize = (16 >> 3) * zx->zxwaveformat.channels;
+    plugin->info->numChannels = zxinfo.Channels;
+    plugin->info->numOrders = zxinfo.Positions;
+    plugin->info->loopPosition = zxinfo.LoopPosition;
+    plugin->info->loopFrame = zxinfo.LoopFrame;
+    plugin->info->numPatterns = zxinfo.Patterns;
+    plugin->info->numFrames = zxinfo.Frames;
+    plugin->info->initialTempo = zxinfo.InitialTempo;
+    //    plugin->info->title = ZXTune_GetInfo(plugin->player,"Title");
+    //    plugin->info->author = ZXTune_GetInfo(plugin->player,"Author");
+    //    plugin->info->replay = ZXTune_GetInfo(plugin->player,"Program");
+    //    plugin->info->comments = ZXTune_GetInfo(plugin->player,"Comment");
 
 
-    codec->waveformat = &(zx->zxwaveformat);
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+
+
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = zx; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    zx->zxwaveformat.lengthpcm = 0xffffffff;
-    const uint64_t msecDuration = zxinfo.Frames * ZXTune_GetDuration(zx->player) / 1000;
-    zx->zxwaveformat.lengthpcm = (msecDuration / 1000.0) * zx->zxwaveformat.frequency;
+    plugin->waveformat.lengthpcm = 0xffffffff;
+    const uint64_t msecDuration = zxinfo.Frames * ZXTune_GetDuration(plugin->player) / 1000;
+    plugin->waveformat.lengthpcm = (msecDuration / 1000.0) * plugin->waveformat.frequency;
 
 
-    std::string type = ZXTune_GetInfo(zx->player, "Type");
+    std::string type = ZXTune_GetInfo(plugin->player, "Type");
 
 
     if (type == "AS0")
     {
-        zx->info->fileformat = "ASC Sound Master v0.xx";
+        plugin->info->fileformat = "ASC Sound Master v0.xx";
     }
     else if (type == "AY")
     {
-        zx->info->fileformat = "AY ZX Spectrum/Amstrad CPC";
+        plugin->info->fileformat = "AY ZX Spectrum/Amstrad CPC";
     }
     else if (type == "ASC")
     {
-        zx->info->fileformat = "ASC Sound Master v1.xx-2.xx";
+        plugin->info->fileformat = "ASC Sound Master v1.xx-2.xx";
     }
     else if (type == "FTC")
     {
-        zx->info->fileformat = "Spectrum Fast Tracker";
+        plugin->info->fileformat = "Spectrum Fast Tracker";
     }
     else if (type == "GTR")
     {
-        zx->info->fileformat = "Global Tracker";
+        plugin->info->fileformat = "Global Tracker";
     }
     else if (type == "PSC")
     {
-        zx->info->fileformat = "Pro Sound Creator";
+        plugin->info->fileformat = "Pro Sound Creator";
     }
     else if (type == "PSG")
     {
-        zx->info->fileformat = "Spectrum PSG";
+        plugin->info->fileformat = "Spectrum PSG";
     }
     else if (type == "PSM")
     {
-        zx->info->fileformat = "Pro Sound Maker";
+        plugin->info->fileformat = "Pro Sound Maker";
     }
     else if (type == "PT1")
     {
-        zx->info->fileformat = "Spectrum Pro Tracker 1";
+        plugin->info->fileformat = "Spectrum Pro Tracker 1";
     }
     else if (type == "PT2")
     {
-        zx->info->fileformat = "Spectrum Pro Tracker 2";
+        plugin->info->fileformat = "Spectrum Pro Tracker 2";
     }
     else if (type == "PT3")
     {
-        zx->info->fileformat = "Spectrum Pro Tracker 3";
+        plugin->info->fileformat = "Spectrum Pro Tracker 3";
     }
     else if (type == "SQT")
     {
-        zx->info->fileformat = "SQ Tracker";
+        plugin->info->fileformat = "SQ Tracker";
     }
     else if (type == "ST1")
     {
-        zx->info->fileformat = "Spectrum Sound Tracker 1";
+        plugin->info->fileformat = "Spectrum Sound Tracker 1";
     }
     else if (type == "ST3")
     {
-        zx->info->fileformat = "Spectrum Sound Tracker 3";
+        plugin->info->fileformat = "Spectrum Sound Tracker 3";
     }
     else if (type == "STC")
     {
-        zx->info->fileformat = "Compiled Spectrum Sound Tracker 1";
+        plugin->info->fileformat = "Compiled Spectrum Sound Tracker 1";
     }
     else if (type == "STP")
     {
-        zx->info->fileformat = "Spectrum Sound Tracker Pro 1";
+        plugin->info->fileformat = "Spectrum Sound Tracker Pro 1";
     }
     else if (type == "TXT")
     {
-        zx->info->fileformat = "Vortextracker (Pro Tracker 3)";
+        plugin->info->fileformat = "Vortextracker (Pro Tracker 3)";
     }
     else if (type == "TS")
     {
-        zx->info->fileformat = "TurboSound module for AY Emulator";
+        plugin->info->fileformat = "TurboSound module for AY Emulator";
     }
     else if (type == "VTX")
     {
-        zx->info->fileformat = "Vortextracker";
+        plugin->info->fileformat = "Vortextracker";
     }
     else if (type == "YM") //played by st-sound
     {
-        zx->info->fileformat = "YM";
+        plugin->info->fileformat = "YM";
     }
     else if (type == "STR")
     {
-        zx->info->fileformat = "Sample Tracker";
+        plugin->info->fileformat = "Sample Tracker";
     }
     else if (type == "CHI")
     {
-        zx->info->fileformat = "Spectrum Chip Tracker";
+        plugin->info->fileformat = "Spectrum Chip Tracker";
     }
     else if (type == "SQD")
     {
-        zx->info->fileformat = "SG Digital Tracker";
+        plugin->info->fileformat = "SG Digital Tracker";
     }
     else if (type == "DMM")
     {
-        zx->info->fileformat = "Digital Music Maker";
+        plugin->info->fileformat = "Digital Music Maker";
     }
     else if (type == "PDT")
     {
-        zx->info->fileformat = "Prodigi Tracker";
+        plugin->info->fileformat = "Prodigi Tracker";
     }
     else if (type == "DST")
     {
-        zx->info->fileformat = "Digital Studio for AY and Covox";
+        plugin->info->fileformat = "Digital Studio for AY and Covox";
     }
     else if (type == "COP")
     {
-        zx->info->fileformat = "Sam Coupe E-Tracker";
+        plugin->info->fileformat = "Sam Coupe E-Tracker";
     }
     else if (type == "TFE")
     {
-        zx->info->fileformat = "TFM Music Maker 1.3+";
+        plugin->info->fileformat = "TFM Music Maker 1.3+";
     }
     else if (type == "TF0")
     {
-        zx->info->fileformat = "TFM Music Maker 0.1-1.2";
+        plugin->info->fileformat = "TFM Music Maker 0.1-1.2";
     }
     else if (type == "TFD")
     {
-        zx->info->fileformat = "TurboFM Dumped";
+        plugin->info->fileformat = "TurboFM Dumped";
     }
     else if (type == "TFC")
     {
-        zx->info->fileformat = "TurboFM Compiled";
+        plugin->info->fileformat = "TurboFM Compiled";
     }
     else
     {
-        zx->info->fileformat = "Unknown ZXTune";
-        //zx->info->fileformat =ZXTune_GetInfo(zx->player,"Program")+"("+type+")";
+        plugin->info->fileformat = "Unknown ZXTune";
+        //plugin->info->fileformat =ZXTune_GetInfo(plugin->player,"Program")+"("+type+")";
     }
 
-    zx->posAfterSeek = 0;
-    zx->info->plugin = PLUGIN_zxtune;
-    zx->info->pluginName = PLUGIN_zxtune_NAME;
-    zx->info->setSeekable(true);
+    plugin->posAfterSeek = 0;
+    plugin->info->plugin = PLUGIN_zxtune;
+    plugin->info->pluginName = PLUGIN_zxtune_NAME;
+    plugin->info->setSeekable(true);
 
     //    cout << "zxtune length: " << msecDuration <<  endl;
-    //    cout << "zxtune numChannels: " << zx->info->numChannels <<  endl;
-    //    cout << "zxtune numOrders: " << zx->info->numOrders <<  endl;
-    //    cout << "zxtune loopPosition: " << zx->info->loopPosition <<  endl;
-    //    cout << "zxtune loopFrame: " << zx->info->loopFrame <<  endl;
-    //    cout << "zxtune numPatterns: " << zx->info->numPatterns <<  endl;
-    //    cout << "zxtune initialTempo: " << zx->info->initialTempo <<  endl;
-    //    cout << "zxtune fileformat: " << zx->info->fileformat <<  endl;
+    //    cout << "zxtune numChannels: " << plugin->info->numChannels <<  endl;
+    //    cout << "zxtune numOrders: " << plugin->info->numOrders <<  endl;
+    //    cout << "zxtune loopPosition: " << plugin->info->loopPosition <<  endl;
+    //    cout << "zxtune loopFrame: " << plugin->info->loopFrame <<  endl;
+    //    cout << "zxtune numPatterns: " << plugin->info->numPatterns <<  endl;
+    //    cout << "zxtune initialTempo: " << plugin->info->initialTempo <<  endl;
+    //    cout << "zxtune fileformat: " << plugin->info->fileformat <<  endl;
 
     //    flush(cout);
 
@@ -326,19 +326,19 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    zxtuneplugin* zx = static_cast<zxtuneplugin*>(codec->plugindata);
-    delete zx;
+    auto* plugin = static_cast<pluginZxtune*>(codec->plugindata);
+    delete plugin;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     //cout << "read" <<   endl;
-    zxtuneplugin* zx = static_cast<zxtuneplugin*>(codec->plugindata);
+    auto* plugin = static_cast<pluginZxtune*>(codec->plugindata);
     //cout << "zxtune read: " << size <<  endl;
     //flush(cout);
 
-    int err = ZXTune_RenderSound(zx->player, buffer, size);
+    int err = ZXTune_RenderSound(plugin->player, buffer, size);
     //    if (err)
     //    {
     //        cout << "returned bytes: " <<  err << endl;
@@ -349,9 +349,9 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    zxtuneplugin* zx = static_cast<zxtuneplugin*>(codec->plugindata);
-    unsigned int pos = (position / 1000) * zx->zxwaveformat.frequency;
-    zx->posAfterSeek = ZXTune_SeekSound(zx->player, pos);
+    auto plugin = static_cast<pluginZxtune*>(codec->plugindata);
+    unsigned int pos = (position / 1000) * plugin->waveformat.frequency;
+    plugin->posAfterSeek = ZXTune_SeekSound(plugin->player, pos);
     //cout << "setposition" <<   endl;
     return FMOD_OK;
 }
@@ -359,17 +359,17 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
     //cout << "getlength" <<   endl;
-    zxtuneplugin* zx = static_cast<zxtuneplugin*>(codec->plugindata);
+    auto* plugin = static_cast<pluginZxtune*>(codec->plugindata);
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    zxtuneplugin* zx = static_cast<zxtuneplugin*>(codec->plugindata);
+    auto* plugin = static_cast<pluginZxtune*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS_REAL)
     {
-        *position = zx->posAfterSeek;
+        *position = plugin->posAfterSeek;
     }
     //cout << "getposition" <<   endl;
     return FMOD_OK;

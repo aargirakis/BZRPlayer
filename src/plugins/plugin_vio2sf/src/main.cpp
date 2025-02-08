@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include <zconf.h>
 #include <zlib.h>
@@ -30,24 +30,24 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &getlength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class ahxplugin
+class pluginVio2sf
 {
     FMOD_CODEC_STATE* _codec;
     FILE* file;
 
 public:
-    ahxplugin(FMOD_CODEC_STATE* codec)
+    pluginVio2sf(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&ahxwaveformat, 0, sizeof(ahxwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~ahxplugin()
+    ~pluginVio2sf()
     {
         //delete some stuff
         state_deinit(&m_ndsState);
@@ -55,7 +55,7 @@ public:
 
     static int InfoMetaPSF(void* context, const char* name, const char* value)
     {
-        auto* This = reinterpret_cast<ahxplugin*>(context);
+        auto* plugin = static_cast<pluginVio2sf*>(context);
         if (!_strnicmp(name, "replaygain_", sizeof("replaygain_") - 1))
         {
         }
@@ -105,7 +105,7 @@ public:
                     length *= 1000;
 
                 if (length > 0)
-                    This->m_length = length;
+                    plugin->m_length = length;
             }
         }
         else if (!_stricmp(name, "fade"))
@@ -116,54 +116,54 @@ public:
         }
         else if (!_stricmp(name, "_lib"))
         {
-            //This->m_hasLib = true;
+            //plugin->m_hasLib = true;
         }
         else if (name[0] == '_')
         {
         }
         else
         {
-            This->m_tags[name] = value;
+            plugin->m_tags[name] = value;
         }
         return 0;
     }
 
     static void* OpenPSF(void* context, const char* uri)
     {
-        auto s = reinterpret_cast<ahxplugin*>(context);
+        auto plugin = static_cast<pluginVio2sf*>(context);
         unsigned int filesize;
-        FMOD_CODEC_FILE_SIZE(s->_codec, &filesize);
-        s->file = fopen(uri, "rb");
-        return s->file;
+        FMOD_CODEC_FILE_SIZE(plugin->_codec, &filesize);
+        plugin->file = fopen(uri, "rb");
+        return plugin->file;
     }
 
     static size_t ReadPSF(void* buffer, size_t size, size_t count, void* handle)
     {
-        return fread(buffer, size, count, (FILE*)handle);
+        return fread(buffer, size, count, static_cast<FILE*>(handle));
     }
 
     static int SeekPSF(void* handle, int64_t offset, int whence)
     {
-        return fseek((FILE*)handle, offset, whence);
+        return fseek(static_cast<FILE*>(handle), offset, whence);
     }
 
     static int ClosePSF(void* handle)
     {
-        return fclose((FILE*)handle);
+        return fclose(static_cast<FILE*>(handle));
     }
 
     static long TellPSF(void* handle)
     {
-        return ftell((FILE*)handle);
+        return ftell(static_cast<FILE*>(handle));
     }
 
     int static TwosfLoad(void* context, const uint8_t* exe, size_t exe_size, const uint8_t* reserved,
                          size_t reserved_size)
     {
-        auto* This = reinterpret_cast<ahxplugin*>(context);
+        auto* plugin = static_cast<pluginVio2sf*>(context);
         if (exe_size >= 8)
         {
-            if (This->TwosfLoadMap(This, 0, exe, (unsigned)exe_size))
+            if (plugin->TwosfLoadMap(plugin, 0, exe, (unsigned)exe_size))
                 return -1;
         }
 
@@ -180,7 +180,7 @@ public:
                 {
                     if (resv_pos + 12 + save_size > reserved_size)
                         return -1;
-                    if (This->TwosfLoadMapz(This, 1, reserved + resv_pos + 12, save_size, save_crc))
+                    if (plugin->TwosfLoadMapz(plugin, 1, reserved + resv_pos + 12, save_size, save_crc))
                         return -1;
                 }
                 resv_pos += 12 + save_size;
@@ -192,7 +192,7 @@ public:
 
     int static TwosfLoadMap(void* context, int issave, const unsigned char* udata, unsigned usize)
     {
-        auto* This = reinterpret_cast<ahxplugin*>(context);
+        auto* plugin = static_cast<pluginVio2sf*>(context);
         if (usize < 8) return -1;
 
         unsigned char* iptr;
@@ -202,17 +202,17 @@ public:
         unsigned xofs = get_le32(udata + 0);
         if (issave)
         {
-            iptr = This->m_loaderState.state;
-            isize = This->m_loaderState.state_size;
-            This->m_loaderState.state = 0;
-            This->m_loaderState.state_size = 0;
+            iptr = plugin->m_loaderState.state;
+            isize = plugin->m_loaderState.state_size;
+            plugin->m_loaderState.state = 0;
+            plugin->m_loaderState.state_size = 0;
         }
         else
         {
-            iptr = This->m_loaderState.rom;
-            isize = This->m_loaderState.rom_size;
-            This->m_loaderState.rom = 0;
-            This->m_loaderState.rom_size = 0;
+            iptr = plugin->m_loaderState.rom;
+            isize = plugin->m_loaderState.rom_size;
+            plugin->m_loaderState.rom = 0;
+            plugin->m_loaderState.rom_size = 0;
         }
         if (!iptr)
         {
@@ -227,7 +227,7 @@ public:
                 rsize |= rsize >> 16;
                 rsize += 1;
             }
-            iptr = (unsigned char*)malloc(rsize + 10);
+            iptr = static_cast<unsigned char*>(malloc(rsize + 10));
             if (!iptr)
                 return -1;
             memset(iptr, 0, rsize + 10);
@@ -246,7 +246,7 @@ public:
                 rsize |= rsize >> 16;
                 rsize += 1;
             }
-            xptr = (unsigned char*)realloc(iptr, xofs + rsize + 10);
+            xptr = static_cast<unsigned char*>(realloc(iptr, xofs + rsize + 10));
             if (!xptr)
             {
                 free(iptr);
@@ -258,20 +258,20 @@ public:
         memcpy(iptr + xofs, udata + 8, xsize);
         if (issave)
         {
-            This->m_loaderState.state = iptr;
-            This->m_loaderState.state_size = isize;
+            plugin->m_loaderState.state = iptr;
+            plugin->m_loaderState.state_size = isize;
         }
         else
         {
-            This->m_loaderState.rom = iptr;
-            This->m_loaderState.rom_size = isize;
+            plugin->m_loaderState.rom = iptr;
+            plugin->m_loaderState.rom_size = isize;
         }
         return 0;
     }
 
     int static TwosfLoadMapz(void* context, int issave, const unsigned char* zdata, unsigned zsize, unsigned zcrc)
     {
-        auto* This = reinterpret_cast<ahxplugin*>(context);
+        auto* plugin = static_cast<pluginVio2sf*>(context);
         int ret;
         int zerr;
         uLongf usize = 8;
@@ -279,7 +279,7 @@ public:
         unsigned char* udata;
         unsigned char* rdata;
 
-        udata = (unsigned char*)malloc(usize);
+        udata = static_cast<unsigned char*>(malloc(usize));
         if (!udata)
             return -1;
 
@@ -306,7 +306,7 @@ public:
                 rsize += rsize;
                 usize = rsize;
             }
-            rdata = (unsigned char*)realloc(udata, usize);
+            rdata = static_cast<unsigned char*>(realloc(udata, usize));
             if (!rdata)
             {
                 free(udata);
@@ -315,7 +315,7 @@ public:
             udata = rdata;
         }
 
-        rdata = (unsigned char*)realloc(udata, usize);
+        rdata = static_cast<unsigned char*>(realloc(udata, usize));
         if (!rdata)
         {
             free(udata);
@@ -324,18 +324,18 @@ public:
 
         if (0)
         {
-            uLong ccrc = crc32(crc32(0L, Z_NULL, 0), rdata, (uInt)usize);
+            uLong ccrc = crc32(crc32(0L, Z_NULL, 0), rdata, static_cast<uInt>(usize));
             if (ccrc != zcrc)
                 return -1;
         }
 
-        ret = TwosfLoadMap(This, issave, rdata, (unsigned)usize);
+        ret = TwosfLoadMap(plugin, issave, rdata, static_cast<unsigned>(usize));
         free(rdata);
         return ret;
     }
 
 
-    FMOD_CODEC_WAVEFORMAT ahxwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     Info* info;
     std::unordered_map<std::string, std::string> m_tags;
     int32_t ms_interpolation = 0;
@@ -400,9 +400,9 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    ahxplugin* ahx = new ahxplugin(codec);
+    auto* plugin = new pluginVio2sf(codec);
 
-    ahx->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     unsigned int bytesread;
     FMOD_RESULT result;
@@ -419,14 +419,14 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
-    ahx->m_length = 0xffffffff;
-    if (psf_load(ahx->info->filename.c_str(), &ahx->m_psfFileSystem, 0x24, nullptr, nullptr, ahx->InfoMetaPSF, ahx, 0,
+    plugin->m_length = 0xffffffff;
+    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, nullptr, nullptr, plugin->InfoMetaPSF, plugin, 0,
                  nullptr, nullptr))
     {
-        auto extPos = ahx->info->filename.find_last_of('.');
-        if (extPos == std::string::npos || _stricmp(ahx->info->filename.c_str() + extPos + 1, "2sflib") != 0)
+        auto extPos = plugin->info->filename.find_last_of('.');
+        if (extPos == std::string::npos || _stricmp(plugin->info->filename.c_str() + extPos + 1, "2sflib") != 0)
         {
-            if (psf_load(ahx->info->filename.c_str(), &ahx->m_psfFileSystem, 0x24, ahx->TwosfLoad, ahx, nullptr,
+            if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, plugin->TwosfLoad, plugin, nullptr,
                          nullptr, 0, nullptr, nullptr) >= 0)
             {
             }
@@ -448,72 +448,72 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     int freq = 44100;
     int channels = 2;
 
-    ahx->ahxwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    ahx->ahxwaveformat.channels = channels;
-    ahx->ahxwaveformat.frequency = freq;
-    ahx->ahxwaveformat.pcmblocksize = (16 >> 3) * ahx->ahxwaveformat.channels;
-    ahx->ahxwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = channels;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
 
-    codec->waveformat = &ahx->ahxwaveformat;
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = ahx; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    ahx->info->fileformat = "Nintendo DS";
-    ahx->info->plugin = PLUGIN_vio2sf;
-    ahx->info->pluginName = PLUGIN_vio2sf_NAME;
+    plugin->info->fileformat = "Nintendo DS";
+    plugin->info->plugin = PLUGIN_vio2sf;
+    plugin->info->pluginName = PLUGIN_vio2sf_NAME;
 
-    if (keyExists(ahx->m_tags, "title"))
+    if (keyExists(plugin->m_tags, "title"))
     {
-        ahx->info->title = ahx->m_tags["title"];
+        plugin->info->title = plugin->m_tags["title"];
     }
-    if (keyExists(ahx->m_tags, "artist"))
+    if (keyExists(plugin->m_tags, "artist"))
     {
-        ahx->info->artist = ahx->m_tags["artist"];
+        plugin->info->artist = plugin->m_tags["artist"];
     }
-    if (keyExists(ahx->m_tags, "game"))
+    if (keyExists(plugin->m_tags, "game"))
     {
-        ahx->info->game = ahx->m_tags["game"];
+        plugin->info->game = plugin->m_tags["game"];
     }
-    if (keyExists(ahx->m_tags, "copyright"))
+    if (keyExists(plugin->m_tags, "copyright"))
     {
-        ahx->info->copyright = ahx->m_tags["copyright"];
+        plugin->info->copyright = plugin->m_tags["copyright"];
     }
-    if (keyExists(ahx->m_tags, "psfby"))
+    if (keyExists(plugin->m_tags, "psfby"))
     {
-        ahx->info->ripper = ahx->m_tags["psfby"];
+        plugin->info->ripper = plugin->m_tags["psfby"];
     }
-    if (keyExists(ahx->m_tags, "year"))
+    if (keyExists(plugin->m_tags, "year"))
     {
-        ahx->info->date = ahx->m_tags["year"];
+        plugin->info->date = plugin->m_tags["year"];
     }
-    if (keyExists(ahx->m_tags, "volume"))
+    if (keyExists(plugin->m_tags, "volume"))
     {
-        ahx->info->volumeAmplificationStr = ahx->m_tags["volume"];
+        plugin->info->volumeAmplificationStr = plugin->m_tags["volume"];
     }
-    if (keyExists(ahx->m_tags, "genre"))
+    if (keyExists(plugin->m_tags, "genre"))
     {
-        ahx->info->system = ahx->m_tags["genre"];
+        plugin->info->system = plugin->m_tags["genre"];
     }
-    if (keyExists(ahx->m_tags, "comment"))
+    if (keyExists(plugin->m_tags, "comment"))
     {
-        ahx->info->comments = ahx->m_tags["comment"];
+        plugin->info->comments = plugin->m_tags["comment"];
     }
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    delete ahx;
+    auto* plugin = static_cast<pluginVio2sf*>(codec->plugindata);
+    delete plugin;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    state_render(&ahx->m_ndsState, (s16*)buffer, size);
+    auto plugin = static_cast<pluginVio2sf*>(codec->plugindata);
+    state_render(&plugin->m_ndsState, static_cast<s16*>(buffer), size);
     *read = size;
     return FMOD_OK;
 }
@@ -521,42 +521,42 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginVio2sf*>(codec->plugindata);
 
-    psf_load(ahx->info->filename.c_str(), &ahx->m_psfFileSystem, 0x24, ahx->TwosfLoad, ahx, ahx->InfoMetaPSF, ahx, 0,
+    psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, plugin->TwosfLoad, plugin, plugin->InfoMetaPSF, plugin, 0,
              nullptr, nullptr);
-    state_deinit(&ahx->m_ndsState);
-    state_init(&ahx->m_ndsState);
-    ahx->m_ndsState.dwInterpolation = 0;
-    ahx->m_ndsState.dwChannelMute = 0;
-    ahx->m_ndsState.initial_frames = ahx->m_loaderState.initial_frames;
-    ahx->m_ndsState.sync_type = ahx->m_loaderState.sync_type;
-    ahx->m_ndsState.arm7_clockdown_level = ahx->m_loaderState.arm7_clockdown_level;
-    ahx->m_ndsState.arm9_clockdown_level = ahx->m_loaderState.arm9_clockdown_level;
+    state_deinit(&plugin->m_ndsState);
+    state_init(&plugin->m_ndsState);
+    plugin->m_ndsState.dwInterpolation = 0;
+    plugin->m_ndsState.dwChannelMute = 0;
+    plugin->m_ndsState.initial_frames = plugin->m_loaderState.initial_frames;
+    plugin->m_ndsState.sync_type = plugin->m_loaderState.sync_type;
+    plugin->m_ndsState.arm7_clockdown_level = plugin->m_loaderState.arm7_clockdown_level;
+    plugin->m_ndsState.arm9_clockdown_level = plugin->m_loaderState.arm9_clockdown_level;
 
-    if (ahx->m_loaderState.rom)
-        state_setrom(&ahx->m_ndsState, ahx->m_loaderState.rom, (u32)ahx->m_loaderState.rom_size, 1);
+    if (plugin->m_loaderState.rom)
+        state_setrom(&plugin->m_ndsState, plugin->m_loaderState.rom, (u32)plugin->m_loaderState.rom_size, 1);
 
-    state_loadstate(&ahx->m_ndsState, ahx->m_loaderState.state, (u32)ahx->m_loaderState.state_size);
+    state_loadstate(&plugin->m_ndsState, plugin->m_loaderState.state, (u32)plugin->m_loaderState.state_size);
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginVio2sf*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS)
     {
-        if (ahx->m_length > 0)
+        if (plugin->m_length > 0)
         {
-            *length = ahx->m_length;
+            *length = plugin->m_length;
         }
         else
         {
             *length = 0xffffffff;
         }
-        ahx->info->numSubsongs = 1;
+        plugin->info->numSubsongs = 1;
         return FMOD_OK;
     }
 }

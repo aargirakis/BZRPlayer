@@ -21,9 +21,7 @@ Uint32 STDCALL Mixer(Uint8* Buffer, Uint32 Len);
 
 void Set_Default_Channels_Polyphony(void)
 {
-    int i;
-
-    for (i = 0; i < MAX_TRACKS; i++)
+    for (int i = 0; i < MAX_TRACKS; i++)
     {
         Channels_Polyphony[i] = DEFAULT_POLYPHONY;
     }
@@ -47,27 +45,27 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class ahxplugin
+class pluginProtrekkr
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    ahxplugin(FMOD_CODEC_STATE* codec)
+    pluginProtrekkr(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
         //LogFile = new CLogFile("libmod.log");
-        memset(&ahxwaveformat, 0, sizeof(ahxwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~ahxplugin()
+    ~pluginProtrekkr()
     {
         delete[] buffer;
         if (loaded)
@@ -79,7 +77,7 @@ public:
         }
     }
 
-    FMOD_CODEC_WAVEFORMAT ahxwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     uint8_t* buffer;
     size_t filesize;
     bool loaded = false;
@@ -107,7 +105,7 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    Info* info = (Info*)userexinfo->userdata;
+    Info* info = static_cast<Info*>(userexinfo->userdata);
     FMOD_RESULT result;
 
     int freq = 44100;
@@ -131,9 +129,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
     delete[] testBuffer;
 
-    ahxplugin* ahx = new ahxplugin(codec);
+    auto* plugin = new pluginProtrekkr(codec);
 
-    FMOD_CODEC_FILE_SIZE(codec, &ahx->filesize);
+    FMOD_CODEC_FILE_SIZE(codec, &plugin->filesize);
 
     memset(SampleName, 0, sizeof(SampleName));
     memset(nameins, 0, sizeof(nameins));
@@ -142,16 +140,16 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     Ptk_InitDriver();
     Alloc_Patterns_Pool();
 
-    ahx->buffer = new uint8_t[ahx->filesize];
+    plugin->buffer = new uint8_t[plugin->filesize];
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, ahx->buffer, ahx->filesize, &bytesread);
+    result = FMOD_CODEC_FILE_READ(codec, plugin->buffer, plugin->filesize, &bytesread);
 
 
-    if (!Load_Ptk({ahx->buffer, ahx->filesize}))
+    if (!Load_Ptk({plugin->buffer, plugin->filesize}))
     {
         return FMOD_ERR_FORMAT;
     }
-    ahx->loaded = true;
+    plugin->loaded = true;
 
     info->samples = new string[128];
     info->instruments = new string[128];
@@ -164,17 +162,17 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
 
-    ahx->ahxwaveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
-    ahx->ahxwaveformat.channels = channels;
-    ahx->ahxwaveformat.frequency = freq;
-    ahx->ahxwaveformat.pcmblocksize = (16 >> 3) * ahx->ahxwaveformat.channels;
-    ahx->ahxwaveformat.lengthpcm = Calc_Length() / 1000 * freq;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
+    plugin->waveformat.channels = channels;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = Calc_Length() / 1000 * freq;
 
 
-    codec->waveformat = &ahx->ahxwaveformat;
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = ahx; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
     info->numSamples = 128;
     info->numInstruments = 128;
@@ -192,30 +190,30 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    delete (ahxplugin*)codec->plugindata;
+    delete static_cast<pluginProtrekkr*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginProtrekkr*>(codec->plugindata);
 
-    *read = Mixer((Uint8*)buffer, size >> 1);
+    *read = Mixer(static_cast<Uint8*>(buffer), size >> 1);
     return FMOD_OK;
 }
 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginProtrekkr*>(codec->plugindata);
     Ptk_Stop();
     Free_Samples();
 
-    if (!Load_Ptk({ahx->buffer, ahx->filesize}))
+    if (!Load_Ptk({plugin->buffer, plugin->filesize}))
     {
         return FMOD_ERR_FORMAT;
     }
     Ptk_Play();
-    //pac_seek(ahx->pac_module,(position/1000)*ahx->ahxwaveformat.frequency,SEEK_SET);
+    //pac_seek(plugin->pac_module,(position/1000)*plugin->waveformat.frequency,SEEK_SET);
     return FMOD_OK;
 }

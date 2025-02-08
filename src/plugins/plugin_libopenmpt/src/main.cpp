@@ -1,6 +1,6 @@
 #include <iostream>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <exception>
 #include <fstream>
 #include <vector>
@@ -39,21 +39,21 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &libopenmptsetposition, // Setposition callback.
     &libopenmptgetposition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class libopenmptplugin
+class pluginLibopenmpt
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    libopenmptplugin(FMOD_CODEC_STATE* codec)
+    pluginLibopenmpt(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&libopenmptwaveformat, 0, sizeof(libopenmptwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~libopenmptplugin()
+    ~pluginLibopenmpt()
     {
         info->modRows.clear();
 
@@ -79,7 +79,7 @@ public:
     double maxVUMeter;
     Info* info;
     openmpt::module_ext* mod;
-    FMOD_CODEC_WAVEFORMAT libopenmptwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 #ifdef __cplusplus
@@ -105,8 +105,8 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    libopenmptplugin* libopenmpt = new libopenmptplugin(codec);
-    libopenmpt->info = (Info*)userexinfo->userdata;
+    auto* plugin = new pluginLibopenmpt(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
     if (filesize == 4294967295) //stream
     {
         return FMOD_ERR_FORMAT;
@@ -126,18 +126,18 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
         return FMOD_ERR_FORMAT;
     }
 
-    libopenmpt->myBuffer = new unsigned char[filesize];
+    plugin->myBuffer = new unsigned char[filesize];
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, libopenmpt->myBuffer, filesize, &bytesread);
+    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
 
     try
     {
-        Info* info = (Info*)userexinfo->userdata;
+        Info* info = static_cast<Info*>(userexinfo->userdata);
 
 
         //read config from disk
-        string filename = libopenmpt->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
+        string filename = plugin->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
         ifstream ifs(filename.c_str());
         string line;
         bool useDefaults = false;
@@ -236,41 +236,41 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
             {"dither", dither},
             /*{ "play.at_end", "fadeout" },*/
         };
-        libopenmpt->mod = nullptr;
-        libopenmpt->mod = new openmpt::module_ext(libopenmpt->myBuffer, filesize, std::clog, ctls);
+        plugin->mod = nullptr;
+        plugin->mod = new openmpt::module_ext(plugin->myBuffer, filesize, std::clog, ctls);
 
 
-        libopenmpt->mod->set_render_param(openmpt::module::RENDER_STEREOSEPARATION_PERCENT, stereo_separation);
-        libopenmpt->mod->set_render_param(openmpt::module::RENDER_INTERPOLATIONFILTER_LENGTH, interpolation_filter);
+        plugin->mod->set_render_param(openmpt::module::RENDER_STEREOSEPARATION_PERCENT, stereo_separation);
+        plugin->mod->set_render_param(openmpt::module::RENDER_INTERPOLATIONFILTER_LENGTH, interpolation_filter);
 
-        libopenmpt->libopenmptwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-        libopenmpt->libopenmptwaveformat.channels = 2;
-        libopenmpt->libopenmptwaveformat.frequency = 44100;
-        libopenmpt->libopenmptwaveformat.pcmblocksize = (16 >> 3) * libopenmpt->libopenmptwaveformat.channels;
-        libopenmpt->libopenmptwaveformat.lengthpcm = 0xffffffff;
-        //libopenmpt->mod->get_duration_seconds()*libopenmpt->libopenmptwaveformat.frequency;
+        plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+        plugin->waveformat.channels = 2;
+        plugin->waveformat.frequency = 44100;
+        plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+        plugin->waveformat.lengthpcm = 0xffffffff;
+        //plugin->mod->get_duration_seconds()*plugin->waveformat.frequency;
 
-        codec->waveformat = &(libopenmpt->libopenmptwaveformat);
+        codec->waveformat = &(plugin->waveformat);
         codec->numsubsounds = 0;
         /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-        codec->plugindata = libopenmpt; /* user data value */
+        codec->plugindata = plugin; /* user data value */
 
-        info->numSamples = libopenmpt->mod->get_num_samples();
-        info->numInstruments = libopenmpt->mod->get_num_instruments();
-        info->title = libopenmpt->mod->get_metadata("title");
+        info->numSamples = plugin->mod->get_num_samples();
+        info->numInstruments = plugin->mod->get_num_instruments();
+        info->title = plugin->mod->get_metadata("title");
 
-        info->comments = libopenmpt->mod->get_metadata("message_raw");
+        info->comments = plugin->mod->get_metadata("message_raw");
 
 
-        info->numChannels = libopenmpt->mod->get_num_channels();
-        info->numPatterns = libopenmpt->mod->get_num_patterns();
-        info->numOrders = libopenmpt->mod->get_num_orders();
+        info->numChannels = plugin->mod->get_num_channels();
+        info->numPatterns = plugin->mod->get_num_patterns();
+        info->numOrders = plugin->mod->get_num_orders();
         //        info->restart = fc->mi.mod->rst;
 
 
         if (info->numSamples > 0)
         {
-            std::vector<std::string> samplenames = libopenmpt->mod->get_sample_names();
+            std::vector<std::string> samplenames = plugin->mod->get_sample_names();
 
             info->samples = new string[info->numSamples];
             info->samplesSize = new unsigned int[info->numSamples];
@@ -284,11 +284,11 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
             for (int j = 0; j < info->numSamples; j++)
             {
                 info->samples[j] = samplenames.at(j);
-                info->samplesSize[j] = libopenmpt->mod->get_mod_sample_size(j + 1);
-                info->samplesLoopStart[j] = libopenmpt->mod->get_mod_sample_loopstart(j + 1);
-                info->samplesLoopEnd[j] = libopenmpt->mod->get_mod_sample_loopend(j + 1);
-                info->samplesVolume[j] = libopenmpt->mod->get_mod_sample_volume(j + 1) / 4;
-                int finetune = libopenmpt->mod->get_mod_sample_finetune(j + 1);
+                info->samplesSize[j] = plugin->mod->get_mod_sample_size(j + 1);
+                info->samplesLoopStart[j] = plugin->mod->get_mod_sample_loopstart(j + 1);
+                info->samplesLoopEnd[j] = plugin->mod->get_mod_sample_loopend(j + 1);
+                info->samplesVolume[j] = plugin->mod->get_mod_sample_volume(j + 1) / 4;
+                int finetune = plugin->mod->get_mod_sample_finetune(j + 1);
                 if (finetune > 127)
                 {
                     finetune -= 256;
@@ -306,7 +306,7 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
 
         if (info->numInstruments > 0)
         {
-            std::vector<std::string> instrumentnames = libopenmpt->mod->get_instrument_names();
+            std::vector<std::string> instrumentnames = plugin->mod->get_instrument_names();
 
             info->instruments = new string[info->numInstruments];
 
@@ -316,63 +316,63 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
             }
         }
 
-        info->fileformat = libopenmpt->mod->get_metadata("type_long");
+        info->fileformat = plugin->mod->get_metadata("type_long");
 
         //get_current_channel_vu_mono seems to return 1.40317 for max volume for most formats, but max for protracker it is 1.11105
         if (info->fileformat.substr(0, 10) == "ProTracker" || info->fileformat.substr(0, 12) == "Soundtracker")
         {
-            libopenmpt->maxVUMeter = 1.11105;
+            plugin->maxVUMeter = 1.11105;
         }
         else
         {
-            libopenmpt->maxVUMeter = 1.40317;
+            plugin->maxVUMeter = 1.40317;
         }
 
 
         info->plugin = PLUGIN_libopenmpt;
         info->pluginName = PLUGIN_libopenmpt_NAME;
         info->setSeekable(true);
-        //libopenmpt->vumeterBuffer = CreateQueue(22);
+        //plugin->vumeterBuffer = CreateQueue(22);
         return FMOD_OK;
     }
     catch (...)
     {
-        delete libopenmpt->mod;
-        libopenmpt->mod = nullptr;
-        delete[] libopenmpt->myBuffer;
+        delete plugin->mod;
+        plugin->mod = nullptr;
+        delete[] plugin->myBuffer;
         return FMOD_ERR_FORMAT;
     }
 }
 
 FMOD_RESULT F_CALLBACK libopenmptclose(FMOD_CODEC_STATE* codec)
 {
-    delete (libopenmptplugin*)codec->plugindata;
+    delete static_cast<pluginLibopenmpt*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK libopenmptread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    libopenmptplugin* libopenmpt = (libopenmptplugin*)codec->plugindata;
-    libopenmpt->mod->read_interleaved_stereo(libopenmpt->libopenmptwaveformat.frequency, size, (short*)buffer);
-    unsigned char* vumeters = new unsigned char[libopenmpt->info->numChannels];
+    auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
+    plugin->mod->read_interleaved_stereo(plugin->waveformat.frequency, size, (short*)buffer);
+    unsigned char* vumeters = new unsigned char[plugin->info->numChannels];
 
 
-    for (int i = 0; i < libopenmpt->info->numChannels; i++)
+    for (int i = 0; i < plugin->info->numChannels; i++)
     {
-        vumeters[i] = (libopenmpt->mod->get_current_channel_vu_mono(i) / libopenmpt->maxVUMeter) * 100;
+        vumeters[i] = (plugin->mod->get_current_channel_vu_mono(i) / plugin->maxVUMeter) * 100;
     }
 
-    if (libopenmpt->vumeterBuffer.size() >= 70)
+    if (plugin->vumeterBuffer.size() >= 70)
     {
-        libopenmpt->vumeterBuffer.pop();
-        libopenmpt->rowBuffer.pop();
-        libopenmpt->patternBuffer.pop();
-        libopenmpt->orderBuffer.pop();
+        plugin->vumeterBuffer.pop();
+        plugin->rowBuffer.pop();
+        plugin->patternBuffer.pop();
+        plugin->orderBuffer.pop();
     }
-    libopenmpt->vumeterBuffer.push(vumeters);
-    libopenmpt->rowBuffer.push(libopenmpt->mod->get_current_row());
-    libopenmpt->patternBuffer.push(libopenmpt->mod->get_current_pattern());
-    libopenmpt->orderBuffer.push(libopenmpt->mod->get_current_order());
+    plugin->vumeterBuffer.push(vumeters);
+    plugin->rowBuffer.push(plugin->mod->get_current_row());
+    plugin->patternBuffer.push(plugin->mod->get_current_pattern());
+    plugin->orderBuffer.push(plugin->mod->get_current_order());
 
     *read = size;
     return FMOD_OK;
@@ -380,17 +380,17 @@ FMOD_RESULT F_CALLBACK libopenmptread(FMOD_CODEC_STATE* codec, void* buffer, uns
 
 FMOD_RESULT F_CALLBACK libopenmptgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    libopenmptplugin* libopenmpt = (libopenmptplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS || lengthtype ==
         FMOD_TIMEUNIT_MUTE_VOICE)
     {
-        *length = libopenmpt->mod->get_duration_seconds() * 1000;
+        *length = plugin->mod->get_duration_seconds() * 1000;
         return FMOD_OK;
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
-        *length = libopenmpt->mod->get_num_subsongs();
+        *length = plugin->mod->get_num_subsongs();
         return FMOD_OK;
     }
     else
@@ -402,14 +402,14 @@ FMOD_RESULT F_CALLBACK libopenmptgetlength(FMOD_CODEC_STATE* codec, unsigned int
 FMOD_RESULT F_CALLBACK libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                              FMOD_TIMEUNIT postype)
 {
-    libopenmptplugin* libopenmpt = (libopenmptplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         //         //position is a mask
-        //         for(int i = 0 ; i<libopenmpt->info->numChannels ; i++)
+        //         for(int i = 0 ; i<plugin->info->numChannels ; i++)
         //         {
         //             #ifdef LIBOPENMPT_EXT_INTERFACE_INTERACTIVE
-        //               openmpt::ext::interactive *interactive = static_cast<openmpt::ext::interactive *>( libopenmpt->mod->get_interface( openmpt::ext::interactive_id ) );
+        //               openmpt::ext::interactive *interactive = static_cast<openmpt::ext::interactive *>( plugin->mod->get_interface( openmpt::ext::interactive_id ) );
 
         //               if ( interactive ) {
         //                 interactive->set_channel_mute_status(i,(position >> i & 1));
@@ -426,16 +426,16 @@ FMOD_RESULT F_CALLBACK libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsou
         //         }
 
 
-        for (int i = 0; i < libopenmpt->info->numChannels; i++)
+        for (int i = 0; i < plugin->info->numChannels; i++)
         {
 #ifdef LIBOPENMPT_EXT_INTERFACE_INTERACTIVE
-            openmpt::ext::interactive* interactive = static_cast<openmpt::ext::interactive*>(libopenmpt->mod->
+            openmpt::ext::interactive* interactive = static_cast<openmpt::ext::interactive*>(plugin->mod->
                 get_interface(openmpt::ext::interactive_id));
 
             if (interactive)
             {
                 bool mute = false;
-                if (libopenmpt->info->mutedChannelsMask.at(i) == '0')
+                if (plugin->info->mutedChannelsMask.at(i) == '0')
                 {
                     mute = true;
                 }
@@ -455,13 +455,13 @@ FMOD_RESULT F_CALLBACK libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsou
     }
     else if (postype == FMOD_TIMEUNIT_MS)
     {
-        libopenmpt->mod->set_position_seconds(position / 1000.0);
+        plugin->mod->set_position_seconds(position / 1000.0);
         return FMOD_OK;
     }
 
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        libopenmpt->mod->select_subsong(position);
+        plugin->mod->select_subsong(position);
         return FMOD_OK;
     }
     return FMOD_ERR_UNSUPPORTED;;
@@ -469,46 +469,46 @@ FMOD_RESULT F_CALLBACK libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsou
 
 FMOD_RESULT F_CALLBACK libopenmptgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    libopenmptplugin* libopenmpt = (libopenmptplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MODVUMETER)
     {
-        libopenmpt->info->modVUMeters = libopenmpt->vumeterBuffer.front();
-        //cout << "get position " <<  ": " << (int)libopenmpt->info->modVUMeters[0] << endl;
+        plugin->info->modVUMeters = plugin->vumeterBuffer.front();
+        //cout << "get position " <<  ": " << (int)plugin->info->modVUMeters[0] << endl;
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MODROW)
     {
-        *position = libopenmpt->rowBuffer.front();
+        *position = plugin->rowBuffer.front();
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MODPATTERN)
     {
-        *position = libopenmpt->patternBuffer.front();
+        *position = plugin->patternBuffer.front();
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MODORDER)
     {
-        *position = libopenmpt->orderBuffer.front();
+        *position = plugin->orderBuffer.front();
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SPEED)
     {
-        *position = libopenmpt->mod->get_current_speed();
+        *position = plugin->mod->get_current_speed();
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_BPM)
     {
-        *position = libopenmpt->mod->get_current_estimated_bpm();
+        *position = plugin->mod->get_current_estimated_bpm();
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO)
     {
         //set the mod pattern (notes etc.) in the info struct and just return 0
 
-        libopenmpt->info->modRows.clear();
+        plugin->info->modRows.clear();
 
-        for (vector<vector<BaseRow*>>::iterator itr = libopenmpt->info->patterns.begin(); itr != libopenmpt->info->
+        for (vector<vector<BaseRow*>>::iterator itr = plugin->info->patterns.begin(); itr != plugin->info->
              patterns.end(); ++itr)
         {
             for (vector<BaseRow*>::iterator itr2 = (*itr).begin(); itr2 != (*itr).end(); ++itr2)
@@ -517,25 +517,25 @@ FMOD_RESULT F_CALLBACK libopenmptgetposition(FMOD_CODEC_STATE* codec, unsigned i
             }
             (*itr).clear();
         }
-        libopenmpt->info->patterns.clear();
+        plugin->info->patterns.clear();
 
-        for (int i = 0; i < libopenmpt->mod->get_num_patterns(); i++)
+        for (int i = 0; i < plugin->mod->get_num_patterns(); i++)
         {
-            int numberRows = libopenmpt->mod->get_pattern_num_rows(i);
-            vector<BaseRow*> modRows(numberRows * libopenmpt->info->numChannels);
+            int numberRows = plugin->mod->get_pattern_num_rows(i);
+            vector<BaseRow*> modRows(numberRows * plugin->info->numChannels);
             int counter = 0;
             for (int j = 0; j < numberRows; j++)
             {
-                for (int k = 0; k < libopenmpt->info->numChannels; k++)
+                for (int k = 0; k < plugin->info->numChannels; k++)
                 {
-                    BaseRow* row = new BaseRow();
+                    auto row = new BaseRow();
                     //int trackidx = fc->mi.mod->xxp[i]->index[k];
-                    row->note = libopenmpt->mod->
-                                            get_pattern_row_channel_command(i, j, k, libopenmpt->mod->command_note);
-                    row->sample = libopenmpt->mod->get_pattern_row_channel_command(
-                        i, j, k, libopenmpt->mod->command_instrument);
-                    int effect = libopenmpt->mod->get_pattern_row_channel_command(
-                        i, j, k, libopenmpt->mod->command_effect);
+                    row->note = plugin->mod->
+                                            get_pattern_row_channel_command(i, j, k, plugin->mod->command_note);
+                    row->sample = plugin->mod->get_pattern_row_channel_command(
+                        i, j, k, plugin->mod->command_instrument);
+                    int effect = plugin->mod->get_pattern_row_channel_command(
+                        i, j, k, plugin->mod->command_effect);
                     if (effect > 0)
                     {
                         effect--;
@@ -551,26 +551,26 @@ FMOD_RESULT F_CALLBACK libopenmptgetposition(FMOD_CODEC_STATE* codec, unsigned i
 
 
                     row->effect = effect;
-                    row->param = libopenmpt->mod->get_pattern_row_channel_command(
-                        i, j, k, libopenmpt->mod->command_parameter);
-                    row->effect2 = libopenmpt->mod->get_pattern_row_channel_command(
-                        i, j, k, libopenmpt->mod->command_volumeffect);
+                    row->param = plugin->mod->get_pattern_row_channel_command(
+                        i, j, k, plugin->mod->command_parameter);
+                    row->effect2 = plugin->mod->get_pattern_row_channel_command(
+                        i, j, k, plugin->mod->command_volumeffect);
                     row->param2 = 0;
-                    row->vol = libopenmpt->mod->get_pattern_row_channel_command(
-                        i, j, k, libopenmpt->mod->command_volume);
+                    row->vol = plugin->mod->get_pattern_row_channel_command(
+                        i, j, k, plugin->mod->command_volume);
 
                     modRows[counter] = row;
                     counter++;
                 }
             }
-            libopenmpt->info->patterns.push_back(modRows);
+            plugin->info->patterns.push_back(modRows);
         }
         *position = 0;
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MS_REAL)
     {
-        *position = libopenmpt->mod->get_position_seconds() * 1000;
+        *position = plugin->mod->get_position_seconds() * 1000;
         return FMOD_OK;
     }
 

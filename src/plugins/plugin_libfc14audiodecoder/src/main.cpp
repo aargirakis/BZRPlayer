@@ -1,8 +1,8 @@
 #include "FC.h"
 #include "fc14audiodecoder.h"
-#include <string.h>
+#include <cstring>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include "fmod_errors.h"
 #include <queue>
 #include "info.h"
@@ -32,22 +32,22 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &fcsetposition, // Setposition callback.
     &fcgetposition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class fcplugin
+class pluginLibfc14
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    fcplugin(FMOD_CODEC_STATE* codec)
+    pluginLibfc14(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&fcwaveformat, 0, sizeof(fcwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
         decoder = NULL;
     }
 
-    ~fcplugin()
+    ~pluginLibfc14()
     {
         //delete some stuff
         fc14dec_delete(decoder);
@@ -59,7 +59,7 @@ public:
     Info* info;
     queue<unsigned char*> vumeterBuffer;
 
-    FMOD_CODEC_WAVEFORMAT fcwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -84,7 +84,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 {
     FMOD_RESULT result;
 
-    fcplugin* fc = new fcplugin(codec);
+    auto* plugin = new pluginLibfc14(codec);
 
     unsigned int bytesread;
     char* smallBuffer;
@@ -118,7 +118,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
         return FMOD_ERR_FORMAT;
     }
 
-    fc->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     signed short* myBuffer;
     myBuffer = new signed short[filesize];
@@ -126,87 +126,87 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
-    fc->decoder = fc14dec_new();
-    int ok = fc14dec_init(fc->decoder, myBuffer, filesize);
+    plugin->decoder = fc14dec_new();
+    int ok = fc14dec_init(plugin->decoder, myBuffer, filesize);
     delete[] myBuffer;
     if (!ok)
     {
         return FMOD_ERR_FORMAT;
     }
 
-    fc->fcwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    fc->fcwaveformat.channels = 2;
-    fc->fcwaveformat.frequency = 44100;
-    fc->fcwaveformat.pcmblocksize = (16 >> 3) * fc->fcwaveformat.channels;
-    fc->fcwaveformat.lengthpcm = fc14dec_duration(fc->decoder) / 1000.0 * fc->fcwaveformat.frequency;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = fc14dec_duration(plugin->decoder) / 1000.0 * plugin->waveformat.frequency;
 
-    codec->waveformat = &(fc->fcwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = fc; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    fc14dec_mixer_init(fc->decoder, fc->fcwaveformat.frequency, 16, fc->fcwaveformat.channels, 0);
+    fc14dec_mixer_init(plugin->decoder, plugin->waveformat.frequency, 16, plugin->waveformat.channels, 0);
     if (isSMOD)
     {
-        fc->info->fileformat = "Future Composer 1.0-1.3";
+        plugin->info->fileformat = "Future Composer 1.0-1.3";
     }
     else if (isFC14)
     {
-        fc->info->fileformat = "Future Composer 1.4";
+        plugin->info->fileformat = "Future Composer 1.4";
     }
 
-    fc->info->plugin = PLUGIN_libfc14audiodecoder;
-    fc->info->pluginName = PLUGIN_libfc14audiodecoder_NAME;
-    fc->info->numUsedPatterns = fc14dec_get_used_patterns(fc->decoder);
-    fc->info->numSndModSeqs = fc14dec_get_used_snd_mod_seqs(fc->decoder);
-    fc->info->numVolModSeqs = fc14dec_get_used_vol_mod_seqs(fc->decoder);
+    plugin->info->plugin = PLUGIN_libfc14audiodecoder;
+    plugin->info->pluginName = PLUGIN_libfc14audiodecoder_NAME;
+    plugin->info->numUsedPatterns = fc14dec_get_used_patterns(plugin->decoder);
+    plugin->info->numSndModSeqs = fc14dec_get_used_snd_mod_seqs(plugin->decoder);
+    plugin->info->numVolModSeqs = fc14dec_get_used_vol_mod_seqs(plugin->decoder);
 
-    fc->info->numSamples = 10;
+    plugin->info->numSamples = 10;
 
 
-    fc->info->samplesSize = new unsigned int[10];
-    fc->info->samplesLoopStart = new unsigned int[10];
-    fc->info->samplesLoopLength = new unsigned int[10];
+    plugin->info->samplesSize = new unsigned int[10];
+    plugin->info->samplesLoopStart = new unsigned int[10];
+    plugin->info->samplesLoopLength = new unsigned int[10];
 
     for (int j = 1; j <= 10; j++)
     {
-        fc->info->samplesSize[j - 1] = fc14dec_get_sample_length(fc->decoder, j - 1);
-        fc->info->samplesLoopStart[j - 1] = fc14dec_get_sample_rep_offset(fc->decoder, j - 1);
-        fc->info->samplesLoopLength[j - 1] = fc14dec_get_sample_rep_length(fc->decoder, j - 1);
+        plugin->info->samplesSize[j - 1] = fc14dec_get_sample_length(plugin->decoder, j - 1);
+        plugin->info->samplesLoopStart[j - 1] = fc14dec_get_sample_rep_offset(plugin->decoder, j - 1);
+        plugin->info->samplesLoopLength[j - 1] = fc14dec_get_sample_rep_length(plugin->decoder, j - 1);
     }
 
-    fc->info->numChannels = 4;
-    fc->info->setSeekable(true);
+    plugin->info->numChannels = 4;
+    plugin->info->setSeekable(true);
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 {
-    delete (fcplugin*)codec->plugindata;
+    delete static_cast<pluginLibfc14*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginLibfc14*>(codec->plugindata);
     unsigned char* vumeters = new unsigned char[16];
 
-    fc14dec_buffer_fill(fc->decoder, buffer, size << 2);
+    fc14dec_buffer_fill(plugin->decoder, buffer, size << 2);
     *read = size;
 
     for (int i = 0; i < 4; i++)
     {
-        unsigned char newValue = fc14dec_get_channel_volume(fc->decoder, i);
+        unsigned char newValue = fc14dec_get_channel_volume(plugin->decoder, i);
 
         vumeters[i] = newValue;
     }
-    if (fc->vumeterBuffer.size() >= 68)
+    if (plugin->vumeterBuffer.size() >= 68)
     {
-        fc->vumeterBuffer.pop();
+        plugin->vumeterBuffer.pop();
     }
 
-    fc->vumeterBuffer.push(vumeters);
+    plugin->vumeterBuffer.push(vumeters);
 
     return FMOD_OK;
 }
@@ -214,10 +214,10 @@ FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned in
 FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginLibfc14*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        fc14dec_seek(fc->decoder, position);
+        fc14dec_seek(plugin->decoder, position);
     }
     else if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
@@ -226,7 +226,7 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
         {
             int m = position >> i & 1;
             bool mute = m == 1 ? true : false;
-            fc14dec_mute_channel(fc->decoder, mute, i);
+            fc14dec_mute_channel(plugin->decoder, mute, i);
         }
 
         return FMOD_OK;
@@ -236,14 +236,14 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
 
 FMOD_RESULT F_CALLBACK fcgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginLibfc14*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MODVUMETER)
     {
-        fc->info->modVUMeters = fc->vumeterBuffer.front();
-        //        cout << "get vumeter " <<  ": " << (int)fc->info->modVUMeters[0] << endl;
-        //        cout << "get vumeter " <<  ": " << (int)fc->info->modVUMeters[1] << endl;
-        //        cout << "get vumeter " <<  ": " << (int)fc->info->modVUMeters[2] << endl;
-        //        cout << "get vumeter " <<  ": " << (int)fc->info->modVUMeters[3] << endl;
+        plugin->info->modVUMeters = plugin->vumeterBuffer.front();
+        //        cout << "get vumeter " <<  ": " << (int)plugin->info->modVUMeters[0] << endl;
+        //        cout << "get vumeter " <<  ": " << (int)plugin->info->modVUMeters[1] << endl;
+        //        cout << "get vumeter " <<  ": " << (int)plugin->info->modVUMeters[2] << endl;
+        //        cout << "get vumeter " <<  ": " << (int)plugin->info->modVUMeters[3] << endl;
         return FMOD_OK;
     }
     return FMOD_OK;
@@ -251,14 +251,10 @@ FMOD_RESULT F_CALLBACK fcgetposition(FMOD_CODEC_STATE* codec, unsigned int* posi
 
 FMOD_RESULT F_CALLBACK fcgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
-
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         return FMOD_OK;
     }
-    else
-    {
-        return FMOD_ERR_UNSUPPORTED;
-    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }

@@ -1,6 +1,6 @@
-#include <string.h>
+#include <cstring>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 #include "fmod_errors.h"
 #include "info.h"
 #include "kmp_pi.h"
@@ -24,28 +24,28 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &fcopen, // Open callback.
     &fcclose, // Close callback.
     &fcread, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &fcsetposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class fcplugin
+class pluginTunes98
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    fcplugin(FMOD_CODEC_STATE* codec)
+    pluginTunes98(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&fcwaveformat, 0, sizeof(fcwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
         //memset(&ay, 0, sizeof(ay));
         pos = 0;
     }
 
-    ~fcplugin()
+    ~pluginTunes98()
     {
         //delete some stuff
         delete[] myBuffer;
@@ -60,7 +60,7 @@ public:
     SOUNDINFO s98info;
     size_t pos;
 
-    FMOD_CODEC_WAVEFORMAT fcwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -83,78 +83,78 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 #endif
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    fcplugin* fc = new fcplugin(codec);
-    fc->info = (Info*)userexinfo->userdata;
+    auto* plugin = new pluginTunes98(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    fc->fp = fopen(fc->info->filename.c_str(), "rb");
+    plugin->fp = fopen(plugin->info->filename.c_str(), "rb");
 
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    fc->myBuffer = new BYTE[filesize];
+    plugin->myBuffer = new BYTE[filesize];
 
     // buffer will store the DWORD read from the file
-    fread(fc->myBuffer, 1, filesize, fc->fp);
+    fread(plugin->myBuffer, 1, filesize, plugin->fp);
 
-    if (fc->myBuffer[0] == 'S' && fc->myBuffer[1] == '9' && fc->myBuffer[2] == '8' && fc->myBuffer[3] == '3')
+    if (plugin->myBuffer[0] == 'S' && plugin->myBuffer[1] == '9' && plugin->myBuffer[2] == '8' && plugin->myBuffer[3] == '3')
     {
-        fc->info->fileformat = "S98 V.3";
+        plugin->info->fileformat = "S98 V.3";
     }
-    else if (fc->myBuffer[0] == 'S' && fc->myBuffer[1] == '9' && fc->myBuffer[2] == '8' && fc->myBuffer[3] == '2')
+    else if (plugin->myBuffer[0] == 'S' && plugin->myBuffer[1] == '9' && plugin->myBuffer[2] == '8' && plugin->myBuffer[3] == '2')
     {
-        fc->info->fileformat = "S98 V.2";
+        plugin->info->fileformat = "S98 V.2";
     }
-    else if (fc->myBuffer[0] == 'S' && fc->myBuffer[1] == '9' && fc->myBuffer[2] == '8' && fc->myBuffer[3] == '1')
+    else if (plugin->myBuffer[0] == 'S' && plugin->myBuffer[1] == '9' && plugin->myBuffer[2] == '8' && plugin->myBuffer[3] == '1')
     {
-        fc->info->fileformat = "S98 V.1";
+        plugin->info->fileformat = "S98 V.1";
     }
-    else if (fc->myBuffer[0] == 'S' && fc->myBuffer[1] == '9' && fc->myBuffer[2] == '8' && fc->myBuffer[3] == '0')
+    else if (plugin->myBuffer[0] == 'S' && plugin->myBuffer[1] == '9' && plugin->myBuffer[2] == '8' && plugin->myBuffer[3] == '0')
     {
-        fc->info->fileformat = "S98 V.0";
+        plugin->info->fileformat = "S98 V.0";
     }
     else
     {
-        delete fc->myBuffer;
+        delete plugin->myBuffer;
         return FMOD_ERR_FORMAT;
     }
 
-    fc->s98info.dwSamplesPerSec = 44100;
-    fc->s98 = S98_OpenFromBuffer(fc->myBuffer, filesize, &fc->s98info);
+    plugin->s98info.dwSamplesPerSec = 44100;
+    plugin->s98 = S98_OpenFromBuffer(plugin->myBuffer, filesize, &plugin->s98info);
 
-    if (!fc->s98)
+    if (!plugin->s98)
     {
         return FMOD_ERR_FORMAT;
     }
 
-    fc->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    fc->fcwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    fc->fcwaveformat.channels = 2;
-    fc->fcwaveformat.frequency = 44100;
-    fc->fcwaveformat.pcmblocksize = (16 >> 3) * fc->fcwaveformat.channels;
-    fc->fcwaveformat.lengthpcm = fc->s98info.dwLength / 1000 * fc->fcwaveformat.frequency;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = plugin->s98info.dwLength / 1000 * plugin->waveformat.frequency;
 
-    codec->waveformat = &(fc->fcwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = fc; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    fc->info->plugin = PLUGIN_tunes98_plug;
-    fc->info->pluginName = PLUGIN_tunes98_plug_NAME;
-    fc->info->setSeekable(true);
+    plugin->info->plugin = PLUGIN_tunes98_plug;
+    plugin->info->pluginName = PLUGIN_tunes98_plug_NAME;
+    plugin->info->setSeekable(true);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 {
-    delete (fcplugin*)codec->plugindata;
+    delete static_cast<pluginTunes98*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
-    S98_Render(fc->s98, (BYTE*)buffer, size);
+    auto* plugin = static_cast<pluginTunes98*>(codec->plugindata);
+    S98_Render(plugin->s98, static_cast<BYTE*>(buffer), size);
     *read = size;
 
     return FMOD_OK;
@@ -165,8 +165,8 @@ FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsi
 {
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        fcplugin* fc = (fcplugin*)codec->plugindata;
-        S98_SetPosition(fc->s98, position);
+        auto* plugin = static_cast<pluginTunes98*>(codec->plugindata);
+        S98_SetPosition(plugin->s98, position);
         return FMOD_OK;
     }
     else

@@ -3,7 +3,7 @@
 #include <blargg_endian.h>
 #include <iostream>
 #include <fstream>
-#include <string.h>
+#include <cstring>
 #include "fmod.h"
 #include "info.h"
 #include "plugins.h"
@@ -52,29 +52,29 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &setposition, // Setposition callback.
     &getposition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class gameplugin
+class pluginGme
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    gameplugin(FMOD_CODEC_STATE* codec)
+    pluginGme(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
         //LogFile = new CLogFile("gameemu.log");
-        memset(&gpwaveformat, 0, sizeof(gpwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~gameplugin()
+    ~pluginGme()
     {
         //delete some stuff
         gme_delete(emu);
     }
 
     Music_Emu* emu;
-    FMOD_CODEC_WAVEFORMAT gpwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     gme_info_t* info;
     int track;
 };
@@ -101,13 +101,13 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
-    gameplugin* gp = new gameplugin(codec);
+    auto plugin = new pluginGme(codec);
 
 
     //read config from disk
 
     //Info* info = new Info();
-    Info* info = (Info*)userexinfo->userdata;
+    Info* info = static_cast<Info*>(userexinfo->userdata);
     string filename = info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/gameemu.cfg";
     ifstream ifs(filename.c_str());
     string line;
@@ -199,7 +199,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
     info->fileformat = file_type->system;
-    gp->emu = gme_new_emu(file_type, freq);
+    plugin->emu = gme_new_emu(file_type, freq);
 
     /* Allocate space for buffer. */
     signed short* myBuffer = new signed short[filesize];
@@ -212,12 +212,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
     ERRCHECK(result);
 
-    handle_error(gme_load_data(gp->emu, myBuffer, filesize));
+    handle_error(gme_load_data(plugin->emu, myBuffer, filesize));
     delete [] myBuffer;
 
-    gp->track = 0;
+    plugin->track = 0;
 
-    handle_error(gme_track_info(gp->emu, &gp->info, gp->track));
+    handle_error(gme_track_info(plugin->emu, &plugin->info, plugin->track));
 
     /* Get and print main info for track */
 
@@ -236,49 +236,49 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     if ( info.loop_length != 0 )
             printf( " (endless)" );*/
 
-    gp->gpwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    gp->gpwaveformat.channels = 2;
-    gp->gpwaveformat.frequency = freq;
-    gp->gpwaveformat.pcmblocksize = (16 >> 3) * gp->gpwaveformat.channels;
-    gp->gpwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
     //// If file doesn't have overall length, it might have intro and loop lengths
-    //   if ( gp->info.length <= 0 )
-    //       gp->info.length = gp->info.intro_length + gp->info.loop_length * 2;
+    //   if ( plugin->info.length <= 0 )
+    //       plugin->info.length = plugin->info.intro_length + plugin->info.loop_length * 2;
 
-    //if(gp->info.length>0)
+    //if(plugin->info.length>0)
     //{
-    //	gp->gpwaveformat.lengthpcm    = gp->info.length/1000*gp->gpwaveformat.frequency;
+    //	plugin->waveformat.lengthpcm    = plugin->info.length/1000*plugin->waveformat.frequency;
     //}
 
-    codec->waveformat = &(gp->gpwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = gp; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    gme_ignore_silence(gp->emu, !ignore_silence);
+    gme_ignore_silence(plugin->emu, !ignore_silence);
 
-    gme_set_tempo(gp->emu, tempo);
+    gme_set_tempo(plugin->emu, tempo);
 
     eq.bass = bass;
     eq.treble = treble;
-    gme_set_equalizer(gp->emu, &eq);
-    gme_set_stereo_depth(gp->emu, stereoDepth);
+    gme_set_equalizer(plugin->emu, &eq);
+    gme_set_stereo_depth(plugin->emu, stereoDepth);
 
-    handle_error(gme_start_track(gp->emu, gp->track));
+    handle_error(gme_start_track(plugin->emu, plugin->track));
 
-    info->title = gp->info->song;
-    info->artist = gp->info->author;
-    info->copyright = gp->info->copyright;
-    info->comments = gp->info->comment;
-    info->system = gp->info->system;
-    info->game = gp->info->game;
-    info->dumper = gp->info->dumper;
+    info->title = plugin->info->song;
+    info->artist = plugin->info->author;
+    info->copyright = plugin->info->copyright;
+    info->comments = plugin->info->comment;
+    info->system = plugin->info->system;
+    info->game = plugin->info->game;
+    info->dumper = plugin->info->dumper;
     info->plugin = PLUGIN_game_music_emu;
     info->pluginName = PLUGIN_game_music_emu_NAME;
     info->setSeekable(true);
-    info->numChannels = gme_voice_count(gp->emu);
-    info->numSubsongs = (int)gme_track_count(gp->emu);
+    info->numChannels = gme_voice_count(plugin->emu);
+    info->numSubsongs = (int)gme_track_count(plugin->emu);
 
 
     return FMOD_OK;
@@ -286,16 +286,15 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
-    delete (gameplugin*)codec->plugindata;
+    delete static_cast<pluginGme*>(codec->plugindata);
     //delete LogFile;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
-    gp->emu->play(size << 1, (signed short*)buffer);
+    auto plugin = static_cast<pluginGme*>(codec->plugindata);
+    plugin->emu->play(size << 1, static_cast<signed short*>(buffer));
 
     *read = size;
 
@@ -304,34 +303,34 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginGme*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        return handle_error(gme_seek(gp->emu, position));
+        return handle_error(gme_seek(plugin->emu, position));
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
         if (position < 0) position = 0;
-        gp->track = position;
-        return handle_error(gme_start_track(gp->emu, position));
+        plugin->track = position;
+        return handle_error(gme_start_track(plugin->emu, position));
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_TEMPO)
     {
-        //return handle_error( gme_start_track( gp->emu, position ) );
+        //return handle_error( gme_start_track( plugin->emu, position ) );
         if (position < 0) position = 0;
         double rate = (double)position / 250.0;
         //printf("\n\nrate: %f\n",rate);
-        gme_set_tempo(gp->emu, rate);
+        gme_set_tempo(plugin->emu, rate);
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
-        gme_mute_voices(gp->emu, 0); //unmutes all voices
-        //gme_mute_voices( gp->emu, -1 ); //mutes all voices
+        gme_mute_voices(plugin->emu, 0); //unmutes all voices
+        //gme_mute_voices( plugin->emu, -1 ); //mutes all voices
         //position is a mask
-        gme_mute_voices(gp->emu, position);
+        gme_mute_voices(plugin->emu, position);
         return FMOD_ERR_UNSUPPORTED;
     }
     else
@@ -342,18 +341,18 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginGme*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
-        handle_error(gme_track_info(gp->emu, &gp->info, gp->track));
+        handle_error(gme_track_info(plugin->emu, &plugin->info, plugin->track));
         // If file doesn't have overall length, it might have intro and loop lengths
-        if (gp->info->length <= 0)
-            gp->info->length = gp->info->intro_length + gp->info->loop_length * 2;
+        if (plugin->info->length <= 0)
+            plugin->info->length = plugin->info->intro_length + plugin->info->loop_length * 2;
 
-        if (gp->info->length > 0)
+        if (plugin->info->length > 0)
         {
-            *length = gp->info->length;
+            *length = plugin->info->length;
         }
         else
         {
@@ -363,7 +362,7 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
-        *length = (int)gme_track_count(gp->emu);
+        *length = (int)gme_track_count(plugin->emu);
         return FMOD_OK;
     }
 
@@ -375,10 +374,10 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginGme*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        *position = gp->emu->current_track();
+        *position = plugin->emu->current_track();
         return FMOD_OK;
     }
     else

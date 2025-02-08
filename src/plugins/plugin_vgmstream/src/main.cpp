@@ -23,26 +23,26 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &fcopen, // Open callback.
     &fcclose, // Close callback.
     &fcread, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &fcsetposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class fcplugin
+class pluginVgmstream
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    fcplugin(FMOD_CODEC_STATE* codec)
+    pluginVgmstream(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&fcwaveformat, 0, sizeof(fcwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~fcplugin()
+    ~pluginVgmstream()
     {
         //delete some stuff
     }
@@ -50,7 +50,7 @@ public:
     VGMSTREAM* vgmstream;
     Info* info;
 
-    FMOD_CODEC_WAVEFORMAT fcwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -74,65 +74,65 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    fcplugin* fc = new fcplugin(codec);
+    auto* plugin = new pluginVgmstream(codec);
 
-    fc->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    fc->vgmstream = NULL;
-    fc->vgmstream = init_vgmstream(fc->info->filename.c_str());
-    if (!fc->vgmstream)
+    plugin->vgmstream = NULL;
+    plugin->vgmstream = init_vgmstream(plugin->info->filename.c_str());
+    if (!plugin->vgmstream)
     {
         return FMOD_ERR_FORMAT;
     }
 
-    fc->vgmstream->loop_flag = 0;
+    plugin->vgmstream->loop_flag = 0;
 
     /* will we be able to play it? */
-    if (fc->vgmstream->channels <= 0)
+    if (plugin->vgmstream->channels <= 0)
     {
-        close_vgmstream(fc->vgmstream);
-        fc->vgmstream = NULL;
+        close_vgmstream(plugin->vgmstream);
+        plugin->vgmstream = NULL;
         return FMOD_ERR_FORMAT;
     }
 
     int loop_count = 1;
     int fade_seconds = 0;
     int fade_delay_seconds = 0;
-    fc->fcwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    fc->fcwaveformat.channels = fc->vgmstream->channels;
-    fc->fcwaveformat.frequency = fc->vgmstream->sample_rate;
-    fc->fcwaveformat.pcmblocksize = (16 >> 3) * fc->fcwaveformat.channels;
-    fc->fcwaveformat.lengthpcm =
-        get_vgmstream_play_samples(loop_count, fade_seconds, fade_delay_seconds, fc->vgmstream);
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = plugin->vgmstream->channels;
+    plugin->waveformat.frequency = plugin->vgmstream->sample_rate;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm =
+        get_vgmstream_play_samples(loop_count, fade_seconds, fade_delay_seconds, plugin->vgmstream);
 
-    codec->waveformat = &(fc->fcwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = fc; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    fc->info->plugin = PLUGIN_vgmstream;
-    fc->info->pluginName = PLUGIN_vgmstream_NAME;
-    fc->info->setSeekable(true);
+    plugin->info->plugin = PLUGIN_vgmstream;
+    plugin->info->pluginName = PLUGIN_vgmstream_NAME;
+    plugin->info->setSeekable(true);
 
     char description[128];
-    get_vgmstream_meta_description(fc->vgmstream, description, sizeof(description));
-    fc->info->fileformat = description;
+    get_vgmstream_meta_description(plugin->vgmstream, description, sizeof(description));
+    plugin->info->fileformat = description;
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 {
-    //fcplugin* fc = (fcplugin*)codec->plugindata;
-    //close_vgmstream(fc->vgmstream);
-    delete (fcplugin*)codec->plugindata;
+    //pluginVgmstream* plugin = static_cast<plugin*>(codec->plugindata);
+    //close_vgmstream(plugin->vgmstream);
+    delete static_cast<pluginVgmstream*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
-    render_vgmstream((sample_t*)buffer, size, fc->vgmstream);
+    auto* plugin = static_cast<pluginVgmstream*>(codec->plugindata);
+    render_vgmstream(static_cast<sample_t*>(buffer), size, plugin->vgmstream);
     *read = size;
 
     return FMOD_OK;
@@ -141,9 +141,9 @@ FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned in
 FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginVgmstream*>(codec->plugindata);
 
-    int32_t seek_sample = (int32_t)(position * 0.001 * fc->vgmstream->sample_rate);
-    seek_vgmstream(fc->vgmstream, seek_sample);
+    auto seek_sample = static_cast<int32_t>(position * 0.001 * plugin->vgmstream->sample_rate);
+    seek_vgmstream(plugin->vgmstream, seek_sample);
     return FMOD_OK;
 }

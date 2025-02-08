@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include "fmod_errors.h"
 #include "info.h"
@@ -30,24 +30,24 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &getlength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class ahxplugin
+class pluginHighlyQ
 {
     FMOD_CODEC_STATE* _codec;
     FILE* file;
 
 public:
-    ahxplugin(FMOD_CODEC_STATE* codec)
+    pluginHighlyQ(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&ahxwaveformat, 0, sizeof(ahxwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~ahxplugin()
+    ~pluginHighlyQ()
     {
         //delete some stuff
         delete[] m_qsoundState;
@@ -55,7 +55,7 @@ public:
 
     static int InfoMetaPSF(void* context, const char* name, const char* value)
     {
-        auto* This = reinterpret_cast<ahxplugin*>(context);
+        auto* plugin = static_cast<pluginHighlyQ*>(context);
         if (!_strnicmp(name, "replaygain_", sizeof("replaygain_") - 1))
         {
         }
@@ -105,7 +105,7 @@ public:
                     length *= 1000;
 
                 if (length > 0)
-                    This->m_length = length;
+                    plugin->m_length = length;
             }
         }
         else if (!_stricmp(name, "fade"))
@@ -116,25 +116,25 @@ public:
         }
         else if (!_stricmp(name, "_lib"))
         {
-            //This->m_hasLib = true;
+            //plugin->m_hasLib = true;
         }
         else if (name[0] == '_')
         {
         }
         else
         {
-            This->m_tags[name] = value;
+            plugin->m_tags[name] = value;
         }
         return 0;
     }
 
     static void* OpenPSF(void* context, const char* uri)
     {
-        auto s = reinterpret_cast<ahxplugin*>(context);
+        auto plugin = static_cast<pluginHighlyQ*>(context);
         unsigned int filesize;
-        FMOD_CODEC_FILE_SIZE(s->_codec, &filesize);
-        s->file = fopen(uri, "rb");
-        return s->file;
+        FMOD_CODEC_FILE_SIZE(plugin->_codec, &filesize);
+        plugin->file = fopen(uri, "rb");
+        return plugin->file;
     }
 
     static size_t ReadPSF(void* buffer, size_t size, size_t count, void* handle)
@@ -160,7 +160,7 @@ public:
     static int QsoundLoad(void* context, const uint8_t* exe, size_t exe_size, const uint8_t* /*reserved*/,
                           size_t /*reserved_size*/)
     {
-        auto* This = reinterpret_cast<ahxplugin*>(context);
+        auto* plugin = static_cast<pluginHighlyQ*>(context);
         for (;;)
         {
             char s[4];
@@ -190,19 +190,19 @@ public:
 
                 if (!strcmp(section, "KEY"))
                 {
-                    pArray = &This->m_aKey;
-                    pArrayValid = &This->m_aKeyValid;
+                    pArray = &plugin->m_aKey;
+                    pArrayValid = &plugin->m_aKeyValid;
                     maxsize = 11;
                 }
                 else if (!strcmp(section, "Z80"))
                 {
-                    pArray = &This->m_aZ80ROM;
-                    pArrayValid = &This->m_aZ80ROMValid;
+                    pArray = &plugin->m_aZ80ROM;
+                    pArrayValid = &plugin->m_aZ80ROMValid;
                 }
                 else if (!strcmp(section, "SMP"))
                 {
-                    pArray = &This->m_aSampleROM;
-                    pArrayValid = &This->m_aSampleROMValid;
+                    pArray = &plugin->m_aSampleROM;
+                    pArrayValid = &plugin->m_aSampleROMValid;
                 }
                 else
                 {
@@ -215,7 +215,7 @@ public:
                 }
 
                 uint32_t newsize = start + size;
-                uint32_t oldsize = uint32_t(pArray->NumItems());
+                uint32_t oldsize = pArray->NumItems();
                 if (newsize > maxsize)
                 {
                     return -1;
@@ -243,7 +243,7 @@ public:
         return 0;
     }
 
-    FMOD_CODEC_WAVEFORMAT ahxwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     Info* info;
     std::unordered_map<std::string, std::string> m_tags;
     uint8_t* m_qsoundState = nullptr;
@@ -300,9 +300,9 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    ahxplugin* ahx = new ahxplugin(codec);
+    auto* plugin = new pluginHighlyQ(codec);
 
-    ahx->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     unsigned int bytesread;
     FMOD_RESULT result;
@@ -320,14 +320,14 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
 
-    ahx->m_length = 0xffffffff;
-    if (psf_load(ahx->info->filename.c_str(), &ahx->m_psfFileSystem, 0x41, nullptr, nullptr, ahx->InfoMetaPSF, ahx, 0,
+    plugin->m_length = 0xffffffff;
+    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x41, nullptr, nullptr, plugin->InfoMetaPSF, plugin, 0,
                  nullptr, nullptr))
     {
-        auto extPos = ahx->info->filename.find_last_of('.');
-        if (extPos == std::string::npos || _stricmp(ahx->info->filename.c_str() + extPos + 1, "qsflib") != 0)
+        auto extPos = plugin->info->filename.find_last_of('.');
+        if (extPos == std::string::npos || _stricmp(plugin->info->filename.c_str() + extPos + 1, "qsflib") != 0)
         {
-            if (psf_load(ahx->info->filename.c_str(), &ahx->m_psfFileSystem, 0x41, ahx->QsoundLoad, ahx, nullptr,
+            if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x41, plugin->QsoundLoad, plugin, nullptr,
                          nullptr, 0, nullptr, nullptr) >= 0)
             {
             }
@@ -345,81 +345,81 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     {
         return FMOD_ERR_FORMAT;
     }
-    ahx->m_qsoundState = new uint8_t[qsound_get_state_size()];
+    plugin->m_qsoundState = new uint8_t[qsound_get_state_size()];
     qsound_init();
 
     int freq = 24038;
     int channels = 2;
 
-    ahx->ahxwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    ahx->ahxwaveformat.channels = channels;
-    ahx->ahxwaveformat.frequency = freq;
-    ahx->ahxwaveformat.pcmblocksize = (16 >> 3) * ahx->ahxwaveformat.channels;
-    ahx->ahxwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = channels;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
 
-    codec->waveformat = &ahx->ahxwaveformat;
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = ahx; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    ahx->info->fileformat = "Capcom QSound";
+    plugin->info->fileformat = "Capcom QSound";
 
-    ahx->info->plugin = PLUGIN_highly_quixotic;
-    ahx->info->pluginName = PLUGIN_highly_quixotic_NAME;
+    plugin->info->plugin = PLUGIN_highly_quixotic;
+    plugin->info->pluginName = PLUGIN_highly_quixotic_NAME;
 
-    if (keyExists(ahx->m_tags, "title"))
+    if (keyExists(plugin->m_tags, "title"))
     {
-        ahx->info->title = ahx->m_tags["title"];
+        plugin->info->title = plugin->m_tags["title"];
     }
-    if (keyExists(ahx->m_tags, "artist"))
+    if (keyExists(plugin->m_tags, "artist"))
     {
-        ahx->info->artist = ahx->m_tags["artist"];
+        plugin->info->artist = plugin->m_tags["artist"];
     }
-    if (keyExists(ahx->m_tags, "game"))
+    if (keyExists(plugin->m_tags, "game"))
     {
-        ahx->info->game = ahx->m_tags["game"];
+        plugin->info->game = plugin->m_tags["game"];
     }
-    if (keyExists(ahx->m_tags, "copyright"))
+    if (keyExists(plugin->m_tags, "copyright"))
     {
-        ahx->info->copyright = ahx->m_tags["copyright"];
+        plugin->info->copyright = plugin->m_tags["copyright"];
     }
-    if (keyExists(ahx->m_tags, "psfby"))
+    if (keyExists(plugin->m_tags, "psfby"))
     {
-        ahx->info->ripper = ahx->m_tags["psfby"];
+        plugin->info->ripper = plugin->m_tags["psfby"];
     }
-    if (keyExists(ahx->m_tags, "year"))
+    if (keyExists(plugin->m_tags, "year"))
     {
-        ahx->info->date = ahx->m_tags["year"];
+        plugin->info->date = plugin->m_tags["year"];
     }
-    if (keyExists(ahx->m_tags, "volume"))
+    if (keyExists(plugin->m_tags, "volume"))
     {
-        ahx->info->volumeAmplificationStr = ahx->m_tags["volume"];
+        plugin->info->volumeAmplificationStr = plugin->m_tags["volume"];
     }
-    if (keyExists(ahx->m_tags, "genre"))
+    if (keyExists(plugin->m_tags, "genre"))
     {
-        ahx->info->system = ahx->m_tags["genre"];
+        plugin->info->system = plugin->m_tags["genre"];
     }
-    if (keyExists(ahx->m_tags, "comment"))
+    if (keyExists(plugin->m_tags, "comment"))
     {
-        ahx->info->comments = ahx->m_tags["comment"];
+        plugin->info->comments = plugin->m_tags["comment"];
     }
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    delete ahx;
+    auto* plugin = static_cast<pluginHighlyQ*>(codec->plugindata);
+    delete plugin;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginHighlyQ*>(codec->plugindata);
     unsigned int numSamples;
 
-    if (qsound_execute(ahx->m_qsoundState, 0x7fffffff, (short*)buffer, &size) <= 0)
+    if (qsound_execute(plugin->m_qsoundState, 0x7fffffff, static_cast<short*>(buffer), &size) <= 0)
     {
         *read = 0;
     }
@@ -435,42 +435,42 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    qsound_clear_state(ahx->m_qsoundState);
+    pluginHighlyQ* plugin = static_cast<pluginHighlyQ*>(codec->plugindata);
+    qsound_clear_state(plugin->m_qsoundState);
 
-    if (ahx->m_aKey.NumItems() == 11)
+    if (plugin->m_aKey.NumItems() == 11)
     {
-        uint8_t* ptr = ahx->m_aKey.Items();
-        uint32_t swap_key1 = *(uint32_t*)(ptr + 0);
-        uint32_t swap_key2 = *(uint32_t*)(ptr + 4);
-        uint32_t addr_key = *(uint32_t*)(ptr + 8);
+        uint8_t* ptr = plugin->m_aKey.Items();
+        uint32_t swap_key1 = *reinterpret_cast<uint32_t*>(ptr + 0);
+        uint32_t swap_key2 = *reinterpret_cast<uint32_t*>(ptr + 4);
+        uint32_t addr_key = *reinterpret_cast<uint32_t*>(ptr + 8);
         uint8_t xor_key = *(ptr + 10);
-        qsound_set_kabuki_key(ahx->m_qsoundState, swap_key1, swap_key2, uint16_t(addr_key), xor_key);
+        qsound_set_kabuki_key(plugin->m_qsoundState, swap_key1, swap_key2, static_cast<uint16_t>(addr_key), xor_key);
     }
     else
     {
-        qsound_set_kabuki_key(ahx->m_qsoundState, 0, 0, 0, 0);
+        qsound_set_kabuki_key(plugin->m_qsoundState, 0, 0, 0, 0);
     }
-    qsound_set_z80_rom(ahx->m_qsoundState, ahx->m_aZ80ROM.Items(), uint32_t(ahx->m_aZ80ROM.NumItems()));
-    qsound_set_sample_rom(ahx->m_qsoundState, ahx->m_aSampleROM.Items(), uint32_t(ahx->m_aSampleROM.NumItems()));
+    qsound_set_z80_rom(plugin->m_qsoundState, plugin->m_aZ80ROM.Items(), uint32_t(plugin->m_aZ80ROM.NumItems()));
+    qsound_set_sample_rom(plugin->m_qsoundState, plugin->m_aSampleROM.Items(), uint32_t(plugin->m_aSampleROM.NumItems()));
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginHighlyQ*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS)
     {
-        if (ahx->m_length > 0)
+        if (plugin->m_length > 0)
         {
-            *length = ahx->m_length;
+            *length = plugin->m_length;
         }
         else
         {
             *length = 0xffffffff;
         }
-        ahx->info->numSubsongs = 1;
+        plugin->info->numSubsongs = 1;
         return FMOD_OK;
     }
 }

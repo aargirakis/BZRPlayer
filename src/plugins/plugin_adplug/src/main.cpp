@@ -3,7 +3,7 @@
 #include <emuopl.h>
 #include <kemuopl.h>
 #include <fstream>
-#include <string.h>
+#include <cstring>
 #include "info.h"
 #include "plugins.h"
 
@@ -42,24 +42,24 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &getlength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
 
-class adplugin
+class pluginAdplug
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    adplugin(FMOD_CODEC_STATE* codec)
+    pluginAdplug(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&adwaveformat, 0, sizeof(adwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~adplugin()
+    ~pluginAdplug()
     {
         //delete some stuff
         delete player;
@@ -69,7 +69,7 @@ public:
     CPlayer* player;
     Copl* opl;
     unsigned int m_remainingSamples;
-    FMOD_CODEC_WAVEFORMAT adwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -93,23 +93,22 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    adplugin* ad = new adplugin(codec);
-    Info* info = (Info*)userexinfo->userdata;
+    auto* plugin = new pluginAdplug(codec);
+    Info* info = static_cast<Info*>(userexinfo->userdata);
 
-    FMOD_RESULT result;
-    ad->opl = new CKemuopl(44100, true, false);
-    if (!ad->opl)
+    plugin->opl = new CKemuopl(44100, true, false);
+    if (!plugin->opl)
     {
-        delete ad->opl;
+        delete plugin->opl;
         return FMOD_ERR_FORMAT;
     }
 
     cout << "adplug trying to load: " << info->filename << "\n";
-    ad->player = CAdPlug::factory(info->filename, ad->opl);
-    if (!ad->player)
+    plugin->player = CAdPlug::factory(info->filename, plugin->opl);
+    if (!plugin->player)
     {
-        delete ad->player;
-        delete ad->opl;
+        delete plugin->player;
+        delete plugin->opl;
         return FMOD_ERR_FORMAT;
     }
 
@@ -131,7 +130,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     int emulator = 0;
     int freq = 44100;
     bool stereo = true;
-    ad->adwaveformat.channels = 1;
+    plugin->waveformat.channels = 1;
 
     if (!useDefaults)
     {
@@ -152,12 +151,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                     if (value.compare("stereo") == 0)
                     {
                         stereo = true;
-                        ad->adwaveformat.channels = 2;
+                        plugin->waveformat.channels = 2;
                     }
                     else
                     {
                         stereo = false;
-                        ad->adwaveformat.channels = 2;
+                        plugin->waveformat.channels = 2;
                     }
                 }
                 else if (word.compare("emulator") == 0)
@@ -170,77 +169,77 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
     //we have to create a new engine AGAIN with the new settings
-    delete ad->opl;
-    delete ad->player;
+    delete plugin->opl;
+    delete plugin->player;
     //stereo plays twice as fast.........................???
     if (emulator == 2)
     {
-        ad->opl = new CKemuopl(freq, true, false);
+        plugin->opl = new CKemuopl(freq, true, false);
     }
     else
     {
-        ad->opl = new CEmuopl(freq, true, false);
+        plugin->opl = new CEmuopl(freq, true, false);
     }
-    if (!ad->opl)
+    if (!plugin->opl)
     {
-        delete ad->opl;
+        delete plugin->opl;
         return FMOD_ERR_FORMAT;
     }
 
-    ad->player = CAdPlug::factory(info->filename, ad->opl);
-    if (!ad->player)
+    plugin->player = CAdPlug::factory(info->filename, plugin->opl);
+    if (!plugin->player)
     {
-        delete ad->player;
-        delete ad->opl;
+        delete plugin->player;
+        delete plugin->opl;
         return FMOD_ERR_FORMAT;
     }
 
-    ad->adwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    ad->adwaveformat.frequency = freq;
-    ad->adwaveformat.pcmblocksize = (16 >> 3) * ad->adwaveformat.channels;
-    ad->adwaveformat.lengthpcm = ad->player->songlength() / 1000 * ad->adwaveformat.frequency;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = plugin->player->songlength() / 1000 * plugin->waveformat.frequency;
 
-    codec->waveformat = &(ad->adwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds.
-    codec->plugindata = ad; // user data value
+    codec->plugindata = plugin; // user data value
 
-    info->fileformat = ad->player->gettype();
-    info->artist = ad->player->getauthor();
-    info->title = ad->player->gettitle();
-    info->comments = ad->player->getdesc();
-    info->numInstruments = ad->player->getinstruments();
-    info->numPatterns = ad->player->getpatterns();
-    info->numOrders = ad->player->getorders();
+    info->fileformat = plugin->player->gettype();
+    info->artist = plugin->player->getauthor();
+    info->title = plugin->player->gettitle();
+    info->comments = plugin->player->getdesc();
+    info->numInstruments = plugin->player->getinstruments();
+    info->numPatterns = plugin->player->getpatterns();
+    info->numOrders = plugin->player->getorders();
 
     info->instruments = new string[info->numInstruments];
     for (int j = 0; j < info->numInstruments; j++)
     {
-        info->instruments[j] = ad->player->getinstrument(j);
+        info->instruments[j] = plugin->player->getinstrument(j);
     }
     info->plugin = PLUGIN_adplug;
     info->pluginName = PLUGIN_adplug_NAME;
     info->setSeekable(true);
 
 
-    /*ad->player->update();
-    samples_left = (int)(2 * ad->adwaveformat.frequency / ad->player->getrefresh());
- ad->player->rewind();
- ad->opl->init();*/
+    /*plugin->player->update();
+    samples_left = (int)(2 * plugin->waveformat.frequency / plugin->player->getrefresh());
+ plugin->player->rewind();
+ plugin->opl->init();*/
     cout << "adlib ok\n";
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    delete (adplugin*)codec->plugindata;
+    delete static_cast<pluginAdplug*>(codec->plugindata);
     return FMOD_OK;
 }
 
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    adplugin* ad = (adplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
 
 
     int real_len = size;
@@ -250,12 +249,12 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
         if (samples_left < real_len)
         {
             real_len -= samples_left;
-            ad->player->update();
-            samples_left = (int)(1 * ad->adwaveformat.frequency / ad->player->getrefresh());
+            plugin->player->update();
+            samples_left = static_cast<int>(1 * plugin->waveformat.frequency / plugin->player->getrefresh());
         }
         else
         {
-            ad->opl->update((short*)buffer, size);
+            plugin->opl->update(static_cast<short*>(buffer), size);
             samples_left -= real_len;
             *read = size;
             return FMOD_OK;
@@ -270,7 +269,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     ////                return 0;
     ////            }
 
-    //            auto remainingSamples = ad->m_remainingSamples;
+    //            auto remainingSamples = plugin->m_remainingSamples;
     //            while (numSamples > 0)
     //            {
     //                if (remainingSamples > 0)
@@ -278,16 +277,16 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     //                    auto samplesToAdd = min(numSamples, remainingSamples);
 
     //                    //auto buf = reinterpret_cast<int16_t*>(output + samplesToAdd) - samplesToAdd * 2;
-    //                    ad->opl->update((short*)buffer, samplesToAdd);
+    //                    plugin->opl->update((short*)buffer, samplesToAdd);
 
     //                    remainingSamples -= samplesToAdd;
     //                    numSamples -= samplesToAdd;
 
     //                    //output = output->Convert(buf, samplesToAdd);
     //                }
-    //                else if (ad->player->update())
+    //                else if (plugin->player->update())
     //                {
-    //                    remainingSamples = static_cast<uint32_t>(ad->adwaveformat.frequency / ad->player->getrefresh());
+    //                    remainingSamples = static_cast<uint32_t>(plugin->waveformat.frequency / plugin->player->getrefresh());
     //                    //m_isStuck = 0;
     //                }
     ////                else if (m_isStuck == 1)
@@ -302,7 +301,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     //                    break;
     //                }
     //            }
-    //            ad->m_remainingSamples = remainingSamples;
+    //            plugin->m_remainingSamples = remainingSamples;
 
     //            *read = maxSamples - numSamples;
     return FMOD_OK;
@@ -310,23 +309,23 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    adplugin* ad = (adplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
 
     //printf("lengthtype: %i ",lengthtype);
 
     if (lengthtype == FMOD_TIMEUNIT_MS)
     {
-        *length = ad->adwaveformat.lengthpcm;
+        *length = plugin->waveformat.lengthpcm;
         return FMOD_OK;
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
-        *length = ad->player->getsubsongs();
+        *length = plugin->player->getsubsongs();
         return FMOD_OK;
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
-        *length = ad->player->songlength();
+        *length = plugin->player->songlength();
         return FMOD_OK;
     }
     return FMOD_OK;
@@ -334,17 +333,17 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    adplugin* ad = (adplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        ad->m_remainingSamples = 0;
-        ad->player->seek(position);
+        plugin->m_remainingSamples = 0;
+        plugin->player->seek(position);
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
         if (position < 0) position = 0;
-        ad->player->rewind(position);
+        plugin->player->rewind(position);
         return FMOD_OK;
     }
     else

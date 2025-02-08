@@ -1,8 +1,8 @@
 ﻿#include "BaseSample.h"
 #include "FileLoader.h"
 //#define UNICODEHACK 1
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -14,11 +14,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "sysconfig.h"
 #include "uade.h"
 #include "uae.h"
 #include "songinfo.h"
-#include "uadeconf.h"
 #include "xs_length.h"
 #ifdef __cplusplus
 }
@@ -55,23 +53,23 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &getlength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class gameplugin
+class pluginWothkeUade
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    gameplugin(FMOD_CODEC_STATE* codec)
+    pluginWothkeUade(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&gpwaveformat, 0, sizeof(gpwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~gameplugin()
+    ~pluginWothkeUade()
     {
         //delete some stuff
 #ifdef UNICODEHACK
@@ -79,7 +77,7 @@ public:
 #endif
     }
 
-    FMOD_CODEC_WAVEFORMAT gpwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 
     Info* info;
     int led_forced;
@@ -128,21 +126,21 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     FMOD_RESULT result;
-    gameplugin* gp = new gameplugin(codec);
-    gp->info = (Info*)userexinfo->userdata;
+    auto* plugin = new pluginWothkeUade(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
 
-    gp->gpwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    gp->gpwaveformat.channels = 2;
-    gp->gpwaveformat.frequency = 44100;
-    gp->gpwaveformat.pcmblocksize = 2048 * 2;
-    gp->gpwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = 2048 * 2;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
 
-    codec->waveformat = &(gp->gpwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = gp; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
     unsigned int bytesread;
     char* smallBuffer;
@@ -241,15 +239,15 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
     char uade_basedir[1024];
-    snprintf(uade_basedir, 1024, "%s/%s", gp->info->applicationPath.c_str(),UADE_DATA_PATH);
+    snprintf(uade_basedir, 1024, "%s/%s", plugin->info->applicationPath.c_str(),UADE_DATA_PATH);
 #ifdef UNICODEHACK
-    gp->basefilename = gp->info->filename.substr(gp->info->filename.find_last_of("/\\") + 1);
+    plugin->basefilename = plugin->info->filename.substr(plugin->info->filename.find_last_of("/\\") + 1);
 
     bool ok = fmemopen(myBuffer,filesize,"r");
     delete[] myBuffer;
 
 
-    int err = uade_reset(gp->gpwaveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME));
+    int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME));
     if(err)
     {
         unlink(TEMPFILENAME);
@@ -257,7 +255,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
     delete[] myBuffer;
 #else
-    int err = uade_reset(gp->gpwaveformat.frequency, uade_basedir, const_cast<char*>(gp->info->filename.c_str()));
+    int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(plugin->info->filename.c_str()));
     if (err)
     {
         return FMOD_ERR_FORMAT;
@@ -281,7 +279,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     //read config from disk
-    string filename = gp->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/uade.cfg";
+    string filename = plugin->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/uade.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -293,12 +291,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
     //defaults
-    gp->led_forced = 0;
-    gp->led_state = 0;
-    gp->no_filter = 1;
-    gp->silence_timeout = 5;
-    gp->silence_timeout_enabled = true;
-    gp->uade_songlengths_enabled = true;
+    plugin->led_forced = 0;
+    plugin->led_state = 0;
+    plugin->no_filter = 1;
+    plugin->silence_timeout = 5;
+    plugin->silence_timeout_enabled = true;
+    plugin->uade_songlengths_enabled = true;
     if (!useDefaults)
     {
         while (getline(ifs, line))
@@ -313,58 +311,58 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                 {
                     if (value.compare("auto") == 0)
                     {
-                        gp->led_forced = 0;
+                        plugin->led_forced = 0;
                     }
                     else if (value.compare("on") == 0)
                     {
-                        gp->led_forced = 1;
-                        gp->led_state = 1;
+                        plugin->led_forced = 1;
+                        plugin->led_state = 1;
                     }
                     else
                     {
-                        gp->led_forced = 1;
-                        gp->led_state = 0;
+                        plugin->led_forced = 1;
+                        plugin->led_state = 0;
                     }
                 }
                 else if (word.compare("no_filter") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        gp->no_filter = 1;
+                        plugin->no_filter = 1;
                     }
                     else
                     {
-                        gp->no_filter = 0;
+                        plugin->no_filter = 0;
                     }
                 }
                 else if (word.compare("silence_timeout") == 0)
                 {
-                    gp->silence_timeout = atoi(value.c_str());
+                    plugin->silence_timeout = atoi(value.c_str());
                 }
                 else if (word.compare("silence_timeout_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        gp->silence_timeout_enabled = true;
+                        plugin->silence_timeout_enabled = true;
                     }
                     else
                     {
-                        gp->silence_timeout_enabled = false;
+                        plugin->silence_timeout_enabled = false;
                     }
                 }
                 else if (word.compare("uade_songlengths_path") == 0)
                 {
-                    gp->uade_songlengthspath = value;
+                    plugin->uade_songlengthspath = value;
                 }
                 else if (word.compare("uade_songlengths_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        gp->uade_songlengths_enabled = true;
+                        plugin->uade_songlengths_enabled = true;
                     }
                     else
                     {
-                        gp->uade_songlengths_enabled = false;
+                        plugin->uade_songlengths_enabled = false;
                     }
                 }
             }
@@ -372,9 +370,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         ifs.close();
     }
 
-    if (gp->uade_songlengthspath.empty() || gp->uade_songlengthspath == "/uade.md5")
+    if (plugin->uade_songlengthspath.empty() || plugin->uade_songlengthspath == "/uade.md5")
     {
-        gp->uade_songlengthspath = gp->info->applicationPath + UADE_DATA_PATH + "/uade.md5";
+        plugin->uade_songlengthspath = plugin->info->applicationPath + UADE_DATA_PATH + "/uade.md5";
     }
 
     uade_state* state;
@@ -390,73 +388,73 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     //        return FMOD_ERR_FORMAT;
     //    }
 
-    state->config.led_forced = gp->led_forced; //Force led
-    state->config.led_state = gp->led_state; //Forced led state
-    state->config.no_filter = gp->no_filter; //Turn filter emulation off.
-    if (!gp->silence_timeout_enabled)
+    state->config.led_forced = plugin->led_forced; //Force led
+    state->config.led_state = plugin->led_state; //Forced led state
+    state->config.no_filter = plugin->no_filter; //Turn filter emulation off.
+    if (!plugin->silence_timeout_enabled)
     {
         state->config.silence_timeout = -1;
     }
     else
     {
-        state->config.silence_timeout = gp->silence_timeout;
+        state->config.silence_timeout = plugin->silence_timeout;
     }
 
     state->config.use_timeouts = 1;
     state->config.timeout = -1;
 
 
-    gp->currentSubsong = -1;
+    plugin->currentSubsong = -1;
 
     set_uade_state(state);
 
 
-    gp->info->numSamples = 0;
-    gp->info->plugin = PLUGIN_wothke_uade_2_13;
-    gp->info->pluginName = PLUGIN_wothke_uade_2_13_NAME;
+    plugin->info->numSamples = 0;
+    plugin->info->plugin = PLUGIN_wothke_uade_2_13;
+    plugin->info->pluginName = PLUGIN_wothke_uade_2_13_NAME;
     if (!acid)
     {
-        gp->info->fileformat = "AC1D Packer";
+        plugin->info->fileformat = "AC1D Packer";
     }
     else if (!pru1)
     {
-        gp->info->fileformat = "Prorunner 1.0";
+        plugin->info->fileformat = "Prorunner 1.0";
     }
     else if (!fcm)
     {
-        gp->info->fileformat = "FC-M Packer";
+        plugin->info->fileformat = "FC-M Packer";
     }
     else if (!skyt)
     {
-        gp->info->fileformat = "SKYT Packer";
+        plugin->info->fileformat = "SKYT Packer";
     }
     else if (!p40a)
     {
-        gp->info->fileformat = "The Player 4.0a";
+        plugin->info->fileformat = "The Player 4.0a";
     }
     else if (!p40b)
     {
-        gp->info->fileformat = "The Player 4.0b";
+        plugin->info->fileformat = "The Player 4.0b";
     }
     else if (!p41a)
     {
-        gp->info->fileformat = "The Player 4.1a";
+        plugin->info->fileformat = "The Player 4.1a";
     }
     else
     {
-        gp->info->fileformat = state->ep->playername;
+        plugin->info->fileformat = state->ep->playername;
     }
 
 
-    if (gp->info->fileformat == "BenDaglish" || gp->info->fileformat == "DeltaMusic1.3" || gp->info->fileformat ==
-        "DeltaMusic2.0" || gp->info->fileformat == "DavidWhittaker"
-        || gp->info->fileformat == "Fred" || gp->info->fileformat == "Infogrames" || gp->info->fileformat ==
-        "JasonBrooke" || gp->info->fileformat == "JochenHippel"
-        || gp->info->fileformat == "JochenHippel-CoSo" || gp->info->fileformat == "Mugician" || gp->info->fileformat ==
+    if (plugin->info->fileformat == "BenDaglish" || plugin->info->fileformat == "DeltaMusic1.3" || plugin->info->fileformat ==
+        "DeltaMusic2.0" || plugin->info->fileformat == "DavidWhittaker"
+        || plugin->info->fileformat == "Fred" || plugin->info->fileformat == "Infogrames" || plugin->info->fileformat ==
+        "JasonBrooke" || plugin->info->fileformat == "JochenHippel"
+        || plugin->info->fileformat == "JochenHippel-CoSo" || plugin->info->fileformat == "Mugician" || plugin->info->fileformat ==
         "MugicianII"
-        || gp->info->fileformat == "RobHubbard" || gp->info->fileformat == "RichardJoseph" || gp->info->fileformat ==
-        "SIDMon1.0" || gp->info->fileformat == "SIDMon2.0"
-        || gp->info->fileformat == "PaulShields"
+        || plugin->info->fileformat == "RobHubbard" || plugin->info->fileformat == "RichardJoseph" || plugin->info->fileformat ==
+        "SIDMon1.0" || plugin->info->fileformat == "SIDMon2.0"
+        || plugin->info->fileformat == "PaulShields"
     )
     {
         //read samples
@@ -468,9 +466,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
         std::vector<BaseSample*> samples;
 
-        FileLoader* fileLoader = new FileLoader();
+        auto* fileLoader = new FileLoader();
 
-        AmigaPlayer* player = fileLoader->load((signed short*)d, filesize, gp->info->filename.c_str());
+        AmigaPlayer* player = fileLoader->load((signed short*)d, filesize, plugin->info->filename.c_str());
 
         delete fileLoader;
         delete[] d;
@@ -481,21 +479,21 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
             samples = player->getSamples();
             if (samples.size() > 0)
             {
-                gp->info->numSamples = samples.size();
-                gp->info->samples = new string[gp->info->numSamples];
-                gp->info->samplesSize = new unsigned int[gp->info->numSamples];
-                gp->info->samplesLoopStart = new unsigned int[gp->info->numSamples];
-                gp->info->samplesLoopLength = new unsigned int[gp->info->numSamples];
-                gp->info->samplesVolume = new unsigned short[gp->info->numSamples];
+                plugin->info->numSamples = samples.size();
+                plugin->info->samples = new string[plugin->info->numSamples];
+                plugin->info->samplesSize = new unsigned int[plugin->info->numSamples];
+                plugin->info->samplesLoopStart = new unsigned int[plugin->info->numSamples];
+                plugin->info->samplesLoopLength = new unsigned int[plugin->info->numSamples];
+                plugin->info->samplesVolume = new unsigned short[plugin->info->numSamples];
 
                 int loopStart = 0;
-                for (int j = 0; j < gp->info->numSamples; j++)
+                for (int j = 0; j < plugin->info->numSamples; j++)
                 {
                     if (samples[j])
                     {
-                        gp->info->samples[j] = samples[j]->name;
-                        gp->info->samplesSize[j] = samples[j]->length;
-                        gp->info->samplesVolume[j] = samples[j]->volume;
+                        plugin->info->samples[j] = samples[j]->name;
+                        plugin->info->samplesSize[j] = samples[j]->length;
+                        plugin->info->samplesVolume[j] = samples[j]->volume;
                     }
                 }
             }
@@ -506,11 +504,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
 #ifdef UNICODEHACK
-    gp->info->md5New = getMD5(TEMPFILENAME);
+    plugin->info->md5New = getMD5(TEMPFILENAME);
 #else
-    gp->info->md5New = getMD5(gp->info->filename.c_str());
+    plugin->info->md5New = getMD5(plugin->info->filename.c_str());
 #endif
-    gp->info->setSeekable(false);
+    plugin->info->setSeekable(false);
 
     return FMOD_OK;
 }
@@ -518,14 +516,14 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
     uae_quit();
-    gameplugin* gp = (gameplugin*)codec->plugindata;
-    delete gp;
+    auto* plugin = static_cast<pluginWothkeUade*>(codec->plugindata);
+    delete plugin;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginWothkeUade*>(codec->plugindata);
     while (!get_samples(buffer))
     {
         m68k_run_1();
@@ -542,21 +540,21 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     }
     //    if(get_quit())
     //    {
-    //        gp->gpwaveformat.lengthpcm = 0xffffffff;
+    //        plugin->waveformat.lengthpcm = 0xffffffff;
     //        return FMOD_ERR_FILE_EOF;
     //    }
 
-    *read = gp->gpwaveformat.pcmblocksize;
+    *read = plugin->waveformat.pcmblocksize;
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
-    if (gp->currentSubsong == -1)
+    auto* plugin = static_cast<pluginWothkeUade*>(codec->plugindata);
+    if (plugin->currentSubsong == -1)
     {
-        gp->currentSubsong = get_min_subsongs();
+        plugin->currentSubsong = get_min_subsongs();
     }
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
@@ -565,19 +563,19 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     }
     else
     {
-        int sub = gp->currentSubsong;
+        int sub = plugin->currentSubsong;
         if (get_min_subsongs() == 1)
         {
-            sub = gp->currentSubsong - 1;
+            sub = plugin->currentSubsong - 1;
         }
 
         int songLength;
-        if (gp->uade_songlengths_enabled)
+        if (plugin->uade_songlengths_enabled)
         {
 #ifdef UNICODEHACK
             songLength = getLengthFromDatabase(TEMPFILENAME,sub,gp->uade_songlengthspath.c_str());
 #else
-            songLength = getLengthFromDatabase(gp->info->filename.c_str(), sub, gp->uade_songlengthspath.c_str());
+            songLength = getLengthFromDatabase(plugin->info->filename.c_str(), sub, plugin->uade_songlengthspath.c_str());
 #endif
         }
         else
@@ -591,34 +589,34 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginWothkeUade*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS)
     {
         char uade_basedir[1024];
-        snprintf(uade_basedir, 1024, "%s/%s", gp->info->applicationPath.c_str(),UADE_DATA_PATH);
+        snprintf(uade_basedir, 1024, "%s/%s", plugin->info->applicationPath.c_str(),UADE_DATA_PATH);
 #ifdef UNICODEHACK
-            int err = uade_reset(gp->gpwaveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME));
+            int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME));
 #else
-        int err = uade_reset(gp->gpwaveformat.frequency, uade_basedir, const_cast<char*>(gp->info->filename.c_str()));
+        int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(plugin->info->filename.c_str()));
 #endif
         uade_state* state;
         state = get_uade_state();
 
-        state->config.led_forced = gp->led_forced; //Force led
-        state->config.led_state = gp->led_state; //Forced led state
-        state->config.no_filter = gp->no_filter; //Turn filter emulation off.
-        if (!gp->silence_timeout_enabled)
+        state->config.led_forced = plugin->led_forced; //Force led
+        state->config.led_state = plugin->led_state; //Forced led state
+        state->config.no_filter = plugin->no_filter; //Turn filter emulation off.
+        if (!plugin->silence_timeout_enabled)
         {
             state->config.silence_timeout = -1;
         }
         else
         {
-            state->config.silence_timeout = gp->silence_timeout;
+            state->config.silence_timeout = plugin->silence_timeout;
         }
         state->config.use_timeouts = 1;
         state->config.timeout = -1;
         set_uade_state(state);
-        change_subsong(gp->currentSubsong);
+        change_subsong(plugin->currentSubsong);
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
@@ -636,7 +634,7 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
             position = get_min_subsongs() + position;
         }
 
-        gp->currentSubsong = position;
+        plugin->currentSubsong = position;
         change_subsong(position);
         return FMOD_OK;
     }

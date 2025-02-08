@@ -1,7 +1,7 @@
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 #include "fmod_errors.h"
 #include "info.h"
 #include "kdmeng.h"
@@ -24,26 +24,26 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &fcopen, // Open callback.
     &fcclose, // Close callback.
     &fcread, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &fcsetposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class fcplugin
+class pluginKdm
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    fcplugin(FMOD_CODEC_STATE* codec)
+    pluginKdm(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&fcwaveformat, 0, sizeof(fcwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~fcplugin()
+    ~pluginKdm()
     {
         //delete some stuff
         delete[] myBuffer;
@@ -55,7 +55,7 @@ public:
     Info* info;
     kdmeng* m_player;
 
-    FMOD_CODEC_WAVEFORMAT fcwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -80,8 +80,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 {
     FMOD_RESULT result;
 
-    fcplugin* fc = new fcplugin(codec);
-    fc->info = (Info*)userexinfo->userdata;
+    auto plugin = new pluginKdm(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     //    char* smallBuffer;
     //    smallBuffer = new char[2];
@@ -102,107 +102,107 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
 
-    fc->myBuffer = new signed short[filesize];
+    plugin->myBuffer = new signed short[filesize];
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, fc->myBuffer, filesize, &bytesread);
+    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
 
-    fc->m_player = new kdmeng(44100, 2, 2);
+    plugin->m_player = new kdmeng(44100, 2, 2);
 
-    unsigned found = fc->info->filename.find_last_of("/\\");
+    unsigned found = plugin->info->filename.find_last_of("/\\");
 
-    long length = fc->m_player->load((signed short*)fc->myBuffer, filesize,
-                                     fc->info->filename.substr(0, found + 1).c_str());
+    long length = plugin->m_player->load((signed short*)plugin->myBuffer, filesize,
+                                     plugin->info->filename.substr(0, found + 1).c_str());
 
     if (!length)
     {
-        delete fc->myBuffer;
-        delete fc->m_player;
+        delete plugin->myBuffer;
+        delete plugin->m_player;
         return FMOD_ERR_FORMAT;
     }
 
 
-    fc->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    fc->fcwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    fc->fcwaveformat.channels = 2;
-    fc->fcwaveformat.frequency = 44100;
-    fc->fcwaveformat.pcmblocksize = 1468;
-    fc->fcwaveformat.lengthpcm = length / 1000 * fc->fcwaveformat.frequency;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = 1468;
+    plugin->waveformat.lengthpcm = length / 1000 * plugin->waveformat.frequency;
 
-    codec->waveformat = &(fc->fcwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = fc; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    fc->info->fileformat = "Ken's Digital Music";
-    fc->info->plugin = PLUGIN_kdm;
-    fc->info->pluginName = PLUGIN_kdm_NAME;
-    fc->info->setSeekable(true);
+    plugin->info->fileformat = "Ken's Digital Music";
+    plugin->info->plugin = PLUGIN_kdm;
+    plugin->info->pluginName = PLUGIN_kdm_NAME;
+    plugin->info->setSeekable(true);
 
-    int numSamples = fc->m_player->getNumwaves();
-    int numTracks = fc->m_player->getNumtracks();
-    fc->info->numSamples = numSamples;
-    fc->info->numPatterns = numTracks;
+    int numSamples = plugin->m_player->getNumwaves();
+    int numTracks = plugin->m_player->getNumtracks();
+    plugin->info->numSamples = numSamples;
+    plugin->info->numPatterns = numTracks;
 
 
     if (numSamples > 0)
     {
-        fc->info->samplesSize = new unsigned int[numSamples];
-        fc->info->samplesLoopStart = new unsigned int[numSamples];
-        fc->info->samplesLoopLength = new unsigned int[numSamples];
-        fc->info->samplesFineTune = new signed int[numSamples];
-        fc->info->samples = new string[numSamples];
+        plugin->info->samplesSize = new unsigned int[numSamples];
+        plugin->info->samplesLoopStart = new unsigned int[numSamples];
+        plugin->info->samplesLoopLength = new unsigned int[numSamples];
+        plugin->info->samplesFineTune = new signed int[numSamples];
+        plugin->info->samples = new string[numSamples];
         char* c = new char[17];
         for (int j = 0; j < numSamples; j++)
         {
-            fc->info->samplesSize[j] = fc->m_player->getInstsize(j);
-            fc->info->samplesLoopStart[j] = fc->m_player->getInstrepstart(j);
-            fc->info->samplesLoopLength[j] = fc->m_player->getInstreplength(j);
-            fc->info->samplesFineTune[j] = fc->m_player->getInstfinetune(j);
-            fc->m_player->getInstname(j, c);
-            fc->info->samples[j] = c;
+            plugin->info->samplesSize[j] = plugin->m_player->getInstsize(j);
+            plugin->info->samplesLoopStart[j] = plugin->m_player->getInstrepstart(j);
+            plugin->info->samplesLoopLength[j] = plugin->m_player->getInstreplength(j);
+            plugin->info->samplesFineTune[j] = plugin->m_player->getInstfinetune(j);
+            plugin->m_player->getInstname(j, c);
+            plugin->info->samples[j] = c;
         }
         delete c;
     }
 
     if (numTracks > 0)
     {
-        fc->info->instruments = new string[numTracks];
-        fc->info->instrumentsNumber = new char[numTracks];
-        fc->info->instrumentsQuantize = new char[numTracks];
-        fc->info->instrumentsVolume1 = new unsigned char[numTracks];
-        fc->info->instrumentsVolume2 = new unsigned char[numTracks];
+        plugin->info->instruments = new string[numTracks];
+        plugin->info->instrumentsNumber = new char[numTracks];
+        plugin->info->instrumentsQuantize = new char[numTracks];
+        plugin->info->instrumentsVolume1 = new unsigned char[numTracks];
+        plugin->info->instrumentsVolume2 = new unsigned char[numTracks];
 
 
         char* c = new char[17];
         for (int j = 0; j < numTracks; j++)
         {
-            int instrIdx = fc->m_player->getTrackInstrument(j);
-            fc->info->instrumentsNumber[j] = instrIdx + 1;
-            fc->info->instruments[j] = fc->info->samples[instrIdx];
-            fc->info->instrumentsQuantize[j] = fc->m_player->getTrackQuantize(j);
-            fc->info->instrumentsVolume1[j] = fc->m_player->getTrackVolume1(j);
-            fc->info->instrumentsVolume2[j] = fc->m_player->getTrackVolume2(j);
+            int instrIdx = plugin->m_player->getTrackInstrument(j);
+            plugin->info->instrumentsNumber[j] = instrIdx + 1;
+            plugin->info->instruments[j] = plugin->info->samples[instrIdx];
+            plugin->info->instrumentsQuantize[j] = plugin->m_player->getTrackQuantize(j);
+            plugin->info->instrumentsVolume1[j] = plugin->m_player->getTrackVolume1(j);
+            plugin->info->instrumentsVolume2[j] = plugin->m_player->getTrackVolume2(j);
         }
         delete c;
     }
 
-    fc->m_player->musicon();
+    plugin->m_player->musicon();
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 {
-    delete (fcplugin*)codec->plugindata;
+    delete static_cast<pluginKdm*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
-    fc->m_player->rendersound(buffer, size << 2);
+    auto plugin = static_cast<pluginKdm*>(codec->plugindata);
+    plugin->m_player->rendersound(buffer, size << 2);
     *read = size;
 
     return FMOD_OK;
@@ -211,7 +211,7 @@ FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned in
 FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
-    fc->m_player->seek(position);
+    auto* plugin = static_cast<pluginKdm*>(codec->plugindata);
+    plugin->m_player->seek(position);
     return FMOD_OK;
 }

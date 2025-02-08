@@ -1,5 +1,5 @@
 #include "mdxmini.h"
-#include <string.h>
+#include <cstring>
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
@@ -20,26 +20,26 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &fcopen, // Open callback.
     &fcclose, // Close callback.
     &fcread, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &fcsetposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class fcplugin
+class pluginMdxmini
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    fcplugin(FMOD_CODEC_STATE* codec)
+    pluginMdxmini(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&fcwaveformat, 0, sizeof(fcwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~fcplugin()
+    ~pluginMdxmini()
     {
         mdx_close(&data);
         //delete some stuff
@@ -48,7 +48,7 @@ public:
     t_mdxmini data;
     Info* info;
 
-    FMOD_CODEC_WAVEFORMAT fcwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -73,8 +73,8 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 {
     FMOD_RESULT result;
 
-    fcplugin* fc = new fcplugin(codec);
-    fc->info = (Info*)userexinfo->userdata;
+    auto* plugin = new pluginMdxmini(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
@@ -91,10 +91,10 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
         return FMOD_ERR_FORMAT;
     }
 
-    int found = fc->info->filename.find_last_of("/\\");
+    int found = plugin->info->filename.find_last_of("/\\");
 
-    int success = mdx_open(&fc->data, const_cast<char*>(fc->info->filename.c_str()),
-                           const_cast<char*>(fc->info->filename.substr(0, found).c_str()));
+    int success = mdx_open(&plugin->data, const_cast<char*>(plugin->info->filename.c_str()),
+                           const_cast<char*>(plugin->info->filename.substr(0, found).c_str()));
 
     if (success < 0)
     {
@@ -102,43 +102,43 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     }
 
 
-    fc->fcwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    fc->fcwaveformat.channels = 2;
-    fc->fcwaveformat.frequency = 44100;
-    fc->fcwaveformat.pcmblocksize = (16 >> 3) * fc->fcwaveformat.channels;
-    fc->fcwaveformat.lengthpcm = mdx_get_length(&fc->data) * fc->fcwaveformat.frequency;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = mdx_get_length(&plugin->data) * plugin->waveformat.frequency;
 
-    codec->waveformat = &(fc->fcwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = fc; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    fc->info->numChannels = mdx_get_tracks(&fc->data);
-    mdx_set_rate(fc->fcwaveformat.frequency);
+    plugin->info->numChannels = mdx_get_tracks(&plugin->data);
+    mdx_set_rate(plugin->waveformat.frequency);
     char title[MDX_MAX_TITLE_LENGTH];
 
-    mdx_get_title(&fc->data, title);
-    fc->info->title = title;
-    fc->info->fileformat = "MDX";
-    fc->info->plugin = PLUGIN_mdxmini;
-    fc->info->pluginName = PLUGIN_mdxmini_NAME;
+    mdx_get_title(&plugin->data, title);
+    plugin->info->title = title;
+    plugin->info->fileformat = "MDX";
+    plugin->info->plugin = PLUGIN_mdxmini;
+    plugin->info->pluginName = PLUGIN_mdxmini_NAME;
 
 
-    fc->info->setSeekable(false);
+    plugin->info->setSeekable(false);
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 {
-    delete (fcplugin*)codec->plugindata;
+    delete static_cast<pluginMdxmini*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
-    mdx_calc_sample(&fc->data, (short*)buffer, size);
+    auto plugin = static_cast<pluginMdxmini*>(codec->plugindata);
+    mdx_calc_sample(&plugin->data, static_cast<short*>(buffer), size);
     *read = size;
 
     return FMOD_OK;
@@ -147,8 +147,8 @@ FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned in
 FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
-    fcplugin* fc = (fcplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginMdxmini*>(codec->plugindata);
 
-    int success = mdx_open(&fc->data, const_cast<char*>(fc->info->filename.c_str()), 0);
+    int success = mdx_open(&plugin->data, const_cast<char*>(plugin->info->filename.c_str()), 0);
     return FMOD_OK;
 }

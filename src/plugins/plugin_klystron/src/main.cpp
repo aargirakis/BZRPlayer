@@ -1,6 +1,5 @@
 #include <iostream>
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,26 +30,26 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &klystronopen, // Open callback.
     &klystronclose, // Close callback.
     &klystronread, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &klystronsetposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class klystronplugin
+class pluginKlystron
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    klystronplugin(FMOD_CODEC_STATE* codec)
+    pluginKlystron(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&klystronwaveformat, 0, sizeof(klystronwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~klystronplugin()
+    ~pluginKlystron()
     {
         if (song) KSND_FreeSong(song);
         if (player) KSND_FreePlayer(player);
@@ -62,7 +61,7 @@ public:
     KPlayer* player;
     KSongInfo* songinfo;
     KSong* song;
-    FMOD_CODEC_WAVEFORMAT klystronwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 #ifdef __cplusplus
@@ -99,49 +98,49 @@ FMOD_RESULT F_CALLBACK klystronopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode,
         return FMOD_ERR_FORMAT;
     }
 
-    klystronplugin* klystron = new klystronplugin(codec);
+    auto* plugin = new pluginKlystron(codec);
 
-    klystron->myBuffer = new signed short[filesize];
+    plugin->myBuffer = new signed short[filesize];
 
-    klystron->player = KSND_CreatePlayerUnregistered(44100);
-    if (!klystron->player)
+    plugin->player = KSND_CreatePlayerUnregistered(44100);
+    if (!plugin->player)
     {
         cout << "Error creating Klystron Player!\n";
         flush(cout);
-        delete klystron;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    //klystron->song = KSND_LoadSongFromMemory(klystron->player, klystron->myBuffer, filesize);
-    klystron->song = KSND_LoadSong(klystron->player, info->filename.c_str());
+    //plugin->song = KSND_LoadSongFromMemory(plugin->player, plugin->myBuffer, filesize);
+    plugin->song = KSND_LoadSong(plugin->player, info->filename.c_str());
 
-    if (!klystron->song)
+    if (!plugin->song)
     {
-        delete klystron;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    int numPatternRows = KSND_GetSongLength(klystron->song);
-    cout << "Song length: " << (KSND_GetPlayTime(klystron->song, numPatternRows) / 1000.0) << "\n";
+    int numPatternRows = KSND_GetSongLength(plugin->song);
+    cout << "Song length: " << (KSND_GetPlayTime(plugin->song, numPatternRows) / 1000.0) << "\n";
     flush(cout);
-    klystron->klystronwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    klystron->klystronwaveformat.channels = 2;
-    klystron->klystronwaveformat.frequency = 44100;
-    klystron->klystronwaveformat.pcmblocksize = (16 >> 3) * klystron->klystronwaveformat.channels;
-    klystron->klystronwaveformat.lengthpcm = (KSND_GetPlayTime(klystron->song, numPatternRows) / 1000.0) * klystron->
-        klystronwaveformat.frequency;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = (KSND_GetPlayTime(plugin->song, numPatternRows) / 1000.0) * plugin->
+        waveformat.frequency;
 
-    codec->waveformat = &(klystron->klystronwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = klystron; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    klystron->songinfo = new KSongInfo();
-    KSND_GetSongInfo(klystron->song, klystron->songinfo);
+    plugin->songinfo = new KSongInfo();
+    KSND_GetSongInfo(plugin->song, plugin->songinfo);
 
-    info->title = klystron->songinfo->song_title;
-    info->numInstruments = klystron->songinfo->n_instruments;
-    info->numChannels = klystron->songinfo->n_channels;
+    info->title = plugin->songinfo->song_title;
+    info->numInstruments = plugin->songinfo->n_instruments;
+    info->numChannels = plugin->songinfo->n_channels;
     info->numPatterns = numPatternRows;
 
     if (info->numInstruments > 0)
@@ -149,11 +148,11 @@ FMOD_RESULT F_CALLBACK klystronopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode,
         info->instruments = new string[info->numInstruments];
         for (int j = 0; j < info->numInstruments; j++)
         {
-            info->instruments[j] = klystron->songinfo->instrument_name[j];
+            info->instruments[j] = plugin->songinfo->instrument_name[j];
         }
     }
 
-    KSND_PlaySong(klystron->player, klystron->song, 0);
+    KSND_PlaySong(plugin->player, plugin->song, 0);
 
     info->fileformat = "Klystron";
     info->plugin = PLUGIN_klystron;
@@ -168,14 +167,14 @@ FMOD_RESULT F_CALLBACK klystronclose(FMOD_CODEC_STATE* codec)
 {
     cout << "klystronclose\n";
     flush(cout);
-    delete (klystronplugin*)codec->plugindata;
+    delete static_cast<pluginKlystron*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK klystronread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    klystronplugin* klystron = (klystronplugin*)codec->plugindata;
-    KSND_FillBuffer(klystron->player, (short int*)buffer, size << 2);
+    auto* plugin = static_cast<pluginKlystron*>(codec->plugindata);
+    KSND_FillBuffer(plugin->player, static_cast<short int*>(buffer), size << 2);
     *read = size;
 
     return FMOD_OK;
@@ -184,8 +183,8 @@ FMOD_RESULT F_CALLBACK klystronread(FMOD_CODEC_STATE* codec, void* buffer, unsig
 FMOD_RESULT F_CALLBACK klystronsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                            FMOD_TIMEUNIT postype)
 {
-    klystronplugin* klystron = (klystronplugin*)codec->plugindata;
-    //mus_set_song(&klystron->mus, &klystron->song, 0);
-    KSND_PlaySong(klystron->player, klystron->song, 0);
+    auto* plugin = static_cast<pluginKlystron*>(codec->plugindata);
+    //mus_set_song(&plugin->mus, &plugin->song, 0);
+    KSND_PlaySong(plugin->player, plugin->song, 0);
     return FMOD_OK;
 }

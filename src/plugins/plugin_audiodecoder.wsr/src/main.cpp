@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include <algorithm>
 #include "fmod_errors.h"
@@ -35,28 +35,28 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &getlength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class wsrplugin
+class pluginWsr
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    wsrplugin(FMOD_CODEC_STATE* codec)
+    pluginWsr(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&wsrwaveformat, 0, sizeof(wsrwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~wsrplugin()
+    ~pluginWsr()
     {
         //delete some stuff
     }
 
-    FMOD_CODEC_WAVEFORMAT wsrwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -80,14 +80,14 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    Info* info = (Info*)userexinfo->userdata;
+    Info* info = static_cast<Info*>(userexinfo->userdata);
 
 
     int freq = 44100;
     int channels = 2;
     SampleRate = freq;
 
-    wsrplugin* wsr = new wsrplugin(codec);
+    pluginWsr* plugin = new pluginWsr(codec);
     string filename_lowercase = info->filename;
     std::transform(filename_lowercase.begin(), filename_lowercase.end(), filename_lowercase.begin(), ::tolower);
     if (filename_lowercase.substr(filename_lowercase.find_last_of(".") + 1) != "wsr")
@@ -111,17 +111,17 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec, ROM, filesize, &bytesread);
 
 
-    wsr->wsrwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    wsr->wsrwaveformat.channels = channels;
-    wsr->wsrwaveformat.frequency = freq;
-    wsr->wsrwaveformat.pcmblocksize = 128 * 2 * 2;
-    wsr->wsrwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = channels;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = 128 * 2 * 2;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
 
-    codec->waveformat = &wsr->wsrwaveformat;
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = wsr; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
     info->plugin = PLUGIN_audiodecoder_wsr;
     info->pluginName = PLUGIN_audiodecoder_wsr_NAME;
@@ -138,17 +138,17 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
     Close_WSR();
-    wsrplugin* wsr = (wsrplugin*)codec->plugindata;
-    delete wsr;
+    auto* plugin = static_cast<pluginWsr*>(codec->plugindata);
+    delete plugin;
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    wsrplugin* wsr = (wsrplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginWsr*>(codec->plugindata);
 
-    if (size == wsr->wsrwaveformat.pcmblocksize)
+    if (size == plugin->waveformat.pcmblocksize)
     {
         Update_WSR(40157, 0);
     }
@@ -178,7 +178,6 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    wsrplugin* wsr = (wsrplugin*)codec->plugindata;
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
         *length = 0xffffffff;

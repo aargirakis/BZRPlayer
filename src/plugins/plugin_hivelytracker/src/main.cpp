@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include "fmod_errors.h"
 #include "hvl_replay.h"
@@ -42,7 +42,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &setposition, // Setposition callback.
     &getposition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 const char* NOTES[67] =
 {
@@ -54,26 +54,26 @@ const char* NOTES[67] =
     "C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "???"
 };
 
-class ahxplugin
+class pluginHivelyTracker
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    ahxplugin(FMOD_CODEC_STATE* codec)
+    pluginHivelyTracker(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
         //LogFile = new CLogFile("libmod.log");
-        memset(&ahxwaveformat, 0, sizeof(ahxwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~ahxplugin()
+    ~pluginHivelyTracker()
     {
         //delete some stuff
         delete subsongslengths;
     }
 
     struct hvl_tune* m_tune;
-    FMOD_CODEC_WAVEFORMAT ahxwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned int* subsongslengths;
     Info* info;
 };
@@ -99,8 +99,8 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    ahxplugin* ahx = new ahxplugin(codec);
-    ahx->info = (Info*)userexinfo->userdata;
+    auto* plugin = new pluginHivelyTracker(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     char id[4] = "";
     unsigned int bytesread;
@@ -111,11 +111,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     // HivelyTracker file
     if ((id[0] == 'H') && (id[1] == 'V') && (id[2] == 'L') && (id[3] < 2))
     {
-        ahx->info->fileformat = "HivelyTracker";
+        plugin->info->fileformat = "HivelyTracker";
     }
     else if ((id[0] == 'T') && (id[1] == 'H') && (id[2] == 'X') && (id[3] < 3))
     {
-        ahx->info->fileformat = "AHX";
+        plugin->info->fileformat = "AHX";
     }
     else
     {
@@ -126,7 +126,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     hvl_InitReplayer();
 
 
-    //ahx->m_tune = hvl_LoadTune(const_cast<char*>(ahx->info->filename.c_str()), 44100, 1);
+    //plugin->m_tune = hvl_LoadTune(const_cast<char*>(plugin->info->filename.c_str()), 44100, 1);
 
     FMOD_RESULT result;
 
@@ -143,51 +143,51 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
     ERRCHECK(result);
 
-    ahx->m_tune = hvl_ParseTune(myBuffer, filesize, 44100, 1);
+    plugin->m_tune = hvl_ParseTune(myBuffer, filesize, 44100, 1);
 
-    if (!ahx->m_tune)
+    if (!plugin->m_tune)
     {
         delete myBuffer;
         return FMOD_ERR_FORMAT;
     }
 
-    ahx->ahxwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    ahx->ahxwaveformat.channels = 2;
-    ahx->ahxwaveformat.frequency = 44100;
-    ahx->ahxwaveformat.pcmblocksize = 882; //(16 >> 3) * ahx->ahxwaveformat.channels;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = 882; //(16 >> 3) * plugin->waveformat.channels;
 
 
-    codec->waveformat = &ahx->ahxwaveformat;
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = ahx; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
 
-    int subsongs = ahx->m_tune->ht_SubsongNr;
+    int subsongs = plugin->m_tune->ht_SubsongNr;
     if (subsongs == 0)
     {
         subsongs = 1;
     }
-    ahx->subsongslengths = new unsigned int[subsongs];
+    plugin->subsongslengths = new unsigned int[subsongs];
     for (int i = 0; i < subsongs; i++)
     {
-        ahx->subsongslengths[i] = hvl_GetLen(ahx->m_tune) / 1000.0 * 44100;
+        plugin->subsongslengths[i] = hvl_GetLen(plugin->m_tune) / 1000.0 * 44100;
     }
 
-    hvl_InitSubsong(ahx->m_tune, 0);
+    hvl_InitSubsong(plugin->m_tune, 0);
 
 
-    ahx->ahxwaveformat.lengthpcm = ahx->subsongslengths[0];
-    ahx->info->title = ahx->m_tune->ht_Name;
-    ahx->info->numChannels = ahx->m_tune->ht_Channels;
-    ahx->info->numPatterns = ahx->m_tune->ht_TrackNr;
-    ahx->info->modPatternRows = ahx->m_tune->ht_TrackLength;
+    plugin->waveformat.lengthpcm = plugin->subsongslengths[0];
+    plugin->info->title = plugin->m_tune->ht_Name;
+    plugin->info->numChannels = plugin->m_tune->ht_Channels;
+    plugin->info->numPatterns = plugin->m_tune->ht_TrackNr;
+    plugin->info->modPatternRows = plugin->m_tune->ht_TrackLength;
 
-    int numInstruments = ahx->m_tune->ht_InstrumentNr;
-    ahx->info->numInstruments = numInstruments;
-    ahx->info->numSubsongs = ahx->m_tune->ht_SubsongNr;
-    ahx->info->numOrders = ahx->m_tune->ht_PositionNr;
-    ahx->info->modPatternRestart = ahx->m_tune->ht_Restart;
+    int numInstruments = plugin->m_tune->ht_InstrumentNr;
+    plugin->info->numInstruments = numInstruments;
+    plugin->info->numSubsongs = plugin->m_tune->ht_SubsongNr;
+    plugin->info->numOrders = plugin->m_tune->ht_PositionNr;
+    plugin->info->modPatternRestart = plugin->m_tune->ht_Restart;
 
     if (numInstruments > 0)
     {
@@ -195,31 +195,31 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         {
             4, 8, 10, 20, 40, 80
         };
-        ahx->info->instruments = new string[numInstruments];
-        ahx->info->instrumentsVolume = new unsigned char[numInstruments];
-        ahx->info->instrumentsWavelen = new unsigned char[numInstruments];
+        plugin->info->instruments = new string[numInstruments];
+        plugin->info->instrumentsVolume = new unsigned char[numInstruments];
+        plugin->info->instrumentsWavelen = new unsigned char[numInstruments];
 
 
-        //        ahx->info->instrumentsFilterLowerLimit = new unsigned char[numInstruments];
-        //        ahx->info->instrumentsFilterUpperLimit = new unsigned char[numInstruments];
-        //        ahx->info->instrumentsFilterSpeed = new unsigned char[numInstruments];
+        //        plugin->info->instrumentsFilterLowerLimit = new unsigned char[numInstruments];
+        //        plugin->info->instrumentsFilterUpperLimit = new unsigned char[numInstruments];
+        //        plugin->info->instrumentsFilterSpeed = new unsigned char[numInstruments];
 
         for (int j = 1; j <= numInstruments; j++)
         {
-            ahx->info->instruments[j - 1] = ahx->m_tune->ht_Instruments[j].ins_Name;
-            ahx->info->instrumentsVolume[j - 1] = ahx->m_tune->ht_Instruments[j].ins_Volume;
-            ahx->info->instrumentsWavelen[j - 1] = WAVELENGTH[ahx->m_tune->ht_Instruments[j].ins_WaveLength];
+            plugin->info->instruments[j - 1] = plugin->m_tune->ht_Instruments[j].ins_Name;
+            plugin->info->instrumentsVolume[j - 1] = plugin->m_tune->ht_Instruments[j].ins_Volume;
+            plugin->info->instrumentsWavelen[j - 1] = WAVELENGTH[plugin->m_tune->ht_Instruments[j].ins_WaveLength];
 
-            //            ahx->info->instrumentsFilterLowerLimit[j-1] = ahx->m_tune->ht_Instruments[j].ins_FilterLowerLimit;
-            //            ahx->info->instrumentsFilterUpperLimit[j-1] = ahx->m_tune->ht_Instruments[j].ins_FilterUpperLimit;
-            //            ahx->info->instrumentsFilterSpeed[j-1] = ahx->m_tune->ht_Instruments[j].ins_FilterSpeed;
+            //            plugin->info->instrumentsFilterLowerLimit[j-1] = plugin->m_tune->ht_Instruments[j].ins_FilterLowerLimit;
+            //            plugin->info->instrumentsFilterUpperLimit[j-1] = plugin->m_tune->ht_Instruments[j].ins_FilterUpperLimit;
+            //            plugin->info->instrumentsFilterSpeed[j-1] = plugin->m_tune->ht_Instruments[j].ins_FilterSpeed;
         }
     }
 
     delete myBuffer;
-    ahx->info->plugin = PLUGIN_hivelytracker;
-    ahx->info->pluginName = PLUGIN_hivelytracker_NAME;
-    ahx->info->setSeekable(true);
+    plugin->info->plugin = PLUGIN_hivelytracker;
+    plugin->info->pluginName = PLUGIN_hivelytracker_NAME;
+    plugin->info->setSeekable(true);
 
 
     return FMOD_OK;
@@ -227,44 +227,44 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    if (ahx)
+    auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
+    if (plugin)
     {
-        hvl_FreeTune(ahx->m_tune);
+        hvl_FreeTune(plugin->m_tune);
     }
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    hvl_DecodeFrame(ahx->m_tune, (int8*)buffer, (int8*)buffer + 2, 4);
-    if (size < ahx->ahxwaveformat.pcmblocksize)
+    auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
+    hvl_DecodeFrame(plugin->m_tune, (int8*)buffer, (int8*)buffer + 2, 4);
+    if (size < plugin->waveformat.pcmblocksize)
     {
         *read = size;
     }
     else
     {
-        *read = ahx->ahxwaveformat.pcmblocksize;
+        *read = plugin->waveformat.pcmblocksize;
     }
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         //hvl_GetLen can't be called during playing, so loop through all subsongs at load and getlength for
         //all songs and store them and return the current one here
-        *length = ahx->subsongslengths[ahx->m_tune->ht_SongNum];
+        *length = plugin->subsongslengths[plugin->m_tune->ht_SongNum];
 
         return FMOD_OK;
     }
 
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
-        *length = ahx->m_tune->ht_SubsongNr;
+        *length = plugin->m_tune->ht_SubsongNr;
         return FMOD_OK;
     }
     else
@@ -277,27 +277,27 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        hvl_Seek(ahx->m_tune, position);
+        hvl_Seek(plugin->m_tune, position);
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
         if (position < 0) position = 0;
-        hvl_InitSubsong(ahx->m_tune, position);
+        hvl_InitSubsong(plugin->m_tune, position);
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         //position is a mask
-        for (int i = 0; i < ahx->info->numChannels; i++)
+        for (int i = 0; i < plugin->info->numChannels; i++)
         {
             int m = position >> i & 1;
             int mute = m == 0 ? 1 : 0;
-            ahx->m_tune->ht_Voices[i].vc_TrackOn = mute;
+            plugin->m_tune->ht_Voices[i].vc_TrackOn = mute;
         }
         return FMOD_OK;
     }
@@ -307,26 +307,26 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
 
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MODROW)
     {
-        *position = Front(ahx->m_tune->trackPosBuffer);
+        *position = Front(plugin->m_tune->trackPosBuffer);
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MODORDER)
     {
-        *position = Front(ahx->m_tune->patternPosBuffer);
+        *position = Front(plugin->m_tune->patternPosBuffer);
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MODPATTERN)
     {
         //set the current track positions in the info struct and just return 0
-        ahx->info->modTrackPositions.clear();
-        for (int i = 0; i < ahx->m_tune->ht_Channels; i++)
+        plugin->info->modTrackPositions.clear();
+        for (int i = 0; i < plugin->m_tune->ht_Channels; i++)
         {
-            ahx->info->modTrackPositions.push_back(
-                ahx->m_tune->ht_Positions[Front(ahx->m_tune->patternPosBuffer)].pos_Track[i]);
+            plugin->info->modTrackPositions.push_back(
+                plugin->m_tune->ht_Positions[Front(plugin->m_tune->patternPosBuffer)].pos_Track[i]);
         }
         *position = 0;
         return FMOD_OK;
@@ -334,25 +334,25 @@ FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* positi
     else if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO)
     {
         //set the mod pattern (notes etc.) in the info struct and just return 0
-        for (vector<BaseRow*>::iterator itr = ahx->info->modRows.begin(); itr != ahx->info->modRows.end(); ++itr)
+        for (vector<BaseRow*>::iterator itr = plugin->info->modRows.begin(); itr != plugin->info->modRows.end(); ++itr)
         {
             delete (*itr);
         }
-        ahx->info->modRows.clear();
-        for (int i = 0; i <= ahx->m_tune->ht_TrackNr; i++)
+        plugin->info->modRows.clear();
+        for (int i = 0; i <= plugin->m_tune->ht_TrackNr; i++)
         {
-            for (int j = 0; j < ahx->m_tune->ht_TrackLength; j++)
+            for (int j = 0; j < plugin->m_tune->ht_TrackLength; j++)
             {
-                BaseRow* row = new BaseRow();
-                uint8 note = ahx->m_tune->ht_Tracks[i][j].stp_Note;
+                auto* row = new BaseRow();
+                uint8 note = plugin->m_tune->ht_Tracks[i][j].stp_Note;
                 row->note = note;
-                row->noteText = note == 0 ? "---" : NOTES[ahx->m_tune->ht_Tracks[i][j].stp_Note - 1];
-                row->sample = ahx->m_tune->ht_Tracks[i][j].stp_Instrument;
-                row->effect = ahx->m_tune->ht_Tracks[i][j].stp_FX;
-                row->param = ahx->m_tune->ht_Tracks[i][j].stp_FXParam;
-                row->effect2 = ahx->m_tune->ht_Tracks[i][j].stp_FXb;
-                row->param2 = ahx->m_tune->ht_Tracks[i][j].stp_FXbParam;
-                ahx->info->modRows.push_back(row);
+                row->noteText = note == 0 ? "---" : NOTES[plugin->m_tune->ht_Tracks[i][j].stp_Note - 1];
+                row->sample = plugin->m_tune->ht_Tracks[i][j].stp_Instrument;
+                row->effect = plugin->m_tune->ht_Tracks[i][j].stp_FX;
+                row->param = plugin->m_tune->ht_Tracks[i][j].stp_FXParam;
+                row->effect2 = plugin->m_tune->ht_Tracks[i][j].stp_FXb;
+                row->param2 = plugin->m_tune->ht_Tracks[i][j].stp_FXbParam;
+                plugin->info->modRows.push_back(row);
             }
         }
 
@@ -361,10 +361,10 @@ FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* positi
     }
     else if (postype == FMOD_TIMEUNIT_MODVUMETER)
     {
-        unsigned char* vumeters = new unsigned char[ahx->info->numChannels];
-        hvl_GetChannelVolumes(ahx->m_tune, vumeters);
+        unsigned char* vumeters = new unsigned char[plugin->info->numChannels];
+        hvl_GetChannelVolumes(plugin->m_tune, vumeters);
 
-        ahx->info->modVUMeters = vumeters;
+        plugin->info->modVUMeters = vumeters;
         return FMOD_OK;
     }
     else

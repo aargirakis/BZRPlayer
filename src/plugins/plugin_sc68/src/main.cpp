@@ -1,4 +1,4 @@
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include "fmod_errors.h"
 #include "info.h"
@@ -46,31 +46,31 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &getlength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
 static bool invalidFile = false;
 
-class gameplugin
+class pluginSc68
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    gameplugin(FMOD_CODEC_STATE* codec)
+    pluginSc68(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
         //LogFile = new CLogFile("sc68.log");
-        memset(&gpwaveformat, 0, sizeof(gpwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~gameplugin()
+    ~pluginSc68()
     {
         //delete some stuff
     }
 
-    FMOD_CODEC_WAVEFORMAT gpwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     sc68_t* sc68;
     sc68_init_t init68;
     sc68_create_t create68;
@@ -100,7 +100,7 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
-    gameplugin* gp = new gameplugin(codec);
+    auto plugin = new pluginSc68(codec);
 
 
     unsigned int bytesread;
@@ -140,7 +140,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
 
-    Info* info = (Info*)userexinfo->userdata;
+    Info* info = static_cast<Info*>(userexinfo->userdata);
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
@@ -157,24 +157,24 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
     //ERRCHECK(result);
 
-    memset(&gp->init68, 0, sizeof(gp->init68));
+    memset(&plugin->init68, 0, sizeof(plugin->init68));
 
     // Set debug message handler (optionnal).
     //init68.debug = (debugmsg68_t)vfprintf;
     //init68.debug_cookie = stderr;
 
-    sc68_init(&gp->init68);
+    sc68_init(&plugin->init68);
 
     string path = info->applicationPath + SC68_DATA_PATH;
     rsc68_set_share(path.c_str());
 
-    memset(&gp->create68, 0, sizeof(gp->create68));
-    gp->sc68 = sc68_create(&gp->create68);
+    memset(&plugin->create68, 0, sizeof(plugin->create68));
+    plugin->sc68 = sc68_create(&plugin->create68);
 
-    if (sc68_load_mem(gp->sc68, (signed short*)myBuffer, filesize) < 0)
+    if (sc68_load_mem(plugin->sc68, (signed short*)myBuffer, filesize) < 0)
     {
         invalidFile = true;
-        sc68_destroy(gp->sc68);
+        sc68_destroy(plugin->sc68);
         sc68_shutdown();
         delete[] myBuffer;
         cout << "FMOD_ERR_FORMAT load" << endl;
@@ -184,7 +184,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     //just to get number of subsongs
-    int infoError = sc68_music_info(gp->sc68, &gp->info, 1, 0);
+    int infoError = sc68_music_info(plugin->sc68, &plugin->info, 1, 0);
     //No idea why I have to put track #2 in here to get the time?
 
 
@@ -195,28 +195,28 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
 
-    gp->gpwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    gp->gpwaveformat.channels = 2;
-    gp->gpwaveformat.frequency = 44100;
-    gp->gpwaveformat.pcmblocksize = (16 >> 3) * gp->gpwaveformat.channels;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
 
 
-    unsigned int length = gp->info.time_ms * gp->gpwaveformat.frequency * gp->gpwaveformat.channels;
+    unsigned int length = plugin->info.time_ms * plugin->waveformat.frequency * plugin->waveformat.channels;
     if (length > 0xfffff || length == 0)
     //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
     {
         length = 0xffffffff;
     }
-    gp->gpwaveformat.lengthpcm = length;
+    plugin->waveformat.lengthpcm = length;
 
-    codec->waveformat = &(gp->gpwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = gp; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
 
-    gp->currentSubsong = 1;
-    sc68_play(gp->sc68, gp->currentSubsong, 0);
+    plugin->currentSubsong = 1;
+    sc68_play(plugin->sc68, plugin->currentSubsong, 0);
 
     info->plugin = PLUGIN_sc68;
     info->pluginName = PLUGIN_sc68_NAME;
@@ -226,16 +226,16 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     {
         info->fileformat = "SNDH";
     }
-    info->author = gp->info.author;
-    info->composer = gp->info.composer;
-    info->replay = gp->info.replay;
-    info->hwname = gp->info.hwname;
-    info->title = gp->info.title;
-    info->rate = gp->info.rate;
-    info->address = gp->info.addr;
-    info->converter = gp->info.converter ? gp->info.converter : "";
-    info->ripper = gp->info.ripper ? gp->info.ripper : "";
-    info->numSubsongs = gp->info.tracks;
+    info->author = plugin->info.author;
+    info->composer = plugin->info.composer;
+    info->replay = plugin->info.replay;
+    info->hwname = plugin->info.hwname;
+    info->title = plugin->info.title;
+    info->rate = plugin->info.rate;
+    info->address = plugin->info.addr;
+    info->converter = plugin->info.converter ? plugin->info.converter : "";
+    info->ripper = plugin->info.ripper ? plugin->info.ripper : "";
+    info->numSubsongs = plugin->info.tracks;
     info->setSeekable(false);
 
     return FMOD_OK;
@@ -243,49 +243,49 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginSc68*>(codec->plugindata);
     if (!invalidFile)
     {
-        sc68_destroy(gp->sc68);
+        sc68_destroy(plugin->sc68);
         sc68_shutdown();
     }
 
-    delete (gameplugin*)codec->plugindata;
+    delete static_cast<pluginSc68*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginSc68*>(codec->plugindata);
 
-    if (sc68_process(gp->sc68, (signed short*)buffer, gp->gpwaveformat.pcmblocksize) == SC68_MIX_ERROR)
+    if (sc68_process(plugin->sc68, (signed short*)buffer, plugin->waveformat.pcmblocksize) == SC68_MIX_ERROR)
     {
         //cout << "FMOD_ERR_FORMAT play" << endl;
         //return FMOD_ERR_FORMAT;
     }
-    *read = gp->gpwaveformat.pcmblocksize;
+    *read = plugin->waveformat.pcmblocksize;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginSc68*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS)
     {
         //setting loop = 1 in api68_seek function will make it work
         //but seeking is so slow (like slowly winding it up, audible so it's pretty useless
         //int* seek = 0;
-        //api68_seek(gp->sc68, position,seek);
-        sc68_play(gp->sc68, gp->currentSubsong, 0);
+        //api68_seek(plugin->sc68, position,seek);
+        sc68_play(plugin->sc68, plugin->currentSubsong, 0);
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
         if (position < 0) position = 0;
-        sc68_play(gp->sc68, position + 1, 0);
-        sc68_music_info(gp->sc68, &gp->info, position + 1, 0);
-        gp->currentSubsong = position + 1;
+        sc68_play(plugin->sc68, position + 1, 0);
+        sc68_music_info(plugin->sc68, &plugin->info, position + 1, 0);
+        plugin->currentSubsong = position + 1;
         return FMOD_OK;
     }
     return FMOD_ERR_UNSUPPORTED;
@@ -293,12 +293,12 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginSc68*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
-        cout << "length: " << gp->info.time_ms << endl;
-        *length = gp->info.time_ms;
+        cout << "length: " << plugin->info.time_ms << endl;
+        *length = plugin->info.time_ms;
         if (*length > 0xfffff || *length == 0)
         //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
         {
@@ -307,7 +307,7 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     }
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
-        *length = gp->info.tracks;
+        *length = plugin->info.tracks;
     }
     return FMOD_OK;
 }

@@ -1,7 +1,7 @@
 #include <cmath>
 #include <queue>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include "fmod_errors.h"
 #include "info.h"
@@ -31,24 +31,24 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &setposition, // Setposition callback.
     &getposition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
 static constexpr uint32_t kMaxSamples = 2048;
 
-class ahxplugin
+class pluginFurnace
 {
     FMOD_CODEC_STATE* _codec;
     FILE* file;
 
 public:
-    ahxplugin(FMOD_CODEC_STATE* codec)
+    pluginFurnace(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&ahxwaveformat, 0, sizeof(ahxwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~ahxplugin()
+    ~pluginFurnace()
     {
         //delete some stuff
         m_engine->quit(false);
@@ -56,7 +56,7 @@ public:
     }
 
 
-    FMOD_CODEC_WAVEFORMAT ahxwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     Info* info;
     DivEngine* m_engine;
     float m_samples[2][kMaxSamples];
@@ -97,9 +97,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
-    ahxplugin* ahx = new ahxplugin(codec);
+    auto plugin = new pluginFurnace(codec);
 
-    ahx->info = (Info*)userexinfo->userdata;
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     uint8_t* buffer;
@@ -126,95 +126,95 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     initLog(stdout);
 
-    ahx->m_engine = new DivEngine;
-    ahx->m_engine->preInit();
-    if (ahx->m_engine->load(buffer, filesize) && ahx->m_engine->init())
+    plugin->m_engine = new DivEngine;
+    plugin->m_engine->preInit();
+    if (plugin->m_engine->load(buffer, filesize) && plugin->m_engine->init())
     {
     }
     else
     {
-        ahx->m_engine->quit(false);
+        plugin->m_engine->quit(false);
 
-        delete ahx->m_engine;
+        delete plugin->m_engine;
         return FMOD_ERR_FORMAT;
     }
 
 
-    int freq = ahx->m_engine->getAudioDescGot().rate;
+    int freq = plugin->m_engine->getAudioDescGot().rate;
     int channels = 2;
 
 
-    ahx->ahxwaveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
-    ahx->ahxwaveformat.channels = channels;
-    ahx->ahxwaveformat.frequency = freq;
-    ahx->ahxwaveformat.pcmblocksize = kMaxSamples;
-    ahx->ahxwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
+    plugin->waveformat.channels = channels;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = kMaxSamples;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
 
-    codec->waveformat = &ahx->ahxwaveformat;
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = ahx; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    DivSong song = ahx->m_engine->song;
+    DivSong song = plugin->m_engine->song;
     char ver[16];
 
     string format;
     if (song.version == DIV_VERSION_FTM)
     {
         format = "Famitracker";
-        ahx->info->fileformat = format;
+        plugin->info->fileformat = format;
     }
     else
     {
         format = song.isDMF ? "DefleMask v" : "Furnace v";
         sprintf(ver, "%d", song.version);
-        ahx->info->fileformat = format + string(ver);
+        plugin->info->fileformat = format + string(ver);
     }
-    ahx->info->artist = song.author;
-    ahx->info->title = song.name;
-    ahx->info->system = song.systemName;
-    ahx->info->numChannels = ahx->m_engine->getTotalChannelCount();
-    ahx->info->plugin = PLUGIN_furnace;
-    ahx->info->pluginName = PLUGIN_furnace_NAME;
+    plugin->info->artist = song.author;
+    plugin->info->title = song.name;
+    plugin->info->system = song.systemName;
+    plugin->info->numChannels = plugin->m_engine->getTotalChannelCount();
+    plugin->info->plugin = PLUGIN_furnace;
+    plugin->info->pluginName = PLUGIN_furnace_NAME;
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginFurnace*>(codec->plugindata);
 
-    delete ahx;
+    delete plugin;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginFurnace*>(codec->plugindata);
 
-    float* bufferPtr = (float*)buffer; // Pointer to the buffer
+    auto bufferPtr = static_cast<float*>(buffer); // Pointer to the buffer
     unsigned int numSamples = size;
 
-    float* samples[] = {ahx->m_samples[0], ahx->m_samples[1]};
+    float* samples[] = {plugin->m_samples[0], plugin->m_samples[1]};
     uint32_t numSamplesRendered = 0;
-    uint32_t numRemainingSamples = ahx->m_numRemainingSamples;
+    uint32_t numRemainingSamples = plugin->m_numRemainingSamples;
     while (numSamples)
     {
         if (numRemainingSamples == 0)
         {
-            ahx->m_engine->nextBuf(nullptr, samples, 0, 2, kMaxSamples);
+            plugin->m_engine->nextBuf(nullptr, samples, 0, 2, kMaxSamples);
             numRemainingSamples = kMaxSamples;
-            ahx->m_lastLoopPos = ahx->m_engine->lastLoopPos;
+            plugin->m_lastLoopPos = plugin->m_engine->lastLoopPos;
         }
         auto numSamplesAvailable = numRemainingSamples;
-        if (ahx->m_lastLoopPos > -1)
+        if (plugin->m_lastLoopPos > -1)
         {
-            numSamplesAvailable = ahx->m_lastLoopPos - (kMaxSamples - numRemainingSamples);
+            numSamplesAvailable = plugin->m_lastLoopPos - (kMaxSamples - numRemainingSamples);
             if (numSamplesAvailable == 0)
             {
                 if (numSamplesRendered == 0)
-                    ahx->m_lastLoopPos = -1;
+                    plugin->m_lastLoopPos = -1;
                 break;
             }
         }
@@ -229,15 +229,15 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
         numRemainingSamples -= numSamplesToCopy;
         numSamplesRendered += numSamplesToCopy;
 
-        unsigned char* vumeters = new unsigned char[ahx->m_engine->getTotalChannelCount()];
-        for (int i = 0; i < ahx->m_engine->getTotalChannelCount(); i++)
+        unsigned char* vumeters = new unsigned char[plugin->m_engine->getTotalChannelCount()];
+        for (int i = 0; i < plugin->m_engine->getTotalChannelCount(); i++)
         {
-            DivDispatchOscBuffer* divDispatchOscBuffer = ahx->m_engine->getOscBuffer(i);
+            DivDispatchOscBuffer* divDispatchOscBuffer = plugin->m_engine->getOscBuffer(i);
             int rate = 0;
             int displaySize = 0;
             if (divDispatchOscBuffer != NULL)
             {
-                displaySize = (float)(divDispatchOscBuffer->rate) * 0.03f;
+                displaySize = static_cast<float>(divDispatchOscBuffer->rate) * 0.03f;
             }
 
             short minLevel = 32767;
@@ -257,7 +257,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
                 short y = 0;
                 if (divDispatchOscBuffer != NULL)
                 {
-                    y = ahx->m_engine->getOscBuffer(i)->data[(unsigned short)(needlePos + (j * displaySize / bufsize))];
+                    y = plugin->m_engine->getOscBuffer(i)->data[(unsigned short)(needlePos + (j * displaySize / bufsize))];
                 }
                 if (minLevel > y) minLevel = y;
                 if (maxLevel < y) maxLevel = y;
@@ -267,9 +267,9 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
             if (estimate > 1.0f) estimate = 1.0f;
             estimate = estimate * 100;
 
-            if (ahx->vumeterBuffer.size() > 0)
+            if (plugin->vumeterBuffer.size() > 0)
             {
-                vumeters[i] = (MAX(ahx->vumeterBuffer.back()[i]*0.87f, estimate));
+                vumeters[i] = (MAX(plugin->vumeterBuffer.back()[i]*0.87f, estimate));
             }
             else
             {
@@ -277,17 +277,17 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
             }
         }
 
-        ahx->vumeterBuffer.push(vumeters);
-        if (ahx->vumeterBuffer.size() >= 10)
+        plugin->vumeterBuffer.push(vumeters);
+        if (plugin->vumeterBuffer.size() >= 10)
         {
-            ahx->vumeterBuffer.pop();
+            plugin->vumeterBuffer.pop();
         }
     }
 
 
-    ahx->m_numRemainingSamples = numRemainingSamples;
+    plugin->m_numRemainingSamples = numRemainingSamples;
     *read = numSamplesRendered;
-    if (ahx->m_engine->endOfSong)
+    if (plugin->m_engine->endOfSong)
     {
         return FMOD_ERR_FILE_ENDOFDATA;
     }
@@ -297,31 +297,31 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginFurnace*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        ahx->m_engine->initDispatch();
-        ahx->m_engine->renderSamplesP();
-        ahx->m_engine->play();
+        plugin->m_engine->initDispatch();
+        plugin->m_engine->renderSamplesP();
+        plugin->m_engine->play();
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        ahx->m_engine->changeSongP(position);
-        ahx->m_engine->play();
-        ahx->m_position = 0;
-        ahx->m_lastLoopPos = -1;
-        ahx->m_numRemainingSamples = 0;
+        plugin->m_engine->changeSongP(position);
+        plugin->m_engine->play();
+        plugin->m_position = 0;
+        plugin->m_lastLoopPos = -1;
+        plugin->m_numRemainingSamples = 0;
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         //position is a mask
-        for (int i = 0; i < ahx->m_engine->getTotalChannelCount(); i++)
+        for (int i = 0; i < plugin->m_engine->getTotalChannelCount(); i++)
         {
             int m = position >> i & 1;
             bool mute = m == 1 ? true : false;
-            ahx->m_engine->muteChannel(i, mute);
+            plugin->m_engine->muteChannel(i, mute);
         }
     }
     return FMOD_OK;
@@ -342,10 +342,10 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto plugin = static_cast<pluginFurnace*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MODVUMETER)
     {
-        ahx->info->modVUMeters = ahx->vumeterBuffer.front();
+        plugin->info->modVUMeters = plugin->vumeterBuffer.front();
         return FMOD_OK;
     }
     return FMOD_OK;

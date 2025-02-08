@@ -1,0 +1,11 @@
+--- src/sidtune/MUS.h	2025-02-09 16:02:28.449258000 +0100
++++ src/sidtune/MUS.h	2025-02-09 16:02:18.346046000 +0100
+@@ -30,6 +30,8 @@
+ namespace libsidplayfp
+ {
+ 
++bool detect(const uint8_t* buffer, size_t bufsize, uint_least32_t& voice3Index);
++
+ class MUS final : public SidTuneBase
+ {
+ private:

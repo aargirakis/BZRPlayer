@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include "fmod_errors.h"
 #include <pacP.h>
@@ -25,27 +25,27 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
     &getposition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class ahxplugin
+class pluginLibpac
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    ahxplugin(FMOD_CODEC_STATE* codec)
+    pluginLibpac(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
         //LogFile = new CLogFile("libmod.log");
-        memset(&ahxwaveformat, 0, sizeof(ahxwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~ahxplugin()
+    ~pluginLibpac()
     {
         if (pac_module != nullptr)
         {
@@ -55,7 +55,7 @@ public:
         unlink(tempFilename.c_str());
     }
 
-    FMOD_CODEC_WAVEFORMAT ahxwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     struct pac_module* pac_module;
     string tempFilename;
 };
@@ -93,7 +93,7 @@ bool fmemopen(void* buf, size_t size, const char* mode, string filename)
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    Info* info = (Info*)userexinfo->userdata;
+    Info* info = static_cast<Info*>(userexinfo->userdata);
 
     int freq = 44100;
     int channels = 2;
@@ -106,7 +106,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     pac_disable(PAC_MODE_DEFAULT);
-    ahxplugin* ahx = new ahxplugin(codec);
+    auto plugin = new pluginLibpac(codec);
     pac_enable(PAC_MODE_DEFAULT);
 
     pac_enable(PAC_MODE_DEFAULT);
@@ -125,49 +125,49 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     if (smallBuffer[0] != 'P' || smallBuffer[1] != 'A' || smallBuffer[2] != 'C' || smallBuffer[3] != 'G')
     {
         delete[] smallBuffer;
-        delete ahx;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
-    ahx->tempFilename = info->tempPath + "/bzr_tempfile.tmp";
-    bool ok = fmemopen(myBuffer, filesize, "r", ahx->tempFilename.c_str());
+    plugin->tempFilename = info->tempPath + "/bzr_tempfile.tmp";
+    bool ok = fmemopen(myBuffer, filesize, "r", plugin->tempFilename.c_str());
 
-    if (ok && (ahx->pac_module = pac_open(ahx->tempFilename.c_str())) == nullptr)
+    if (ok && (plugin->pac_module = pac_open(plugin->tempFilename.c_str())) == nullptr)
     {
         delete[] myBuffer;
-        //ahx->pac_module = NULL;
-        unlink(ahx->tempFilename.c_str());
-        delete ahx;
+        //plugin->pac_module = NULL;
+        unlink(plugin->tempFilename.c_str());
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
     delete[] myBuffer;
 
-    ahx->ahxwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    ahx->ahxwaveformat.channels = channels;
-    ahx->ahxwaveformat.frequency = freq;
-    ahx->ahxwaveformat.pcmblocksize = (16 >> 3) * ahx->ahxwaveformat.channels;
-    ahx->ahxwaveformat.lengthpcm = pac_length(ahx->pac_module);
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = channels;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = pac_length(plugin->pac_module);
 
 
-    codec->waveformat = &ahx->ahxwaveformat;
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = ahx; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
 
-    info->numChannels = pac_num_channels(ahx->pac_module);
-    info->numPatterns = pac_num_sheets(ahx->pac_module);
-    info->numOrders = pac_num_positions(ahx->pac_module);
-    info->title = pac_title(ahx->pac_module);
+    info->numChannels = pac_num_channels(plugin->pac_module);
+    info->numPatterns = pac_num_sheets(plugin->pac_module);
+    info->numOrders = pac_num_positions(plugin->pac_module);
+    info->title = pac_title(plugin->pac_module);
     info->plugin = PLUGIN_libpac;
     info->pluginName = PLUGIN_libpac_NAME;
     info->fileformat = "SBStudio PAC";
     info->setSeekable(true);
 
-    int numSamples = pac_num_samples(ahx->pac_module);
+    int numSamples = pac_num_samples(plugin->pac_module);
     info->numSamples = numSamples;
 
     if (numSamples > 0)
@@ -182,7 +182,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
         for (int j = 1; j <= numSamples; j++)
         {
-            struct pac_sound* sample = pac_sample(ahx->pac_module, j);
+            struct pac_sound* sample = pac_sample(plugin->pac_module, j);
             info->samples[j - 1] = sample->name;
             info->samples16Bit[j - 1] = sample->bits == 16 ? true : false;
             info->samplesSize[j - 1] = sample->length;
@@ -193,7 +193,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         }
     }
 
-    //cout << "sample name " << pac_sample_title(ahx->pac_module,2);
+    //cout << "sample name " << pac_sample_title(plugin->pac_module,2);
 
 
     return FMOD_OK;
@@ -201,14 +201,14 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    delete (ahxplugin*)codec->plugindata;
+    delete static_cast<pluginLibpac*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    pac_read(ahx->pac_module, buffer, size);
+    auto* plugin = static_cast<pluginLibpac*>(codec->plugindata);
+    pac_read(plugin->pac_module, buffer, size);
     *read = size >> 2;
     return FMOD_OK;
 }
@@ -216,17 +216,17 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
-    pac_seek(ahx->pac_module, (position / 1000) * ahx->ahxwaveformat.frequency,SEEK_SET);
+    auto* plugin = static_cast<pluginLibpac*>(codec->plugindata);
+    pac_seek(plugin->pac_module, (position / 1000) * plugin->waveformat.frequency,SEEK_SET);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    ahxplugin* ahx = (ahxplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginLibpac*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS_REAL)
     {
-        *position = (pac_tell(ahx->pac_module) / 44100.0) * 1000;
+        *position = (pac_tell(plugin->pac_module) / 44100.0) * 1000;
     }
     return FMOD_OK;
 }

@@ -1,10 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include <string.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 #include "fmod.h"
 #include "info.h"
 #include "plugins.h"
@@ -48,34 +48,34 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
-    0,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    0 // Sound create callback (don't need it)
+    nullptr // Sound create callback (don't need it)
 };
 
-class gameplugin
+class pluginVgmplayLegacy
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    gameplugin(FMOD_CODEC_STATE* codec)
+    pluginVgmplayLegacy(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
         //LogFile = new CLogFile("gameemu.log");
-        memset(&gpwaveformat, 0, sizeof(gpwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~gameplugin()
+    ~pluginVgmplayLegacy()
     {
         //delete some stuff
         //gme_delete( emu );
     }
 
     //Music_Emu* emu;
-    FMOD_CODEC_WAVEFORMAT gpwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
 /*
@@ -184,10 +184,10 @@ static string PrintChipStr(UINT8 ChipID, UINT8 SubType, UINT32 Clock)
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
-    gameplugin* gp = new gameplugin(codec);
+    auto* plugin = new pluginVgmplayLegacy(codec);
 
 
-    Info* info = (Info*)userexinfo->userdata;
+    Info* info = static_cast<Info*>(userexinfo->userdata);
 
 
     VGMPlay_Init();
@@ -206,16 +206,16 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     int freq = 44100;
 
-    gp->gpwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    gp->gpwaveformat.channels = 2;
-    gp->gpwaveformat.frequency = freq;
-    gp->gpwaveformat.pcmblocksize = (16 >> 3) * gp->gpwaveformat.channels;
-    gp->gpwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = freq;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = 0xffffffff;
 
-    codec->waveformat = &(gp->gpwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = gp; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
 
     VGM_HEADER header;
@@ -289,12 +289,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     if (header.lngLoopSamples)
     {
         trackLen = header.lngTotalSamples;
-        gp->gpwaveformat.lengthpcm = header.lngTotalSamples + (header.lngLoopSamples);
+        plugin->waveformat.lengthpcm = header.lngTotalSamples + (header.lngLoopSamples);
     }
     else
     {
         trackLen = header.lngTotalSamples;
-        gp->gpwaveformat.lengthpcm = header.lngTotalSamples;
+        plugin->waveformat.lengthpcm = header.lngTotalSamples;
     }
 
     double trackLenMs;
@@ -334,17 +334,17 @@ FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
     StopVGM();
     VGMPlay_Deinit();
-    gameplugin* gp = (gameplugin*)codec->plugindata;
-    delete (gameplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginVgmplayLegacy*>(codec->plugindata);
+    delete static_cast<pluginVgmplayLegacy*>(codec->plugindata);
     //delete LogFile;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginVgmplayLegacy*>(codec->plugindata);
 
-    int RetSamples = FillBuffer((WAVE_16BS*)buffer, size);
+    int RetSamples = FillBuffer(static_cast<WAVE_16BS*>(buffer), size);
 
     *read = size;
 
@@ -353,11 +353,11 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    gameplugin* gp = (gameplugin*)codec->plugindata;
+    auto* plugin = static_cast<pluginVgmplayLegacy*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        UINT32 u = (UINT32)(position * 44.1);
+        UINT32 u = static_cast<UINT32>(position * 44.1);
         //I'm not sure why the above seems to work...
         //The one below will overflow and other shit
         //UINT32 u = (UINT32)((position * 44100 * 2) / 1000);

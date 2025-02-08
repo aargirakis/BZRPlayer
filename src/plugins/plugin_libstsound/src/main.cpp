@@ -1,5 +1,5 @@
 #include "StSoundLibrary.h"
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include "fmod_errors.h"
 #include "info.h"
@@ -20,7 +20,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    0,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setposition, // Setposition callback.
     nullptr,
@@ -29,18 +29,18 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr
 };
 
-class gameplugin
+class pluginLibstsound
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    gameplugin(FMOD_CODEC_STATE* codec)
+    pluginLibstsound(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        memset(&gpwaveformat, 0, sizeof(gpwaveformat));
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~gameplugin()
+    ~pluginLibstsound()
     {
         //delete some stuff
         ymMusicDestroy(pMusic);
@@ -48,7 +48,7 @@ public:
     }
 
     YMMUSIC* pMusic;
-    FMOD_CODEC_WAVEFORMAT gpwaveformat;
+    FMOD_CODEC_WAVEFORMAT waveformat;
     signed char* myBuffer;
 };
 
@@ -69,9 +69,9 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
-    gameplugin* gp = new gameplugin(codec);
+    auto* plugin = new pluginLibstsound(codec);
     Info* info = static_cast<Info*>(userexinfo->userdata);
-    gp->pMusic = ymMusicCreate();
+    plugin->pMusic = ymMusicCreate();
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
@@ -80,41 +80,41 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     {
         return FMOD_ERR_FORMAT;
     }
-    gp->myBuffer = new signed char[filesize];
+    plugin->myBuffer = new signed char[filesize];
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, gp->myBuffer, filesize, &bytesread);
+    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
 
-    if (!ymMusicLoadMemory(gp->pMusic, static_cast<signed char*>(gp->myBuffer), filesize))
+    if (!ymMusicLoadMemory(plugin->pMusic, static_cast<signed char*>(plugin->myBuffer), filesize))
     {
-        ymMusicDestroy(gp->pMusic);
-        delete gp->myBuffer;
+        ymMusicDestroy(plugin->pMusic);
+        delete plugin->myBuffer;
         return FMOD_ERR_FORMAT;
     }
     cout << "we got ym!\n";
     flush(cout);
 
     ymMusicInfo_t yminfo;
-    ymMusicGetInfo(gp->pMusic, &yminfo);
+    ymMusicGetInfo(plugin->pMusic, &yminfo);
 
 
-    gp->gpwaveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    gp->gpwaveformat.channels = 2;
-    gp->gpwaveformat.frequency = 44100;
-    gp->gpwaveformat.pcmblocksize = (16 >> 3) * gp->gpwaveformat.channels;
-    gp->gpwaveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = 0xffffffff;
     if (yminfo.musicTimeInMs > 0)
     {
-        gp->gpwaveformat.lengthpcm = yminfo.musicTimeInMs / 1000 * gp->gpwaveformat.frequency;
+        plugin->waveformat.lengthpcm = yminfo.musicTimeInMs / 1000 * plugin->waveformat.frequency;
     }
 
 
-    codec->waveformat = &(gp->gpwaveformat);
+    codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = gp; /* user data value */
+    codec->plugindata = plugin; /* user data value */
 
-    ymMusicSetLoopMode(gp->pMusic,YMTRUE);
+    ymMusicSetLoopMode(plugin->pMusic,YMTRUE);
 
 
     info->artist = yminfo.pSongAuthor;
@@ -128,10 +128,10 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     info->pluginName = PLUGIN_libstsound_NAME;
 
 
-    gp->gpwaveformat.channels = 2;
+    plugin->waveformat.channels = 2;
     if (info->songType == "MIX1")
     {
-        gp->gpwaveformat.channels = 1;
+        plugin->waveformat.channels = 1;
     }
 
     info->fileformat = yminfo.pSongType;
@@ -141,17 +141,17 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
-    gameplugin* gp = static_cast<gameplugin*>(codec->plugindata);
-    delete gp;
+    auto plugin = static_cast<pluginLibstsound*>(codec->plugindata);
+    delete plugin;
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    gameplugin* gp = static_cast<gameplugin*>(codec->plugindata);
+    auto* plugin = static_cast<pluginLibstsound*>(codec->plugindata);
 
     int nbSample = size;
-    ymMusicCompute(gp->pMusic, static_cast<ymsample*>(buffer), nbSample);
+    ymMusicCompute(plugin->pMusic, static_cast<ymsample*>(buffer), nbSample);
     *read = size;
 
     return FMOD_OK;
@@ -159,11 +159,11 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    gameplugin* gp = static_cast<gameplugin*>(codec->plugindata);
+    auto* plugin = static_cast<pluginLibstsound*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        ymMusicStop(gp->pMusic);
-        ymMusicPlay(gp->pMusic);
+        ymMusicStop(plugin->pMusic);
+        ymMusicPlay(plugin->pMusic);
     }
     else
     {
