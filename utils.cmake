@@ -58,10 +58,7 @@ function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
     file(GLOB PATCH_FILES "${patches_dir}/*.patch")
 
     foreach (PATCH_FILE ${PATCH_FILES})
-        if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-            set(PATCH_EXECUTABLE "${CMAKE_PREFIX_PATH}/../usr/bin/patch.exe")
-        else ()
-            set(PATCH_EXECUTABLE "patch")
+        if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
             execute_process(
                     COMMAND lsdiff ${PATCH_FILE}
                     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -74,7 +71,7 @@ function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
         endif ()
 
         execute_process(
-                COMMAND ${PATCH_EXECUTABLE}
+                COMMAND patch
                 -ul -d ${EXTERNAL_SOURCE_DIR}
                 -p0 -i ${PATCH_FILE}
                 RESULT_VARIABLE PATCH_RESULT
@@ -143,10 +140,7 @@ function(download_patch_and_make target_name target_filename target_url sha_256_
     )
 
     if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-        set(make_command
-                ${CMAKE_PREFIX_PATH}/../usr/bin/make.exe
-                AR=${CMAKE_PREFIX_PATH}/bin/ar.exe
-        )
+        set(make_command mingw32-make AR=ar)
     else ()
         set(make_command make)
     endif ()
