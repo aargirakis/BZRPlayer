@@ -26,7 +26,7 @@ required), then start the configuration process executing:\
 To build the project execute:\
 `ninja -C cmake-build`
 
-As result of the building process, in the chosen cmake build directory the `output` directory will be populated with
+As result of the building process, in the chosen CMake build directory the `output` directory will be populated with
 binaries.\
 If the **Release** build type is selected, along with `output` also `output_release` directory will be created,
 containing the final archive release file
@@ -39,18 +39,41 @@ cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/mingw32 -DCMAKE_BUILD_TYPE=Releas
 ninja -C cmake-build 
 ```
 
+#### IDE setup
+
+These are the settings for any IDE that supports CMake:
+
+- set the toolchain to **<MSYS2_dir>\mingw32**\
+  (e.g. `C:\msys64\mingw32`)
+
+
+- set the CMake command with following flags:\
+  **-DCMAKE_PREFIX_PATH="<MSYS2_dir>/mingw32" -G "Ninja"**\
+  (e.g. `-DCMAKE_PREFIX_PATH="c:/msys64/mingw32" -G "Ninja"`)
+
+
+- set additional environment variables **MSYSTEM=MINGW32** and **PATH=<MSYS2_dir>/usr/bin**\
+  (e.g. `MSYSTEM=MINGW32;PATH=c:/msys64/usr/bin`)
+
+
+- set the CMake application runner to build **All targets** with `app` as executable
+
+
+- (optional) set CMake executable to **<MSYS2_dir>\mingw32\bin\cmake.exe**\
+  (e.g. `C:\msys64\mingw32\bin\cmake.exe`)
+
 ### Linux (cross-compilation)
 
 Dockerized cross-compilation toolchain is provided, just execute `run.sh` from the **docker** directory with following
 flags:
 
-- `CONFIG=1` for running the cmake configuration stage (Debug eventually setting `BUILD_TYPE=Release` if needed)
+- `CONFIG=1` for running the CMake configuration stage (Debug eventually setting `BUILD_TYPE=Release` if needed)
 - `BUILD=1` for building the project
 - `RUN_BZR2=1` for running built BZR2 (**Wine** is required)
 
 ### Offline mode
 
-By default, the cmake configuration stage will download all needed libraries and files. Add `-DOFFLINE_MODE=1` to cmake
+By default, the CMake configuration stage will download all needed libraries and files. Add `-DOFFLINE_MODE=1` to CMake
 command (or `OFFLINE_MODE=1` to `run.sh`) for switching to offline mode.\
 Offline mode doesn't guarantee that the build will include the latest versions of the files with unmanaged version
 
