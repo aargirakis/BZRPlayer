@@ -7,6 +7,13 @@ set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_PREFIX_PATH}/lib/cmake/SndFile")
+
+find_package(FLAC REQUIRED)
+find_package(mpg123 REQUIRED)
+find_package(Ogg REQUIRED)
+find_package(SndFile REQUIRED)
+find_package(Vorbis REQUIRED)
 find_package(ZLIB REQUIRED)
 
 set(CMAKE_C_STANDARD 17)
@@ -52,6 +59,11 @@ set_target_properties(LIBOPENMPT_STATIC PROPERTIES
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         LIBOPENMPT_STATIC
+        # FLAC::FLAC
+        MPG123::libmpg123
+        Ogg::ogg
+        # SndFile::sndfile
+        Vorbis::vorbisfile
         ZLIB::ZLIB
 )
 
