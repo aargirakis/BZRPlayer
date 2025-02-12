@@ -13,10 +13,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
-set(LIB_FILENAME_URL "v${LIB_VERSION}.zip")
+set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
+set(LIB_FILENAME_URL "v${LIB_VERSION}.tar.gz")
 set(LIB_URL "https://github.com/arnaud-carre/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "9291b3279f448b7674fe0c0df3fce90ba9a92cc7dca794b0f8e20f0ccd226933")
+set(LIB_SHA_256_HASH "c5e66cc2a724c8f4e88683c904d54805ff1c0e4b22cf3d45697e681cdcab6845")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
