@@ -38,7 +38,8 @@
 #define PROJECT_NAME "BZR Player"
 #define PROJECT_NAME_VERSIONED PROJECT_NAME " " PROJECT_VERSION
 #define PLAYLIST_DEFAULT "Default"
-#define PLAYLIST_DEFAULT_FILENAME PLAYLIST_DEFAULT ".m3u"
+#define PLAYLIST_DEFAULT_EXTENSION ".m3u"
+#define PLAYLIST_DEFAULT_FILENAME PLAYLIST_DEFAULT PLAYLIST_DEFAULT_EXTENSION
 
 using namespace std;
 const QString MainWindow::VERSION = PROJECT_VERSION;
@@ -3209,16 +3210,16 @@ void MainWindow::renamePlaylist()
 
         if ((oldName != newName) && ok && !newName.isEmpty())
         {
-            if (!newName.endsWith(".m3u"))
+            if (!newName.endsWith(PLAYLIST_DEFAULT_EXTENSION))
             {
-                newName = newName + ".m3u";
+                newName = newName + PLAYLIST_DEFAULT_EXTENSION;
             }
             QString newOrgFilename = newName;
             int suffix = 0;
             while (tableWidgetPlaylists.contains(newName))
             {
                 suffix++;
-                newName = newOrgFilename + " (" + QString::number(suffix) + ").m3u";
+                newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
             }
             QDir directory(USER_PLAYLISTS_DIR);
             QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
@@ -3252,16 +3253,16 @@ void MainWindow::savePlaylistAs()
 
     if ((oldName != newName) && ok && !newName.isEmpty())
     {
-        if (!newName.endsWith(".m3u"))
+        if (!newName.endsWith(PLAYLIST_DEFAULT_EXTENSION))
         {
-            newName = newName + ".m3u";
+            newName = newName + PLAYLIST_DEFAULT_EXTENSION;
         }
         QString newOrgFilename = newName;
         int suffix = 0;
         while (tableWidgetPlaylists.contains(newName))
         {
             suffix++;
-            newName = newOrgFilename + " (" + QString::number(suffix) + ").m3u";
+            newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
         }
         QDir directory(USER_PLAYLISTS_DIR);
         QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
@@ -4430,7 +4431,7 @@ QString MainWindow::createPlaylist(QString name)
     while (tableWidgetPlaylists.contains(newFilename))
     {
         suffix++;
-        newFilename = newOrgFilename + " (" + QString::number(suffix) + ").m3u";
+        newFilename = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
     }
 
     newItem->setText(newFilename);
@@ -4483,7 +4484,7 @@ QString MainWindow::createPlaylist(QString name)
 
 void MainWindow::on_pushButtonNewPlaylist_clicked()
 {
-    createPlaylist("New Playlist.m3u");
+    createPlaylist("New Playlist" PLAYLIST_DEFAULT_EXTENSION);
 }
 
 void MainWindow::on_listWidget_itemClicked(QListWidgetItem* item)
