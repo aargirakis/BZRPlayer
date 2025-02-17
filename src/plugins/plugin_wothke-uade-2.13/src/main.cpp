@@ -524,25 +524,19 @@ FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginWothkeUade*>(codec->plugindata);
-    while (!get_samples(buffer))
+
+    // trying to correctly handle tracks with/without length or with/without its sample files,
+    // trying to skip unsupported/invalid track instead of a silent playback
+
+    while (!get_missing_file() && !get_samples(buffer))
     {
         m68k_run_1();
     }
-    //This will do so that missing file don't crash program,
-    //but will not load hippel files :(
-    if (get_silence_detected())
-    {
-        return FMOD_ERR_FILE_EOF;
-    }
-    else if (get_missing_file())
+
+    if (get_quit() && get_missing_file())
     {
         return FMOD_ERR_FILE_NOTFOUND;
     }
-    //    if(get_quit())
-    //    {
-    //        plugin->waveformat.lengthpcm = 0xffffffff;
-    //        return FMOD_ERR_FILE_EOF;
-    //    }
 
     *read = plugin->waveformat.pcmblocksize;
 
