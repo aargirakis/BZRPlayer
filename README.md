@@ -16,8 +16,8 @@ coded pretty much from scratch.
 
 **[MSYS2](https://www.msys2.org/)** with following packages is required:
 
-`make` `mingw-w64-i686-cmake` `mingw-w64-i686-libsndfile` `mingw-w64-i686-qt5-base` `mingw-w64-i686-qt5-svg`
-`mingw-w64-i686-SDL2` `mingw-w64-i686-toolchain` `openssl-devel` `patch`
+`make` `mingw-w64-i686-cmake` `mingw-w64-i686-qt5-base` `mingw-w64-i686-qt5-svg` `mingw-w64-i686-SDL2`
+`mingw-w64-i686-toolchain` `openssl-devel` `patch`
 
 From the MSYS2 **mingw32.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
 required), then start the configuration process executing:\

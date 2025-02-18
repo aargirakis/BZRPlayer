@@ -7,13 +7,6 @@ set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_PREFIX_PATH}/lib/cmake/SndFile")
-
-find_package(FLAC REQUIRED)
-find_package(mpg123 REQUIRED)
-find_package(Ogg REQUIRED)
-find_package(SndFile REQUIRED)
-find_package(Vorbis REQUIRED)
 find_package(ZLIB REQUIRED)
 
 set(CMAKE_C_STANDARD 17)
@@ -27,7 +20,10 @@ set(LIB_FILENAME "${LIB_NAME_VERSIONED2}.makefile.tar.gz")
 set(LIB_URL "https://lib.openmpt.org/files/${NAME}/src/${LIB_FILENAME}")
 set(LIB_SHA_256_HASH "3184069109d1d43c52f1258218a82e550213c37d8e3bcb79a8375be4765eb68c")
 set(LIB_UNPACKED_DIR "${LIB_NAME_VERSIONED2}")
-set(LIB_MAKE_ARGS CONFIG=mingw-w64 WINDOWS_ARCH=x86 OPENMPT123=0 TEST=0 EXAMPLES=0 SHARED_LIB=0 STATIC_LIB=1)
+set(LIB_MAKE_ARGS
+        CONFIG=mingw-w64 WINDOWS_ARCH=x86 OPENMPT123=0 TEST=0 EXAMPLES=0 NO_FLAC=1 NO_MPG123=1 NO_OGG=1 NO_PORTAUDIO=1
+        NO_PORTAUDIOCPP=1 NO_PULSEAUDIO=1 NO_SNDFILE=1 NO_VORBIS=1 NO_VORBISFILE=1 SHARED_LIB=0 STATIC_LIB=1
+)
 set(LIB_BUILD_BYPRODUCTS "bin/libopenmpt.a")
 download_patch_and_make(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
@@ -59,11 +55,6 @@ set_target_properties(LIBOPENMPT_STATIC PROPERTIES
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         LIBOPENMPT_STATIC
-        # FLAC::FLAC
-        MPG123::libmpg123
-        Ogg::ogg
-        # SndFile::sndfile
-        Vorbis::vorbisfile
         ZLIB::ZLIB
 )
 
