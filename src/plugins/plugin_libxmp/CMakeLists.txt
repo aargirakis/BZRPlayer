@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libxmp")
-set(VERSION "4.6.1")
+set(VERSION "4.6.2")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "Libxmp" PARENT_SCOPE)
@@ -15,7 +15,7 @@ set(LIB_VERSION "${VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/releases/download/${LIB_NAME_VERSIONED}/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "af605e72c83b24abaf03269347e24ebc3fc06cd7b495652a2c619c1f514bc5cb")
+set(LIB_SHA_256_HASH "acac1705be2c4fb4d2d70dc05759853ba6aab747a83de576b082784d46f5a4b9")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
