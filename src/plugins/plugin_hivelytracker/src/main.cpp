@@ -5,7 +5,7 @@
 #include "hvl_replay.h"
 #include "info.h"
 #include "BaseRow.h"
-#include <iostream>
+#include <fstream>
 #include "plugins.h"
 
 static int samples_left = 0;
@@ -122,6 +122,38 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
+    //read config from disk
+    string filename = plugin->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
+    ifstream ifs(filename.c_str());
+    string line;
+    bool useDefaults = false;
+    if (ifs.fail())
+    {
+        //The file could not be opened
+        useDefaults = true;
+    }
+
+    //defaults
+    uint32 defstereo = 4;
+
+    if (!useDefaults)
+    {
+        while (getline(ifs, line))
+        {
+            int i = line.find_first_of("=");
+
+            if (i != -1)
+            {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word.compare("stereo_separation") == 0)
+                {
+                    defstereo = atoi(value.c_str());
+                }
+            }
+        }
+        ifs.close();
+    }
 
     hvl_InitReplayer();
 
@@ -143,7 +175,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
     ERRCHECK(result);
 
-    plugin->m_tune = hvl_ParseTune(myBuffer, filesize, 44100, 1);
+    plugin->m_tune = hvl_ParseTune(myBuffer, filesize, 44100, defstereo);
 
     if (!plugin->m_tune)
     {

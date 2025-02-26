@@ -81,6 +81,11 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderRasterBarsVerticalSpacing->installEventFilter(this);
     ui->sliderNumberOfRasterBars->installEventFilter(this);
 
+    ui->comboBoxStereoSeparationHivelytracker->addItem("0% (Mono)", "0");
+    ui->comboBoxStereoSeparationHivelytracker->addItem("25%", "1");
+    ui->comboBoxStereoSeparationHivelytracker->addItem("50%", "2");
+    ui->comboBoxStereoSeparationHivelytracker->addItem("75%", "3");
+    ui->comboBoxStereoSeparationHivelytracker->addItem("100% (Paula)", "4");
 
     ui->comboBoxFilterOpenMPT->installEventFilter(this);
     ui->comboBoxFilterOpenMPT->addItem("Auto", "auto");
@@ -257,6 +262,10 @@ settingsWindow::settingsWindow(QWidget* parent) :
     QString thumbP(mainWindow->getEffect()->getPrinterFont().left(extensionPos) + ".thumb.png");
     ui->buttonPrinterFontImage->setIcon(QIcon(thumbP));
 
+    if (PLUGIN_hivelytracker_DLL != "")
+    {
+        loadHivelytrackerSettings();
+    }
     if (PLUGIN_libsidplayfp_DLL != "")
     {
         loadSidplaySettings();
@@ -682,6 +691,10 @@ void settingsWindow::on_buttonOK_clicked()
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
     updateScrollText();
 
+    if (PLUGIN_hivelytracker_DLL != "")
+    {
+        saveHivelytrackerSettings();
+    }
     if (PLUGIN_libsidplayfp_DLL != "")
     {
         saveSidplaySettings();
@@ -719,6 +732,43 @@ void settingsWindow::on_buttonBrowseHvscSonglengths_clicked()
     if (!file.isEmpty())
     {
         setUiLineEditHvscSonglengthTextForcingRelativePaths(file);
+    }
+}
+
+void settingsWindow::loadHivelytrackerSettings()
+{
+    //read config from disk
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
+    ifstream ifs(filename.c_str());
+    string line;
+    bool useDefaults = false;
+    if (ifs.fail())
+    {
+        //The file could not be opened
+        useDefaults = true;
+    }
+    //defaults
+    int index = ui->comboBoxStereoSeparationHivelytracker->findData("4");
+    ui->comboBoxStereoSeparationHivelytracker->setCurrentIndex(index);
+
+    if (!useDefaults)
+    {
+        while (getline(ifs, line))
+        {
+            int i = line.find_first_of("=");
+
+            if (i != -1)
+            {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word.compare("stereo_separation") == 0)
+                {
+                    int index = ui->comboBoxStereoSeparationHivelytracker->findData(value.c_str());
+                    ui->comboBoxStereoSeparationHivelytracker->setCurrentIndex(index);
+                }
+            }
+        }
+        ifs.close();
     }
 }
 
@@ -994,6 +1044,22 @@ void settingsWindow::loadSidplaySettings()
     }
 }
 
+void settingsWindow::saveHivelytrackerSettings()
+{
+    //save config to disk
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
+    ofstream ofs(filename.c_str());
+    string line;
+
+    if (ofs.fail())
+    {
+        //The file could not be opened
+        return;
+    }
+    ofs << "stereo_separation=" << ui->comboBoxStereoSeparationHivelytracker->currentData().toString().toStdString().c_str() << "\n";
+    ofs.close();
+}
+
 void settingsWindow::saveSidplaySettings()
 {
     //save config to disk
@@ -1093,8 +1159,17 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
 {
     int row = item->row();
 
-    if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME)
+    if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME)
     {
+        ui->groupBoxHivelytracker->setHidden(false);
+        ui->groupBoxLibOpenMPT->setHidden(true);
+        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxUADE->setHidden(true);
+    }
+    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME)
+    {
+        ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(false);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
@@ -1102,6 +1177,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME)
     {
+        ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(false);
         ui->groupBoxLibxmp->setHidden(true);
@@ -1109,6 +1185,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME)
     {
+        ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(false);
@@ -1116,6 +1193,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_wothke_uade_2_13_NAME)
     {
+        ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
@@ -1123,6 +1201,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
     else
     {
+        ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
@@ -1221,6 +1300,17 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
     ui->tableWidgetPlugins->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxHivelytracker->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxHivelytracker->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxUADE->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -1425,6 +1515,7 @@ void settingsWindow::on_buttonVisualizer_clicked()
     ui->scrollArea->setHidden(true);
     ui->scrollAreaAppearance->setHidden(true);
     ui->tableWidgetPlugins->setHidden(true);
+    ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
@@ -1439,6 +1530,7 @@ void settingsWindow::on_buttonGeneral_clicked()
     ui->scrollAreaAppearance->setHidden(true);
     ui->tableWidgetPlugins->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(true);
+    ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
@@ -1460,6 +1552,7 @@ void settingsWindow::on_buttonAppearance_clicked()
     ui->scrollAreaAppearance->setHidden(false);
     ui->tableWidgetPlugins->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(true);
+    ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);

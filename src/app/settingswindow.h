@@ -219,7 +219,8 @@ private slots:
 private:
     void updateColorButtons();
 
-
+    void loadHivelytrackerSettings();
+    void saveHivelytrackerSettings();
     void loadSidplaySettings();
     void saveUADESettings();
     void savelibopenmptSettings();

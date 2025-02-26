@@ -32,6 +32,8 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
+add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
+
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/Replayer_Windows/hvl_replay.c
         ${EXTERNAL_SOURCE_DIR}/Replayer_Windows/hvl_tables.c
