@@ -878,13 +878,13 @@ border:none;
        </property>
        <property name="minimumSize">
         <size>
-         <width>140</width>
+         <width>100</width>
          <height>29</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>150</width>
+         <width>100</width>
          <height>29</height>
         </size>
        </property>
@@ -916,7 +916,7 @@ QPushButton:hover
 </string>
        </property>
        <property name="text">
-        <string>New Playlist</string>
+        <string>New</string>
        </property>
        <property name="icon">
         <iconset resource="resource.qrc">
