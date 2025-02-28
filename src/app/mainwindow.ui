@@ -22,9 +22,6 @@
   <property name="acceptDrops">
    <bool>true</bool>
   </property>
-  <property name="windowTitle">
-   <string>BZR Player 2.0.42 Alpha</string>
-  </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
     <normaloff>:/bzr/static/data/resources/icon.png</normaloff>:/bzr/static/data/resources/icon.png</iconset>
