@@ -135,6 +135,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     //defaults
     uint32 defstereo = 4;
+    bool isContinuousPlaybackActive = false;
 
     if (!useDefaults)
     {
@@ -149,6 +150,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                 if (word.compare("stereo_separation") == 0)
                 {
                     defstereo = atoi(value.c_str());
+                }
+                else if (word.compare("continuous_playback") == 0)
+                {
+                    isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value.compare(
+                        "true") == 0;
                 }
             }
         }
@@ -203,7 +209,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->subsongslengths = new unsigned int[subsongs];
     for (int i = 0; i < subsongs; i++)
     {
-        plugin->subsongslengths[i] = hvl_GetLen(plugin->m_tune) / 1000.0 * 44100;
+        if (isContinuousPlaybackActive)
+            plugin->subsongslengths[i] = -1;
+        else
+        {
+            plugin->subsongslengths[i] = hvl_GetLen(plugin->m_tune) / 1000.0 * 44100;
+        }
     }
 
     hvl_InitSubsong(plugin->m_tune, 0);

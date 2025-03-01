@@ -5487,6 +5487,38 @@ QPushButton:hover
      <bool>false</bool>
     </property>
    </widget>
+      <widget class="QLabel" name="labelContinuousPlaybackHivelytracker">
+          <property name="geometry">
+              <rect>
+                  <x>30</x>
+                  <y>70</y>
+                  <width>261</width>
+                  <height>31</height>
+              </rect>
+          </property>
+          <property name="text">
+              <string>Continuous Playback</string>
+          </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBoxContinuousPlaybackHivelytracker">
+          <property name="geometry">
+              <rect>
+                  <x>300</x>
+                  <y>70</y>
+                  <width>151</width>
+                  <height>31</height>
+              </rect>
+          </property>
+          <property name="text">
+              <string/>
+          </property>
+          <property name="iconSize">
+              <size>
+                  <width>40</width>
+                  <height>40</height>
+              </size>
+          </property>
+      </widget>
   </widget>
  </widget>
  <customwidgets>

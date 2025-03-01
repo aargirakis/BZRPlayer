@@ -148,6 +148,8 @@ private slots:
 
     void on_checkBoxMilliseconds_toggled(bool checked);
 
+    void on_checkBoxContinuousPlaybackHivelytracker_toggled();
+
     void on_SliderStereoSeparationOpenMPT_valueChanged(int value);
 
     void on_checkBoxContinuousPlaybackOpenMPT_toggled();

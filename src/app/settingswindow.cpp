@@ -750,6 +750,7 @@ void settingsWindow::loadHivelytrackerSettings()
     //defaults
     int index = ui->comboBoxStereoSeparationHivelytracker->findData("4");
     ui->comboBoxStereoSeparationHivelytracker->setCurrentIndex(index);
+    ui->checkBoxContinuousPlaybackHivelytracker->setChecked(false);
 
     if (!useDefaults)
     {
@@ -765,6 +766,10 @@ void settingsWindow::loadHivelytrackerSettings()
                 {
                     int index = ui->comboBoxStereoSeparationHivelytracker->findData(value.c_str());
                     ui->comboBoxStereoSeparationHivelytracker->setCurrentIndex(index);
+                }
+                else if (word.compare("continuous_playback") == 0)
+                {
+                    ui->checkBoxContinuousPlaybackHivelytracker->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1057,6 +1062,7 @@ void settingsWindow::saveHivelytrackerSettings()
         return;
     }
     ofs << "stereo_separation=" << ui->comboBoxStereoSeparationHivelytracker->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackHivelytracker->isChecked()?"true":"false") << "\n";
     ofs.close();
 }
 
@@ -2544,6 +2550,9 @@ void settingsWindow::updateCheckBoxes()
         ui->checkBoxVUMeterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
 
+    ui->checkBoxContinuousPlaybackHivelytracker->setIcon(
+        mainWindow->icons[ui->checkBoxContinuousPlaybackHivelytracker->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
     ui->checkBoxContinuousPlaybackOpenMPT->setIcon(
         mainWindow->icons[ui->checkBoxContinuousPlaybackOpenMPT->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
@@ -2695,6 +2704,11 @@ void settingsWindow::forceUpdateToSliders()
     on_sliderNumberOfRasterBars_valueChanged(ui->sliderNumberOfRasterBars->value());
 }
 
+void settingsWindow::on_checkBoxContinuousPlaybackHivelytracker_toggled()
+{
+    ui->checkBoxContinuousPlaybackHivelytracker->setIcon(
+        mainWindow->icons[(ui->checkBoxContinuousPlaybackHivelytracker->isChecked() ? "checkbox-on" : "checkbox-off")]);
+}
 
 void settingsWindow::on_checkBoxSongLengthUADE_toggled(bool checked)
 {
