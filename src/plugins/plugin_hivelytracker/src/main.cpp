@@ -213,14 +213,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
             plugin->subsongslengths[i] = -1;
         else
         {
-            plugin->subsongslengths[i] = hvl_GetLen(plugin->m_tune) / 1000.0 * 44100;
+            hvl_InitSubsong(plugin->m_tune, i);
+            plugin->subsongslengths[i] = hvl_GetLen(plugin->m_tune);
         }
     }
 
-    hvl_InitSubsong(plugin->m_tune, 0);
-
-
-    plugin->waveformat.lengthpcm = plugin->subsongslengths[0];
+    plugin->waveformat.lengthpcm = 0xffffffff;
     plugin->info->title = plugin->m_tune->ht_Name;
     plugin->info->numChannels = plugin->m_tune->ht_Channels;
     plugin->info->numPatterns = plugin->m_tune->ht_TrackNr;
