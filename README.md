@@ -67,7 +67,8 @@ These are the settings for any IDE that supports CMake:
 Dockerized cross-compilation toolchain is provided, just execute `run.sh` from the **docker** directory with following
 flags:
 
-- `CONFIG=1` for running the CMake configuration stage (Debug eventually setting `BUILD_TYPE=Release` if needed)
+- `CONFIG=1` for running the CMake configuration stage (with **Debug** build type, eventually setting
+  `BUILD_TYPE=Release` if needed)
 - `BUILD=1` for building the project
 - `RUN_BZR2=1` for running built BZR2 (**Wine** is required)
 
@@ -82,7 +83,7 @@ Offline mode doesn't guarantee that the build will include the latest versions o
 Although the **BZR2 online installer for Windows** is scripted in **Nullsoft Scriptable Install System (NSIS)**, it can
 be only compiled using **WSL2** or cross-compiled on Linux since it contains Linux specific code (mostly the bash script
 for the XDG MIME types handling), also **MSYS2** it is currently not viable since the required **NSIS** plugins are
-currently still missing.
+still missing.
 
 **NSIS** (3.10 or newer) with following plugins (check AUR entries) is required:
 
