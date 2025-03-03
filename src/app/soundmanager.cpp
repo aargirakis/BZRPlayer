@@ -631,7 +631,8 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
     cout << "FMOD_System_CreateSound\n";
     flush(cout);
     result = FMOD_System_CreateSound(system, filename.toStdString().c_str(),
-                                     FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_MPEGSEARCH, &extrainfo1, &soundPlay);
+                                     FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_LOOP_OFF | FMOD_MPEGSEARCH,
+                                     &extrainfo1, &soundPlay);
     cout << "FMOD_System_CreateSound done\n";
     cout << "plugin: " << m_Info1->pluginName << "\n";
     flush(cout);
