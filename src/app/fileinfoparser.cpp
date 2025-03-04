@@ -287,7 +287,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         }
     }
 
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_wothke_uade_2_13)
+    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_webuade)
     {
         tableInfo->setItem(
             row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numSubsongs)));

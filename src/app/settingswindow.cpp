@@ -478,10 +478,10 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vio2sf_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vio2sf_NAME));
     }
-    if (PLUGIN_wothke_uade_2_13_DLL != "")
+    if (PLUGIN_webuade_DLL != "")
     {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_wothke_uade_2_13_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_wothke_uade_2_13_NAME));
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_webuade_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_webuade_NAME));
     }
     if (PLUGIN_zxtune_DLL != "")
     {
@@ -1197,7 +1197,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibxmp->setHidden(false);
         ui->groupBoxUADE->setHidden(true);
     }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_wothke_uade_2_13_NAME)
+    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_webuade_NAME)
     {
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);

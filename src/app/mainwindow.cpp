@@ -2565,7 +2565,7 @@ void MainWindow::updateInstruments()
                 }
             }
         }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_wothke_uade_2_13)
+        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_webuade)
         {
             if (SoundManager::getInstance().m_Info1->numSamples > 0)
             {

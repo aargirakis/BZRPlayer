@@ -175,10 +175,10 @@
 #define PLUGIN_vio2sf_NAME "@PLUGIN_vio2sf_NAME@"
 #define PLUGIN_vio2sf_VERSION "@PLUGIN_vio2sf_VERSION@"
 
-#define PLUGIN_wothke_uade_2_13 34
-#define PLUGIN_wothke_uade_2_13_DLL "@PLUGIN_wothke-uade-2.13_DLL@"
-#define PLUGIN_wothke_uade_2_13_NAME "@PLUGIN_wothke-uade-2.13_NAME@"
-#define PLUGIN_wothke_uade_2_13_VERSION "@PLUGIN_wothke-uade-2.13_VERSION@"
+#define PLUGIN_webuade 34
+#define PLUGIN_webuade_DLL "@PLUGIN_webuade_DLL@"
+#define PLUGIN_webuade_NAME "@PLUGIN_webuade_NAME@"
+#define PLUGIN_webuade_VERSION "@PLUGIN_webuade_VERSION@"
 
 #define PLUGIN_zxtune 35
 #define PLUGIN_zxtune_DLL "@PLUGIN_zxtune_DLL@"

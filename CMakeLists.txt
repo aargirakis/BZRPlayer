@@ -61,7 +61,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_vgmplay-legacy "src/plugins/plugin_vgmplay-legacy"            #check cmake TODO
         plugin_vgmstream "src/plugins/plugin_vgmstream"
         plugin_vio2sf "src/plugins/plugin_vio2sf"                            #check cmake TODO
-        plugin_wothke-uade-2.13 "src/plugins/plugin_wothke-uade-2.13"        #TODO unfinished
+        plugin_webuade "src/plugins/plugin_webuade"        #TODO unfinished
         plugin_zxtune "src/plugins/plugin_zxtune"
 )
 

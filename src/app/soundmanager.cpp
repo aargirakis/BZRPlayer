@@ -83,9 +83,9 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_furnace_DLL, 1);
     }
-    if (PLUGIN_wothke_uade_2_13_DLL != "")
+    if (PLUGIN_webuade_DLL != "")
     {
-        loadPlugin(PLUGIN_wothke_uade_2_13_DLL, 1);
+        loadPlugin(PLUGIN_webuade_DLL, 1);
     }
 
     //loadPlugin("plugin_quartet.dll",1);

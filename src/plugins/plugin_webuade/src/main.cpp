@@ -43,7 +43,7 @@ const char TEMPFILENAME[] = "tempfile.tmp";
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_wothke_uade_2_13_NAME, // Name.
+    PLUGIN_webuade_NAME, // Name.
     0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG, // The time format we would like to accept into setposition/getposition.
@@ -410,8 +410,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     plugin->info->numSamples = 0;
-    plugin->info->plugin = PLUGIN_wothke_uade_2_13;
-    plugin->info->pluginName = PLUGIN_wothke_uade_2_13_NAME;
+    plugin->info->plugin = PLUGIN_webuade;
+    plugin->info->pluginName = PLUGIN_webuade_NAME;
     if (!acid)
     {
         plugin->info->fileformat = "AC1D Packer";
