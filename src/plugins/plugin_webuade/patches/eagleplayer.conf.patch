@@ -1,6 +1,6 @@
---- eagleplayer.conf	2014-09-16 19:11:24.000000000 +0200
-+++ eagleplayer.conf	2024-09-21 11:33:59.423194942 +0200
-@@ -17,7 +17,7 @@
+--- eagleplayer.conf	2019-06-21 15:52:56.000000000 +0200
++++ eagleplayer.conf.new	2025-03-12 08:11:18.566776800 +0100
+@@ -19,7 +19,7 @@
  CoreDesign		prefixes=core
  custom			prefixes=cus,cust,custom
  CustomMade		prefixes=cm,rk,rkb	ignore_player_check
@@ -9,27 +9,15 @@
  DaveLowe		prefixes=dl
  DaveLowe_Deli		prefixes=dl_deli
  DaveLoweNew		prefixes=dln
-@@ -51,14 +51,16 @@
- InStereo2.0		prefixes=is20
- JamCracker		prefixes=jam,jc
- JankoMrsicFlogel	prefixes=jmf
--JasonBrooke		prefixes=jcb,jcbo
-+JasonBrooke		prefixes=jcb,jcbo,jb
- JasonPage		prefixes=jpn,jpnd
- JasonPage_JP		prefixes=jp
- JeroenTel		prefixes=jt,mon_old
- JesperOlsen		prefixes=jo
--JochenHippel		prefixes=hip,mcmd,sog
-+JochenHippel-CoSo	prefixes=hipc
-+JochenHippel		prefixes=hip,mcmd_disabled	detect_format_by_name
- JochenHippel-7V		prefixes=hip7,s7g
--Jochen_Hippel_ST	prefixes=hst
-+Jochen_Hippel_ST	prefixes=sog		
-+Hippel-ST_note	prefixes=soc,hst
- KrisHatlelid		prefixes=kh
- Laxity			prefixes=powt,pt
- LegglessMusicEditor	prefixes=lme
-@@ -67,7 +69,7 @@
+@@ -45,6 +45,7 @@
+ GlueMon			prefixes=glue,gm
+ EarAche			prefixes=ea,mg
+ HowieDavies		prefixes=hd
++JochenHippel-CoSo	prefixes=hipc,soc
+ QuadraComposer		prefixes=emod,qc
+ ImagesMusicSystem	prefixes=ims
+ Infogrames		prefixes=dum
+@@ -70,7 +71,7 @@
  MajorTom		prefixes=hn,mtp2,thn
  Mark_Cooksey		prefixes=mc,mcr
  Mark_Cooksey_Old	prefixes=mco
@@ -37,8 +25,8 @@
 +MarkII			prefixes=mk2,mkii,mii
  MartinWalker		prefixes=avp,mw
  Maximum_Effect		prefixes=max
- MCMD			prefixes=mcmd_org
-@@ -99,7 +101,7 @@
+ MCMD			prefixes=mcmd
+@@ -103,7 +104,7 @@
  PTK-Prowiz		prefixes=mod_ntk2	epopt=type:nt20	always_ends
  PTK-Prowiz		prefixes=mod_ntkamp	epopt=type:m&k.	always_ends
  PTK-Prowiz		prefixes=mod_flt4	epopt=type:flt4	always_ends
@@ -47,26 +35,34 @@
  PTK-Prowiz		prefixes=mod_comp	epopt=type:comp	always_ends
  PTK-Prowiz		prefixes=!pm!,40a,40b,41a,50a,60a,61a,ac1,ac1d,aval,chan,cp,cplx,crb,di,eu,fc-m,fcm,ft,fuz,fuzz,gmc,gv,hmc,hrt,hrt!,ice,it1,kef,kef7,krs,ksm,lax,mexxmp,mpro,np,np1,np2,noisepacker2,np3,noisepacker3,nr,nru,ntpk,p10,p21,p30,p40a,p40b,p41a,p4x,p50a,p5a,p5x,p60,p60a,p61,p61a,p6x,pha,pin,pm,pm0,pm01,pm1,pm10c,pm18a,pm2,pm20,pm4,pm40,pmz,polk,pp10,pp20,pp21,pp30,ppk,pr1,pr2,prom,pru,pru1,pru2,prun,prun1,prun2,pwr,pyg,pygm,pygmy,skt,skyt,snt,snt!,st2,st26,st30,star,stpk,tp,tp1,tp2,tp3,un2,unic,unic2,wn,xan,xann,zen	always_ends
  PumaTracker		prefixes=puma
-@@ -159,4 +161,20 @@
+@@ -149,7 +150,7 @@
+ TFMX-7V-TFHD		prefixes=tfhd7V
+ TFMX-Pro		prefixes=mdat,tfmxpro
+ TFMX-Pro-TFHD		prefixes=tfhdpro,tfmx
+-TFMX_ST			prefixes=mdst
++TFMX_ST			prefixes=mdst	detect_format_by_name
+ ThomasHermann		prefixes=thm
+ TimFollin		prefixes=tf
+ TheMusicalEnlightenment	prefixes=tme
+@@ -166,5 +167,18 @@
  DirkBialluch		prefixes=tpu
  Quartet			prefixes=qpa
  Quartet_PSG		prefixes=sqt
 -Quartet_ST		prefixes=qts
+-ZoundMonitor	prefixes=zm
 +Quartet_ST		prefixes=4v
-+Anders0land		prefixes=hot
++ZoundMonitor	prefixes=zm,sng
 +AndrewParton	prefixes=bye
 +AshleyHogg		prefixes=ash
 +JanneSalmijarviOptimizer	prefixes=js
 +KimChristensen		prefixes=kim
-+ZoundMonitor	prefixes=sng
 +NickPellingPacker prefixes=npp
 +MoshPacker	prefixes=mosh
 +PaulTonge	prefixes=pat
 +TimeTracker	prefixes=tmk
 +SymphoniePro		prefixes=sym
 +SoundTrackerProII		prefixes=stp
-+AProSys		prefixes=aps
 +Stonetracker		prefixes=spm
-+TCB_Tracker		prefixes=tcb 
++TCB_Tracker		prefixes=tcb
 +PreTracker		prefixes=prt	speed_hack
 \ No newline at end of file

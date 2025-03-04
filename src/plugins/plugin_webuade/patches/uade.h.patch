@@ -1,19 +1,17 @@
---- src/include/uade.h	2014-09-16 19:11:24.000000000 +0200
-+++ src/include/uade.h	2024-12-24 09:23:26.851801912 +0100
-@@ -38,8 +38,11 @@
+--- src/include/uade.h	2019-06-21 15:52:56.000000000 +0200
++++ src/include/uade.h	2025-02-26 14:33:56.076205549 +0100
+@@ -38,7 +38,10 @@
  };
  
  
 -struct uade_sample_data sample_data;
--
-+//struct uade_sample_data sample_data;
 +int get_samples(void*);
 +int get_quit();
 +int get_silence_detected();
 +int get_missing_file();
+ 
  struct uade_sample_data *get_new_samples(void);
  
- #endif
 @@ -50,6 +53,10 @@
  void uade_get_amiga_message(void);
  void uade_handle_r_state(void);
@@ -22,6 +20,6 @@
 +void set_uade_state(struct uade_state* state);
 +int get_max_subsongs();
 +int get_min_subsongs();
+ void set_subsong(int subsong);
  void change_subsong(int subsong);
  int uade_option(const char *basedir);
- int uade_reset(int,char*,char*);

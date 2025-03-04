@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "webuade")
-set(VERSION "6e96e16c30d794f8e739921da5b23f722dc53b2f")
+set(VERSION "8abcb3e6841d11269527db6e7085386b0c983014")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
@@ -24,7 +24,7 @@ set(LIB_NAME_VERSIONED2 "wothke-uade-2.13-${LIB_VERSION_SHORT}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED2}.zip")
 set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
 set(LIB_URL "https://bitbucket.org/wothke/uade-2.13/get/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "1f0df2bc7ecb93212ca9c6ca4e76e93c266858dc04233a8d343b90f7b191c0ba")
+set(LIB_SHA_256_HASH "c47bf0148057eb5f345b54030ff81ab73f84cf83632c740b02fbf8e0c011d0ee")
 set(LIB_UNPACKED_DIR "${LIB_NAME_VERSIONED2}")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
@@ -34,7 +34,7 @@ download_patch_and_add(
 set(UADE_DATA_PATH "${DATA_PLUGINS_DIR}/uade")
 add_compile_definitions(UADE_DATA_PATH="${UADE_DATA_PATH}")
 add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
-add_compile_definitions(EMSCRIPTEN=1)
+add_compile_definitions(EMSCRIPTEN)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/compat/memmemrep.c

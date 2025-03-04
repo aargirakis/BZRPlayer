@@ -240,6 +240,13 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     char uade_basedir[1024];
     snprintf(uade_basedir, 1024, "%s/%s", plugin->info->applicationPath.c_str(),UADE_DATA_PATH);
+
+    int err = uade_boot(uade_basedir);
+    if (err)
+    {
+        return FMOD_ERR_FORMAT;
+    }
+
 #ifdef UNICODEHACK
     plugin->basefilename = plugin->info->filename.substr(plugin->info->filename.find_last_of("/\\") + 1);
 
@@ -247,7 +254,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     delete[] myBuffer;
 
 
-    int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME));
+    err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME), 1);
     if(err)
     {
         unlink(TEMPFILENAME);
@@ -255,7 +262,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
     delete[] myBuffer;
 #else
-    int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(plugin->info->filename.c_str()));
+    err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(plugin->info->filename.c_str()), 1);
     if (err)
     {
         return FMOD_ERR_FORMAT;
@@ -589,9 +596,9 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
         char uade_basedir[1024];
         snprintf(uade_basedir, 1024, "%s/%s", plugin->info->applicationPath.c_str(),UADE_DATA_PATH);
 #ifdef UNICODEHACK
-            int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME));
+        int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME), 0);
 #else
-        int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(plugin->info->filename.c_str()));
+        int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(plugin->info->filename.c_str()), 0);
 #endif
         uade_state* state;
         state = get_uade_state();
