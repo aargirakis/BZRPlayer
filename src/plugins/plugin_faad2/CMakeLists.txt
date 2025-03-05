@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "faad2")
-set(VERSION "2.10.0")
+set(VERSION "2.11.2")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "FAAD2" PARENT_SCOPE)
@@ -16,16 +16,13 @@ endif ()
 
 set(LIB_NAME "${NAME}")
 set(LIB_VERSION "${VERSION}")
-string(REPLACE "." "_" LIB_TAG "${LIB_VERSION}")
 set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_NAME_TAGGED "${LIB_NAME}-${LIB_TAG}")
-set(LIB_FILENAME "${LIB_NAME_TAGGED}.zip")
-set(LIB_FILENAME_URL "${LIB_TAG}.zip")
+set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
+set(LIB_FILENAME_URL "${LIB_VERSION}.tar.gz")
 set(LIB_URL "https://github.com/knik0/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "841841dd2ccd8cac295b15420ad20cc69ca4951a3de642ed2bdba8d634bfcf8a")
-set(LIB_UNPACKED_DIR "${LIB_NAME_TAGGED}")
+set(LIB_SHA_256_HASH "3fcbd305e4abd34768c62050e18ca0986f7d9c5eca343fb98275418013065c0e")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
+        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
 )
 
 add_compile_definitions(HAVE_CONFIG_H=1)
@@ -36,11 +33,7 @@ configure_file(
         @ONLY NEWLINE_STYLE UNIX
 )
 
-configure_file(
-        src/win32_ver.h.in
-        ${EXTERNAL_SOURCE_DIR}/libfaad/win32_ver.h
-        @ONLY NEWLINE_STYLE UNIX
-)
+add_compile_definitions(PACKAGE_VERSION="${LIB_VERSION}")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/libfaad/*.c
