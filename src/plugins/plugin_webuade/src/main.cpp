@@ -617,7 +617,7 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
         state->config.use_timeouts = 1;
         state->config.timeout = -1;
         set_uade_state(state);
-        change_subsong(plugin->currentSubsong);
+        set_subsong(plugin->currentSubsong);
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
