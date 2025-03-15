@@ -545,6 +545,11 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
         return FMOD_ERR_FILE_NOTFOUND;
     }
 
+    if (get_silence_detected())
+    {
+        return FMOD_ERR_FILE_EOF;
+    }
+
     *read = plugin->waveformat.pcmblocksize;
 
     return FMOD_OK;
