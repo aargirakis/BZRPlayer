@@ -10,7 +10,6 @@
 using namespace std;
 
 //CLogFile *LogFile;
-static int samples_left = 0;
 
 FMOD_RESULT handle_error(const char* str)
 {
@@ -70,6 +69,7 @@ public:
     Copl* opl;
     unsigned int m_remainingSamples;
     FMOD_CODEC_WAVEFORMAT waveformat;
+    unsigned long samplesToWrite = 0;
 };
 
 /*
@@ -221,11 +221,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     info->pluginName = PLUGIN_adplug_NAME;
     info->setSeekable(true);
 
-
-    /*plugin->player->update();
-    samples_left = (int)(2 * plugin->waveformat.frequency / plugin->player->getrefresh());
- plugin->player->rewind();
- plugin->opl->init();*/
     cout << "adlib ok\n";
     return FMOD_OK;
 }
@@ -241,25 +236,20 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 {
     auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
 
+    //TODO there is a bug that makes the playing (and seek) slower for a second in the beginning while cutting the end
 
-    int real_len = size;
-    for (;;)
+    while (plugin->samplesToWrite < size)
     {
-        //Here, somewhere, is a bug that makes the playing slower for a second in the beginning
-        if (samples_left < real_len)
-        {
-            real_len -= samples_left;
-            plugin->player->update();
-            samples_left = static_cast<int>(1 * plugin->waveformat.frequency / plugin->player->getrefresh());
-        }
-        else
-        {
-            plugin->opl->update(static_cast<short*>(buffer), size);
-            samples_left -= real_len;
-            *read = size;
-            return FMOD_OK;
-        }
+        plugin->player->update();
+        plugin->samplesToWrite += 1 * plugin->waveformat.frequency / plugin->player->getrefresh();
     }
+
+    plugin->opl->update(static_cast<short*>(buffer), static_cast<int>(size));
+    *read = size;
+    plugin->samplesToWrite -= size;
+
+    return FMOD_OK;
+
     //    unsigned int numSamples = size;
     //    auto maxSamples = numSamples;
 
@@ -304,7 +294,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     //            plugin->m_remainingSamples = remainingSamples;
 
     //            *read = maxSamples - numSamples;
-    return FMOD_OK;
+    //return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
