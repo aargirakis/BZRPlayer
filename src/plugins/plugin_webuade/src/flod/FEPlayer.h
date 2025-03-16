@@ -19,7 +19,7 @@ private:
     unsigned int position;
     std::vector<FESong*> songs;
     std::vector<FESample*> samples;
-    signed char* patterns;
+    //signed char* patterns;
     FESong* song;
     std::vector<FEVoice*> voices;
     int complete;

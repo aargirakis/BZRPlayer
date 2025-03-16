@@ -42,10 +42,10 @@ FEPlayer::~FEPlayer()
         if (songs[i]) delete songs[i];
     }
     songs.clear();
-    if (patterns)
+    /*if (patterns)
     {
         delete[] patterns;
-    }
+    }*/
 }
 
 int FEPlayer::load(void* _data, unsigned long int _length)
