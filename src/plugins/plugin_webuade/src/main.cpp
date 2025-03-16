@@ -470,9 +470,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
         result = FMOD_CODEC_FILE_READ(codec, d, filesize, &bytesread);
 
-
-        std::vector<BaseSample*> samples;
-
         auto* fileLoader = new FileLoader();
 
         AmigaPlayer* player = fileLoader->load((signed short*)d, filesize, plugin->info->filename.c_str());
@@ -480,9 +477,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         delete fileLoader;
         delete[] d;
 
-
         if (player)
         {
+            std::vector<BaseSample*> samples;
             samples = player->getSamples();
             if (samples.size() > 0)
             {
@@ -493,7 +490,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                 plugin->info->samplesLoopLength = new unsigned int[plugin->info->numSamples];
                 plugin->info->samplesVolume = new unsigned short[plugin->info->numSamples];
 
-                int loopStart = 0;
                 for (int j = 0; j < plugin->info->numSamples; j++)
                 {
                     if (samples[j])
