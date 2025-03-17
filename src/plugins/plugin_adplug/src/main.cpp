@@ -2,6 +2,9 @@
 #include <adplug.h>
 #include <emuopl.h>
 #include <kemuopl.h>
+#include <nemuopl.h>
+#include <wemuopl.h>
+#include <surroundopl.h>
 #include <fstream>
 #include <cstring>
 #include "info.h"
@@ -97,7 +100,135 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     auto* plugin = new pluginAdplug(codec);
     Info* info = static_cast<Info*>(userexinfo->userdata);
 
-    plugin->opl = new CKemuopl(44100, true, false);
+    //read config from disk
+    string filename = info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/adplug.cfg";
+    ifstream ifs(filename.c_str());
+    string line;
+
+    bool useDefaults = false;
+    if (ifs.fail())
+    {
+        //The file could not be opened
+        useDefaults = true;
+    }
+
+    int emulator = 2;
+    int freq = 44100;
+    int bits = 16; //TODO didn't added to preferences yet since 8bit still sounds too loud (distorted)
+    plugin->waveformat.channels = 2;
+    bool harmonic = true;
+    plugin->isContinuousPlaybackActive = false;
+
+    if (!useDefaults)
+    {
+        while (getline(ifs, line))
+        {
+            int i = line.find_first_of("=");
+
+            if (i != -1)
+            {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word.compare("emulator") == 0)
+                {
+                    emulator = atoi(value.c_str());
+                }
+                else if (word.compare("frequency") == 0)
+                {
+                    freq = atoi(value.c_str());
+                }
+                else if (word.compare("playback") == 0)
+                {
+                    int playback = atoi(value.c_str());
+                    if (playback == 0) // mono
+                    {
+                        plugin->waveformat.channels = 1;
+                        harmonic = false;
+                    }
+                    else if (playback == 1) // stereo
+                    {
+                        plugin->waveformat.channels = 2;
+                        harmonic = false;
+                    }
+                    else if (playback == 2) // surround (default)
+                    {
+                        plugin->waveformat.channels = 2;
+                        harmonic = true;
+                    }
+                }
+                else if (word.compare("continuous_playback") == 0)
+                {
+                    plugin->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare(
+                        "true") == 0;
+                }
+            }
+        }
+        ifs.close();
+    }
+
+    switch (emulator)
+    {
+        case 0: // Tatsuyuki Satoh (left channel only when stereo)
+        if (harmonic)
+        {
+            COPLprops a = {};
+            COPLprops b = {};
+            a.use16bit = b.use16bit = bits == 16;
+            a.stereo = b.stereo = false;
+            a.opl = new CEmuopl(freq, a.use16bit, a.stereo);
+            b.opl = new CEmuopl(freq, b.use16bit, b.stereo);
+            plugin->opl = new CSurroundopl(&a, &b, bits == 16);
+        }
+        else plugin->opl = new CEmuopl(freq, bits == 16, plugin->waveformat.channels == 2);
+        break;
+
+    case 1:
+        // Ken Silverman (only supports one instance so does not work properly in surround mode in old versions of the adplug library)
+        if (harmonic)
+        {
+            COPLprops a = {};
+            COPLprops b = {};
+            a.use16bit = b.use16bit = bits == 16;
+            a.stereo = b.stereo = false;
+            a.opl = new CKemuopl(freq, a.use16bit, a.stereo);
+            b.opl = new CKemuopl(freq, b.use16bit, b.stereo);
+            plugin->opl = new CSurroundopl(&a, &b, bits == 16);
+        }
+        else plugin->opl = new CKemuopl(freq, bits == 16, plugin->waveformat.channels == 2);
+        break;
+
+    case 2: // Woody (DOSBox)
+    default:
+        if (harmonic)
+        {
+            COPLprops a = {};
+            COPLprops b = {};
+            a.use16bit = b.use16bit = bits == 16;
+            a.stereo = b.stereo = false;
+            a.opl = new CWemuopl(freq, a.use16bit, a.stereo);
+            b.opl = new CWemuopl(freq, b.use16bit, b.stereo);
+            plugin->opl = new CSurroundopl(&a, &b, bits == 16);
+        }
+        else plugin->opl = new CWemuopl(freq, bits == 16, plugin->waveformat.channels == 2);
+        break;
+
+    case 3: // Nuked OPL3 (only works in stereo 16 bits)
+        if (harmonic)
+        {
+            COPLprops a = {};
+            COPLprops b = {};
+            a.use16bit = b.use16bit = true; // Nuked only supports 16-bit
+            a.stereo = b.stereo = true; // Nuked only supports stereo
+            a.opl = new CNemuopl(freq);
+            b.opl = new CNemuopl(freq);
+            plugin->opl = new CSurroundopl(&a, &b, bits == 16); // SurroundOPL can convert to 8-bit though
+        }
+        else plugin->opl = new CNemuopl(freq);
+        plugin->waveformat.channels = 2;
+        bits = 16;
+        break;
+    }
+
     if (!plugin->opl)
     {
         delete plugin->opl;
@@ -113,97 +244,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
-
-    //read config from disk
-
-
-    string filename = info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/adplug.cfg";
-    ifstream ifs(filename.c_str());
-    string line;
-
-    bool useDefaults = false;
-    if (ifs.fail())
-    {
-        //The file could not be opened
-        useDefaults = true;
-    }
-
-    int emulator = 0;
-    int freq = 44100;
-    bool stereo = true;
-    plugin->waveformat.channels = 1;
-    plugin->isContinuousPlaybackActive = false;
-
-    if (!useDefaults)
-    {
-        while (getline(ifs, line))
-        {
-            int i = line.find_first_of("=");
-
-            if (i != -1)
-            {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
-                if (word.compare("frequency") == 0)
-                {
-                    freq = atoi(value.c_str());
-                }
-                else if (word.compare("playback") == 0)
-                {
-                    if (value.compare("stereo") == 0)
-                    {
-                        stereo = true;
-                        plugin->waveformat.channels = 2;
-                    }
-                    else
-                    {
-                        stereo = false;
-                        plugin->waveformat.channels = 2;
-                    }
-                }
-                else if (word.compare("emulator") == 0)
-                {
-                    emulator = atoi(value.c_str());
-                }
-                else if (word.compare("continuous_playback") == 0)
-                {
-                    plugin->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare(
-                        "true") == 0;
-                }
-            }
-        }
-        ifs.close();
-    }
-
-    //we have to create a new engine AGAIN with the new settings
-    delete plugin->opl;
-    delete plugin->player;
-    //stereo plays twice as fast.........................???
-    if (emulator == 2)
-    {
-        plugin->opl = new CKemuopl(freq, true, false);
-    }
-    else
-    {
-        plugin->opl = new CEmuopl(freq, true, false);
-    }
-    if (!plugin->opl)
-    {
-        delete plugin->opl;
-        return FMOD_ERR_FORMAT;
-    }
-
-    plugin->player = CAdPlug::factory(info->filename, plugin->opl);
-    if (!plugin->player)
-    {
-        delete plugin->player;
-        delete plugin->opl;
-        return FMOD_ERR_FORMAT;
-    }
-
-    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.format = bits == 16? FMOD_SOUND_FORMAT_PCM16 : FMOD_SOUND_FORMAT_PCM8;
     plugin->waveformat.frequency = freq;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = (bits >> 3) * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = plugin->isContinuousPlaybackActive
                                        ? -1
                                        : plugin->player->songlength() / 1000 * plugin->waveformat.frequency;
@@ -248,7 +291,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     while (plugin->samplesToWrite < plugin->fixedBufferSize)
     {
         plugin->player->update();
-        plugin->samplesToWrite += 1 * plugin->waveformat.frequency / plugin->player->getrefresh();
+        plugin->samplesToWrite += plugin->waveformat.frequency / plugin->player->getrefresh();
     }
 
     plugin->opl->update(static_cast<short*>(buffer), plugin->fixedBufferSize);

@@ -81,6 +81,19 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderRasterBarsVerticalSpacing->installEventFilter(this);
     ui->sliderNumberOfRasterBars->installEventFilter(this);
 
+    ui->comboBoxEmulatorAdplug->addItem("Tatsuyuki Satoh", "0");
+    ui->comboBoxEmulatorAdplug->addItem("Ken Silverman", "1");
+    ui->comboBoxEmulatorAdplug->addItem("Woody (DOSBox)", "2");
+    ui->comboBoxEmulatorAdplug->addItem("Nuked OPL3", "3");
+
+    ui->comboBoxFreqAdplug->addItem("11025", "11025");
+    ui->comboBoxFreqAdplug->addItem("22050", "22050");
+    ui->comboBoxFreqAdplug->addItem("44100", "44100");
+
+    ui->comboBoxPlaybackAdplug->addItem("Mono", "0");
+    ui->comboBoxPlaybackAdplug->addItem("Stereo", "1");
+    ui->comboBoxPlaybackAdplug->addItem("Surround", "2");
+
     ui->comboBoxStereoSeparationHivelytracker->addItem("0% (Mono)", "0");
     ui->comboBoxStereoSeparationHivelytracker->addItem("25%", "1");
     ui->comboBoxStereoSeparationHivelytracker->addItem("50%", "2");
@@ -758,6 +771,9 @@ void settingsWindow::loadAdplugSettings()
         useDefaults = true;
     }
     //defaults
+    ui->comboBoxEmulatorAdplug->setCurrentIndex(ui->comboBoxEmulatorAdplug->findData("2"));
+    ui->comboBoxFreqAdplug->setCurrentIndex(ui->comboBoxFreqAdplug->findData("44100"));
+    ui->comboBoxPlaybackAdplug->setCurrentIndex(ui->comboBoxPlaybackAdplug->findData("2"));
     ui->checkBoxContinuousPlaybackAdplug->setChecked(false);
 
     if (!useDefaults)
@@ -770,7 +786,22 @@ void settingsWindow::loadAdplugSettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("continuous_playback") == 0)
+                if (word.compare("emulator") == 0)
+                {
+                    int index = ui->comboBoxEmulatorAdplug->findData(value.c_str());
+                    ui->comboBoxEmulatorAdplug->setCurrentIndex(index);
+                }
+                else if (word.compare("frequency") == 0)
+                {
+                    int index = ui->comboBoxFreqAdplug->findData(value.c_str());
+                    ui->comboBoxFreqAdplug->setCurrentIndex(index);
+                }
+                else if (word.compare("playback") == 0)
+                {
+                    int index = ui->comboBoxPlaybackAdplug->findData(value.c_str());
+                    ui->comboBoxPlaybackAdplug->setCurrentIndex(index);
+                }
+                else if (word.compare("continuous_playback") == 0)
                 {
                     ui->checkBoxContinuousPlaybackAdplug->setChecked(value.compare("true") == 0);
                 }
@@ -1106,6 +1137,9 @@ void settingsWindow::saveAdplugSettings()
         //The file could not be opened
         return;
     }
+    ofs << "emulator=" << ui->comboBoxEmulatorAdplug->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "frequency=" << ui->comboBoxFreqAdplug->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "playback=" << ui->comboBoxPlaybackAdplug->currentData().toString().toStdString().c_str() << "\n";
     ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackAdplug->isChecked() ? "true" : "false") << "\n";
     ofs.close();
 }

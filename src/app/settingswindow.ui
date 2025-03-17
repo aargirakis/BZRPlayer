@@ -5443,11 +5443,143 @@ QPushButton:hover
    <property name="flat">
     <bool>true</bool>
    </property>
-   <widget class="QLabel" name="labelContinuousPlaybackAdplug">
+   <widget class="QLabel" name="labelEmulatorAdplug">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>20</y>
+      <width>300</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Emulator</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxEmulatorAdplug">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>20</y>
+      <width>211</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelFreqAdplug">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>70</y>
+      <width>300</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Frequency</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxFreqAdplug">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>70</y>
+      <width>211</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelPlaybackAdplug">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>120</y>
+      <width>300</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Playback</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxPlaybackAdplug">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>120</y>
+      <width>211</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelContinuousPlaybackAdplug">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>170</y>
       <width>261</width>
       <height>31</height>
      </rect>
@@ -5460,7 +5592,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>20</y>
+      <y>170</y>
       <width>151</width>
       <height>31</height>
      </rect>
