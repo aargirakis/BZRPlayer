@@ -67,9 +67,9 @@ public:
 
     CPlayer* player;
     Copl* opl;
-    unsigned int m_remainingSamples;
     FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned long samplesToWrite = 0;
+    const int fixedBufferSize = 256;
 };
 
 /*
@@ -236,17 +236,17 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 {
     auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
 
-    //TODO there is a bug that makes the playing (and seek) slower for a second in the beginning while cutting the end
-
-    while (plugin->samplesToWrite < size)
+    while (plugin->samplesToWrite < plugin->fixedBufferSize)
     {
         plugin->player->update();
         plugin->samplesToWrite += 1 * plugin->waveformat.frequency / plugin->player->getrefresh();
     }
 
-    plugin->opl->update(static_cast<short*>(buffer), static_cast<int>(size));
-    *read = size;
-    plugin->samplesToWrite -= size;
+    plugin->opl->update(static_cast<short*>(buffer), plugin->fixedBufferSize);
+
+    *read = plugin->fixedBufferSize;
+
+    plugin->samplesToWrite -= plugin->fixedBufferSize;
 
     return FMOD_OK;
 
@@ -326,7 +326,7 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
     auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        plugin->m_remainingSamples = 0;
+        plugin->samplesToWrite = 0;
         plugin->player->seek(position);
         return FMOD_OK;
     }
