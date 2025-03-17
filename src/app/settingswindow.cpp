@@ -262,6 +262,11 @@ settingsWindow::settingsWindow(QWidget* parent) :
     QString thumbP(mainWindow->getEffect()->getPrinterFont().left(extensionPos) + ".thumb.png");
     ui->buttonPrinterFontImage->setIcon(QIcon(thumbP));
 
+    if (PLUGIN_adplug_DLL != "")
+    {
+        loadAdplugSettings();
+    }
+
     if (PLUGIN_hivelytracker_DLL != "")
     {
         loadHivelytrackerSettings();
@@ -691,6 +696,11 @@ void settingsWindow::on_buttonOK_clicked()
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
     updateScrollText();
 
+    if (PLUGIN_adplug_DLL != "")
+    {
+        saveAdplugSettings();
+    }
+
     if (PLUGIN_hivelytracker_DLL != "")
     {
         saveHivelytrackerSettings();
@@ -732,6 +742,41 @@ void settingsWindow::on_buttonBrowseHvscSonglengths_clicked()
     if (!file.isEmpty())
     {
         setUiLineEditHvscSonglengthTextForcingRelativePaths(file);
+    }
+}
+
+void settingsWindow::loadAdplugSettings()
+{
+    //read config from disk
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/adplug.cfg";
+    ifstream ifs(filename.c_str());
+    string line;
+    bool useDefaults = false;
+    if (ifs.fail())
+    {
+        //The file could not be opened
+        useDefaults = true;
+    }
+    //defaults
+    ui->checkBoxContinuousPlaybackAdplug->setChecked(false);
+
+    if (!useDefaults)
+    {
+        while (getline(ifs, line))
+        {
+            int i = line.find_first_of("=");
+
+            if (i != -1)
+            {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word.compare("continuous_playback") == 0)
+                {
+                    ui->checkBoxContinuousPlaybackAdplug->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+        ifs.close();
     }
 }
 
@@ -1049,6 +1094,22 @@ void settingsWindow::loadSidplaySettings()
     }
 }
 
+void settingsWindow::saveAdplugSettings()
+{
+    //save config to disk
+    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/adplug.cfg";
+    ofstream ofs(filename.c_str());
+    string line;
+
+    if (ofs.fail())
+    {
+        //The file could not be opened
+        return;
+    }
+    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackAdplug->isChecked() ? "true" : "false") << "\n";
+    ofs.close();
+}
+
 void settingsWindow::saveHivelytrackerSettings()
 {
     //save config to disk
@@ -1165,8 +1226,18 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
 {
     int row = item->row();
 
-    if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME)
+    if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_adplug_NAME)
     {
+        ui->groupBoxAdplug->setHidden(false);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLibOpenMPT->setHidden(true);
+        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxUADE->setHidden(true);
+    }
+    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME)
+    {
+        ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(false);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1175,6 +1246,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME)
     {
+        ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(false);
         ui->groupBoxLibsid->setHidden(true);
@@ -1183,6 +1255,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME)
     {
+        ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(false);
@@ -1191,6 +1264,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME)
     {
+        ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1199,6 +1273,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_webuade_NAME)
     {
+        ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1207,6 +1282,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     }
     else
     {
+        ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1306,6 +1382,17 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
     ui->tableWidgetPlugins->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxAdplug->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxAdplug->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxHivelytracker->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -1520,13 +1607,14 @@ void settingsWindow::on_buttonVisualizer_clicked()
 {
     ui->scrollArea->setHidden(true);
     ui->scrollAreaAppearance->setHidden(true);
+    ui->scrollAreaVisualizer->setHidden(false);
     ui->tableWidgetPlugins->setHidden(true);
+    ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
     ui->groupBoxUADE->setHidden(true);
-    ui->scrollAreaVisualizer->setHidden(false);
 }
 
 
@@ -1534,8 +1622,9 @@ void settingsWindow::on_buttonGeneral_clicked()
 {
     ui->scrollArea->setHidden(false);
     ui->scrollAreaAppearance->setHidden(true);
-    ui->tableWidgetPlugins->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(true);
+    ui->tableWidgetPlugins->setHidden(true);
+    ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
@@ -1558,6 +1647,7 @@ void settingsWindow::on_buttonAppearance_clicked()
     ui->scrollAreaAppearance->setHidden(false);
     ui->tableWidgetPlugins->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(true);
+    ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
@@ -2550,6 +2640,9 @@ void settingsWindow::updateCheckBoxes()
         ui->checkBoxVUMeterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
 
+    ui->checkBoxContinuousPlaybackAdplug->setIcon(
+            mainWindow->icons[ui->checkBoxContinuousPlaybackAdplug->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
     ui->checkBoxContinuousPlaybackHivelytracker->setIcon(
         mainWindow->icons[ui->checkBoxContinuousPlaybackHivelytracker->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
@@ -2702,6 +2795,12 @@ void settingsWindow::forceUpdateToSliders()
     on_sliderRasterbarsOpacity_valueChanged(ui->sliderRasterbarsOpacity->value());
     on_sliderRasterBarsVerticalSpacing_valueChanged(ui->sliderRasterBarsVerticalSpacing->value());
     on_sliderNumberOfRasterBars_valueChanged(ui->sliderNumberOfRasterBars->value());
+}
+
+void settingsWindow::on_checkBoxContinuousPlaybackAdplug_toggled()
+{
+    ui->checkBoxContinuousPlaybackAdplug->setIcon(
+        mainWindow->icons[(ui->checkBoxContinuousPlaybackAdplug->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
 void settingsWindow::on_checkBoxContinuousPlaybackHivelytracker_toggled()

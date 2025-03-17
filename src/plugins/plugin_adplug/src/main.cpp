@@ -70,6 +70,7 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned long samplesToWrite = 0;
     const int fixedBufferSize = 256;
+    bool isContinuousPlaybackActive;
 };
 
 /*
@@ -131,6 +132,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     int freq = 44100;
     bool stereo = true;
     plugin->waveformat.channels = 1;
+    plugin->isContinuousPlaybackActive = false;
 
     if (!useDefaults)
     {
@@ -162,6 +164,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                 else if (word.compare("emulator") == 0)
                 {
                     emulator = atoi(value.c_str());
+                }
+                else if (word.compare("continuous_playback") == 0)
+                {
+                    plugin->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare(
+                        "true") == 0;
                 }
             }
         }
@@ -197,7 +204,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.frequency = freq;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = plugin->player->songlength() / 1000 * plugin->waveformat.frequency;
+    plugin->waveformat.lengthpcm = plugin->isContinuousPlaybackActive
+                                       ? -1
+                                       : plugin->player->songlength() / 1000 * plugin->waveformat.frequency;
 
     codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
@@ -315,7 +324,7 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
-        *length = plugin->player->songlength();
+        *length = plugin->isContinuousPlaybackActive ? -1 : plugin->player->songlength();
         return FMOD_OK;
     }
     return FMOD_OK;

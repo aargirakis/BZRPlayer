@@ -148,6 +148,8 @@ private slots:
 
     void on_checkBoxMilliseconds_toggled(bool checked);
 
+    void on_checkBoxContinuousPlaybackAdplug_toggled();
+
     void on_checkBoxContinuousPlaybackHivelytracker_toggled();
 
     void on_SliderStereoSeparationOpenMPT_valueChanged(int value);
@@ -221,6 +223,8 @@ private slots:
 private:
     void updateColorButtons();
 
+    void loadAdplugSettings();
+    void saveAdplugSettings();
     void loadHivelytrackerSettings();
     void saveHivelytrackerSettings();
     void loadSidplaySettings();

@@ -5288,6 +5288,194 @@ QPushButton:hover
     </property>
    </widget>
   </widget>
+  <widget class="QGroupBox" name="groupBoxAdplug">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>220</y>
+     <width>701</width>
+     <height>361</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QWidget
+                 {
+                 border-color:#ff2828;
+                 selection-background-color: #333333/*selection*/;
+                 selection-color: #ffffff/*main text*/;
+                 font-family:Roboto;
+                 font-size:14px;
+                 background-color:#282828/*background*/;
+                 color:#ffffff/*main text*/;
+                 }
+                 QTextEdit {
+                 border: 8px solid;
+                 border-color:#009379/*main*/;
+                 border-radius: 3px;
+                 padding: 1px 18px 1px 3px;
+                 min-width: 6em;
+                 }
+
+                 QSlider::groove:horizontal {
+                 background-color: #404040/*medium*/;
+                 height: 4px;
+                 border-radius: 4px;
+                 }
+                 QSlider::handle:horizontal {
+                 background-color: #009379/*main*/;
+                 border: 2px solid #009379/*main*/;
+                 width: 11px;
+                 height: 20px;
+                 line-height: 20px;
+                 margin-top: -5px;
+                 margin-bottom: -5px;
+                 border-radius: 7px;
+                 }
+                 QSlider::handle:horizontal:hover {
+                 background-color: #00c09e/*main hover*/;
+                 border: 2px solid #00c09e/*main hover*/;
+                 }
+
+
+                 QSlider::sub-page:horizontal {
+                 background-color:#009379/*main*/;
+                 }
+                 QComboBox {
+                 border: 1px solid;
+                 border-color: #009379/*main*/;
+                 border-radius: 3px;
+                 padding: 1px 18px 1px 3px;
+                 min-width: 6em;
+                 }
+
+
+
+                 QComboBox:!editable, QComboBox::drop-down:editable {
+                 background: ;
+                 }
+
+                 /* QComboBox gets the &quot;on&quot; state when the popup is open */
+                 QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+                 background: #333333/*selection*/
+                 }
+
+                 QComboBox:on { /* shift the text when the popup opens */
+                 padding-top: 3px;
+                 padding-left: 4px;
+                 }
+
+                 QComboBox::drop-down {
+                 subcontrol-origin: padding;
+                 subcontrol-position: top right;
+                 width: 15px;
+
+                 border-left-width: 1px;
+                 border-left-color: #009379/*main*/;
+                 border-left-style: solid; /* just a single line */
+                 border-top-right-radius: 3px; /* same radius as the QComboBox */
+                 border-bottom-right-radius: 3px;
+                 }
+                 QComboBox QAbstractItemView {
+                 border: 1px solid;
+                 border-color: #009379/*main*/;
+                 background-color:#282828/*background*/;
+                 outline:none;
+                 }
+                 QComboBox::down-arrow {
+                 image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
+                 }
+
+                 QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+                 top: 1px;
+                 left: 1px;
+                 }
+
+                 QLineEdit {
+                 border: 1px solid;
+                 border-color:#009379/*main*/;
+                 border-radius: 3px;
+                 padding: 1px 18px 1px 3px;
+                 min-width: 6em;
+                 }
+                 QLineEdit:disabled{
+                 border-color:#404040/*medium*/;
+                 }
+                 QWidget:disabled
+                 {
+                 color:#404040/*medium*/;
+
+                 }
+
+                 QSlider::handle:disabled {
+                 background-color: #404040/*medium*/;
+                 border: 2px solid #404040/*medium*/;
+                 }
+                 QSlider::sub-page:horizontal:disabled {
+                 background-color:#404040/*medium*/;
+                 }
+                 QComboBox:disabled {
+                 border: 1px solid #404040/*medium*/;
+
+                 }
+                 QComboBox::drop-down:disabled {
+
+                 border-left-color: #404040/*medium*/;
+
+                 }
+                 QPushButton
+                 {
+                 font-family:roboto;
+                 background-color: #b7b7b7/*button*/;
+                 border-radius: 12px;
+                 padding:6px;
+                 font-size:14px;
+                 color:#282828/*background*/;
+                 }
+                 QPushButton:hover
+                 {
+                 background-color: #ffffff/*button hover*/;
+                 }
+             </string>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+   <widget class="QLabel" name="labelContinuousPlaybackAdplug">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>261</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Continuous Playback</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxContinuousPlaybackAdplug">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>20</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+   </widget>
+  </widget>
   <widget class="QGroupBox" name="groupBoxHivelytracker">
    <property name="geometry">
     <rect>
@@ -5487,38 +5675,38 @@ QPushButton:hover
      <bool>false</bool>
     </property>
    </widget>
-      <widget class="QLabel" name="labelContinuousPlaybackHivelytracker">
-          <property name="geometry">
-              <rect>
-                  <x>30</x>
-                  <y>70</y>
-                  <width>261</width>
-                  <height>31</height>
-              </rect>
-          </property>
-          <property name="text">
-              <string>Continuous Playback</string>
-          </property>
-      </widget>
-      <widget class="QCheckBox" name="checkBoxContinuousPlaybackHivelytracker">
-          <property name="geometry">
-              <rect>
-                  <x>300</x>
-                  <y>70</y>
-                  <width>151</width>
-                  <height>31</height>
-              </rect>
-          </property>
-          <property name="text">
-              <string/>
-          </property>
-          <property name="iconSize">
-              <size>
-                  <width>40</width>
-                  <height>40</height>
-              </size>
-          </property>
-      </widget>
+   <widget class="QLabel" name="labelContinuousPlaybackHivelytracker">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>70</y>
+      <width>261</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Continuous Playback</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxContinuousPlaybackHivelytracker">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>70</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+   </widget>
   </widget>
  </widget>
  <customwidgets>
