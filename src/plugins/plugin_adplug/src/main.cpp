@@ -72,7 +72,6 @@ public:
     Copl* opl;
     FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned long samplesToWrite = 0;
-    const int fixedBufferSize = 256;
     bool isContinuousPlaybackActive;
 };
 
@@ -283,22 +282,19 @@ FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
     return FMOD_OK;
 }
 
-
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
 
-    while (plugin->samplesToWrite < plugin->fixedBufferSize)
+    while (plugin->samplesToWrite < plugin->waveformat.pcmblocksize)
     {
         plugin->player->update();
         plugin->samplesToWrite += plugin->waveformat.frequency / plugin->player->getrefresh();
     }
 
-    plugin->opl->update(static_cast<short*>(buffer), plugin->fixedBufferSize);
-
-    *read = plugin->fixedBufferSize;
-
-    plugin->samplesToWrite -= plugin->fixedBufferSize;
+    plugin->opl->update(static_cast<short*>(buffer), plugin->waveformat.pcmblocksize);
+    *read = plugin->waveformat.pcmblocksize;
+    plugin->samplesToWrite -= plugin->waveformat.pcmblocksize;
 
     return FMOD_OK;
 
