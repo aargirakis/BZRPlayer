@@ -72,6 +72,7 @@ public:
     Copl* opl;
     FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned long samplesToWrite = 0;
+    unsigned long songlength;
     bool isContinuousPlaybackActive;
 };
 
@@ -246,9 +247,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->waveformat.format = bits == 16? FMOD_SOUND_FORMAT_PCM16 : FMOD_SOUND_FORMAT_PCM8;
     plugin->waveformat.frequency = freq;
     plugin->waveformat.pcmblocksize = (bits >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = plugin->isContinuousPlaybackActive
-                                       ? -1
-                                       : plugin->player->songlength() / 1000 * plugin->waveformat.frequency;
+    plugin->waveformat.lengthpcm = -1;
+
+    plugin->songlength = plugin->player->songlength(-1); // it does a rewind: call it only before start playing
 
     codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
@@ -349,23 +350,17 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 {
     auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
 
-    //printf("lengthtype: %i ",lengthtype);
-
-    if (lengthtype == FMOD_TIMEUNIT_MS)
-    {
-        *length = plugin->waveformat.lengthpcm;
-        return FMOD_OK;
-    }
-    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
         *length = plugin->player->getsubsongs();
         return FMOD_OK;
     }
-    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
-        *length = plugin->isContinuousPlaybackActive ? -1 : plugin->player->songlength();
+        *length = plugin->isContinuousPlaybackActive ? -1 : plugin->songlength;
         return FMOD_OK;
     }
+
     return FMOD_OK;
 }
 
