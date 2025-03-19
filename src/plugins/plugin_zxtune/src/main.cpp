@@ -126,7 +126,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->info->numOrders = zxinfo.Positions;
     plugin->info->loopPosition = zxinfo.LoopPosition;
     plugin->info->loopFrame = zxinfo.LoopFrame;
-    plugin->info->numPatterns = zxinfo.Patterns;
+    // plugin->info->numPatterns = zxinfo.Patterns;
     plugin->info->numFrames = zxinfo.Frames;
     plugin->info->initialTempo = zxinfo.InitialTempo;
     //    plugin->info->title = ZXTune_GetInfo(plugin->player,"Title");
