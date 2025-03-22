@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.28)
 
+#TODO decrease zxtune priority?
+
 set(NAME "zxtune")
-set(VERSION "r4310")
+set(VERSION "r4340")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "ZXTune" PARENT_SCOPE)
@@ -16,7 +18,7 @@ set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
 set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
 set(LIB_FILENAME_URL "${LIB_VERSION}.tar.gz")
 set(LIB_URL "https://github.com/vitamin-caig/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "388eb1d4799be2f34d43cff05bac4ff2b56d6b1f36e168c45fd501e7b8583e54")
+set(LIB_SHA_256_HASH "d196b7f6ddb490652f4283f4dfe2aba1f4a17ecf4084d08ae4386c60f8fd7465")
 download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
@@ -26,7 +28,9 @@ add_compile_definitions(Z80EX_API_REVISION=1)
 add_compile_definitions(Z80EX_VERSION_MAJOR=1)
 add_compile_definitions(Z80EX_VERSION_MINOR=19)
 
-file(GLOB SOURCES
+file(GLOB_RECURSE SOURCES
+        ${EXTERNAL_SOURCE_DIR}/src/*.c
+        ${EXTERNAL_SOURCE_DIR}/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/crc16.c
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/ext_header.c
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/lh1_decoder.c
@@ -108,17 +112,17 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/archives/stub/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/asap/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/ay/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/chi_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/dac_plugin.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/dmm_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/dst_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/et1_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/pdt_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/sqd_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/str_supp.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/gme/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/multi/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/music/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/saa/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/sid/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/tfm/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/xmp/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/xsf/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/text/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/debug/src/*.cpp
@@ -128,6 +132,10 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/devices/fm/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/devices/saa/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/devices/z80/*.cpp
+
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/multitrack/*.cpp
+
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/aym/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/*.cpp
@@ -135,26 +143,31 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/fm/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/multidevice/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/multitrack/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/music/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/saa/*.cpp
+
+
+
+        ${EXTERNAL_SOURCE_DIR}/src/formats/image/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/instrumentation/*.cpp
+
         ${EXTERNAL_SOURCE_DIR}/src/formats/multitrack/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/packed/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/archives/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/decompilers/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/lha/*.cpp
+
+
+
         ${EXTERNAL_SOURCE_DIR}/src/formats/text/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/l10n/stub/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/aym/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/chiptracker.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_base.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_parameters.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_properties_helper.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_simple.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/digitalmusicmaker.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/digitalstudio.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/extremetracker1.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/prodigitracker.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/sampletracker.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/sqdigitaltracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/saa/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/tfm/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/xsf/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/text/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/parameters/src/*.cpp
@@ -176,8 +189,48 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib
         ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar
         ${EXTERNAL_SOURCE_DIR}/3rdparty/z80ex/include
+        ${EXTERNAL_SOURCE_DIR}/apps/libzxtune/src
         ${EXTERNAL_SOURCE_DIR}/include
         ${EXTERNAL_SOURCE_DIR}/src
+        ${EXTERNAL_SOURCE_DIR}/src/module
+        ${EXTERNAL_SOURCE_DIR}/src/module/players
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/aym
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/saa
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/tfm
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/xs
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/asap
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/gme
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/multi
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/music
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/saa
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/sid
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/tfm
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/xmp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/xsf
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/aym
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/emulation
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/fm
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/multidevice
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/multitrack
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/music
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/saa
+        ${EXTERNAL_SOURCE_DIR}/src/formats
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/multitrack
+        ${EXTERNAL_SOURCE_DIR}/src/formats/image
+        ${EXTERNAL_SOURCE_DIR}/src/formats/instrumentation
+        ${EXTERNAL_SOURCE_DIR}/src/formats/multitrack
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/archives
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/decompilers
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/lha
+        ${EXTERNAL_SOURCE_DIR}/src/formats/text
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
