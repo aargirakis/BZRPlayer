@@ -1,3 +1,4 @@
+#include <cstring>
 #include "apps/libzxtune/zxtune.h"
 #include <iostream>
 #include <string>
@@ -11,7 +12,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec);
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
-FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
@@ -40,15 +40,18 @@ public:
     pluginZxtune(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
+        memset(&waveformat, 0, sizeof(waveformat));
     }
 
     ~pluginZxtune()
     {
         //delete some stuff
-        ZXTune_CloseModule(module);
         ZXTune_DestroyPlayer(player);
+        ZXTune_CloseModule(module);
+        ZXTune_CloseData(data);
     }
 
+    ZXTuneHandle data;
     ZXTuneHandle module;
     ZXTuneHandle player;
     Info* info;
@@ -76,8 +79,8 @@ __declspec(dllexport) FMOD_CODEC_DESCRIPTION* __stdcall _FMODGetCodecDescription
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    FMOD_RESULT result;
     auto* plugin = new pluginZxtune(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     unsigned int bytesread;
     unsigned int filesize;
@@ -88,10 +91,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
     /* Allocate space for buffer. */
-    signed short* myBuffer = new signed short[filesize];
+    auto myBuffer = new signed short[filesize];
 
     //rewind file pointer
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+
     if (result != FMOD_OK)
     {
         return FMOD_ERR_FORMAT;
@@ -104,43 +108,19 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
-    ZXTuneHandle data = ZXTune_CreateData(myBuffer, filesize);
-
-    plugin->module = ZXTune_OpenModule(data);
+    plugin->data = ZXTune_CreateData(myBuffer, filesize);
+    plugin->module = ZXTune_OpenModule(plugin->data);
     plugin->player = ZXTune_CreatePlayer(plugin->module);
 
-
     delete [] myBuffer;
+
     if (!plugin->player)
     {
         return FMOD_ERR_FORMAT;
     }
 
-
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
-
     ZXTuneModuleInfo zxinfo;
     ZXTune_GetModuleInfo(plugin->module, &zxinfo);
-
-    cout << "Title: " << ZXTune_GetInfo(plugin->player, "Title") << "\n";
-    //    cout << "Author: " << ZXTune_GetInfo(plugin->player,"Author") << "\n";
-    //    cout << "Program: " << ZXTune_GetInfo(plugin->player,"Program") << "\n";
-    //    cout << "Computer: " << ZXTune_GetInfo(plugin->player,"Computer") << "\n";
-    //    cout << "Date: " << ZXTune_GetInfo(plugin->player,"Date") << "\n";
-    //    cout << "Comment: " << ZXTune_GetInfo(plugin->player,"Comment") << "\n";
-    //    cout << "Version: " << ZXTune_GetInfo(plugin->player,"Version") << "\n";
-    //    cout << "CRC: " << ZXTune_GetInfo(plugin->player,"CRC") << "\n";
-    //    cout << "FixedCRC: " << ZXTune_GetInfo(plugin->player,"FixedCRC") << "\n";
-    //    cout << "FixedCRC: " << ZXTune_GetInfo(plugin->player,"FixedCRC") << "\n";
-    //    cout << "Size: " << ZXTune_GetInfo(plugin->player,"Size") << "\n";
-    //    cout << "Content: " << ZXTune_GetInfo(plugin->player,"Content") << "\n";
-    //    cout << "Container: " << ZXTune_GetInfo(plugin->player,"Container") << "\n";
-    //    cout << "Subpath: " << ZXTune_GetInfo(plugin->player,"Subpath") << "\n";
-    //    cout << "Extension: " << ZXTune_GetInfo(plugin->player,"Extension") << "\n";
-    //    cout << "Filename: " << ZXTune_GetInfo(plugin->player,"Filename") << "\n";
-    //    cout << "Path: " << ZXTune_GetInfo(plugin->player,"Path") << "\n";
-    //    cout << "Fullpath: " << ZXTune_GetInfo(plugin->player,"Fullpath") << "\n";
-
 
     plugin->info->numChannels = zxinfo.Channels;
     plugin->info->numOrders = zxinfo.Positions;
@@ -154,25 +134,20 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     //    plugin->info->replay = ZXTune_GetInfo(plugin->player,"Program");
     //    plugin->info->comments = ZXTune_GetInfo(plugin->player,"Comment");
 
-
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-
 
     codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    plugin->waveformat.lengthpcm = 0xffffffff;
     const uint64_t msecDuration = zxinfo.Frames * ZXTune_GetDuration(plugin->player) / 1000;
     plugin->waveformat.lengthpcm = (msecDuration / 1000.0) * plugin->waveformat.frequency;
 
-
     std::string type = ZXTune_GetInfo(plugin->player, "Type");
-
 
     if (type == "AS0")
     {
@@ -309,18 +284,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->info->pluginName = PLUGIN_zxtune_NAME;
     plugin->info->setSeekable(true);
 
-    //    cout << "zxtune length: " << msecDuration <<  endl;
-    //    cout << "zxtune numChannels: " << plugin->info->numChannels <<  endl;
-    //    cout << "zxtune numOrders: " << plugin->info->numOrders <<  endl;
-    //    cout << "zxtune loopPosition: " << plugin->info->loopPosition <<  endl;
-    //    cout << "zxtune loopFrame: " << plugin->info->loopFrame <<  endl;
-    //    cout << "zxtune numPatterns: " << plugin->info->numPatterns <<  endl;
-    //    cout << "zxtune initialTempo: " << plugin->info->initialTempo <<  endl;
-    //    cout << "zxtune fileformat: " << plugin->info->fileformat <<  endl;
-
-    //    flush(cout);
-
-
     return FMOD_OK;
 }
 
@@ -333,16 +296,14 @@ FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 
 FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    //cout << "read" <<   endl;
     auto* plugin = static_cast<pluginZxtune*>(codec->plugindata);
-    //cout << "zxtune read: " << size <<  endl;
-    //flush(cout);
 
-    int err = ZXTune_RenderSound(plugin->player, buffer, size);
-    //    if (err)
-    //    {
-    //        cout << "returned bytes: " <<  err << endl;
-    //    }
+    int samples = ZXTune_RenderSound(plugin->player, buffer, size);
+    if (samples == -1)
+    {
+        return FMOD_ERR_FORMAT;
+    }
+
     *read = size;
     return FMOD_OK;
 }
@@ -352,18 +313,11 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
     auto plugin = static_cast<pluginZxtune*>(codec->plugindata);
     unsigned int pos = (position / 1000) * plugin->waveformat.frequency;
     plugin->posAfterSeek = ZXTune_SeekSound(plugin->player, pos);
-    //cout << "setposition" <<   endl;
-    return FMOD_OK;
-}
-
-FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
-    //cout << "getlength" <<   endl;
-    auto* plugin = static_cast<pluginZxtune*>(codec->plugindata);
 
     return FMOD_OK;
 }
 
+//TODO needed?
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginZxtune*>(codec->plugindata);
@@ -371,6 +325,6 @@ FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* positi
     {
         *position = plugin->posAfterSeek;
     }
-    //cout << "getposition" <<   endl;
+
     return FMOD_OK;
 }
