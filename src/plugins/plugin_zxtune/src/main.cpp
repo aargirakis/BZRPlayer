@@ -155,9 +155,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     {
         plugin->info->fileformat = "AY ZX Spectrum/Amstrad CPC";
     }
+    else if (type == "AYC")
+    {
+        plugin->info->fileformat = "AYC Amstrad CPC";
+    }
     else if (type == "ASC")
     {
         plugin->info->fileformat = "ASC Sound Master v1.xx-2.xx";
+    }
+    else if (type == "ET1")
+    {
+        plugin->info->fileformat = "Extreme Tracker v1.x";
     }
     else if (type == "FTC")
     {
@@ -166,6 +174,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     else if (type == "GTR")
     {
         plugin->info->fileformat = "Global Tracker";
+    }
+    else if (type == "MTC")
+    {
+        plugin->info->fileformat = "Multitrack Container";
     }
     else if (type == "PSC")
     {

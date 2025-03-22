@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "zxtune")
-set(VERSION "r4310")
+set(VERSION "r4960")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "ZXTune" PARENT_SCOPE)
@@ -14,7 +14,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/vitamin-caig/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "388eb1d4799be2f34d43cff05bac4ff2b56d6b1f36e168c45fd501e7b8583e54")
+set(SHA_256_HASH "d7269ea2b92cedc5d0868a7132622a408620ccc105ef33dc527f6b757e859fbf")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
@@ -40,49 +40,6 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/macbinary.c
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/null_decoder.c
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/pm2_decoder.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/archive.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/arcread.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/cmddata.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/consio.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/crc.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/crypt.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/encname.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/errhnd.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/extinfo.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/extract.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/filcreat.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/file.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/filefn.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/filestr.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/find.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/getbits.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/global.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/isnt.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/list.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/log.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/match.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/options.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/pathfn.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/rarvm.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/rawread.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/rdwrfn.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/recvol.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/resource.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/rijndael.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/rs.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/savepos.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/scantree.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/secpassword.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/sha1.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/smallfn.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/strfn.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/strlist.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/system.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/timefn.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/ulinks.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/unicode.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/unpack.cpp
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar/volume.cpp
         ${EXTERNAL_SOURCE_DIR}/3rdparty/z80ex/z80ex.c
         ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/adler32.c
         ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/compress.c
@@ -103,14 +60,8 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/archives/stub/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/ay/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/chi_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/dac_plugin.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/dmm_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/dst_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/et1_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/pdt_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/sqd_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/str_supp.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/multi/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/saa/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/tfm/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/src/*.cpp
@@ -136,17 +87,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/l10n/stub/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/aym/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/chiptracker.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_base.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_parameters.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_properties_helper.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_simple.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/digitalmusicmaker.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/digitalstudio.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/extremetracker1.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/prodigitracker.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/sampletracker.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/sqdigitaltracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/saa/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/tfm/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/src/*.cpp
@@ -161,17 +102,24 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/tools/text/*.cpp
         src/main.cpp)
 
+list(REMOVE_ITEM SOURCES
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/rar_file.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/ahx_supp.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/v2m_supp.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/abysshighestexperience.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/v2m.cpp
+)
+
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         src/boost_1_66_0
         ${EXTERNAL_SOURCE_DIR}
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/unrar
         ${EXTERNAL_SOURCE_DIR}/3rdparty/z80ex/include
         ${EXTERNAL_SOURCE_DIR}/include
         ${EXTERNAL_SOURCE_DIR}/src
-
+        ${EXTERNAL_SOURCE_DIR}/src/module
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
 

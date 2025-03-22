@@ -1,0 +1,28 @@
+--- src/core/plugins/players/plugins_list.cpp	2020-08-10 22:20:32.000000000 +0200
++++ src/core/plugins/players/plugins_list.cpp	2025-09-19 07:06:18.847947918 +0200
+@@ -47,25 +47,8 @@
+     RegisterFTCSupport(registrator);
+     RegisterCOPSupport(registrator);
+     RegisterTFESupport(registrator);
+-    RegisterXMPPlugins(registrator);
+-    RegisterSIDPlugins(registrator);
+     RegisterET1Support(registrator);
+     RegisterAYCSupport(registrator);
+-    RegisterSPCSupport(registrator);
+     RegisterMTCSupport(registrator);
+-    RegisterGMEPlugins(registrator);
+-    RegisterAHXSupport(registrator);
+-    RegisterPSFSupport(registrator);
+-    RegisterUSFSupport(registrator);
+-    RegisterGSFSupport(registrator);
+-    Register2SFSupport(registrator);
+-    RegisterSDSFSupport(registrator);
+-    RegisterASAPPlugins(registrator);
+-    RegisterMP3Plugin(registrator);
+-    RegisterOGGPlugin(registrator);
+-    RegisterWAVPlugin(registrator);
+-    RegisterFLACPlugin(registrator);
+-    RegisterV2MSupport(registrator);
+-    RegisterVGMPlugins(registrator);
+   }
+ }
