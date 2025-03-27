@@ -124,19 +124,19 @@ QScrollBar#scrollArea:vertical {
 </string>
    </property>
    <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
+    <enum>QFrame::Shape::NoFrame</enum>
    </property>
    <property name="lineWidth">
     <number>0</number>
    </property>
    <property name="verticalScrollBarPolicy">
-    <enum>Qt::ScrollBarAsNeeded</enum>
+    <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
    </property>
    <property name="horizontalScrollBarPolicy">
-    <enum>Qt::ScrollBarAsNeeded</enum>
+    <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
    </property>
    <property name="sizeAdjustPolicy">
-    <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
    </property>
    <property name="widgetResizable">
     <bool>true</bool>
@@ -147,7 +147,7 @@ QScrollBar#scrollArea:vertical {
       <x>0</x>
       <y>0</y>
       <width>700</width>
-      <height>770</height>
+      <height>800</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -329,7 +329,7 @@ QCheckBox:disabled {
       <string>10000</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="labelReverb">
@@ -393,7 +393,7 @@ QCheckBox:disabled {
       <number>1000</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelNormalizerFadeTimeValue">
@@ -412,7 +412,7 @@ QCheckBox:disabled {
       <string>10000</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QCheckBox" name="checkBoxReverb">
@@ -473,7 +473,7 @@ QCheckBox:disabled {
       <string>10000</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="labelSliderResetVolume">
@@ -492,7 +492,7 @@ QCheckBox:disabled {
       <string>100 %</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QSlider" name="sliderResetVolumeToValue">
@@ -514,7 +514,7 @@ QCheckBox:disabled {
       <number>100</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="invertedAppearance">
       <bool>false</bool>
@@ -523,7 +523,7 @@ QCheckBox:disabled {
       <bool>false</bool>
      </property>
      <property name="tickPosition">
-      <enum>QSlider::NoTicks</enum>
+      <enum>QSlider::TickPosition::NoTicks</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelDefaultPlaymode">
@@ -592,7 +592,7 @@ QCheckBox:disabled {
       <number>1000</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelNormalizer">
@@ -637,7 +637,7 @@ QCheckBox:disabled {
       <number>100</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QCheckBox" name="checkBoxResetVolume">
@@ -1166,7 +1166,7 @@ QPushButton:hover
      </rect>
     </property>
     <property name="cursorMoveStyle">
-     <enum>Qt::LogicalMoveStyle</enum>
+     <enum>Qt::CursorMoveStyle::LogicalMoveStyle</enum>
     </property>
     <property name="clearButtonEnabled">
      <bool>false</bool>
@@ -1191,7 +1191,7 @@ font-size:10px;
      <string>Downloaded HVSC Songlengths.md5</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
     </property>
     <property name="wordWrap">
      <bool>true</bool>
@@ -1346,7 +1346,7 @@ QPushButton:hover
     <string notr="true"/>
    </property>
    <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
+    <enum>QFrame::Shape::NoFrame</enum>
    </property>
    <property name="widgetResizable">
     <bool>true</bool>
@@ -1856,7 +1856,7 @@ QPushButton:hover
       <number>50</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelRowHeight">
@@ -1920,7 +1920,7 @@ QPushButton:hover
       <number>50</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QPushButton" name="buttonSelectionColor">
@@ -1974,7 +1974,7 @@ QPushButton:hover
       <number>50</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelNowPlayingFontSize">
@@ -2046,13 +2046,13 @@ QPushButton:hover
     <string notr="true"/>
    </property>
    <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
+    <enum>QFrame::Shape::NoFrame</enum>
    </property>
    <property name="frameShadow">
-    <enum>QFrame::Plain</enum>
+    <enum>QFrame::Shadow::Plain</enum>
    </property>
    <property name="verticalScrollBarPolicy">
-    <enum>Qt::ScrollBarAsNeeded</enum>
+    <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
    </property>
    <property name="widgetResizable">
     <bool>true</bool>
@@ -2334,7 +2334,7 @@ QComboBox::drop-down:disabled {
       <number>1000</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QSlider" name="sliderFrequency">
@@ -2356,7 +2356,7 @@ QComboBox::drop-down:disabled {
       <number>1000</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QSlider" name="sliderSinusSpeed">
@@ -2378,7 +2378,7 @@ QComboBox::drop-down:disabled {
       <number>50</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QSlider" name="sliderScrollSpeed">
@@ -2397,7 +2397,7 @@ QComboBox::drop-down:disabled {
       <number>20</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelAmplitude">
@@ -2633,7 +2633,7 @@ QComboBox::drop-down:disabled {
       <number>50</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelVUMeterTitleFallingPeaks">
@@ -2671,7 +2671,7 @@ QComboBox::drop-down:disabled {
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelTitleScrollerXScale">
@@ -2741,7 +2741,7 @@ QComboBox::drop-down:disabled {
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelScrollerYScale">
@@ -2779,7 +2779,7 @@ QComboBox::drop-down:disabled {
       <number>1000</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelTitleVerticalScrollPosition">
@@ -2901,7 +2901,7 @@ Scroll Position</string>
       <string/>
      </property>
      <property name="autoDefault">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="flat">
       <bool>false</bool>
@@ -3004,7 +3004,7 @@ Opacity</string>
       <number>100</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QSlider" name="sliderVUMeterWidth">
@@ -3026,7 +3026,7 @@ Opacity</string>
       <number>100</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelVUMeterWidth">
@@ -3077,7 +3077,7 @@ Opacity</string>
       <number>100</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelVumeterTitleOpacity">
@@ -3179,7 +3179,7 @@ Opacity</string>
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QSlider" name="sliderPrinterYScale">
@@ -3201,7 +3201,7 @@ Opacity</string>
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelPrinterXScale">
@@ -3421,7 +3421,7 @@ Opacity</string>
       <number>100</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelTitleNumberOfStars">
@@ -3482,7 +3482,7 @@ stars</string>
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelStarSpeed">
@@ -3739,7 +3739,7 @@ from font scaling</string>
       <number>4096</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QSlider" name="sliderResolutionHeight">
@@ -3758,7 +3758,7 @@ from font scaling</string>
       <number>4096</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="label_15">
@@ -3890,7 +3890,7 @@ aspect ratio</string>
       <number>4</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="invertedAppearance">
       <bool>false</bool>
@@ -3957,7 +3957,7 @@ bars</string>
       <number>4</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="invertedAppearance">
       <bool>false</bool>
@@ -4043,7 +4043,7 @@ spacing</string>
       <number>4</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelRasterBarsBarHeight">
@@ -4106,7 +4106,7 @@ spacing</string>
       <number>4</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="labelRasterBarsSpeed">
@@ -4193,10 +4193,10 @@ raster bars</string>
       <string notr="true"/>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
+      <enum>QFrame::Shadow::Plain</enum>
      </property>
      <property name="acceptRichText">
       <bool>false</bool>
@@ -4269,7 +4269,7 @@ raster bars</string>
       <number>100</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
    </widget>
@@ -4530,7 +4530,7 @@ QPushButton:hover
      <number>5</number>
     </property>
     <property name="orientation">
-     <enum>Qt::Horizontal</enum>
+     <enum>Qt::Orientation::Horizontal</enum>
     </property>
    </widget>
    <widget class="QLabel" name="labelSilenceTimeOut">
@@ -4620,7 +4620,7 @@ QPushButton:hover
      </rect>
     </property>
     <property name="cursorMoveStyle">
-     <enum>Qt::LogicalMoveStyle</enum>
+     <enum>Qt::CursorMoveStyle::LogicalMoveStyle</enum>
     </property>
     <property name="clearButtonEnabled">
      <bool>false</bool>
@@ -4852,7 +4852,7 @@ QPushButton:hover
      <number>50</number>
     </property>
     <property name="orientation">
-     <enum>Qt::Horizontal</enum>
+     <enum>Qt::Orientation::Horizontal</enum>
     </property>
    </widget>
    <widget class="QLabel" name="labelStereoSeparationOpenMPT">

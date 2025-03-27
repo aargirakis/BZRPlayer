@@ -3,6 +3,7 @@
 #include "qdebug.h"
 #include <math.h>
 #include <plugins.h>
+#include <QFile>
 #include "qpainterpath.h"
 #include "qregularexpression.h"
 #include "soundmanager.h"

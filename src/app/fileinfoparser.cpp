@@ -1509,11 +1509,12 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             {
                                 tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
                                 //match "(n)" where n is 0-999
-                                QRegExp rx("[(](\\d{1,3})[)]");
-                                if (rx.exactMatch(data))
+                                QRegularExpression rx(QRegularExpression::anchoredPattern(QLatin1String("[(](\\d{1,3})[)]")));
+                                QRegularExpressionMatch match = rx.match(data);
+                                if (match.hasMatch())
                                 {
                                     QStringList list;
-                                    list << rx.cap(1);
+                                    list << match.captured(1);
                                     int number = list[0].toInt();
                                     //check if number is 0-147
                                     if (number >= 0 && number <= 147)

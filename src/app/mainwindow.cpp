@@ -3344,7 +3344,7 @@ void MainWindow::savePlayList(QString path, QString newPath)
         return;
     QTextStream out(&file);
 
-    out.setCodec("UTF-8");
+    out.setEncoding(QStringConverter::Utf8);
     out.setGenerateByteOrderMark(true);
 
     out << "#EXTM3U\n";
@@ -4124,7 +4124,7 @@ vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
     if (file.open(QIODevice::ReadOnly))
     {
         QTextStream in(&file);
-        in.setCodec("UTF-8");
+        in.setEncoding(QStringConverter::Utf8);
 
         QString line = "";
         while (!line.isNull())
@@ -5601,7 +5601,7 @@ void MainWindow::removeHighlight()
     if (tableWidgetPlaylists.contains(currentPlaylist))
     {
         QModelIndex index3 = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 7, QModelIndex());
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(index3, FALSE, Qt::EditRole);
+        tableWidgetPlaylists[currentPlaylist]->model()->setData(index3, false, Qt::EditRole);
         tableWidgetPlaylists[currentPlaylist]->update();
     }
 }

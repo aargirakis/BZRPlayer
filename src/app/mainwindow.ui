@@ -17,7 +17,7 @@
    <bool>false</bool>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::NoFocus</enum>
+   <enum>Qt::FocusPolicy::NoFocus</enum>
   </property>
   <property name="acceptDrops">
    <bool>true</bool>
@@ -250,7 +250,7 @@ padding-left:6px;
      <item row="0" column="0">
       <widget class="QTableWidget" name="tableInfo">
        <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
+        <enum>Qt::FocusPolicy::NoFocus</enum>
        </property>
        <property name="styleSheet">
         <string notr="true">QHeaderView::section
@@ -261,19 +261,19 @@ margin-right:10px;
 }</string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
+        <enum>QFrame::Shadow::Plain</enum>
        </property>
        <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
+        <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
        </property>
        <property name="verticalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
        <property name="horizontalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
        <property name="showGrid">
         <bool>false</bool>
@@ -318,7 +318,7 @@ margin-right:10px;
   </widget>
   <widget class="QDockWidget" name="dockWidgetPlaylist">
    <property name="focusPolicy">
-    <enum>Qt::NoFocus</enum>
+    <enum>Qt::FocusPolicy::NoFocus</enum>
    </property>
    <property name="acceptDrops">
     <bool>true</bool>
@@ -356,7 +356,7 @@ QDockWidget::title {
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_4">
     <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
+     <enum>Qt::FocusPolicy::NoFocus</enum>
     </property>
     <property name="styleSheet">
      <string notr="true">#dockWidgetContents_4
@@ -472,7 +472,7 @@ QTableView { outline:none; }
     </property>
     <layout class="QGridLayout" name="gridLayout_4">
      <property name="sizeConstraint">
-      <enum>QLayout::SetDefaultConstraint</enum>
+      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
      </property>
      <property name="leftMargin">
       <number>9</number>
@@ -489,7 +489,7 @@ QTableView { outline:none; }
      <item row="0" column="0">
       <widget class="QTableView" name="playlist">
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
        </property>
        <property name="styleSheet">
         <string notr="true">QHeaderView::section
@@ -499,19 +499,19 @@ font-family:Roboto;
 </string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="selectionMode">
-        <enum>QAbstractItemView::MultiSelection</enum>
+        <enum>QAbstractItemView::SelectionMode::MultiSelection</enum>
        </property>
        <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
+        <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
        </property>
        <property name="verticalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
        <property name="horizontalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
        <property name="showGrid">
         <bool>true</bool>
@@ -606,7 +606,7 @@ font-family:Roboto;
         <bool>false</bool>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -661,7 +661,7 @@ color:#ffffff;
     </property>
     <layout class="QGridLayout" name="gridLayout_9">
      <property name="sizeConstraint">
-      <enum>QLayout::SetNoConstraint</enum>
+      <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
      </property>
      <item row="0" column="0">
       <widget class="TrackerView" name="trackerView">
@@ -702,7 +702,7 @@ QDockWidget::title {
 </string>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetClosable|QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
     <string>Channels</string>
@@ -730,7 +730,7 @@ color:#ffffff/*main text*/;
   </widget>
   <widget class="QDockWidget" name="dockWidgetPlaylists">
    <property name="focusPolicy">
-    <enum>Qt::NoFocus</enum>
+    <enum>Qt::FocusPolicy::NoFocus</enum>
    </property>
    <property name="styleSheet">
     <string notr="true">
@@ -764,7 +764,7 @@ QDockWidget::title {
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_8">
     <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
+     <enum>Qt::FocusPolicy::NoFocus</enum>
     </property>
     <property name="styleSheet">
      <string notr="true">#dockWidgetContents_8
@@ -889,10 +889,10 @@ border:none;
         <bool>true</bool>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
+        <enum>Qt::FocusPolicy::NoFocus</enum>
        </property>
        <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
+        <enum>Qt::LayoutDirection::LeftToRight</enum>
        </property>
        <property name="styleSheet">
         <string notr="true">QPushButton
@@ -930,7 +930,7 @@ QPushButton:hover
      <item row="0" column="0" colspan="3">
       <widget class="QListWidgetCustom" name="listWidget">
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
        </property>
        <property name="styleSheet">
         <string notr="true">QListWidget::item
@@ -943,7 +943,7 @@ background-color: #333333/*selection*/;
 QListWidget { outline:none; }</string>
        </property>
        <property name="editTriggers">
-        <set>QAbstractItemView::DoubleClicked</set>
+        <set>QAbstractItemView::EditTrigger::DoubleClicked</set>
        </property>
        <property name="showDropIndicator" stdset="0">
         <bool>false</bool>
@@ -952,32 +952,32 @@ QListWidget { outline:none; }</string>
         <bool>false</bool>
        </property>
        <property name="dragDropMode">
-        <enum>QAbstractItemView::NoDragDrop</enum>
+        <enum>QAbstractItemView::DragDropMode::NoDragDrop</enum>
        </property>
        <property name="defaultDropAction">
-        <enum>Qt::MoveAction</enum>
+        <enum>Qt::DropAction::MoveAction</enum>
        </property>
        <property name="alternatingRowColors">
         <bool>false</bool>
        </property>
        <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
+        <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
        </property>
        <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
+        <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
        </property>
        <property name="verticalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
        <property name="horizontalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
       </widget>
      </item>
      <item row="1" column="0">
       <spacer name="horizontalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -990,7 +990,7 @@ QListWidget { outline:none; }</string>
      <item row="1" column="2">
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -1095,7 +1095,7 @@ border:none;
         <string/>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
        <property name="flat">
         <bool>false</bool>
@@ -1116,10 +1116,10 @@ border:none;
         <item row="0" column="0">
          <spacer name="horizontalSpacer_3">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeType">
-           <enum>QSizePolicy::Maximum</enum>
+           <enum>QSizePolicy::Policy::Maximum</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -1228,7 +1228,7 @@ border:0;</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
+              <enum>Qt::FocusPolicy::NoFocus</enum>
              </property>
              <property name="styleSheet">
               <string notr="true">QSlider::groove:horizontal { 
@@ -1278,7 +1278,7 @@ background-color:#009379/*main*/;
               <bool>true</bool>
              </property>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -1316,7 +1316,7 @@ background-color:#009379/*main*/;
               <string>0:00:00.000</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1338,7 +1338,7 @@ background-color:#009379/*main*/;
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
+              <enum>Qt::FocusPolicy::NoFocus</enum>
              </property>
              <property name="styleSheet">
               <string notr="true">QSlider::groove:horizontal { 
@@ -1379,7 +1379,7 @@ background-color:#009379/*main*/;
               <bool>true</bool>
              </property>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -1410,7 +1410,7 @@ background-color:#009379/*main*/;
               </font>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
+              <enum>Qt::FocusPolicy::NoFocus</enum>
              </property>
              <property name="styleSheet">
               <string notr="true">QCheckBox
@@ -1453,10 +1453,10 @@ QCheckBox:hover
            <item row="0" column="12">
             <spacer name="horizontalSpacer_8">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::Maximum</enum>
+              <enum>QSizePolicy::Policy::Maximum</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -1490,11 +1490,11 @@ QCheckBox:hover
               <string/>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
              <layout class="QGridLayout" name="gridLayout_3">
               <property name="sizeConstraint">
-               <enum>QLayout::SetDefaultConstraint</enum>
+               <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
               </property>
               <item row="0" column="1">
                <widget class="QPushButton" name="buttonPrev">
@@ -1517,13 +1517,13 @@ QCheckBox:hover
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
                 <property name="toolTip">
                  <string>Previous</string>
                 </property>
                 <property name="layoutDirection">
-                 <enum>Qt::LeftToRight</enum>
+                 <enum>Qt::LayoutDirection::LeftToRight</enum>
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton
@@ -1595,13 +1595,13 @@ QPushButton:hover
                  <bool>true</bool>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
                 <property name="toolTip">
                  <string>Play</string>
                 </property>
                 <property name="layoutDirection">
-                 <enum>Qt::LeftToRight</enum>
+                 <enum>Qt::LayoutDirection::LeftToRight</enum>
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton
@@ -1670,13 +1670,13 @@ QPushButton:hover
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
                 <property name="toolTip">
                  <string>Next</string>
                 </property>
                 <property name="layoutDirection">
-                 <enum>Qt::LeftToRight</enum>
+                 <enum>Qt::LayoutDirection::LeftToRight</enum>
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton
@@ -1739,7 +1739,7 @@ QPushButton:hover
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
                 <property name="toolTip">
                  <string>Stop</string>
@@ -1793,7 +1793,7 @@ QPushButton:hover
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
                 <property name="toolTip">
                  <string>Enable shuffle</string>
@@ -1864,7 +1864,7 @@ QCheckBox:hover
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable repeat&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1954,7 +1954,7 @@ QCheckBox:hover
               </font>
              </property>
              <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
+              <enum>Qt::LayoutDirection::LeftToRight</enum>
              </property>
              <property name="styleSheet">
               <string notr="true">QLabel
@@ -1969,17 +1969,17 @@ QCheckBox:hover
               <string>100 %</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
            <item row="0" column="3">
             <spacer name="horizontalSpacer_7">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
+              <enum>QSizePolicy::Policy::Expanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2007,7 +2007,7 @@ QCheckBox:hover
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
+              <enum>Qt::FocusPolicy::NoFocus</enum>
              </property>
              <property name="styleSheet">
               <string notr="true">QSlider::groove:horizontal { 
@@ -2054,17 +2054,17 @@ background-color:#009379/*main*/;
               <bool>true</bool>
              </property>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
             </widget>
            </item>
            <item row="0" column="0" colspan="3">
             <spacer name="horizontalSpacer_5">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::Maximum</enum>
+              <enum>QSizePolicy::Policy::Maximum</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2096,17 +2096,17 @@ background-color:#009379/*main*/;
               <string>Pitch</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
            <item row="2" column="7">
             <spacer name="horizontalSpacer_9">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::Maximum</enum>
+              <enum>QSizePolicy::Policy::Maximum</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2119,10 +2119,10 @@ background-color:#009379/*main*/;
            <item row="0" column="10">
             <spacer name="horizontalSpacer_6">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
+              <enum>QSizePolicy::Policy::Expanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2138,10 +2138,10 @@ background-color:#009379/*main*/;
         <item row="0" column="2">
          <spacer name="horizontalSpacer_4">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeType">
-           <enum>QSizePolicy::Maximum</enum>
+           <enum>QSizePolicy::Policy::Maximum</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -2197,7 +2197,7 @@ QDockWidget::title {
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
     <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
+     <enum>Qt::FocusPolicy::NoFocus</enum>
     </property>
     <property name="acceptDrops">
      <bool>false</bool>
@@ -2318,7 +2318,7 @@ background-color: #282828/*background*/;
      <item row="0" column="0">
       <widget class="QTableWidget" name="samples">
        <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
+        <enum>Qt::FocusPolicy::NoFocus</enum>
        </property>
        <property name="acceptDrops">
         <bool>false</bool>
@@ -2330,25 +2330,25 @@ font-family:Roboto;
 }</string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
+        <enum>QFrame::Shadow::Plain</enum>
        </property>
        <property name="lineWidth">
         <number>0</number>
        </property>
        <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
+        <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
        </property>
        <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
+        <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
        </property>
        <property name="verticalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
        <property name="horizontalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
        <property name="showGrid">
         <bool>false</bool>
@@ -2385,11 +2385,11 @@ font-family:Roboto;
      <x>0</x>
      <y>0</y>
      <width>1400</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="layoutDirection">
-    <enum>Qt::LeftToRight</enum>
+    <enum>Qt::LayoutDirection::LeftToRight</enum>
    </property>
    <property name="styleSheet">
     <string notr="true">
@@ -2577,13 +2577,13 @@ border:none;
      <item row="0" column="0">
       <widget class="QPlainTextEdit" name="Debug">
        <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
+        <enum>Qt::FocusPolicy::NoFocus</enum>
        </property>
        <property name="styleSheet">
         <string notr="true"/>
        </property>
        <property name="lineWrapMode">
-        <enum>QPlainTextEdit::NoWrap</enum>
+        <enum>QPlainTextEdit::LineWrapMode::NoWrap</enum>
        </property>
       </widget>
      </item>
@@ -2735,7 +2735,7 @@ background-color: #282828/*background*/;
      <item row="0" column="0">
       <widget class="QTableWidget" name="instruments">
        <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
+        <enum>Qt::FocusPolicy::NoFocus</enum>
        </property>
        <property name="styleSheet">
         <string notr="true">QHeaderView::section
@@ -2744,25 +2744,25 @@ font-family:Roboto;
 }</string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
+        <enum>QFrame::Shadow::Plain</enum>
        </property>
        <property name="lineWidth">
         <number>0</number>
        </property>
        <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
+        <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
        </property>
        <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
+        <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
        </property>
        <property name="verticalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
        <property name="horizontalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
+        <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
        </property>
        <property name="showGrid">
         <bool>false</bool>
