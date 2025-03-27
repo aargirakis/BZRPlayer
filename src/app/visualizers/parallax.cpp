@@ -1,5 +1,4 @@
 #include "parallax.h"
-#include <QGLWidget>
 #include "qapplication.h"
 
 Parallax::Parallax()

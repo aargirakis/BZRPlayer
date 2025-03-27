@@ -1,7 +1,7 @@
 # BZR Player 2 (BZR2)
 
 Audio player for **Windows** and **Linux** (using **Wine**) supporting a wide array of multi-platform **exotic** file
-formats, written in **C++** and **Qt5** with a sound engine based on **FMOD**.\
+formats, written in **C++** and **Qt** with a sound engine based on **FMOD**.\
 The first BZR version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version which is
 coded pretty much from scratch.
 
@@ -16,7 +16,7 @@ coded pretty much from scratch.
 
 **[MSYS2](https://www.msys2.org/)** with following packages is required:
 
-`make` `mingw-w64-ucrt-x86_64-cmake` `mingw-w64-ucrt-x86_64-qt5-base` `mingw-w64-ucrt-x86_64-qt5-svg`
+`make` `mingw-w64-ucrt-x86_64-cmake` `mingw-w64-ucrt-x86_64-qt6-base` `mingw-w64-ucrt-x86_64-qt6-svg`
 `mingw-w64-ucrt-x86_64-SDL2` `mingw-w64-ucrt-x86_64-toolchain` `openssl-devel` `patch`
 
 From the MSYS2 **ucrt64.exe** command prompt go to the project sources dir (take in mind Unix-style paths are

@@ -13,7 +13,6 @@ if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_
 endif ()
 
 set(DATA_DIR "/data")
-set(PLATFORMS_DIR "/platforms")
 set(USER_DIR "/user")
 set(DATA_PLUGINS_DIR "${DATA_DIR}/plugin")
 set(DATA_PLUGINS_FMOD_DIR "${DATA_PLUGINS_DIR}/fmod")
@@ -24,7 +23,8 @@ set(USER_PLUGINS_CONFIG_DIR "${USER_PLUGINS_DIR}/config")
 set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/output")
 set(OUTPUT_DATA_DIR "${OUTPUT_DIR}${DATA_DIR}")
 set(OUTPUT_DATA_PLUGINS_DIR "${OUTPUT_DIR}${DATA_PLUGINS_DIR}")
-set(OUTPUT_PLATFORMS_DIR "${OUTPUT_DIR}${PLATFORMS_DIR}")
+set(OUTPUT_PLATFORMS_DIR "${OUTPUT_DIR}/platforms")
+set(OUTPUT_TLS_DIR "${OUTPUT_DIR}/tls")
 
 include(${CMAKE_SOURCE_DIR}/utils.cmake)
 include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)
@@ -102,7 +102,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     install(
             DIRECTORY
             ${OUTPUT_DATA_DIR}
-            ${OUTPUT_DIR}/platforms
+            ${OUTPUT_PLATFORMS_DIR}
+            ${OUTPUT_TLS_DIR}
             DESTINATION .
     )
 

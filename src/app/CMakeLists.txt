@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.28)
 
 project(app VERSION "${PROJECT_VERSION}")
 
-set(QT_VERSION_MAJOR "5")
+set(QT_VERSION_MAJOR "6")
 include(${CMAKE_SOURCE_DIR}/src/external/qt-ads/qt-ads.cmake)
 
 set(CMAKE_C_STANDARD 17)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -19,7 +19,7 @@ configure_file(
         @ONLY NEWLINE_STYLE UNIX
 )
 
-set(QT_MODULES Core Gui Network OpenGL Svg Widgets Xml)
+set(QT_MODULES Core Gui Network OpenGL OpenGLWidgets Svg Widgets Xml)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
 
@@ -79,6 +79,7 @@ endforeach ()
 list(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
         ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
+        ${CMAKE_PREFIX_PATH}/bin/libb2-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libcrypto-3-x64.dll
         ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
@@ -127,16 +128,24 @@ endforeach ()
 set(RUNTIME_DLLS ${RUNTIME_DLLS} PARENT_SCOPE)
 
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(QT_PLATFORMS_DIR "${CMAKE_PREFIX_PATH}/share/qt${QT_VERSION_MAJOR}/plugins/platforms")
+    set(QT_PLUGINS_DIR "${CMAKE_PREFIX_PATH}/share/qt${QT_VERSION_MAJOR}/plugins")
 else ()
-    set(QT_PLATFORMS_DIR "${CMAKE_PREFIX_PATH}/lib/qt/plugins/platforms")
+    set(QT_PLUGINS_DIR "${CMAKE_PREFIX_PATH}/lib/qt${QT_VERSION_MAJOR}/plugins")
 endif ()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_PLATFORMS_DIR}"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${QT_PLATFORMS_DIR}/qwindows.dll"
+        "${QT_PLUGINS_DIR}/platforms/qwindows.dll"
         "${OUTPUT_PLATFORMS_DIR}"
+        VERBATIM
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_TLS_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${QT_PLUGINS_DIR}/tls/qopensslbackend.dll"
+        "${OUTPUT_TLS_DIR}"
         VERBATIM
 )
 
