@@ -111,7 +111,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             ${OUTPUT_DIR}/BZRPlayer.exe
             ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
             ${OUTPUT_DIR}/fmod.dll
-            ${OUTPUT_DIR}/libqt5advanceddocking.dll
+            ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
             ${OUTPUT_DIR}/LICENSE.txt
             DESTINATION .
     )

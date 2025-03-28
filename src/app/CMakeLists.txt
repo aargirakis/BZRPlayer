@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 project(app VERSION "${PROJECT_VERSION}")
 
+set(QT_VERSION_MAJOR "5")
 include(${CMAKE_SOURCE_DIR}/src/external/qt-ads/qt-ads.cmake)
 
 set(CMAKE_C_STANDARD 17)
@@ -18,7 +19,6 @@ configure_file(
         @ONLY NEWLINE_STYLE UNIX
 )
 
-set(QT_VERSION_MAJOR "5")
 set(QT_MODULES Core Gui Network OpenGL Svg Widgets Xml)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
