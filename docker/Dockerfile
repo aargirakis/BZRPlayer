@@ -1,5 +1,6 @@
 FROM burningdaylight/mingw-arch
 
+RUN sed -i '/^\[community\]/,+1d' /etc/pacman.conf
 RUN pacman-key --init
 RUN pacman -Sy archlinux-keyring --noconfirm
 RUN pacman -Syu --noconfirm ninja patchutils dos2unix base-devel go
