@@ -39,7 +39,7 @@ CRCCheck force
 !define VERSION_FILENAME "bzr2_version_latest"
 !define RELEASE_ARCHIVE_FILENAME_UNVERSIONED "BZR-Player-"
 !define RELEASE_ARCHIVE_FILE_PATH "$releaseArchiveFileDir\$releaseArchiveFilename"
-!define URL_MAIN "http://bzrplayer.blazer.nu"
+!define URL_MAIN "https://bzrplayer.blazer.nu"
 !define URL_LATEST_VERSION "${URL_MAIN}/latest-version.php"
 !define URL_CHANGELOG "${URL_MAIN}/versions_json.php"
 !define URL_RELEASE_ARCHIVE "${URL_MAIN}/getFile.php?id=$version"

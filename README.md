@@ -110,7 +110,7 @@ Useful flags for dev/testing purposes:
 
 #### Useful links:
 
-- [BZR2 website](http://bzrplayer.blazer.nu)
+- [BZR2 website](https://bzrplayer.blazer.nu)
 - [Patreon](https://www.patreon.com/bzrplayer)
 - [Discord](https://discord.com/channels/893241318120239124/893241440174477382)
 

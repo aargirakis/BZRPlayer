@@ -36,9 +36,9 @@ main() {
     xdg-desktop-menu xdg-icon-resource xdg-mime xrdb
   )
   force_reinstall_default="n"
-  url_latest_version="http://bzrplayer.blazer.nu/latest-version.php"
+  url_latest_version="https://bzrplayer.blazer.nu/latest-version.php"
   urls_download=(
-    "http://bzrplayer.blazer.nu/getFile.php?id="
+    "https://bzrplayer.blazer.nu/getFile.php?id="
     "https://github.com/aargirakis/BZRPlayer/releases/download"
     "https://raw.githubusercontent.com/aargirakis/BZRPlayer/binaries_archive/binaries"
   )
