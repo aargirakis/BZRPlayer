@@ -117,14 +117,14 @@ else ()
     )
 endif ()
 
-foreach (DLL ${RUNTIME_DLLS})
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${DLL}"
-            ${OUTPUT_DIR}
-            VERBATIM
-    )
-endforeach ()
+#foreach (DLL ${RUNTIME_DLLS})
+#    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#            "${DLL}"
+#            ${OUTPUT_DIR}
+#            VERBATIM
+#    )
+#endforeach ()
 
 set(RUNTIME_DLLS ${RUNTIME_DLLS} PARENT_SCOPE)
 
@@ -168,9 +168,17 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 )
 
 install(FILES ${OPENSSL_LIBRARIES}
-        DESTINATION ${OUTPUT_DIR})  #TODO use CMAKE_CURRENT_BINARY_DIR
+        DESTINATION ${OUTPUT_DIR})
 
-install(FILES ${CMAKE_PREFIX_PATH}/bin/libcrypto-3-x64.dll DESTINATION ${OUTPUT_DIR})
+install(TARGETS ${PROJECT_NAME}
+        BUNDLE  DESTINATION .
+        RUNTIME DESTINATION ${OUTPUT_DIR}
+)
+
+install(TARGETS ${PROJECT_NAME} RUNTIME_DEPENDENCY_SET DESTINATION ${OUTPUT_DIR})
+#install(TARGETS ${PROJECT_NAME} RUNTIME_DEPENDENCIES DESTINATION ${OUTPUT_DIR})
+
+#install(FILES ${CMAKE_PREFIX_PATH}/bin/libcrypto-3-x64.dll DESTINATION ${OUTPUT_DIR})
 
 add_custom_target(install_all ALL DEPENDS ${PROJECT_NAME})
-add_custom_command(TARGET install_all POST_BUILD COMMAND ${CMAKE_COMMAND} --install ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_command(TARGET install_all POST_BUILD COMMAND ${CMAKE_COMMAND} --install ${CMAKE_CURRENT_BINARY_DIR}) #TODO ${OUTPUT_DIR}
