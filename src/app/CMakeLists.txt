@@ -22,6 +22,7 @@ configure_file(
 set(QT_MODULES Core Gui Network OpenGL OpenGLWidgets Svg Widgets Xml)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 add_compile_definitions(PROJECT_VERSION="${PROJECT_VERSION}")
 add_compile_definitions(DATA_DIR="${DATA_DIR}")
@@ -64,6 +65,8 @@ endforeach ()
 target_link_libraries(${PROJECT_NAME} PRIVATE
         -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod
         ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
+        OpenSSL::Crypto OpenSSL::SSL
+        # OpenSSL::applink #TODO
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -81,7 +84,6 @@ list(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
         ${CMAKE_PREFIX_PATH}/bin/libb2-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
-        ${CMAKE_PREFIX_PATH}/bin/libcrypto-3-x64.dll
         ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
         ${CMAKE_PREFIX_PATH}/bin/libgcc_s_seh-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
@@ -92,7 +94,6 @@ list(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll
         ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll
         ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll
-        ${CMAKE_PREFIX_PATH}/bin/libssl-3-x64.dll
         ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll
         ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll
         ${CMAKE_PREFIX_PATH}/bin/libzstd.dll
@@ -165,3 +166,11 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         VERBATIM
 )
+
+install(FILES ${OPENSSL_LIBRARIES}
+        DESTINATION ${OUTPUT_DIR})  #TODO use CMAKE_CURRENT_BINARY_DIR
+
+install(FILES ${CMAKE_PREFIX_PATH}/bin/libcrypto-3-x64.dll DESTINATION ${OUTPUT_DIR})
+
+add_custom_target(install_all ALL DEPENDS ${PROJECT_NAME})
+add_custom_command(TARGET install_all POST_BUILD COMMAND ${CMAKE_COMMAND} --install ${CMAKE_CURRENT_BINARY_DIR})
