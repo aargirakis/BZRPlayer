@@ -22,6 +22,7 @@ configure_file(
 set(QT_MODULES Core Gui Network OpenGL OpenGLWidgets Svg Widgets Xml)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
+qt_standard_project_setup()
 
 add_compile_definitions(PROJECT_VERSION="${PROJECT_VERSION}")
 add_compile_definitions(DATA_DIR="${DATA_DIR}")
@@ -72,10 +73,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         WIN32_EXECUTABLE true
 )
 
-foreach (QT_MODULE ${QT_MODULES})
-    list(APPEND RUNTIME_DLLS ${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll)
-endforeach ()
-
 list(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
         ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
@@ -125,30 +122,6 @@ foreach (DLL ${RUNTIME_DLLS})
     )
 endforeach ()
 
-set(RUNTIME_DLLS ${RUNTIME_DLLS} PARENT_SCOPE)
-
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(QT_PLUGINS_DIR "${CMAKE_PREFIX_PATH}/share/qt${QT_VERSION_MAJOR}/plugins")
-else ()
-    set(QT_PLUGINS_DIR "${CMAKE_PREFIX_PATH}/lib/qt${QT_VERSION_MAJOR}/plugins")
-endif ()
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_PLATFORMS_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${QT_PLUGINS_DIR}/platforms/qwindows.dll"
-        "${OUTPUT_PLATFORMS_DIR}"
-        VERBATIM
-)
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_TLS_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${QT_PLUGINS_DIR}/tls/qopensslbackend.dll"
-        "${OUTPUT_TLS_DIR}"
-        VERBATIM
-)
-
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_SOURCE_DIR}/LICENSE
@@ -165,3 +138,19 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
         VERBATIM
 )
+
+install(TARGETS ${PROJECT_NAME}
+        BUNDLE  DESTINATION .
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+qt_generate_deploy_app_script(
+        TARGET ${PROJECT_NAME}
+        OUTPUT_SCRIPT deploy_script
+        NO_UNSUPPORTED_PLATFORM_ERROR
+)
+install(SCRIPT ${deploy_script})
+
+#ninja install
+add_custom_target(install_all ALL DEPENDS ${PROJECT_NAME})
+add_custom_command(TARGET install_all POST_BUILD COMMAND ${CMAKE_COMMAND} --install ${CMAKE_INSTALL_BINDIR} --prefix ${CMAKE_INSTALL_BINDIR}) #TODO ${OUTPUT_DIR}
