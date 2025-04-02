@@ -161,16 +161,27 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     memset(&plugin->init68, 0, sizeof(plugin->init68));
 
-    sc68_init(&plugin->init68);
+   // plugin->init68.debug_clr_mask = 0;
+   // plugin->init68.debug_set_mask = 0;
+
+    if (sc68_init(&plugin->init68) < 0)
+    {
+        return FMOD_ERR_FORMAT; //TODO proper error type
+    }
 
     string path = info->dataPath + SC68_DATA_DIR;
     rsc68_set_share(path.c_str());
 
     memset(&plugin->create68, 0, sizeof(plugin->create68));
-    plugin->create68.emu68_debug = 1; // avoids sc68 crash
+   // plugin->create68.emu68_debug = 1; // avoids sc68 crash //TODO
+   // plugin->create68.sampling_rate = 44100; //TODO
     plugin->sc68 = sc68_create(&plugin->create68);
 
-    if (sc68_load_mem(plugin->sc68, (signed short*)myBuffer, filesize) < 0)
+    if (!plugin->sc68) {
+        return FMOD_ERR_FORMAT; //TODO proper error type
+    }
+
+    if (sc68_load_mem(plugin->sc68, myBuffer, filesize))
     {
         invalidFile = true;
         sc68_destroy(plugin->sc68);
@@ -183,11 +194,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 
     //just to get number of subsongs
-    int infoError = sc68_music_info(plugin->sc68, &plugin->info, 1, 0);
+  //  int infoError = sc68_music_info(plugin->sc68, &plugin->info, 1, 0);
     //No idea why I have to put track #2 in here to get the time?
 
 
-    if (infoError)
+  //  if (infoError)
     {
         //        std::cout << "music info error\n";
         //        std::flush(std::cout);
@@ -200,7 +211,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
 
 
-    unsigned int length = plugin->info.time_ms * plugin->waveformat.frequency * plugin->waveformat.channels;
+    unsigned int length = 0xfffff;
     if (length > 0xfffff || length == 0)
     //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
     {
@@ -215,7 +226,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 
     plugin->currentSubsong = 1;
-    sc68_play(plugin->sc68, plugin->currentSubsong, 0);
+    if (sc68_play(plugin->sc68, SC68_DEF_TRACK, SC68_DEF_LOOP) < 0)
+    {
+        return FMOD_ERR_FORMAT;
+    }
+
+    if (sc68_process(plugin->sc68, nullptr, nullptr) == SC68_ERROR)
+    {
+        return FMOD_ERR_FORMAT;
+    }
 
     info->plugin = PLUGIN_sc68;
     info->pluginName = PLUGIN_sc68_NAME;
@@ -225,10 +244,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     {
         info->fileformat = "SNDH";
     }
-    info->author = plugin->info.author;
-    info->composer = plugin->info.composer;
+    info->author = "";
+    info->composer = "";
     info->replay = plugin->info.replay;
-    info->hwname = plugin->info.hwname;
+    info->hwname = "";
     info->title = plugin->info.title;
     info->rate = plugin->info.rate;
     info->address = plugin->info.addr;
@@ -257,10 +276,10 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 {
     auto* plugin = static_cast<pluginSc68*>(codec->plugindata);
 
-    if (sc68_process(plugin->sc68, (signed short*)buffer, plugin->waveformat.pcmblocksize) == SC68_MIX_ERROR)
+    if (sc68_process(plugin->sc68, buffer, plugin->waveformat.pcmblocksize) == SC68_ERROR)
     {
         //cout << "FMOD_ERR_FORMAT play" << endl;
-        //return FMOD_ERR_FORMAT;
+        return FMOD_ERR_FORMAT;
     }
     *read = plugin->waveformat.pcmblocksize;
     return FMOD_OK;
@@ -276,7 +295,10 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
         //but seeking is so slow (like slowly winding it up, audible so it's pretty useless
         //int* seek = 0;
         //api68_seek(plugin->sc68, position,seek);
-        sc68_play(plugin->sc68, plugin->currentSubsong, 0);
+        if (sc68_play(plugin->sc68, plugin->currentSubsong, SC68_DEF_LOOP)<0)
+        {
+            return FMOD_ERR_FORMAT;
+        };
         return FMOD_OK;
     }
     else if (postype == FMOD_TIMEUNIT_SUBSONG)
@@ -296,8 +318,8 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
-        cout << "length: " << plugin->info.time_ms << endl;
-        *length = plugin->info.time_ms;
+        cout << "length: " << "" << endl;
+        *length = 0xfffff;
         if (*length > 0xfffff || *length == 0)
         //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
         {
