@@ -81,19 +81,23 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderRasterBarsVerticalSpacing->installEventFilter(this);
     ui->sliderNumberOfRasterBars->installEventFilter(this);
 
+    ui->comboBoxEmulatorAdplug->installEventFilter(this);
     ui->comboBoxEmulatorAdplug->addItem("Tatsuyuki Satoh", "0");
     ui->comboBoxEmulatorAdplug->addItem("Ken Silverman", "1");
     ui->comboBoxEmulatorAdplug->addItem("Woody (DOSBox)", "2");
     ui->comboBoxEmulatorAdplug->addItem("Nuked OPL3", "3");
 
+    ui->comboBoxFreqAdplug->installEventFilter(this);
     ui->comboBoxFreqAdplug->addItem("11025", "11025");
     ui->comboBoxFreqAdplug->addItem("22050", "22050");
     ui->comboBoxFreqAdplug->addItem("44100", "44100");
 
+    ui->comboBoxPlaybackAdplug->installEventFilter(this);
     ui->comboBoxPlaybackAdplug->addItem("Mono", "0");
     ui->comboBoxPlaybackAdplug->addItem("Stereo", "1");
     ui->comboBoxPlaybackAdplug->addItem("Surround", "2");
 
+    ui->comboBoxStereoSeparationHivelytracker->installEventFilter(this);
     ui->comboBoxStereoSeparationHivelytracker->addItem("0% (Mono)", "0");
     ui->comboBoxStereoSeparationHivelytracker->addItem("25%", "1");
     ui->comboBoxStereoSeparationHivelytracker->addItem("50%", "2");
@@ -138,6 +142,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->comboBox->addItem("ASIO 2.0", FMOD_OUTPUTTYPE_ASIO);
     ui->comboBox->addItem("Windows Sonic", FMOD_OUTPUTTYPE_WINSONIC);
 
+    ui->comboBoxDefaultPlaymode->installEventFilter(this);
     ui->comboBoxDefaultPlaymode->addItem("Last used", -1);
     ui->comboBoxDefaultPlaymode->addItem("Repeat disabled", mainWindow->playmode::normal);
     ui->comboBoxDefaultPlaymode->addItem("Repeat all", mainWindow->playmode::repeatPlaylist);
@@ -680,7 +685,12 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
             obj == ui->comboBoxDitherOpenMPT ||
             obj == ui->SliderStereoSeparationOpenMPT ||
             obj == ui->comboBoxHvscSonglengthsUpdateFrequency ||
-            obj == ui->sliderSilenceTimeOut
+            obj == ui->sliderSilenceTimeOut ||
+            obj == ui->comboBoxEmulatorAdplug ||
+            obj == ui->comboBoxFreqAdplug ||
+            obj == ui->comboBoxPlaybackAdplug ||
+            obj == ui->comboBoxStereoSeparationHivelytracker ||
+            obj == ui->comboBoxDefaultPlaymode
         )
     )
 
