@@ -1,16 +1,39 @@
 #include "kdmeng.h"
-#include <algorithm> //added by blazer
+#include <algorithm>
 #define _USE_MATH_DEFINES
-#include <math.h>
-#include <windows.h> //added by blazer
-#include "MyEndian.h" //added by blazer
-#include <iostream> //for cout
+#include <cstring>
+#include <cmath>
+
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <cstdint>
+typedef int64_t __int64;
+
+typedef union _LARGE_INTEGER {
+	struct {
+		uint32_t LowPart;
+		int32_t HighPart;
+	};
+
+	uint64_t QuadPart;
+} LARGE_INTEGER;
+
+int MulDiv(int number, int numerator, int denominator) {
+	long long ret = number;
+	ret *= numerator;
+	ret /= denominator;
+	return (int) ret;
+}
+#endif
+
+#include "MyEndian.h"
 #include <fstream>
 #include <cstdint>
 using namespace std;
-#define _inline inline //added by blazer
-#define min(a, b)  (((a) < (b)) ? (a) : (b)) //added by blazer
-#define max(a, b)  (((a) > (b)) ? (a) : (b)) //added by blazer
+#define _inline inline
+#define min(a, b)  (((a) < (b)) ? (a) : (b))
+#define max(a, b)  (((a) > (b)) ? (a) : (b))
 
 #define scale(a, b, c) MulDiv( a, b, c )
 

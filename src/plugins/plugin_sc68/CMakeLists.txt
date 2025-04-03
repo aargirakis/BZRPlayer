@@ -5,7 +5,7 @@ set(VERSION "a3eac9974c8d261e2e8cd8bdc0872e05269f8659")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 set(REVISION "r106") # original sourceforge svn revision number
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT} (${REVISION})" PARENT_SCOPE)
 
@@ -35,6 +35,7 @@ add_compile_definitions(SC68_DATA_PATH="${SC68_DATA_PATH}")
 add_compile_definitions(HAVE_FREE)
 add_compile_definitions(HAVE_MALLOC)
 add_compile_definitions(HAVE_STDINT_H)
+add_compile_definitions(HAVE_STRING_H)
 add_compile_definitions(HAVE_ZLIB_H)
 add_compile_definitions(PACKAGE_BUGREPORT="")
 add_compile_definitions(PACKAGE_STRING="")
@@ -76,6 +77,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
 )
 

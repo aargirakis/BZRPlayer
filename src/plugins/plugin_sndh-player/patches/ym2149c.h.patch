@@ -1,0 +1,14 @@
+--- AtariAudio/ym2149c.h	2025-04-07 18:06:54.101566000 +0200
++++ AtariAudio/ym2149c.h	2025-04-07 18:08:48.256883848 +0200
+@@ -14,7 +14,11 @@
+ 	void	Reset(uint32_t hostReplayRate, uint32_t ymClock = 2000000);
+ 	void	WritePort(uint8_t port, uint8_t value);
+ 	uint8_t ReadPort(uint8_t port) const;
++#ifdef WIN32
+ 	int16_t	ComputeNextSample(uint32_t* pSampleDebugInfo = NULL);
++#else
++	int16_t	ComputeNextSample(uint32_t* pSampleDebugInfo = nullptr);
++#endif
+ 	void	InsideTimerIrq(bool inside);
+ 
+ private:

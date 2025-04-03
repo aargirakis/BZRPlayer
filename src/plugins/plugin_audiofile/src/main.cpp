@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
+#include <unistd.h>
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"

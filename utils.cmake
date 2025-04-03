@@ -6,6 +6,14 @@ include(ProcessorCount)
 
 set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
 
+function(set_platform_lib_ext)
+    if (WIN32)
+        set(LIB_EXT "dll" PARENT_SCOPE)
+    else ()
+        set(LIB_EXT "so" PARENT_SCOPE)
+    endif ()
+endfunction()
+
 function(download_to target_filename target_url sha_256_hash
         destination_path display_destination_path target_name)
     if (OFFLINE_MODE EQUAL 1 OR "${target_url}" STREQUAL "")

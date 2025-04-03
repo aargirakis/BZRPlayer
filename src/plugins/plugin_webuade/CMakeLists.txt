@@ -4,7 +4,7 @@ set(NAME "webuade")
 set(VERSION "8abcb3e6841d11269527db6e7085386b0c983014")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "WebUADE+" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
@@ -74,10 +74,13 @@ file(GLOB SOURCES
         src/flod/*.cpp #TODO
         src/md5/*.c    #TODO all src/md5/*.* files (apart types.h) comes from xmms-sid (version from 0.8.96 to 0.8.99.2) that seem untraceable on the web: better upgrade to 0.9.2
         src/main.cpp
-        src/strsep.c
 
         ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
 )
+
+if (WIN32)
+    list(APPEND SOURCES src/strsep.c)
+endif ()
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -95,13 +98,20 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod -lws2_32
-)
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod -lws2_32
+    )
+else ()
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86_64 -lfmod
+    )
+endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
 )
 

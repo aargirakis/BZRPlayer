@@ -4,19 +4,30 @@
 #include <exception>
 #include <fstream>
 #include <vector>
+
+#ifdef WIN32
 #include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
+
 #include <fmod_errors.h>
 #include "info.h"
 #include "sunvox.h"
 #include "plugins.h"
 
-FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
-FMOD_RESULT F_CALLBACK sunvoxclose(FMOD_CODEC_STATE* codec);
-FMOD_RESULT F_CALLBACK sunvoxread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
-FMOD_RESULT F_CALLBACK sunvoxgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
-FMOD_RESULT F_CALLBACK sunvoxsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
+FMOD_RESULT F_CALLBACK sunvoxclose(FMOD_CODEC_STATE *codec);
+
+FMOD_RESULT F_CALLBACK sunvoxread(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
+FMOD_RESULT F_CALLBACK sunvoxgetlength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
+
+FMOD_RESULT F_CALLBACK sunvoxsetposition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                          FMOD_TIMEUNIT postype);
-FMOD_RESULT F_CALLBACK sunvoxgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
+
+FMOD_RESULT F_CALLBACK sunvoxgetposition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 
 FMOD_CODEC_DESCRIPTION codecDescription =
@@ -40,24 +51,21 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginSunvoxLib
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginSunvoxLib {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginSunvoxLib(FMOD_CODEC_STATE* codec)
-    {
+    pluginSunvoxLib(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginSunvoxLib()
-    {
+    ~pluginSunvoxLib() {
     }
 
-    unsigned char* myBuffer;
+    unsigned char *myBuffer;
 
-    Info* info;
+    Info *info;
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
@@ -65,8 +73,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -74,9 +81,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
-    if (sv_load_dll2((static_cast<string>(&DATA_PLUGINS_DIR[1]) + "/sunvox.dll").c_str()))
+FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    if (sv_load_dll2((static_cast<string>(&DATA_PLUGINS_DIR[1]) + "/" + SUNVOX_LIB).c_str()))
         return FMOD_ERR_FORMAT;
     FMOD_RESULT result;
 
@@ -85,8 +91,8 @@ FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    auto* plugin = new pluginSunvoxLib(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    auto *plugin = new pluginSunvoxLib(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
     if (filesize == 4294967295) //stream
     {
         return FMOD_ERR_FORMAT;
@@ -96,14 +102,11 @@ FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
     FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     FMOD_CODEC_FILE_READ(codec, id, 4, &bytesread);
 
-    Info* info = static_cast<Info*>(userexinfo->userdata);
+    Info *info = static_cast<Info *>(userexinfo->userdata);
     // HivelyTracker file
-    if ((id[0] == 'S') && (id[1] == 'V') && (id[2] == 'O') && (id[3] == 'X'))
-    {
+    if ((id[0] == 'S') && (id[1] == 'V') && (id[2] == 'O') && (id[3] == 'X')) {
         info->fileformat = "SunVox";
-    }
-    else
-    {
+    } else {
         return FMOD_ERR_FORMAT;
     }
 
@@ -111,8 +114,7 @@ FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
     cout << "SunVox sv_init\n";
     flush(cout);
     int ver = sv_init(0, 44100, 2, SV_INIT_FLAG_USER_AUDIO_CALLBACK);
-    if (ver >= 0)
-    {
+    if (ver >= 0) {
         int major = (ver >> 16) & 255;
         int minor1 = (ver >> 8) & 255;
         int minor2 = (ver) & 255;
@@ -128,8 +130,7 @@ FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
     res = sv_load_from_memory(0, plugin->myBuffer, filesize);
 
     delete[] plugin->myBuffer;
-    if (res == 0)
-    {
+    if (res == 0) {
         plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
         plugin->waveformat.channels = 2;
         plugin->waveformat.frequency = 44100;
@@ -148,37 +149,31 @@ FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
         sv_play_from_beginning(0);
 
         return FMOD_OK;
-    }
-    else
-    {
+    } else {
         return FMOD_ERR_FORMAT;
     }
 }
 
-FMOD_RESULT F_CALLBACK sunvoxclose(FMOD_CODEC_STATE* codec)
-{
+FMOD_RESULT F_CALLBACK sunvoxclose(FMOD_CODEC_STATE *codec) {
     sv_stop(0);
     sv_close_slot(0);
     sv_deinit();
-    delete static_cast<pluginSunvoxLib*>(codec->plugindata);
+    delete static_cast<pluginSunvoxLib *>(codec->plugindata);
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK sunvoxread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    auto* plugin = static_cast<pluginSunvoxLib*>(codec->plugindata);
+FMOD_RESULT F_CALLBACK sunvoxread(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    auto *plugin = static_cast<pluginSunvoxLib *>(codec->plugindata);
     sv_audio_callback(buffer, size, 0, sv_get_ticks());
     *read = size;
     return FMOD_OK;
 }
 
 
-FMOD_RESULT F_CALLBACK sunvoxsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                         FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginSunvoxLib*>(codec->plugindata);
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
+FMOD_RESULT F_CALLBACK sunvoxsetposition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                         FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginSunvoxLib *>(codec->plugindata);
+    if (postype == FMOD_TIMEUNIT_MS) {
         sv_stop(0);
         sv_play_from_beginning(0);
         return FMOD_OK;
@@ -187,12 +182,10 @@ FMOD_RESULT F_CALLBACK sunvoxsetposition(FMOD_CODEC_STATE* codec, int subsound, 
     return FMOD_ERR_UNSUPPORTED;
 }
 
-FMOD_RESULT F_CALLBACK sunvoxgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginSunvoxLib*>(codec->plugindata);
+FMOD_RESULT F_CALLBACK sunvoxgetposition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginSunvoxLib *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_MODROW)
-    {
+    if (postype == FMOD_TIMEUNIT_MODROW) {
         int line = sv_get_current_line2(0);
         *position = line;
         return FMOD_OK;

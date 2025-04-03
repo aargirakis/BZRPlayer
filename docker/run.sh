@@ -45,7 +45,7 @@ fi
 docker run --rm -v "$PROJECT_DIR:$PROJECT_DIR" --name "$CONTAINER_NAME" \
   $IMAGE_NAME bash -c "$CONTAINER_COMMAND"
 
-if [ "$RUN_BZR2" == 1 ]; then
+if [ "$RUN" == 1 ]; then
   for tmp_dir in "$XDG_RUNTIME_DIR" "$TMPDIR" "$(dirname "$(mktemp -u --tmpdir)")" "/tmp" "/var/tmp" "/var/cache"; do
     if [ -w "$tmp_dir" ]; then
       break

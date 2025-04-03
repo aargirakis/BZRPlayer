@@ -203,7 +203,7 @@ No sample file found"
 
 check_requirements
 
-bzr2_setup_filename="bzr2_setup.sh"
+bzr2_setup_filename="bzr2-wine_setup.sh"
 bzr2_setup="$(dirname "$0")/../$bzr2_setup_filename"
 bzr2_xml_filename="x-bzr-player.xml"
 bzr2_xml="$(dirname "$0")/../$bzr2_xml_filename"

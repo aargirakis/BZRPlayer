@@ -1,0 +1,11 @@
+--- src/files/include/files.h	2025-01-30 20:14:52.000000000 +0100
++++ src/files/include/files.h	2025-04-08 16:10:21.343080294 +0200
+@@ -37,7 +37,7 @@
+ #include <stdio.h>
+ #include "../../include/variables.h"
+ 
+-#if defined(__AROS__) || defined(__MORPHOS__)
++#if defined(__AROS__) || defined(__MORPHOS__) || defined(__LINUX__)
+ #include <stdint.h>
+ #include <string.h>
+ #define int32 int32_t

@@ -1,9 +1,9 @@
 #ifndef _KDMENG_H_
 #define _KDMENG_H_
 
-//#include <foobar2000.h> //blazer uncomment
+//#include <foobar2000.h>
 #include <vector>
-typedef unsigned int t_uint32; //added by blazer
+typedef unsigned int t_uint32;
 class kdmeng
 {
 	enum

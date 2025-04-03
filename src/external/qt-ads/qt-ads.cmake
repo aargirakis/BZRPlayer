@@ -20,14 +20,14 @@ download_patch_and_cmake(
 
 set_target_properties(qtadvanceddocking-qt${QT_VERSION_MAJOR} PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ""
-        LIBRARY_OUTPUT_DIRECTORY ""
+        LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(LIB_QT_ADVANCED_DOCKING_SYSTEM "${OUTPUT_DIR}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}d.dll")
+    set(LIB_QT_ADVANCED_DOCKING_SYSTEM "${OUTPUT_DIR}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}d.${LIB_EXT}")
 else ()
-    set(LIB_QT_ADVANCED_DOCKING_SYSTEM "${OUTPUT_DIR}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.dll")
+    set(LIB_QT_ADVANCED_DOCKING_SYSTEM "${OUTPUT_DIR}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.${LIB_EXT}")
 endif ()
 
 set(LIB_QT_ADVANCED_DOCKING_SYSTEM ${LIB_QT_ADVANCED_DOCKING_SYSTEM} PARENT_SCOPE)

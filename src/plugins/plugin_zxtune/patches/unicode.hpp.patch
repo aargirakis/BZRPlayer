@@ -1,0 +1,11 @@
+--- 3rdparty/unrar/unicode.hpp	2025-04-07 21:07:19.956851000 +0200
++++ 3rdparty/unrar/unicode.hpp	2025-04-07 21:08:18.316125000 +0200
+@@ -29,7 +29,7 @@
+ // Borland C++ Builder 5 uses the old style swprintf without the buffer size,
+ // so we replace it with snwprintf in our custom sprintfw definition.
+ #define sprintfw snwprintf
+-#elif defined (__OpenBSD__)
++#elif defined (__OpenBSD__) || defined(__linux__)
+ #define sprintfw(s,...) *(s)=0
+ #else
+ #define sprintfw _snwprintf

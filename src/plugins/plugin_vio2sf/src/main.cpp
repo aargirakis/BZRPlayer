@@ -56,10 +56,10 @@ public:
     static int InfoMetaPSF(void* context, const char* name, const char* value)
     {
         auto* plugin = static_cast<pluginVio2sf*>(context);
-        if (!_strnicmp(name, "replaygain_", sizeof("replaygain_") - 1))
+        if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1))
         {
         }
-        else if (!_stricmp(name, "length"))
+        else if (!strcasecmp(name, "length"))
         {
             auto getDigit = [](const char*& value)
             {
@@ -108,13 +108,13 @@ public:
                     plugin->m_length = length;
             }
         }
-        else if (!_stricmp(name, "fade"))
+        else if (!strcasecmp(name, "fade"))
         {
         }
-        else if (!_stricmp(name, "utf8"))
+        else if (!strcasecmp(name, "utf8"))
         {
         }
-        else if (!_stricmp(name, "_lib"))
+        else if (!strcasecmp(name, "_lib"))
         {
             //plugin->m_hasLib = true;
         }
@@ -424,7 +424,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                  nullptr, nullptr))
     {
         auto extPos = plugin->info->filename.find_last_of('.');
-        if (extPos == std::string::npos || _stricmp(plugin->info->filename.c_str() + extPos + 1, "2sflib") != 0)
+        if (extPos == std::string::npos || strcasecmp(plugin->info->filename.c_str() + extPos + 1, "2sflib") != 0)
         {
             if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, plugin->TwosfLoad, plugin, nullptr,
                          nullptr, 0, nullptr, nullptr) >= 0)

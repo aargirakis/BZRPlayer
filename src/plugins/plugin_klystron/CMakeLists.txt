@@ -4,7 +4,7 @@ set(NAME "klystron")
 set(VERSION "8655115f58cfe83a5d792c6a703f7bd46cbb2167")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
@@ -33,9 +33,11 @@ download_patch_and_add(
 
 add_compile_definitions(NOSDL_MIXER)
 add_compile_definitions(STEREOOUTPUT)
-add_compile_definitions(USENATIVEAPIS)
 add_compile_definitions(USESDLMUTEXES)
-add_compile_definitions(WIN32)
+
+if (WIN32)
+    add_compile_definitions(USENATIVEAPIS)
+endif ()
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/lib/*.c
@@ -53,10 +55,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE -lwinmm)
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE -lwinmm)
+else ()
+    target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
+endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
 )
