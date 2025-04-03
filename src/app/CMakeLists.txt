@@ -61,10 +61,17 @@ foreach (QT_MODULE ${QT_MODULES})
     target_link_libraries(${PROJECT_NAME} PRIVATE "Qt${QT_VERSION_MAJOR}::${QT_MODULE}")
 endforeach ()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod
-        ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
-)
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod
+            ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
+    )
+else ()
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86_64 -lfmod
+            ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
+    )
+endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "BZRPlayer"
@@ -73,59 +80,65 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 foreach (QT_MODULE ${QT_MODULES})
-    list(APPEND RUNTIME_DLLS ${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll)
+    if (WIN32)
+        list(APPEND RUNTIME_LIBS ${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll)
+    else ()
+        list(APPEND RUNTIME_LIBS ${CMAKE_PREFIX_PATH}/lib/libQt${QT_VERSION_MAJOR}${QT_MODULE}.so)
+    endif ()
 endforeach ()
 
-list(APPEND RUNTIME_DLLS
-        ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
-        ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
-        ${CMAKE_PREFIX_PATH}/bin/libb2-1.dll
-        ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
-        ${CMAKE_PREFIX_PATH}/bin/libcrypto-3-x64.dll
-        ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
-        ${CMAKE_PREFIX_PATH}/bin/libgcc_s_seh-1.dll
-        ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
-        ${CMAKE_PREFIX_PATH}/bin/libgraphite2.dll
-        ${CMAKE_PREFIX_PATH}/bin/libharfbuzz-0.dll
-        ${CMAKE_PREFIX_PATH}/bin/libiconv-2.dll
-        ${CMAKE_PREFIX_PATH}/bin/libintl-8.dll
-        ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll
-        ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll
-        ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll
-        ${CMAKE_PREFIX_PATH}/bin/libssl-3-x64.dll
-        ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll
-        ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll
-        ${CMAKE_PREFIX_PATH}/bin/libzstd.dll
-        ${CMAKE_PREFIX_PATH}/bin/zlib1.dll
-)
+if (WIN32)
+    list(APPEND RUNTIME_LIBS
+            ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
+            ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
+            ${CMAKE_PREFIX_PATH}/bin/libb2-1.dll
+            ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
+            ${CMAKE_PREFIX_PATH}/bin/libcrypto-3-x64.dll
+            ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
+            ${CMAKE_PREFIX_PATH}/bin/libgcc_s_seh-1.dll
+            ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
+            ${CMAKE_PREFIX_PATH}/bin/libgraphite2.dll
+            ${CMAKE_PREFIX_PATH}/bin/libharfbuzz-0.dll
+            ${CMAKE_PREFIX_PATH}/bin/libiconv-2.dll
+            ${CMAKE_PREFIX_PATH}/bin/libintl-8.dll
+            ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll
+            ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll
+            ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll
+            ${CMAKE_PREFIX_PATH}/bin/libssl-3-x64.dll
+            ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll
+            ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll
+            ${CMAKE_PREFIX_PATH}/bin/libzstd.dll
+            ${CMAKE_PREFIX_PATH}/bin/zlib1.dll
+    )
 
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    list(APPEND RUNTIME_DLLS
-            ${CMAKE_PREFIX_PATH}/bin/libdouble-conversion.dll
-            ${CMAKE_PREFIX_PATH}/bin/libmd4c.dll
-    )
-    file(GLOB RUNTIME_DLLS_VERSIONED
-            ${CMAKE_PREFIX_PATH}/bin/libicudt*.dll
-            ${CMAKE_PREFIX_PATH}/bin/libicuin*.dll
-            ${CMAKE_PREFIX_PATH}/bin/libicuuc*.dll
-    )
-    list(APPEND RUNTIME_DLLS ${RUNTIME_DLLS_VERSIONED})
-else ()
-    list(APPEND RUNTIME_DLLS
-            ${CMAKE_PREFIX_PATH}/bin/libssp-0.dll
-    )
+    if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+        list(APPEND RUNTIME_LIBS
+                ${CMAKE_PREFIX_PATH}/bin/libdouble-conversion.dll
+                ${CMAKE_PREFIX_PATH}/bin/libmd4c.dll
+        )
+        file(GLOB RUNTIME_LIBS_VERSIONED
+                ${CMAKE_PREFIX_PATH}/bin/libicudt*.dll
+                ${CMAKE_PREFIX_PATH}/bin/libicuin*.dll
+                ${CMAKE_PREFIX_PATH}/bin/libicuuc*.dll
+        )
+        list(APPEND RUNTIME_LIBS ${RUNTIME_LIBS_VERSIONED})
+    else ()
+        list(APPEND RUNTIME_LIBS
+                ${CMAKE_PREFIX_PATH}/bin/libssp-0.dll
+        )
+    endif ()
 endif ()
 
-foreach (DLL ${RUNTIME_DLLS})
+foreach (LIB ${RUNTIME_LIBS})
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${DLL}"
+            "${LIB}"
             ${OUTPUT_DIR}
             VERBATIM
     )
 endforeach ()
 
-set(RUNTIME_DLLS ${RUNTIME_DLLS} PARENT_SCOPE)
+set(RUNTIME_LIBS ${RUNTIME_LIBS} PARENT_SCOPE)
 
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     set(QT_PLUGINS_DIR "${CMAKE_PREFIX_PATH}/share/qt${QT_VERSION_MAJOR}/plugins")
@@ -133,21 +146,33 @@ else ()
     set(QT_PLUGINS_DIR "${CMAKE_PREFIX_PATH}/lib/qt${QT_VERSION_MAJOR}/plugins")
 endif ()
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_PLATFORMS_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${QT_PLUGINS_DIR}/platforms/qwindows.dll"
-        "${OUTPUT_PLATFORMS_DIR}"
-        VERBATIM
-)
+if (WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_PLATFORMS_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${QT_PLUGINS_DIR}/platforms/qwindows.dll"
+            "${OUTPUT_PLATFORMS_DIR}"
+            VERBATIM
+    )
+endif ()
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_TLS_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${QT_PLUGINS_DIR}/tls/qopensslbackend.dll"
-        "${OUTPUT_TLS_DIR}"
-        VERBATIM
-)
+if (WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_TLS_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${QT_PLUGINS_DIR}/tls/qopensslbackend.dll"
+            "${OUTPUT_TLS_DIR}"
+            VERBATIM
+    )
+else ()
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_TLS_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${QT_PLUGINS_DIR}/tls/libqopensslbackend.so"
+            "${OUTPUT_TLS_DIR}"
+            VERBATIM
+    )
+endif ()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -158,10 +183,14 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${CMAKE_CURRENT_SOURCE_DIR}/static/data
         ${OUTPUT_DATA_DIR}
 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml
-
-        ${OUTPUT_DIR}
-
         VERBATIM
 )
+
+if (WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml
+            ${OUTPUT_DIR}
+            VERBATIM
+    )
+endif ()

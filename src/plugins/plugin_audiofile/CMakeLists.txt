@@ -4,7 +4,13 @@ set(NAME "audiofile")
 set(VERSION "d9363a5d16af4ce55eb35c5aad9ca19bb9c53cbe")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+
+if (WIN32)
+    set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.dll" PARENT_SCOPE)
+else ()
+    set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.so" PARENT_SCOPE)
+endif ()
+
 set(PLUGIN_${NAME}_NAME "Audio File Library" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
@@ -56,5 +62,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
 )

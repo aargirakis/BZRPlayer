@@ -205,7 +205,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         ui->checkBoxLoop->setCheckState(Qt::Checked);
     }
 
-    if (PLUGIN_libsidplayfp_DLL != "") {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         HvscSonglengthsDownloadedEpoch = settings.value("libsidplayfp/timehvscsonglengthsdownloaded", 0).
                 toLongLong();
         HvscSonglengthsPathDownloaded = settings.value("libsidplayfp/hvscsonglengthspath", "").toString();
@@ -613,7 +613,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     qint64 currentSeconds = QDateTime::currentDateTime().toSecsSinceEpoch();
 
-    if (PLUGIN_libsidplayfp_DLL != "") {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         if (HvscSonglengthsFrequency == "Never") {
             //Do nothing
         } else if (HvscSonglengthsFrequency == "At every start") {
@@ -4004,7 +4004,7 @@ void MainWindow::SaveSettings()
         settings.setValue(QString("playlist_") + i.key(), i.value()->horizontalHeader()->saveState());
     }
 
-    if (PLUGIN_libsidplayfp_DLL != "")
+    if (PLUGIN_libsidplayfp_LIB != "")
     {
         settings.setValue(QString("libsidplayfp/updateFrequency"), HvscSonglengthsFrequency);
     }

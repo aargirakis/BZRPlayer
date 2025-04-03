@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 set(NAME "libfc14audiodecoder")
 set(VERSION "1.0.4")
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "libfc14audiodecoder" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 

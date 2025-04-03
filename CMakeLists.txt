@@ -87,35 +87,58 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     if (NOT DEFINED CPACK_EXECUTABLE)
         set(CPACK_EXECUTABLE "${CMAKE_PREFIX_PATH}/bin/cpack")
     endif ()
-    set(CPACK_GENERATOR "ZIP")
+
+    if (WIN32)
+        set(CPACK_GENERATOR ZIP)
+    else ()
+        set(CPACK_GENERATOR TGZ)
+    endif ()
+
     set(CPACK_PACKAGE_NAME "BZR-Player")
     set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
+
+    if (WIN32)
+        string(APPEND CPACK_PACKAGE_FILE_NAME "_win")
+    else ()
+        string(APPEND CPACK_PACKAGE_FILE_NAME "_linux")
+    endif ()
+
     set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
     set(CPACK_OUTPUT_FILE_PREFIX "${OUTPUT_DIR}_release")
 
     install(
-            FILES ${RUNTIME_DLLS}
-            DESTINATION .
-    )
-
-    install(
             DIRECTORY
             ${OUTPUT_DATA_DIR}
-            ${OUTPUT_PLATFORMS_DIR}
             ${OUTPUT_TLS_DIR}
             DESTINATION .
     )
 
+    if (WIN32)
+        install(
+                DIRECTORY
+                ${OUTPUT_PLATFORMS_DIR}
+                DESTINATION .
+        )
+    endif ()
+
+
     install(
-            FILES
-            ${OUTPUT_DIR}/BZRPlayer.exe
-            ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
-            ${OUTPUT_DIR}/fmod.dll
+            FILES ${RUNTIME_LIBS}
             ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
             ${OUTPUT_DIR}/LICENSE.txt
             DESTINATION .
     )
+
+    if (WIN32)
+        install(
+                FILES
+                ${OUTPUT_DIR}/BZRPlayer.exe
+                ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
+                ${OUTPUT_DIR}/fmod.dll
+                DESTINATION .
+        )
+    endif ()
 
     include(CPack)
 

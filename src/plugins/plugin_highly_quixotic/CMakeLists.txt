@@ -4,7 +4,13 @@ set(NAME "highly_quixotic")
 set(VERSION "d730174d436e8cabca90fabdb3ad4ddf614d31cc")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+
+if (WIN32)
+    set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.dll" PARENT_SCOPE)
+else ()
+    set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.so" PARENT_SCOPE)
+endif ()
+
 set(PLUGIN_${NAME}_NAME "Highly Quixotic" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
@@ -51,13 +57,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        ZLIB::ZLIB
-        -lshlwapi
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE -lshlwapi)
+endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
 )

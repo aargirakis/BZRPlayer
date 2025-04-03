@@ -1,4 +1,4 @@
-#include <cstdio>
+#include <climits>
 #include <cstring>
 #include <string>
 #include "fmod_errors.h"
@@ -63,14 +63,14 @@ public:
     static int InfoMetaPSF(void* context, const char* name, const char* value)
     {
         auto* plugin = static_cast<pluginHighlyExp*>(context);
-        if (!_stricmp(name, "_refresh"))
+        if (!strcasecmp(name, "_refresh"))
         {
-            sscanf_s(value, "%u", &plugin->m_loaderState.refresh);
+            sscanf(value, "%u", &plugin->m_loaderState.refresh);
         }
-        else if (!_strnicmp(name, "replaygain_", sizeof("replaygain_") - 1))
+        else if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1))
         {
         }
-        else if (!_stricmp(name, "length"))
+        else if (!strcasecmp(name, "length"))
         {
             auto getDigit = [](const char*& value)
             {
@@ -121,13 +121,13 @@ public:
                 }
             }
         }
-        else if (!_stricmp(name, "fade"))
+        else if (!strcasecmp(name, "fade"))
         {
         }
-        else if (!_stricmp(name, "utf8"))
+        else if (!strcasecmp(name, "utf8"))
         {
         }
-        else if (!_stricmp(name, "_lib"))
+        else if (!strcasecmp(name, "_lib"))
         {
             //plugin->m_hasLib = true;
         }
@@ -164,11 +164,11 @@ public:
 
         if (!plugin->m_loaderState.refresh)
         {
-            if (!_strnicmp((const char*)exe + 113, "Japan", 5))
+            if (!strncasecmp((const char*)exe + 113, "Japan", 5))
                 plugin->m_loaderState.refresh = 60;
-            else if (!_strnicmp((const char*)exe + 113, "Europe", 6))
+            else if (!strncasecmp((const char*)exe + 113, "Europe", 6))
                 plugin->m_loaderState.refresh = 50;
-            else if (!_strnicmp((const char*)exe + 113, "North America", 13))
+            else if (!strncasecmp((const char*)exe + 113, "North America", 13))
                 plugin->m_loaderState.refresh = 60;
         }
 
@@ -294,7 +294,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
     auto extPos = plugin->info->filename.find_last_of('.');
-    if (extPos == std::string::npos || _stricmp(plugin->info->filename.c_str() + extPos + 1,
+    if (extPos == std::string::npos || strcasecmp(plugin->info->filename.c_str() + extPos + 1,
                                                 plugin->psfType == 0x1 ? "psflib" : "psf2lib") != 0)
     {
         bios_set_image(hebios, HEBIOS_SIZE);

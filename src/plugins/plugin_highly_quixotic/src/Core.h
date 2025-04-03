@@ -2,9 +2,7 @@
 #pragma warning(disable : 4200)
 #pragma warning(disable : 26812)
 
-#include <Types.h>
-#include <malloc.h>
-#include <string.h>
+#include <cstring>
 #include <type_traits>
 #include <utility>
 
@@ -15,7 +13,11 @@ namespace core
     */
     inline void* Alloc(size_t size, size_t alignment = 0)
     {
+#ifdef WIN32
         return _aligned_malloc(size, alignment > 0 ? alignment : 16);
+#else
+        return aligned_alloc(alignment > 0 ? alignment : 16, size);
+#endif
     }
 
     template <typename T>
@@ -31,20 +33,23 @@ namespace core
         return p;
     }
 
-    inline void* Realloc(void* ptr, size_t size, size_t alignment = 0)
-    {
+    inline void *ReAlloc(void *ptr, size_t size, size_t alignment = 0) {
+#ifdef WIN32
         return _aligned_realloc(ptr, size, alignment > 0 ? alignment : 16);
+#else
+        return realloc(ptr, size); //TODO do an aligned realloc
+#endif
     }
 
     template <typename T>
-    inline T* Realloc(void* ptr, size_t size)
+    inline T* ReAlloc(void* ptr, size_t size)
     {
         return reinterpret_cast<T*>(ReAlloc(ptr, size, alignof(T)));
     }
 
     inline void Free(const void* ptr)
     {
-        _aligned_free(const_cast<void*>(ptr));
+        free(const_cast<void*>(ptr));
     }
 
     template <typename T1, typename T2>

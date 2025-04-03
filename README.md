@@ -7,8 +7,11 @@ coded pretty much from scratch.
 
 ## Download binaries
 
-- Windows & Linux online installers: https://github.com/aargirakis/BZRPlayer/blob/main/src/inst
-- AUR package: `bzr-player` https://aur.archlinux.org/packages/bzr-player
+Windows & Linux (Wine) online installers: https://github.com/aargirakis/BZRPlayer/blob/main/src/inst \
+AUR packages:
+
+- `bzr-player-bin` https://aur.archlinux.org/packages/bzr-player-bin
+- `bzr-player-wine` https://aur.archlinux.org/packages/bzr-player-wine
 
 ## How To Build
 
@@ -25,11 +28,6 @@ required), then start the configuration process executing:\
 
 To build the project execute:\
 `ninja -C cmake-build`
-
-As result of the building process, in the chosen CMake build directory the `output` directory will be populated with
-binaries.\
-If the **Release** build type is selected, along with `output` also `output_release` directory will be created,
-containing the final archive release file
 
 #### build example
 
@@ -62,6 +60,29 @@ These are the settings for any IDE that supports CMake:
 - (optional) set CMake executable to **<MSYS2_dir>\ucrt64\bin\cmake.exe**\
   (e.g. `C:\msys64\ucrt64\bin\cmake.exe`)
 
+### Linux
+
+Any Arch-based Linux distribution with following packages is required:
+
+`base-devel` `cmake` `dos2unix` `libglvnd` `ninja` `patchutils` `qt6-base` `qt6-declarative` `qt6-svg` `vulkan-headers`
+
+Go to the project sources dir then start the configuration process executing:\
+`cmake -S . -B cmake-build -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
+
+To build the project execute:\
+`ninja -C cmake-build`
+
+- (optional) set CMAKE_PREFIX_PATH if needed\
+  (e.g. `-DCMAKE_PREFIX_PATH=/usr`)
+
+#### build example
+
+```
+d ~/bzr-player &&
+cmake -S . -B cmake-build -DCMAKE_BUILD_TYPE=Release -G Ninja &&
+ninja -C cmake-build 
+```
+
 ### Linux (cross-compilation)
 
 Dockerized cross-compilation toolchain is provided, just execute `run.sh` from the **docker** directory with following
@@ -70,13 +91,26 @@ flags:
 - `CONFIG=1` for running the CMake configuration stage (with **Debug** build type, eventually setting
   `BUILD_TYPE=Release` if needed)
 - `BUILD=1` for building the project
-- `RUN_BZR2=1` for running built BZR2 (**Wine** is required)
+- `RUN=1` for running the built binaries BZR2 (**Wine** is required)
+
+#### build example
+
+```
+~/bzr-player/docker/run.sh CONFIG=1;BUILD=1;RUN=1
+```
 
 ### Offline mode
 
 By default, the CMake configuration stage will download all needed libraries and files. Add `-DOFFLINE_MODE=1` to CMake
 command (or `OFFLINE_MODE=1` to `run.sh`) for switching to offline mode.\
 Offline mode doesn't guarantee that the build will include the latest versions of the files with unmanaged version
+
+### Resulting binaries
+
+As result of the building process, in the chosen CMake build directory the `output` directory will be populated with
+binaries.\
+If the **Release** build type is selected, along with `output` also `output_release` directory will be created,
+containing the final archive release file
 
 ### Windows online installer
 

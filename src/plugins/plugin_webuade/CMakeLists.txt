@@ -4,7 +4,7 @@ set(NAME "webuade")
 set(VERSION "8abcb3e6841d11269527db6e7085386b0c983014")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.dll" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "WebUADE+" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
@@ -95,9 +95,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod -lws2_32
-)
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod -lws2_32
+    )
+else ()
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x86_64 -lfmod
+    )
+endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
