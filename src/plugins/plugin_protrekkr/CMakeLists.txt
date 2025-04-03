@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 set(NAME "protrekkr")
 set(VERSION "2.8.1")
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "ProTrekkr" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
@@ -26,6 +26,12 @@ download_patch_and_add(
 
 add_compile_definitions(BZR2 __STAND_ALONE__ __WINAMP__)
 
+if (WIN32)
+    add_compile_definitions(__WIN32__)
+else ()
+    add_compile_definitions(__GCC__ __LINUX__)
+endif ()
+
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/editors/patterns_blocks.cpp
@@ -36,9 +42,11 @@ file(GLOB SOURCES
         src/main.cpp
 )
 
-list(REMOVE_ITEM SOURCES
-        ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/endianness.cpp
-)
+if (WIN32)
+    list(REMOVE_ITEM SOURCES ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/endianness.cpp)
+else ()
+    list(REMOVE_ITEM SOURCES ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/samples_unpack.cpp)
+endif ()
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -52,16 +60,18 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
+        ${LIB_FMOD_API_DIR}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        ZLIB::ZLIB
-        -lmsacm32
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE -lmsacm32)
+endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
 )

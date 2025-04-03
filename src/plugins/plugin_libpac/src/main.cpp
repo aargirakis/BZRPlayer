@@ -1,10 +1,11 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
-#include "fmod_errors.h"
-#include <pacP.h>
-#include "info.h"
+#include <unistd.h>
 #include <iostream>
+#include "fmod_errors.h"
+#include "pacP.h"
+#include "info.h"
 #include "plugins.h"
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);

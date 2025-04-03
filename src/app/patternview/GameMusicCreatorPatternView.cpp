@@ -1,4 +1,6 @@
 #include "GameMusicCreatorPatternView.h"
+
+#include <mainwindow.h>
 #include <QApplication>
 #include <QDir>
 
@@ -35,7 +37,7 @@ GameMusicCreatorPatternView::GameMusicCreatorPatternView(Tracker* parent, unsign
 
 void GameMusicCreatorPatternView::paintAbove(QPainter* painter, int height, int currentRow)
 {
-    QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
         "trackerview" + QDir::separator() + "gmc_top.png";
     QImage spriteSheet(imagepath);
     //bottom border
@@ -69,7 +71,7 @@ void GameMusicCreatorPatternView::paintBelow(QPainter* painter, int height, int 
     painter->drawLine(0, (height / 2) - 1, 320, height / 2 - 1);
 
     //left border
-    QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
         "trackerview" + QDir::separator() + "gmc_top.png";
     QImage spriteSheet(imagepath);
     QRectF sourceLeftBar(1, 26, 5, 1);

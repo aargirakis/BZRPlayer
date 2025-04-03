@@ -4,7 +4,7 @@ set(NAME "webuade")
 set(VERSION "8abcb3e6841d11269527db6e7085386b0c983014")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "WebUADE+" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
@@ -26,9 +26,11 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-set(UADE_DATA_PATH "${DATA_PLUGINS_DIR}/uade")
-add_compile_definitions(UADE_DATA_PATH="${UADE_DATA_PATH}")
-add_compile_definitions(USER_PLUGINS_CONFIG_DIR="${USER_PLUGINS_CONFIG_DIR}")
+set(UADE_DATA_DIR "${PLUGINS_DIR}/uade")
+set(PLUGIN_${NAME}_DIR "${UADE_DATA_DIR}" PARENT_SCOPE)
+set(UADE_SONGLENGTHS "uade.md5")
+add_compile_definitions(UADE_DATA_DIR="${UADE_DATA_DIR}")
+add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 add_compile_definitions(EMSCRIPTEN)
 
 file(GLOB SOURCES
@@ -74,10 +76,13 @@ file(GLOB SOURCES
         src/flod/*.cpp #TODO
         src/md5/*.c    #TODO all src/md5/*.* files (apart types.h) comes from xmms-sid (version from 0.8.96 to 0.8.99.2) that seem untraceable on the web: better upgrade to 0.9.2
         src/main.cpp
-        src/strsep.c
 
         ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
 )
+
+if (WIN32)
+    list(APPEND SOURCES src/strsep.c)
+endif ()
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -92,46 +97,44 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/md5  #TODO
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
+        ${LIB_FMOD_API_DIR}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod -lws2_32
-)
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            -L"${LIB_FMOD_DIR}" -lfmod -lws2_32
+    )
+else ()
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            -L"${LIB_FMOD_DIR}" -lfmod
+    )
+endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
 )
+
+
+cmake_path(SET UADE_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${UADE_DATA_DIR})
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        ${EXTERNAL_SOURCE_DIR}/players
-        ${OUTPUT_DIR}${UADE_DATA_PATH}/players
+        ${EXTERNAL_SOURCE_DIR}/players ${UADE_DATA_PATH}/players
 
         #TODO where they come from?
         #TODO why MusicMaker-4V, MusicMaker-8V & onEscapee should overwrite the uade bundled ones?
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/dist/players
-        ${OUTPUT_DIR}${UADE_DATA_PATH}/players
+        ${CMAKE_CURRENT_SOURCE_DIR}/dist/players ${UADE_DATA_PATH}/players
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${EXTERNAL_SOURCE_DIR}/amigasrc/score/score
-        ${OUTPUT_DIR}${UADE_DATA_PATH}/amigasrc/score/score
-
+        ${EXTERNAL_SOURCE_DIR}/amigasrc/score/score ${UADE_DATA_PATH}/amigasrc/score/score
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR}/eagleplayer.conf
         ${EXTERNAL_SOURCE_DIR}/uade.conf
         ${EXTERNAL_SOURCE_DIR}/uaerc
-        ${OUTPUT_DIR}${UADE_DATA_PATH}
-
-        VERBATIM
-)
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/dist/uade.md5
-        ${OUTPUT_DIR}${UADE_DATA_PATH}
-        VERBATIM
-)
+        ${CMAKE_CURRENT_SOURCE_DIR}/dist/${UADE_SONGLENGTHS}
+        ${UADE_DATA_PATH}
+        VERBATIM)

@@ -19,6 +19,9 @@
 
 using namespace std;
 
+inline QString dataPath;
+inline QString userPath;
+
 namespace Ui
 {
     class MainWindow;
@@ -42,6 +45,7 @@ class MainWindow : public QMainWindow
     )
 
 public:
+
     enum playmode
     {
         normal = 0,

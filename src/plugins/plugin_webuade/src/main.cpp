@@ -239,7 +239,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
     char uade_basedir[1024];
-    snprintf(uade_basedir, 1024, "%s/%s", plugin->info->applicationPath.c_str(),UADE_DATA_PATH);
+    snprintf(uade_basedir, 1024, "%s/%s", plugin->info->dataPath.c_str(),UADE_DATA_DIR);
 
     int err = uade_boot(uade_basedir);
     if (err)
@@ -286,7 +286,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     //read config from disk
-    string filename = plugin->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/uade.cfg";
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/uade.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -379,7 +379,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     if (plugin->uade_songlengthspath.empty() || plugin->uade_songlengthspath == "/uade.md5")
     {
-        plugin->uade_songlengthspath = plugin->info->applicationPath + UADE_DATA_PATH + "/uade.md5";
+        plugin->uade_songlengthspath = plugin->info->dataPath + UADE_DATA_DIR + "/uade.md5";
     }
 
     uade_state* state;
@@ -595,7 +595,7 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
     if (postype == FMOD_TIMEUNIT_MS)
     {
         char uade_basedir[1024];
-        snprintf(uade_basedir, 1024, "%s/%s", plugin->info->applicationPath.c_str(),UADE_DATA_PATH);
+        snprintf(uade_basedir, 1024, "%s/%s", plugin->info->dataPath.c_str(),UADE_DATA_DIR);
 #ifdef UNICODEHACK
         int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME), 0);
 #else

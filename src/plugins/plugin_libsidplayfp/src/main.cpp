@@ -184,9 +184,9 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->player = new sidplayfp();
 
-    string kernal_filename = info->applicationPath + KERNAL_BIN_DATA_PATH;
-    string basic_filename = info->applicationPath + BASIC_BIN_DATA_PATH;
-    string characters_filename = info->applicationPath + CHARACTERS_BIN_DATA_PATH;
+    string kernal_filename = info->dataPath + KERNAL_BIN_DATA_PATH;
+    string basic_filename = info->dataPath + BASIC_BIN_DATA_PATH;
+    string characters_filename = info->dataPath + CHARACTERS_BIN_DATA_PATH;
 
     plugin->kernal = plugin->loadRom(kernal_filename.c_str(), 8192);
     plugin->basic = plugin->loadRom(basic_filename.c_str(), 8192);
@@ -206,7 +206,7 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
 
     //read sidid
-    string sidid_filename = info->applicationPath + SIDID_CFG_DATA_PATH;
+    string sidid_filename = info->dataPath + SIDID_CFG_DATA_PATH;
     if (!readconfig(sidid_filename.c_str()))
     {
         std::string myString(identify(myBuffer, filesize), MAX_PATHNAME);
@@ -214,7 +214,7 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
 
     //read config from disk
-    string filename = info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
+    string filename = info->userPath + PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
     ifstream ifs(filename.c_str());
     string line;
 
@@ -368,15 +368,9 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-    if (plugin->hvscSonglengthsFile.empty())
-    {
-        plugin->hvscSonglengthsFile = plugin->info->applicationPath + HVSC_SONGLENGTHS_DATA_PATH;
+    if (plugin->hvscSonglengthsFile.empty()) {
+        plugin->hvscSonglengthsFile = plugin->info->dataPath + HVSC_SONGLENGTHS_PATH;
     }
-    else if (plugin->hvscSonglengthsFile == HVSC_SONGLENGTHS_DATA_PATH || plugin->hvscSonglengthsFile == HVSC_SONGLENGTHS_USER_PATH)
-    {
-        plugin->hvscSonglengthsFile = plugin->info->applicationPath + plugin->hvscSonglengthsFile;
-    }
-
 
     plugin->tune = new SidTune(myBuffer, filesize);
     // Check if the tune is valid

@@ -54,7 +54,9 @@ QHeaderView::section
 QCheckBox::indicator {
     width: 0px;
     height: 0px;
+    border: 0px;
 }
+
 QComboBox QAbstractItemView {
     border: 1px solid;
 	border-color: #009379/*main*/; 
@@ -327,9 +329,6 @@ QComboBox QAbstractItemView {
     background-color:#282828/*background*/;
 	outline:none;
 }
-QComboBox::down-arrow {
-    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
-}
 
 QComboBox::down-arrow:on { /* shift the arrow when popup is open */
     top: 1px;
@@ -371,8 +370,10 @@ QComboBox::drop-down:disabled {
 
 }
 
-QCheckBox:disabled {
-    /*border:1px solid #ff0000;*/
+QCheckBox::indicator {
+    width: 0px;
+    height: 0px;
+    border: 0px;
 }
  </string>
     </property>
@@ -903,10 +904,10 @@ QCheckBox:disabled {
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
-       <normaloff>:/bzr/resources/checkbox-off.svg</normaloff>
-       <normalon>:/bzr/resources/checkbox-on.svg</normalon>
-       <disabledoff>:/bzr/resources/checkbox-off-disabled.svg</disabledoff>
-       <disabledon>:/bzr/resources/checkbox-on-disabled.svg</disabledon>:/bzr/resources/checkbox-off.svg</iconset>
+       <normaloff>:/resources/checkbox-off.svg</normaloff>
+       <normalon>:/resources/checkbox-on.svg</normalon>
+       <disabledoff>:/resources/checkbox-off-disabled.svg</disabledoff>
+       <disabledon>:/resources/checkbox-on-disabled.svg</disabledon>:/resources/checkbox-off.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -1138,9 +1139,6 @@ QComboBox QAbstractItemView {
     background-color:#282828/*background*/;
 	outline:none;
 }
-QComboBox::down-arrow {
-    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
-}
 
 QComboBox::down-arrow:on { /* shift the arrow when popup is open */
     top: 1px;
@@ -1229,15 +1227,15 @@ QPushButton:hover
      </rect>
     </property>
     <property name="text">
-     <string>HVSC Songlengths path:</string>
+     <string>HVSC Songlengths:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEditHvscSonglength">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>160</x>
       <y>100</y>
-      <width>281</width>
+      <width>430</width>
       <height>31</height>
      </rect>
     </property>
@@ -1542,9 +1540,6 @@ QComboBox QAbstractItemView {
 	border-color: #009379/*main*/; 
     background-color:#282828/*background*/;
 	outline:none;
-}
-QComboBox::down-arrow {
-    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
 }
 
 QComboBox::down-arrow:on { /* shift the arrow when popup is open */
@@ -2250,9 +2245,6 @@ QComboBox QAbstractItemView {
 	border-color: #009379/*main*/; 
     background-color:#282828/*background*/;
 	outline:none;
-}
-QComboBox::down-arrow {
-    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
 }
 
 QComboBox::down-arrow:on { /* shift the arrow when popup is open */
@@ -3409,7 +3401,7 @@ Opacity</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
-       <normaloff>:/bzr/resources/checkbox-on.svg</normaloff>:/bzr/resources/checkbox-on.svg</iconset>
+       <normaloff>:/resources/checkbox-on.svg</normaloff>:/resources/checkbox-on.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -4446,9 +4438,6 @@ QComboBox QAbstractItemView {
     background-color:#282828/*background*/;
 	outline:none;
 }
-QComboBox::down-arrow {
-    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
-}
 
 QComboBox::down-arrow:on { /* shift the arrow when popup is open */
     top: 1px;
@@ -4683,15 +4672,15 @@ QPushButton:hover
      </rect>
     </property>
     <property name="text">
-     <string>UADE Songlengths path:</string>
+     <string>UADE Songlengths:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEditUADESonglength">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>170</x>
       <y>309</y>
-      <width>281</width>
+      <width>430</width>
       <height>31</height>
      </rect>
     </property>
@@ -4830,9 +4819,6 @@ QComboBox QAbstractItemView {
 	border-color: #009379/*main*/; 
     background-color:#282828/*background*/;
 	outline:none;
-}
-QComboBox::down-arrow {
-    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
 }
 
 QComboBox::down-arrow:on { /* shift the arrow when popup is open */
@@ -5269,9 +5255,6 @@ QPushButton:hover
               background-color:#282828/*background*/;
               outline:none;
               }
-              QComboBox::down-arrow {
-              image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
-              }
 
               QComboBox::down-arrow:on { /* shift the arrow when popup is open */
               top: 1px;
@@ -5456,9 +5439,6 @@ QPushButton:hover
                  border-color: #009379/*main*/;
                  background-color:#282828/*background*/;
                  outline:none;
-                 }
-                 QComboBox::down-arrow {
-                 image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
                  }
 
                  QComboBox::down-arrow:on { /* shift the arrow when popup is open */
@@ -5776,9 +5756,6 @@ QPushButton:hover
                   border-color: #009379/*main*/;
                   background-color:#282828/*background*/;
                   outline:none;
-                  }
-                  QComboBox::down-arrow {
-                  image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
                   }
 
                   QComboBox::down-arrow:on { /* shift the arrow when popup is open */

@@ -1,0 +1,21 @@
+--- src/editors/include/editor_sequencer.h	2025-04-10 08:58:25.533180000 +0200
++++ src/editors/include/editor_sequencer.h	2025-04-10 08:58:01.286821000 +0200
+@@ -34,14 +34,14 @@
+ 
+ // ------------------------------------------------------
+ // Includes
+-#if defined(__GCC__)
++#if defined(BZR2)
++#include "../include/variables.h"
++#elif defined(__GCC__)
+ #include "../../include/variables.h"
+ #include "../../ui/include/misc_draw.h"
+-#elif !defined(BZR2)
+-#include "../include/variables.h"
+-#include "../ui/include/misc_draw.h"
+ #else
+ #include "../include/variables.h"
++#include "../ui/include/misc_draw.h"
+ #endif
+ 
+ // ------------------------------------------------------

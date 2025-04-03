@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QDebug>
 #include <iostream>
+#include <mainwindow.h>
 
 BitmapFont::BitmapFont()
 {
@@ -10,8 +11,7 @@ BitmapFont::BitmapFont()
 
 BitmapFont::BitmapFont(QString filename)
 {
-    QString fontDir = QApplication::applicationDirPath() + QDir::separator() + "data/resources/trackerview/fonts" +
-        QDir::separator();
+    QString fontDir = dataPath + RESOURCES_DIR + "/trackerview/fonts" + QDir::separator();
 
     QFile myFile(fontDir + filename + ".inf");
     if (myFile.open(QIODevice::ReadOnly))

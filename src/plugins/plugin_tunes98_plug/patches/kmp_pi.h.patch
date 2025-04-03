@@ -1,0 +1,14 @@
+--- s98/kmp_pi.h	2025-04-07 20:11:06.642896585 +0200
++++ s98/kmp_pi.h	2025-04-07 20:09:17.927763343 +0200
+@@ -1,6 +1,11 @@
+ #ifndef KMP_PI_H
+ #define KMP_PI_H
++
++#ifdef WIN32
+ #include <windows.h>
++#else
++#include "../include/windows.h"
++#endif
+ 
+ /*
+      KbMedia Player Plugin

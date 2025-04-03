@@ -24,7 +24,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
-    <normaloff>:/bzr/static/data/resources/icon.png</normaloff>:/bzr/static/data/resources/icon.png</iconset>
+    <normaloff>:/static/data/resources/icon.png</normaloff>:/static/data/resources/icon.png</iconset>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -105,8 +105,8 @@ QToolTip {
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;
@@ -331,8 +331,8 @@ margin-right:10px;
 {
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 	font-size:14px;
 }
 QDockWidget::close-button, QDockWidget::float-button {
@@ -531,8 +531,8 @@ font-family:Roboto;
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;
@@ -626,8 +626,8 @@ font-family:Roboto;
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;
@@ -684,8 +684,8 @@ QDockWidget
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;
@@ -739,8 +739,8 @@ QDockWidget
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;
@@ -917,7 +917,7 @@ QPushButton:hover
        </property>
        <property name="icon">
         <iconset resource="resource.qrc">
-         <normaloff>:/bzr/resources/add.svg</normaloff>:/bzr/resources/add.svg</iconset>
+         <normaloff>:/resources/add.svg</normaloff>:/resources/add.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -1016,8 +1016,8 @@ QListWidget { outline:none; }</string>
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;
@@ -1436,8 +1436,8 @@ QCheckBox:hover
              </property>
              <property name="icon">
               <iconset resource="resource.qrc">
-               <normaloff>:/bzr/resources/speaker-off.svg</normaloff>
-               <normalon>:/bzr/resources/speaker.svg</normalon>:/bzr/resources/speaker-off.svg</iconset>
+               <normaloff>:/resources/speaker-off.svg</normaloff>
+               <normalon>:/resources/speaker.svg</normalon>:/resources/speaker-off.svg</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -1546,7 +1546,7 @@ QPushButton:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/bzr/resources/prev.svg</normaloff>:/bzr/resources/prev.svg</iconset>
+                  <normaloff>:/resources/prev.svg</normaloff>:/resources/prev.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1627,7 +1627,7 @@ QPushButton:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/bzr/resources/play.svg</normaloff>:/bzr/resources/play.svg</iconset>
+                  <normaloff>:/resources/play.svg</normaloff>:/resources/play.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1700,7 +1700,7 @@ QPushButton:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/bzr/resources/next.svg</normaloff>:/bzr/resources/next.svg</iconset>
+                  <normaloff>:/resources/next.svg</normaloff>:/resources/next.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1763,7 +1763,7 @@ QPushButton:hover
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>resources/stop.svg</normaloff>resources/stop.svg</iconset>
+                  <normaloff>:/resources/stop.svg</normaloff>:/resources/stop.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1833,7 +1833,7 @@ QCheckBox:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/bzr/resources/shuffle.svg</normaloff>:/bzr/resources/shuffle.svg</iconset>
+                  <normaloff>:/resources/shuffle.svg</normaloff>:/resources/shuffle.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1909,7 +1909,7 @@ QCheckBox:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/bzr/resources/repeat.svg</normaloff>:/bzr/resources/repeat.svg</iconset>
+                  <normaloff>:/resources/repeat.svg</normaloff>:/resources/repeat.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -2170,8 +2170,8 @@ background-color:#009379/*main*/;
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;
@@ -2453,8 +2453,8 @@ background-color:#282828/*background*/;
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 
 }
 QDockWidget::close-button, QDockWidget::float-button {
@@ -2597,8 +2597,8 @@ border:none;
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;
@@ -2794,8 +2794,8 @@ font-family:Roboto;
 	color:#b1b1b1/*dimmed text*/;
 	font-family:Roboto;
 	font-size:14px;
-    titlebar-close-icon: url(:/bzr/resources/close.png);
-    titlebar-normal-icon: url(:/bzr/resources/undock.png);
+    titlebar-close-icon: url(:/resources/close.png);
+    titlebar-normal-icon: url(:/resources/undock.png);
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;

@@ -123,7 +123,7 @@ void OctaMEDPatternView::paintAbove(QPainter* painter, int height, int currentRo
 
     painter->setPen(colorHilite);
 
-    //    t->drawText(QString::fromLocal8Bit(t->m_info->title.c_str()).left(25),painter,406*m_scale,height-(2*m_scale));
+    //    t->drawText(QString::fromLatin1(t->m_info->title).left(25),painter,406*m_scale,height-(2*m_scale));
 }
 
 void OctaMEDPatternView::paintBelow(QPainter* painter, int height, int currentRow)

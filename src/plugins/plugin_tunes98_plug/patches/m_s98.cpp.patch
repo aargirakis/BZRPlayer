@@ -1,6 +1,15 @@
 --- s98/m_s98.cpp	2007-11-26 21:34:26.000000000 +0100
-+++ s98/m_s98.cpp	2024-09-21 11:33:59.369862290 +0200
-@@ -4,13 +4,13 @@
++++ s98/m_s98.cpp	2025-04-07 20:07:38.412312841 +0200
+@@ -1,16 +1,22 @@
+ #define WIN32_LEAN_AND_MEAN
++
++#ifdef WIN32
+ #include <windows.h>
++#else
++#include "../include/windows.h"
++#endif
++
+ #include "device/s98device.h"
  #include "kmp_pi.h"
  //#include "reg.h"
  

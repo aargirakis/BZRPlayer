@@ -1,0 +1,12 @@
+--- s98/device/s98fmgen.cpp	2007-11-26 21:45:14.000000000 +0100
++++ s98/device/s98fmgen.cpp	2025-04-07 20:02:48.179190185 +0200
+@@ -1,4 +1,9 @@
++#ifdef WIN32
+ #include <windows.h>
++#else
++#include "../include/windows.h"
++#endif
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include "s98device.h"

@@ -1,0 +1,15 @@
+--- s98/device/fmgen/headers.h	2007-11-26 18:46:40.000000000 +0100
++++ s98/device/fmgen/headers.h	2025-04-07 20:02:48.175856893 +0200
+@@ -4,7 +4,12 @@
+ #define STRICT
+ #define WIN32_LEAN_AND_MEAN
+ 
++#ifdef WIN32
+ #include <windows.h>
++#else
++#include "../include/windows.h"
++#endif
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <math.h>

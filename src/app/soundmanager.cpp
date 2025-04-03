@@ -1,4 +1,7 @@
 #include "soundmanager.h"
+
+#include <mainwindow.h>
+
 #include "qdatetime.h"
 #include "qdir.h"
 #include <QFile>
@@ -23,150 +26,150 @@ void SoundManager::Init(int device, QString outputfilename)
                FMOD_VERSION);
     }
 
-    if (PLUGIN_klystron_DLL != "")
+    if (PLUGIN_klystron_LIB != "")
     {
-        loadPlugin(PLUGIN_klystron_DLL, 99999);
+        loadPlugin(PLUGIN_klystron_LIB, 99999);
     }
-    if (PLUGIN_libsidplayfp_DLL != "")
+    if (PLUGIN_libsidplayfp_LIB != "")
     {
-        loadPlugin(PLUGIN_libsidplayfp_DLL, 0);
+        loadPlugin(PLUGIN_libsidplayfp_LIB, 0);
     }
-    if (PLUGIN_libfc14audiodecoder_DLL != "")
+    if (PLUGIN_libfc14audiodecoder_LIB != "")
     {
-        loadPlugin(PLUGIN_libfc14audiodecoder_DLL, 0);
+        loadPlugin(PLUGIN_libfc14audiodecoder_LIB, 0);
     }
-    if (PLUGIN_libopenmpt_DLL != "")
+    if (PLUGIN_libopenmpt_LIB != "")
     {
-        loadPlugin(PLUGIN_libopenmpt_DLL, 0);
+        loadPlugin(PLUGIN_libopenmpt_LIB, 0);
     }
-    if (PLUGIN_highly_experimental_DLL != "")
+    if (PLUGIN_highly_experimental_LIB != "")
     {
-        loadPlugin(PLUGIN_highly_experimental_DLL, 1);
+        loadPlugin(PLUGIN_highly_experimental_LIB, 1);
     }
-    if (PLUGIN_highly_theoretical_DLL != "")
+    if (PLUGIN_highly_theoretical_LIB != "")
     {
-        loadPlugin(PLUGIN_highly_theoretical_DLL, 1);
+        loadPlugin(PLUGIN_highly_theoretical_LIB, 1);
     }
-    if (PLUGIN_lazyusf2_DLL != "")
+    if (PLUGIN_lazyusf2_LIB != "")
     {
-        loadPlugin(PLUGIN_lazyusf2_DLL, 1);
+        loadPlugin(PLUGIN_lazyusf2_LIB, 1);
     }
-    if (PLUGIN_highly_quixotic_DLL != "")
+    if (PLUGIN_highly_quixotic_LIB != "")
     {
-        loadPlugin(PLUGIN_highly_quixotic_DLL, 1);
+        loadPlugin(PLUGIN_highly_quixotic_LIB, 1);
     }
-    if (PLUGIN_vio2sf_DLL != "")
+    if (PLUGIN_vio2sf_LIB != "")
     {
-        loadPlugin(PLUGIN_vio2sf_DLL, 1);
+        loadPlugin(PLUGIN_vio2sf_LIB, 1);
     }
-    if (PLUGIN_protrekkr_DLL != "")
+    if (PLUGIN_protrekkr_LIB != "")
     {
-        loadPlugin(PLUGIN_protrekkr_DLL, 1);
+        loadPlugin(PLUGIN_protrekkr_LIB, 1);
     }
-    if (PLUGIN_hivelytracker_DLL != "")
+    if (PLUGIN_hivelytracker_LIB != "")
     {
-        loadPlugin(PLUGIN_hivelytracker_DLL, 1);
+        loadPlugin(PLUGIN_hivelytracker_LIB, 1);
     }
-    if (PLUGIN_libstsound_DLL != "")
+    if (PLUGIN_libstsound_LIB != "")
     {
-        loadPlugin(PLUGIN_libstsound_DLL, 1);
+        loadPlugin(PLUGIN_libstsound_LIB, 1);
     }
-    if (PLUGIN_flod_DLL != "")
+    if (PLUGIN_flod_LIB != "")
     {
-        loadPlugin(PLUGIN_flod_DLL, 1);
+        loadPlugin(PLUGIN_flod_LIB, 1);
     }
-    if (PLUGIN_sndh_player_DLL != "")
+    if (PLUGIN_sndh_player_LIB != "")
     {
-        loadPlugin(PLUGIN_sndh_player_DLL, 1);
+        loadPlugin(PLUGIN_sndh_player_LIB, 1);
     }
-    if (PLUGIN_furnace_DLL != "")
+    if (PLUGIN_furnace_LIB != "")
     {
-        loadPlugin(PLUGIN_furnace_DLL, 1);
+        loadPlugin(PLUGIN_furnace_LIB, 1);
     }
-    if (PLUGIN_webuade_DLL != "")
+    if (PLUGIN_webuade_LIB != "")
     {
-        loadPlugin(PLUGIN_webuade_DLL, 1);
+        loadPlugin(PLUGIN_webuade_LIB, 1);
     }
 
     //loadPlugin("plugin_quartet.dll",1);
 
-    if (PLUGIN_faad2_DLL != "")
+    if (PLUGIN_faad2_LIB != "")
     {
-        loadPlugin(PLUGIN_faad2_DLL, 99999);
+        loadPlugin(PLUGIN_faad2_LIB, 99999);
     }
-    if (PLUGIN_mdxmini_DLL != "")
+    if (PLUGIN_mdxmini_LIB != "")
     {
-        loadPlugin(PLUGIN_mdxmini_DLL, 99999);
+        loadPlugin(PLUGIN_mdxmini_LIB, 99999);
     }
-    if (PLUGIN_zxtune_DLL != "")
+    if (PLUGIN_zxtune_LIB != "")
     {
-        loadPlugin(PLUGIN_zxtune_DLL, 99999);
+        loadPlugin(PLUGIN_zxtune_LIB, 99999);
     }
-    if (PLUGIN_vgmplay_legacy_DLL != "")
+    if (PLUGIN_vgmplay_legacy_LIB != "")
     {
-        loadPlugin(PLUGIN_vgmplay_legacy_DLL, 99999);
+        loadPlugin(PLUGIN_vgmplay_legacy_LIB, 99999);
     }
-    if (PLUGIN_game_music_emu_DLL != "")
+    if (PLUGIN_game_music_emu_LIB != "")
     {
-        loadPlugin(PLUGIN_game_music_emu_DLL, 99999);
+        loadPlugin(PLUGIN_game_music_emu_LIB, 99999);
     }
-    if (PLUGIN_asap_DLL != "")
+    if (PLUGIN_asap_LIB != "")
     {
-        loadPlugin(PLUGIN_asap_DLL, 99999);
-    }
-
-    if (PLUGIN_organya_decoder_DLL != "")
-    {
-        loadPlugin(PLUGIN_organya_decoder_DLL, 99999);
-    }
-    if (PLUGIN_sunvox_lib_DLL != "")
-    {
-        loadPlugin(PLUGIN_sunvox_lib_DLL, 99999);
-    }
-    if (PLUGIN_audiofile_DLL != "")
-    {
-        loadPlugin(PLUGIN_audiofile_DLL, 99999);
-    }
-    if (PLUGIN_sc68_DLL != "")
-    {
-        loadPlugin(PLUGIN_sc68_DLL, 99999);
-    }
-    if (PLUGIN_tunes98_plug_DLL != "")
-    {
-        loadPlugin(PLUGIN_tunes98_plug_DLL, 99999);
-    }
-    if (PLUGIN_kdm_DLL != "")
-    {
-        loadPlugin(PLUGIN_kdm_DLL, 99999);
-    }
-    if (PLUGIN_libpac_DLL != "")
-    {
-        loadPlugin(PLUGIN_libpac_DLL, 99999);
+        loadPlugin(PLUGIN_asap_LIB, 99999);
     }
 
-    if (PLUGIN_libxmp_DLL != "")
+    if (PLUGIN_organya_decoder_LIB != "")
     {
-        loadPlugin(PLUGIN_libxmp_DLL, 99999);
+        loadPlugin(PLUGIN_organya_decoder_LIB, 99999);
     }
-    if (PLUGIN_adplug_DLL != "")
+    if (PLUGIN_sunvox_lib_LIB != "")
     {
-        loadPlugin(PLUGIN_adplug_DLL, 99999);
+        loadPlugin(PLUGIN_sunvox_lib_LIB, 99999);
     }
-    if (PLUGIN_vgmstream_DLL != "")
+    if (PLUGIN_audiofile_LIB != "")
     {
-        loadPlugin(PLUGIN_vgmstream_DLL, 99999);
+        loadPlugin(PLUGIN_audiofile_LIB, 99999);
     }
-    if (PLUGIN_audiodecoder_wsr_DLL != "")
+    if (PLUGIN_sc68_LIB != "")
     {
-        loadPlugin(PLUGIN_audiodecoder_wsr_DLL, 99999);
+        loadPlugin(PLUGIN_sc68_LIB, 99999);
     }
-    if (PLUGIN_v2m_player_DLL != "")
+    if (PLUGIN_tunes98_plug_LIB != "")
     {
-        loadPlugin(PLUGIN_v2m_player_DLL, 99999);
+        loadPlugin(PLUGIN_tunes98_plug_LIB, 99999);
     }
-    if (PLUGIN_jaytrax_DLL != "")
+    if (PLUGIN_kdm_LIB != "")
     {
-        loadPlugin(PLUGIN_jaytrax_DLL, 99999);
+        loadPlugin(PLUGIN_kdm_LIB, 99999);
+    }
+    if (PLUGIN_libpac_LIB != "")
+    {
+        loadPlugin(PLUGIN_libpac_LIB, 99999);
+    }
+
+    if (PLUGIN_libxmp_LIB != "")
+    {
+        loadPlugin(PLUGIN_libxmp_LIB, 99999);
+    }
+    if (PLUGIN_adplug_LIB != "")
+    {
+        loadPlugin(PLUGIN_adplug_LIB, 99999);
+    }
+    if (PLUGIN_vgmstream_LIB != "")
+    {
+        loadPlugin(PLUGIN_vgmstream_LIB, 99999);
+    }
+    if (PLUGIN_audiodecoder_wsr_LIB != "")
+    {
+        loadPlugin(PLUGIN_audiodecoder_wsr_LIB, 99999);
+    }
+    if (PLUGIN_v2m_player_LIB != "")
+    {
+        loadPlugin(PLUGIN_v2m_player_LIB, 99999);
+    }
+    if (PLUGIN_jaytrax_LIB != "")
+    {
+        loadPlugin(PLUGIN_jaytrax_LIB, 99999);
     }
 
     //loadPlugin("plugin_wavpack.dll",99999);
@@ -188,13 +191,13 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         QString outputPath = outputfilename;
 
-        QDir pathDir(QApplication::applicationDirPath() + QDir::separator() + "user/recordings");
+        QDir pathDir(userPath + "/recordings");
         if (!pathDir.exists())
         {
-            QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user/recordings");
+            QDir().mkdir(userPath + "/recordings");
         }
 
-        outputPath = QApplication::applicationDirPath() + QDir::separator() + "user/recordings/" + outputfilename;
+        outputPath = userPath + "/recordings/" + outputfilename;
         cout << "filename: " << outputPath.toStdString().c_str() << "\n";
 
 
@@ -467,13 +470,16 @@ int SoundManager::getNumTags()
 
 void SoundManager::loadPlugin(string filename, int prority)
 {
-    result = FMOD_System_LoadPlugin(system, QString(&DATA_PLUGINS_DIR[1] + QString("/") + QString(filename.c_str())).toLocal8Bit().data(),
-                                    nullptr, prority);
+    string pluginsDir = QString(dataPath + PLUGINS_DIR + "/").toStdString();
+    const char* pluginPath = (pluginsDir += filename).c_str();
+
+    result = FMOD_System_LoadPlugin(system, pluginPath, nullptr, prority);
+
     if (result != FMOD_OK)
     {
         //DebugWindow::instance()->addText(QString(filename.c_str()));
     }
-    ERRCHECK(result, QString(&DATA_PLUGINS_DIR[1] + QString("/") + QString(filename.c_str())).toLocal8Bit().data());
+    ERRCHECK(result, pluginPath);
 
     //DebugWindow::instance()->addText("GetNumPlugins " + QString::number(numplugins));
 }
@@ -615,14 +621,15 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
     m_Info1 = new Info();
     m_Info1->clearMemory();
     m_Info1->clear();
-    m_Info1->applicationPath = QCoreApplication::applicationDirPath().toStdString();
     m_Info1->tempPath = QDir::tempPath().toStdString();
+    m_Info1->dataPath = dataPath.toUtf8();
+    m_Info1->userPath = userPath.toUtf8();
     m_Info1->filename = filename.toLatin1().toStdString();
     m_Info1->isPlayModeRepeatSongEnabled = isPlayModeRepeatSongEnabled;
     FMOD_CREATESOUNDEXINFO extrainfo1;
     memset(&extrainfo1, 0, sizeof(FMOD_CREATESOUNDEXINFO));
     extrainfo1.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-    string dls = m_Info1->applicationPath + DATA_PLUGINS_FMOD_DIR + "/gm.dls";
+    string dls = dataPath.toStdString() + PLUGINS_FMOD_DIR + "/gm.dls";
     extrainfo1.dlsname = dls.c_str();
     extrainfo1.userdata = m_Info1;
 

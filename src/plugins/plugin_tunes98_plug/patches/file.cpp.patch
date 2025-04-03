@@ -1,11 +1,60 @@
---- s98/device/fmgen/file.cpp	2007-11-26 20:39:44.000000000 +0100
-+++ s98/device/fmgen/file.cpp	2024-09-21 11:33:59.369862290 +0200
-@@ -1,7 +1,7 @@
+--- s98/device/fmgen/file.cpp	2025-04-12 23:15:41.016093318 +0200
++++ s98/device/fmgen/file.cpp	2025-04-12 23:16:37.968729750 +0200
+@@ -1,7 +1,56 @@
  //	$Id: file.cpp,v 1.6 1999/12/28 11:14:05 cisc Exp $
  
  #include "headers.h"
 -#include "File.h"
 +#include "file.h"
++
++#ifndef WIN32
++
++#define CREATE_NEW 1
++#define CREATE_ALWAYS 2
++#define ERROR_FILE_NOT_FOUND 2L
++#define ERROR_SHARING_VIOLATION 32L
++#define FILE_BEGIN 0
++#define FILE_CURRENT 1
++#define FILE_END 2
++#define FILE_SHARE_READ 0x00000001
++#define GENERIC_READ 0x80000000
++#define GENERIC_WRITE 0x40000000
++#define OPEN_EXISTING 3
++
++HANDLE CreateFile(const char *filename) {
++    return nullptr;
++}
++
++HANDLE CreateFile(const char *filename, DWORD access, DWORD share, int a, DWORD creation, int b, int c) {
++    return nullptr;
++}
++
++DWORD GetLastError() {
++    return NULL;
++}
++
++bool CloseHandle(HANDLE hObject) {
++    return false;
++}
++
++bool ReadFile(HANDLE hFile, void *dest, int32 size, DWORD *readsize, bool a) {
++    return false;
++};
++
++bool WriteFile(HANDLE hFile, const void *dest, int32 size, DWORD *writtensize, bool a) {
++    return false;
++}
++
++DWORD SetFilePointer(HANDLE hFile, int32 pos, bool a, DWORD wmethod) {
++    return NULL;
++}
++
++bool SetEndOfFile(HANDLE hFile) {
++    return false;
++}
++
++#endif
++
  #ifdef __amigaos4__
  #include <proto/dos.h>
  #endif

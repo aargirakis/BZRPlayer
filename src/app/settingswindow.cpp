@@ -138,9 +138,14 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->comboBox->addItem("Default", FMOD_OUTPUTTYPE_AUTODETECT);
     ui->comboBox->addItem("No Sound", FMOD_OUTPUTTYPE_NOSOUND);
     ui->comboBox->addItem("WAV Writer", FMOD_OUTPUTTYPE_WAVWRITER);
+#ifdef WIN32
     ui->comboBox->addItem("Windows Audio Session API", FMOD_OUTPUTTYPE_WASAPI);
     ui->comboBox->addItem("ASIO 2.0", FMOD_OUTPUTTYPE_ASIO);
     ui->comboBox->addItem("Windows Sonic", FMOD_OUTPUTTYPE_WINSONIC);
+#else
+    ui->comboBox->addItem("ALSA", FMOD_OUTPUTTYPE_PULSEAUDIO);
+    ui->comboBox->addItem("PulseAudio", FMOD_OUTPUTTYPE_ALSA);
+#endif
 
     ui->comboBoxDefaultPlaymode->installEventFilter(this);
     ui->comboBoxDefaultPlaymode->addItem("Last used", -1);
@@ -260,7 +265,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderRasterbarsOpacity->setValue(mainWindow->getEffect()->getRasterbarsOpacity());
     forceUpdateToSliders();
 
-    if (PLUGIN_libsidplayfp_DLL != "")
+    if (PLUGIN_libsidplayfp_LIB != "")
     {
         ui->comboBoxHvscSonglengthsUpdateFrequency->installEventFilter(this);
         ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("At every start", "At every start");
@@ -280,20 +285,20 @@ settingsWindow::settingsWindow(QWidget* parent) :
     QString thumbP(mainWindow->getEffect()->getPrinterFont().left(extensionPos) + ".thumb.png");
     ui->buttonPrinterFontImage->setIcon(QIcon(thumbP));
 
-    if (PLUGIN_adplug_DLL != "")
+    if (PLUGIN_adplug_LIB != "")
     {
         loadAdplugSettings();
     }
 
-    if (PLUGIN_hivelytracker_DLL != "")
+    if (PLUGIN_hivelytracker_LIB != "")
     {
         loadHivelytrackerSettings();
     }
-    if (PLUGIN_libsidplayfp_DLL != "")
+    if (PLUGIN_libsidplayfp_LIB != "")
     {
         loadSidplaySettings();
     }
-    if (PLUGIN_libxmp_DLL != "")
+    if (PLUGIN_libxmp_LIB != "")
     {
         loadLibxmpSettings();
     }
@@ -336,183 +341,183 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_fmod_VERSION));
     ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_fmod_NAME));
 
-    if (PLUGIN_adplug_DLL != "")
+    if (PLUGIN_adplug_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_adplug_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_adplug_NAME));
     }
-    if (PLUGIN_asap_DLL != "")
+    if (PLUGIN_asap_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_asap_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_asap_NAME));
     }
-    if (PLUGIN_audiodecoder_wsr_DLL != "")
+    if (PLUGIN_audiodecoder_wsr_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_audiodecoder_wsr_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_audiodecoder_wsr_NAME));
     }
-    if (PLUGIN_audiofile_DLL != "")
+    if (PLUGIN_audiofile_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_audiofile_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_audiofile_NAME));
     }
-    if (PLUGIN_faad2_DLL != "")
+    if (PLUGIN_faad2_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_faad2_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_faad2_NAME));
     }
-    if (PLUGIN_flod_DLL != "")
+    if (PLUGIN_flod_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_flod_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_flod_NAME));
     }
-    if (PLUGIN_furnace_DLL != "")
+    if (PLUGIN_furnace_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_furnace_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_furnace_NAME));
     }
-    if (PLUGIN_game_music_emu_DLL != "")
+    if (PLUGIN_game_music_emu_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_game_music_emu_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_game_music_emu_NAME));
     }
-    if (PLUGIN_highly_experimental_DLL != "")
+    if (PLUGIN_highly_experimental_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_highly_experimental_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_highly_experimental_NAME));
     }
-    if (PLUGIN_highly_quixotic_DLL != "")
+    if (PLUGIN_highly_quixotic_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_highly_quixotic_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_highly_quixotic_NAME));
     }
-    if (PLUGIN_highly_theoretical_DLL != "")
+    if (PLUGIN_highly_theoretical_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_highly_theoretical_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_highly_theoretical_NAME));
     }
-    if (PLUGIN_hivelytracker_DLL != "")
+    if (PLUGIN_hivelytracker_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_hivelytracker_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_hivelytracker_NAME));
     }
-    if (PLUGIN_jaytrax_DLL != "")
+    if (PLUGIN_jaytrax_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_jaytrax_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_jaytrax_NAME));
     }
-    if (PLUGIN_kdm_DLL != "")
+    if (PLUGIN_kdm_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_kdm_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_kdm_NAME));
     }
-    if (PLUGIN_klystron_DLL != "")
+    if (PLUGIN_klystron_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_klystron_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_klystron_NAME));
     }
-    if (PLUGIN_lazyusf2_DLL != "")
+    if (PLUGIN_lazyusf2_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_lazyusf2_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_lazyusf2_NAME));
     }
-    if (PLUGIN_libfc14audiodecoder_DLL != "")
+    if (PLUGIN_libfc14audiodecoder_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libfc14audiodecoder_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libfc14audiodecoder_NAME));
     }
-    if (PLUGIN_libopenmpt_DLL != "")
+    if (PLUGIN_libopenmpt_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libopenmpt_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libopenmpt_NAME));
     }
-    if (PLUGIN_libpac_DLL != "")
+    if (PLUGIN_libpac_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libpac_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libpac_NAME));
     }
-    if (PLUGIN_libsidplayfp_DLL != "")
+    if (PLUGIN_libsidplayfp_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libsidplayfp_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libsidplayfp_NAME));
     }
-    if (PLUGIN_libstsound_DLL != "")
+    if (PLUGIN_libstsound_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libstsound_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libstsound_NAME));
     }
-    if (PLUGIN_libxmp_DLL != "")
+    if (PLUGIN_libxmp_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libxmp_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libxmp_NAME));
     }
-    if (PLUGIN_mdxmini_DLL != "")
+    if (PLUGIN_mdxmini_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_mdxmini_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_mdxmini_NAME));
     }
-    if (PLUGIN_organya_decoder_DLL != "")
+    if (PLUGIN_organya_decoder_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_organya_decoder_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_organya_decoder_NAME));
     }
-    if (PLUGIN_protrekkr_DLL != "")
+    if (PLUGIN_protrekkr_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_protrekkr_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_protrekkr_NAME));
     }
-    if (PLUGIN_sc68_DLL != "")
+    if (PLUGIN_sc68_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_sc68_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_sc68_NAME));
     }
-    if (PLUGIN_sndh_player_DLL != "")
+    if (PLUGIN_sndh_player_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_sndh_player_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_sndh_player_NAME));
     }
-    if (PLUGIN_sunvox_lib_DLL != "")
+    if (PLUGIN_sunvox_lib_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_sunvox_lib_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_sunvox_lib_NAME));
     }
-    if (PLUGIN_tunes98_plug_DLL != "")
+    if (PLUGIN_tunes98_plug_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_tunes98_plug_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_tunes98_plug_NAME));
     }
-    if (PLUGIN_v2m_player_DLL != "")
+    if (PLUGIN_v2m_player_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_v2m_player_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_v2m_player_NAME));
     }
-    if (PLUGIN_vgmplay_legacy_DLL != "")
+    if (PLUGIN_vgmplay_legacy_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vgmplay_legacy_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vgmplay_legacy_NAME));
     }
-    if (PLUGIN_vgmstream_DLL != "")
+    if (PLUGIN_vgmstream_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vgmstream_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vgmstream_NAME));
     }
-    if (PLUGIN_vio2sf_DLL != "")
+    if (PLUGIN_vio2sf_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vio2sf_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vio2sf_NAME));
     }
-    if (PLUGIN_webuade_DLL != "")
+    if (PLUGIN_webuade_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_webuade_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_webuade_NAME));
     }
-    if (PLUGIN_zxtune_DLL != "")
+    if (PLUGIN_zxtune_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_zxtune_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_zxtune_NAME));
     }
 
-    if (PLUGIN_libsidplayfp_DLL != "")
+    if (PLUGIN_libsidplayfp_LIB != "")
     {
         QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getHvscSonglengthsDownloaded());
         if (mainWindow->getHvscSonglengthsDownloaded() > 0)
@@ -531,11 +536,11 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->tableWidgetPlugins->setRowCount(row);
     ui->fontWidget->setVisible(false);
     ui->fontWidgetPrinter->setVisible(false);
-    QDir directory(QApplication::applicationDirPath() + "/data/resources/visualizer/bitmapfonts");
+    QDir directory(dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts");
     QStringList images = directory.entryList(QStringList() << "*.thumb.png", QDir::Files);
     foreach(QString filename, images)
     {
-        QString fullfilename = QApplication::applicationDirPath() + "/data/resources/visualizer/bitmapfonts/" +
+        QString fullfilename = dataPath + RESOURCES_DIR  + "/visualizer/bitmapfonts/" +
             filename;
         Album* album = new Album(filename);
         album->artwork = fullfilename;
@@ -719,20 +724,20 @@ void settingsWindow::on_buttonOK_clicked()
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
     updateScrollText();
 
-    if (PLUGIN_adplug_DLL != "")
+    if (PLUGIN_adplug_LIB != "")
     {
         saveAdplugSettings();
     }
 
-    if (PLUGIN_hivelytracker_DLL != "")
+    if (PLUGIN_hivelytracker_LIB != "")
     {
         saveHivelytrackerSettings();
     }
-    if (PLUGIN_libsidplayfp_DLL != "")
+    if (PLUGIN_libsidplayfp_LIB != "")
     {
         saveSidplaySettings();
     }
-    if (PLUGIN_libxmp_DLL != "")
+    if (PLUGIN_libxmp_LIB != "")
     {
         saveLibxmpSettings();
     }
@@ -757,10 +762,6 @@ void settingsWindow::on_comboBoxReverb_textActivated(const QString& arg1)
 void settingsWindow::on_buttonBrowseHvscSonglengths_clicked()
 {
     QString startFolder = ui->lineEditHvscSonglength->text();
-    if (startFolder.startsWith("/"))
-    {
-        startFolder = QApplication::applicationDirPath() + startFolder;
-    }
     QString file = QFileDialog::getOpenFileName(this, "Choose your Songlengths.md5", startFolder, "*.md5");
     if (!file.isEmpty())
     {
@@ -771,7 +772,7 @@ void settingsWindow::on_buttonBrowseHvscSonglengths_clicked()
 void settingsWindow::loadAdplugSettings()
 {
     //read config from disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/adplug.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/adplug.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -824,7 +825,7 @@ void settingsWindow::loadAdplugSettings()
 void settingsWindow::loadHivelytrackerSettings()
 {
     //read config from disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -866,7 +867,7 @@ void settingsWindow::loadHivelytrackerSettings()
 void settingsWindow::loadlibopenmptSettings()
 {
     //read config from disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -936,7 +937,7 @@ void settingsWindow::loadlibopenmptSettings()
 void settingsWindow::loadLibxmpSettings()
 {
     //read config from disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libxmp.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libxmp.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -971,7 +972,7 @@ void settingsWindow::loadLibxmpSettings()
 void settingsWindow::loadUADESettings()
 {
     //read config from disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/uade.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/uade.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -1072,7 +1073,7 @@ void settingsWindow::loadUADESettings()
 void settingsWindow::loadSidplaySettings()
 {
     //read config from disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;
@@ -1103,7 +1104,7 @@ void settingsWindow::loadSidplaySettings()
                     if (value == "")
                     {
                         setUiLineEditHvscSonglengthTextForcingRelativePaths(
-                            PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH);
+                            dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
                     }
                     else
                     {
@@ -1131,14 +1132,14 @@ void settingsWindow::loadSidplaySettings()
     {
         ui->checkBoxHvscSonglengthsEnabled->setChecked(false);
         ui->checkBoxHvscSonglengthsEnabled->setChecked(true);
-        setUiLineEditHvscSonglengthTextForcingRelativePaths(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH);
+        setUiLineEditHvscSonglengthTextForcingRelativePaths(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
     }
 }
 
 void settingsWindow::saveAdplugSettings()
 {
     //save config to disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/adplug.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/adplug.cfg";
     ofstream ofs(filename.c_str());
     string line;
 
@@ -1157,7 +1158,7 @@ void settingsWindow::saveAdplugSettings()
 void settingsWindow::saveHivelytrackerSettings()
 {
     //save config to disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
     ofstream ofs(filename.c_str());
     string line;
 
@@ -1174,7 +1175,7 @@ void settingsWindow::saveHivelytrackerSettings()
 void settingsWindow::saveSidplaySettings()
 {
     //save config to disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
     ofstream ofs(filename.c_str());
     string line;
 
@@ -1193,7 +1194,7 @@ void settingsWindow::saveSidplaySettings()
 void settingsWindow::savelibopenmptSettings()
 {
     //save config to disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
     ofstream ofs(filename.c_str());
     string line;
 
@@ -1215,7 +1216,7 @@ void settingsWindow::savelibopenmptSettings()
 void settingsWindow::saveLibxmpSettings()
 {
     //save config to disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/libxmp.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libxmp.cfg";
     ofstream ofs(filename.c_str());
     string line;
 
@@ -1231,7 +1232,7 @@ void settingsWindow::saveLibxmpSettings()
 void settingsWindow::saveUADESettings()
 {
     //save config to disk
-    string filename = QApplication::applicationDirPath().toStdString() + USER_PLUGINS_CONFIG_DIR + "/uade.cfg";
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/uade.cfg";
     ofstream ofs(filename.c_str());
     string line;
 
@@ -1494,20 +1495,19 @@ void settingsWindow::changeStyleSheetColor()
     ui->groupBoxLibxmp->setStyleSheet(stylesheet);
 }
 
-void settingsWindow::setUiLineEditHvscSonglengthTextForcingRelativePaths(const QString& text)
-{
-    if (text.compare(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH) == 0)
-    {
-        ui->lineEditHvscSonglength->setText(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
-    }
-    else if (text.compare(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH) == 0)
-    {
-        ui->lineEditHvscSonglength->setText(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH);
-    }
-    else
-    {
+void settingsWindow::setUiLineEditHvscSonglengthTextForcingRelativePaths(const QString& text) {
+    /*
+     * TODO: temporary disabled since the generated relative path string is currently "/plugin/sid/Songlengths.md5"
+     *  instead of "data/plugin/sid/Songlengths.md5" (default) or "user/plugin/sid/Songlengths.md5" (downloaded)
+     *  due to adaptations made for linux paths structure, not allowing distinguishing between the two
+     */
+
+    // if (text.compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0 ||
+    //     text.compare(userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
+    //     ui->lineEditHvscSonglength->setText(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
+    // } else {
         ui->lineEditHvscSonglength->setText(text);
-    }
+    // }
 }
 
 void settingsWindow::on_buttonMainColor_clicked()
@@ -2120,14 +2120,21 @@ void settingsWindow::on_checkBoxSilenceTimeout_toggled(bool checked)
 void settingsWindow::on_buttonBrowseUADESonglengths_clicked()
 {
     QString startFolder = ui->lineEditUADESonglength->text();
-    if (startFolder.startsWith("/"))
+    if (startFolder.compare("/uade.md5") == 0)
     {
-        startFolder = QApplication::applicationDirPath() + startFolder;
+        startFolder = dataPath + PLUGIN_webuade_DIR + "/uade.md5";
     }
     QString file = QFileDialog::getOpenFileName(this, "Choose your uade.md5", startFolder, "*.md5");
     if (!file.isEmpty())
     {
-        ui->lineEditUADESonglength->setText(file);
+        if (file.compare(dataPath + PLUGIN_webuade_DIR + "/uade.md5") == 0)
+        {
+            ui->lineEditUADESonglength->setText("/uade.md5");
+        }
+        else
+        {
+            ui->lineEditUADESonglength->setText(file);
+        }
     }
 }
 
@@ -2462,24 +2469,24 @@ void settingsWindow::downloadHvscSonglengthsComplete()
 {
     if (mainWindow->filedownloader->downloadedData().size() > 0)
     {
-        QFile file(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+        QFile file(userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
         if (file.open(QIODevice::ReadWrite))
         {
             QTextStream stream(&file);
             stream << mainWindow->filedownloader->downloadedData();
             file.close();
             QDateTime::currentDateTime().toSecsSinceEpoch();
-            QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
+            QSettings settings(userPath + "/settings.ini",
                                QSettings::IniFormat);
             qint64 seconds = QDateTime::currentDateTime().toSecsSinceEpoch();
             settings.setValue("libsidplayfp/timehvscsonglengthsdownloaded", seconds);
             settings.setValue("libsidplayfp/hvscsonglengthspath",
-                              QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+                              userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
             mainWindow->HvscSonglengthsDownloadedEpoch = seconds;
             mainWindow->addDebugText(
                 "Downloaded " + mainWindow->filedownloader->getUrl().toString() + " to " + file.fileName());
             mainWindow->setHvscSonglengthsPathDownloaded(
-                QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+                userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
             QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getHvscSonglengthsDownloaded());
             ui->labelHvscSonglengthsDownloaded->setText(
                 "Downloaded HVSC Songlengths.md5 to " + mainWindow->getHvscSonglengthsPathDownloaded() + " at " + qdt.

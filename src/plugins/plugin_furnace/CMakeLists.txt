@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 set(NAME "furnace")
 set(VERSION "0.6.7")
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "Furnace" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
@@ -57,7 +57,7 @@ download_patch_and_add(
 
 set(EXTERNAL_SOURCE_DIR_3 "${EXTERNAL_SOURCE_DIR}")
 
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+if (WIN32)
     add_compile_definitions(ENABLE_VIRTUAL_TERMINAL_PROCESSING=0x0004)
 endif ()
 
@@ -144,18 +144,21 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/waveSynth.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/wavetable.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/wavOps.cpp
-        ${EXTERNAL_SOURCE_DIR_1}/src/engine/winStuff.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/workPool.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/zsm.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/engine/zsmOps.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/fileutils.cpp
         ${EXTERNAL_SOURCE_DIR_1}/src/log.cpp
-        ${EXTERNAL_SOURCE_DIR_1}/src/utfutils.cpp
         ${EXTERNAL_SOURCE_DIR_2}/*.c
         ${EXTERNAL_SOURCE_DIR_3}/src/format.cc
         ${EXTERNAL_SOURCE_DIR_3}/src/os.cc
         src/main.cpp
 )
+
+if (WIN32)
+    list(APPEND SOURCES ${EXTERNAL_SOURCE_DIR_1}/src/utfutils.cpp)
+    list(APPEND SOURCES ${EXTERNAL_SOURCE_DIR_1}/src/engine/winStuff.cpp)
+endif ()
 
 list(REMOVE_ITEM SOURCES ${EXTERNAL_SOURCE_DIR_1}/src/engine/platform/sound/m114s.c)
 
@@ -222,22 +225,18 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_3}/include
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
+        ${LIB_FMOD_API_DIR}
 )
 
-if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows") #fix #543
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-            ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/libstdc++.a
-    )
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE -lshlwapi)
 endif ()
-
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        ZLIB::ZLIB
-        -lshlwapi
-)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
 )

@@ -101,7 +101,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     Info* info = static_cast<Info*>(userexinfo->userdata);
 
     //read config from disk
-    string filename = info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/adplug.cfg";
+    string filename = info->userPath + PLUGINS_CONFIG_DIR + "/adplug.cfg";
     ifstream ifs(filename.c_str());
     string line;
 

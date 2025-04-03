@@ -83,8 +83,8 @@ FMOD_RESULT F_CALLBACK orgopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     //is.imbue(std::locale("en_US.UTF8"));
     is.open(plugin->info->filename, ios::binary);
 
-    string sample_path = plugin->info->applicationPath + ORG_DATA_PATH;
-    plugin->m_tune = org_decoder_create(is, sample_path.c_str(), 1);
+    string samples_path = plugin->info->dataPath + ORGANYA_DATA_DIR;
+    plugin->m_tune = org_decoder_create(is, samples_path.c_str(), 1);
     is.close();
 
 

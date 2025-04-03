@@ -86,10 +86,6 @@ QComboBox::drop-down {
     border-bottom-right-radius: 3px;
 }
 
-QComboBox::down-arrow {
-    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
-}
-
 QComboBox::down-arrow:on { /* shift the arrow when popup is open */
     top: 1px;
     left: 1px;

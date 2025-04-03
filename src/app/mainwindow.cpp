@@ -23,6 +23,7 @@
 #include <QInputDialog>
 #include <QSettings>
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <cmath>
 #include "soundmanager.h"
 #include "settingswindow.h"
@@ -48,9 +49,28 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+#ifdef WIN32
+    const QString exePath = QApplication::applicationDirPath();
+    dataPath = exePath + DATA_DIR;
+    userPath = exePath + USER_DIR;
+#else
+#ifdef OUTPUT_DIR
+    dataPath = QString::fromUtf8(OUTPUT_DIR) + DATA_DIR;
+    userPath = QString::fromUtf8(OUTPUT_DIR) + "/" + USER_DIR;
+#else
+    dataPath = QString::fromUtf8(DATA_DIR);
+    userPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QDir::separator() + USER_DIR;
+#endif
+#endif
+
+    if (!QDir(dataPath).exists()) {
+        qFatal("Cannot find directory %s", dataPath.toUtf8().data());
+        QCoreApplication::exit(EXIT_FAILURE);
+    }
+
     bool instanceExists = false;
 
-    QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
+    QSettings settings(userPath + "/settings.ini",
                        QSettings::IniFormat);
     m_bAllowOnlyOneInstanceEnabled = settings.value("AllowOnlyOneInstance", true).toBool();
 
@@ -64,15 +84,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     if (instanceExists) return;
 
     //Fonts needs to be added before the GUI
-    QFontDatabase::addApplicationFont(
-        QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
-        "Roboto-Medium.ttf");
-    QFontDatabase::addApplicationFont(
-        QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
-        "Roboto-Regular.ttf");
-    QFontDatabase::addApplicationFont(
-        QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
-        "RobotoMono-Regular.ttf");
+    QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "Roboto-Medium.ttf");
+    QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "Roboto-Regular.ttf");
+    QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "RobotoMono-Regular.ttf");
 
     ui->setupUi(this);
 
@@ -205,7 +219,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         ui->checkBoxLoop->setCheckState(Qt::Checked);
     }
 
-    if (PLUGIN_libsidplayfp_DLL != "") {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         HvscSonglengthsDownloadedEpoch = settings.value("libsidplayfp/timehvscsonglengthsdownloaded", 0).
                 toLongLong();
         HvscSonglengthsPathDownloaded = settings.value("libsidplayfp/hvscsonglengthspath", "").toString();
@@ -318,12 +332,10 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     getEffect()->setResolutionHeight(settings.value("visualizer/resolutionheight", 256).toInt());
 
     getEffect()->setScrollerFont(settings.value("scroller/font",
-                                                QApplication::applicationDirPath() +
-                                                "/data/resources/visualizer/bitmapfonts/angels_font.png").
+                                                dataPath + "/resources/visualizer/bitmapfonts/angels_font.png").
         toString());
     getEffect()->setPrinterFont(settings.value("printer/font",
-                                               QApplication::applicationDirPath() +
-                                               "/data/resources/visualizer/bitmapfonts/angels_font.png").
+                                               dataPath + "/resources/visualizer/bitmapfonts/angels_font.png").
         toString());
 
 
@@ -443,36 +455,34 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     ui->positionSlider->setMaximum(0);
 
-    QDir pathDir(QApplication::applicationDirPath() + USER_DIR);
+    QDir pathDir(userPath);
     if (!pathDir.exists()) {
-        QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user");
+        QDir().mkdir(userPath);
     }
 
-    QDir pathDir2(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
+    QDir pathDir2(userPath + PLAYLISTS_DIR);
     if (!pathDir2.exists()) {
-        QDir().mkdir(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
+        QDir().mkdir(userPath + PLAYLISTS_DIR);
     }
-    QDir pathDir3(QApplication::applicationDirPath() + USER_PLUGINS_DIR);
+    QDir pathDir3(userPath + PLUGINS_DIR);
     if (!pathDir3.exists()) {
-        QDir().mkdir(QApplication::applicationDirPath() + USER_PLUGINS_DIR);
+        QDir().mkdir(userPath + PLUGINS_DIR);
     }
-    QDir pathDir4(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
+    QDir pathDir4(userPath + PLUGIN_libsidplayfp_DIR);
     if (!pathDir4.exists()) {
-        QDir().mkdir(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
+        QDir().mkdir(userPath + PLUGIN_libsidplayfp_DIR);
     }
-    QDir pathDir5(QApplication::applicationDirPath() + USER_PLUGINS_CONFIG_DIR);
+    QDir pathDir5(userPath + PLUGINS_CONFIG_DIR);
     if (!pathDir5.exists()) {
-        QDir().mkdir(QApplication::applicationDirPath() + USER_PLUGINS_CONFIG_DIR);
+        QDir().mkdir(userPath + PLUGINS_CONFIG_DIR);
     }
 
 
-    QDir directory(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
+    QDir directory(userPath + PLAYLISTS_DIR);
 
     QStringList playlists;
 
-    if (!QFileInfo::exists(
-        QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
-        PLAYLIST_DEFAULT_FILENAME)) {
+    if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() + PLAYLIST_DEFAULT_FILENAME)) {
         playlists.append(PLAYLIST_DEFAULT_FILENAME);
     }
     //Remove PLAYLIST_DEFAULT_FILENAME and the put it first in playlists
@@ -480,9 +490,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     playlists.removeOne(PLAYLIST_DEFAULT_FILENAME);
     playlists.insert(0, PLAYLIST_DEFAULT_FILENAME);
 
-    addDebugText(
-        "Loading " + QString::number(playlists.count()) + " playlists from " + QApplication::applicationDirPath() +
-        USER_PLAYLISTS_DIR);
+    addDebugText("Loading " + QString::number(playlists.count()) + " playlists from " + userPath + PLAYLISTS_DIR);
 
 
     changeStyleSheetColor();
@@ -535,8 +543,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
 
         //There was no existing default playlist
-        if (!QFileInfo::exists(
-                QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
+        if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() +
                 PLAYLIST_DEFAULT_FILENAME) && filename == PLAYLIST_DEFAULT_FILENAME) {
             swapColumns(tableWidgetPlaylists[f.fileName()]);
         }
@@ -562,9 +569,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
         ui->listWidget->insertItem(ui->listWidget->count(), newItem);
         ui->listWidget->setItemDelegate(new MyItemDelegate(this));
-        QUrl u = QUrl::fromLocalFile(
-            QDir::separator() + QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + f.
-            fileName());
+        QUrl u = QUrl::fromLocalFile(QDir::separator() + userPath + PLAYLISTS_DIR + "/" + f.fileName());
         QList<QUrl> ql;
         ql.append(u);
 
@@ -573,9 +578,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         createThePopupMenuCurrentPlaylist(f.fileName());
     }
 
-    if (!QFileInfo::exists(
-        QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
-        currentPlaylist)) {
+    if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() + currentPlaylist)) {
         currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
     }
     addDebugText("currentPlaylist: " + currentPlaylist);
@@ -613,7 +616,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     qint64 currentSeconds = QDateTime::currentDateTime().toSecsSinceEpoch();
 
-    if (PLUGIN_libsidplayfp_DLL != "") {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         if (HvscSonglengthsFrequency == "Never") {
             //Do nothing
         } else if (HvscSonglengthsFrequency == "At every start") {
@@ -716,44 +719,44 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     }
 
 
-    QPixmap shuffleOn = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorMain.left(7));
-    QPixmap shuffleOnHover = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorMainHover.left(7));
-    QPixmap shuffleOff = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorButton.left(7));
-    QPixmap shuffleOffHover = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorButtonHover.left(7));
+    QPixmap shuffleOn = ChangeSVGColor(":/resources/shuffle.svg", colorMain.left(7));
+    QPixmap shuffleOnHover = ChangeSVGColor(":/resources/shuffle.svg", colorMainHover.left(7));
+    QPixmap shuffleOff = ChangeSVGColor(":/resources/shuffle.svg", colorButton.left(7));
+    QPixmap shuffleOffHover = ChangeSVGColor(":/resources/shuffle.svg", colorButtonHover.left(7));
 
-    QPixmap speakerOn = ChangeSVGColor(":/bzr/resources/speaker.svg", colorButton.left(7));
-    QPixmap speakerOnHover = ChangeSVGColor(":/bzr/resources/speaker.svg", colorButtonHover.left(7));
-    QPixmap speakerOff = ChangeSVGColor(":/bzr/resources/speaker-off.svg", colorButton.left(7));
-    QPixmap speakerOffHover = ChangeSVGColor(":/bzr/resources/speaker-off.svg", colorButtonHover.left(7));
+    QPixmap speakerOn = ChangeSVGColor(":/resources/speaker.svg", colorButton.left(7));
+    QPixmap speakerOnHover = ChangeSVGColor(":/resources/speaker.svg", colorButtonHover.left(7));
+    QPixmap speakerOff = ChangeSVGColor(":/resources/speaker-off.svg", colorButton.left(7));
+    QPixmap speakerOffHover = ChangeSVGColor(":/resources/speaker-off.svg", colorButtonHover.left(7));
 
 
-    QPixmap play = ChangeSVGColor(":/bzr/resources/play.svg", colorButton.left(7));
-    QPixmap playHover = ChangeSVGColor(":/bzr/resources/play.svg", colorButtonHover.left(7));
-    QPixmap pause = ChangeSVGColor(":/bzr/resources/pause.svg", colorButton.left(7));
-    QPixmap pauseHover = ChangeSVGColor(":/bzr/resources/pause.svg", colorButtonHover.left(7));
+    QPixmap play = ChangeSVGColor(":/resources/play.svg", colorButton.left(7));
+    QPixmap playHover = ChangeSVGColor(":/resources/play.svg", colorButtonHover.left(7));
+    QPixmap pause = ChangeSVGColor(":/resources/pause.svg", colorButton.left(7));
+    QPixmap pauseHover = ChangeSVGColor(":/resources/pause.svg", colorButtonHover.left(7));
 
-    QPixmap stop = ChangeSVGColor(":/bzr/resources/stop.svg", colorButton.left(7));
-    QPixmap stopHover = ChangeSVGColor(":/bzr/resources/stop.svg", colorButtonHover.left(7));
+    QPixmap stop = ChangeSVGColor(":/resources/stop.svg", colorButton.left(7));
+    QPixmap stopHover = ChangeSVGColor(":/resources/stop.svg", colorButtonHover.left(7));
 
-    QPixmap prev = ChangeSVGColor(":/bzr/resources/prev.svg", colorButton.left(7));
-    QPixmap prevHover = ChangeSVGColor(":/bzr/resources/prev.svg", colorButtonHover.left(7));
-    QPixmap next = ChangeSVGColor(":/bzr/resources/next.svg", colorButton.left(7));
-    QPixmap nextHover = ChangeSVGColor(":/bzr/resources/next.svg", colorButtonHover.left(7));
+    QPixmap prev = ChangeSVGColor(":/resources/prev.svg", colorButton.left(7));
+    QPixmap prevHover = ChangeSVGColor(":/resources/prev.svg", colorButtonHover.left(7));
+    QPixmap next = ChangeSVGColor(":/resources/next.svg", colorButton.left(7));
+    QPixmap nextHover = ChangeSVGColor(":/resources/next.svg", colorButtonHover.left(7));
 
-    QPixmap repeat = ChangeSVGColor(":/bzr/resources/repeat.svg", colorButton.left(7));
-    QPixmap repeatHover = ChangeSVGColor(":/bzr/resources/repeat.svg", colorButtonHover.left(7));
-    QPixmap repeat1 = ChangeSVGColor(":/bzr/resources/repeat-1.svg", colorMain.left(7));
-    QPixmap repeat1Hover = ChangeSVGColor(":/bzr/resources/repeat-1.svg", colorMainHover.left(7));
-    QPixmap repeatOn = ChangeSVGColor(":/bzr/resources/repeat.svg", colorMain.left(7));
-    QPixmap repeatOnHover = ChangeSVGColor(":/bzr/resources/repeat.svg", colorMainHover.left(7));
+    QPixmap repeat = ChangeSVGColor(":/resources/repeat.svg", colorButton.left(7));
+    QPixmap repeatHover = ChangeSVGColor(":/resources/repeat.svg", colorButtonHover.left(7));
+    QPixmap repeat1 = ChangeSVGColor(":/resources/repeat-1.svg", colorMain.left(7));
+    QPixmap repeat1Hover = ChangeSVGColor(":/resources/repeat-1.svg", colorMainHover.left(7));
+    QPixmap repeatOn = ChangeSVGColor(":/resources/repeat.svg", colorMain.left(7));
+    QPixmap repeatOnHover = ChangeSVGColor(":/resources/repeat.svg", colorMainHover.left(7));
 
-    QPixmap add = ChangeSVGColor(":/bzr/resources/add.svg", colorButton.left(7));
-    QPixmap addHover = ChangeSVGColor(":/bzr/resources/add.svg", colorButtonHover.left(7));
+    QPixmap add = ChangeSVGColor(":/resources/add.svg", colorButton.left(7));
+    QPixmap addHover = ChangeSVGColor(":/resources/add.svg", colorButtonHover.left(7));
 
-    QPixmap checkBoxOn = ChangeSVGColor(":/bzr/resources/checkbox-on.svg", colorMain.left(7));
-    QPixmap checkBoxOff = ChangeSVGColor(":/bzr/resources/checkbox-off.svg", colorBehindBackground.left(7));
-    QPixmap checkBoxOnDisabled = ChangeSVGColor(":/bzr/resources/checkbox-on-disabled.svg", colorMedium.left(7));
-    QPixmap checkBoxOffDisabled = ChangeSVGColor(":/bzr/resources/checkbox-off-disabled.svg", colorMedium.left(7));
+    QPixmap checkBoxOn = ChangeSVGColor(":/resources/checkbox-on.svg", colorMain.left(7));
+    QPixmap checkBoxOff = ChangeSVGColor(":/resources/checkbox-off.svg", colorBehindBackground.left(7));
+    QPixmap checkBoxOnDisabled = ChangeSVGColor(":/resources/checkbox-on-disabled.svg", colorMedium.left(7));
+    QPixmap checkBoxOffDisabled = ChangeSVGColor(":/resources/checkbox-off-disabled.svg", colorMedium.left(7));
 
 
     icons["speaker-on"] = speakerOn;
@@ -2117,40 +2120,40 @@ void MainWindow::updateScrollText()
         ui->visualizer->getEffect()->setScrollText(ui->visualizer->getEffect()->getCustomScrolltext());
     } else {
         QString visualizerText = "";
-        visualizerText = QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->artist.c_str());
+        visualizerText = QString::fromLatin1(SoundManager::getInstance().m_Info1->artist);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->game.c_str());
+        visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->game);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->comments.c_str());
+        visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->comments);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->copyright.c_str());
+        visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->copyright);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->date.c_str());
+        visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->date);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
         if (SoundManager::getInstance().m_Info1->instruments != nullptr) {
             for (int i = 0; i < SoundManager::getInstance().m_Info1->numInstruments; i++) {
-                visualizerText += QString::fromLocal8Bit(
-                    SoundManager::getInstance().m_Info1->instruments[i].c_str()) + QString(" ");
+                visualizerText += QString::fromLatin1(
+                    SoundManager::getInstance().m_Info1->instruments[i]) + QString(" ");
             }
         }
         if (SoundManager::getInstance().m_Info1->samples != nullptr) {
             for (int i = 0; i < SoundManager::getInstance().m_Info1->numSamples; i++) {
-                visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->samples[i].c_str()) +
+                visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->samples[i]) +
                         QString(" ");
             }
         }
@@ -2239,7 +2242,7 @@ void MainWindow::PlaySong(int currentRow)
             }
             else
             {
-                filename = QString::fromLocal8Bit(pi.info->title.c_str());
+                filename = QString::fromLatin1(pi.info->title);
             }
         }
 
@@ -2251,7 +2254,7 @@ void MainWindow::PlaySong(int currentRow)
             }
             else
             {
-                artist = QString::fromLocal8Bit(pi.info->artist.c_str());
+                artist = QString::fromLatin1(pi.info->artist);
             }
         }
         else if (pi.info->author != "")
@@ -2262,7 +2265,7 @@ void MainWindow::PlaySong(int currentRow)
             }
             else
             {
-                artist = QString::fromLocal8Bit(pi.info->author.c_str());
+                artist = QString::fromLatin1(pi.info->author);
             }
         }
         else if (pi.info->composer != "")
@@ -2273,7 +2276,7 @@ void MainWindow::PlaySong(int currentRow)
             }
             else
             {
-                artist = QString::fromLocal8Bit(pi.info->composer.c_str());
+                artist = QString::fromLatin1(pi.info->composer);
             }
         }
         if (artist != "")
@@ -2877,8 +2880,7 @@ void MainWindow::updateInstruments()
             }
         }
     }
-    QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
-                       QSettings::IniFormat);
+    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
 }
 
 
@@ -3131,11 +3133,9 @@ void MainWindow::renamePlaylist()
             suffix++;
             newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
         }
-        QDir directory(USER_PLAYLISTS_DIR);
-        QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-                                  QDir::separator() + newName;
-        QString playlistOldName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-                                  QDir::separator() + oldName;
+        QDir directory(userPath + PLAYLISTS_DIR);
+        QString playlistNewName = userPath + PLAYLISTS_DIR + QDir::separator() + newName;
+        QString playlistOldName = userPath + PLAYLISTS_DIR + QDir::separator() + oldName;
         QFile oldFile(playlistOldName);
         oldFile.rename(playlistNewName);
         addDebugText("Renaming playlist " + playlistOldName + " to " + playlistNewName);
@@ -3170,11 +3170,9 @@ void MainWindow::savePlaylistAs()
         suffix++;
         newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
     }
-    QDir directory(USER_PLAYLISTS_DIR);
-    QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-                              QDir::separator() + newName;
-    QString playlistOldName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-                              QDir::separator() + oldName;
+    QDir directory(userPath + PLAYLISTS_DIR);
+    QString playlistNewName = userPath + PLAYLISTS_DIR + QDir::separator() + newName;
+    QString playlistOldName = userPath + PLAYLISTS_DIR + QDir::separator() + oldName;
 
     savePlayList(playlistOldName, playlistNewName);
 
@@ -3229,8 +3227,7 @@ void MainWindow::savePlaylistAs()
             SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
 
     QUrl u = QUrl::fromLocalFile(
-        QDir::separator() + QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" +
-        newName);
+        QDir::separator() + userPath + PLAYLISTS_DIR + "/" + newName);
     QList<QUrl> ql;
     ql.append(u);
 
@@ -3272,13 +3269,10 @@ void MainWindow::savePlayList(QString path, QString newPath)
     file.close();
 }
 
-void MainWindow::savePlaylist()
-{
-    savePlayList(
-        QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + ui->listWidget->currentItem()->
-                                                                            text(),
-        QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + ui->listWidget->currentItem()->
-                                                                            text());
+void MainWindow::savePlaylist() {
+    savePlayList(userPath + PLAYLISTS_DIR + "/" + ui->listWidget->currentItem()->text(),
+                 userPath + PLAYLISTS_DIR + "/" + ui->listWidget->currentItem()->
+                 text());
 }
 
 void MainWindow::deleteAllPlaylists()
@@ -3288,8 +3282,8 @@ void MainWindow::deleteAllPlaylists()
         ui->listWidget->setCurrentRow(rowNumber);
         if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME)
         {
-            QString playlistToDelete = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-                QDir::separator() + ui->listWidget->currentItem()->text();
+            QString playlistToDelete = userPath + PLAYLISTS_DIR + QDir::separator() + ui->listWidget->currentItem()
+                                       ->text();
             addDebugText("Deleting playlist " + playlistToDelete);
             QFile::remove(playlistToDelete);
             tableWidgetPlaylists.remove(ui->listWidget->currentItem()->text());
@@ -3307,8 +3301,7 @@ void MainWindow::deletePlaylist()
     int rowNumber = ui->listWidget->currentRow();
     rowNumber--;
 
-    QString playlistToDelete = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-                               QDir::separator() + ui->listWidget->currentItem()->text();
+    QString playlistToDelete = userPath + PLAYLISTS_DIR + QDir::separator() + ui->listWidget->currentItem()->text();
     addDebugText("Deleting playlist " + playlistToDelete);
     QFile::remove(playlistToDelete);
     //playlists.remove(ui->listWidget->currentItem()->text());
@@ -3874,8 +3867,7 @@ void MainWindow::setSystrayOnQuitEnabled(bool enabled)
 
 void MainWindow::SaveSettings()
 {
-    QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
-                       QSettings::IniFormat);
+    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
     settings.setValue("outputdevice", m_outputDevice);
     settings.setValue("volume", ui->volumeSlider->value());
     settings.setValue("shuffle", ui->checkBoxShuffle->isChecked());
@@ -4004,7 +3996,7 @@ void MainWindow::SaveSettings()
         settings.setValue(QString("playlist_") + i.key(), i.value()->horizontalHeader()->saveState());
     }
 
-    if (PLUGIN_libsidplayfp_DLL != "")
+    if (PLUGIN_libsidplayfp_LIB != "")
     {
         settings.setValue(QString("libsidplayfp/updateFrequency"), HvscSonglengthsFrequency);
     }
@@ -4564,14 +4556,12 @@ void MainWindow::quit()
 
     QMap<QString, QList<PlaylistItem*>>::iterator i;
 
-    for (auto e : tableWidgetPlaylists.keys())
-    {
-        savePlayList(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + e,
-                     QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + e);
+    for (auto e: tableWidgetPlaylists.keys()) {
+        savePlayList(userPath + PLAYLISTS_DIR + "/" + e,
+                     userPath + PLAYLISTS_DIR + "/" + e);
     }
 
-    QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
-                       QSettings::IniFormat);
+    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
     settings.setValue("dockingState", m_DockManager->saveState());
@@ -4744,7 +4734,7 @@ void MainWindow::createTrayMenu()
     m_Tray = new QSystemTrayIcon(this);
     QIcon trayIcon;
 
-    trayIcon = QIcon(":/bzr/static/data/resources/icon.png");
+    trayIcon = QIcon(":/static/data/resources/icon.png");
     m_Tray->setIcon(trayIcon);
     m_Tray->setToolTip(PROJECT_NAME);
 
@@ -5749,7 +5739,7 @@ void MainWindow::LoadWorkspaces()
     QAction* restore = ui->menuRestore_Layout->actions().first();
     workspaceSeparator = ui->menuRestore_Layout->insertSeparator(restore);
 
-    QDir directory(QApplication::applicationDirPath() + USER_LAYOUTS_DIR);
+    QDir directory(userPath + LAYOUTS_DIR);
     QStringList workspaces = directory.entryList(QStringList() << "*.ini", QDir::Files);
     QAction* action;
     foreach(QString filename, workspaces)
@@ -5784,7 +5774,7 @@ void MainWindow::DeleteWorkspace(QString workspace)
 
 void MainWindow::slot_LoadWorkspace(QString filename)
 {
-    QSettings settings(QApplication::applicationDirPath() + USER_LAYOUTS_DIR + "/" + filename, QSettings::IniFormat);
+    QSettings settings(userPath + LAYOUTS_DIR + "/" + filename, QSettings::IniFormat);
     if (!m_DockManager->restoreState(settings.value("dockingState").toByteArray()))
     {
         QMessageBox::critical(this, "Error", "Couldn't load layout.");
@@ -5794,8 +5784,7 @@ void MainWindow::slot_LoadWorkspace(QString filename)
 void MainWindow::CreateNewWorkspace(QString filename)
 {
     QString fileNameAndExtension = filename + ".ini";
-    QSettings settings(QApplication::applicationDirPath() + USER_LAYOUTS_DIR + "/" + fileNameAndExtension,
-                       QSettings::IniFormat);
+    QSettings settings(userPath + LAYOUTS_DIR + "/" + fileNameAndExtension, QSettings::IniFormat);
     settings.setValue("dockingState", m_DockManager->saveState());
     QAction* action = new QAction(filename);
     ui->menuRestore_Layout->insertAction(workspaceSeparator, action);
@@ -5809,31 +5798,29 @@ void MainWindow::downloadHvscSonglengthsComplete()
 {
     if (filedownloader->downloadedData().size() > 0)
     {
-        QFile file(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+        QFile file(userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
         if (file.open(QIODevice::ReadWrite))
         {
             QTextStream stream(&file);
             stream << filedownloader->downloadedData();
             file.close();
             QDateTime::currentDateTime().toSecsSinceEpoch();
-            QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
-                               QSettings::IniFormat);
+            QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
             qint64 seconds = QDateTime::currentDateTime().toSecsSinceEpoch();
 
-            if (getHvscSonglengthsPathDownloaded().toStdString().compare(
-                QApplication::applicationDirPath().toStdString() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_DATA_PATH))
+            if (getHvscSonglengthsPathDownloaded().compare(
+                dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH))
             {
                 settingsWindow settingsWindow(this);
                 settingsWindow.setUiLineEditHvscSonglengthTextForcingRelativePaths(
-                    PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
+                    userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
                 settingsWindow.saveSidplaySettings();
             }
 
             settings.setValue("libsidplayfp/timehvscsonglengthsdownloaded", seconds);
             settings.setValue("libsidplayfp/hvscsonglengthspath",
-                              QApplication::applicationDirPath() + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH);
-            HvscSonglengthsPathDownloaded = QApplication::applicationDirPath() +
-                PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_USER_PATH;
+                              userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
+            HvscSonglengthsPathDownloaded = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
             HvscSonglengthsDownloadedEpoch = seconds;
             addDebugText("Downloaded " + filedownloader->getUrl().toString() + " to " + file.fileName());
         }

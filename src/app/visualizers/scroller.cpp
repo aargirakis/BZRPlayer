@@ -1,4 +1,7 @@
 #include "scroller.h"
+
+#include <mainwindow.h>
+
 #include "qapplication.h"
 #include "qdebug.h"
 #include <math.h>
@@ -17,10 +20,8 @@ Scroller::Scroller(QWidget* parent)
     customScrolltext = "";
 
     m_vumeterWidth = 100;
-    m_bitmapFont = QApplication::applicationDirPath() + QString::fromUtf8(
-        "/data/resources/visualizer/bitmapfonts/anomaly.png");
-    m_bitmapFontPrinter = QApplication::applicationDirPath() + QString::fromUtf8(
-        "/data/resources/visualizer/bitmapfonts/anomaly.png");
+    m_bitmapFont = dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts/anomaly.png";
+    m_bitmapFontPrinter = dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts/anomaly.png";
     fontScaleXPrinter = 1;
     fontScaleYPrinter = 1;
     m_Amplitude = 32;

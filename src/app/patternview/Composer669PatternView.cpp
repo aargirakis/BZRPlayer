@@ -1,4 +1,6 @@
 #include "Composer669PatternView.h"
+
+#include <mainwindow.h>
 #include <QApplication>
 #include <QDir>
 
@@ -69,8 +71,8 @@ void Composer669PatternView::paintAbove(QPainter* painter, int height, int curre
     //top
     painter->fillRect(0, 0, 640, 8, colorLightBlue);
     painter->fillRect(0, 8, 640, 8, colorBlue);
-    QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
-        "trackerview" + QDir::separator() + "composer669_top.png";
+    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() + "trackerview" + QDir::separator() +
+                        "composer669_top.png";
 
     //symbol
     QImage spriteSheet(imagepath);

@@ -56,18 +56,18 @@ public:
     static int InfoMetaPSF(void* context, const char* name, const char* value)
     {
         auto* plugin = static_cast<pluginLazyusf2*>(context);
-		if (!_stricmp(name, "_enablecompare"))
+		if (!strcasecmp(name, "_enablecompare"))
         {
             plugin->m_loaderState.enablecompare = 1;
         }
-        else if (!_stricmp(name, "_enablefifofull"))
+        else if (!strcasecmp(name, "_enablefifofull"))
         {
             plugin->m_loaderState.enablefifofull = 1;
         }
-        else if (!_strnicmp(name, "replaygain_", sizeof("replaygain_") - 1))
+        else if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1))
         {
         }
-        else if (!_stricmp(name, "length"))
+        else if (!strcasecmp(name, "length"))
         {
             auto getDigit = [](const char*& value)
             {
@@ -119,13 +119,13 @@ public:
 				}
             }
         }
-        else if (!_stricmp(name, "fade"))
+        else if (!strcasecmp(name, "fade"))
         {
         }
-        else if (!_stricmp(name, "utf8"))
+        else if (!strcasecmp(name, "utf8"))
         {
         }
-        else if (!_stricmp(name, "_lib"))
+        else if (!strcasecmp(name, "_lib"))
         {
             //plugin->m_hasLib = true;
         }
@@ -247,7 +247,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     if (psfType == 0x21)
     {
         auto extPos = plugin->info->filename.find_last_of('.');
-        if (extPos == std::string::npos || _stricmp(plugin->info->filename.c_str() + extPos + 1, "usflib") != 0)
+        if (extPos == std::string::npos || strcasecmp(plugin->info->filename.c_str() + extPos + 1, "usflib") != 0)
         {
 			if (plugin->m_lazyState == nullptr)
 			{

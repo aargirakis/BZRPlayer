@@ -1,10 +1,10 @@
 #!/bin/bash
 #
 # NAME
-#     bzr2_setup.sh - distribution-agnostic BZR Player 2.x (BZR2) linux online installer
+#     bzr2-wine_setup.sh - distribution-agnostic BZR Player 2.x (BZR2) installer for linux with wine support
 #
 # SYNOPSIS
-#     ./bzr2_setup.sh
+#     ./bzr2-wine_setup.sh
 #
 # DESCRIPTION
 #     download, install and configure BZR2 using wine, also providing the way to remove it
@@ -117,7 +117,13 @@ setup() {
   fi
 
   if ! $is_already_installed || [ "$force_reinstall" = y ]; then
-    bzr2_zip_filename="BZR-Player-$bzr2_version.zip"
+
+    if is_ge_than "$bzr2_version" "2.0.78"; then
+      bzr2_zip_filename="BZR-Player-$bzr2_version-win64.zip"
+    else
+      bzr2_zip_filename="BZR-Player-$bzr2_version.zip"
+    fi
+
     download_bzr2
 
     if [ "$is_zip_downloaded" == false ]; then
@@ -669,7 +675,6 @@ Terminal=false
 StartupNotify=false
 Categories=AudioVideo;Audio;Music;Player;
 MimeType=$desktop_entry_mime_types
-NoDisplay=false
 
 EOF
   )

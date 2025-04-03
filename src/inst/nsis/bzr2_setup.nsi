@@ -176,7 +176,7 @@ Section "!${NAME} (required)"
     goto beforeUnpacking
   ${EndIf}
 
-  StrCpy $releaseArchiveFilename "${RELEASE_ARCHIVE_FILENAME_UNVERSIONED}$version.zip"
+  StrCpy $releaseArchiveFilename "${RELEASE_ARCHIVE_FILENAME_UNVERSIONED}$version-win64.zip"
 
   inetc::get /RESUME "" /QUESTION "" "${URL_RELEASE_ARCHIVE}" "${RELEASE_ARCHIVE_FILE_PATH}"
   Pop $0
@@ -310,7 +310,7 @@ Function .onInit
     #TODO a regex should be used here
     ${WordFind} "$releaseArchiveFilename" "${RELEASE_ARCHIVE_FILENAME_UNVERSIONED}" "E+1}" $version
     IfErrors localReleaseArchiveFilenameNotValid
-    ${WordFind} "$version" ".zip" "E+1{" $version
+    ${WordFind} "$version" "-win64.zip" "E+1{" $version
     IfErrors localReleaseArchiveFilenameNotValid
     ${WordFind} "$version" "2." "E+1}" $R0
     IfErrors localReleaseArchiveFilenameNotValid

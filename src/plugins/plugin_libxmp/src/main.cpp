@@ -153,7 +153,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 
 
     //read config from disk
-    string filename = plugin->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/libxmp.cfg";
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/libxmp.cfg";
     ifstream ifs(filename.c_str());
     string line;
     bool useDefaults = false;

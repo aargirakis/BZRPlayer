@@ -1,17 +1,21 @@
 --- release/distrib/replay/lib/replay.cpp	2025-01-30 20:14:52.000000000 +0100
-+++ release/distrib/replay/lib/replay.cpp	2025-02-03 17:24:43.526807960 +0100
-@@ -49,6 +49,10 @@
++++ release/distrib/replay/lib/replay.cpp	2025-04-08 16:39:00.317941847 +0200
+@@ -49,6 +49,14 @@
  #include "../../../../src/include/ptk.h"
  #endif
  
 +#if defined(BZR2)
 +#include <cstdio>
++#if defined(__LINUX__)
++#include <cstring>
++#include <unistd.h>
++#endif
 +#endif
 +
  // ------------------------------------------------------
  // Variables
  #if !defined(__STAND_ALONE__) && !defined(__WINAMP__)
-@@ -2192,7 +2196,7 @@
+@@ -2192,7 +2200,7 @@
  
      glide = 0;
  

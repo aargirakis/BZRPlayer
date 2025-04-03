@@ -1,7 +1,7 @@
 #ifndef _SOUNDDRIVER_DUMMY_H_
 #define _SOUNDDRIVER_DUMMY_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #define STDCALL
 #define FALSE 0

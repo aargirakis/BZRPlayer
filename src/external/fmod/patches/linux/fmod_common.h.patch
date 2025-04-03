@@ -1,0 +1,20 @@
+--- api/core/inc/fmod_common.h	2022-03-15 06:26:00.000000000 +0100
++++ api/core/inc/fmod_common.h	2024-09-26 10:07:24.429769195 +0200
+@@ -110,6 +110,17 @@
+ #define FMOD_TIMEUNIT_MODORDER                      0x00000100
+ #define FMOD_TIMEUNIT_MODROW                        0x00000200
+ #define FMOD_TIMEUNIT_MODPATTERN                    0x00000400
++#define FMOD_TIMEUNIT_SUBSONG                       0x00000800
++#define FMOD_TIMEUNIT_MODPATTERN_INFO               0x00001000
++#define FMOD_TIMEUNIT_MODVUMETER                    0x00002000
++#define FMOD_TIMEUNIT_SUBSONG_MS                    0x00004000
++#define FMOD_TIMEUNIT_MUTE_VOICE                    0x00008000
++#define FMOD_TIMEUNIT_TEMPO                         0x00010000
++#define FMOD_TIMEUNIT_MS_REAL                       0x00020000
++#define FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS          0x00040000
++#define FMOD_TIMEUNIT_SPEED                         0x00080000
++#define FMOD_TIMEUNIT_BPM                           0x00100000
++#define FMOD_TIMEUNIT_WAVEFORM                      0x00200000
+ 
+ typedef unsigned int FMOD_SYSTEM_CALLBACK_TYPE;
+ #define FMOD_SYSTEM_CALLBACK_DEVICELISTCHANGED      0x00000001

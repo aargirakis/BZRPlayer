@@ -4,7 +4,13 @@
 #include <exception>
 #include <fstream>
 #include <vector>
+
+#ifdef WIN32
 #include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
+
 #include <fmod_errors.h>
 #include "info.h"
 #include "sunvox.h"
@@ -76,8 +82,13 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 
 FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    if (sv_load_dll2((static_cast<string>(&DATA_PLUGINS_DIR[1]) + "/sunvox.dll").c_str()))
-        return FMOD_ERR_FORMAT;
+    auto *plugin = new pluginSunvoxLib(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
+
+    if (sv_load_dll2((plugin->info->dataPath + PLUGINS_DIR + "/" + SUNVOX_LIB).c_str()) == -1) {
+        return FMOD_ERR_INTERNAL;
+    }
+
     FMOD_RESULT result;
 
     unsigned int bytesread;
@@ -85,8 +96,6 @@ FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    auto* plugin = new pluginSunvoxLib(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
     if (filesize == 4294967295) //stream
     {
         return FMOD_ERR_FORMAT;
