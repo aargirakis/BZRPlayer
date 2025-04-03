@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 set(NAME "sndh-player")
 set(VERSION "0.79")
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "SNDH-Archive-Player" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
@@ -28,6 +28,8 @@ set(TIMEDB_FILE_URL "https://sourceforge.net/p/sc68/code/${TIMEDB_VERSION}/tree/
 set(TIMEDB_DESTINATION_PATH "${EXTERNAL_SOURCE_DIR}")
 download_to(${TIMEDB_FILENAME} ${TIMEDB_FILE_URL} "" ${TIMEDB_DESTINATION_PATH} true "")
 
+add_compile_definitions(_strdup=strdup)
+
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/AtariAudio/*.cpp
         ${EXTERNAL_SOURCE_DIR}/AtariAudio/external/ice_24.c
@@ -45,11 +47,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         # ${EXTERNAL_SOURCE_DIR}/AtariAudio/external/Musashi    #TODO remove?
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
+        ${LIB_FMOD_API_DIR}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
 )

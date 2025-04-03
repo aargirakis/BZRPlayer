@@ -108,7 +108,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     //Info* info = new Info();
     Info* info = static_cast<Info*>(userexinfo->userdata);
-    string filename = info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/gameemu.cfg";
+    string filename = info->userPath + PLUGINS_CONFIG_DIR + "/gameemu.cfg";
     ifstream ifs(filename.c_str());
     string line;
     unsigned int filesize;

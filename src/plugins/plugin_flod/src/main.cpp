@@ -127,7 +127,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
     //read config from disk
 
-    string filename = plugin->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/flod.cfg";
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/flod.cfg";
     ifstream ifs(filename.c_str());
     string line;
     int force = 0;

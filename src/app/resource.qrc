@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/bzr">
+    <qresource>
         <file>static/data/resources/icon.png</file>
         <file>resources/close.png</file>
         <file>resources/undock.png</file>
@@ -20,5 +20,4 @@
         <file>resources/checkbox-off-disabled.svg</file>
         <file>resources/checkbox-on-disabled.svg</file>
     </qresource>
-    <qresource prefix="/"/>
 </RCC>

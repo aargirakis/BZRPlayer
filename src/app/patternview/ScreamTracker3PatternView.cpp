@@ -1,4 +1,6 @@
 #include "ScreamTracker3PatternView.h"
+
+#include <mainwindow.h>
 #include <QApplication>
 #include <QDir>
 
@@ -86,7 +88,7 @@ void ScreamTracker3PatternView::paintAbove(QPainter* painter, int height, int cu
     painter->fillRect(0, 0, (72 + m_channels * 112), 2, colorHilite);
 
     //corners
-    QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
         "trackerview" + QDir::separator() + "s3m_top.png";
     QImage spriteSheet(imagepath);
 

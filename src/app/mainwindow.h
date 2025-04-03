@@ -5,6 +5,8 @@
 #include <QListWidgetItem>
 #include <QSystemTrayIcon>
 #include <QDomElement>
+#include <QApplication>
+#include <QDir>
 #include <string>
 #include "DockManager.h"
 #include "filedownloader.h"
@@ -18,6 +20,10 @@
 #include "visualizers/visualizerfullscreen.h"
 
 using namespace std;
+
+inline QString exePath;
+inline QString dataPath;
+inline QString userPath;
 
 namespace Ui
 {
@@ -42,6 +48,7 @@ class MainWindow : public QMainWindow
     )
 
 public:
+
     enum playmode
     {
         normal = 0,

@@ -4,7 +4,7 @@ set(NAME "lazyusf2")
 set(VERSION "421f00bcaa1988b8e1825e91780129f24fbd1aa0")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
@@ -19,10 +19,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
     add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-return-mismatch>)
-endif ()
-
-if (CMAKE_COMPILER_IS_GNUCC)
-    add_compile_options(-mfpmath=sse -msse2) # not needed for 64bit (already set by default)
 endif ()
 
 set(LIB_NAME "${NAME}")
@@ -97,16 +93,18 @@ target_include_directories(${PROJECT_NAME} PRIVATE #TODO remove unnecessary
         ${EXTERNAL_SOURCE_DIR_psflib}
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
+        ${LIB_FMOD_API_DIR}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        ZLIB::ZLIB
-        # -lshlwapi   #TODO
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+
+#if (WIN32) TODO
+#    target_link_libraries(${PROJECT_NAME} PRIVATE -lshlwapi)
+#endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
 )

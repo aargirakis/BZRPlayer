@@ -1,0 +1,16 @@
+--- include/windows.h	2007-11-26 20:20:50.000000000 +0100
++++ include/windows.h	2025-04-13 20:29:10.984518579 +0200
+@@ -13,8 +13,13 @@
+ typedef char * LPSTR;
+ typedef const char * LPCSTR;
+ 
++#ifdef WIN32
+ typedef BPTR HANDLE;
+ #define INVALID_HANDLE_VALUE ZERO
++#else
++typedef void* HANDLE;
++#define INVALID_HANDLE_VALUE 0
++#endif
+ 
+ #define __stdcall
+ 

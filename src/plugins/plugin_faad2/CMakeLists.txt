@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 set(NAME "faad2")
 set(VERSION "2.11.2")
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "FAAD2" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
@@ -27,6 +27,7 @@ download_patch_and_add(
 
 add_compile_definitions(HAVE_CONFIG_H=1)
 set(HAVE_MEMCPY 1)
+set(HAVE_STDINT_H 1)
 configure_file(
         src/config.h.in
         ${EXTERNAL_SOURCE_DIR}/config.h
@@ -47,11 +48,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/libfaad
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
+        ${LIB_FMOD_API_DIR}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
 )

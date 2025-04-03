@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.28)
 
+cmake_policy(SET CMP0177 OLD) #TODO fix
+
 set(NAME "organya-decoder")
 set(VERSION "1.11")
 project(plugin_${NAME})
-set(PLUGIN_${NAME}_DLL "${PROJECT_NAME}.dll" PARENT_SCOPE)
+set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "Organya decoder" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
@@ -22,8 +24,9 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-set(ORG_DATA_PATH "${DATA_PLUGINS_DIR}/orgsamples")
-add_compile_definitions(ORG_DATA_PATH="${ORG_DATA_PATH}")
+set(ORG_DATA_DIR "${PLUGINS_DIR}/organya")
+set(ORG_SAMPLES_DIR "${ORG_DATA_DIR}/samples")
+add_compile_definitions(ORG_SAMPLES_DIR="${ORG_SAMPLES_DIR}")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/liborganya/*.c
@@ -37,19 +40,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/liborganya
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
+        ${LIB_FMOD_API_DIR}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DATA_PLUGINS_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
 )
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        ${EXTERNAL_SOURCE_DIR}/liborganya/samples
-        ${OUTPUT_DIR}${ORG_DATA_PATH}
-
-        VERBATIM
-)
+install(DIRECTORY ${EXTERNAL_SOURCE_DIR}/liborganya/samples
+        DESTINATION ${OUTPUT_DIR}/${DATA_DIR}/${ORG_DATA_DIR})

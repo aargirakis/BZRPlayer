@@ -1,14 +1,17 @@
 # BZR Player 2 (BZR2)
 
-Audio player for **Windows** and **Linux** (using **Wine**) supporting a wide array of multi-platform **exotic** file
+Audio player for **Windows** and **Linux** supporting a wide array of multi-platform **exotic** file
 formats, written in **C++** and **Qt** with a sound engine based on **FMOD**.\
 The first BZR version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version which is
 coded pretty much from scratch.
 
 ## Download binaries
 
-- Windows & Linux online installers: https://github.com/aargirakis/BZRPlayer/blob/main/src/inst
-- AUR package: `bzr-player` https://aur.archlinux.org/packages/bzr-player
+- [Releases & changelogs](https://github.com/aargirakis/BZRPlayer/releases)
+- AUR package: [`bzr-player`](https://aur.archlinux.org/packages/bzr-player)
+- Installers: [Windows](https://github.com/aargirakis/BZRPlayer/blob/main/src/inst/nsis/bzr2_setup.exe) -
+  [Linux (Wine)](https://github.com/aargirakis/BZRPlayer/blob/main/src/inst/bzr2-wine_setup.sh)
+- [Old versions archive](https://github.com/aargirakis/BZRPlayer/tree/binaries_archive/binaries)
 
 ## How To Build
 
@@ -25,7 +28,7 @@ required), then start the configuration process executing:\
 `cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
 
 To build the project execute:\
-`ninja -C cmake-build`
+`ninja -C cmake-build && cmake --install cmake-build`
 
 As result of the building process, in the chosen CMake build directory the `output` directory will be populated with
 binaries.\
@@ -37,7 +40,7 @@ containing the final archive release file
 ```
 cd /c/BZRPlayer
 cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
-ninja -C cmake-build 
+ninja -C cmake-build && cmake --install cmake-build
 ```
 
 #### IDE setup
@@ -63,25 +66,9 @@ These are the settings for any IDE that supports CMake:
 - (optional) set CMake executable to **<MSYS2_dir>\ucrt64\bin\cmake.exe**\
   (e.g. `C:\msys64\ucrt64\bin\cmake.exe`)
 
-### Linux (cross-compilation)
+#### Windows installer
 
-Dockerized cross-compilation toolchain is provided, just execute `run.sh` from the **docker** directory with following
-flags:
-
-- `CONFIG=1` for running the CMake configuration stage (with **Debug** build type, eventually setting
-  `BUILD_TYPE=Release` if needed)
-- `BUILD=1` for building the project
-- `RUN_BZR2=1` for running built BZR2 (**Wine** is required)
-
-### Offline mode
-
-By default, the CMake configuration stage will download all needed libraries and files. Add `-DOFFLINE_MODE=1` to CMake
-command (or `OFFLINE_MODE=1` to `run.sh`) for switching to offline mode.\
-Offline mode doesn't guarantee that the build will include the latest versions of the files with unmanaged version
-
-### Windows online installer
-
-Although the **BZR2 online installer for Windows** is scripted in **Nullsoft Scriptable Install System (NSIS)**, it can
+Although the **BZR2 installer for Windows** is scripted in **Nullsoft Scriptable Install System (NSIS)**, it can
 be only compiled using **WSL2** or cross-compiled on Linux since it contains Linux specific code (mostly the bash script
 for the XDG MIME types handling), also **MSYS2** it is currently not viable since the required **NSIS** plugins are
 still missing.
@@ -106,6 +93,46 @@ Useful flags for dev/testing purposes:
 - `skipInstallerUpdate2` skip latest installer's version check/download: `bzr2_setup.exe /skipInstallerUpdate2`
 - `localReleaseArchivePath` install BZR2 from a local release archive:
   `bzr2_setup.exe /localBinaryPath="<path_to_release_archive_file>"`
+
+### Linux
+
+Any Arch-based Linux distribution with following packages is required:
+
+`base-devel` `cmake` `dos2unix` `libglvnd` `ninja` `patchutils` `qt6-base` `qt-advanced-docking-system`
+`qt6-declarative` `qt6-svg` `sdl2-compat` `vulkan-headers`
+
+Go to the project sources dir then start the configuration process executing:\
+`cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
+
+To build the project execute:\
+`ninja -C cmake-build && cmake --install cmake-build`
+
+#### build example
+
+```
+cd ~/bzr-player &&
+cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Release -G Ninja &&
+ninja -C cmake-build && cmake --install cmake-build 
+```
+
+#### Runtime dependencies
+
+For Arch-based Linux distributions following packages are required for running BZR2:
+
+`qt6-base` `qt-advanced-docking-system`
+
+### Further CMake flags
+
+#### Dev paths
+
+Adding `-DUSE_DEV_PATHS=1` to CMake command ensure BZR2 will use paths relative to `output` directory avoiding the
+system ones: useful for dev/testing purposes
+
+#### Offline mode
+
+By default, the CMake configuration stage will download all needed libraries and files. Add `-DOFFLINE_MODE=1` to CMake
+command for switching to offline mode.\
+Offline mode doesn't guarantee that the build will include the latest versions of the files with unmanaged version
 
 ----
 

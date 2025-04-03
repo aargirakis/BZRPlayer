@@ -1,4 +1,6 @@
 #include "ProTracker36PatternView.h"
+
+#include <mainwindow.h>
 #include <QApplication>
 #include <QDir>
 
@@ -55,7 +57,7 @@ void ProTracker36PatternView::paintAbove(QPainter* painter, int height, int curr
 
     //scrollbar
 
-    QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
         "trackerview" + QDir::separator() + "protracker361_top.png";
     QImage spriteSheet(imagepath);
 

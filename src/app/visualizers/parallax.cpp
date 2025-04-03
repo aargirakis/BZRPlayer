@@ -1,4 +1,5 @@
 #include "parallax.h"
+#include "mainwindow.h"
 #include "qapplication.h"
 
 Parallax::Parallax()
@@ -10,13 +11,14 @@ void Parallax::paint(QPainter* painter, QPaintEvent* event)
 {
     if (!inited)
     {
-        tile1 = QPixmap(QApplication::applicationDirPath() + QString::fromUtf8("/Resources/visualizer/parallax1.png"));
-        tile2 = QPixmap(QApplication::applicationDirPath() + QString::fromUtf8("/Resources/visualizer/parallax2.png"));
-        tile3 = QPixmap(QApplication::applicationDirPath() + QString::fromUtf8("/Resources/visualizer/parallax3.png"));
-        tile4 = QPixmap(QApplication::applicationDirPath() + QString::fromUtf8("/Resources/visualizer/parallax4.png"));
-        tile5 = QPixmap(QApplication::applicationDirPath() + QString::fromUtf8("/Resources/visualizer/parallax5.png"));
-        tile6 = QPixmap(QApplication::applicationDirPath() + QString::fromUtf8("/Resources/visualizer/parallax6.png"));
-        tile7 = QPixmap(QApplication::applicationDirPath() + QString::fromUtf8("/Resources/visualizer/parallax7.png"));
+        //TODO missing files (from bzr1 SOTB visualizer)
+        tile1 = QPixmap(dataPath + "/resources/visualizer/parallax1.png");
+        tile2 = QPixmap(dataPath + "/resources/visualizer/parallax2.png");
+        tile3 = QPixmap(dataPath + "/resources/visualizer/parallax3.png");
+        tile4 = QPixmap(dataPath + "/resources/visualizer/parallax4.png");
+        tile5 = QPixmap(dataPath + "/resources/visualizer/parallax5.png");
+        tile6 = QPixmap(dataPath + "/resources/visualizer/parallax6.png");
+        tile7 = QPixmap(dataPath + "/resources/visualizer/parallax7.png");
 
         inited = true;
     }

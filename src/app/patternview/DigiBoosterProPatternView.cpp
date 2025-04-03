@@ -1,4 +1,6 @@
 #include "DigiBoosterProPatternView.h"
+
+#include <mainwindow.h>
 #include <QApplication>
 #include <QDir>
 
@@ -71,7 +73,7 @@ void DigiBoosterProPatternView::paintAbove(QPainter* painter, int height, int cu
     pen.setWidth(1);
     painter->setPen(pen);
 
-    QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
         "trackerview" + QDir::separator() + "digiboosterpro2_top.png";
     QImage spriteSheet(imagepath);
 
@@ -169,7 +171,7 @@ void DigiBoosterProPatternView::paintBelow(QPainter* painter, int height, __attr
     painter->fillRect(8, (height / 2) - 7, (18) + m_channels * 90, 8, QColor(156, 154, 156));
     painter->fillRect(8, (height / 2) + 3, (18) + m_channels * 90, 1, QColor(0, 0, 0));
 
-    QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
         "trackerview" + QDir::separator() + "digiboosterpro2_top.png";
     QImage spriteSheet(imagepath);
     QRectF sourceTop(0, 0, 128, 2);

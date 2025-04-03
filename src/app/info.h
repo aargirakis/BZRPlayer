@@ -34,7 +34,8 @@ public:
     void clear()
     {
         tempPath = "";
-        applicationPath = "";
+        dataPath = "";
+        userPath = "";
         mutedChannelsMask = "";
         filename = "";
         artist = "";
@@ -222,8 +223,9 @@ public:
     }
 
     string mutedChannelsMask;
-    string applicationPath;
     string tempPath;
+    string dataPath;
+    string userPath;
     string filename;
     string artist;
     string title;

@@ -193,7 +193,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="resource.qrc">:/bzr/static/data/resources/icon.png</pixmap>
+    <pixmap resource="resource.qrc">:/static/data/resources/icon.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.28)
 
 project(bzr2 VERSION "2.0.77")
 
+include(GNUInstallDirs)
+
 if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(WARNING "Only x64 build is supported")
     return()
@@ -12,22 +14,35 @@ if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_
     set(CMAKE_BUILD_TYPE "Debug")
 endif ()
 
-set(DATA_DIR "/data")
-set(USER_DIR "/user")
-set(DATA_PLUGINS_DIR "${DATA_DIR}/plugin")
-set(DATA_PLUGINS_FMOD_DIR "${DATA_PLUGINS_DIR}/fmod")
-set(USER_LAYOUTS_DIR "${USER_DIR}/layouts")
-set(USER_PLAYLISTS_DIR "${USER_DIR}/playlists")
-set(USER_PLUGINS_DIR "${USER_DIR}/plugin")
-set(USER_PLUGINS_CONFIG_DIR "${USER_PLUGINS_DIR}/config")
-set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/output")
-set(OUTPUT_DATA_DIR "${OUTPUT_DIR}${DATA_DIR}")
-set(OUTPUT_DATA_PLUGINS_DIR "${OUTPUT_DIR}${DATA_PLUGINS_DIR}")
-set(OUTPUT_PLATFORMS_DIR "${OUTPUT_DIR}/platforms")
-set(OUTPUT_TLS_DIR "${OUTPUT_DIR}/tls")
+set(CMAKE_INSTALL_MESSAGE NEVER)
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/output")
+set(OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}") #TODO delete OUTPUT_DIR
+
+if (WIN32)
+    set(PLATFORMS_DIR "/platforms")
+    set(TLS_DIR "/tls")
+    set(DATA_DIR "/data")
+    set(USER_DIR "/user")
+else ()
+    set(USER_DIR "bzr-player")
+    set(PREFIX_DIR "${CMAKE_PREFIX_PATH}")
+    set(BIN_DIR "${PREFIX_DIR}/${CMAKE_INSTALL_BINDIR}")
+    set(LIB_DIR "${PREFIX_DIR}/${CMAKE_INSTALL_LIBDIR}")
+    set(SHARE_DIR "${PREFIX_DIR}/share/bzr-player")
+    set(DATA_DIR "${SHARE_DIR}/data")
+endif ()
+
+set(RESOURCES_DIR "/resources")
+set(LAYOUTS_DIR "/layouts")
+set(PLAYLISTS_DIR "/playlists")
+set(PLUGINS_DIR "/plugin")
+set(PLUGINS_FMOD_DIR "${PLUGINS_DIR}/fmod")
+set(PLUGINS_CONFIG_DIR "${PLUGINS_DIR}/config")
 
 include(${CMAKE_SOURCE_DIR}/utils.cmake)
 include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)
+
+set_platform_lib_ext()
 
 add_compile_options(-w) #TODO remove
 
@@ -83,36 +98,37 @@ configure_file(
         @ONLY NEWLINE_STYLE UNIX
 )
 
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
+if (CMAKE_BUILD_TYPE STREQUAL "Release" AND WIN32)
+    if (USE_DEV_PATHS EQUAL 1)
+        message(NOTICE "USE_DEV_PATHS is set: binaries archive generation is skipped")
+        return()
+    endif ()
+
+    #TODO needed?
     if (NOT DEFINED CPACK_EXECUTABLE)
         set(CPACK_EXECUTABLE "${CMAKE_PREFIX_PATH}/bin/cpack")
     endif ()
-    set(CPACK_GENERATOR "ZIP")
+
     set(CPACK_PACKAGE_NAME "BZR-Player")
     set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}_win")
     set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
     set(CPACK_OUTPUT_FILE_PREFIX "${OUTPUT_DIR}_release")
+    set(CPACK_GENERATOR ZIP)
 
-    install(
-            FILES ${RUNTIME_DLLS}
+    install(DIRECTORY
+            ${OUTPUT_DIR}${DATA_DIR}
+            ${OUTPUT_DIR}/${PLATFORMS_DIR}
+            ${OUTPUT_DIR}/${TLS_DIR}
             DESTINATION .
     )
 
-    install(
-            DIRECTORY
-            ${OUTPUT_DATA_DIR}
-            ${OUTPUT_PLATFORMS_DIR}
-            ${OUTPUT_TLS_DIR}
-            DESTINATION .
-    )
-
-    install(
-            FILES
-            ${OUTPUT_DIR}/BZRPlayer.exe
+    install(FILES
+            ${OUTPUT_DIR}/${EXE_NAME}
             ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
-            ${OUTPUT_DIR}/fmod.dll
             ${OUTPUT_DIR}/LICENSE.txt
+            ${OUTPUT_DIR}/${LIB_FMOD}
+            ${RUNTIME_LIBS}
             DESTINATION .
     )
 

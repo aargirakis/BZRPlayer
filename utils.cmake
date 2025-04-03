@@ -6,6 +6,14 @@ include(ProcessorCount)
 
 set(DEPENDENCIES_DIR ${CMAKE_BINARY_DIR}/_deps)
 
+function(set_platform_lib_ext)
+    if (WIN32)
+        set(LIB_EXT "dll" PARENT_SCOPE)
+    else ()
+        set(LIB_EXT "so" PARENT_SCOPE)
+    endif ()
+endfunction()
+
 function(download_to target_filename target_url sha_256_hash
         destination_path display_destination_path target_name)
     if (OFFLINE_MODE EQUAL 1 OR "${target_url}" STREQUAL "")
@@ -58,7 +66,7 @@ function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
     file(GLOB PATCH_FILES "${patches_dir}/*.patch")
 
     foreach (PATCH_FILE ${PATCH_FILES})
-        if (NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+        if (NOT WIN32)
             execute_process(
                     COMMAND lsdiff ${PATCH_FILE}
                     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -139,7 +147,7 @@ function(download_patch_and_make target_name target_filename target_url sha_256_
             "${target_unpacked_dir}" "${patches_dir}"
     )
 
-    if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    if (WIN32)
         set(make_command mingw32-make AR=ar)
     else ()
         set(make_command make)

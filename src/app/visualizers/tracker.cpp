@@ -41,7 +41,7 @@
 
 Tracker::Tracker()
 {
-    QString fontDir = QApplication::applicationDirPath() + QDir::separator() + "data/resources/trackerview/fonts" +
+    QString fontDir = dataPath + RESOURCES_DIR + "/trackerview/fonts" +
         QDir::separator();
     QFontDatabase::addApplicationFont(fontDir + "DejaVuSansMono.ttf");
 }
@@ -1456,7 +1456,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF sourceNext(6, 0, 6, 7);
                 QRectF targetPrev(left + 3, 35, 6, 7);
                 QRectF targetNext(left + 14, 35, 6, 7);
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "startrekker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPrev, imageTop, sourcePrev);
@@ -1534,7 +1534,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF sourceNext(6, 0, 6, 7);
                 QRectF targetPrev(left + 3, 24, 6, 7);
                 QRectF targetNext(left + 14, 24, 6, 7);
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "protracker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPrev, imageTop, sourcePrev);
@@ -1621,7 +1621,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF targetPrev(left + 3, 24, 6, 7);
                 QRectF targetNext(left + 14, 24, 6, 7);
 
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "chiptracker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPosition, imageTop, sourcePosition);
@@ -1789,7 +1789,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF sourceNext(6, 0, 6, 7);
                 QRectF targetPrev(left + 3, 24, 6, 7);
                 QRectF targetNext(left + 14, 24, 6, 7);
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "icetracker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPrev, imageTop, sourcePrev);
@@ -1899,7 +1899,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF sourceNext(6, 0, 6, 7);
                 QRectF targetPrev(left + 3, 24, 6, 7);
                 QRectF targetNext(left + 14, 24, 6, 7);
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "noisetracker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPrev, imageTop, sourcePrev);
@@ -2293,7 +2293,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF source(0, 0, imageWidth, imageHeight);
                 QRectF target(left, top, imageWidth, imageHeight);
 
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "ahx_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(target, imageTop, source);
@@ -2331,7 +2331,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 painter->fillRect(rectBg, QColor(0, 0, 0));
 
 
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "hively_top.png";
                 QImage imageTop(imagepath);
 
@@ -2449,7 +2449,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF source(0, 0, imageWidth, imageHeight);
                 QRectF target(left - 4, 0, imageWidth, imageHeight);
 
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "digibooster17_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(target, imageTop, source);
@@ -2499,7 +2499,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF targetNextSample(left + 2, 24, 9, 7);
                 QRectF sourcePrevSample(70, 0, 9, 7);
                 QRectF targetPrevSample(left + 14, 24, 9, 7);
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "ust_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPosition, imageTop, sourcePosition);
@@ -2569,7 +2569,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF source(0, 0, 320, 27);
                 QRectF target(left, 0, 320, 27);
 
-                QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" +
+                QString imagepath = dataPath + RESOURCES_DIR +
                     QDir::separator() + "trackerview" + QDir::separator() + "gmc_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(target, imageTop, source);

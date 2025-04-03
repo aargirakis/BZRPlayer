@@ -1,4 +1,6 @@
 #include "DigiBooster17PatternView.h"
+
+#include <mainwindow.h>
 #include <QApplication>
 #include <QDir>
 
@@ -59,7 +61,7 @@ BitmapFont DigiBooster17PatternView::infoFont()
 
 void DigiBooster17PatternView::paintAbove(QPainter* painter, int height, int currentRow)
 {
-    QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
         "trackerview" + QDir::separator() + "digibooster17_top.png";
     QImage spriteSheet(imagepath);
 
@@ -113,7 +115,7 @@ void DigiBooster17PatternView::paintBelow(QPainter* painter, int height, int cur
         painter->setPen(pen);
         painter->drawLine((28 + chan * 72), 0, (28 + chan * 72), height);
     }
-    QString imagepath = QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
         "trackerview" + QDir::separator() + "digibooster17_top.png";
     QImage spriteSheet(imagepath);
     //bottom border

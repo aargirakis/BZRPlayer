@@ -1,0 +1,72 @@
+# Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
+# Contributor: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
+
+pkgname='bzr-player'
+pkgver='2.0.77'
+pkgrel='1'
+pkgdesc='Audio player supporting a wide array of multi-platform exotic file formats'
+arch=('x86_64')
+url="https://bzrplayer.blazer.nu"
+license=('GPL3')
+depends=('hicolor-icon-theme' 'qt6-base' 'qt-advanced-docking-system')
+makedepends=('cmake' 'dos2unix' 'gendesk' 'libarchive' 'libglvnd' 'ninja' 'patchutils' 'qt6-base'
+ 'qt-advanced-docking-system' 'qt6-declarative' 'qt6-svg' 'sdl2-compat' 'vulkan-headers')
+
+#TODO
+#options=(!strip)
+
+_setup="bzr2_setup.sh"
+_mimes="x-bzr-player.xml"
+
+#TODO switch to main
+source=("${pkgname}-${pkgver}.zip::https://github.com/aargirakis/BZRPlayer/archive/refs/heads/feature/linux.zip"
+  "https://raw.githubusercontent.com/aargirakis/BZRPlayer/refs/heads/main/src/inst/$_setup"
+  "https://raw.githubusercontent.com/aargirakis/BZRPlayer/refs/heads/main/src/inst/$_mimes")
+
+#TODO
+#sha256sums=('cb1eb3ae374f73440a2e06df143f7da595ace26eadfbb795519d9cea6c8cec45')
+sha256sums=('SKIP'
+  'SKIP'
+  'SKIP')
+
+prepare() {
+  mapfile -t mime_types_supported < <(sed -n "\|mime_types_supported=(| , \|)|{p; \|)|q}" "$_setup" |
+    sed -e 's:mime_types_supported=(::g' -e 's:)::g' -e 's: :\n:g' | sed '/^[[:space:]]*$/d')
+
+  for mime_type in "${mime_types_supported[@]}"; do
+    desktop_entry_mime_types="$desktop_entry_mime_types$mime_type;"
+  done
+
+  desktop_entry_mime_types="${desktop_entry_mime_types%?}"
+
+  gendesk -n -f --pkgname "$pkgname" --pkgdesc "$pkgdesc" \
+    --name="BZR Player" \
+    --genericname='Audio player' \
+    --exec="/usr/bin/$pkgname %U" \
+    --icon="$pkgname" \
+    --categories='AudioVideo;Audio;Music;Player;' \
+    --mimetype="$desktop_entry_mime_types"
+}
+
+build() {
+cd BZRPlayer-feature-linux &&
+cmake -S . -B cmake-build -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Release -DOFFLINE_MODE=1 -G Ninja &&
+ninja -C cmake-build && cmake --install cmake-build
+}
+
+package() {
+cd BZRPlayer-feature-linux &&
+mv cmake-build/output/usr "$pkgdir"
+install -dm755 "$pkgdir/usr/bin"
+install -dm755 "$pkgdir/usr/lib"
+install -dm755 "$pkgdir/usr/share"
+install -dm755 cmake-build/output "$pkgdir"
+install -Dm644 cmake-build/output/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+install -Dm644 "../$_mimes" "$pkgdir/usr/share/mime/packages/$_mimes"
+install -Dm644 "../$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
+
+  for size in 16 32 48 64 128 256 512; do
+    install -Dm644 "$pkgdir/usr/share/$pkgname/data/resources/icon.png" \
+      "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/$pkgname.png"
+  done
+}

@@ -1,0 +1,14 @@
+--- s98/device/s98types.h	2025-04-07 20:18:08.250506000 +0200
++++ s98/device/s98types.h	2025-04-07 20:24:38.455442945 +0200
+@@ -30,8 +30,9 @@
+ #include <malloc.h>
+ #include <memory.h>
+ 
+-#ifndef __amigaos4__
+-#define XSLEEP(t)		_sleep(t)
++#ifndef WIN32
++#include <unistd.h>
++#define XSLEEP(t)		sleep(t)
+ #else
+ #define XSLEEP(t)
+ #endif

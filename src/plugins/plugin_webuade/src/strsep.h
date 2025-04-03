@@ -1,6 +1,6 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef STRSEP_H
+#define STRSEP_H
 
 char* strsep(char** stringp, const char* delim);
 
-#endif //UTIL_H
+#endif //STRSEP_H

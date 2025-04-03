@@ -827,10 +827,10 @@ QCheckBox:disabled {
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
-       <normaloff>:/bzr/resources/checkbox-off.svg</normaloff>
-       <normalon>:/bzr/resources/checkbox-on.svg</normalon>
-       <disabledoff>:/bzr/resources/checkbox-off-disabled.svg</disabledoff>
-       <disabledon>:/bzr/resources/checkbox-on-disabled.svg</disabledon>:/bzr/resources/checkbox-off.svg</iconset>
+       <normaloff>:/resources/checkbox-off.svg</normaloff>
+       <normalon>:/resources/checkbox-on.svg</normalon>
+       <disabledoff>:/resources/checkbox-off-disabled.svg</disabledoff>
+       <disabledon>:/resources/checkbox-on-disabled.svg</disabledon>:/resources/checkbox-off.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -1153,15 +1153,15 @@ QPushButton:hover
      </rect>
     </property>
     <property name="text">
-     <string>HVSC Songlengths path:</string>
+     <string>HVSC Songlengths:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEditHvscSonglength">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>160</x>
       <y>100</y>
-      <width>281</width>
+      <width>430</width>
       <height>31</height>
      </rect>
     </property>
@@ -3333,7 +3333,7 @@ Opacity</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
-       <normaloff>:/bzr/resources/checkbox-on.svg</normaloff>:/bzr/resources/checkbox-on.svg</iconset>
+       <normaloff>:/resources/checkbox-on.svg</normaloff>:/resources/checkbox-on.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -4607,15 +4607,15 @@ QPushButton:hover
      </rect>
     </property>
     <property name="text">
-     <string>UADE Songlengths path:</string>
+     <string>UADE Songlengths:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEditUADESonglength">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>170</x>
       <y>309</y>
-      <width>281</width>
+      <width>430</width>
       <height>31</height>
      </rect>
     </property>

@@ -4,7 +4,7 @@
  //std includes
  #include <algorithm>
  #include <cassert>
-+#include <limits>       //added for linux cross-compilation
- 
++#include <limits>
+
  namespace Strings
  {

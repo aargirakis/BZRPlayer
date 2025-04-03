@@ -138,7 +138,7 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
 
 
         //read config from disk
-        string filename = plugin->info->applicationPath + USER_PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
+        string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
         ifstream ifs(filename.c_str());
         string line;
         bool useDefaults = false;
