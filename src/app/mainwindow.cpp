@@ -50,867 +50,795 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 {
     bool instanceExists = false;
 
-
     QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
                        QSettings::IniFormat);
     m_bAllowOnlyOneInstanceEnabled = settings.value("AllowOnlyOneInstance", true).toBool();
 
     qDebug() << "m_bAllowOnlyOneInstanceEnabled: " << m_bAllowOnlyOneInstanceEnabled;
-    qDebug() << "instanceExists: " << instanceExists;
+
     if (m_bAllowOnlyOneInstanceEnabled)
     {
         instanceExists = initializeSocket();
     }
 
+    if (instanceExists) return;
 
-    if (!instanceExists)
-    {
-        //Fonts needs to be added before the GUI
-        QFontDatabase::addApplicationFont(
-            QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
-            "Roboto-Medium.ttf");
-        QFontDatabase::addApplicationFont(
-            QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
-            "Roboto-Regular.ttf");
-        QFontDatabase::addApplicationFont(
-            QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
-            "RobotoMono-Regular.ttf");
+    //Fonts needs to be added before the GUI
+    QFontDatabase::addApplicationFont(
+        QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+        "Roboto-Medium.ttf");
+    QFontDatabase::addApplicationFont(
+        QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+        "Roboto-Regular.ttf");
+    QFontDatabase::addApplicationFont(
+        QApplication::applicationDirPath() + QDir::separator() + "data/resources" + QDir::separator() +
+        "RobotoMono-Regular.ttf");
 
-        ui->setupUi(this);
+    ui->setupUi(this);
 
-        setWindowTitle(PROJECT_NAME_VERSIONED);
-        windowTitle = PROJECT_NAME_VERSIONED;
-        srand(time(NULL));
+    setWindowTitle(PROJECT_NAME_VERSIONED);
+    windowTitle = PROJECT_NAME_VERSIONED;
+    srand(time(NULL));
 
-        ads::CDockManager::setConfigFlags(ads::CDockManager::DefaultOpaqueConfig);
-        ads::CDockManager::setConfigFlag(ads::CDockManager::DockAreaHasTabsMenuButton, false);
-        ads::CDockManager::setConfigFlag(ads::CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
+    ads::CDockManager::setConfigFlags(ads::CDockManager::DefaultOpaqueConfig);
+    ads::CDockManager::setConfigFlag(ads::CDockManager::DockAreaHasTabsMenuButton, false);
+    ads::CDockManager::setConfigFlag(ads::CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
 
-        m_DockManager = new ads::CDockManager(this);
+    m_DockManager = new ads::CDockManager(this);
 
-        m_DockManager->setStyleSheet(
-            "QScrollBar:vertical {background-color: #282828/*background*/;     width: 15px;     margin: 0 3px 0 3px;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:vertical {     background-color: #404040/*medium*/;     min-height: 25px;     border-radius: 4px; } QScrollBar:horizontal {     background-color: #282828/*background*/;     height: 15px;     margin: 3px 0 3px 0;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:horizontal {     background-color: #404040/*medium*/;     min-width: 5px;     border-radius: 4px; } QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {     background: none; } QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {     background: none; } QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal {     background: none; } QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {     background: none; } QScrollBar::sub-line:vertical {     height: 0;     width: 0; } QScrollBar::add-line:vertical {     height: 0;     width: 0; } QScrollBar::sub-line:horizontal {     height: 0;     width: 0; } QScrollBar::add-line:horizontal {     height: 0;     width: 0; }QScrollArea#dockWidgetScrollArea {	background: #282828/*background*/;padding: 0px;	border: none;} ads--CDockWidgetTab QLabel {font-family:Roboto;font-size:14px;color:#b1b1b1/*dimmed text*/;}ads--CDockWidgetTab[activeTab=\"true\"] QLabel {color:#ffffff/*main text*/;}#tabCloseButton {margin-top: 0;background: none;border: none;}ads--CDockContainerWidget ads--CDockSplitter::handle {background: #161616/*behind-background*/;}ads--CDockAreaTitleBar { background: #282828/*background*/;}ads--CDockWidgetTab {background: #282828/*background*/}");
+    m_DockManager->setStyleSheet(
+        "QScrollBar:vertical {background-color: #282828/*background*/;     width: 15px;     margin: 0 3px 0 3px;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:vertical {     background-color: #404040/*medium*/;     min-height: 25px;     border-radius: 4px; } QScrollBar:horizontal {     background-color: #282828/*background*/;     height: 15px;     margin: 3px 0 3px 0;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:horizontal {     background-color: #404040/*medium*/;     min-width: 5px;     border-radius: 4px; } QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {     background: none; } QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {     background: none; } QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal {     background: none; } QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {     background: none; } QScrollBar::sub-line:vertical {     height: 0;     width: 0; } QScrollBar::add-line:vertical {     height: 0;     width: 0; } QScrollBar::sub-line:horizontal {     height: 0;     width: 0; } QScrollBar::add-line:horizontal {     height: 0;     width: 0; }QScrollArea#dockWidgetScrollArea {	background: #282828/*background*/;padding: 0px;	border: none;} ads--CDockWidgetTab QLabel {font-family:Roboto;font-size:14px;color:#b1b1b1/*dimmed text*/;}ads--CDockWidgetTab[activeTab=\"true\"] QLabel {color:#ffffff/*main text*/;}#tabCloseButton {margin-top: 0;background: none;border: none;}ads--CDockContainerWidget ads--CDockSplitter::handle {background: #161616/*behind-background*/;}ads--CDockAreaTitleBar { background: #282828/*background*/;}ads--CDockWidgetTab {background: #282828/*background*/}");
 
 
-        DockWidgetLogMessages = new ads::CDockWidget("Log Messages");
-        DockWidgetLogMessages->setWidget(ui->dockWidgetContents_9, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetLogMessages);
-        dockWidgets.append(DockWidgetLogMessages);
+    DockWidgetLogMessages = new ads::CDockWidget("Log Messages");
+    DockWidgetLogMessages->setWidget(ui->dockWidgetContents_9, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetLogMessages);
+    dockWidgets.append(DockWidgetLogMessages);
 
-        DockWidgetTitle = new ads::CDockWidget("Now Playing");
-        DockWidgetTitle->setWidget(ui->dockWidgetContents_5, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTitle);
-        dockWidgets.append(DockWidgetTitle);
+    DockWidgetTitle = new ads::CDockWidget("Now Playing");
+    DockWidgetTitle->setWidget(ui->dockWidgetContents_5, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTitle);
+    dockWidgets.append(DockWidgetTitle);
 
 
-        DockWidgetChannels = new ads::CDockWidget("Channels");
-        DockWidgetChannels->setWidget(ui->dockWidgetContents_7);
-        m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetChannels);
-        dockWidgets.append(DockWidgetChannels);
+    DockWidgetChannels = new ads::CDockWidget("Channels");
+    DockWidgetChannels->setWidget(ui->dockWidgetContents_7);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetChannels);
+    dockWidgets.append(DockWidgetChannels);
 
-        DockWidgetTrackerView = new ads::CDockWidget("Tracker View");
-        DockWidgetTrackerView->setWidget(ui->dockWidgetContents_6, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTrackerView);
-        dockWidgets.append(DockWidgetTrackerView);
+    DockWidgetTrackerView = new ads::CDockWidget("Tracker View");
+    DockWidgetTrackerView->setWidget(ui->dockWidgetContents_6, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTrackerView);
+    dockWidgets.append(DockWidgetTrackerView);
 
-        DockWidgetInfo = new ads::CDockWidget("Info");
-        DockWidgetInfo->setWidget(ui->dockWidgetContents_3, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetInfo);
-        dockWidgets.append(DockWidgetInfo);
+    DockWidgetInfo = new ads::CDockWidget("Info");
+    DockWidgetInfo->setWidget(ui->dockWidgetContents_3, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetInfo);
+    dockWidgets.append(DockWidgetInfo);
 
 
-        DockWidgetVisualizer = new ads::CDockWidget("Visualizer");
-        DockWidgetVisualizer->setWidget(ui->dockWidgetContents_11, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetVisualizer);
-        dockWidgets.append(DockWidgetVisualizer);
+    DockWidgetVisualizer = new ads::CDockWidget("Visualizer");
+    DockWidgetVisualizer->setWidget(ui->dockWidgetContents_11, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetVisualizer);
+    dockWidgets.append(DockWidgetVisualizer);
 
 
-        DockWidgetPlaylists = new ads::CDockWidget("Playlists");
-        DockWidgetPlaylists->setWidget(ui->dockWidgetContents_8, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylists);
-        dockWidgets.append(DockWidgetPlaylists);
+    DockWidgetPlaylists = new ads::CDockWidget("Playlists");
+    DockWidgetPlaylists->setWidget(ui->dockWidgetContents_8, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylists);
+    dockWidgets.append(DockWidgetPlaylists);
 
-        DockWidgetPlaylist = new ads::CDockWidget("Playlist");
-        DockWidgetPlaylist->setWidget(ui->dockWidgetContents_4, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylist);
-        dockWidgets.append(DockWidgetPlaylist);
+    DockWidgetPlaylist = new ads::CDockWidget("Playlist");
+    DockWidgetPlaylist->setWidget(ui->dockWidgetContents_4, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylist);
+    dockWidgets.append(DockWidgetPlaylist);
 
-        DockWidgetInstruments = new ads::CDockWidget("Instruments");
-        DockWidgetInstruments->setWidget(ui->dockWidgetContents_10, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetInstruments);
-        dockWidgets.append(DockWidgetInstruments);
+    DockWidgetInstruments = new ads::CDockWidget("Instruments");
+    DockWidgetInstruments->setWidget(ui->dockWidgetContents_10, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetInstruments);
+    dockWidgets.append(DockWidgetInstruments);
 
-        DockWidgetSamples = new ads::CDockWidget("Samples");
-        DockWidgetSamples->setWidget(ui->dockWidgetContents_2, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetSamples);
-        dockWidgets.append(DockWidgetSamples);
+    DockWidgetSamples = new ads::CDockWidget("Samples");
+    DockWidgetSamples->setWidget(ui->dockWidgetContents_2, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetSamples);
+    dockWidgets.append(DockWidgetSamples);
 
-        DockWidgetPlayControl = new ads::CDockWidget("Play Control");
-        DockWidgetPlayControl->setMinimumSizeHintMode(ads::CDockWidget::MinimumSizeHintFromContent);
-        DockWidgetPlayControl->setWidget(ui->dockWidgetContents, ads::CDockWidget::ForceNoScrollArea);
-        m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetPlayControl);
-        dockWidgets.append(DockWidgetPlayControl);
+    DockWidgetPlayControl = new ads::CDockWidget("Play Control");
+    DockWidgetPlayControl->setMinimumSizeHintMode(ads::CDockWidget::MinimumSizeHintFromContent);
+    DockWidgetPlayControl->setWidget(ui->dockWidgetContents, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetPlayControl);
+    dockWidgets.append(DockWidgetPlayControl);
 
 
-        ui->positionSlider->setValue(0);
-        ui->labelFilename->setText("");
-        ui->centralWidget->setStyleSheet("background:#282828/*background*/;color:#ffffff");
+    ui->positionSlider->setValue(0);
+    ui->labelFilename->setText("");
+    ui->centralWidget->setStyleSheet("background:#282828/*background*/;color:#ffffff");
 
 
-        QFont roboto("Roboto");
+    QFont roboto("Roboto");
 
 
-        ui->playlist->setFont(roboto);
-        ui->labelFilename->setFont(roboto);
+    ui->playlist->setFont(roboto);
+    ui->labelFilename->setFont(roboto);
 
 
-        currentRow = 0;
-        isUpdateCurrentRowToNextEnabled = true;
-        ui->visualizer->init();
-        ui->trackerView->init();
-
-
-        ui->pitchSlider->setSnapToDefault(true);
-        ui->pitchSlider->setDefaultValue(100);
-
-
-        ui->dockWidgetPlaylist->setFloating(false);
-
-        LoadWorkspaces();
-
-        createThePopupMenuPlaylists();
-
-
-        createThePopupMenuInstruments();
-        createThePopupMenuChannels();
-        createThePopupLogWindow();
-
-        createTrayMenu();
-        m_Tray->show();
-
-        m_outputDevice = settings.value("outputdevice").toInt();
-        m_resetVolume = settings.value("resetvolume", false).toBool();
-        m_resetVolumeValue = settings.value("resetvolumevalue", 100).toInt();
-
-        lastDir = settings.value("lastOpenedDir", "/").toString();
-
-        m_defaultPlaymode = settings.value("default_playmode", -1).toInt();
-        Playmode = static_cast<playmode>(m_defaultPlaymode == -1
-                                             ? settings.value("playmode", 0).toInt()
-                                             : m_defaultPlaymode);
-
-        if (Playmode == normal)
-        {
-            ui->checkBoxLoop->setCheckState(Qt::Unchecked);
-        }
-        else if (Playmode == repeatPlaylist)
-        {
-            ui->checkBoxLoop->setCheckState(Qt::PartiallyChecked);
-        }
-        else
-        {
-            ui->checkBoxLoop->setCheckState(Qt::Checked);
-        }
-
-        if (PLUGIN_libsidplayfp_DLL != "")
-        {
-            HvscSonglengthsDownloadedEpoch = settings.value("libsidplayfp/timehvscsonglengthsdownloaded", 0).
-                                                      toLongLong();
-            HvscSonglengthsPathDownloaded = settings.value("libsidplayfp/hvscsonglengthspath", "").toString();
-            HvscSonglengthsFrequency = settings.value("libsidplayfp/updateFrequency", "Weekly").toString();
-        }
-
-        ui->checkBoxShuffle->setChecked(settings.value("shuffle", false).toBool());
-
-        m_systrayOnQuitEnabled = settings.value("systrayonquitenabled", false).toBool();
-
-        m_displayMilliseconds = settings.value("displaymilliseconds", false).toBool();
-
-        m_enqueueItems = settings.value("enqueueitems", false).toBool();
-
-        m_normalizeEnabled = settings.value("normalizeenabled", false).toBool();
-        m_normalizeFadeTime = settings.value("normalizefadetime", 5000).toInt();
-        m_normalizeThreshold = settings.value("normalizethreshold", 10).toInt();
-        m_normalizeMaxAmp = settings.value("normalizemaxamp", 20).toInt();
-        currentPlaylist = settings.value("currentPlaylist", PLAYLIST_DEFAULT).toString();
-        currentRow = settings.value("currentRow", -1).toInt();
-        selectedPlaylist = settings.value("selectedPlaylist", PLAYLIST_DEFAULT).toString();
-        m_reverbEnabled = settings.value("reverbenabled", false).toBool();
-        m_reverbPreset = settings.value("reverbpreset", "Generic").toString();
-        m_ignoreSuffix = settings.value("ignoresuffix", "psflib;psf2lib;dsflib").toString();
-        m_ignorePrefix = settings.value("ignoreprefix", "").toString();
-
-
-        colorMainDefault = "#009379/*main*/";
-        colorMainHoverDefault = "#00c09e/*main hover*/";
-        colorMediumDefault = "#404040/*medium*/";
-        colorBackgroundDefault = "#282828/*background*/";
-        colorBehindBackgroundDefault = "#161616/*behind-background*/";
-        colorMainTextDefault = "#ffffff/*main text*/";
-        colorSelectionDefault = "#333333/*selection*/";
-        colorButtonDefault = "#b7b7b7/*button*/";
-        colorButtonHoverDefault = "#ffffff/*button hover*/";
-        colorDimmedTextDefault = "#b1b1b1/*dimmed text*/";
-
-        colorMain = settings.value("colormain", colorMainDefault).toString();
-        colorMainHover = settings.value("colormainhover", colorMainHoverDefault).toString();
-        colorMedium = settings.value("colormedium", colorMediumDefault).toString();
-        colorBackground = settings.value("colorbackground", colorBackgroundDefault).toString();
-        colorBehindBackground = settings.value("colorbehindbackground", colorBehindBackgroundDefault).toString();
-        colorMainText = settings.value("colormaintext", colorMainTextDefault).toString();
-        colorSelection = settings.value("colorselection", colorSelectionDefault).toString();
-        colorButton = settings.value("colorbutton", colorButtonDefault).toString();
-        colorButtonHover = settings.value("colorbuttonhover", colorButtonHoverDefault).toString();
-        colorDimmedText = settings.value("colordimmedtext", colorDimmedTextDefault).toString();
-
-        colorVisualizerTop = settings.value("colorvumetertop", "#ff00dd").toString();
-        colorVisualizerMiddle = settings.value("colorvumetermiddle", "#0000ff").toString();
-        colorVisualizerBottom = settings.value("colorvumeterbottom", "#00ff5e").toString();
-        colorVisualizerBackground = settings.value("colorvisualizerbackground", "#000000").toString();
-
-        sampleColumnNumberWidth = settings.value("samplescolumns/number", 35).toInt();
-        sampleColumnNameWidth = settings.value("samplescolumns/name", 185).toInt();
-        sampleColumnSizeWidth = settings.value("samplescolumns/size", 70).toInt();
-        sampleColumnLoopStartWidth = settings.value("samplescolumns/loopstart", 70).toInt();
-        sampleColumnLoopEndWidth = settings.value("samplescolumns/loopend", 70).toInt();
-        sampleColumnVolumeWidth = settings.value("samplescolumns/volume", 70).toInt();
-        sampleColumnFinetuneWidth = settings.value("samplescolumns/finetune", 70).toInt();
-        sampleColumnResolutionWidth = settings.value("samplescolumns/resolution", 70).toInt();
-
-        instrumentColumnNumberWidth = settings.value("instrumentscolumns/number", 35).toInt();
-        instrumentColumnNameWidth = settings.value("instrumentscolumns/name", 185).toInt();
-        instrumentColumnVolumeWidth = settings.value("instrumentscolumns/volume", 70).toInt();
-        instrumentColumnWaveLengthWidth = settings.value("instrumentscolumns/wavelength", 70).toInt();
-
-        infoNameWidth = settings.value("infocolumns/name", 70).toInt();
-        infoValueWidth = settings.value("infocolumns/value", 70).toInt();
-
-        colorVisualizerPeak = settings.value("colorvumeterpeak", "#b00e3e").toString();
-        vumeterPeaksEnabled = settings.value("vumeterpeaksenabled", true).toBool();
-        vumeterPeaksHeight = settings.value("vumeterpeaksheight", 8).toInt();
-        getEffect()->setVumeterWidth(settings.value("vumeterwidth", 50.0).toDouble());
-        getEffect()->setVumeterOpacity(settings.value("vumeteropacity", 65).toInt());
-
-
-        getEffect()->setAmplitude(settings.value("scroller/amplitude", 32).toInt());
-        getEffect()->setSinusFrequency(settings.value("scroller/frequency", 0.0027).toDouble());
-        getEffect()->setSinusSpeed(settings.value("scroller/sinusspeed", 0.1).toDouble());
-        getEffect()->setScrollSpeed(settings.value("scroller/scrollspeed", 3).toInt());
-        getEffect()->setVerticalScrollPosition(settings.value("scroller/verticalscrollposition", 0).toInt());
-        getEffect()->setFontScaleX(settings.value("scroller/fontscaleX", 1).toInt());
-        getEffect()->setFontScaleY(settings.value("scroller/fontscaleY", 2).toInt());
-        getEffect()->setPrinterFontScaleX(settings.value("printer/fontscaleX", 1).toInt());
-        getEffect()->setPrinterFontScaleY(settings.value("printer/fontscaleY", 1).toInt());
-        getEffect()->setReflectionEnabled(settings.value("scroller/reflection", true).toBool());
-        getEffect()->setStarsEnabled(settings.value("scroller/starfield", true).toBool());
-        getEffect()->setCustomScrolltextEnabled(settings.value("scroller/customscrolltextenabled", false).toBool());
-        getEffect()->setCustomScrolltext(settings.value("scroller/customscrolltext", "").toString());
-        getEffect()->setNumberOfStars(settings.value("scroller/numberofstars", 1000).toInt());
-        getEffect()->setStarsDirection(settings.value("scroller/starsdirection", "right").toString());
-        getEffect()->setStarSpeed(settings.value("scroller/starspeed", 5).toInt());
-        getEffect()->setScrollerEnabled(settings.value("scroller/scrollerenabled", true).toBool());
-        getEffect()->setPrinterEnabled(settings.value("scroller/printerenabled", true).toBool());
-        getEffect()->setVUMeterEnabled(settings.value("scroller/vumeterenabled", true).toBool());
-        getEffect()->setScrollerReflectionColor(
-            QColor(settings.value("scroller/reflectionColor", "#00032e").toString()));
-        getEffect()->setSinusFontScalingEnabled(settings.value("scroller/setsinusfontscaling", false).toBool());
-        getEffect()->setRasterBarsEnabled(settings.value("scroller/rasterbars", false).toBool());
-        getEffect()->setNumberOfRasterBars(settings.value("scroller/rasterbarsamount", 8).toInt());
-        getEffect()->setRasterBarsSpeed(settings.value("scroller/rasterbarsspeed", 35).toInt());
-        getEffect()->setRasterBarsBarHeight(settings.value("scroller/rasterbarsheight", 16).toInt());
-        getEffect()->setVumeterOpacity(settings.value("scroller/vumeteropacity", 100).toInt());
-        getEffect()->setRasterBarsVerticalSpacing(settings.value("scroller/rasterbarsverticalspacing", 16).toInt());
-        getEffect()->setRasterBarsOpacity(settings.value("scroller/rasterbarsopacity", 100).toInt());
-        getEffect()->setKeepAspectRatio(settings.value("visualizer/keepaspectratio", false).toBool());
-        getEffect()->setResolutionWidth(settings.value("visualizer/resolutionwidth", 320).toInt());
-        getEffect()->setResolutionHeight(settings.value("visualizer/resolutionheight", 256).toInt());
-
-        getEffect()->setScrollerFont(settings.value("scroller/font",
-                                                    QApplication::applicationDirPath() +
-                                                    "/data/resources/visualizer/bitmapfonts/angels_font.png").
-                                              toString());
-        getEffect()->setPrinterFont(settings.value("printer/font",
-                                                   QApplication::applicationDirPath() +
-                                                   "/data/resources/visualizer/bitmapfonts/angels_font.png").
-                                             toString());
-
-
-        getEffect()->setReflectionOpacity(settings.value("reflectionopacity", 50).toInt());
-
-        playlistRowHeight = settings.value("playlistrowheight", "30").toInt();
-        playlistsRowHeight = settings.value("playlistsrowheight", "30").toInt();
-        nowPlayingFontSize = settings.value("nowplayingfontsize", "16").toInt();
-
-
-        setColorVisualizerTop(colorVisualizerTop);
-        setColorVisualizerBottom(colorVisualizerBottom);
-        setColorVisualizerMiddle(colorVisualizerMiddle);
-        setColorVisualizerBackground(colorVisualizerBackground);
-
-        setColorVisualizerPeakColor(colorVisualizerPeak);
-        setVUMeterPeaksEnabled(vumeterPeaksEnabled);
-        setVUMeterPeaksHeight(vumeterPeaksHeight);
-
-        colorMainOld = colorMainDefault;
-        colorMainHoverOld = colorMainHoverDefault;
-        colorMediumOld = colorMediumDefault;
-        colorBackgroundOld = colorBackgroundDefault;
-        colorBehindBackgroundOld = colorBehindBackgroundDefault;
-        colorMainTextOld = colorMainTextDefault;
-        colorSelectionOld = colorSelectionDefault;
-        colorButtonOld = colorButtonDefault;
-        colorButtonHoverOld = colorButtonHoverDefault;
-        colorDimmedTextOld = colorDimmedTextDefault;
-
-        channels = new Channels(this, ui->dockWidgetContents_7);
-
-        QFont font = ui->labelFilename->font();
-        font.setPixelSize(16);
-        ui->labelFilename->setFont(font);
-
-        ui->tableInfo->setFont(roboto);
-
-        QStringList columnLabelsInfo;
-        columnLabelsInfo << "Name" << "Value";
-        ui->tableInfo->setColumnCount(columnLabelsInfo.size());
-        ui->tableInfo->setHorizontalHeaderLabels(columnLabelsInfo);
-
-        ui->tableInfo->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignRight);
-        ui->tableInfo->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-        ui->tableInfo->setColumnWidth(0, infoNameWidth);
-        ui->tableInfo->setColumnWidth(1, infoValueWidth);
-
-        connect(ui->tableInfo->horizontalHeader(), &QHeaderView::sectionResized,
-                [=](int logicalIndex, int oldSize, int newSize)
-                {
-                    //with lambda
-
-                    if (ui->tableInfo->horizontalHeaderItem(logicalIndex) != nullptr)
-                    {
-                        QString columnText = ui->tableInfo->horizontalHeaderItem(logicalIndex)->text();
-
-                        if (columnText == "Name")
-                        {
-                            infoNameWidth = newSize;
-                        }
-                        else if (columnText == "Value")
-                        {
-                            infoValueWidth = newSize;
-                        }
-                    }
-                });
-
-
-        addDebugText("Settings, reverbpreset: " + m_reverbPreset);
-        addDebugText("Settings, m_reverbEnabled: " + QString::number(m_reverbEnabled));
-
-        addDebugText("m_muteVolume: " + QString::number(m_muteVolume));
-        addDebugText("m_resetVolume: " + QString::number(m_resetVolume));
-
-
-        int vol = settings.value("volume", 100).toInt();
-        if (m_resetVolume)
-        {
-            ui->volumeSlider->setValue(m_resetVolumeValue);
-        }
-        else
-        {
-            ui->volumeSlider->setValue(vol);
-        }
-        m_muteVolume = settings.value("mutevolume", false).toBool();
-        if (m_resetVolume)
-        {
-            m_muteVolume = false;
-        }
-        addDebugText("m_muteVolume: " + QString::number(m_muteVolume));
-        if (m_muteVolume)
-        {
-            ui->checkBoxVolumeOn->setCheckState(Qt::Unchecked);
-        }
-        else
-        {
-            ui->checkBoxVolumeOn->setCheckState(Qt::Checked);
-        }
-
-        SoundManager& sm = SoundManager::getInstance();
-        sm.Init(FMOD_OUTPUTTYPE_NOSOUND, ""); //Set sound device to silent
-
-
-        fileInfoParser = new FileInfoParser();
-
-        refreshInfoTimer = 0;
-
-        m_Timer = new QTimer(this);
-        connect(m_Timer, SIGNAL(timeout()), this, SLOT(timerProgress()));
-
-
-        sm.setNormalizeEnabled(m_normalizeEnabled);
-        sm.setNormalizeFadeTime(m_normalizeFadeTime);
-        sm.setNormalizeMaxAmp(m_normalizeMaxAmp);
-        sm.setNormalizeThreshold(m_normalizeThreshold);
-        sm.setReverbPreset(m_reverbPreset);
-        sm.setReverbEnabled(m_reverbEnabled);
-
-
-        m_Timer->start(16);
-
-        qDebug() << "timerProgress started";
-        playStarted = false;
-        loaded = false;
-        currentSubsong = 1;
-        buttonNextClicked = true;
-
-
-        ui->positionSlider->setMaximum(0);
-
-        QDir pathDir(QApplication::applicationDirPath() + USER_DIR);
-        if (!pathDir.exists())
-        {
-            QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user");
-        }
-
-        QDir pathDir2(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
-        if (!pathDir2.exists())
-        {
-            QDir().mkdir(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
-        }
-        QDir pathDir3(QApplication::applicationDirPath() + USER_PLUGINS_DIR);
-        if (!pathDir3.exists())
-        {
-            QDir().mkdir(QApplication::applicationDirPath() + USER_PLUGINS_DIR);
-        }
-        QDir pathDir4(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
-        if (!pathDir4.exists())
-        {
-            QDir().mkdir(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
-        }
-        QDir pathDir5(QApplication::applicationDirPath() + USER_PLUGINS_CONFIG_DIR);
-        if (!pathDir5.exists())
-        {
-            QDir().mkdir(QApplication::applicationDirPath() + USER_PLUGINS_CONFIG_DIR);
-        }
-
-
-        QDir directory(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
-
-        QStringList playlists;
-
-        if (!QFileInfo::exists(
-            QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
-            PLAYLIST_DEFAULT_FILENAME))
-        {
-            playlists.append(PLAYLIST_DEFAULT_FILENAME);
-        }
-        //Remove PLAYLIST_DEFAULT_FILENAME and the put it first in playlists
-        playlists.append(directory.entryList(QStringList() << "*.m3u" << "*.M3U" << "*.m3u8" << "*.M3U8", QDir::Files));
-        playlists.removeOne(PLAYLIST_DEFAULT_FILENAME);
-        playlists.insert(0, PLAYLIST_DEFAULT_FILENAME);
-
-        addDebugText(
-            "Loading " + QString::number(playlists.count()) + " playlists from " + QApplication::applicationDirPath() +
-            USER_PLAYLISTS_DIR);
-
-
-        changeStyleSheetColor();
-
-        foreach(QString filename, playlists)
-        {
-            QFileInfo f(filename);
-
-            QTableView* tv = new QTableView();
-
-            PlaylistModel* pm = new PlaylistModel(this);
-            QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
-            proxyModel->setSourceModel(pm);
-            tv->setModel(proxyModel);
-
-
-            tableWidgetPlaylists[f.fileName()] = tv;
-            tableWidgetPlaylists[f.fileName()]->setStyleSheet(
-                ui->dockWidgetContents_4->styleSheet() +
-                "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
-            tableWidgetPlaylists[f.fileName()]->setShowGrid(false);
-            tableWidgetPlaylists[f.fileName()]->setFrameShape(QFrame::NoFrame);
-            tableWidgetPlaylists[f.fileName()]->setFrameShadow(QFrame::Plain);
-            tableWidgetPlaylists[f.fileName()]->setSelectionBehavior(QAbstractItemView::SelectRows);
-            tableWidgetPlaylists[f.fileName()]->setSelectionMode((QAbstractItemView::ExtendedSelection));
-            tableWidgetPlaylists[f.fileName()]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-            tableWidgetPlaylists[f.fileName()]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-            tableWidgetPlaylists[f.fileName()]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-            tableWidgetPlaylists[f.fileName()]->setFont(roboto);
-
-            tableWidgetPlaylists[f.fileName()]->verticalHeader()->setVisible(false);
-            tableWidgetPlaylists[f.fileName()]->setWordWrap(false);
-            tableWidgetPlaylists[f.fileName()]->setItemDelegate(new MyItemDelegate(this));
-
-            tableWidgetPlaylists[f.fileName()]->verticalHeader()->setMinimumSectionSize(1);
-            tableWidgetPlaylists[f.fileName()]->setFocusPolicy(Qt::StrongFocus);
-            tableWidgetPlaylists[f.fileName()]->installEventFilter(this);
-            tableWidgetPlaylists[f.fileName()]->setSelectionMode(QAbstractItemView::ExtendedSelection);
-            tableWidgetPlaylists[f.fileName()]->setDragEnabled(true);
-            tableWidgetPlaylists[f.fileName()]->setAcceptDrops(true);
-            tableWidgetPlaylists[f.fileName()]->setDragDropMode(QAbstractItemView::DragDrop);
-            tableWidgetPlaylists[f.fileName()]->setDefaultDropAction(Qt::MoveAction);
-            tableWidgetPlaylists[f.fileName()]->setDragDropOverwriteMode(false);
-            tableWidgetPlaylists[f.fileName()]->setDropIndicatorShown(true);
-
-            connect(tableWidgetPlaylists[f.fileName()], SIGNAL(doubleClicked(const QModelIndex &)),
-                    SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
-
-            QStringList columns;
-            columns << tr("TITLE") << tr("TYPE") << tr("LENGTH") << tr("SUBSONG");
-
-
-            //There was no existing default playlist
-            if (!QFileInfo::exists(
-                QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
-                PLAYLIST_DEFAULT_FILENAME) && filename == PLAYLIST_DEFAULT_FILENAME)
-            {
-                swapColumns(tableWidgetPlaylists[f.fileName()]);
-            }
-            tableWidgetPlaylists[f.fileName()]->horizontalHeader()->restoreState(
-                settings.value(QString("playlist_") + f.fileName(), "").toByteArray());
-            tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSectionsMovable(true);
-            tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSortIndicatorShown(false);
-            tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-            tv->setColumnHidden(4, true);
-            tv->setColumnHidden(5, true);
-            tv->setColumnHidden(6, true);
-            tv->setColumnHidden(7, true);
-
-
-            QListWidgetItem* newItem = new QListWidgetItem;
-            newItem->setText(f.fileName());
-            if (f.fileName() == PLAYLIST_DEFAULT_FILENAME)
-            {
-                QFont fontItalic = newItem->font();
-                fontItalic.setItalic(true);
-                newItem->setFont(fontItalic);
-            }
-
-            newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
-            ui->listWidget->insertItem(ui->listWidget->count(), newItem);
-            ui->listWidget->setItemDelegate(new MyItemDelegate(this));
-            QUrl u = QUrl::fromLocalFile(
-                QDir::separator() + QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + f.
-                fileName());
-            QList<QUrl> ql;
-            ql.append(u);
-
-            addSong(ql, 0, f.fileName(), false);
-
-            createThePopupMenuCurrentPlaylist(f.fileName());
-        }
-
-        if (!QFileInfo::exists(
-            QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
-            currentPlaylist))
-        {
-            currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
-        }
-        addDebugText("currentPlaylist: " + currentPlaylist);
-        QList<QListWidgetItem*> items = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
-        int row = 0;
-        for (int i = 0; i < items.count(); i++)
-        {
-            row = items.at(i)->listWidget()->row(items.at(i));
-            break;
-        }
-
-        setPlaylistRowHeight(playlistRowHeight);
-        ui->listWidget->setCurrentRow(row);
-
-        on_listWidget_itemClicked(ui->listWidget->currentItem());
-
-        //First save default layout;
-        this->setHidden(true);
-
-        QRect BZRrect = geometry();
-        BZRrect.setTop(200);
-        BZRrect.setLeft(200);
-        setGeometry(BZRrect);
-        defaultGeometry = saveGeometry();
-        this->setHidden(false);
-        defaultState = saveState();
-        dockingState = m_DockManager->saveState();
-        bool shuffle = settings.value("shuffle", false).toBool();
-        if (shuffle)
-        {
-            resetShuffle(currentPlaylist);
-        }
-
-
-        QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
-        filedownloader = new FileDownloader(imageUrl, this);
-
-        qint64 currentSeconds = QDateTime::currentDateTime().toSecsSinceEpoch();
-
-        if (PLUGIN_libsidplayfp_DLL != "")
-        {
-            if (HvscSonglengthsFrequency == "Never")
-            {
-                //Do nothing
-            }
-            else if (HvscSonglengthsFrequency == "At every start")
-            {
-                connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-            }
-            else if (HvscSonglengthsFrequency == "Daily" && (currentSeconds - HvscSonglengthsDownloadedEpoch >= 86400))
-            {
-                connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-            }
-            else if (HvscSonglengthsFrequency == "Weekly" && (currentSeconds - HvscSonglengthsDownloadedEpoch >=
-                604800))
-            {
-                connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-            }
-            else if (HvscSonglengthsFrequency == "Monthly" && (currentSeconds - HvscSonglengthsDownloadedEpoch >=
-                2629743))
-            {
-                connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-            }
-        }
-
-        connect(ui->samples->horizontalHeader(), &QHeaderView::sectionResized,
-                [=](int logicalIndex, int oldSize, int newSize)
-                {
-                    //with lambda
-
-                    if (ui->samples->horizontalHeaderItem(logicalIndex) != nullptr)
-                    {
-                        QString columnText = ui->samples->horizontalHeaderItem(logicalIndex)->text();
-
-                        if (columnText == "#")
-                        {
-                            sampleColumnNumberWidth = newSize;
-                        }
-                        else if (columnText == "Name")
-                        {
-                            sampleColumnNameWidth = newSize;
-                        }
-                        else if (columnText == "Size")
-                        {
-                            sampleColumnSizeWidth = newSize;
-                        }
-                        else if (columnText == "Loopstart")
-                        {
-                            sampleColumnLoopStartWidth = newSize;
-                        }
-                        else if (columnText == "Loopend")
-                        {
-                            sampleColumnLoopEndWidth = newSize;
-                        }
-                        else if (columnText == "Volume")
-                        {
-                            sampleColumnVolumeWidth = newSize;
-                        }
-                        else if (columnText == "Finetune")
-                        {
-                            sampleColumnFinetuneWidth = newSize;
-                        }
-                        else if (columnText == "Resolution")
-                        {
-                            sampleColumnResolutionWidth = newSize;
-                        }
-                    }
-                });
-
-        connect(ui->instruments->horizontalHeader(), &QHeaderView::sectionResized,
-                [=](int logicalIndex, int oldSize, int newSize)
-                {
-                    //with lambda
-
-                    if (ui->instruments->horizontalHeaderItem(logicalIndex) != nullptr)
-                    {
-                        QString columnText = ui->instruments->horizontalHeaderItem(logicalIndex)->text();
-
-                        if (columnText == "#")
-                        {
-                            instrumentColumnNumberWidth = newSize;
-                        }
-                        else if (columnText == "Name")
-                        {
-                            instrumentColumnNameWidth = newSize;
-                        }
-                        else if (columnText == "Volume")
-                        {
-                            instrumentColumnVolumeWidth = newSize;
-                        }
-                        else if (columnText == "Wavelen")
-                        {
-                            instrumentColumnWaveLengthWidth = newSize;
-                        }
-                    }
-                });
-
-        ui->dockWidget->hide();
-        ui->dockWidgetChannels->hide();
-        ui->dockWidgetFilename->hide();
-        ui->dockWidgetInfo->hide();
-        ui->dockWidgetInstruments->hide();
-        ui->dockWidgetLogger->hide();
-        ui->dockWidgetPlaylist->hide();
-        ui->dockWidgetPlaylists->hide();
-        ui->dockWidgetSamples->hide();
-        ui->dockWidgetTrackerView->hide();
-        ui->dockWidgetVisualizer->hide();
-        m_DockManager->restoreState(settings.value("dockingState").toByteArray());
-        restoreGeometry(settings.value("geometry").toByteArray());
-        restoreState(settings.value("windowState").toByteArray());
-        visualizerFullScreen = new VisualizerFullScreen(ui->visualizer->getEffect());
-        trackerFullScreen = new TrackerFullScreen(ui->trackerView->getTracker());
-        createThePopupMenuVisualizer();
-        createThePopupMenuTracker();
-        createMenuWindowTabs();
-
-        ui->labelFilename->installEventFilter(this);
-        ui->visualizer->installEventFilter(this);
-        ui->dockWidgetContents_4->installEventFilter(this);
-        visualizerFullScreen->installEventFilter(this);
-        trackerFullScreen->installEventFilter(this);
-        ui->visualizer->installEventFilter(this);
-        ui->trackerView->installEventFilter(this);
-        ui->listWidget->installEventFilter(this);
-        tableWidgetPlaylists[currentPlaylist]->installEventFilter(this);
-
-        QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0);
-        tableWidgetPlaylists[currentPlaylist]->scrollTo(index);
-        tableWidgetPlaylists[currentPlaylist]->setCurrentIndex(index);
-
-
-        QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
-        if (l.size() > 0)
-        {
-            l.at(0)->setForeground(QColor(colorMain.left(7)));
-        }
-
-
-        QPixmap shuffleOn = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorMain.left(7));
-        QPixmap shuffleOnHover = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorMainHover.left(7));
-        QPixmap shuffleOff = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorButton.left(7));
-        QPixmap shuffleOffHover = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorButtonHover.left(7));
-
-        QPixmap speakerOn = ChangeSVGColor(":/bzr/resources/speaker.svg", colorButton.left(7));
-        QPixmap speakerOnHover = ChangeSVGColor(":/bzr/resources/speaker.svg", colorButtonHover.left(7));
-        QPixmap speakerOff = ChangeSVGColor(":/bzr/resources/speaker-off.svg", colorButton.left(7));
-        QPixmap speakerOffHover = ChangeSVGColor(":/bzr/resources/speaker-off.svg", colorButtonHover.left(7));
-
-
-        QPixmap play = ChangeSVGColor(":/bzr/resources/play.svg", colorButton.left(7));
-        QPixmap playHover = ChangeSVGColor(":/bzr/resources/play.svg", colorButtonHover.left(7));
-        QPixmap pause = ChangeSVGColor(":/bzr/resources/pause.svg", colorButton.left(7));
-        QPixmap pauseHover = ChangeSVGColor(":/bzr/resources/pause.svg", colorButtonHover.left(7));
-
-        QPixmap stop = ChangeSVGColor(":/bzr/resources/stop.svg", colorButton.left(7));
-        QPixmap stopHover = ChangeSVGColor(":/bzr/resources/stop.svg", colorButtonHover.left(7));
-
-        QPixmap prev = ChangeSVGColor(":/bzr/resources/prev.svg", colorButton.left(7));
-        QPixmap prevHover = ChangeSVGColor(":/bzr/resources/prev.svg", colorButtonHover.left(7));
-        QPixmap next = ChangeSVGColor(":/bzr/resources/next.svg", colorButton.left(7));
-        QPixmap nextHover = ChangeSVGColor(":/bzr/resources/next.svg", colorButtonHover.left(7));
-
-        QPixmap repeat = ChangeSVGColor(":/bzr/resources/repeat.svg", colorButton.left(7));
-        QPixmap repeatHover = ChangeSVGColor(":/bzr/resources/repeat.svg", colorButtonHover.left(7));
-        QPixmap repeat1 = ChangeSVGColor(":/bzr/resources/repeat-1.svg", colorMain.left(7));
-        QPixmap repeat1Hover = ChangeSVGColor(":/bzr/resources/repeat-1.svg", colorMainHover.left(7));
-        QPixmap repeatOn = ChangeSVGColor(":/bzr/resources/repeat.svg", colorMain.left(7));
-        QPixmap repeatOnHover = ChangeSVGColor(":/bzr/resources/repeat.svg", colorMainHover.left(7));
-
-        QPixmap add = ChangeSVGColor(":/bzr/resources/add.svg", colorButton.left(7));
-        QPixmap addHover = ChangeSVGColor(":/bzr/resources/add.svg", colorButtonHover.left(7));
-
-        QPixmap checkBoxOn = ChangeSVGColor(":/bzr/resources/checkbox-on.svg", colorMain.left(7));
-        QPixmap checkBoxOff = ChangeSVGColor(":/bzr/resources/checkbox-off.svg", colorBehindBackground.left(7));
-        QPixmap checkBoxOnDisabled = ChangeSVGColor(":/bzr/resources/checkbox-on-disabled.svg", colorMedium.left(7));
-        QPixmap checkBoxOffDisabled = ChangeSVGColor(":/bzr/resources/checkbox-off-disabled.svg", colorMedium.left(7));
-
-
-        icons["speaker-on"] = speakerOn;
-        icons["speaker-off"] = speakerOff;
-        icons["speaker-onHover"] = speakerOnHover;
-        icons["speaker-offHover"] = speakerOffHover;
-        icons["shuffle-on"] = shuffleOn;
-        icons["shuffle-onHover"] = shuffleOnHover;
-        icons["shuffle-off"] = shuffleOff;
-        icons["shuffle-offHover"] = shuffleOffHover;
-        icons["play"] = play;
-        icons["playHover"] = playHover;
-        icons["pause"] = pause;
-        icons["pauseHover"] = pauseHover;
-        icons["prev"] = prev;
-        icons["prevHover"] = prevHover;
-        icons["next"] = next;
-        icons["nextHover"] = nextHover;
-        icons["repeat"] = repeat;
-        icons["repeatHover"] = repeatHover;
-        icons["repeat-1"] = repeat1;
-        icons["repeat-1Hover"] = repeat1Hover;
-        icons["repeat-on"] = repeatOn;
-        icons["repeat-onHover"] = repeatOnHover;
-        icons["stop"] = stop;
-        icons["stopHover"] = stopHover;
-        icons["add"] = add;
-        icons["addHover"] = addHover;
-        icons["checkbox-on"] = checkBoxOn;
-        icons["checkbox-off"] = checkBoxOff;
-        icons["checkbox-on-disabled"] = checkBoxOnDisabled;
-        icons["checkbox-off-disabled"] = checkBoxOffDisabled;
-
-        ui->buttonPrev->setIcon(prev);
-        ui->buttonNext->setIcon(next);
-        ui->buttonStop->setIcon(stop);
-        ui->pushButtonNewPlaylist->setIcon(add);
-
-        ui->buttonPrev->installEventFilter(this);
-        ui->buttonNext->installEventFilter(this);
-        ui->buttonStop->installEventFilter(this);
-        ui->buttonPlay_2->installEventFilter(this);
-        ui->checkBoxShuffle->installEventFilter(this);
-        ui->checkBoxVolumeOn->installEventFilter(this);
-        ui->checkBoxLoop->installEventFilter(this);
-        ui->pushButtonNewPlaylist->installEventFilter(this);
-
-        ui->Debug->moveCursor(QTextCursor::StartOfLine);
-
-
-        on_buttonStop_clicked();
-        updateButtons();
-        //        if(tableWidgetPlaylists[currentPlaylist]->item(currentRow,0))
-        //        {
-        highlightPlaylistItem(currentPlaylist, currentRow);
-
-        //        }
-        checkCommandLine(argc, argv);
+    currentRow = 0;
+    isUpdateCurrentRowToNextEnabled = true;
+    ui->visualizer->init();
+    ui->trackerView->init();
+
+
+    ui->pitchSlider->setSnapToDefault(true);
+    ui->pitchSlider->setDefaultValue(100);
+
+
+    ui->dockWidgetPlaylist->setFloating(false);
+
+    LoadWorkspaces();
+
+    createThePopupMenuPlaylists();
+
+
+    createThePopupMenuInstruments();
+    createThePopupMenuChannels();
+    createThePopupLogWindow();
+
+    createTrayMenu();
+    m_Tray->show();
+
+    m_outputDevice = settings.value("outputdevice").toInt();
+    m_resetVolume = settings.value("resetvolume", false).toBool();
+    m_resetVolumeValue = settings.value("resetvolumevalue", 100).toInt();
+
+    lastDir = settings.value("lastOpenedDir", "/").toString();
+
+    m_defaultPlaymode = settings.value("default_playmode", -1).toInt();
+    Playmode = static_cast<playmode>(m_defaultPlaymode == -1
+                                         ? settings.value("playmode", 0).toInt()
+                                         : m_defaultPlaymode);
+
+    if (Playmode == normal) {
+        ui->checkBoxLoop->setCheckState(Qt::Unchecked);
+    } else if (Playmode == repeatPlaylist) {
+        ui->checkBoxLoop->setCheckState(Qt::PartiallyChecked);
+    } else {
+        ui->checkBoxLoop->setCheckState(Qt::Checked);
     }
+
+    if (PLUGIN_libsidplayfp_DLL != "") {
+        HvscSonglengthsDownloadedEpoch = settings.value("libsidplayfp/timehvscsonglengthsdownloaded", 0).
+                toLongLong();
+        HvscSonglengthsPathDownloaded = settings.value("libsidplayfp/hvscsonglengthspath", "").toString();
+        HvscSonglengthsFrequency = settings.value("libsidplayfp/updateFrequency", "Weekly").toString();
+    }
+
+    ui->checkBoxShuffle->setChecked(settings.value("shuffle", false).toBool());
+
+    m_systrayOnQuitEnabled = settings.value("systrayonquitenabled", false).toBool();
+
+    m_displayMilliseconds = settings.value("displaymilliseconds", false).toBool();
+
+    m_enqueueItems = settings.value("enqueueitems", false).toBool();
+
+    m_normalizeEnabled = settings.value("normalizeenabled", false).toBool();
+    m_normalizeFadeTime = settings.value("normalizefadetime", 5000).toInt();
+    m_normalizeThreshold = settings.value("normalizethreshold", 10).toInt();
+    m_normalizeMaxAmp = settings.value("normalizemaxamp", 20).toInt();
+    currentPlaylist = settings.value("currentPlaylist", PLAYLIST_DEFAULT).toString();
+    currentRow = settings.value("currentRow", -1).toInt();
+    selectedPlaylist = settings.value("selectedPlaylist", PLAYLIST_DEFAULT).toString();
+    m_reverbEnabled = settings.value("reverbenabled", false).toBool();
+    m_reverbPreset = settings.value("reverbpreset", "Generic").toString();
+    m_ignoreSuffix = settings.value("ignoresuffix", "psflib;psf2lib;dsflib").toString();
+    m_ignorePrefix = settings.value("ignoreprefix", "").toString();
+
+
+    colorMainDefault = "#009379/*main*/";
+    colorMainHoverDefault = "#00c09e/*main hover*/";
+    colorMediumDefault = "#404040/*medium*/";
+    colorBackgroundDefault = "#282828/*background*/";
+    colorBehindBackgroundDefault = "#161616/*behind-background*/";
+    colorMainTextDefault = "#ffffff/*main text*/";
+    colorSelectionDefault = "#333333/*selection*/";
+    colorButtonDefault = "#b7b7b7/*button*/";
+    colorButtonHoverDefault = "#ffffff/*button hover*/";
+    colorDimmedTextDefault = "#b1b1b1/*dimmed text*/";
+
+    colorMain = settings.value("colormain", colorMainDefault).toString();
+    colorMainHover = settings.value("colormainhover", colorMainHoverDefault).toString();
+    colorMedium = settings.value("colormedium", colorMediumDefault).toString();
+    colorBackground = settings.value("colorbackground", colorBackgroundDefault).toString();
+    colorBehindBackground = settings.value("colorbehindbackground", colorBehindBackgroundDefault).toString();
+    colorMainText = settings.value("colormaintext", colorMainTextDefault).toString();
+    colorSelection = settings.value("colorselection", colorSelectionDefault).toString();
+    colorButton = settings.value("colorbutton", colorButtonDefault).toString();
+    colorButtonHover = settings.value("colorbuttonhover", colorButtonHoverDefault).toString();
+    colorDimmedText = settings.value("colordimmedtext", colorDimmedTextDefault).toString();
+
+    colorVisualizerTop = settings.value("colorvumetertop", "#ff00dd").toString();
+    colorVisualizerMiddle = settings.value("colorvumetermiddle", "#0000ff").toString();
+    colorVisualizerBottom = settings.value("colorvumeterbottom", "#00ff5e").toString();
+    colorVisualizerBackground = settings.value("colorvisualizerbackground", "#000000").toString();
+
+    sampleColumnNumberWidth = settings.value("samplescolumns/number", 35).toInt();
+    sampleColumnNameWidth = settings.value("samplescolumns/name", 185).toInt();
+    sampleColumnSizeWidth = settings.value("samplescolumns/size", 70).toInt();
+    sampleColumnLoopStartWidth = settings.value("samplescolumns/loopstart", 70).toInt();
+    sampleColumnLoopEndWidth = settings.value("samplescolumns/loopend", 70).toInt();
+    sampleColumnVolumeWidth = settings.value("samplescolumns/volume", 70).toInt();
+    sampleColumnFinetuneWidth = settings.value("samplescolumns/finetune", 70).toInt();
+    sampleColumnResolutionWidth = settings.value("samplescolumns/resolution", 70).toInt();
+
+    instrumentColumnNumberWidth = settings.value("instrumentscolumns/number", 35).toInt();
+    instrumentColumnNameWidth = settings.value("instrumentscolumns/name", 185).toInt();
+    instrumentColumnVolumeWidth = settings.value("instrumentscolumns/volume", 70).toInt();
+    instrumentColumnWaveLengthWidth = settings.value("instrumentscolumns/wavelength", 70).toInt();
+
+    infoNameWidth = settings.value("infocolumns/name", 70).toInt();
+    infoValueWidth = settings.value("infocolumns/value", 70).toInt();
+
+    colorVisualizerPeak = settings.value("colorvumeterpeak", "#b00e3e").toString();
+    vumeterPeaksEnabled = settings.value("vumeterpeaksenabled", true).toBool();
+    vumeterPeaksHeight = settings.value("vumeterpeaksheight", 8).toInt();
+    getEffect()->setVumeterWidth(settings.value("vumeterwidth", 50.0).toDouble());
+    getEffect()->setVumeterOpacity(settings.value("vumeteropacity", 65).toInt());
+
+
+    getEffect()->setAmplitude(settings.value("scroller/amplitude", 32).toInt());
+    getEffect()->setSinusFrequency(settings.value("scroller/frequency", 0.0027).toDouble());
+    getEffect()->setSinusSpeed(settings.value("scroller/sinusspeed", 0.1).toDouble());
+    getEffect()->setScrollSpeed(settings.value("scroller/scrollspeed", 3).toInt());
+    getEffect()->setVerticalScrollPosition(settings.value("scroller/verticalscrollposition", 0).toInt());
+    getEffect()->setFontScaleX(settings.value("scroller/fontscaleX", 1).toInt());
+    getEffect()->setFontScaleY(settings.value("scroller/fontscaleY", 2).toInt());
+    getEffect()->setPrinterFontScaleX(settings.value("printer/fontscaleX", 1).toInt());
+    getEffect()->setPrinterFontScaleY(settings.value("printer/fontscaleY", 1).toInt());
+    getEffect()->setReflectionEnabled(settings.value("scroller/reflection", true).toBool());
+    getEffect()->setStarsEnabled(settings.value("scroller/starfield", true).toBool());
+    getEffect()->setCustomScrolltextEnabled(settings.value("scroller/customscrolltextenabled", false).toBool());
+    getEffect()->setCustomScrolltext(settings.value("scroller/customscrolltext", "").toString());
+    getEffect()->setNumberOfStars(settings.value("scroller/numberofstars", 1000).toInt());
+    getEffect()->setStarsDirection(settings.value("scroller/starsdirection", "right").toString());
+    getEffect()->setStarSpeed(settings.value("scroller/starspeed", 5).toInt());
+    getEffect()->setScrollerEnabled(settings.value("scroller/scrollerenabled", true).toBool());
+    getEffect()->setPrinterEnabled(settings.value("scroller/printerenabled", true).toBool());
+    getEffect()->setVUMeterEnabled(settings.value("scroller/vumeterenabled", true).toBool());
+    getEffect()->setScrollerReflectionColor(
+        QColor(settings.value("scroller/reflectionColor", "#00032e").toString()));
+    getEffect()->setSinusFontScalingEnabled(settings.value("scroller/setsinusfontscaling", false).toBool());
+    getEffect()->setRasterBarsEnabled(settings.value("scroller/rasterbars", false).toBool());
+    getEffect()->setNumberOfRasterBars(settings.value("scroller/rasterbarsamount", 8).toInt());
+    getEffect()->setRasterBarsSpeed(settings.value("scroller/rasterbarsspeed", 35).toInt());
+    getEffect()->setRasterBarsBarHeight(settings.value("scroller/rasterbarsheight", 16).toInt());
+    getEffect()->setVumeterOpacity(settings.value("scroller/vumeteropacity", 100).toInt());
+    getEffect()->setRasterBarsVerticalSpacing(settings.value("scroller/rasterbarsverticalspacing", 16).toInt());
+    getEffect()->setRasterBarsOpacity(settings.value("scroller/rasterbarsopacity", 100).toInt());
+    getEffect()->setKeepAspectRatio(settings.value("visualizer/keepaspectratio", false).toBool());
+    getEffect()->setResolutionWidth(settings.value("visualizer/resolutionwidth", 320).toInt());
+    getEffect()->setResolutionHeight(settings.value("visualizer/resolutionheight", 256).toInt());
+
+    getEffect()->setScrollerFont(settings.value("scroller/font",
+                                                QApplication::applicationDirPath() +
+                                                "/data/resources/visualizer/bitmapfonts/angels_font.png").
+        toString());
+    getEffect()->setPrinterFont(settings.value("printer/font",
+                                               QApplication::applicationDirPath() +
+                                               "/data/resources/visualizer/bitmapfonts/angels_font.png").
+        toString());
+
+
+    getEffect()->setReflectionOpacity(settings.value("reflectionopacity", 50).toInt());
+
+    playlistRowHeight = settings.value("playlistrowheight", "30").toInt();
+    playlistsRowHeight = settings.value("playlistsrowheight", "30").toInt();
+    nowPlayingFontSize = settings.value("nowplayingfontsize", "16").toInt();
+
+
+    setColorVisualizerTop(colorVisualizerTop);
+    setColorVisualizerBottom(colorVisualizerBottom);
+    setColorVisualizerMiddle(colorVisualizerMiddle);
+    setColorVisualizerBackground(colorVisualizerBackground);
+
+    setColorVisualizerPeakColor(colorVisualizerPeak);
+    setVUMeterPeaksEnabled(vumeterPeaksEnabled);
+    setVUMeterPeaksHeight(vumeterPeaksHeight);
+
+    colorMainOld = colorMainDefault;
+    colorMainHoverOld = colorMainHoverDefault;
+    colorMediumOld = colorMediumDefault;
+    colorBackgroundOld = colorBackgroundDefault;
+    colorBehindBackgroundOld = colorBehindBackgroundDefault;
+    colorMainTextOld = colorMainTextDefault;
+    colorSelectionOld = colorSelectionDefault;
+    colorButtonOld = colorButtonDefault;
+    colorButtonHoverOld = colorButtonHoverDefault;
+    colorDimmedTextOld = colorDimmedTextDefault;
+
+    channels = new Channels(this, ui->dockWidgetContents_7);
+
+    QFont font = ui->labelFilename->font();
+    font.setPixelSize(16);
+    ui->labelFilename->setFont(font);
+
+    ui->tableInfo->setFont(roboto);
+
+    QStringList columnLabelsInfo;
+    columnLabelsInfo << "Name" << "Value";
+    ui->tableInfo->setColumnCount(columnLabelsInfo.size());
+    ui->tableInfo->setHorizontalHeaderLabels(columnLabelsInfo);
+
+    ui->tableInfo->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignRight);
+    ui->tableInfo->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->tableInfo->setColumnWidth(0, infoNameWidth);
+    ui->tableInfo->setColumnWidth(1, infoValueWidth);
+
+    connect(ui->tableInfo->horizontalHeader(), &QHeaderView::sectionResized,
+            [=](int logicalIndex, int oldSize, int newSize) {
+                //with lambda
+
+                if (ui->tableInfo->horizontalHeaderItem(logicalIndex) != nullptr) {
+                    QString columnText = ui->tableInfo->horizontalHeaderItem(logicalIndex)->text();
+
+                    if (columnText == "Name") {
+                        infoNameWidth = newSize;
+                    } else if (columnText == "Value") {
+                        infoValueWidth = newSize;
+                    }
+                }
+            });
+
+
+    addDebugText("Settings, reverbpreset: " + m_reverbPreset);
+    addDebugText("Settings, m_reverbEnabled: " + QString::number(m_reverbEnabled));
+
+    addDebugText("m_muteVolume: " + QString::number(m_muteVolume));
+    addDebugText("m_resetVolume: " + QString::number(m_resetVolume));
+
+
+    int vol = settings.value("volume", 100).toInt();
+    if (m_resetVolume) {
+        ui->volumeSlider->setValue(m_resetVolumeValue);
+    } else {
+        ui->volumeSlider->setValue(vol);
+    }
+    m_muteVolume = settings.value("mutevolume", false).toBool();
+    if (m_resetVolume) {
+        m_muteVolume = false;
+    }
+    addDebugText("m_muteVolume: " + QString::number(m_muteVolume));
+    if (m_muteVolume) {
+        ui->checkBoxVolumeOn->setCheckState(Qt::Unchecked);
+    } else {
+        ui->checkBoxVolumeOn->setCheckState(Qt::Checked);
+    }
+
+    SoundManager &sm = SoundManager::getInstance();
+    sm.Init(FMOD_OUTPUTTYPE_NOSOUND, ""); //Set sound device to silent
+
+
+    fileInfoParser = new FileInfoParser();
+
+    refreshInfoTimer = 0;
+
+    m_Timer = new QTimer(this);
+    connect(m_Timer, SIGNAL(timeout()), this, SLOT(timerProgress()));
+
+
+    sm.setNormalizeEnabled(m_normalizeEnabled);
+    sm.setNormalizeFadeTime(m_normalizeFadeTime);
+    sm.setNormalizeMaxAmp(m_normalizeMaxAmp);
+    sm.setNormalizeThreshold(m_normalizeThreshold);
+    sm.setReverbPreset(m_reverbPreset);
+    sm.setReverbEnabled(m_reverbEnabled);
+
+
+    m_Timer->start(16);
+
+    qDebug() << "timerProgress started";
+    playStarted = false;
+    loaded = false;
+    currentSubsong = 1;
+    buttonNextClicked = true;
+
+
+    ui->positionSlider->setMaximum(0);
+
+    QDir pathDir(QApplication::applicationDirPath() + USER_DIR);
+    if (!pathDir.exists()) {
+        QDir().mkdir(QApplication::applicationDirPath() + QDir::separator() + "user");
+    }
+
+    QDir pathDir2(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
+    if (!pathDir2.exists()) {
+        QDir().mkdir(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
+    }
+    QDir pathDir3(QApplication::applicationDirPath() + USER_PLUGINS_DIR);
+    if (!pathDir3.exists()) {
+        QDir().mkdir(QApplication::applicationDirPath() + USER_PLUGINS_DIR);
+    }
+    QDir pathDir4(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
+    if (!pathDir4.exists()) {
+        QDir().mkdir(QApplication::applicationDirPath() + PLUGIN_libsidplayfp_USER_DIR);
+    }
+    QDir pathDir5(QApplication::applicationDirPath() + USER_PLUGINS_CONFIG_DIR);
+    if (!pathDir5.exists()) {
+        QDir().mkdir(QApplication::applicationDirPath() + USER_PLUGINS_CONFIG_DIR);
+    }
+
+
+    QDir directory(QApplication::applicationDirPath() + USER_PLAYLISTS_DIR);
+
+    QStringList playlists;
+
+    if (!QFileInfo::exists(
+        QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
+        PLAYLIST_DEFAULT_FILENAME)) {
+        playlists.append(PLAYLIST_DEFAULT_FILENAME);
+    }
+    //Remove PLAYLIST_DEFAULT_FILENAME and the put it first in playlists
+    playlists.append(directory.entryList(QStringList() << "*.m3u" << "*.M3U" << "*.m3u8" << "*.M3U8", QDir::Files));
+    playlists.removeOne(PLAYLIST_DEFAULT_FILENAME);
+    playlists.insert(0, PLAYLIST_DEFAULT_FILENAME);
+
+    addDebugText(
+        "Loading " + QString::number(playlists.count()) + " playlists from " + QApplication::applicationDirPath() +
+        USER_PLAYLISTS_DIR);
+
+
+    changeStyleSheetColor();
+
+    foreach(QString filename, playlists) {
+        QFileInfo f(filename);
+
+        QTableView *tv = new QTableView();
+
+        PlaylistModel *pm = new PlaylistModel(this);
+        QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(pm); // create proxy
+        proxyModel->setSourceModel(pm);
+        tv->setModel(proxyModel);
+
+
+        tableWidgetPlaylists[f.fileName()] = tv;
+        tableWidgetPlaylists[f.fileName()]->setStyleSheet(
+            ui->dockWidgetContents_4->styleSheet() +
+            "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
+        tableWidgetPlaylists[f.fileName()]->setShowGrid(false);
+        tableWidgetPlaylists[f.fileName()]->setFrameShape(QFrame::NoFrame);
+        tableWidgetPlaylists[f.fileName()]->setFrameShadow(QFrame::Plain);
+        tableWidgetPlaylists[f.fileName()]->setSelectionBehavior(QAbstractItemView::SelectRows);
+        tableWidgetPlaylists[f.fileName()]->setSelectionMode((QAbstractItemView::ExtendedSelection));
+        tableWidgetPlaylists[f.fileName()]->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        tableWidgetPlaylists[f.fileName()]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+        tableWidgetPlaylists[f.fileName()]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+        tableWidgetPlaylists[f.fileName()]->setFont(roboto);
+
+        tableWidgetPlaylists[f.fileName()]->verticalHeader()->setVisible(false);
+        tableWidgetPlaylists[f.fileName()]->setWordWrap(false);
+        tableWidgetPlaylists[f.fileName()]->setItemDelegate(new MyItemDelegate(this));
+
+        tableWidgetPlaylists[f.fileName()]->verticalHeader()->setMinimumSectionSize(1);
+        tableWidgetPlaylists[f.fileName()]->setFocusPolicy(Qt::StrongFocus);
+        tableWidgetPlaylists[f.fileName()]->installEventFilter(this);
+        tableWidgetPlaylists[f.fileName()]->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        tableWidgetPlaylists[f.fileName()]->setDragEnabled(true);
+        tableWidgetPlaylists[f.fileName()]->setAcceptDrops(true);
+        tableWidgetPlaylists[f.fileName()]->setDragDropMode(QAbstractItemView::DragDrop);
+        tableWidgetPlaylists[f.fileName()]->setDefaultDropAction(Qt::MoveAction);
+        tableWidgetPlaylists[f.fileName()]->setDragDropOverwriteMode(false);
+        tableWidgetPlaylists[f.fileName()]->setDropIndicatorShown(true);
+
+        connect(tableWidgetPlaylists[f.fileName()], SIGNAL(doubleClicked(const QModelIndex &)),
+                SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
+
+        QStringList columns;
+        columns << tr("TITLE") << tr("TYPE") << tr("LENGTH") << tr("SUBSONG");
+
+
+        //There was no existing default playlist
+        if (!QFileInfo::exists(
+                QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
+                PLAYLIST_DEFAULT_FILENAME) && filename == PLAYLIST_DEFAULT_FILENAME) {
+            swapColumns(tableWidgetPlaylists[f.fileName()]);
+        }
+        tableWidgetPlaylists[f.fileName()]->horizontalHeader()->restoreState(
+            settings.value(QString("playlist_") + f.fileName(), "").toByteArray());
+        tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSectionsMovable(true);
+        tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSortIndicatorShown(false);
+        tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+        tv->setColumnHidden(4, true);
+        tv->setColumnHidden(5, true);
+        tv->setColumnHidden(6, true);
+        tv->setColumnHidden(7, true);
+
+
+        QListWidgetItem *newItem = new QListWidgetItem;
+        newItem->setText(f.fileName());
+        if (f.fileName() == PLAYLIST_DEFAULT_FILENAME) {
+            QFont fontItalic = newItem->font();
+            fontItalic.setItalic(true);
+            newItem->setFont(fontItalic);
+        }
+
+        newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
+        ui->listWidget->insertItem(ui->listWidget->count(), newItem);
+        ui->listWidget->setItemDelegate(new MyItemDelegate(this));
+        QUrl u = QUrl::fromLocalFile(
+            QDir::separator() + QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + f.
+            fileName());
+        QList<QUrl> ql;
+        ql.append(u);
+
+        addSong(ql, 0, f.fileName(), false);
+
+        createThePopupMenuCurrentPlaylist(f.fileName());
+    }
+
+    if (!QFileInfo::exists(
+        QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + QDir::separator() +
+        currentPlaylist)) {
+        currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
+    }
+    addDebugText("currentPlaylist: " + currentPlaylist);
+    QList<QListWidgetItem *> items = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+    int row = 0;
+    for (int i = 0; i < items.count(); i++) {
+        row = items.at(i)->listWidget()->row(items.at(i));
+        break;
+    }
+
+    setPlaylistRowHeight(playlistRowHeight);
+    ui->listWidget->setCurrentRow(row);
+
+    on_listWidget_itemClicked(ui->listWidget->currentItem());
+
+    //First save default layout;
+    this->setHidden(true);
+
+    QRect BZRrect = geometry();
+    BZRrect.setTop(200);
+    BZRrect.setLeft(200);
+    setGeometry(BZRrect);
+    defaultGeometry = saveGeometry();
+    this->setHidden(false);
+    defaultState = saveState();
+    dockingState = m_DockManager->saveState();
+    bool shuffle = settings.value("shuffle", false).toBool();
+    if (shuffle) {
+        resetShuffle(currentPlaylist);
+    }
+
+
+    QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
+    filedownloader = new FileDownloader(imageUrl, this);
+
+    qint64 currentSeconds = QDateTime::currentDateTime().toSecsSinceEpoch();
+
+    if (PLUGIN_libsidplayfp_DLL != "") {
+        if (HvscSonglengthsFrequency == "Never") {
+            //Do nothing
+        } else if (HvscSonglengthsFrequency == "At every start") {
+            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+        } else if (HvscSonglengthsFrequency == "Daily" && (currentSeconds - HvscSonglengthsDownloadedEpoch >= 86400)) {
+            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+        } else if (HvscSonglengthsFrequency == "Weekly" && (currentSeconds - HvscSonglengthsDownloadedEpoch >=
+                                                            604800)) {
+            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+        } else if (HvscSonglengthsFrequency == "Monthly" && (currentSeconds - HvscSonglengthsDownloadedEpoch >=
+                                                             2629743)) {
+            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+        }
+    }
+
+    connect(ui->samples->horizontalHeader(), &QHeaderView::sectionResized,
+            [=](int logicalIndex, int oldSize, int newSize) {
+                //with lambda
+
+                if (ui->samples->horizontalHeaderItem(logicalIndex) != nullptr) {
+                    QString columnText = ui->samples->horizontalHeaderItem(logicalIndex)->text();
+
+                    if (columnText == "#") {
+                        sampleColumnNumberWidth = newSize;
+                    } else if (columnText == "Name") {
+                        sampleColumnNameWidth = newSize;
+                    } else if (columnText == "Size") {
+                        sampleColumnSizeWidth = newSize;
+                    } else if (columnText == "Loopstart") {
+                        sampleColumnLoopStartWidth = newSize;
+                    } else if (columnText == "Loopend") {
+                        sampleColumnLoopEndWidth = newSize;
+                    } else if (columnText == "Volume") {
+                        sampleColumnVolumeWidth = newSize;
+                    } else if (columnText == "Finetune") {
+                        sampleColumnFinetuneWidth = newSize;
+                    } else if (columnText == "Resolution") {
+                        sampleColumnResolutionWidth = newSize;
+                    }
+                }
+            });
+
+    connect(ui->instruments->horizontalHeader(), &QHeaderView::sectionResized,
+            [=](int logicalIndex, int oldSize, int newSize) {
+                //with lambda
+
+                if (ui->instruments->horizontalHeaderItem(logicalIndex) != nullptr) {
+                    QString columnText = ui->instruments->horizontalHeaderItem(logicalIndex)->text();
+
+                    if (columnText == "#") {
+                        instrumentColumnNumberWidth = newSize;
+                    } else if (columnText == "Name") {
+                        instrumentColumnNameWidth = newSize;
+                    } else if (columnText == "Volume") {
+                        instrumentColumnVolumeWidth = newSize;
+                    } else if (columnText == "Wavelen") {
+                        instrumentColumnWaveLengthWidth = newSize;
+                    }
+                }
+            });
+
+    ui->dockWidget->hide();
+    ui->dockWidgetChannels->hide();
+    ui->dockWidgetFilename->hide();
+    ui->dockWidgetInfo->hide();
+    ui->dockWidgetInstruments->hide();
+    ui->dockWidgetLogger->hide();
+    ui->dockWidgetPlaylist->hide();
+    ui->dockWidgetPlaylists->hide();
+    ui->dockWidgetSamples->hide();
+    ui->dockWidgetTrackerView->hide();
+    ui->dockWidgetVisualizer->hide();
+    m_DockManager->restoreState(settings.value("dockingState").toByteArray());
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("windowState").toByteArray());
+    visualizerFullScreen = new VisualizerFullScreen(ui->visualizer->getEffect());
+    trackerFullScreen = new TrackerFullScreen(ui->trackerView->getTracker());
+    createThePopupMenuVisualizer();
+    createThePopupMenuTracker();
+    createMenuWindowTabs();
+
+    ui->labelFilename->installEventFilter(this);
+    ui->visualizer->installEventFilter(this);
+    ui->dockWidgetContents_4->installEventFilter(this);
+    visualizerFullScreen->installEventFilter(this);
+    trackerFullScreen->installEventFilter(this);
+    ui->visualizer->installEventFilter(this);
+    ui->trackerView->installEventFilter(this);
+    ui->listWidget->installEventFilter(this);
+    tableWidgetPlaylists[currentPlaylist]->installEventFilter(this);
+
+    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0);
+    tableWidgetPlaylists[currentPlaylist]->scrollTo(index);
+    tableWidgetPlaylists[currentPlaylist]->setCurrentIndex(index);
+
+
+    QList<QListWidgetItem *> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+    if (l.size() > 0) {
+        l.at(0)->setForeground(QColor(colorMain.left(7)));
+    }
+
+
+    QPixmap shuffleOn = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorMain.left(7));
+    QPixmap shuffleOnHover = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorMainHover.left(7));
+    QPixmap shuffleOff = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorButton.left(7));
+    QPixmap shuffleOffHover = ChangeSVGColor(":/bzr/resources/shuffle.svg", colorButtonHover.left(7));
+
+    QPixmap speakerOn = ChangeSVGColor(":/bzr/resources/speaker.svg", colorButton.left(7));
+    QPixmap speakerOnHover = ChangeSVGColor(":/bzr/resources/speaker.svg", colorButtonHover.left(7));
+    QPixmap speakerOff = ChangeSVGColor(":/bzr/resources/speaker-off.svg", colorButton.left(7));
+    QPixmap speakerOffHover = ChangeSVGColor(":/bzr/resources/speaker-off.svg", colorButtonHover.left(7));
+
+
+    QPixmap play = ChangeSVGColor(":/bzr/resources/play.svg", colorButton.left(7));
+    QPixmap playHover = ChangeSVGColor(":/bzr/resources/play.svg", colorButtonHover.left(7));
+    QPixmap pause = ChangeSVGColor(":/bzr/resources/pause.svg", colorButton.left(7));
+    QPixmap pauseHover = ChangeSVGColor(":/bzr/resources/pause.svg", colorButtonHover.left(7));
+
+    QPixmap stop = ChangeSVGColor(":/bzr/resources/stop.svg", colorButton.left(7));
+    QPixmap stopHover = ChangeSVGColor(":/bzr/resources/stop.svg", colorButtonHover.left(7));
+
+    QPixmap prev = ChangeSVGColor(":/bzr/resources/prev.svg", colorButton.left(7));
+    QPixmap prevHover = ChangeSVGColor(":/bzr/resources/prev.svg", colorButtonHover.left(7));
+    QPixmap next = ChangeSVGColor(":/bzr/resources/next.svg", colorButton.left(7));
+    QPixmap nextHover = ChangeSVGColor(":/bzr/resources/next.svg", colorButtonHover.left(7));
+
+    QPixmap repeat = ChangeSVGColor(":/bzr/resources/repeat.svg", colorButton.left(7));
+    QPixmap repeatHover = ChangeSVGColor(":/bzr/resources/repeat.svg", colorButtonHover.left(7));
+    QPixmap repeat1 = ChangeSVGColor(":/bzr/resources/repeat-1.svg", colorMain.left(7));
+    QPixmap repeat1Hover = ChangeSVGColor(":/bzr/resources/repeat-1.svg", colorMainHover.left(7));
+    QPixmap repeatOn = ChangeSVGColor(":/bzr/resources/repeat.svg", colorMain.left(7));
+    QPixmap repeatOnHover = ChangeSVGColor(":/bzr/resources/repeat.svg", colorMainHover.left(7));
+
+    QPixmap add = ChangeSVGColor(":/bzr/resources/add.svg", colorButton.left(7));
+    QPixmap addHover = ChangeSVGColor(":/bzr/resources/add.svg", colorButtonHover.left(7));
+
+    QPixmap checkBoxOn = ChangeSVGColor(":/bzr/resources/checkbox-on.svg", colorMain.left(7));
+    QPixmap checkBoxOff = ChangeSVGColor(":/bzr/resources/checkbox-off.svg", colorBehindBackground.left(7));
+    QPixmap checkBoxOnDisabled = ChangeSVGColor(":/bzr/resources/checkbox-on-disabled.svg", colorMedium.left(7));
+    QPixmap checkBoxOffDisabled = ChangeSVGColor(":/bzr/resources/checkbox-off-disabled.svg", colorMedium.left(7));
+
+
+    icons["speaker-on"] = speakerOn;
+    icons["speaker-off"] = speakerOff;
+    icons["speaker-onHover"] = speakerOnHover;
+    icons["speaker-offHover"] = speakerOffHover;
+    icons["shuffle-on"] = shuffleOn;
+    icons["shuffle-onHover"] = shuffleOnHover;
+    icons["shuffle-off"] = shuffleOff;
+    icons["shuffle-offHover"] = shuffleOffHover;
+    icons["play"] = play;
+    icons["playHover"] = playHover;
+    icons["pause"] = pause;
+    icons["pauseHover"] = pauseHover;
+    icons["prev"] = prev;
+    icons["prevHover"] = prevHover;
+    icons["next"] = next;
+    icons["nextHover"] = nextHover;
+    icons["repeat"] = repeat;
+    icons["repeatHover"] = repeatHover;
+    icons["repeat-1"] = repeat1;
+    icons["repeat-1Hover"] = repeat1Hover;
+    icons["repeat-on"] = repeatOn;
+    icons["repeat-onHover"] = repeatOnHover;
+    icons["stop"] = stop;
+    icons["stopHover"] = stopHover;
+    icons["add"] = add;
+    icons["addHover"] = addHover;
+    icons["checkbox-on"] = checkBoxOn;
+    icons["checkbox-off"] = checkBoxOff;
+    icons["checkbox-on-disabled"] = checkBoxOnDisabled;
+    icons["checkbox-off-disabled"] = checkBoxOffDisabled;
+
+    ui->buttonPrev->setIcon(prev);
+    ui->buttonNext->setIcon(next);
+    ui->buttonStop->setIcon(stop);
+    ui->pushButtonNewPlaylist->setIcon(add);
+
+    ui->buttonPrev->installEventFilter(this);
+    ui->buttonNext->installEventFilter(this);
+    ui->buttonStop->installEventFilter(this);
+    ui->buttonPlay_2->installEventFilter(this);
+    ui->checkBoxShuffle->installEventFilter(this);
+    ui->checkBoxVolumeOn->installEventFilter(this);
+    ui->checkBoxLoop->installEventFilter(this);
+    ui->pushButtonNewPlaylist->installEventFilter(this);
+
+    ui->Debug->moveCursor(QTextCursor::StartOfLine);
+
+
+    on_buttonStop_clicked();
+    updateButtons();
+    //        if(tableWidgetPlaylists[currentPlaylist]->item(currentRow,0))
+    //        {
+    highlightPlaylistItem(currentPlaylist, currentRow);
+
+    //        }
+    checkCommandLine(argc, argv);
 }
 
 void MainWindow::checkCommandLine(int argc, char* argv[])
 {
     QStringList args = qApp->arguments();
-    if (args.count() > 1) //we've got songs/dirs from command line
-    {
-        args.removeFirst();
-        QList<QUrl> urls;
-        for (const auto& item : args)
-        {
-            urls.append(QUrl().fromLocalFile(item));
-        }
 
-        const int rowCountBeforeAddSong = tableWidgetPlaylists[currentPlaylist]->model()->rowCount();
+    if (args.count() <= 1) return; //we've got no songs/dirs from command line
 
-        addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
+    args.removeFirst();
+    QList<QUrl> urls;
+    for (const auto &item: args) {
+        urls.append(QUrl().fromLocalFile(item));
+    }
+
+    const int rowCountBeforeAddSong = tableWidgetPlaylists[currentPlaylist]->model()->rowCount();
+
+    addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
 
 
-        if ((m_bAllowOnlyOneInstanceEnabled && !m_enqueueItems) || !m_bAllowOnlyOneInstanceEnabled)
-        {
-            on_listWidget_itemClicked(ui->listWidget->item(0));
-            QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
-            l.at(0)->setForeground(QColor(colorMainText.left(7)));
-            currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
-            removeHighlight();
-            currentRow = rowCountBeforeAddSong;
-            PlaySong(currentRow);
-        }
+    if ((m_bAllowOnlyOneInstanceEnabled && !m_enqueueItems) || !m_bAllowOnlyOneInstanceEnabled) {
+        on_listWidget_itemClicked(ui->listWidget->item(0));
+        QList<QListWidgetItem *> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+        l.at(0)->setForeground(QColor(colorMainText.left(7)));
+        currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
+        removeHighlight();
+        currentRow = rowCountBeforeAddSong;
+        PlaySong(currentRow);
     }
 }
 
@@ -942,7 +870,6 @@ bool MainWindow::initializeSocket()
                 SLOT(displayError(QAbstractSocket::SocketError)));
         tcpClient->connectToHost(QHostAddress::LocalHost, 9860);
     }
-
 
     return instanceExists;
 }
@@ -2150,7 +2077,6 @@ void MainWindow::resetToDefaultColors()
     colorButtonHover = colorButtonHoverDefault;
     colorDimmedText = colorDimmedTextDefault;
 
-
     changeStyleSheetColor();
 }
 
@@ -2184,64 +2110,51 @@ void MainWindow::on_playlist_itemDoubleClicked(const QModelIndex& index)
 
 void MainWindow::updateScrollText()
 {
-    if (loaded)
-    {
-        if (ui->visualizer->getEffect()->getCustomScrolltextEnabled())
-        {
-            //TODO this will only be blank after program start
-            ui->visualizer->getEffect()->setScrollText(ui->visualizer->getEffect()->getCustomScrolltext());
+    if (!loaded) return;
+
+    if (ui->visualizer->getEffect()->getCustomScrolltextEnabled()) {
+        //TODO this will only be blank after program start
+        ui->visualizer->getEffect()->setScrollText(ui->visualizer->getEffect()->getCustomScrolltext());
+    } else {
+        QString visualizerText = "";
+        visualizerText = QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->artist.c_str());
+        if (!visualizerText.isEmpty()) {
+            visualizerText += " ";
         }
-        else
-        {
-            QString visualizerText = "";
-            visualizerText = QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->artist.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
 
-            visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->game.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
+        visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->game.c_str());
+        if (!visualizerText.isEmpty()) {
+            visualizerText += " ";
+        }
 
-            visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->comments.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
+        visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->comments.c_str());
+        if (!visualizerText.isEmpty()) {
+            visualizerText += " ";
+        }
 
-            visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->copyright.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
+        visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->copyright.c_str());
+        if (!visualizerText.isEmpty()) {
+            visualizerText += " ";
+        }
 
-            visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->date.c_str());
-            if (!visualizerText.isEmpty())
-            {
-                visualizerText += " ";
-            }
+        visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->date.c_str());
+        if (!visualizerText.isEmpty()) {
+            visualizerText += " ";
+        }
 
-            if (SoundManager::getInstance().m_Info1->instruments != nullptr)
-            {
-                for (int i = 0; i < SoundManager::getInstance().m_Info1->numInstruments; i++)
-                {
-                    visualizerText += QString::fromLocal8Bit(
-                        SoundManager::getInstance().m_Info1->instruments[i].c_str()) + QString(" ");
-                }
+        if (SoundManager::getInstance().m_Info1->instruments != nullptr) {
+            for (int i = 0; i < SoundManager::getInstance().m_Info1->numInstruments; i++) {
+                visualizerText += QString::fromLocal8Bit(
+                    SoundManager::getInstance().m_Info1->instruments[i].c_str()) + QString(" ");
             }
-            if (SoundManager::getInstance().m_Info1->samples != nullptr)
-            {
-                for (int i = 0; i < SoundManager::getInstance().m_Info1->numSamples; i++)
-                {
-                    visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->samples[i].c_str()) +
+        }
+        if (SoundManager::getInstance().m_Info1->samples != nullptr) {
+            for (int i = 0; i < SoundManager::getInstance().m_Info1->numSamples; i++) {
+                visualizerText += QString::fromLocal8Bit(SoundManager::getInstance().m_Info1->samples[i].c_str()) +
                         QString(" ");
-                }
             }
-            ui->visualizer->getEffect()->setScrollText(visualizerText);
         }
+        ui->visualizer->getEffect()->setScrollText(visualizerText);
     }
 }
 
@@ -3200,46 +3113,41 @@ void MainWindow::clearLogWindow()
 
 void MainWindow::renamePlaylist()
 {
-    if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME)
-    {
-        bool ok;
-        QString oldName = ui->listWidget->currentItem()->text();
-        QString newName = QInputDialog::getText(this, "Rename Playlist",
-                                                "New name:", QLineEdit::Normal,
-                                                oldName, &ok);
+    if (ui->listWidget->currentItem()->text() == PLAYLIST_DEFAULT_FILENAME) return;
 
-        if ((oldName != newName) && ok && !newName.isEmpty())
-        {
-            if (!newName.endsWith(PLAYLIST_DEFAULT_EXTENSION))
-            {
-                newName = newName + PLAYLIST_DEFAULT_EXTENSION;
-            }
-            QString newOrgFilename = newName;
-            int suffix = 0;
-            while (tableWidgetPlaylists.contains(newName))
-            {
-                suffix++;
-                newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
-            }
-            QDir directory(USER_PLAYLISTS_DIR);
-            QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-                QDir::separator() + newName;
-            QString playlistOldName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-                QDir::separator() + oldName;
-            QFile oldFile(playlistOldName);
-            oldFile.rename(playlistNewName);
-            addDebugText("Renaming playlist " + playlistOldName + " to " + playlistNewName);
-            ui->listWidget->currentItem()->setText(newName);
+    bool ok;
+    QString oldName = ui->listWidget->currentItem()->text();
+    QString newName = QInputDialog::getText(this, "Rename Playlist",
+                                            "New name:", QLineEdit::Normal,
+                                            oldName, &ok);
 
-            if (oldName == currentPlaylist)
-            {
-                currentPlaylist = newName;
-            }
-            QTableView* newTableWidget = tableWidgetPlaylists[oldName];
-            tableWidgetPlaylists.remove(oldName);
-            tableWidgetPlaylists.insert(newName, newTableWidget);
-            DockWidgetPlaylist->setWindowTitle(newName);
+    if ((oldName != newName) && ok && !newName.isEmpty()) {
+        if (!newName.endsWith(PLAYLIST_DEFAULT_EXTENSION)) {
+            newName = newName + PLAYLIST_DEFAULT_EXTENSION;
         }
+        QString newOrgFilename = newName;
+        int suffix = 0;
+        while (tableWidgetPlaylists.contains(newName)) {
+            suffix++;
+            newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
+        }
+        QDir directory(USER_PLAYLISTS_DIR);
+        QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
+                                  QDir::separator() + newName;
+        QString playlistOldName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
+                                  QDir::separator() + oldName;
+        QFile oldFile(playlistOldName);
+        oldFile.rename(playlistNewName);
+        addDebugText("Renaming playlist " + playlistOldName + " to " + playlistNewName);
+        ui->listWidget->currentItem()->setText(newName);
+
+        if (oldName == currentPlaylist) {
+            currentPlaylist = newName;
+        }
+        QTableView *newTableWidget = tableWidgetPlaylists[oldName];
+        tableWidgetPlaylists.remove(oldName);
+        tableWidgetPlaylists.insert(newName, newTableWidget);
+        DockWidgetPlaylist->setWindowTitle(newName);
     }
 }
 
@@ -3251,87 +3159,84 @@ void MainWindow::savePlaylistAs()
                                             "New name:", QLineEdit::Normal,
                                             oldName, &ok);
 
-    if ((oldName != newName) && ok && !newName.isEmpty())
-    {
-        if (!newName.endsWith(PLAYLIST_DEFAULT_EXTENSION))
-        {
-            newName = newName + PLAYLIST_DEFAULT_EXTENSION;
-        }
-        QString newOrgFilename = newName;
-        int suffix = 0;
-        while (tableWidgetPlaylists.contains(newName))
-        {
-            suffix++;
-            newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
-        }
-        QDir directory(USER_PLAYLISTS_DIR);
-        QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-            QDir::separator() + newName;
-        QString playlistOldName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-            QDir::separator() + oldName;
+    if (oldName == newName || !ok || newName.isEmpty()) return;
 
-        savePlayList(playlistOldName, playlistNewName);
-
-        addDebugText("Saving playlist: " + playlistOldName + " as " + playlistNewName);
-        QListWidgetItem* newItem = ui->listWidget->currentItem()->clone();
-        newItem->setText(newName);
-        newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
-
-        ui->listWidget->addItem(newItem);
-        ui->listWidget->setItemDelegate(new MyItemDelegate(this));
-
-        QTableView* tv = new QTableView();
-        PlaylistModel* pm = new PlaylistModel(this);
-        tv->setModel(pm);
-        tv->setColumnHidden(4, true);
-        tv->setColumnHidden(5, true);
-        tv->setColumnHidden(6, true);
-        tv->setColumnHidden(7, true);
-
-        tableWidgetPlaylists[newName] = tv;
-
-        QFont roboto("Roboto");
-
-
-        tableWidgetPlaylists[newName]->setStyleSheet(
-            ui->dockWidgetContents_4->styleSheet() +
-            "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
-        tableWidgetPlaylists[newName]->setShowGrid(false);
-        tableWidgetPlaylists[newName]->setFrameShape(QFrame::NoFrame);
-        tableWidgetPlaylists[newName]->horizontalHeader()->setSectionsMovable(true);
-        tableWidgetPlaylists[newName]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-        tableWidgetPlaylists[newName]->setFrameShadow(QFrame::Plain);
-        tableWidgetPlaylists[newName]->setSelectionBehavior(QAbstractItemView::SelectRows);
-        tableWidgetPlaylists[newName]->setSelectionMode((QAbstractItemView::ExtendedSelection));
-        tableWidgetPlaylists[newName]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        tableWidgetPlaylists[newName]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-        tableWidgetPlaylists[newName]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-        tableWidgetPlaylists[newName]->setFont(roboto);
-
-        tableWidgetPlaylists[newName]->horizontalHeader()->setSortIndicatorShown(false);
-        tableWidgetPlaylists[newName]->verticalHeader()->setVisible(false);
-        tableWidgetPlaylists[newName]->setWordWrap(false);
-        tableWidgetPlaylists[newName]->setItemDelegate(new MyItemDelegate(this));
-        tableWidgetPlaylists[newName]->verticalHeader()->setMinimumSectionSize(1);
-        tableWidgetPlaylists[newName]->setFocusPolicy(Qt::StrongFocus);
-        tableWidgetPlaylists[newName]->installEventFilter(this);
-
-        swapColumns(tableWidgetPlaylists[newName]);
-
-
-        connect(tableWidgetPlaylists[newName], SIGNAL(doubleClicked(const QModelIndex &)),
-                SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
-
-        QUrl u = QUrl::fromLocalFile(
-            QDir::separator() + QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" +
-            newName);
-        QList<QUrl> ql;
-        ql.append(u);
-
-        addSong(ql, 0, newName, false);
-
-        createThePopupMenuCurrentPlaylist(newName);
+    if (!newName.endsWith(PLAYLIST_DEFAULT_EXTENSION)) {
+        newName = newName + PLAYLIST_DEFAULT_EXTENSION;
     }
+    QString newOrgFilename = newName;
+    int suffix = 0;
+    while (tableWidgetPlaylists.contains(newName)) {
+        suffix++;
+        newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
+    }
+    QDir directory(USER_PLAYLISTS_DIR);
+    QString playlistNewName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
+                              QDir::separator() + newName;
+    QString playlistOldName = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
+                              QDir::separator() + oldName;
+
+    savePlayList(playlistOldName, playlistNewName);
+
+    addDebugText("Saving playlist: " + playlistOldName + " as " + playlistNewName);
+    QListWidgetItem *newItem = ui->listWidget->currentItem()->clone();
+    newItem->setText(newName);
+    newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
+
+    ui->listWidget->addItem(newItem);
+    ui->listWidget->setItemDelegate(new MyItemDelegate(this));
+
+    QTableView *tv = new QTableView();
+    PlaylistModel *pm = new PlaylistModel(this);
+    tv->setModel(pm);
+    tv->setColumnHidden(4, true);
+    tv->setColumnHidden(5, true);
+    tv->setColumnHidden(6, true);
+    tv->setColumnHidden(7, true);
+
+    tableWidgetPlaylists[newName] = tv;
+
+    QFont roboto("Roboto");
+
+
+    tableWidgetPlaylists[newName]->setStyleSheet(
+        ui->dockWidgetContents_4->styleSheet() +
+        "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
+    tableWidgetPlaylists[newName]->setShowGrid(false);
+    tableWidgetPlaylists[newName]->setFrameShape(QFrame::NoFrame);
+    tableWidgetPlaylists[newName]->horizontalHeader()->setSectionsMovable(true);
+    tableWidgetPlaylists[newName]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    tableWidgetPlaylists[newName]->setFrameShadow(QFrame::Plain);
+    tableWidgetPlaylists[newName]->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableWidgetPlaylists[newName]->setSelectionMode((QAbstractItemView::ExtendedSelection));
+    tableWidgetPlaylists[newName]->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tableWidgetPlaylists[newName]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    tableWidgetPlaylists[newName]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    tableWidgetPlaylists[newName]->setFont(roboto);
+
+    tableWidgetPlaylists[newName]->horizontalHeader()->setSortIndicatorShown(false);
+    tableWidgetPlaylists[newName]->verticalHeader()->setVisible(false);
+    tableWidgetPlaylists[newName]->setWordWrap(false);
+    tableWidgetPlaylists[newName]->setItemDelegate(new MyItemDelegate(this));
+    tableWidgetPlaylists[newName]->verticalHeader()->setMinimumSectionSize(1);
+    tableWidgetPlaylists[newName]->setFocusPolicy(Qt::StrongFocus);
+    tableWidgetPlaylists[newName]->installEventFilter(this);
+
+    swapColumns(tableWidgetPlaylists[newName]);
+
+
+    connect(tableWidgetPlaylists[newName], SIGNAL(doubleClicked(const QModelIndex &)),
+            SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
+
+    QUrl u = QUrl::fromLocalFile(
+        QDir::separator() + QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" +
+        newName);
+    QList<QUrl> ql;
+    ql.append(u);
+
+    addSong(ql, 0, newName, false);
+
+    createThePopupMenuCurrentPlaylist(newName);
 }
 
 void MainWindow::savePlayList(QString path, QString newPath)
@@ -3397,21 +3302,20 @@ void MainWindow::deleteAllPlaylists()
 
 void MainWindow::deletePlaylist()
 {
-    if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME)
-    {
-        int rowNumber = ui->listWidget->currentRow();
-        rowNumber--;
+    if (ui->listWidget->currentItem()->text() == PLAYLIST_DEFAULT_FILENAME) return;
 
-        QString playlistToDelete = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
-            QDir::separator() + ui->listWidget->currentItem()->text();
-        addDebugText("Deleting playlist " + playlistToDelete);
-        QFile::remove(playlistToDelete);
-        //playlists.remove(ui->listWidget->currentItem()->text());
-        tableWidgetPlaylists.remove(ui->listWidget->currentItem()->text());
-        delete ui->listWidget->takeItem(ui->listWidget->currentRow());
-        ui->listWidget->setCurrentRow(rowNumber);
-        on_listWidget_itemClicked(ui->listWidget->item(rowNumber));
-    }
+    int rowNumber = ui->listWidget->currentRow();
+    rowNumber--;
+
+    QString playlistToDelete = QApplication::applicationDirPath() + USER_PLAYLISTS_DIR +
+                               QDir::separator() + ui->listWidget->currentItem()->text();
+    addDebugText("Deleting playlist " + playlistToDelete);
+    QFile::remove(playlistToDelete);
+    //playlists.remove(ui->listWidget->currentItem()->text());
+    tableWidgetPlaylists.remove(ui->listWidget->currentItem()->text());
+    delete ui->listWidget->takeItem(ui->listWidget->currentRow());
+    ui->listWidget->setCurrentRow(rowNumber);
+    on_listWidget_itemClicked(ui->listWidget->item(rowNumber));
 }
 
 void MainWindow::clearPlaylist()
