@@ -2,6 +2,8 @@
 #define MYMODEL_H
 
 #include "mainwindow.h"
+#include <QMimeData>
+#include <QUuid>
 
 struct Item
 {
@@ -21,6 +23,10 @@ struct Item
     signed int startSubsongPlayList;
     QString length;
     int lengthInt;
+    QUuid uuid = QUuid::createUuid();
+    bool operator==(const Item& other) const {
+        return uuid == other.uuid;
+    }
 };
 
 class PlaylistModel : public QAbstractTableModel
@@ -39,11 +45,17 @@ public:
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
     bool insertRows(int position, int rows, const QModelIndex& index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex& index = QModelIndex()) override;
+    QMimeData * mimeData(const QModelIndexList &indexes) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action,
+                                     int row, int column, const QModelIndex &parent) override;
+    QStringList mimeTypes() const override;
+    void setDropTargetRow(int row);
+    int findRowByUuid(const QUuid& uuid) const;
 
 private:
     MainWindow* m_root;
     QList<Item> items;
-    //int currentRowPlaying;
+    int m_pendingDropRow = -1;
 };
 
 #endif // MYMODEL_H

@@ -33,6 +33,8 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include "about.h"
+#include "DraggableTableView.h"
+#include <QHeaderView>
 
 #define NEZPLAYLISTSPLITTER "::<>::?<>"
 #define PLAYLISTFIELDSPLITTER "<><>::????"
@@ -431,48 +433,45 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     addDebugText("Loading " + QString::number(playlists.count()) + " playlists from " + userPath + PLAYLISTS_DIR);
 
-
     changeStyleSheetColor();
 
-    foreach(QString filename, playlists) {
+    //Read all columns orders, size etc. from settings for all playlists
+    settings.beginGroup("playlists");
+
+    QStringList playlistsGeometryKeys = settings.childKeys();
+    QMap<QString, QByteArray> playlistsGeometryMap;
+
+    for (const QString& key : playlistsGeometryKeys) {
+        QByteArray data = settings.value(key).toByteArray();
+        playlistsGeometryMap.insert(key, data);
+    }
+    settings.endGroup();
+
+    QStringList previousSortedPlaylists = settings.value("playlistOrder").toStringList();
+    QStringList sortedPlaylists = sortPreservingOrder(playlists, previousSortedPlaylists);
+
+    foreach(QString filename, sortedPlaylists) {
+
         QFileInfo f(filename);
 
-        QTableView *tv = new QTableView();
+		DraggableTableView* tv = new DraggableTableView();
+        tv->setDragBackgroundColor(QColor(colorMain.left(7)));
+        tv->setDragTextColor(QColor(colorMainText.left(7)));
+        tv->setupDelegate(); // has to be called after colors are set
 
-        PlaylistModel *pm = new PlaylistModel(this);
-        QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(pm); // create proxy
-        proxyModel->setSourceModel(pm);
-        tv->setModel(proxyModel);
+        PlaylistModel* pm = new PlaylistModel(this);
+		QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
+		proxyModel->setSourceModel(pm);
+		tv->setModel(proxyModel);
 
 
-        tableWidgetPlaylists[f.fileName()] = tv;
-        tableWidgetPlaylists[f.fileName()]->setStyleSheet(
-            ui->dockWidgetContents_4->styleSheet() +
-            "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
-        tableWidgetPlaylists[f.fileName()]->setShowGrid(false);
-        tableWidgetPlaylists[f.fileName()]->setFrameShape(QFrame::NoFrame);
-        tableWidgetPlaylists[f.fileName()]->setFrameShadow(QFrame::Plain);
-        tableWidgetPlaylists[f.fileName()]->setSelectionBehavior(QAbstractItemView::SelectRows);
-        tableWidgetPlaylists[f.fileName()]->setSelectionMode((QAbstractItemView::ExtendedSelection));
-        tableWidgetPlaylists[f.fileName()]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        tableWidgetPlaylists[f.fileName()]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-        tableWidgetPlaylists[f.fileName()]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-        tableWidgetPlaylists[f.fileName()]->setFont(roboto);
+		tableWidgetPlaylists[f.fileName()] = tv;
+		tableWidgetPlaylists[f.fileName()]->setStyleSheet(
+			ui->dockWidgetContents_4->styleSheet() +
+			"QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
 
-        tableWidgetPlaylists[f.fileName()]->verticalHeader()->setVisible(false);
-        tableWidgetPlaylists[f.fileName()]->setWordWrap(false);
-        tableWidgetPlaylists[f.fileName()]->setItemDelegate(new MyItemDelegate(this));
-
-        tableWidgetPlaylists[f.fileName()]->verticalHeader()->setMinimumSectionSize(1);
-        tableWidgetPlaylists[f.fileName()]->setFocusPolicy(Qt::StrongFocus);
-        tableWidgetPlaylists[f.fileName()]->installEventFilter(this);
-        tableWidgetPlaylists[f.fileName()]->setSelectionMode(QAbstractItemView::ExtendedSelection);
-        tableWidgetPlaylists[f.fileName()]->setDragEnabled(true);
-        tableWidgetPlaylists[f.fileName()]->setAcceptDrops(true);
-        tableWidgetPlaylists[f.fileName()]->setDragDropMode(QAbstractItemView::DragDrop);
-        tableWidgetPlaylists[f.fileName()]->setDefaultDropAction(Qt::MoveAction);
-        tableWidgetPlaylists[f.fileName()]->setDragDropOverwriteMode(false);
-        tableWidgetPlaylists[f.fileName()]->setDropIndicatorShown(true);
+		tableWidgetPlaylists[f.fileName()]->setFont(roboto);
+		tableWidgetPlaylists[f.fileName()]->installEventFilter(this);
 
         connect(tableWidgetPlaylists[f.fileName()], SIGNAL(doubleClicked(const QModelIndex &)),
                 SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
@@ -486,8 +485,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
                 PLAYLIST_DEFAULT_FILENAME) && filename == PLAYLIST_DEFAULT_FILENAME) {
             swapColumns(tableWidgetPlaylists[f.fileName()]);
         }
-        tableWidgetPlaylists[f.fileName()]->horizontalHeader()->restoreState(
-            settings.value(QString("playlist_") + f.fileName(), "").toByteArray());
+
+        tableWidgetPlaylists[f.fileName()]->horizontalHeader()->restoreState(playlistsGeometryMap[f.fileName()]);
+
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSectionsMovable(true);
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSortIndicatorShown(false);
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
@@ -506,8 +506,19 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         }
 
         newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
+        newItem->setFlags(newItem->flags() | Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
+        ui->listWidget->setDragEnabled(true);
+        ui->listWidget->setAcceptDrops(true);
+        ui->listWidget->setDropIndicatorShown(true);
+        ui->listWidget->setDragDropMode(QAbstractItemView::InternalMove);
+        ui->listWidget->setDefaultDropAction(Qt::MoveAction);
         ui->listWidget->insertItem(ui->listWidget->count(), newItem);
-        ui->listWidget->setItemDelegate(new MyItemDelegate(this));
+        ui->listWidget->setDragBackgroundColor(QColor(colorMain.left(7)));
+        ui->listWidget->setDragTextColor(QColor(colorMainText.left(7)));
+        MyItemDelegate* item = new MyItemDelegate(this);
+        item->setMainColor(QColor(colorMain.left(7)));
+        ui->listWidget->setItemDelegate(item);
+
         QUrl u = QUrl::fromLocalFile(QDir::separator() + userPath + PLAYLISTS_DIR + "/" + f.fileName());
         QList<QUrl> ql;
         ql.append(u);
@@ -927,7 +938,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == ui->checkBoxShuffle)
         {
-            if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+            if (isShuffleEnabled())
             {
                 ui->checkBoxShuffle->setIcon(icons["shuffle-onHover"]);
             }
@@ -994,7 +1005,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == ui->checkBoxShuffle)
         {
-            if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+            if (isShuffleEnabled())
             {
                 ui->checkBoxShuffle->setIcon(icons["shuffle-on"]);
             }
@@ -1242,7 +1253,7 @@ void MainWindow::updateButtons()
     {
         ui->buttonPlay_2->setIcon(icons["play"]);
     }
-    if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+    if (isShuffleEnabled())
     {
         ui->checkBoxShuffle->setIcon(icons["shuffle-on"]);
     }
@@ -1314,7 +1325,7 @@ void MainWindow::playNextSong(bool forceNext)
         }
         else
         {
-            if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+            if (isShuffleEnabled())
             {
                 m_iCurrentShufflePosition[currentPlaylist]++;
 
@@ -1414,7 +1425,14 @@ void MainWindow::resetShuffle(QString playlist)
         m_ShuffleToBePlayed[playlist].remove(currentRow);
     }
 }
-
+QString MainWindow::getCurrentPlaylist() const
+{
+    return currentPlaylist;
+}
+QString MainWindow::getSelectedPlaylist() const
+{
+    return selectedPlaylist;
+}
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     quit();
@@ -1957,7 +1975,7 @@ void MainWindow::on_playlist_itemDoubleClicked(const QModelIndex& index)
 
     removeHighlight();
     currentPlaylist = ui->listWidget->currentItem()->text();
-    if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+    if (isShuffleEnabled())
     {
         resetShuffle(currentPlaylist);
     }
@@ -3040,11 +3058,19 @@ void MainWindow::savePlaylistAs()
     newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
 
     ui->listWidget->addItem(newItem);
-    ui->listWidget->setItemDelegate(new MyItemDelegate(this));
+    MyItemDelegate* item = new MyItemDelegate(this);
+    item->setMainColor(QColor(colorMain.left(7)));
+    ui->listWidget->setItemDelegate(item);
 
-    QTableView *tv = new QTableView();
-    PlaylistModel *pm = new PlaylistModel(this);
-    tv->setModel(pm);
+    DraggableTableView *tv = new DraggableTableView();
+    tv->setDragBackgroundColor(QColor(colorMain.left(7)));
+    tv->setDragTextColor(QColor(colorMainText.left(7)));
+    tv->setupDelegate(); // has to be called after colors are set
+    PlaylistModel* pm = new PlaylistModel(this);
+    QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
+    proxyModel->setSourceModel(pm);
+    tv->setModel(proxyModel);
+
     tv->setColumnHidden(4, true);
     tv->setColumnHidden(5, true);
     tv->setColumnHidden(6, true);
@@ -3058,24 +3084,8 @@ void MainWindow::savePlaylistAs()
     tableWidgetPlaylists[newName]->setStyleSheet(
         ui->dockWidgetContents_4->styleSheet() +
         "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
-    tableWidgetPlaylists[newName]->setShowGrid(false);
-    tableWidgetPlaylists[newName]->setFrameShape(QFrame::NoFrame);
-    tableWidgetPlaylists[newName]->horizontalHeader()->setSectionsMovable(true);
-    tableWidgetPlaylists[newName]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    tableWidgetPlaylists[newName]->setFrameShadow(QFrame::Plain);
-    tableWidgetPlaylists[newName]->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableWidgetPlaylists[newName]->setSelectionMode((QAbstractItemView::ExtendedSelection));
-    tableWidgetPlaylists[newName]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    tableWidgetPlaylists[newName]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    tableWidgetPlaylists[newName]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-    tableWidgetPlaylists[newName]->setFont(roboto);
 
-    tableWidgetPlaylists[newName]->horizontalHeader()->setSortIndicatorShown(false);
-    tableWidgetPlaylists[newName]->verticalHeader()->setVisible(false);
-    tableWidgetPlaylists[newName]->setWordWrap(false);
-    tableWidgetPlaylists[newName]->setItemDelegate(new MyItemDelegate(this));
-    tableWidgetPlaylists[newName]->verticalHeader()->setMinimumSectionSize(1);
-    tableWidgetPlaylists[newName]->setFocusPolicy(Qt::StrongFocus);
+    tableWidgetPlaylists[newName]->setFont(roboto);
     tableWidgetPlaylists[newName]->installEventFilter(this);
 
     swapColumns(tableWidgetPlaylists[newName]);
@@ -3486,15 +3496,21 @@ void MainWindow::createThePopupMenuChannels()
     ui->dockWidgetContents_7->addActions({unmuteAllChannelsAction});
 }
 
-
+int MainWindow::getCurrentRow() const
+{
+    return currentRow;
+}
+void MainWindow::setCurrentRow(int row)
+{
+    currentRow=row;
+}
 void MainWindow::playPrevSong()
 {
     addDebugText("Play previous song.");
-    if ((currentRow != 0 && ui->checkBoxShuffle->checkState() == Qt::Unchecked) || (ui->checkBoxShuffle->checkState() ==
-        Qt::Checked && m_iCurrentShufflePosition[currentPlaylist] > 0) || (ui->checkBoxLoop->checkState() ==
-        Qt::PartiallyChecked && ui->checkBoxShuffle->checkState() == Qt::Unchecked))
+    if ((currentRow != 0 && !isShuffleEnabled()) || (isShuffleEnabled() && m_iCurrentShufflePosition[currentPlaylist] > 0) ||
+    (ui->checkBoxLoop->checkState() == Qt::PartiallyChecked && !isShuffleEnabled()))
     {
-        if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+        if (isShuffleEnabled())
         {
             m_iCurrentShufflePosition[currentPlaylist]--;
             removeHighlight();
@@ -3848,11 +3864,7 @@ void MainWindow::SaveSettings()
 
     settings.setValue("lastOpenedDir", lastDir);
 
-    QMap<QString, QTableView*>::iterator i;
-    for (i = tableWidgetPlaylists.begin(); i != tableWidgetPlaylists.end(); ++i)
-    {
-        settings.setValue(QString("playlist_") + i.key(), i.value()->horizontalHeader()->saveState());
-    }
+    savePlayListSettings();
 
     if (PLUGIN_libsidplayfp_LIB != "")
     {
@@ -3860,6 +3872,28 @@ void MainWindow::SaveSettings()
     }
 }
 
+void MainWindow::savePlayListSettings()
+{
+    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
+    //Clear old playlist settings
+    settings.remove("playlists");
+
+    //Iterate all current playlists and save the order and the column settings
+    QStringList orderedKeys;
+    settings.beginGroup("playlists");
+    for (int i = 0; i < ui->listWidget->count(); ++i) {
+        orderedKeys << ui->listWidget->item(i)->text();
+        QListWidgetItem* item = ui->listWidget->item(i);
+        QString key = item->text();
+        if (tableWidgetPlaylists.contains(key)) {
+            QTableView* view = tableWidgetPlaylists.value(key);
+            settings.setValue(key, view->horizontalHeader()->saveState());
+        }
+    }
+    settings.endGroup();
+    settings.setValue("playlistOrder", orderedKeys);
+
+}
 
 vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
 {
@@ -4108,14 +4142,25 @@ QString MainWindow::createPlaylist(QString name)
     newItem->setText(newFilename);
     newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
     ui->listWidget->insertItem(ui->listWidget->count(), newItem);
+    MyItemDelegate* item = new MyItemDelegate(this);
+    item->setMainColor(QColor(colorMain.left(7)));
+    ui->listWidget->setItemDelegate(item);
+
+
 
 
     QFont roboto("Roboto");
 
 
-    QTableView* tv = new QTableView();
+    DraggableTableView* tv = new DraggableTableView();
+    tv->setDragBackgroundColor(QColor(colorMain.left(7)));
+    tv->setDragTextColor(QColor(colorMainText.left(7)));
+    tv->setupDelegate(); // has to be called after colors are set
+
     PlaylistModel* pm = new PlaylistModel(this);
-    tv->setModel(pm);
+    QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
+    proxyModel->setSourceModel(pm);
+    tv->setModel(proxyModel);
     tv->setColumnHidden(4, true);
     tv->setColumnHidden(5, true);
     tv->setColumnHidden(6, true);
@@ -4124,24 +4169,7 @@ QString MainWindow::createPlaylist(QString name)
 
     tableWidgetPlaylists[newItem->text()]->setStyleSheet(
         ui->dockWidgetContents_4->styleSheet() + "QHeaderView::section{font-family:Roboto;} QTableView{padding:9px;}");
-    tableWidgetPlaylists[newItem->text()]->setShowGrid(false);
-    tableWidgetPlaylists[newItem->text()]->setFrameShape(QFrame::NoFrame);
-    tableWidgetPlaylists[newItem->text()]->horizontalHeader()->setSectionsMovable(true);
-    tableWidgetPlaylists[newItem->text()]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    tableWidgetPlaylists[newItem->text()]->setFrameShadow(QFrame::Plain);
-    tableWidgetPlaylists[newItem->text()]->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableWidgetPlaylists[newItem->text()]->setSelectionMode((QAbstractItemView::ExtendedSelection));
-    tableWidgetPlaylists[newItem->text()]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    tableWidgetPlaylists[newItem->text()]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    tableWidgetPlaylists[newItem->text()]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     tableWidgetPlaylists[newItem->text()]->setFont(roboto);
-    //tableWidgetPlaylists[newItem->text()]->horizontalHeader()->setStretchLastSection(true);
-    tableWidgetPlaylists[newItem->text()]->horizontalHeader()->setSortIndicatorShown(false);
-    tableWidgetPlaylists[newItem->text()]->verticalHeader()->setVisible(false);
-    tableWidgetPlaylists[newItem->text()]->setFocusPolicy(Qt::StrongFocus);
-    tableWidgetPlaylists[newItem->text()]->setWordWrap(false);
-    tableWidgetPlaylists[newItem->text()]->setItemDelegate(new MyItemDelegate(this));
-
     tableWidgetPlaylists[newItem->text()]->installEventFilter(this);
 
     createThePopupMenuCurrentPlaylist(newItem->text());
@@ -4181,7 +4209,7 @@ void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem* item)
 
     removeHighlight();
     currentPlaylist = ui->listWidget->currentItem()->text();
-    if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+    if (isShuffleEnabled())
     {
         resetShuffle(currentPlaylist);
     }
@@ -4190,7 +4218,10 @@ void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem* item)
 
     PlaySong(currentRow);
 }
-
+bool MainWindow::isShuffleEnabled() const
+{
+    return ui->checkBoxShuffle->checkState() == Qt::Checked;
+}
 void MainWindow::iffWriteChunkHeader(FILE* f, char* chunkName, uint32_t chunkLen)
 {
     fwrite(chunkName, sizeof(int32_t), 1, f);
@@ -4225,7 +4256,7 @@ void MainWindow::iffWriteChunkData(FILE* f, const void* data, size_t length)
 
 void MainWindow::on_checkBoxShuffle_clicked()
 {
-    if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+    if (isShuffleEnabled())
     {
         resetShuffle(currentPlaylist);
         ui->checkBoxShuffle->setToolTip(("Disable shuffle"));
@@ -5755,4 +5786,24 @@ void MainWindow::setupAdvancedDockingSystem()
     m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetPlayControl);
     dockWidgets.append(DockWidgetPlayControl);
 
+}
+
+QStringList MainWindow::sortPreservingOrder(const QStringList& folderPlaylists, const QStringList& sortedPlaylistOrder)
+{
+    QStringList result;
+    QSet<QString> added;
+
+    for (const QString& key : sortedPlaylistOrder) {
+        if (folderPlaylists.contains(key)) {
+            result.append(key);
+            added.insert(key);
+        }
+    }
+
+    for (const QString& item : folderPlaylists) {
+        if (!added.contains(item)) {
+            result.append(item);
+        }
+    }
+    return result;
 }

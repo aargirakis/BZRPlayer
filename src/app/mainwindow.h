@@ -78,8 +78,14 @@ public:
     QAction* workspaceSeparator;
     Channels* channels;
 
-
+    void setCurrentRow(int);
+    int getCurrentRow() const;
+    QString getCurrentPlaylist() const;
+    QString getSelectedPlaylist() const;
+    void resetShuffle(QString);
+    bool isShuffleEnabled() const;
     void swapColumns(QTableView* tableview);
+    QStringList sortPreservingOrder(const QStringList&, const QStringList&);
     void setHvscSonglengthsFrequency(QString);
     void setHvscSonglengthsPathDownloaded(QString);
     QString getHvscSonglengthsFrequency();
@@ -320,6 +326,7 @@ private slots:
 
     void on_buttonStop_clicked();
 
+
 private:
     QString HvscSonglengthsPathDownloaded;
     QString HvscSonglengthsFrequency;
@@ -421,6 +428,7 @@ private:
     void highlightPlaylistItem(QString playlist, int currentRow);
     bool initializeSocket();
     void createMenuWindowTabs();
+    void savePlayListSettings();
     void checkCommandLine(int argc, char* argv[]);
     void setupIcons();
     void setupAdvancedDockingSystem();
@@ -430,8 +438,6 @@ private:
     QStringList getFilesRecursive(const QString&, const QString& = "", bool = true);
     bool addSong(const QList<QUrl>& urls, int, QString, bool);
     void addSong(const QStringList& filenames, int, QString, bool);
-
-    void resetShuffle(QString);
 
     void addPlaylistEntry(QTableView* table, int rowPosition, QString filename, QString fileFormat, QString length,
                           int subsong, QString fullPath, int lengthInt, QString artist);

@@ -1,5 +1,6 @@
 #include "playlistmodel.h"
 #include "qdebug.h"
+#include <algorithm>
 
 PlaylistModel::PlaylistModel(QObject* parent)
     : QAbstractTableModel(parent)
@@ -100,7 +101,10 @@ QVariant PlaylistModel::headerData(int section, Qt::Orientation orientation, int
 
 Qt::ItemFlags PlaylistModel::flags(const QModelIndex& index) const
 {
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
+    if (index.isValid())
+        return defaultFlags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+    return defaultFlags | Qt::ItemIsDropEnabled;
 }
 
 bool PlaylistModel::insertRows(int position, int rows, const QModelIndex& index)
@@ -169,12 +173,10 @@ bool PlaylistModel::setData(const QModelIndex& index, const QVariant& value, int
             contact.lengthInt = value.toInt() / 1000;
         else if (index.column() == 6)
         {
-            //cout << "setting bool to :" << value.toBool() << "\n";
             contact.playable = value.toBool();
         }
         else if (index.column() == 7)
         {
-            //cout << "setting bool to :" << value.toBool() << "\n";
             contact.isPlaying = value.toBool();
         }
         else
@@ -188,4 +190,108 @@ bool PlaylistModel::setData(const QModelIndex& index, const QVariant& value, int
     {
         return true;
     }
+}
+QStringList PlaylistModel::mimeTypes() const {
+    return { "application/vnd.text.list" };  // Use any string, just keep it consistent
+}
+QMimeData* PlaylistModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData* mimeData = new QMimeData();
+    QByteArray encoded;
+    QDataStream stream(&encoded, QIODevice::WriteOnly);
+
+    QSet<int> rows;
+    for (const QModelIndex& index : indexes)
+        rows.insert(index.row());
+
+    QList<int> sortedRows = rows.values();
+    std::sort(sortedRows.begin(), sortedRows.end());
+
+    for (int row : sortedRows)
+        stream << row;
+
+    mimeData->setData("application/vnd.text.list", encoded);
+    return mimeData;
+}
+bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
+                                 int row, int column, const QModelIndex& parent)
+{
+    if (action != Qt::MoveAction || !data->hasFormat("application/vnd.text.list"))
+        return false;
+
+    // Save a pointer/reference to the item at currentRow
+    Item trackedItem;
+    int currentRow = m_root->getCurrentRow();
+    if(currentRow>=0)
+    {
+        trackedItem = items[currentRow];
+    }
+
+    QByteArray encoded = data->data("application/vnd.text.list");
+    QDataStream stream(&encoded, QIODevice::ReadOnly);
+
+    QList<int> sourceRows;
+    while (!stream.atEnd()) {
+        int r;
+        stream >> r;
+        if (r >= 0 && r < items.size())
+            sourceRows.append(r);
+    }
+
+    if (sourceRows.isEmpty())
+        return false;
+
+    std::sort(sourceRows.begin(), sourceRows.end());
+
+    // Use the drop row passed from the view (via setDropTargetRow)
+    int destinationRow = (m_pendingDropRow != -1) ? m_pendingDropRow : row;
+    m_pendingDropRow = -1;  // Reset after using
+
+    int movedBeforeTarget = 0;
+    for (int r : sourceRows) {
+        if (r < destinationRow)
+            ++movedBeforeTarget;
+    }
+    destinationRow -= movedBeforeTarget;
+
+    // Clamp to valid index range
+    destinationRow = std::clamp(destinationRow, 0, static_cast<int>(items.size()));
+
+    // Remove the source items from the model
+    QList<Item> movedItems;
+    for (int i = sourceRows.size() - 1; i >= 0; --i)
+        movedItems.prepend(items.takeAt(sourceRows[i]));
+
+    // Insert them at the destination
+    beginResetModel();
+    for (int i = 0; i < movedItems.count(); ++i)
+        items.insert(destinationRow + i, movedItems[i]);
+    endResetModel();
+
+    //Reset shuffle if shuffle is enabled
+    if(m_root->isShuffleEnabled())
+    {
+        if (m_root->getSelectedPlaylist() == m_root->getCurrentPlaylist())
+        {
+            m_root->resetShuffle(m_root->getCurrentPlaylist());
+        }
+    }
+    //Set new currentRow
+    if(currentRow>=0)
+    {
+        int newRow = findRowByUuid(trackedItem.uuid);
+        m_root->setCurrentRow(newRow);
+    }
+    return true;
+}
+
+void PlaylistModel::setDropTargetRow(int row)
+{
+    m_pendingDropRow = row;
+}
+int PlaylistModel::findRowByUuid(const QUuid& uuid) const {
+    for (int i = 0; i < items.size(); ++i) {
+        if (items[i].uuid == uuid)
+            return i;
+    }
+    return -1;
 }
