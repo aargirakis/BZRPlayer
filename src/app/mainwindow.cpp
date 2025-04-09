@@ -492,7 +492,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QFileInfo f(filename);
         
 		DraggableTableView* tv = new DraggableTableView(this);
-		tv->setupAnimatedDelegate();
 
 		PlaylistModel* pm = new PlaylistModel(this);
 		QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy

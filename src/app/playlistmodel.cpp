@@ -173,12 +173,10 @@ bool PlaylistModel::setData(const QModelIndex& index, const QVariant& value, int
             contact.lengthInt = value.toInt() / 1000;
         else if (index.column() == 6)
         {
-            //cout << "setting bool to :" << value.toBool() << "\n";
             contact.playable = value.toBool();
         }
         else if (index.column() == 7)
         {
-            //cout << "setting bool to :" << value.toBool() << "\n";
             contact.isPlaying = value.toBool();
         }
         else
@@ -243,7 +241,7 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     if (destinationRow > sourceRows.last())
         destinationRow -= sourceRows.count();
 
-    // 💥 Safety: clamp to valid index range
+    // Clamp to valid index range
     destinationRow = std::clamp(destinationRow, 0, static_cast<int>(items.size()));
 
     // Remove the source items from the model
@@ -257,14 +255,10 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
         items.insert(destinationRow + i, movedItems[i]);
     endResetModel();
 
-    std::cout << "[DROP] dropMimeData() → m_pendingDropRow:" << m_pendingDropRow << "\n";
-    fflush(stdout);
     return true;
 }
 
 void PlaylistModel::setDropTargetRow(int row)
 {
-    std::cout << "[MODEL] setDropTargetRow:" << row << "\n";
-    fflush(stdout);
     m_pendingDropRow = row;
 }
