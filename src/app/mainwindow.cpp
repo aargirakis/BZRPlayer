@@ -32,6 +32,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include "about.h"
+#include "DraggableTableView.h"
 
 #define NEZPLAYLISTSPLITTER "::<>::?<>"
 #define PLAYLISTFIELDSPLITTER "<><>::????"
@@ -489,43 +490,26 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     foreach(QString filename, playlists) {
         QFileInfo f(filename);
+        
+		DraggableTableView* tv = new DraggableTableView(this);
+		tv->setupAnimatedDelegate();
 
-        QTableView *tv = new QTableView();
-
-        PlaylistModel *pm = new PlaylistModel(this);
-        QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(pm); // create proxy
-        proxyModel->setSourceModel(pm);
-        tv->setModel(proxyModel);
+		PlaylistModel* pm = new PlaylistModel(this);
+		QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
+		proxyModel->setSourceModel(pm);
+		tv->setModel(proxyModel);
 
 
-        tableWidgetPlaylists[f.fileName()] = tv;
-        tableWidgetPlaylists[f.fileName()]->setStyleSheet(
-            ui->dockWidgetContents_4->styleSheet() +
-            "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
-        tableWidgetPlaylists[f.fileName()]->setShowGrid(false);
-        tableWidgetPlaylists[f.fileName()]->setFrameShape(QFrame::NoFrame);
-        tableWidgetPlaylists[f.fileName()]->setFrameShadow(QFrame::Plain);
-        tableWidgetPlaylists[f.fileName()]->setSelectionBehavior(QAbstractItemView::SelectRows);
-        tableWidgetPlaylists[f.fileName()]->setSelectionMode((QAbstractItemView::ExtendedSelection));
-        tableWidgetPlaylists[f.fileName()]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        tableWidgetPlaylists[f.fileName()]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-        tableWidgetPlaylists[f.fileName()]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-        tableWidgetPlaylists[f.fileName()]->setFont(roboto);
+		tableWidgetPlaylists[f.fileName()] = tv;
+		tableWidgetPlaylists[f.fileName()]->setStyleSheet(
+			ui->dockWidgetContents_4->styleSheet() +
+			"QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
 
-        tableWidgetPlaylists[f.fileName()]->verticalHeader()->setVisible(false);
-        tableWidgetPlaylists[f.fileName()]->setWordWrap(false);
-        tableWidgetPlaylists[f.fileName()]->setItemDelegate(new MyItemDelegate(this));
-
-        tableWidgetPlaylists[f.fileName()]->verticalHeader()->setMinimumSectionSize(1);
-        tableWidgetPlaylists[f.fileName()]->setFocusPolicy(Qt::StrongFocus);
-        tableWidgetPlaylists[f.fileName()]->installEventFilter(this);
-        tableWidgetPlaylists[f.fileName()]->setSelectionMode(QAbstractItemView::ExtendedSelection);
-        tableWidgetPlaylists[f.fileName()]->setDragEnabled(true);
-        tableWidgetPlaylists[f.fileName()]->setAcceptDrops(true);
-        tableWidgetPlaylists[f.fileName()]->setDragDropMode(QAbstractItemView::DragDrop);
-        tableWidgetPlaylists[f.fileName()]->setDefaultDropAction(Qt::MoveAction);
-        tableWidgetPlaylists[f.fileName()]->setDragDropOverwriteMode(false);
-        tableWidgetPlaylists[f.fileName()]->setDropIndicatorShown(true);
+		tableWidgetPlaylists[f.fileName()]->setFont(roboto);
+		tableWidgetPlaylists[f.fileName()]->verticalHeader()->setVisible(false);
+		tableWidgetPlaylists[f.fileName()]->verticalHeader()->setMinimumSectionSize(1);
+		tableWidgetPlaylists[f.fileName()]->setFocusPolicy(Qt::StrongFocus);
+		tableWidgetPlaylists[f.fileName()]->installEventFilter(this);
 
         connect(tableWidgetPlaylists[f.fileName()], SIGNAL(doubleClicked(const QModelIndex &)),
                 SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
