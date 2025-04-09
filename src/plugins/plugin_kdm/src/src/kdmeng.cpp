@@ -8,15 +8,26 @@
 #include <windows.h>
 #else
 #include <cstdint>
+#include <iostream>
+#include <dirent.h>
+
 typedef int64_t __int64;
+
+typedef uint8_t BYTE;
+typedef uint32_t DWORD;
+typedef int32_t LONG;
+typedef int64_t LONGLONG;
 
 typedef union _LARGE_INTEGER {
 	struct {
-		uint32_t LowPart;
-		int32_t HighPart;
+		DWORD LowPart;
+		LONG HighPart;
 	};
-
-	uint64_t QuadPart;
+	struct {
+		DWORD LowPart;
+		LONG HighPart;
+	} u;
+	LONGLONG QuadPart;
 } LARGE_INTEGER;
 
 int MulDiv(int number, int numerator, int denominator) {
@@ -25,11 +36,55 @@ int MulDiv(int number, int numerator, int denominator) {
 	ret /= denominator;
 	return (int) ret;
 }
+
+bool caseInsensitiveCompare(const std::string& a, const std::string& b) {
+	if (a.size() != b.size()) return false;
+	for (size_t i = 0; i < a.size(); ++i) {
+		if (tolower(a[i]) != tolower(b[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+
+std::string findFileCaseInsensitive(const std::string& filename, const std::string& directory) {
+	DIR* dir = opendir(directory.c_str());
+	if (!dir) {
+		return "";
+	}
+
+	dirent const* entry;
+	while ((entry = readdir(dir)) != nullptr) {
+		if (caseInsensitiveCompare(entry->d_name, filename)) {
+			closedir(dir);
+			return std::string(entry->d_name);
+		}
+	}
+
+	closedir(dir);
+	return "";
+}
 #endif
 
-#include "MyEndian.h"
+typedef unsigned char ubyte;
+typedef unsigned int uword;
+typedef unsigned int udword;
+
+// Convert high bytes and low bytes of MSW and LSW to 32-bit word.
+// Used to read 32-bit words in little-endian order.
+ inline udword readEndian(ubyte hihi, ubyte hilo, ubyte hi, ubyte lo)
+ {
+ 	return(( (udword)hihi << 24 ) + ( (udword)hilo << 16 ) +
+ 		   ( (udword)hi << 8 ) + (udword)lo );
+ }
+
+ // inline uint32_t readEndian(uint8_t hihi, uint8_t hilo, uint8_t hi, uint8_t lo)
+ // {
+ // 	return(( (uint32_t)hihi << 24 ) + ( (uint32_t)hilo << 16 ) +
+ // 		   ( (uint32_t)hi << 8 ) + (uint32_t)lo );
+ // }
+
 #include <fstream>
-#include <cstdint>
 using namespace std;
 #define _inline inline
 #define min(a, b)  (((a) < (b)) ? (a) : (b))
@@ -98,7 +153,7 @@ static void bound2char( unsigned count, long * in, unsigned char * out )
 	for ( unsigned i = 0, j = count * 2; i < j; i++ )
 	{
 		long sample = *in >> 8;
-		*in++ = 32768;
+		*in++ = kdmeng::MAXSAMPLESTOPROCESS;
 		if ( sample < 0 ) sample = 0;
 		else if ( sample > 255 ) sample = 255;
 		*out++ = sample;
@@ -111,7 +166,7 @@ static void bound2short( unsigned count, long * in, unsigned char * out )
 	for ( unsigned i = 0, j = count * 2; i < j; i++ )
 	{
 		long sample = *in;
-		*in++ = 32768;
+		*in++ = kdmeng::MAXSAMPLESTOPROCESS;
 		if ( sample < 0 ) sample = 0;
 		else if ( sample > 65535 ) sample = 65535;
 		*outs++ = sample ^ 0x8000;
@@ -203,7 +258,16 @@ long kdmeng::loadwaves ( const char * refdir)
     if (snd) return(1);
 
     string filename(refdir);
-    filename+= "waves.kwv";
+
+#ifdef WIN32
+	filename+= "waves.kwv";
+#else
+	std::string fileFound = findFileCaseInsensitive("waves.kwv", refdir);
+	if (fileFound.empty()) {
+		return 0;
+	}
+	filename += fileFound;
+#endif
 
     ifstream file (filename.c_str(), ios::in | ios::binary | ios::ate);
     ifstream::pos_type fileSize;
@@ -284,7 +348,7 @@ kdmeng::kdmeng( unsigned samplerate, unsigned numspeakers, unsigned bytespersamp
 
 	timecount = notecnt = musicstatus = musicrepeat = 0;
 
-	clearbuf( (void *)stemp, sizeof( stemp ) >> 2, 32768L );
+	clearbuf(stemp, MAXSAMPLESTOPROCESS, MAXSAMPLESTOPROCESS);
 	for( i = 0; i < ( kdmsamplerate >> 11 ); i++ )
 	{
 		j = 1536 - ( i << 10 ) / ( kdmsamplerate >> 11 );
@@ -539,7 +603,7 @@ long kdmeng::rendersound( void * dasnd, long numbytes)
 				stemp[ i ] += mulscale16( stemp[ i + 1024 ] - stemp[ i ], ramplookup[ i ] );
 			j = bytespertic; k = ( kdmsamplerate >> 11 );
 			copybuf( ( void * ) &stemp[ j ], ( void * ) &stemp[ 1024 ], k );
-			clearbuf( ( void * ) &stemp[ j ], k, 32768 );
+			clearbuf( ( void * ) &stemp[ j ], k, MAXSAMPLESTOPROCESS );
 		}
 		else
 		{
@@ -551,7 +615,7 @@ long kdmeng::rendersound( void * dasnd, long numbytes)
 			}
 			j = ( bytespertic << 1 ); k = ( ( kdmsamplerate >> 11 ) << 1 );
 			copybuf( ( void * ) &stemp[ j ], ( void * ) &stemp[ 1024 ], k );
-			clearbuf( ( void * ) &stemp[ j ], k, 32768 );
+			clearbuf( ( void * ) &stemp[ j ], k, MAXSAMPLESTOPROCESS );
 		}
 
 		if ( kdmnumspeakers == 1 )
