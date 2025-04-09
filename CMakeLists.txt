@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(bzr2 VERSION "2.0.76")
+project(bzr2 VERSION "2.0.77")
 
 if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(WARNING "Only x64 build is supported")
