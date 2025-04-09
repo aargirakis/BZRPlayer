@@ -12,15 +12,15 @@ public:
     void dropEvent(QDropEvent *event) override;
     void dragLeaveEvent(QDragLeaveEvent *event) override;
     void startDrag(Qt::DropActions supportedActions) override;
-    void setupAnimatedDelegate();
     QPixmap createDragPixmap(const QList<int>& rows);
     void paintEvent(QPaintEvent* event) override;
 
 private:
     MainWindow* m_root;
     int m_dropLineRow = -1;
+    void setupDelegate();
 protected:
-    MyItemDelegate *m_animatedDelegate = nullptr;
+    MyItemDelegate *m_Delegate = nullptr;
 
 
 };

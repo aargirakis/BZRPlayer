@@ -27,6 +27,7 @@ DraggableTableView::DraggableTableView(QWidget* parent)
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setDropIndicatorShown(false);
     setDefaultDropAction(Qt::MoveAction);
+    setupDelegate();
 
 }
 
@@ -49,45 +50,23 @@ void DraggableTableView::dragMoveEvent(QDragMoveEvent* event)
         viewport()->update();
     }
 
-    // ✅ This must be here:
-    std::cout << "[DRAG] dragMoveEvent triggered\n";
-    fflush(stdout);
     auto* proxy = qobject_cast<QSortFilterProxyModel*>(model());
-    if (proxy) {
-        auto* playlistModel = qobject_cast<PlaylistModel*>(proxy->sourceModel());
-        if (playlistModel) {
-            playlistModel->setDropTargetRow(m_dropLineRow);
-            std::cout << "[DRAG] setDropTargetRow via proxy:" << m_dropLineRow << "\n";
-            fflush(stdout);
-        } else {
-            std::cout << "[DRAG] sourceModel cast to PlaylistModel failed!\n";
-            fflush(stdout);
-        }
-    } else {
-        std::cout << "[DRAG] model is not a proxy\n";
-        fflush(stdout);
-    }
-
+    auto* playlistModel = qobject_cast<PlaylistModel*>(proxy->sourceModel());
+    playlistModel->setDropTargetRow(m_dropLineRow);
     QTableView::dragMoveEvent(event);
 }
 
 
 void DraggableTableView::dropEvent(QDropEvent *event) {
     setCurrentIndex(QModelIndex());
-    if(m_animatedDelegate)
-    {
-        m_animatedDelegate->setDragActive(false);
-    }
+    m_Delegate->setDragActive(false);
     m_dropLineRow = -1;
     viewport()->update();  // erase drop line
     QTableView::dropEvent(event);
 }
 void DraggableTableView::dragLeaveEvent(QDragLeaveEvent *event) {
     setCurrentIndex(QModelIndex());
-    if(m_animatedDelegate)
-    {
-        m_animatedDelegate->setDragActive(false);
-    }
+    m_Delegate->setDragActive(false);
     m_dropLineRow = -1;
     viewport()->update();  // erase drop line
     QTableView::dragLeaveEvent(event);
@@ -97,12 +76,12 @@ void DraggableTableView::startDrag(Qt::DropActions supportedActions) {
     if (indexes.isEmpty())
         return;
 
-    // Collect unique rows (we only care about which rows are selected)
-    QSet<int> uniqueRows;
+    QSet<int> selectedRows;
     for (const QModelIndex& index : indexes)
-        uniqueRows.insert(index.row());
+        selectedRows.insert(index.row());
 
-    QList<int> sortedRows = uniqueRows.values();
+    //We need to sort the rows, otherwise it will be the picking order
+    QList<int> sortedRows = selectedRows.values();
     std::sort(sortedRows.begin(), sortedRows.end());
 
     // Serialize the row numbers into MIME data
@@ -121,20 +100,14 @@ void DraggableTableView::startDrag(Qt::DropActions supportedActions) {
     QDrag* drag = new QDrag(this);
     drag->setMimeData(mimeData);
     drag->setPixmap(pixmap);
-    drag->setHotSpot(QPoint(10, 10));  // optional positioning
+    drag->setHotSpot(QPoint(10, 10));
 
     drag->exec(Qt::MoveAction);
 }
-void DraggableTableView::setupAnimatedDelegate() {
+void DraggableTableView::setupDelegate() {
     auto *delegate = new MyItemDelegate(m_root);
     setItemDelegate(delegate);
-
-    connect(delegate, &MyItemDelegate::repaintRequested, this, [this]()
-    {
-        viewport()->update();  // Trigger repaint
-    });
-
-    m_animatedDelegate = delegate;
+    m_Delegate = delegate;
 }
 QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) {
     if (rows.isEmpty())
@@ -142,7 +115,7 @@ QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) {
 
     QFont font = this->font();
     QFontMetrics metrics(font);
-    int rowHeight = sizeHintForRow(rows.first());
+    int rowHeight = sizeHintForRow(rows.first())*2;
     int width = viewport()->width();
     int height = rowHeight * rows.count();
 
@@ -159,7 +132,9 @@ QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) {
         QModelIndex index = model()->index(row, 0);  // show first column
         QString text = model()->data(index).toString();
 
-        painter.fillRect(rect, QColor(100, 150, 255, 200));
+        QColor backgroundColor(m_root->getColorMain().left(7));
+        backgroundColor.setAlpha((100));
+        painter.fillRect(rect, backgroundColor);
         painter.setPen(Qt::black);
         painter.drawText(rect.adjusted(5, 0, -5, 0), Qt::AlignLeft | Qt::AlignVCenter, text);
         y += rowHeight;

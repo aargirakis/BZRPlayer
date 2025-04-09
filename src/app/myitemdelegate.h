@@ -17,8 +17,6 @@ public:
 
 private:
     MainWindow* m_root;
-    int m_hoveredRow = -1;
-    QPropertyAnimation *m_animation = nullptr;
     QSet<int> m_draggedRows;
     bool m_dragActive = false;
 
