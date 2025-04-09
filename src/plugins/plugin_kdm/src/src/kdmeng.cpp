@@ -8,6 +8,9 @@
 #include <windows.h>
 #else
 #include <cstdint>
+#include <iostream>
+#include <dirent.h>
+
 typedef int64_t __int64;
 
 typedef union _LARGE_INTEGER {
@@ -25,6 +28,35 @@ int MulDiv(int number, int numerator, int denominator) {
 	ret /= denominator;
 	return (int) ret;
 }
+
+bool caseInsensitiveCompare(const std::string& a, const std::string& b) {
+	if (a.size() != b.size()) return false;
+	for (size_t i = 0; i < a.size(); ++i) {
+		if (tolower(a[i]) != tolower(b[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+
+std::string findFileCaseInsensitive(const std::string& filename, const std::string& directory) {
+	DIR* dir = opendir(directory.c_str());
+	if (!dir) {
+		return "";
+	}
+
+	dirent const* entry;
+	while ((entry = readdir(dir)) != nullptr) {
+		if (caseInsensitiveCompare(entry->d_name, filename)) {
+			closedir(dir);
+			return std::string(entry->d_name);
+		}
+	}
+
+	closedir(dir);
+	return "";
+}
+
 #endif
 
 #include "MyEndian.h"
@@ -203,7 +235,16 @@ long kdmeng::loadwaves ( const char * refdir)
     if (snd) return(1);
 
     string filename(refdir);
-    filename+= "waves.kwv";
+
+#ifdef WIN32
+	filename+= "waves.kwv";
+#else
+    std::string foundFile = findFileCaseInsensitive("waves.kwv", refdir);
+    if (foundFile.empty()) {
+	    return 0;
+    }
+    filename += foundFile;
+#endif
 
     ifstream file (filename.c_str(), ios::in | ios::binary | ios::ate);
     ifstream::pos_type fileSize;
