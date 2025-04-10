@@ -236,15 +236,7 @@ long kdmeng::loadwaves ( const char * refdir)
 
     string filename(refdir);
 
-#ifdef WIN32
 	filename+= "waves.kwv";
-#else
-    std::string foundFile = findFileCaseInsensitive("waves.kwv", refdir);
-    if (foundFile.empty()) {
-	    return 0;
-    }
-    filename += foundFile;
-#endif
 
     ifstream file (filename.c_str(), ios::in | ios::binary | ios::ate);
     ifstream::pos_type fileSize;
