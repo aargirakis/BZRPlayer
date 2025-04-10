@@ -165,7 +165,7 @@ FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto plugin = static_cast<pluginKdm*>(codec->plugindata);
-    kdmrendersound(buffer, size << 2);
+    kdmrendersound(static_cast<char*>(buffer), size << 2);
     *read = size;
 
     return FMOD_OK;
