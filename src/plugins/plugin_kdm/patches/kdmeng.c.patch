@@ -1,0 +1,16 @@
+--- kdmeng.c	2023-02-19 13:29:52.000000000 +0100
++++ kdmeng.c	2025-04-10 18:47:35.186101900 +0200
+@@ -19,6 +19,13 @@
+ #include <sys\types.h>
+ #include <sys\stat.h>
+ 
++#define min(a, b)  (((a) < (b)) ? (a) : (b))
++#define max(a, b)  (((a) > (b)) ? (a) : (b))
++
++long long __emul(int a, int b) {
++	return a * b;
++}
++
+ #define NUMCHANNELS 16
+ #define MAXWAVES 256
+ #define MAXTRACKS 256

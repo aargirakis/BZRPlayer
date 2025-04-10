@@ -45,13 +45,13 @@ public:
     {
         //delete some stuff
         delete[] myBuffer;
-        delete m_player;
+        //delete m_player;
         myBuffer = 0;
     }
 
     signed short* myBuffer;
     Info* info;
-    kdmeng* m_player;
+    //kdmeng* m_player;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -106,7 +106,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
 
-    plugin->m_player = new kdmeng(44100, 2, 2);
+  //  plugin->m_player = new kdmeng(44100, 2, 2);
+
+    int length = kdmload(plugin->info->filename.data());
+
+    if (length < 0)
+    {
+        return FMOD_ERR_FORMAT;
+    }
 
     unsigned found = plugin->info->filename.find_last_of("/\\");
 
