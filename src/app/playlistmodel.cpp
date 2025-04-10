@@ -218,6 +218,14 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     if (action != Qt::MoveAction || !data->hasFormat("application/vnd.text.list"))
         return false;
 
+    // Save a pointer/reference to the item at currentRow
+    Item trackedItem;
+    int currentRow = m_root->getCurrentRow();
+    if(currentRow>=0)
+    {
+        trackedItem = items[currentRow];
+    }
+
     QByteArray encoded = data->data("application/vnd.text.list");
     QDataStream stream(&encoded, QIODevice::ReadOnly);
 
@@ -258,6 +266,8 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     for (int i = 0; i < movedItems.count(); ++i)
         items.insert(destinationRow + i, movedItems[i]);
     endResetModel();
+
+    //Reset shuffle if shuffle is enabled
     if(m_root->isShuffleEnabled())
     {
         if (m_root->getSelectedPlaylist() == m_root->getCurrentPlaylist())
@@ -265,10 +275,23 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
             m_root->resetShuffle(m_root->getCurrentPlaylist());
         }
     }
+    //Set new currentRow
+    if(currentRow>=0)
+    {
+        int newRow = findRowByUuid(trackedItem.uuid);
+        m_root->setCurrentRow(newRow);
+    }
     return true;
 }
 
 void PlaylistModel::setDropTargetRow(int row)
 {
     m_pendingDropRow = row;
+}
+int PlaylistModel::findRowByUuid(const QUuid& uuid) const {
+    for (int i = 0; i < items.size(); ++i) {
+        if (items[i].uuid == uuid)
+            return i;
+    }
+    return -1;
 }

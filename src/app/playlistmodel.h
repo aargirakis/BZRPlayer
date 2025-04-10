@@ -3,6 +3,8 @@
 
 #include "mainwindow.h"
 #include <QMimeData>
+#include <QUuid>
+
 struct Item
 {
     bool isPlaying;
@@ -21,6 +23,10 @@ struct Item
     signed int startSubsongPlayList;
     QString length;
     int lengthInt;
+    QUuid uuid = QUuid::createUuid();
+    bool operator==(const Item& other) const {
+        return uuid == other.uuid;
+    }
 };
 
 class PlaylistModel : public QAbstractTableModel
@@ -44,6 +50,7 @@ public:
                                      int row, int column, const QModelIndex &parent) override;
     QStringList mimeTypes() const override;
     void setDropTargetRow(int row);
+    int findRowByUuid(const QUuid& uuid) const;
 
 private:
     MainWindow* m_root;

@@ -77,8 +77,8 @@ public:
     QAction* workspaceSeparator;
     Channels* channels;
 
-
-
+    void setCurrentRow(int);
+    int getCurrentRow() const;
     QString getCurrentPlaylist() const;
     QString getSelectedPlaylist() const;
     void resetShuffle(QString);
