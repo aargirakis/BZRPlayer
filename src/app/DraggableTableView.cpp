@@ -133,10 +133,11 @@ QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) {
         QString text = model()->data(index).toString();
 
         QColor backgroundColor(m_root->getColorMain().left(7));
-        backgroundColor.setAlpha((100));
+        backgroundColor.setAlpha((150));
         painter.fillRect(rect, backgroundColor);
-        painter.setPen(Qt::black);
-        painter.drawText(rect.adjusted(5, 0, -5, 0), Qt::AlignLeft | Qt::AlignVCenter, text);
+        QColor textColor(m_root->getColorMainText().left(7));
+        painter.setPen(textColor);
+        painter.drawText(rect.adjusted(25, 0, -5, 0), Qt::AlignLeft | Qt::AlignVCenter, text);
         y += rowHeight;
     }
 

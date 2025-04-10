@@ -1052,7 +1052,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == ui->checkBoxShuffle)
         {
-            if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+            if (isShuffleEnabled())
             {
                 ui->checkBoxShuffle->setIcon(icons["shuffle-onHover"]);
             }
@@ -1119,7 +1119,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == ui->checkBoxShuffle)
         {
-            if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+            if (isShuffleEnabled())
             {
                 ui->checkBoxShuffle->setIcon(icons["shuffle-on"]);
             }
@@ -1367,7 +1367,7 @@ void MainWindow::updateButtons()
     {
         ui->buttonPlay_2->setIcon(icons["play"]);
     }
-    if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+    if (isShuffleEnabled())
     {
         ui->checkBoxShuffle->setIcon(icons["shuffle-on"]);
     }
@@ -1439,7 +1439,7 @@ void MainWindow::playNextSong(bool forceNext)
         }
         else
         {
-            if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+            if (isShuffleEnabled())
             {
                 m_iCurrentShufflePosition[currentPlaylist]++;
 
@@ -1539,7 +1539,14 @@ void MainWindow::resetShuffle(QString playlist)
         m_ShuffleToBePlayed[playlist].remove(currentRow);
     }
 }
-
+QString MainWindow::getCurrentPlaylist() const
+{
+    return currentPlaylist;
+}
+QString MainWindow::getSelectedPlaylist() const
+{
+    return selectedPlaylist;
+}
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     quit();
@@ -2082,7 +2089,7 @@ void MainWindow::on_playlist_itemDoubleClicked(const QModelIndex& index)
 
     removeHighlight();
     currentPlaylist = ui->listWidget->currentItem()->text();
-    if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+    if (isShuffleEnabled())
     {
         resetShuffle(currentPlaylist);
     }
@@ -3615,11 +3622,10 @@ void MainWindow::createThePopupMenuChannels()
 void MainWindow::playPrevSong()
 {
     addDebugText("Play previous song.");
-    if ((currentRow != 0 && ui->checkBoxShuffle->checkState() == Qt::Unchecked) || (ui->checkBoxShuffle->checkState() ==
-        Qt::Checked && m_iCurrentShufflePosition[currentPlaylist] > 0) || (ui->checkBoxLoop->checkState() ==
-        Qt::PartiallyChecked && ui->checkBoxShuffle->checkState() == Qt::Unchecked))
+    if ((currentRow != 0 && !isShuffleEnabled()) || (isShuffleEnabled() && m_iCurrentShufflePosition[currentPlaylist] > 0) ||
+    (ui->checkBoxLoop->checkState() == Qt::PartiallyChecked && !isShuffleEnabled()))
     {
-        if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+        if (isShuffleEnabled())
         {
             m_iCurrentShufflePosition[currentPlaylist]--;
             removeHighlight();
@@ -4389,7 +4395,7 @@ void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem* item)
 
     removeHighlight();
     currentPlaylist = ui->listWidget->currentItem()->text();
-    if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+    if (isShuffleEnabled())
     {
         resetShuffle(currentPlaylist);
     }
@@ -4398,7 +4404,10 @@ void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem* item)
 
     PlaySong(currentRow);
 }
-
+bool MainWindow::isShuffleEnabled() const
+{
+    return ui->checkBoxShuffle->checkState() == Qt::Checked;
+}
 void MainWindow::iffWriteChunkHeader(FILE* f, char* chunkName, uint32_t chunkLen)
 {
     fwrite(chunkName, sizeof(int32_t), 1, f);
@@ -4433,7 +4442,7 @@ void MainWindow::iffWriteChunkData(FILE* f, const void* data, size_t length)
 
 void MainWindow::on_checkBoxShuffle_clicked()
 {
-    if (ui->checkBoxShuffle->checkState() == Qt::Checked)
+    if (isShuffleEnabled())
     {
         resetShuffle(currentPlaylist);
         ui->checkBoxShuffle->setToolTip(("Disable shuffle"));
