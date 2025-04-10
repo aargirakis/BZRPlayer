@@ -515,9 +515,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 			"QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
 
 		tableWidgetPlaylists[f.fileName()]->setFont(roboto);
-		tableWidgetPlaylists[f.fileName()]->verticalHeader()->setVisible(false);
-		tableWidgetPlaylists[f.fileName()]->verticalHeader()->setMinimumSectionSize(1);
-		tableWidgetPlaylists[f.fileName()]->setFocusPolicy(Qt::StrongFocus);
 		tableWidgetPlaylists[f.fileName()]->installEventFilter(this);
 
         connect(tableWidgetPlaylists[f.fileName()], SIGNAL(doubleClicked(const QModelIndex &)),
@@ -3176,9 +3173,12 @@ void MainWindow::savePlaylistAs()
     ui->listWidget->addItem(newItem);
     ui->listWidget->setItemDelegate(new MyItemDelegate(this));
 
-    QTableView *tv = new QTableView();
-    PlaylistModel *pm = new PlaylistModel(this);
-    tv->setModel(pm);
+    QTableView *tv = new DraggableTableView();
+    PlaylistModel* pm = new PlaylistModel(this);
+    QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
+    proxyModel->setSourceModel(pm);
+    tv->setModel(proxyModel);
+
     tv->setColumnHidden(4, true);
     tv->setColumnHidden(5, true);
     tv->setColumnHidden(6, true);
@@ -3192,24 +3192,8 @@ void MainWindow::savePlaylistAs()
     tableWidgetPlaylists[newName]->setStyleSheet(
         ui->dockWidgetContents_4->styleSheet() +
         "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
-    tableWidgetPlaylists[newName]->setShowGrid(false);
-    tableWidgetPlaylists[newName]->setFrameShape(QFrame::NoFrame);
-    tableWidgetPlaylists[newName]->horizontalHeader()->setSectionsMovable(true);
-    tableWidgetPlaylists[newName]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    tableWidgetPlaylists[newName]->setFrameShadow(QFrame::Plain);
-    tableWidgetPlaylists[newName]->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableWidgetPlaylists[newName]->setSelectionMode((QAbstractItemView::ExtendedSelection));
-    tableWidgetPlaylists[newName]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    tableWidgetPlaylists[newName]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    tableWidgetPlaylists[newName]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-    tableWidgetPlaylists[newName]->setFont(roboto);
 
-    tableWidgetPlaylists[newName]->horizontalHeader()->setSortIndicatorShown(false);
-    tableWidgetPlaylists[newName]->verticalHeader()->setVisible(false);
-    tableWidgetPlaylists[newName]->setWordWrap(false);
-    tableWidgetPlaylists[newName]->setItemDelegate(new MyItemDelegate(this));
-    tableWidgetPlaylists[newName]->verticalHeader()->setMinimumSectionSize(1);
-    tableWidgetPlaylists[newName]->setFocusPolicy(Qt::StrongFocus);
+    tableWidgetPlaylists[newName]->setFont(roboto);
     tableWidgetPlaylists[newName]->installEventFilter(this);
 
     swapColumns(tableWidgetPlaylists[newName]);
