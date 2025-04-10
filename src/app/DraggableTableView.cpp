@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QDragMoveEvent>
 #include <QDrag>
+#include <QHeaderView>
 #include <iostream>
 #include <QSortFilterProxyModel>
 
@@ -20,6 +21,9 @@ DraggableTableView::DraggableTableView(QWidget* parent)
     setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setSelectionBehavior(QAbstractItemView::SelectRows);
+    setFocusPolicy(Qt::StrongFocus);
+    verticalHeader()->setVisible(false);
+    verticalHeader()->setMinimumSectionSize(1);
 
     setDragEnabled(true);
     setAcceptDrops(true);
@@ -28,7 +32,6 @@ DraggableTableView::DraggableTableView(QWidget* parent)
     setDropIndicatorShown(false);
     setDefaultDropAction(Qt::MoveAction);
     setupDelegate();
-
 }
 
 
@@ -109,6 +112,7 @@ void DraggableTableView::setupDelegate() {
     setItemDelegate(delegate);
     m_Delegate = delegate;
 }
+
 QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) {
     if (rows.isEmpty())
         return QPixmap();
