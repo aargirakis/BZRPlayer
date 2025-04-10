@@ -492,8 +492,10 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QFileInfo f(filename);
         
 		DraggableTableView* tv = new DraggableTableView(this);
+        tv->setDragBackgroundColor(QColor(colorMain.left(7)));
+        tv->setDragTextColor(QColor(colorMainText.left(7)));
 
-		PlaylistModel* pm = new PlaylistModel(this);
+        PlaylistModel* pm = new PlaylistModel(this);
 		QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
 		proxyModel->setSourceModel(pm);
 		tv->setModel(proxyModel);
@@ -3173,7 +3175,9 @@ void MainWindow::savePlaylistAs()
     ui->listWidget->addItem(newItem);
     ui->listWidget->setItemDelegate(new MyItemDelegate(this));
 
-    QTableView *tv = new DraggableTableView();
+    DraggableTableView *tv = new DraggableTableView();
+    tv->setDragBackgroundColor(QColor(colorMain.left(7)));
+    tv->setDragTextColor(QColor(colorMainText.left(7)));
     PlaylistModel* pm = new PlaylistModel(this);
     QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
     proxyModel->setSourceModel(pm);
