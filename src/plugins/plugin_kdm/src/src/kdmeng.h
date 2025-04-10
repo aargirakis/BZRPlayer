@@ -2,8 +2,9 @@
 #define _KDMENG_H_
 
 //#include <foobar2000.h>
+#include <cstdint>
 #include <vector>
-typedef unsigned int t_uint32;
+
 class kdmeng
 {
 	enum
@@ -34,10 +35,10 @@ public:
 
 	unsigned eff[MAXEFFECTS][256];
 
-	t_uint32 kdmversionum, numnotes, numtracks;
+	uint32_t kdmversionum, numnotes, numtracks;
 	char trinst[MAXTRACKS], trquant[MAXTRACKS];
 	char trvol1[MAXTRACKS], trvol2[MAXTRACKS];
-	t_uint32 nttime[MAXNOTES];
+	uint32_t nttime[MAXNOTES];
 	char nttrack[MAXNOTES], ntfreq[MAXNOTES];
 	char ntvol1[MAXNOTES], ntvol2[MAXNOTES];
 	char ntfrqeff[MAXNOTES], ntvoleff[MAXNOTES], ntpaneff[MAXNOTES];

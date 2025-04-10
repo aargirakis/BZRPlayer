@@ -325,7 +325,7 @@ kdmeng::kdmeng( unsigned samplerate, unsigned numspeakers, unsigned bytespersamp
 
 	timecount = notecnt = musicstatus = musicrepeat = 0;
 
-	clearbuf( (void *)stemp, sizeof( stemp ) >> 2, MAXSAMPLESTOPROCESS );
+	clearbuf(stemp, MAXSAMPLESTOPROCESS, MAXSAMPLESTOPROCESS);
 	for( i = 0; i < ( kdmsamplerate >> 11 ); i++ )
 	{
 		j = 1536 - ( i << 10 ) / ( kdmsamplerate >> 11 );
