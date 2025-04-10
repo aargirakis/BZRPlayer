@@ -42,7 +42,7 @@ file(GLOB SOURCES
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        ${EXTERNAL_SOURCE_DIR}/ken
+        src
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
