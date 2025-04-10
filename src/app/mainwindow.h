@@ -78,6 +78,11 @@ public:
     Channels* channels;
 
 
+
+    QString getCurrentPlaylist() const;
+    QString getSelectedPlaylist() const;
+    void resetShuffle(QString);
+    bool isShuffleEnabled() const;
     void swapColumns(QTableView* tableview);
     void setHvscSonglengthsFrequency(QString);
     void setHvscSonglengthsPathDownloaded(QString);
@@ -326,6 +331,7 @@ private slots:
 
     void on_buttonStop_clicked();
 
+
 private:
     QString HvscSonglengthsPathDownloaded;
     QString HvscSonglengthsFrequency;
@@ -434,8 +440,6 @@ private:
     QStringList getFilesRecursive(QString, QString = "", bool = true);
     bool addSong(QList<QUrl> urls, int, QString, bool);
     void addSong(QStringList filenames, int, QString, bool);
-
-    void resetShuffle(QString);
 
     void addPlaylistEntry(QTableView* table, int rowPosition, QString filename, QString fileFormat, QString length,
                           int subsong, QString fullPath, int lengthInt, QString artist);

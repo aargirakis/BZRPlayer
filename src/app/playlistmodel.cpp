@@ -238,8 +238,12 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     int destinationRow = (m_pendingDropRow != -1) ? m_pendingDropRow : row;
     m_pendingDropRow = -1;  // Reset after using
 
-    if (destinationRow > sourceRows.last())
-        destinationRow -= sourceRows.count();
+    int movedBeforeTarget = 0;
+    for (int r : sourceRows) {
+        if (r < destinationRow)
+            ++movedBeforeTarget;
+    }
+    destinationRow -= movedBeforeTarget;
 
     // Clamp to valid index range
     destinationRow = std::clamp(destinationRow, 0, static_cast<int>(items.size()));
@@ -254,7 +258,13 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     for (int i = 0; i < movedItems.count(); ++i)
         items.insert(destinationRow + i, movedItems[i]);
     endResetModel();
-
+    if(m_root->isShuffleEnabled())
+    {
+        if (m_root->getSelectedPlaylist() == m_root->getCurrentPlaylist())
+        {
+            m_root->resetShuffle(m_root->getCurrentPlaylist());
+        }
+    }
     return true;
 }
 
