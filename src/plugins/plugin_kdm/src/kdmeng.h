@@ -1,6 +1,9 @@
-#ifndef _KDMENG_H_
-#define _KDMENG_H_
+#ifndef KDMENG_H
+#define KDMENG_H
 
 int kdmload(char* filename);
+void kdmmusicoff();
+void kdmmusicon();
+void kdmrendersound(char* dasnd, int numbytes);
 
 #endif
