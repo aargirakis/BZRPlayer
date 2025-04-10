@@ -3606,7 +3606,14 @@ void MainWindow::createThePopupMenuChannels()
     ui->dockWidgetContents_7->addActions({unmuteAllChannelsAction});
 }
 
-
+int MainWindow::getCurrentRow() const
+{
+    return currentRow;
+}
+void MainWindow::setCurrentRow(int row)
+{
+    currentRow=row;
+}
 void MainWindow::playPrevSong()
 {
     addDebugText("Play previous song.");
@@ -4315,9 +4322,13 @@ QString MainWindow::createPlaylist(QString name)
     QFont roboto("Roboto");
 
 
-    QTableView* tv = new QTableView();
+    DraggableTableView* tv = new DraggableTableView();
+    tv->setDragBackgroundColor(QColor(colorMain.left(7)));
+    tv->setDragTextColor(QColor(colorMainText.left(7)));
     PlaylistModel* pm = new PlaylistModel(this);
-    tv->setModel(pm);
+    QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
+    proxyModel->setSourceModel(pm);
+    tv->setModel(proxyModel);
     tv->setColumnHidden(4, true);
     tv->setColumnHidden(5, true);
     tv->setColumnHidden(6, true);
@@ -4326,24 +4337,7 @@ QString MainWindow::createPlaylist(QString name)
 
     tableWidgetPlaylists[newItem->text()]->setStyleSheet(
         ui->dockWidgetContents_4->styleSheet() + "QHeaderView::section{font-family:Roboto;} QTableView{padding:9px;}");
-    tableWidgetPlaylists[newItem->text()]->setShowGrid(false);
-    tableWidgetPlaylists[newItem->text()]->setFrameShape(QFrame::NoFrame);
-    tableWidgetPlaylists[newItem->text()]->horizontalHeader()->setSectionsMovable(true);
-    tableWidgetPlaylists[newItem->text()]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    tableWidgetPlaylists[newItem->text()]->setFrameShadow(QFrame::Plain);
-    tableWidgetPlaylists[newItem->text()]->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableWidgetPlaylists[newItem->text()]->setSelectionMode((QAbstractItemView::ExtendedSelection));
-    tableWidgetPlaylists[newItem->text()]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    tableWidgetPlaylists[newItem->text()]->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    tableWidgetPlaylists[newItem->text()]->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     tableWidgetPlaylists[newItem->text()]->setFont(roboto);
-    //tableWidgetPlaylists[newItem->text()]->horizontalHeader()->setStretchLastSection(true);
-    tableWidgetPlaylists[newItem->text()]->horizontalHeader()->setSortIndicatorShown(false);
-    tableWidgetPlaylists[newItem->text()]->verticalHeader()->setVisible(false);
-    tableWidgetPlaylists[newItem->text()]->setFocusPolicy(Qt::StrongFocus);
-    tableWidgetPlaylists[newItem->text()]->setWordWrap(false);
-    tableWidgetPlaylists[newItem->text()]->setItemDelegate(new MyItemDelegate(this));
-
     tableWidgetPlaylists[newItem->text()]->installEventFilter(this);
 
     createThePopupMenuCurrentPlaylist(newItem->text());
