@@ -14,11 +14,16 @@ public:
     void startDrag(Qt::DropActions supportedActions) override;
     QPixmap createDragPixmap(const QList<int>& rows);
     void paintEvent(QPaintEvent* event) override;
+    void setDragBackgroundColor(QColor);
+    void setDragTextColor(QColor);
 
 private:
     MainWindow* m_root;
     int m_dropLineRow = -1;
     void setupDelegate();
+    QColor dragBackgroundColor;
+    QColor dragTextColor;
+
 protected:
     MyItemDelegate *m_Delegate = nullptr;
 
