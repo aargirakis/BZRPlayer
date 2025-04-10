@@ -32,6 +32,9 @@ DraggableTableView::DraggableTableView(QWidget* parent)
     setDropIndicatorShown(false);
     setDefaultDropAction(Qt::MoveAction);
     setupDelegate();
+    setDragBackgroundColor(Qt::black);
+    setDragTextColor(Qt::green);
+
 }
 
 
@@ -108,7 +111,7 @@ void DraggableTableView::startDrag(Qt::DropActions supportedActions) {
     drag->exec(Qt::MoveAction);
 }
 void DraggableTableView::setupDelegate() {
-    auto *delegate = new MyItemDelegate(m_root);
+    auto *delegate = new MyItemDelegate(this->parent());
     setItemDelegate(delegate);
     m_Delegate = delegate;
 }
@@ -136,11 +139,8 @@ QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) {
         QModelIndex index = model()->index(row, 0);  // show first column
         QString text = model()->data(index).toString();
 
-        QColor backgroundColor(m_root->getColorMain().left(7));
-        backgroundColor.setAlpha((150));
-        painter.fillRect(rect, backgroundColor);
-        QColor textColor(m_root->getColorMainText().left(7));
-        painter.setPen(textColor);
+        painter.fillRect(rect, dragBackgroundColor);
+        painter.setPen(dragTextColor);
         painter.drawText(rect.adjusted(25, 0, -5, 0), Qt::AlignLeft | Qt::AlignVCenter, text);
         y += rowHeight;
     }
@@ -155,8 +155,7 @@ void DraggableTableView::paintEvent(QPaintEvent* event) {
         return;
 
     QPainter painter(viewport());
-    QColor mainColor(m_root->getColorMain().left(7));
-    QPen pen(mainColor);
+    QPen pen(dragBackgroundColor);
     pen.setWidth(2);
     painter.setPen(pen);
 
@@ -174,4 +173,13 @@ void DraggableTableView::paintEvent(QPaintEvent* event) {
     }
 
     painter.drawLine(0, y, viewport()->width(), y);
+}
+void DraggableTableView::setDragBackgroundColor(QColor c)
+{
+    dragBackgroundColor=c;
+    dragBackgroundColor.setAlpha((150));
+}
+void DraggableTableView::setDragTextColor(QColor c)
+{
+    dragTextColor=c;
 }
