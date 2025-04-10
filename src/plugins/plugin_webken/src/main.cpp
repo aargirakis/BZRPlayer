@@ -48,18 +48,18 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginKdm
+class pluginWebken
 {
     FMOD_CODEC_STATE* _codec;
 
 public:
-    pluginKdm(FMOD_CODEC_STATE* codec)
+    pluginWebken(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginKdm()
+    ~pluginWebken()
     {
         //delete some stuff
         delete[] myBuffer;
@@ -96,7 +96,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 {
     FMOD_RESULT result;
 
-    auto plugin = new pluginKdm(codec);
+    auto plugin = new pluginWebken(codec);
     plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     //    char* smallBuffer;
@@ -208,13 +208,13 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 {
-    delete static_cast<pluginKdm*>(codec->plugindata);
+    delete static_cast<pluginWebken*>(codec->plugindata);
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto plugin = static_cast<pluginKdm*>(codec->plugindata);
+    auto plugin = static_cast<pluginWebken*>(codec->plugindata);
     plugin->m_player->kdmrendersound(static_cast<char*>(buffer), size << 2);
     *read = size;
 
@@ -224,7 +224,7 @@ FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned in
 FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
-    auto* plugin = static_cast<pluginKdm*>(codec->plugindata);
+    auto* plugin = static_cast<pluginWebken*>(codec->plugindata);
     plugin->m_player->kdmseek(position);
     return FMOD_OK;
 }
