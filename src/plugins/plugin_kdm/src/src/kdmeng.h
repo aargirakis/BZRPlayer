@@ -13,10 +13,13 @@ class kdmeng
 		MAXTRACKS = 256,
 		MAXNOTES = 8192,
 		MAXEFFECTS = 16,
-
-		MAXSAMPLESTOPROCESS = 32768
 	};
 
+public:
+	enum
+	{
+		MAXSAMPLESTOPROCESS = 32768
+	};
 
 	unsigned kdmsamplerate, kdmnumspeakers, kdmbytespersample;
 

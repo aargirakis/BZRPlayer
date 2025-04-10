@@ -130,7 +130,7 @@ static void bound2char( unsigned count, long * in, unsigned char * out )
 	for ( unsigned i = 0, j = count * 2; i < j; i++ )
 	{
 		long sample = *in >> 8;
-		*in++ = 32768;
+		*in++ = kdmeng::MAXSAMPLESTOPROCESS;
 		if ( sample < 0 ) sample = 0;
 		else if ( sample > 255 ) sample = 255;
 		*out++ = sample;
@@ -143,7 +143,7 @@ static void bound2short( unsigned count, long * in, unsigned char * out )
 	for ( unsigned i = 0, j = count * 2; i < j; i++ )
 	{
 		long sample = *in;
-		*in++ = 32768;
+		*in++ = kdmeng::MAXSAMPLESTOPROCESS;
 		if ( sample < 0 ) sample = 0;
 		else if ( sample > 65535 ) sample = 65535;
 		*outs++ = sample ^ 0x8000;
@@ -325,7 +325,7 @@ kdmeng::kdmeng( unsigned samplerate, unsigned numspeakers, unsigned bytespersamp
 
 	timecount = notecnt = musicstatus = musicrepeat = 0;
 
-	clearbuf( (void *)stemp, sizeof( stemp ) >> 2, 32768L );
+	clearbuf( (void *)stemp, sizeof( stemp ) >> 2, MAXSAMPLESTOPROCESS );
 	for( i = 0; i < ( kdmsamplerate >> 11 ); i++ )
 	{
 		j = 1536 - ( i << 10 ) / ( kdmsamplerate >> 11 );
@@ -580,7 +580,7 @@ long kdmeng::rendersound( void * dasnd, long numbytes)
 				stemp[ i ] += mulscale16( stemp[ i + 1024 ] - stemp[ i ], ramplookup[ i ] );
 			j = bytespertic; k = ( kdmsamplerate >> 11 );
 			copybuf( ( void * ) &stemp[ j ], ( void * ) &stemp[ 1024 ], k );
-			clearbuf( ( void * ) &stemp[ j ], k, 32768 );
+			clearbuf( ( void * ) &stemp[ j ], k, MAXSAMPLESTOPROCESS );
 		}
 		else
 		{
@@ -592,7 +592,7 @@ long kdmeng::rendersound( void * dasnd, long numbytes)
 			}
 			j = ( bytespertic << 1 ); k = ( ( kdmsamplerate >> 11 ) << 1 );
 			copybuf( ( void * ) &stemp[ j ], ( void * ) &stemp[ 1024 ], k );
-			clearbuf( ( void * ) &stemp[ j ], k, 32768 );
+			clearbuf( ( void * ) &stemp[ j ], k, MAXSAMPLESTOPROCESS );
 		}
 
 		if ( kdmnumspeakers == 1 )
