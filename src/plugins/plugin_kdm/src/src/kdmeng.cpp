@@ -407,7 +407,7 @@ void kdmeng::startwave( long wavnum, long dafreq, long davolume1, long davolume2
 	svol1[ chanum ] = davolume1;
 	svol2[ chanum ] = davolume2;
 	soff[ chanum ] = wavoffs[ wavnum ] + wavleng[ wavnum ];
-	splc[ chanum ] = -( wavleng[ wavnum ] << 12 );              //splc's modified last
+	splc[ chanum ] = -(static_cast<long>(wavleng[ wavnum ]) << 12 );              //splc's modified last
 	swavenum[ chanum ] = wavnum;
 	frqeff[ chanum ] = dafrqeff; frqoff[ chanum ] = 0;
 	voleff[ chanum ] = davoleff; voloff[ chanum ] = 0;
