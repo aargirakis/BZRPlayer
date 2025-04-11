@@ -26,7 +26,13 @@ public:
 
 	unsigned numwaves;
 	char instname[MAXWAVES][16];
+
+#ifdef WIN32
 	unsigned wavleng[MAXWAVES];
+#else
+	int wavleng[MAXWAVES];
+#endif
+
 	unsigned repstart[MAXWAVES], repleng[MAXWAVES];
 	int finetune[MAXWAVES];
 
