@@ -3173,7 +3173,7 @@ void MainWindow::savePlaylistAs()
     ui->listWidget->addItem(newItem);
     ui->listWidget->setItemDelegate(new MyItemDelegate(this));
 
-    DraggableTableView *tv = new DraggableTableView();
+    DraggableTableView *tv = new DraggableTableView(this);
     tv->setDragBackgroundColor(QColor(colorMain.left(7)));
     tv->setDragTextColor(QColor(colorMainText.left(7)));
     PlaylistModel* pm = new PlaylistModel(this);
@@ -4317,12 +4317,14 @@ QString MainWindow::createPlaylist(QString name)
     newItem->setText(newFilename);
     newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
     ui->listWidget->insertItem(ui->listWidget->count(), newItem);
+    ui->listWidget->setItemDelegate(new MyItemDelegate(this));
+
 
 
     QFont roboto("Roboto");
 
 
-    DraggableTableView* tv = new DraggableTableView();
+    DraggableTableView* tv = new DraggableTableView(this);
     tv->setDragBackgroundColor(QColor(colorMain.left(7)));
     tv->setDragTextColor(QColor(colorMainText.left(7)));
     PlaylistModel* pm = new PlaylistModel(this);
