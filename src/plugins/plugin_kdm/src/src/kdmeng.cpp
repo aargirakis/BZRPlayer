@@ -570,6 +570,18 @@ long kdmeng::rendersound( void * dasnd, long numbytes)
 			kdmasm2 = wavoffs[ daswave ] + repstart[ daswave ] + repleng[ daswave ];
 			kdmasm3 = ( repleng[ daswave ] << 12 ); //repsplcoff
 			kdmasm4 = soff[ i ];
+
+			/* TODO:
+			* this aims to spot the audio overdrive issue (both win & linux) still left, not related to panning
+			* happens only sometimes with tracks FLYSONG.KDM & KLABSONG.KDM
+
+			for (long x = 0; x < (bytespertic << 1); x++) {
+				if (abs(stemp[x]) > 88000) {
+					cout << "audio overdrive with value: " << stemp[x] << endl;
+				}
+			}
+			*/
+
 			if ( kdmnumspeakers == 1 )
 				{ splc[ i ] = monohicomb( voloffs3, bytespertic, dasinc, splc[ i ], stemp ); }
 			else
