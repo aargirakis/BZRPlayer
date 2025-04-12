@@ -41,7 +41,8 @@ public:
 	uint32_t nttime[MAXNOTES];
 	char nttrack[MAXNOTES], ntfreq[MAXNOTES];
 	char ntvol1[MAXNOTES], ntvol2[MAXNOTES];
-	char ntfrqeff[MAXNOTES], ntvoleff[MAXNOTES], ntpaneff[MAXNOTES];
+	char ntfrqeff[MAXNOTES], ntvoleff[MAXNOTES];
+    unsigned char ntpaneff[MAXNOTES];
 
 	long timecount, notecnt, musicstatus, musicrepeat, loopcnt;
 

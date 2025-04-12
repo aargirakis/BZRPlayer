@@ -63,7 +63,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_highly_theoretical "src/plugins/plugin_highly_theoretical"    #check cmake TODO
         plugin_hivelytracker "src/plugins/plugin_hivelytracker"
         plugin_jaytrax "src/plugins/plugin_jaytrax"
-        plugin_kdm "src/plugins/plugin_kdm"
+        plugin_kdm "src/plugins/plugin_kdm"                                  #TODO audio overdrive issue (check kdmeng.cpp)
         plugin_klystron "src/plugins/plugin_klystron"
         plugin_lazyusf2 "src/plugins/plugin_lazyusf2"
         plugin_libfc14audiodecoder "src/plugins/plugin_libfc14audiodecoder"
