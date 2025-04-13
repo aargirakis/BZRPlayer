@@ -17,7 +17,8 @@ coded pretty much from scratch.
 **[MSYS2](https://www.msys2.org/)** with following packages is required:
 
 `make` `mingw-w64-ucrt-x86_64-cmake` `mingw-w64-ucrt-x86_64-qt6-base` `mingw-w64-ucrt-x86_64-qt6-svg`
-`mingw-w64-ucrt-x86_64-SDL2` `mingw-w64-ucrt-x86_64-toolchain` `openssl-devel` `patch`
+`mingw-w64-ucrt-x86_64-qt-advanced-docking-system` `mingw-w64-ucrt-x86_64-SDL2` `mingw-w64-ucrt-x86_64-toolchain`
+`openssl-devel` `patch`
 
 From the MSYS2 **ucrt64.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
 required), then start the configuration process executing:\
