@@ -2,11 +2,9 @@ cmake_minimum_required(VERSION 3.28)
 
 project(app VERSION "${PROJECT_VERSION}")
 
-set(QT_VERSION_MAJOR "6")
-include(${CMAKE_SOURCE_DIR}/src/external/qt-ads/qt-ads.cmake)
-
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
+set(QT_VERSION_MAJOR "6")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -54,16 +52,18 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_fmod}/api/core/inc
-        ${EXTERNAL_SOURCE_DIR_qt-ads}/src
+        ${CMAKE_PREFIX_PATH}/include/qtadvanceddocking-qt${QT_VERSION_MAJOR}
 )
 
 foreach (QT_MODULE ${QT_MODULES})
     target_link_libraries(${PROJECT_NAME} PRIVATE "Qt${QT_VERSION_MAJOR}::${QT_MODULE}")
 endforeach ()
 
+set(LIB_QT_ADS "${CMAKE_PREFIX_PATH}/bin/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.dll")
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
         -L"${EXTERNAL_SOURCE_DIR_fmod}"/api/core/lib/x64 -lfmod
-        ${LIB_QT_ADVANCED_DOCKING_SYSTEM}
+        ${LIB_QT_ADS}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -75,6 +75,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 foreach (QT_MODULE ${QT_MODULES})
     list(APPEND RUNTIME_DLLS ${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll)
 endforeach ()
+
+list(APPEND RUNTIME_DLLS ${LIB_QT_ADS})
 
 list(APPEND RUNTIME_DLLS
         ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
