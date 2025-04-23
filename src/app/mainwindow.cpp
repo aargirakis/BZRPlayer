@@ -491,9 +491,10 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     foreach(QString filename, playlists) {
         QFileInfo f(filename);
         
-		DraggableTableView* tv = new DraggableTableView(this);
+		DraggableTableView* tv = new DraggableTableView();
         tv->setDragBackgroundColor(QColor(colorMain.left(7)));
         tv->setDragTextColor(QColor(colorMainText.left(7)));
+        tv->setupDelegate(); // has to be called after colors are set
 
         PlaylistModel* pm = new PlaylistModel(this);
 		QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
@@ -543,7 +544,10 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
         newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
         ui->listWidget->insertItem(ui->listWidget->count(), newItem);
-        ui->listWidget->setItemDelegate(new MyItemDelegate(this));
+        MyItemDelegate* item = new MyItemDelegate(this);
+        item->setMainColor(QColor(colorMain.left(7)));
+        ui->listWidget->setItemDelegate(item);
+
         QUrl u = QUrl::fromLocalFile(
             QDir::separator() + QApplication::applicationDirPath() + USER_PLAYLISTS_DIR + "/" + f.
             fileName());
@@ -3173,11 +3177,14 @@ void MainWindow::savePlaylistAs()
     newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
 
     ui->listWidget->addItem(newItem);
-    ui->listWidget->setItemDelegate(new MyItemDelegate(this));
+    MyItemDelegate* item = new MyItemDelegate(this);
+    item->setMainColor(QColor(colorMain.left(7)));
+    ui->listWidget->setItemDelegate(item);
 
-    DraggableTableView *tv = new DraggableTableView(this);
+    DraggableTableView *tv = new DraggableTableView();
     tv->setDragBackgroundColor(QColor(colorMain.left(7)));
     tv->setDragTextColor(QColor(colorMainText.left(7)));
+    tv->setupDelegate(); // has to be called after colors are set
     PlaylistModel* pm = new PlaylistModel(this);
     QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
     proxyModel->setSourceModel(pm);
@@ -4325,16 +4332,21 @@ QString MainWindow::createPlaylist(QString name)
     newItem->setText(newFilename);
     newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
     ui->listWidget->insertItem(ui->listWidget->count(), newItem);
-    ui->listWidget->setItemDelegate(new MyItemDelegate(this));
+    MyItemDelegate* item = new MyItemDelegate(this);
+    item->setMainColor(QColor(colorMain.left(7)));
+    ui->listWidget->setItemDelegate(item);
+
 
 
 
     QFont roboto("Roboto");
 
 
-    DraggableTableView* tv = new DraggableTableView(this);
+    DraggableTableView* tv = new DraggableTableView();
     tv->setDragBackgroundColor(QColor(colorMain.left(7)));
     tv->setDragTextColor(QColor(colorMainText.left(7)));
+    tv->setupDelegate(); // has to be called after colors are set
+
     PlaylistModel* pm = new PlaylistModel(this);
     QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
     proxyModel->setSourceModel(pm);

@@ -16,11 +16,10 @@ public:
     void paintEvent(QPaintEvent* event) override;
     void setDragBackgroundColor(QColor);
     void setDragTextColor(QColor);
+    void setupDelegate();
 
 private:
-    MainWindow* m_root;
     int m_dropLineRow = -1;
-    void setupDelegate();
     QColor dragBackgroundColor;
     QColor dragTextColor;
 

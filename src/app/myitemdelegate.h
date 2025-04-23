@@ -14,11 +14,15 @@ public:
     MyItemDelegate(QObject*);
     void paint(QPainter* pPainter, const QStyleOptionViewItem& rOption, const QModelIndex& rIndex) const override;
     void setDragActive(bool active);
+    void setMainTextColor(QColor);
+    void setMainColor(QColor);
 
 private:
-    MainWindow* m_root;
     QSet<int> m_draggedRows;
     bool m_dragActive = false;
+    QColor mainColor;
+    QColor mainTextColor;
+
 
 signals:
     void repaintRequested();
