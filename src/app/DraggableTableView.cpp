@@ -12,7 +12,6 @@ DraggableTableView::DraggableTableView(QWidget* parent)
         : QTableView(parent)
 {
     setStyleSheet("QTableView::item:focus { outline: none; border: none; }");
-    m_root = static_cast<MainWindow*>(parent);
     setWordWrap(false);
     setShowGrid(false);
     setFrameShape(QFrame::NoFrame);
@@ -24,17 +23,12 @@ DraggableTableView::DraggableTableView(QWidget* parent)
     setFocusPolicy(Qt::StrongFocus);
     verticalHeader()->setVisible(false);
     verticalHeader()->setMinimumSectionSize(1);
-
     setDragEnabled(true);
     setAcceptDrops(true);
     setDragDropMode(QAbstractItemView::DragDrop);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setDropIndicatorShown(false);
     setDefaultDropAction(Qt::MoveAction);
-    setupDelegate();
-    setDragBackgroundColor(Qt::black);
-    setDragTextColor(Qt::green);
-
 }
 
 
@@ -111,7 +105,9 @@ void DraggableTableView::startDrag(Qt::DropActions supportedActions) {
     drag->exec(Qt::MoveAction);
 }
 void DraggableTableView::setupDelegate() {
-    auto *delegate = new MyItemDelegate(this->parent());
+    auto *delegate = new MyItemDelegate(this);
+    delegate->setMainColor(dragBackgroundColor);
+    delegate->setMainTextColor(dragTextColor);
     setItemDelegate(delegate);
     m_Delegate = delegate;
 }
@@ -139,7 +135,9 @@ QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) {
         QModelIndex index = model()->index(row, 0);  // show first column
         QString text = model()->data(index).toString();
 
-        painter.fillRect(rect, dragBackgroundColor);
+        QColor bg = dragBackgroundColor;
+        bg.setAlpha((150));
+        painter.fillRect(rect, bg);
         painter.setPen(dragTextColor);
         painter.drawText(rect.adjusted(25, 0, -5, 0), Qt::AlignLeft | Qt::AlignVCenter, text);
         y += rowHeight;
@@ -177,7 +175,6 @@ void DraggableTableView::paintEvent(QPaintEvent* event) {
 void DraggableTableView::setDragBackgroundColor(QColor c)
 {
     dragBackgroundColor=c;
-    dragBackgroundColor.setAlpha((150));
 }
 void DraggableTableView::setDragTextColor(QColor c)
 {
