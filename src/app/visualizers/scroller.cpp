@@ -20,8 +20,8 @@ Scroller::Scroller(QWidget* parent)
     customScrolltext = "";
 
     m_vumeterWidth = 100;
-    m_bitmapFont = dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts/anomaly.png";
-    m_bitmapFontPrinter = dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts/anomaly.png";
+    m_bitmapFont = dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts/angels_font.png";
+    m_bitmapFontPrinter = dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts/angels_font.png";
     fontScaleXPrinter = 1;
     fontScaleYPrinter = 1;
     m_Amplitude = 32;
