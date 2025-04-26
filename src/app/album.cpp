@@ -42,7 +42,7 @@ void Album::putPixmap(const QString& path)
     labelAlbum->setPixmap(pix);
 }
 
-void Album::enterEvent(QEvent* event)
+void Album::enterEvent(QEnterEvent* event)
 {
     event->accept();
 

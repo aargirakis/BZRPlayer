@@ -23,8 +23,8 @@ private:
     QPushButton* playButton;
 
 protected:
-    virtual void enterEvent(QEvent* event);
-    virtual void leaveEvent(QEvent* event);
+    void enterEvent(QEnterEvent* event) override;
+    void leaveEvent(QEvent* event) override;
 
 
 signals:
