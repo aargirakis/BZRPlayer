@@ -550,7 +550,15 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         }
 
         newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
+        newItem->setFlags(newItem->flags() | Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
+        ui->listWidget->setDragEnabled(true);
+        ui->listWidget->setAcceptDrops(true);
+        ui->listWidget->setDropIndicatorShown(true);
+        ui->listWidget->setDragDropMode(QAbstractItemView::InternalMove);
+        ui->listWidget->setDefaultDropAction(Qt::MoveAction);
         ui->listWidget->insertItem(ui->listWidget->count(), newItem);
+        ui->listWidget->setDragBackgroundColor(QColor(colorMain.left(7)));
+        ui->listWidget->setDragTextColor(QColor(colorMainText.left(7)));
         MyItemDelegate* item = new MyItemDelegate(this);
         item->setMainColor(QColor(colorMain.left(7)));
         ui->listWidget->setItemDelegate(item);
