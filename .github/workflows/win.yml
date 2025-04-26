@@ -1,0 +1,33 @@
+name: Win
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: make mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-qt6-base mingw-w64-ucrt-x86_64-qt6-svg
+            mingw-w64-ucrt-x86_64-qt-advanced-docking-system mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-toolchain
+            openssl-devel patch
+
+      - name: Build
+        shell: msys2 {0}
+        run: |
+          cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=Release -DOFFLINE_MODE=1 -G Ninja
+          ninja -C cmake-build
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-win
+          path: cmake-build/output_release/*-win64.zip

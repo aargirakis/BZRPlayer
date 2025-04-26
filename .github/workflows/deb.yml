@@ -1,0 +1,149 @@
+name: Deb
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+          build-essential cmake dos2unix libglvnd0 libsdl2-dev libvulkan-dev ninja-build patchutils qt6-base-dev \
+          qt6-base-private-dev qt6-declarative-dev qt6-svg-dev libqt6core6 libqt6network6 libqt6openglwidgets6 \
+          libqt6svg6 libqt6xml6
+
+      - name: Build qt-ads 4.4.0
+        run: |
+          git clone -b 4.4.0 --single-branch https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git
+          cmake -B cmake-build-qt-ads -S Qt-Advanced-Docking-System -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF \
+          -DADS_VERSION=4.4.0 -DQT_VERSION_MAJOR=6 -G Ninja
+          ninja -C cmake-build-qt-ads
+          sudo install -Dm644 cmake-build-qt-ads/x64/lib/libqtadvanceddocking-qt6.so.4.4.0 /usr/lib
+          sudo ln -s /usr/lib/libqtadvanceddocking-qt6.so.4.4.0 /usr/lib/libqtadvanceddocking-qt6.so
+          qt_ads_deb_name="libqt-advanced-docking-system4.4.0_4.4.0-0_amd64"
+          echo "QT_ADS_DEB_NAME=$qt_ads_deb_name" >> "$GITHUB_ENV"
+          mkdir -p "$qt_ads_deb_name/usr/lib"
+          sudo mv /usr/lib/libqtadvanceddocking-qt6.* "$qt_ads_deb_name/usr/lib"
+          mkdir -p "$qt_ads_deb_name/DEBIAN"
+
+          cat >"$qt_ads_deb_name/DEBIAN/control" <<EOL
+          Package: libqt-advanced-docking-system4.4.0
+          Version: 4.4.0-0
+          Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
+          Architecture: amd64
+          Description: Advanced Docking System for Qt
+           Qt Advanced Docking System lets you create customizable layouts using a full
+           featured window docking system similar to what is found in many popular
+           integrated development environments (IDEs) such as Visual Studio.
+           .
+           This package contains the run-time libraries
+          Depends: libqt6core6
+          Section: libs
+          Priority: optional
+          Homepage: https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System
+          EOL
+
+          dpkg-deb --root-owner-group --build "$qt_ads_deb_name"
+          sudo dpkg -i "$qt_ads_deb_name.deb"
+          
+          qt_ads_deb_dev_name="libqt-advanced-docking-system-dev4.4.0_4.4.0-0_amd64"
+          echo "QT_ADS_DEB_DEV_NAME=$qt_ads_deb_dev_name" >> "$GITHUB_ENV"
+          mkdir -p "$qt_ads_deb_dev_name/usr/include/qtadvanceddocking-qt6"
+          mv Qt-Advanced-Docking-System/src/*.h "$qt_ads_deb_dev_name/usr/include/qtadvanceddocking-qt6"
+          mkdir -p "$qt_ads_deb_dev_name/DEBIAN"
+
+          cat >"$qt_ads_deb_dev_name/DEBIAN/control" <<EOL
+          Package: libqt-advanced-docking-system-dev4.4.0
+          Version: 4.4.0-0
+          Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
+          Architecture: amd64
+          Description: Advanced Docking System for Qt
+           Qt Advanced Docking System lets you create customizable layouts using a full
+           featured window docking system similar to what is found in many popular
+           integrated development environments (IDEs) such as Visual Studio.
+           .
+           This package contains the build-time libraries
+          Depends: libqt-advanced-docking-system4.4.0, qt6-base-dev
+          Section: libdevel
+          Priority: optional
+          Homepage: https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System
+          EOL
+
+          dpkg-deb --root-owner-group --build "$qt_ads_deb_dev_name"
+          sudo dpkg -i "$qt_ads_deb_dev_name.deb"
+
+      - name: Build
+        run: |
+          cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Release -DOFFLINE_MODE=1 -G Ninja
+          ninja -C cmake-build
+          bzr2_version=$(<cmake-build/output/VERSION)
+          bzr2_deb_name="bzr-player_${bzr2_version}-1_amd64"
+          echo "BZR2_DEB_NAME=$bzr2_deb_name" >> "$GITHUB_ENV"
+          mkdir -p "$bzr2_deb_name"
+          mv cmake-build/output/usr "$bzr2_deb_name"
+          install -dm755 "$bzr2_deb_name/usr"
+          install -Dm644 cmake-build/output/LICENSE "$bzr2_deb_name/usr/share/doc/bzr-player/copyright"
+
+          for size in 16 32 48 64 128 256 512; do
+            install -Dm644 "$bzr2_deb_name/usr/share/bzr-player/data/resources/icon.png" \
+              "$bzr2_deb_name/usr/share/icons/hicolor/${size}x${size}/apps/bzr-player.png"
+          done
+
+          install -Dm644 src/inst/x-bzr-player.xml "$bzr2_deb_name/usr/share/mime/packages/x-bzr-player.xml"
+
+          mapfile -t mime_types_supported < <(sed -n "\|mime_types_supported=(| , \|)|{p; \|)|q}" "src/inst/bzr2-wine_setup.sh" |
+            sed -e 's:mime_types_supported=(::g' -e 's:)::g' -e 's: :\n:g' | sed '/^[[:space:]]*$/d')
+
+          for mime_type in "${mime_types_supported[@]}"; do
+            desktop_entry_mime_types="$desktop_entry_mime_types$mime_type;"
+          done
+          
+          bzr2_desktop_content=$(
+            cat <<EOF
+          [Desktop Entry]
+          Type=Application
+          Name=BZR Player
+          GenericName=Audio player
+          Comment=Audio player supporting a wide array of multi-platform exotic file formats
+          Exec=/usr/bin/bzr-player %U
+          Icon=bzr-player
+          Terminal=false
+          StartupNotify=false
+          Categories=AudioVideo;Audio;Music;Player;
+          MimeType=$desktop_entry_mime_types
+          EOF
+          
+          )
+          
+          mkdir -p "$bzr2_deb_name/usr/share/applications"
+          echo "$bzr2_desktop_content" > "$bzr2_deb_name/usr/share/applications/bzr-player.desktop"
+          mkdir -p "$bzr2_deb_name/DEBIAN"
+
+          cat >"$_/control" <<EOL
+          Package: bzr-player
+          Version: ${bzr2_version}-1
+          Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
+          Architecture: amd64
+          Description: Audio player supporting a wide array of multi-platform exotic file formats
+          Depends: libqt6core6, libqt6network6, libqt6openglwidgets6, libqt6svg6, libqt6xml6, libqt-advanced-docking-system4.4.0
+          Homepage: https://bzrplayer.blazer.nu
+          EOL
+          
+          dpkg-deb --root-owner-group --build "$bzr2_deb_name"
+          sudo dpkg -i "$bzr2_deb_name.deb"
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-deb
+          path: |
+            ${{env.QT_ADS_DEB_NAME}}.deb
+            ${{env.QT_ADS_DEB_DEV_NAME}}.deb
+            ${{env.BZR2_DEB_NAME}}.deb
