@@ -62,6 +62,82 @@ QComboBox QAbstractItemView {
 	outline:none;
 }
 
+QScrollBar:vertical
+{
+    background-color: #282828/*background*/;
+    width: 15px;
+    margin: 0 3px 0 3px;
+    border: 1px transparent #282828/*background*/;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical
+{
+    background-color: #404040/*medium*/;
+    min-height: 25px;
+    border-radius: 4px;
+}
+
+QScrollBar:horizontal
+{
+    background-color: #282828/*background*/;
+    height: 15px;
+    margin: 3px 0 3px 0;
+    border: 1px transparent #282828/*background*/;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:horizontal
+{
+    background-color: #404040/*medium*/;
+    min-width: 5px;
+    border-radius: 4px;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+{
+    background: none;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+    background: none;
+}
+
+QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal
+{
+    background: none;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
+{
+    background: none;
+}
+
+QScrollBar::sub-line:vertical
+{
+    height: 0;
+    width: 0;
+}
+
+QScrollBar::add-line:vertical
+{
+    height: 0;
+    width: 0;
+}
+
+QScrollBar::sub-line:horizontal
+{
+    height: 0;
+    width: 0;
+}
+
+QScrollBar::add-line:horizontal
+{
+    height: 0;
+    width: 0;
+}
+
 </string>
   </property>
   <widget class="QPushButton" name="buttonOK">
