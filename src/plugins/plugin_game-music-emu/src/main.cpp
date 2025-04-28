@@ -77,6 +77,7 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
     gme_info_t* info;
     int track;
+    Info* bzrInfo;
 };
 
 /*
@@ -106,9 +107,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     //read config from disk
 
-    //Info* info = new Info();
-    Info* info = static_cast<Info*>(userexinfo->userdata);
-    string filename = info->userPath + PLUGINS_CONFIG_DIR + "/gameemu.cfg";
+    plugin->bzrInfo = static_cast<Info*>(userexinfo->userdata);
+    string filename = plugin->bzrInfo->userPath + PLUGINS_CONFIG_DIR + "/gameemu.cfg";
     ifstream ifs(filename.c_str());
     string line;
     unsigned int filesize;
@@ -198,7 +198,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
-    info->fileformat = file_type->system;
+    plugin->bzrInfo->fileformat = file_type->system;
     plugin->emu = gme_new_emu(file_type, freq);
 
     /* Allocate space for buffer. */
@@ -267,18 +267,18 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     handle_error(gme_start_track(plugin->emu, plugin->track));
 
-    info->title = plugin->info->song;
-    info->artist = plugin->info->author;
-    info->copyright = plugin->info->copyright;
-    info->comments = plugin->info->comment;
-    info->system = plugin->info->system;
-    info->game = plugin->info->game;
-    info->dumper = plugin->info->dumper;
-    info->plugin = PLUGIN_game_music_emu;
-    info->pluginName = PLUGIN_game_music_emu_NAME;
-    info->setSeekable(true);
-    info->numChannels = gme_voice_count(plugin->emu);
-    info->numSubsongs = (int)gme_track_count(plugin->emu);
+    plugin->bzrInfo->title = plugin->info->song;
+    plugin->bzrInfo->artist = plugin->info->author;
+    plugin->bzrInfo->copyright = plugin->info->copyright;
+    plugin->bzrInfo->comments = plugin->info->comment;
+    plugin->bzrInfo->system = plugin->info->system;
+    plugin->bzrInfo->game = plugin->info->game;
+    plugin->bzrInfo->dumper = plugin->info->dumper;
+    plugin->bzrInfo->plugin = PLUGIN_game_music_emu;
+    plugin->bzrInfo->pluginName = PLUGIN_game_music_emu_NAME;
+    plugin->bzrInfo->setSeekable(true);
+    plugin->bzrInfo->numChannels = gme_voice_count(plugin->emu);
+    plugin->bzrInfo->numSubsongs = (int)gme_track_count(plugin->emu);
 
 
     return FMOD_OK;
@@ -346,6 +346,8 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         handle_error(gme_track_info(plugin->emu, &plugin->info, plugin->track));
+        plugin->bzrInfo->title=plugin->info->song;
+
         // If file doesn't have overall length, it might have intro and loop lengths
         if (plugin->info->length <= 0)
             plugin->info->length = plugin->info->intro_length + plugin->info->loop_length * 2;
@@ -362,6 +364,8 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
+        handle_error(gme_track_info(plugin->emu, &plugin->info, plugin->track));
+        plugin->bzrInfo->title=plugin->info->song;
         *length = (int)gme_track_count(plugin->emu);
         return FMOD_OK;
     }
