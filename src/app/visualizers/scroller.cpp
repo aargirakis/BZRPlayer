@@ -1097,7 +1097,7 @@ QString Scroller::replaceIllegalLetters(QString text)
     QString b2 = "B";
     QString c1 = "Çç";
     QString c2 = "C";
-    QString e1 = "ËÉÈÊèéêë";
+    QString e1 = "ËÉÈÊèéêë&";
     QString e2 = "E";
     QString f1 = "ƒ";
     QString f2 = "F";
