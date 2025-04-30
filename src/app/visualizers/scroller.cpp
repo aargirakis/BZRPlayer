@@ -1178,6 +1178,7 @@ void Scroller::setPrinterText(QString text)
     reset();
     m_printerTextRows.clear();
     m_printerText = QString(text.toUpper()).trimmed();
+    m_printerText = replaceIllegalLetters(m_printerText);
     int maxNumberOfCharactersPerRow = originalWidth / fontWidthPrinter;
     //first split to rows for every space character
     QString row = "";
