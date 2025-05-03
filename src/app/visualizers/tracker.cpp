@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QApplication>
 #include "soundmanager.h"
+#include "various.h"
 #include "patternview/ProTracker1PatternView.h"
 #include "patternview/SoundFXPatternView.h"
 #include "patternview/ScreamTracker3PatternView.h"
@@ -2271,7 +2272,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 painter->fillRect(left + (174), 42, 4, 2, colorShadow);
                 painter->fillRect(left + (255), 42, 8, 2, colorShadow);
 
-                drawText("Song: " + QString::fromLatin1(m_info->title), painter, left + (5), 18);
+                drawText("Song: " + fromUtf8OrLatin1(m_info->title), painter, left + (5), 18);
             }
 
             else if (QString(m_info->fileformat.c_str()) == "AHX")
@@ -2316,7 +2317,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                          top + (11));
                 drawText(QString("%1").arg(m_info->modPatternRows, 3, 10, QChar('0')), painter, left + 176, top + (11));
                 drawText(QString("%1").arg(m_info->numSubsongs, 3, 10, QChar('0')), painter, left + 219, top + (11));
-                drawText(QString::fromLatin1(m_info->title).left(35), painter, left + (33), top + (24));
+                drawText(fromUtf8OrLatin1(m_info->title).left(35), painter, left + (33), top + (24));
             }
             else if (QString(m_info->fileformat.c_str()) == "HivelyTracker")
             {

@@ -622,9 +622,9 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
     m_Info1->clearMemory();
     m_Info1->clear();
     m_Info1->tempPath = QDir::tempPath().toStdString();
-    m_Info1->dataPath = dataPath.toUtf8();
-    m_Info1->userPath = userPath.toUtf8();
-    m_Info1->filename = filename.toLatin1().toStdString();
+    m_Info1->dataPath = dataPath.toStdString();
+    m_Info1->userPath = userPath.toStdString();
+    m_Info1->filename = filename.toStdString();
     m_Info1->isPlayModeRepeatSongEnabled = isPlayModeRepeatSongEnabled;
     FMOD_CREATESOUNDEXINFO extrainfo1;
     memset(&extrainfo1, 0, sizeof(FMOD_CREATESOUNDEXINFO));

@@ -73,12 +73,12 @@ void BitmapFont::buildCharacterLookup()
         //        QMapIterator<QChar, QPoint> it(m_characterPositions);
         //        while (it.hasNext()) {
         //            it.next();
-        //            std::cout << it.key().toLatin1() << ": " << it.value().x() << "," << it.value().y() << "\n";
+        //            std::cout << it.key().toStdString().c_str() << ": " << it.value().x() << "," << it.value().y() << "\n";
         //            flush(std::cout);
         //        }
     }
     else
     {
-        //CLogFile::getInstance()->Print(LOGERROR,"Couldn't open bitmap fontfile: %s",m_bitmapFontPath.toLatin1().data());
+        //CLogFile::getInstance()->Print(LOGERROR,"Couldn't open bitmap fontfile: %s",m_bitmapFontPath.toStdString().c_str());
     }
 }

@@ -49,22 +49,24 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    setlocale(LC_ALL, ".UTF8");
+
 #ifdef WIN32
     const QString exePath = QApplication::applicationDirPath();
     dataPath = exePath + DATA_DIR;
     userPath = exePath + USER_DIR;
 #else
 #ifdef OUTPUT_DIR
-    dataPath = QString::fromUtf8(OUTPUT_DIR) + DATA_DIR;
-    userPath = QString::fromUtf8(OUTPUT_DIR) + "/" + USER_DIR;
+    dataPath = fromUtf8OrLatin1(OUTPUT_DIR) + DATA_DIR;
+    userPath = fromUtf8OrLatin1(OUTPUT_DIR) + "/" + USER_DIR;
 #else
-    dataPath = QString::fromUtf8(DATA_DIR);
+    dataPath = fromUtf8OrLatin1(DATA_DIR);
     userPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QDir::separator() + USER_DIR;
 #endif
 #endif
 
     if (!QDir(dataPath).exists()) {
-        qFatal("Cannot find directory %s", dataPath.toUtf8().data());
+        qFatal("Cannot find directory %s", dataPath.toStdString().c_str());
         QCoreApplication::exit(EXIT_FAILURE);
     }
 
@@ -1917,7 +1919,7 @@ void MainWindow::addSong(QStringList filenames, int row, QString playlistName, b
                 //playlists[playlistName].append(playlistEntries.at(e));
 
 
-                //addDebugText("Added from m3u: " + QUrl::fromPercentEncoding(playlistEntries[e]->fullPath.toUtf8()));
+                //addDebugText("Added from m3u: " + QUrl::fromPercentEncoding(playlistEntries[e]->fullPath.toStdString().c_str()));
             }
         }
         else
@@ -2120,40 +2122,40 @@ void MainWindow::updateScrollText()
         ui->visualizer->getEffect()->setScrollText(ui->visualizer->getEffect()->getCustomScrolltext());
     } else {
         QString visualizerText = "";
-        visualizerText = QString::fromLatin1(SoundManager::getInstance().m_Info1->artist);
+        visualizerText = fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->game);
+        visualizerText += fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->comments);
+        visualizerText += fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->copyright);
+        visualizerText += fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->date);
+        visualizerText += fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->date);
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
         if (SoundManager::getInstance().m_Info1->instruments != nullptr) {
             for (int i = 0; i < SoundManager::getInstance().m_Info1->numInstruments; i++) {
-                visualizerText += QString::fromLatin1(
+                visualizerText += fromUtf8OrLatin1(
                     SoundManager::getInstance().m_Info1->instruments[i]) + QString(" ");
             }
         }
         if (SoundManager::getInstance().m_Info1->samples != nullptr) {
             for (int i = 0; i < SoundManager::getInstance().m_Info1->numSamples; i++) {
-                visualizerText += QString::fromLatin1(SoundManager::getInstance().m_Info1->samples[i]) +
+                visualizerText +=fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->samples[i]) +
                         QString(" ");
             }
         }
@@ -2242,7 +2244,7 @@ void MainWindow::PlaySong(int currentRow)
             }
             else
             {
-                filename = QString::fromLatin1(pi.info->title);
+                filename = fromUtf8OrLatin1(pi.info->title);
             }
         }
 
@@ -2254,7 +2256,7 @@ void MainWindow::PlaySong(int currentRow)
             }
             else
             {
-                artist = QString::fromLatin1(pi.info->artist);
+                artist = fromUtf8OrLatin1(pi.info->artist);
             }
         }
         else if (pi.info->author != "")
@@ -2265,7 +2267,7 @@ void MainWindow::PlaySong(int currentRow)
             }
             else
             {
-                artist = QString::fromLatin1(pi.info->author);
+                artist = fromUtf8OrLatin1(pi.info->author);
             }
         }
         else if (pi.info->composer != "")
@@ -2276,7 +2278,7 @@ void MainWindow::PlaySong(int currentRow)
             }
             else
             {
-                artist = QString::fromLatin1(pi.info->composer);
+                artist = fromUtf8OrLatin1(pi.info->composer);
             }
         }
         if (artist != "")
@@ -2307,7 +2309,7 @@ void MainWindow::PlaySong(int currentRow)
         QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
         if (pi.info->title != "")
         {
-            tableWidgetPlaylists[currentPlaylist]->model()->setData(index, pi.info->title.c_str(), Qt::EditRole);
+            tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->title), Qt::EditRole);
         }
 
 
@@ -3003,7 +3005,7 @@ void MainWindow::exportInstrument(QString format)
 
 
             FILE* pFile;
-            pFile = fopen(fileName.toLatin1(), "wb");
+            pFile = fopen(fileName.toStdString().c_str(), "wb");
             fwrite((char*)&wavHeader, sizeof(char), sizeof wavHeader, pFile);
             for (int i = 0; i < SoundManager::getInstance().m_Info1->samplesSize[row]; i++)
                 fputc((uint8_t)(SoundManager::getInstance().m_Info1->samplesData[row][i] + 128), pFile);
@@ -3026,7 +3028,7 @@ void MainWindow::exportInstrument(QString format)
                 QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFileName, "IFF (*.iff)");
 
             FILE* f;
-            f = fopen(fileName.toLatin1(), "wb");
+            f = fopen(fileName.toStdString().c_str(), "wb");
 
             // "FORM" chunk
             iffWriteChunkHeader(f, "FORM", 0); // "FORM" chunk size is overwritten later
@@ -4170,7 +4172,7 @@ vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
                         playlistItem->title = playlistItem->filename;
                     }
                 }
-                playlistItem->fullPath = QUrl::fromPercentEncoding(playlistItem->fullPath.toUtf8());
+                playlistItem->fullPath = QUrl::fromPercentEncoding(playlistItem->fullPath.toStdString().c_str());
                 playlistItem->subsongs = 1;
                 //check if we have extrainfo
                 if (extInfoTitle != "")
@@ -4244,7 +4246,7 @@ vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
 
                     if (!subsongOK)
                     {
-                        //CLogFile::getInstance()->Print(LOGERROR,"'%s' in NEZ/m3u playlist is not a valid subsong index!", NEZParameterList.at(1).toLatin1().data());
+                        //CLogFile::getInstance()->Print(LOGERROR,"'%s' in NEZ/m3u playlist is not a valid subsong index!", NEZParameterList.at(1).toStdString().c_str());
                         playlistItem->startSubsongPlayList = -1;
                     }
 

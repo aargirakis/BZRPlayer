@@ -130,3 +130,11 @@ QString msToNiceStringExact(unsigned int lenms, bool displayMilliseconds)
     }
     return QString(songLength.c_str());
 }
+
+QString fromUtf8OrLatin1(const std::string &str) {
+    QByteArray byteArray = QByteArray::fromStdString(str);
+    if (QString utf8str = QString::fromUtf8(byteArray); byteArray == utf8str.toUtf8()) {
+        return utf8str;
+    }
+    return QString::fromLatin1(str);
+}

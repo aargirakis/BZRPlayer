@@ -209,8 +209,7 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     string sidid_filename = info->dataPath + SIDID_CFG_DATA_PATH;
     if (!readconfig(sidid_filename.c_str()))
     {
-        std::string myString(identify(myBuffer, filesize), MAX_PATHNAME);
-        info->songPlayer = myString;
+        info->songPlayer = identify(myBuffer, filesize);
     }
 
     //read config from disk
@@ -761,7 +760,7 @@ unsigned int getLengthFromSIDDatabase(string databasefile, bool newDatabaseVersi
 
     if (length == 0)
     {
-        //DebugWindow::instance()->addText("Couldn't find song length for SID: " + sidfilename.toLatin1() + ". Hash <" + hashStr.toLatin1() + ">");
+        //DebugWindow::instance()->addText("Couldn't find song length for SID: " + sidfilename.toStdString().c_str() + ". Hash <" + hashStr.toStdString().c_str() + ">");
     }
 
     return length;

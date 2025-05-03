@@ -44,4 +44,5 @@ inline const char* const BoolToString();
 QString groupDigits(int number);
 unsigned int stringTimeToMs(QString strTime);
 QString msToNiceStringExact(unsigned int lenms, bool displayMilliseconds);
+QString fromUtf8OrLatin1(const std::string &str);
 #endif // VARIOUS_H
