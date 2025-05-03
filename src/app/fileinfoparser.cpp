@@ -99,7 +99,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         if (!SoundManager::getInstance().m_Info1->comments.empty())
         {
             QPlainTextEdit* plainText = new QPlainTextEdit(
-                QString::fromLatin1(SoundManager::getInstance().m_Info1->comments));
+                QString::fromStdString(SoundManager::getInstance().m_Info1->comments));
             plainText->setReadOnly(true);
             plainText->setEnabled(true);
             tableInfo->setItem(row, 0, new QTableWidgetItem("Comments"));
@@ -138,19 +138,19 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             row++, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->fileformatSpecific.c_str()));
         tableInfo->setItem(row, 0, new QTableWidgetItem("Title"));
         tableInfo->setItem(
-            row++, 1, new QTableWidgetItem(QString::fromLatin1(SoundManager::getInstance().m_Info1->title)));
+            row++, 1, new QTableWidgetItem(QString::fromStdString(SoundManager::getInstance().m_Info1->title)));
         tableInfo->setItem(row, 0, new QTableWidgetItem("Author"));
         tableInfo->setItem(
             row++, 1, new QTableWidgetItem(
-                QString::fromLatin1(SoundManager::getInstance().m_Info1->artist)));
+                QString::fromStdString(SoundManager::getInstance().m_Info1->artist)));
         tableInfo->setItem(row, 0, new QTableWidgetItem("Copyright"));
         tableInfo->setItem(
             row++, 1, new QTableWidgetItem(
-                QString::fromLatin1(SoundManager::getInstance().m_Info1->copyright)));
+                QString::fromStdString(SoundManager::getInstance().m_Info1->copyright)));
         if (!SoundManager::getInstance().m_Info1->comments.empty())
         {
             QPlainTextEdit* plainText = new QPlainTextEdit(
-                QString::fromLatin1(SoundManager::getInstance().m_Info1->comments));
+                QString::fromStdString(SoundManager::getInstance().m_Info1->comments));
             plainText->setReadOnly(true);
             plainText->setEnabled(true);
             tableInfo->setItem(row, 0, new QTableWidgetItem("Comments"));
@@ -158,7 +158,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             tableInfo->setCellWidget(row, 1, plainText);
             tableInfo->setItem(
                 row++, 1, new QTableWidgetItem(
-                    QString::fromLatin1(SoundManager::getInstance().m_Info1->comments)));
+                    QString::fromStdString(SoundManager::getInstance().m_Info1->comments)));
         }
 
         string sidModel = "Unknown";
@@ -277,7 +277,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         if (!SoundManager::getInstance().m_Info1->comments.empty())
         {
             QPlainTextEdit* plainText = new QPlainTextEdit(
-                QString::fromLatin1(SoundManager::getInstance().m_Info1->comments));
+                QString::fromStdString(SoundManager::getInstance().m_Info1->comments));
             plainText->setReadOnly(true);
             plainText->setEnabled(true);
             tableInfo->setItem(row, 0, new QTableWidgetItem("Comments"));
@@ -363,7 +363,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         if (!SoundManager::getInstance().m_Info1->comments.empty())
         {
             QPlainTextEdit* plainText = new QPlainTextEdit(
-                QString::fromLatin1(SoundManager::getInstance().m_Info1->comments));
+                QString::fromStdString(SoundManager::getInstance().m_Info1->comments));
             plainText->setReadOnly(true);
             plainText->setEnabled(true);
             tableInfo->setRowHeight(row, 100);
@@ -554,7 +554,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         if (!SoundManager::getInstance().m_Info1->comments.empty())
         {
             QPlainTextEdit* plainText = new QPlainTextEdit(
-                QString::fromLatin1(SoundManager::getInstance().m_Info1->comments));
+                QString::fromStdString(SoundManager::getInstance().m_Info1->comments));
             plainText->setReadOnly(true);
             plainText->setEnabled(true);
             tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->comments.c_str()));
@@ -622,7 +622,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         if (!SoundManager::getInstance().m_Info1->comments.empty())
         {
             QPlainTextEdit* plainText = new QPlainTextEdit(
-                QString::fromLatin1(SoundManager::getInstance().m_Info1->comments));
+                QString::fromStdString(SoundManager::getInstance().m_Info1->comments));
             plainText->setReadOnly(true);
             plainText->setEnabled(true);
             tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->comments.c_str()));
@@ -709,7 +709,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             hasWrittenID3V1Header = true;
                         }
                         QString data;
-                        QString DataAsString = QString::fromLatin1((char*)tag.data);
+                        QString DataAsString = QString::fromLatin1(static_cast<char*>(tag.data));
                         data = (char*)tag.data;
                         if (QString(tag.name) == "GENRE")
                         {
@@ -1242,8 +1242,8 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             row++;
                             hasWrittenID3V2Header = true;
                         }
-                        QString data = QString::fromLatin1((char*)tag.data);
-                        tag.name = QString(tag.name).trimmed().toLatin1().data();
+                        QString data = QString::fromLatin1(static_cast<char*>(tag.data));
+                        tag.name = const_cast<char*>(QString(tag.name).trimmed().toStdString().c_str());
 
                         if (QString(tag.name) == "TALB" || QString(tag.name) == "TAL")
                         {

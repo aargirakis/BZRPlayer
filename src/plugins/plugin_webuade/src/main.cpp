@@ -1,6 +1,5 @@
 ﻿#include "BaseSample.h"
 #include "FileLoader.h"
-//#define UNICODEHACK 1
 #include <cstring>
 #include <cstdio>
 #include <iostream>
@@ -37,9 +36,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
 FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
-#ifdef UNICODEHACK
-const char TEMPFILENAME[] = "tempfile.tmp";
-#endif
+
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
@@ -72,9 +69,6 @@ public:
     ~pluginWothkeUade()
     {
         //delete some stuff
-#ifdef UNICODEHACK
-        unlink(TEMPFILENAME);
-#endif
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -103,18 +97,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 #ifdef __cplusplus
 }
 #endif
-#ifdef UNICODEHACK
-bool fmemopen(void *buf, size_t size, const char *mode)
-{
-    FILE *f = fopen(TEMPFILENAME, "wb");
-    if (NULL == f)
-        return NULL;
 
-    fwrite(buf, size, 1, f);
-    fclose(f);
-    return true;
-}
-#endif
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     unsigned int filesize;
@@ -247,27 +230,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
-#ifdef UNICODEHACK
-    plugin->basefilename = plugin->info->filename.substr(plugin->info->filename.find_last_of("/\\") + 1);
-
-    bool ok = fmemopen(myBuffer,filesize,"r");
-    delete[] myBuffer;
-
-
-    err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME), 1);
-    if(err)
-    {
-        unlink(TEMPFILENAME);
-        return FMOD_ERR_FORMAT;
-    }
-    delete[] myBuffer;
-#else
     err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(plugin->info->filename.c_str()), 1);
     if (err)
     {
         return FMOD_ERR_FORMAT;
     }
-#endif
 
     unsigned char* packBuffer;
     packBuffer = new unsigned char[2048];
@@ -505,12 +472,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         }
     }
 
-
-#ifdef UNICODEHACK
-    plugin->info->md5New = getMD5(TEMPFILENAME);
-#else
     plugin->info->md5New = getMD5(plugin->info->filename.c_str());
-#endif
     plugin->info->setSeekable(false);
 
     return FMOD_OK;
@@ -574,11 +536,7 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
         int songLength;
         if (plugin->uade_songlengths_enabled)
         {
-#ifdef UNICODEHACK
-            songLength = getLengthFromDatabase(TEMPFILENAME,sub,gp->uade_songlengthspath.c_str());
-#else
             songLength = getLengthFromDatabase(plugin->info->filename.c_str(), sub, plugin->uade_songlengthspath.c_str());
-#endif
         }
         else
         {
@@ -596,11 +554,9 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
     {
         char uade_basedir[1024];
         snprintf(uade_basedir, 1024, "%s/%s", plugin->info->dataPath.c_str(),UADE_DATA_DIR);
-#ifdef UNICODEHACK
-        int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(TEMPFILENAME), 0);
-#else
+
         int err = uade_reset(plugin->waveformat.frequency, uade_basedir, const_cast<char*>(plugin->info->filename.c_str()), 0);
-#endif
+
         uade_state* state;
         state = get_uade_state();
 
@@ -687,7 +643,7 @@ unsigned int getLengthFromDatabase(const char* sidfilename, int subsong, const c
         hashStr += hex;
     }
 
-    //CLogFile::getInstance()->Print(LOGINFO,"MD5 for sid file: %s",hashStr.toLatin1().data());
+    //CLogFile::getInstance()->Print(LOGINFO,"MD5 for sid file: %s",hashStr.toStdString().c_str());
 
     string filename = database;
 
