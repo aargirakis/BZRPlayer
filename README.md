@@ -115,7 +115,7 @@ Go to the project sources dir then start the configuration process executing:\
 To build the project execute:\
 `ninja -C cmake-build`
 
-##### Build example
+#### Build example
 
 ```
 cd ~/bzr-player &&
@@ -123,7 +123,7 @@ cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Debug -G N
 ninja -C cmake-build 
 ```
 
-##### Runtime dependencies
+#### Runtime dependencies
 
 For running BZR2 on **Arch-based** distros following packages are required:
 
@@ -152,7 +152,7 @@ Offline mode doesn't guarantee that the build will include the latest versions o
 
 ----
 
-#### Useful links:
+## Useful links:
 
 - [BZR2 website](https://bzrplayer.blazer.nu)
 - [Patreon](https://www.patreon.com/bzrplayer)
