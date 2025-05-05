@@ -8,93 +8,81 @@ set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
+include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
+
 find_package(ZLIB REQUIRED)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-#if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 10) #TODO for DYNAREC #TODO 10?
-#    add_compile_options($<$<COMPILE_LANGUAGE:C>:-fcommon>)
-#endif ()
-
-if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
-    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-return-mismatch>)
-endif ()
-
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_VERSION_SHORT "${VERSION_SHORT}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION_SHORT}")
-set(LIB_FILENAME "${LIB_NAME}-${LIB_VERSION}.tar.bz2")
-set(LIB_URL "https://gitlab.com/kode54/${LIB_NAME}/-/archive/${LIB_VERSION}/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "b4ff5df45572e2c5ac5ecc98a5421701330a655b9971e5c012fe9f42bd12c51f")
-set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
+set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
+set(FILENAME "${NAME}-${VERSION}.tar.bz2")
+set(URL "https://gitlab.com/kode54/${NAME}/-/archive/${VERSION}/${FILENAME}")
+set(SHA_256_HASH "b4ff5df45572e2c5ac5ecc98a5421701330a655b9971e5c012fe9f42bd12c51f")
+set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
 )
-
-set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
 
 #TODO get OVERLOAD feature from https://github.com/joshware/lazyusf2/commit/f32bff34e35e23185456781ef1041003309dbf8f
 
-add_compile_definitions(EMU_COMPILE ARCH_MIN_SSE2)
-#add_compile_definitions(DYNAREC)   #TODO
-#add_compile_definitions(SP_STATUS_TASKDONE=0x200)   #TODO
-
-include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
-
 file(GLOB SOURCES                                                        #TODO remove unnecessary
 
-        #    ${EXTERNAL_SOURCE_DIR_${NAME}}/r4300/x86_64/*.c #TODO for DYNAREC
+        #    ${EXTERNAL_SOURCE_DIR}/r4300/x86_64/*.c #TODO for DYNAREC
 
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/ai/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/api/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/debugger/dbg_decoder.c  #TODO
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/main/*.c               #TODO
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/memory/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/pi/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/r4300/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/rdp/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/ri/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/rsp/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/rsp_hle/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/rsp_lle/rsp.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/si/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/usf/*.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/vi/*.c
+        ${EXTERNAL_SOURCE_DIR}/ai/*.c
+        ${EXTERNAL_SOURCE_DIR}/api/*.c
+        ${EXTERNAL_SOURCE_DIR}/debugger/dbg_decoder.c  #TODO
+        ${EXTERNAL_SOURCE_DIR}/main/*.c               #TODO
+        ${EXTERNAL_SOURCE_DIR}/memory/*.c
+        ${EXTERNAL_SOURCE_DIR}/pi/*.c
+        ${EXTERNAL_SOURCE_DIR}/r4300/*.c
+        ${EXTERNAL_SOURCE_DIR}/rdp/*.c
+        ${EXTERNAL_SOURCE_DIR}/ri/*.c
+        ${EXTERNAL_SOURCE_DIR}/rsp/*.c
+        ${EXTERNAL_SOURCE_DIR}/rsp_hle/*.c
+        ${EXTERNAL_SOURCE_DIR}/rsp_lle/rsp.c
+        ${EXTERNAL_SOURCE_DIR}/si/*.c
+        ${EXTERNAL_SOURCE_DIR}/usf/*.c
+        ${EXTERNAL_SOURCE_DIR}/vi/*.c
         ${EXTERNAL_SOURCE_DIR_psflib}/psf2fs.c #TODO needed?
         ${EXTERNAL_SOURCE_DIR_psflib}/psflib.c
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE #TODO remove unnecessary
 
-        #    ${EXTERNAL_SOURCE_DIR_${NAME}}/r4300/x86_64 #TODO for DYNAREC
+        #    ${EXTERNAL_SOURCE_DIR}/r4300/x86_64 #TODO for DYNAREC
 
-        ${EXTERNAL_SOURCE_DIR_${NAME}}
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/ai
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/api
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/debugger
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/main
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/memory
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/osal
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/pi
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/r4300
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/rdp
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/ri
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/rsp
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/rsp_hle
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/rsp_lle
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/si
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/usf
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/vi
+        ${EXTERNAL_SOURCE_DIR}
+        ${EXTERNAL_SOURCE_DIR}/ai
+        ${EXTERNAL_SOURCE_DIR}/api
+        ${EXTERNAL_SOURCE_DIR}/debugger
+        ${EXTERNAL_SOURCE_DIR}/main
+        ${EXTERNAL_SOURCE_DIR}/memory
+        ${EXTERNAL_SOURCE_DIR}/osal
+        ${EXTERNAL_SOURCE_DIR}/pi
+        ${EXTERNAL_SOURCE_DIR}/r4300
+        ${EXTERNAL_SOURCE_DIR}/rdp
+        ${EXTERNAL_SOURCE_DIR}/ri
+        ${EXTERNAL_SOURCE_DIR}/rsp
+        ${EXTERNAL_SOURCE_DIR}/rsp_hle
+        ${EXTERNAL_SOURCE_DIR}/rsp_lle
+        ${EXTERNAL_SOURCE_DIR}/si
+        ${EXTERNAL_SOURCE_DIR}/usf
+        ${EXTERNAL_SOURCE_DIR}/vi
         ${EXTERNAL_SOURCE_DIR_psflib}
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE EMU_COMPILE ARCH_MIN_SSE2)
+#target_compile_definitions(${PROJECT_NAME} PRIVATE DYNAREC)   #TODO
+#target_compile_definitions(${PROJECT_NAME} PRIVATE SP_STATUS_TASKDONE=0x200)   #TODO
+
+#target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-fcommon>) #TODO for DYNAREC
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-return-mismatch>)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

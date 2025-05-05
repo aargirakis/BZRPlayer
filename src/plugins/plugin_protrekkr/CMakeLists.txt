@@ -12,25 +12,15 @@ find_package(ZLIB REQUIRED)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 14)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
-set(LIB_FILENAME_URL "v${LIB_VERSION}.tar.gz")
-set(LIB_URL "https://github.com/hitchhikr/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "40219b51997d4368ff931dada0832bacd99558d088d3aebe424e5d5e33f53b8d")
+set(NAME_VERSIONED "${NAME}-${VERSION}")
+set(FILENAME "${NAME_VERSIONED}.tar.gz")
+set(FILENAME_URL "v${VERSION}.tar.gz")
+set(URL "https://github.com/hitchhikr/${NAME}/archive/refs/tags/${FILENAME_URL}")
+set(SHA_256_HASH "40219b51997d4368ff931dada0832bacd99558d088d3aebe424e5d5e33f53b8d")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
-
-add_compile_definitions(BZR2 __STAND_ALONE__ __WINAMP__)
-
-if (WIN32)
-    add_compile_definitions(__WIN32__)
-else ()
-    add_compile_definitions(__GCC__ __LINUX__)
-endif ()
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/*.cpp
@@ -39,8 +29,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/files/files.cpp
         ${EXTERNAL_SOURCE_DIR}/src/files/reverbs.cpp
         ${EXTERNAL_SOURCE_DIR}/src/files/synths.cpp
-        src/main.cpp
-)
+        src/main.cpp)
 
 if (WIN32)
     list(REMOVE_ITEM SOURCES ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/endianness.cpp)
@@ -60,8 +49,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE BZR2 __STAND_ALONE__ __WINAMP__)
+
+if (WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __WIN32__)
+else ()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __GCC__ __LINUX__)
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

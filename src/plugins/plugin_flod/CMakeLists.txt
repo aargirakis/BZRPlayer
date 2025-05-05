@@ -10,8 +10,6 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
-
 file(GLOB SOURCES
         src/flod/*.cpp
         src/flod/brooke/*.cpp
@@ -32,8 +30,7 @@ file(GLOB SOURCES
         src/flod/whittaker/*.cpp
         src/main.cpp
 
-        ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
-)
+        ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -57,8 +54,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/flod/whittaker
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

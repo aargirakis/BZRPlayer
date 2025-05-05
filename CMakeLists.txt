@@ -125,7 +125,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
                 ${OUTPUT_DIR}/${EXE_NAME}.exe
                 ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
                 ${OUTPUT_DIR}/LICENSE.txt
-                ${OUTPUT_DIR}/${LIB_FMOD}
+                ${OUTPUT_DIR}/${FMOD_LIB}
                 ${RUNTIME_LIBS}
                 DESTINATION .
         )

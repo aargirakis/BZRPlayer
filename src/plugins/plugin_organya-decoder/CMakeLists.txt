@@ -10,26 +10,20 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_UNPACKED_DIR "losnoco-foo_input_org-d713df1b6c8a")
-set(LIB_FILENAME "${LIB_UNPACKED_DIR}.zip")
-set(LIB_URL "https://www.cavestory.org/downloads/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "15d3f0851104c3b8dcb2d0fd600dac86c6afe98b7a3a16033d70dc2fcca9c8c8")
+set(NAME_VERSIONED "${NAME}-${VERSION}")
+set(UNPACKED_DIR "losnoco-foo_input_org-d713df1b6c8a")
+set(FILENAME "${UNPACKED_DIR}.zip")
+set(URL "https://www.cavestory.org/downloads/${FILENAME}")
+set(SHA_256_HASH "15d3f0851104c3b8dcb2d0fd600dac86c6afe98b7a3a16033d70dc2fcca9c8c8")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
-
-set(ORGANYA_DATA_DIR "${PLUGINS_DIR}/organya")
-add_compile_definitions(ORGANYA_DATA_DIR="${ORGANYA_DATA_DIR}")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/liborganya/*.c
         ${EXTERNAL_SOURCE_DIR}/liborganya/*.cpp
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -37,8 +31,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/liborganya
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+set(ORGANYA_DATA_DIR "${PLUGINS_DIR}/organya")
+target_compile_definitions(${PROJECT_NAME} PRIVATE ORGANYA_DATA_DIR="${ORGANYA_DATA_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

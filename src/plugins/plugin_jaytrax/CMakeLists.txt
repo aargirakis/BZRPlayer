@@ -11,23 +11,19 @@ set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_VERSION_SHORT "${VERSION_SHORT}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${VERSION_SHORT}")
-set(LIB_FILENAME "${LIB_NAME}-${LIB_VERSION}.zip")
-set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
-set(LIB_URL "https://github.com/pachuco/${LIB_NAME}/archive/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "f65a4b33a060acca1294d35a57a8bbfda39af452daff76edcddb76d85b9468e3")
-set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
+set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
+set(FILENAME "${NAME}-${VERSION}.zip")
+set(FILENAME_URL "${VERSION}.zip")
+set(URL "https://github.com/pachuco/${NAME}/archive/${FILENAME_URL}")
+set(SHA_256_HASH "f65a4b33a060acca1294d35a57a8bbfda39af452daff76edcddb76d85b9468e3")
+set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
 )
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/lib_oldjaytrax/*.c
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -35,8 +31,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/lib_oldjaytrax
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

@@ -10,21 +10,15 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
-set(LIB_FILENAME_URL "${LIB_VERSION}.tar.gz")
-set(LIB_URL "https://github.com/vitamin-caig/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "388eb1d4799be2f34d43cff05bac4ff2b56d6b1f36e168c45fd501e7b8583e54")
+set(NAME_VERSIONED "${NAME}-${VERSION}")
+set(FILENAME "${NAME_VERSIONED}.tar.gz")
+set(FILENAME_URL "${VERSION}.tar.gz")
+set(URL "https://github.com/vitamin-caig/${NAME}/archive/refs/tags/${FILENAME_URL}")
+set(SHA_256_HASH "388eb1d4799be2f34d43cff05bac4ff2b56d6b1f36e168c45fd501e7b8583e54")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
-
-add_compile_definitions(Z80EX_API_REVISION=1)
-add_compile_definitions(Z80EX_VERSION_MAJOR=1)
-add_compile_definitions(Z80EX_VERSION_MINOR=19)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/crc16.c
@@ -165,8 +159,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/strings/text/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/tools/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/tools/text/*.cpp
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -180,8 +173,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE Z80EX_API_REVISION=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE Z80EX_VERSION_MAJOR=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE Z80EX_VERSION_MINOR=19)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

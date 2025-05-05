@@ -10,21 +10,18 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tgz")
-set(LIB_URL "http://prdownloads.sourceforge.net/${LIB_NAME}/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "17516a4a9fd75c4186c6d85a8b0d46cbff98fbc2042bccf0ce4062b6f68e3e49")
+set(NAME_VERSIONED "${NAME}-${VERSION}")
+set(FILENAME "${NAME_VERSIONED}.tgz")
+set(URL "http://prdownloads.sourceforge.net/${NAME}/${FILENAME}")
+set(SHA_256_HASH "17516a4a9fd75c4186c6d85a8b0d46cbff98fbc2042bccf0ce4062b6f68e3e49")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -32,8 +29,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

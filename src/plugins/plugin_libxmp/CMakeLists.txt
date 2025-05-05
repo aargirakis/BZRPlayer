@@ -10,22 +10,14 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
-set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/releases/download/${LIB_NAME_VERSIONED}/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "acac1705be2c4fb4d2d70dc05759853ba6aab747a83de576b082784d46f5a4b9")
+set(NAME_VERSIONED "${NAME}-${VERSION}")
+set(FILENAME "${NAME_VERSIONED}.tar.gz")
+set(URL "https://github.com/${NAME}/${NAME}/releases/download/${NAME_VERSIONED}/${FILENAME}")
+set(SHA_256_HASH "acac1705be2c4fb4d2d70dc05759853ba6aab747a83de576b082784d46f5a4b9")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
-
-if (WIN32)
-    add_compile_definitions(BUILDING_DLL)
-endif ()
-
-add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c
@@ -36,8 +28,7 @@ file(GLOB SOURCES
         src/queue.c #TODO remove (and the queue.h include in common.h.patch)
         src/main.cpp
 
-        ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
-)
+        ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp)
 
 list(REMOVE_ITEM SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/depackers/lhasa/bit_stream_reader.c
@@ -62,8 +53,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src #TODO remove
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+if (WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE BUILDING_DLL)
+endif ()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

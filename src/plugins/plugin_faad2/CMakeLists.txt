@@ -10,22 +10,15 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
-    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
-endif ()
-
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
-set(LIB_FILENAME_URL "${LIB_VERSION}.tar.gz")
-set(LIB_URL "https://github.com/knik0/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "3fcbd305e4abd34768c62050e18ca0986f7d9c5eca343fb98275418013065c0e")
+set(NAME_VERSIONED "${NAME}-${VERSION}")
+set(FILENAME "${NAME_VERSIONED}.tar.gz")
+set(FILENAME_URL "${VERSION}.tar.gz")
+set(URL "https://github.com/knik0/${NAME}/archive/refs/tags/${FILENAME_URL}")
+set(SHA_256_HASH "3fcbd305e4abd34768c62050e18ca0986f7d9c5eca343fb98275418013065c0e")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" ""
 )
 
-add_compile_definitions(HAVE_CONFIG_H=1)
 set(HAVE_MEMCPY 1)
 set(HAVE_STDINT_H 1)
 configure_file(
@@ -34,12 +27,9 @@ configure_file(
         @ONLY NEWLINE_STYLE UNIX
 )
 
-add_compile_definitions(PACKAGE_VERSION="${LIB_VERSION}")
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/libfaad/*.c
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -48,8 +38,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/libfaad
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_CONFIG_H=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_VERSION="${VERSION}")
+
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

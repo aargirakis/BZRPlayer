@@ -11,26 +11,20 @@ set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_VERSION_SHORT "${VERSION_SHORT}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION_SHORT}")
-set(LIB_FILENAME "${LIB_NAME}-${LIB_VERSION}.zip")
-set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
-set(LIB_URL "https://github.com/jgilje/${LIB_NAME}/archive/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "a6ec966bc0fd95e1da43babe34aeff45f0b511664e51100907b5c25aae67b4d3")
-set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
+set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
+set(FILENAME "${NAME}-${VERSION}.zip")
+set(FILENAME_URL "${VERSION}.zip")
+set(URL "https://github.com/jgilje/${NAME}/archive/${FILENAME_URL}")
+set(SHA_256_HASH "a6ec966bc0fd95e1da43babe34aeff45f0b511664e51100907b5c25aae67b4d3")
+set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-add_compile_definitions(V2MPLAYER_SYNC_FUNCTIONS)
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.cpp
-        src/main.cpp
-)
+        src/main.cpp)
 
 list(REMOVE_ITEM SOURCES ${EXTERNAL_SOURCE_DIR}/src/tinyplayer.cpp)
 
@@ -40,8 +34,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE V2MPLAYER_SYNC_FUNCTIONS)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

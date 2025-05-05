@@ -11,27 +11,17 @@ set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_VERSION_SHORT "${VERSION_SHORT}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION_SHORT}")
-set(LIB_NAME_VERSIONED2 "wothke-uade-2.13-${LIB_VERSION_SHORT}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED2}.zip")
-set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
-set(LIB_URL "https://bitbucket.org/wothke/uade-2.13/get/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "c47bf0148057eb5f345b54030ff81ab73f84cf83632c740b02fbf8e0c011d0ee")
-set(LIB_UNPACKED_DIR "${LIB_NAME_VERSIONED2}")
+set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
+set(NAME_VERSIONED2 "wothke-uade-2.13-${VERSION_SHORT}")
+set(FILENAME "${NAME_VERSIONED2}.zip")
+set(FILENAME_URL "${VERSION}.zip")
+set(URL "https://bitbucket.org/wothke/uade-2.13/get/${FILENAME_URL}")
+set(SHA_256_HASH "c47bf0148057eb5f345b54030ff81ab73f84cf83632c740b02fbf8e0c011d0ee")
+set(UNPACKED_DIR "${NAME_VERSIONED2}")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
-
-set(UADE_DATA_DIR "${PLUGINS_DIR}/uade")
-set(PLUGIN_${NAME}_DIR "${UADE_DATA_DIR}" PARENT_SCOPE)
-set(UADE_SONGLENGTHS "uade.md5")
-add_compile_definitions(UADE_DATA_DIR="${UADE_DATA_DIR}")
-add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
-add_compile_definitions(EMSCRIPTEN)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/compat/memmemrep.c
@@ -77,8 +67,7 @@ file(GLOB SOURCES
         src/md5/*.c    #TODO all src/md5/*.* files (apart types.h) comes from xmms-sid (version from 0.8.96 to 0.8.99.2) that seem untraceable on the web: better upgrade to 0.9.2
         src/main.cpp
 
-        ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp
-)
+        ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp)
 
 if (WIN32)
     list(APPEND SOURCES src/strsep.c)
@@ -97,16 +86,22 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/md5  #TODO
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+set(UADE_DATA_DIR "${PLUGINS_DIR}/uade")
+set(PLUGIN_${NAME}_DIR "${UADE_DATA_DIR}" PARENT_SCOPE)
+set(UADE_SONGLENGTHS "uade.md5")
+target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_DATA_DIR="${UADE_DATA_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE EMSCRIPTEN)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE
-            -L"${LIB_FMOD_DIR}" -lfmod -lws2_32
+            -L"${FMOD_DIR}" -lfmod -lws2_32
     )
 else ()
     target_link_libraries(${PROJECT_NAME} PRIVATE
-            -L"${LIB_FMOD_DIR}" -lfmod
+            -L"${FMOD_DIR}" -lfmod
     )
 endif ()
 

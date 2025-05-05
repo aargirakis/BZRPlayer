@@ -14,33 +14,18 @@ find_package(ZLIB REQUIRED)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_VERSION_SHORT "${VERSION_SHORT}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION_SHORT}-${REVISION}")
-set(LIB_FILENAME "${LIB_NAME}-${LIB_VERSION}.zip")
-set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
+set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}-${REVISION}")
+set(FILENAME "${NAME}-${VERSION}.zip")
+set(FILENAME_URL "${VERSION}.zip")
 # since sourceforge (https://sourceforge.net/p/sc68/code/HEAD) doesn't provide a stable/permanent tarball url,
 # an (outdated) github mirror it is used here
-set(LIB_URL "https://github.com/Zeinok/${LIB_NAME}/archive/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "67a7bed2b4bff56eae543bb90c4f44bb08544ef0e5752b6eb3f1eb569ccf2104")
-set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
+set(URL "https://github.com/Zeinok/${NAME}/archive/${FILENAME_URL}")
+set(SHA_256_HASH "67a7bed2b4bff56eae543bb90c4f44bb08544ef0e5752b6eb3f1eb569ccf2104")
+set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
-
-set(SC68_DATA_DIR "${PLUGINS_DIR}/sc68")
-add_compile_definitions(SC68_DATA_DIR="${SC68_DATA_DIR}")
-add_compile_definitions(HAVE_FREE)
-add_compile_definitions(HAVE_MALLOC)
-add_compile_definitions(HAVE_STDINT_H)
-add_compile_definitions(HAVE_STRING_H)
-add_compile_definitions(HAVE_ZLIB_H)
-add_compile_definitions(PACKAGE_BUGREPORT="")
-add_compile_definitions(PACKAGE_STRING="")
-add_compile_definitions(PACKAGE_URL="")
-add_compile_definitions(PACKAGE_VERNUM)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/file68/src/*.c
@@ -48,8 +33,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/libsc68/emu68/*.c
         ${EXTERNAL_SOURCE_DIR}/libsc68/io68/*.c
         ${EXTERNAL_SOURCE_DIR}/unice68/*.c
-        src/main.cpp
-)
+        src/main.cpp)
 
 list(REMOVE_ITEM SOURCES
         ${EXTERNAL_SOURCE_DIR}/libsc68/io68/ym_atarist_table.c
@@ -69,8 +53,19 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/unice68
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+set(SC68_DATA_DIR "${PLUGINS_DIR}/sc68")
+target_compile_definitions(${PROJECT_NAME} PRIVATE SC68_DATA_DIR="${SC68_DATA_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_FREE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_MALLOC)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STDINT_H)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STRING_H)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_ZLIB_H)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_BUGREPORT="")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_STRING="")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_URL="")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_VERNUM)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

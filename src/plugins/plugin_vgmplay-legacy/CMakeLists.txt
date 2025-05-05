@@ -12,19 +12,14 @@ find_package(ZLIB REQUIRED)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
-set(LIB_FILENAME_URL "${LIB_VERSION}.zip")
-set(LIB_URL "https://github.com/vgmrips/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "c797f4ac00dd9b390b3323fc2d584924eca2625b09bca9c0f8ade771ff4a681d")
+set(NAME_VERSIONED "${NAME}-${VERSION}")
+set(FILENAME "${NAME_VERSIONED}.zip")
+set(FILENAME_URL "${VERSION}.zip")
+set(URL "https://github.com/vgmrips/${NAME}/archive/refs/tags/${FILENAME_URL}")
+set(SHA_256_HASH "c797f4ac00dd9b390b3323fc2d584924eca2625b09bca9c0f8ade771ff4a681d")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" ""
 )
-
-add_compile_definitions(DISABLE_HW_SUPPORT)
-#add_compile_definitions(ENABLE_ALL_CORES) #TODO
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/ChipMapper.c
@@ -99,8 +94,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/chips/ymf278b.c
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/chips/ymz280b.c
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/VGMPlay.c
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -109,8 +103,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/chips
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE DISABLE_HW_SUPPORT)
+#target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_ALL_CORES) #TODO
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

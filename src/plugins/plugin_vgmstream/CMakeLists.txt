@@ -10,22 +10,14 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
-    add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
-endif ()
-
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.tar.gz")
-set(LIB_FILENAME_URL "${LIB_VERSION}.tar.gz")
-set(LIB_URL "https://github.com/${LIB_NAME}/${LIB_NAME}/archive/refs/tags/${LIB_FILENAME_URL}")
-set(LIB_SHA_256_HASH "6b095f8159726c4a4a323c75d837c6092e56d026e60a98c4a30ce3d8d0911f56")
+set(NAME_VERSIONED "${NAME}-${VERSION}")
+set(FILENAME "${NAME_VERSIONED}.tar.gz")
+set(FILENAME_URL "${VERSION}.tar.gz")
+set(URL "https://github.com/${NAME}/${NAME}/archive/refs/tags/${FILENAME_URL}")
+set(SHA_256_HASH "6b095f8159726c4a4a323c75d837c6092e56d026e60a98c4a30ce3d8d0911f56")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" ""
 )
-
-add_compile_definitions(_VORBIS_CUSTOM_DECODER_H_)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c
@@ -35,8 +27,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/layout/*.c
         ${EXTERNAL_SOURCE_DIR}/src/meta/*.c
         ${EXTERNAL_SOURCE_DIR}/src/util/*.c
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -50,8 +41,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/util
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE _VORBIS_CUSTOM_DECODER_H_)
+
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

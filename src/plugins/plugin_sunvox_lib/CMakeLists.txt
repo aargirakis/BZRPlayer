@@ -10,35 +10,30 @@ set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION}")
-set(LIB_FILENAME "${LIB_NAME_VERSIONED}.zip")
-set(LIB_URL "https://warmplace.ru/soft/sunvox/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "dc8ed3e7869eefe77a691bf4af6e20091691245649546f05c5893a1f38d9e34c")
-set(LIB_UNPACKED_DIR "${LIB_NAME}")
+set(NAME_VERSIONED "${NAME}-${VERSION}")
+set(FILENAME "${NAME_VERSIONED}.zip")
+set(URL "https://warmplace.ru/soft/sunvox/${FILENAME}")
+set(SHA_256_HASH "dc8ed3e7869eefe77a691bf4af6e20091691245649546f05c5893a1f38d9e34c")
+set(UNPACKED_DIR "${NAME}")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
 )
 
-add_compile_definitions(SUNVOX_MAIN)
-add_compile_definitions(PLUGINS_DIR="${PLUGINS_DIR}")
-
-set(SUNVOX_LIB "sunvox.${LIB_EXT}")
-add_compile_definitions(SUNVOX_LIB="${SUNVOX_LIB}")
-
-file(GLOB SOURCES
-        src/main.cpp
-)
+file(GLOB SOURCES src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        ${EXTERNAL_SOURCE_DIR}/${LIB_NAME}/headers
+        ${EXTERNAL_SOURCE_DIR}/${NAME}/headers
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE SUNVOX_MAIN)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_DIR="${PLUGINS_DIR}")
+
+set(SUNVOX_LIB "sunvox.${LIB_EXT}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE SUNVOX_LIB="${SUNVOX_LIB}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
@@ -52,11 +47,11 @@ cmake_path(SET SUNVOX_LIB_DIR NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${PLUGINS_DIR}
 if (WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${EXTERNAL_SOURCE_DIR}/${LIB_NAME}/windows/lib_x86_64/${SUNVOX_LIB} ${SUNVOX_LIB_DIR}
+            ${EXTERNAL_SOURCE_DIR}/${NAME}/windows/lib_x86_64/${SUNVOX_LIB} ${SUNVOX_LIB_DIR}
             VERBATIM)
 else ()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${EXTERNAL_SOURCE_DIR}/${LIB_NAME}/linux/lib_x86_64/${SUNVOX_LIB} ${SUNVOX_LIB_DIR}
+            ${EXTERNAL_SOURCE_DIR}/${NAME}/linux/lib_x86_64/${SUNVOX_LIB} ${SUNVOX_LIB_DIR}
             VERBATIM)
 endif ()

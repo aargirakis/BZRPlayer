@@ -8,48 +8,41 @@ set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "Highly Quixotic" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
+include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
+
 find_package(ZLIB REQUIRED)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fpermissive>)
-
-set(LIB_NAME "${NAME}")
-set(LIB_VERSION "${VERSION}")
-set(LIB_VERSION_SHORT "${VERSION_SHORT}")
-set(LIB_NAME_VERSIONED "${LIB_NAME}-${LIB_VERSION_SHORT}")
-set(LIB_FILENAME "${LIB_NAME}-${LIB_VERSION}.zip")
-set(LIB_URL "https://gitlab.com/kode54/${LIB_NAME}/-/archive/${LIB_VERSION}/${LIB_FILENAME}")
-set(LIB_SHA_256_HASH "6e25e219fe7877dfd871a500a6e03e95f15e6cf873289a275fa246eb7f58f918")
-set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
+set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
+set(FILENAME "${NAME}-${VERSION}.zip")
+set(URL "https://gitlab.com/kode54/${NAME}/-/archive/${VERSION}/${FILENAME}")
+set(SHA_256_HASH "6e25e219fe7877dfd871a500a6e03e95f15e6cf873289a275fa246eb7f58f918")
+set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
-        ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
 )
-
-set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
-
-add_compile_definitions(EMU_COMPILE EMU_LITTLE_ENDIAN)
-
-include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
 
 file(GLOB SOURCES
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/Core/*.c
+        ${EXTERNAL_SOURCE_DIR}/Core/*.c
         ${EXTERNAL_SOURCE_DIR_psflib}/psf2fs.c #TODO needed?
         ${EXTERNAL_SOURCE_DIR_psflib}/psflib.c
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/Core
+        ${EXTERNAL_SOURCE_DIR}/Core
         ${EXTERNAL_SOURCE_DIR_psflib}
         src
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE EMU_COMPILE EMU_LITTLE_ENDIAN)
+
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive>)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

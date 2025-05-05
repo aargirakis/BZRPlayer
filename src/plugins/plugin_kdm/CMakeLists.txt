@@ -14,8 +14,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 file(GLOB SOURCES
         src/src/*.cpp
-        src/main.cpp
-)
+        src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -23,8 +22,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/src
 
         ${CMAKE_SOURCE_DIR}/src/app
-        ${LIB_FMOD_API_DIR}
-)
+        ${FMOD_API_DIR})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
