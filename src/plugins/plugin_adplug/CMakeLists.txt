@@ -55,9 +55,6 @@ configure_file(
         @ONLY NEWLINE_STYLE UNIX
 )
 
-add_compile_definitions(stricmp=strcasecmp)
-add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_1}/src/*.c
         ${EXTERNAL_SOURCE_DIR_1}/src/*.cpp
@@ -74,6 +71,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE stricmp=strcasecmp)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

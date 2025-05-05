@@ -21,12 +21,6 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-if (WIN32)
-    add_compile_definitions(BUILDING_DLL)
-endif ()
-
-add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c
         ${EXTERNAL_SOURCE_DIR}/src/depackers/*.c
@@ -64,6 +58,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+if (WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE BUILDING_DLL)
+endif ()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

@@ -30,18 +30,6 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-set(SC68_DATA_DIR "${PLUGINS_DIR}/sc68")
-add_compile_definitions(SC68_DATA_DIR="${SC68_DATA_DIR}")
-add_compile_definitions(HAVE_FREE)
-add_compile_definitions(HAVE_MALLOC)
-add_compile_definitions(HAVE_STDINT_H)
-add_compile_definitions(HAVE_STRING_H)
-add_compile_definitions(HAVE_ZLIB_H)
-add_compile_definitions(PACKAGE_BUGREPORT="")
-add_compile_definitions(PACKAGE_STRING="")
-add_compile_definitions(PACKAGE_URL="")
-add_compile_definitions(PACKAGE_VERNUM)
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/file68/src/*.c
         ${EXTERNAL_SOURCE_DIR}/libsc68/*.c
@@ -71,6 +59,18 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+set(SC68_DATA_DIR "${PLUGINS_DIR}/sc68")
+target_compile_definitions(${PROJECT_NAME} PRIVATE SC68_DATA_DIR="${SC68_DATA_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_FREE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_MALLOC)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STDINT_H)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STRING_H)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_ZLIB_H)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_BUGREPORT="")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_STRING="")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_URL="")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_VERNUM)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

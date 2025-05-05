@@ -25,8 +25,6 @@ download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
 )
 
-add_compile_definitions(_VORBIS_CUSTOM_DECODER_H_)
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c
         ${EXTERNAL_SOURCE_DIR}/src/base/*.c
@@ -52,6 +50,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE _VORBIS_CUSTOM_DECODER_H_)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

@@ -21,12 +21,6 @@ download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
 )
 
-add_compile_definitions(SUNVOX_MAIN)
-add_compile_definitions(PLUGINS_DIR="${PLUGINS_DIR}")
-
-set(SUNVOX_LIB "sunvox.${LIB_EXT}")
-add_compile_definitions(SUNVOX_LIB="${SUNVOX_LIB}")
-
 file(GLOB SOURCES
         src/main.cpp
 )
@@ -39,6 +33,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE SUNVOX_MAIN)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_DIR="${PLUGINS_DIR}")
+
+set(SUNVOX_LIB "sunvox.${LIB_EXT}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE SUNVOX_LIB="${SUNVOX_LIB}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

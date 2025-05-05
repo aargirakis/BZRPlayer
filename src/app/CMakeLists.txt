@@ -21,21 +21,6 @@ configure_file(
         @ONLY NEWLINE_STYLE UNIX
 )
 
-add_compile_definitions(PROJECT_VERSION="${PROJECT_VERSION}")
-
-if (NOT CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_compile_definitions(OUTPUT_DIR="${OUTPUT_DIR}")
-endif ()
-
-add_compile_definitions(DATA_DIR="${DATA_DIR}")
-add_compile_definitions(USER_DIR="${USER_DIR}")
-add_compile_definitions(PLUGINS_FMOD_DIR="${PLUGINS_FMOD_DIR}")
-add_compile_definitions(RESOURCES_DIR="${RESOURCES_DIR}")
-add_compile_definitions(LAYOUTS_DIR="${LAYOUTS_DIR}")
-add_compile_definitions(PLAYLISTS_DIR="${PLAYLISTS_DIR}")
-add_compile_definitions(PLUGINS_DIR="${PLUGINS_DIR}")
-add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
-
 file(GLOB SOURCES
         *.cpp
         patternview/*.cpp
@@ -69,6 +54,21 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_PREFIX_PATH}/include/qtadvanceddocking-qt${QT_VERSION_MAJOR}
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_VERSION="${PROJECT_VERSION}")
+
+if (NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE OUTPUT_DIR="${OUTPUT_DIR}")
+endif ()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE DATA_DIR="${DATA_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE USER_DIR="${USER_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_FMOD_DIR="${PLUGINS_FMOD_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE RESOURCES_DIR="${RESOURCES_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE LAYOUTS_DIR="${LAYOUTS_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLAYLISTS_DIR="${PLAYLISTS_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_DIR="${PLUGINS_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 foreach (QT_MODULE ${QT_MODULES})
     target_link_libraries(${PROJECT_NAME} PRIVATE "Qt${QT_VERSION_MAJOR}::${QT_MODULE}")

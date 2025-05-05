@@ -40,8 +40,6 @@ download_patch_and_make(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches "${LIB_MAKE_ARGS}" ${LIB_BUILD_BYPRODUCTS}
 )
 
-add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
-
 file(GLOB SOURCES
         src/main.cpp
 
@@ -56,6 +54,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 add_library(LIBOPENMPT_STATIC STATIC IMPORTED GLOBAL)
 

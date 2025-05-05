@@ -28,8 +28,6 @@ set(TIMEDB_FILE_URL "https://sourceforge.net/p/sc68/code/${TIMEDB_VERSION}/tree/
 set(TIMEDB_DESTINATION_PATH "${EXTERNAL_SOURCE_DIR}")
 download_to(${TIMEDB_FILENAME} ${TIMEDB_FILE_URL} "" ${TIMEDB_DESTINATION_PATH} true "")
 
-add_compile_definitions(_strdup=strdup)
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/AtariAudio/*.cpp
         ${EXTERNAL_SOURCE_DIR}/AtariAudio/external/ice_24.c
@@ -49,6 +47,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE _strdup=strdup)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

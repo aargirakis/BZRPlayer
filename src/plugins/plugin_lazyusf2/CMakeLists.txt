@@ -37,10 +37,6 @@ set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
 
 #TODO get OVERLOAD feature from https://github.com/joshware/lazyusf2/commit/f32bff34e35e23185456781ef1041003309dbf8f
 
-add_compile_definitions(EMU_COMPILE ARCH_MIN_SSE2)
-#add_compile_definitions(DYNAREC)   #TODO
-#add_compile_definitions(SP_STATUS_TASKDONE=0x200)   #TODO
-
 include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
 
 file(GLOB SOURCES                                                        #TODO remove unnecessary
@@ -95,6 +91,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE #TODO remove unnecessary
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE EMU_COMPILE ARCH_MIN_SSE2)
+#target_compile_definitions(${PROJECT_NAME} PRIVATE DYNAREC)   #TODO
+#target_compile_definitions(${PROJECT_NAME} PRIVATE SP_STATUS_TASKDONE=0x200)   #TODO
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

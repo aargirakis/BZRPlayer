@@ -22,9 +22,6 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-set(ORGANYA_DATA_DIR "${PLUGINS_DIR}/organya")
-add_compile_definitions(ORGANYA_DATA_DIR="${ORGANYA_DATA_DIR}")
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/liborganya/*.c
         ${EXTERNAL_SOURCE_DIR}/liborganya/*.cpp
@@ -39,6 +36,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+set(ORGANYA_DATA_DIR "${PLUGINS_DIR}/organya")
+target_compile_definitions(${PROJECT_NAME} PRIVATE ORGANYA_DATA_DIR="${ORGANYA_DATA_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

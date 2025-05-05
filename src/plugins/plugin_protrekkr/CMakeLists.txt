@@ -24,14 +24,6 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-add_compile_definitions(BZR2 __STAND_ALONE__ __WINAMP__)
-
-if (WIN32)
-    add_compile_definitions(__WIN32__)
-else ()
-    add_compile_definitions(__GCC__ __LINUX__)
-endif ()
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/editors/patterns_blocks.cpp
@@ -62,6 +54,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE BZR2 __STAND_ALONE__ __WINAMP__)
+
+if (WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __WIN32__)
+else ()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __GCC__ __LINUX__)
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

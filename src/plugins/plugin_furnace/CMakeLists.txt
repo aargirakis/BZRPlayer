@@ -57,10 +57,6 @@ download_patch_and_add(
 
 set(EXTERNAL_SOURCE_DIR_3 "${EXTERNAL_SOURCE_DIR}")
 
-if (WIN32)
-    add_compile_definitions(ENABLE_VIRTUAL_TERMINAL_PROCESSING=0x0004)
-endif ()
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_1}/extern/adpcm-xq-s/*.c
         ${EXTERNAL_SOURCE_DIR_1}/extern/emu2413/*.c
@@ -227,6 +223,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+if (WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_VIRTUAL_TERMINAL_PROCESSING=0x0004)
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

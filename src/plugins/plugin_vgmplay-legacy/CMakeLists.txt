@@ -23,9 +23,6 @@ download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
 )
 
-add_compile_definitions(DISABLE_HW_SUPPORT)
-#add_compile_definitions(ENABLE_ALL_CORES) #TODO
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/ChipMapper.c
         ${EXTERNAL_SOURCE_DIR}/VGMPlay/chips/262intf.c
@@ -111,6 +108,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE DISABLE_HW_SUPPORT)
+#target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_ALL_CORES) #TODO
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

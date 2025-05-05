@@ -25,7 +25,6 @@ download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
 )
 
-add_compile_definitions(HAVE_CONFIG_H=1)
 set(HAVE_MEMCPY 1)
 set(HAVE_STDINT_H 1)
 configure_file(
@@ -33,8 +32,6 @@ configure_file(
         ${EXTERNAL_SOURCE_DIR}/config.h
         @ONLY NEWLINE_STYLE UNIX
 )
-
-add_compile_definitions(PACKAGE_VERSION="${LIB_VERSION}")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/libfaad/*.c
@@ -50,6 +47,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_CONFIG_H=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_VERSION="${LIB_VERSION}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

@@ -26,13 +26,6 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-set(UADE_DATA_DIR "${PLUGINS_DIR}/uade")
-set(PLUGIN_${NAME}_DIR "${UADE_DATA_DIR}" PARENT_SCOPE)
-set(UADE_SONGLENGTHS "uade.md5")
-add_compile_definitions(UADE_DATA_DIR="${UADE_DATA_DIR}")
-add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
-add_compile_definitions(EMSCRIPTEN)
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/compat/memmemrep.c
         ${EXTERNAL_SOURCE_DIR}/compat/strlrep.c
@@ -99,6 +92,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+set(UADE_DATA_DIR "${PLUGINS_DIR}/uade")
+set(PLUGIN_${NAME}_DIR "${UADE_DATA_DIR}" PARENT_SCOPE)
+set(UADE_SONGLENGTHS "uade.md5")
+target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_DATA_DIR="${UADE_DATA_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE EMSCRIPTEN)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE

@@ -21,10 +21,6 @@ download_patch_and_add(
         ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} false "" ""
 )
 
-add_compile_definitions(BLARGG_BUILD_DLL)
-add_compile_definitions(VGM_YM2612_MAME)
-add_compile_definitions(PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/gme/*.cpp
         src/main.cpp
@@ -38,6 +34,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE BLARGG_BUILD_DLL)
+target_compile_definitions(${PROJECT_NAME} PRIVATE VGM_YM2612_MAME)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

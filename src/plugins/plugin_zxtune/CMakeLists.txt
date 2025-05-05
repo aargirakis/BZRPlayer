@@ -22,10 +22,6 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-add_compile_definitions(Z80EX_API_REVISION=1)
-add_compile_definitions(Z80EX_VERSION_MAJOR=1)
-add_compile_definitions(Z80EX_VERSION_MINOR=19)
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/crc16.c
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/ext_header.c
@@ -182,6 +178,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE Z80EX_API_REVISION=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE Z80EX_VERSION_MAJOR=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE Z80EX_VERSION_MINOR=19)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

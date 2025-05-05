@@ -31,14 +31,6 @@ download_patch_and_add(
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
-add_compile_definitions(NOSDL_MIXER)
-add_compile_definitions(STEREOOUTPUT)
-
-if (WIN32)
-    add_compile_definitions(USENATIVEAPIS)
-    add_compile_definitions(USESDLMUTEXES)
-endif ()
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/lib/*.c
         ${EXTERNAL_SOURCE_DIR}/src/snd/*.c
@@ -54,6 +46,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE NOSDL_MIXER)
+target_compile_definitions(${PROJECT_NAME} PRIVATE STEREOOUTPUT)
+
+if (WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USENATIVEAPIS)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USESDLMUTEXES)
+endif ()
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE -lwinmm)

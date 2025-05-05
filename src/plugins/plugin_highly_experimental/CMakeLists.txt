@@ -31,8 +31,6 @@ download_patch_and_add(
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
 
-add_compile_definitions(EMU_COMPILE EMU_LITTLE_ENDIAN)
-
 include(${CMAKE_SOURCE_DIR}/src/external/psflib/psflib.cmake)
 
 file(GLOB SOURCES
@@ -51,6 +49,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${LIB_FMOD_API_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE EMU_COMPILE EMU_LITTLE_ENDIAN)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 
