@@ -34,6 +34,7 @@
 #include <QTcpSocket>
 #include "about.h"
 #include "DraggableTableView.h"
+#include <QHeaderView>
 
 #define NEZPLAYLISTSPLITTER "::<>::?<>"
 #define PLAYLISTFIELDSPLITTER "<><>::????"
@@ -495,10 +496,25 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     addDebugText("Loading " + QString::number(playlists.count()) + " playlists from " + userPath + PLAYLISTS_DIR);
 
-
     changeStyleSheetColor();
 
-    foreach(QString filename, playlists) {
+    //Read all columns orders, size etc. from settings for all playlists
+    settings.beginGroup("playlists");
+
+    QStringList playlistsGeometryKeys = settings.childKeys();
+    QMap<QString, QByteArray> playlistsGeometryMap;
+
+    for (const QString& key : playlistsGeometryKeys) {
+        QByteArray data = settings.value(key).toByteArray();
+        playlistsGeometryMap.insert(key, data);
+    }
+    settings.endGroup();
+
+    QStringList previousSortedPlaylists = settings.value("playlistOrder").toStringList();
+    QStringList sortedPlaylists = sortPreservingOrder(playlists, previousSortedPlaylists);
+
+    foreach(QString filename, sortedPlaylists) {
+
         QFileInfo f(filename);
         
 		DraggableTableView* tv = new DraggableTableView();
@@ -532,8 +548,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
                 PLAYLIST_DEFAULT_FILENAME) && filename == PLAYLIST_DEFAULT_FILENAME) {
             swapColumns(tableWidgetPlaylists[f.fileName()]);
         }
-        tableWidgetPlaylists[f.fileName()]->horizontalHeader()->restoreState(
-            settings.value(QString("playlist_") + f.fileName(), "").toByteArray());
+
+        tableWidgetPlaylists[f.fileName()]->horizontalHeader()->restoreState(playlistsGeometryMap[f.fileName()]);
+
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSectionsMovable(true);
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSortIndicatorShown(false);
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
@@ -3991,11 +4008,7 @@ void MainWindow::SaveSettings()
 
     settings.setValue("lastOpenedDir", lastDir);
 
-    QMap<QString, QTableView*>::iterator i;
-    for (i = tableWidgetPlaylists.begin(); i != tableWidgetPlaylists.end(); ++i)
-    {
-        settings.setValue(QString("playlist_") + i.key(), i.value()->horizontalHeader()->saveState());
-    }
+    savePlayListSettings();
 
     if (PLUGIN_libsidplayfp_LIB != "")
     {
@@ -4003,6 +4016,29 @@ void MainWindow::SaveSettings()
     }
 }
 
+void MainWindow::savePlayListSettings()
+{
+    QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
+                       QSettings::IniFormat);
+    //Clear old playlist settings
+    settings.remove("playlists");
+
+    //Iterate all current playlists and save the order and the column settings
+    QStringList orderedKeys;
+    settings.beginGroup("playlists");
+    for (int i = 0; i < ui->listWidget->count(); ++i) {
+        orderedKeys << ui->listWidget->item(i)->text();
+        QListWidgetItem* item = ui->listWidget->item(i);
+        QString key = item->text();
+        if (tableWidgetPlaylists.contains(key)) {
+            QTableView* view = tableWidgetPlaylists.value(key);
+            settings.setValue(key, view->horizontalHeader()->saveState());
+        }
+    }
+    settings.endGroup();
+    settings.setValue("playlistOrder", orderedKeys);
+
+}
 
 vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
 {
@@ -5851,4 +5887,23 @@ void MainWindow::swapColumns(QTableView* tableview)
     //    tableview->horizontalHeader()->swapSections(1,8);
     //    tableview->horizontalHeader()->swapSections(2,8);
     //    tableview->horizontalHeader()->swapSections(3,8);
+}
+QStringList MainWindow::sortPreservingOrder(const QStringList& folderPlaylists, const QStringList& sortedPlaylistOrder)
+{
+    QStringList result;
+    QSet<QString> added;
+
+    for (const QString& key : sortedPlaylistOrder) {
+        if (folderPlaylists.contains(key)) {
+            result.append(key);
+            added.insert(key);
+        }
+    }
+
+    for (const QString& item : folderPlaylists) {
+        if (!added.contains(item)) {
+            result.append(item);
+        }
+    }
+    return result;
 }

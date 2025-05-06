@@ -84,6 +84,7 @@ public:
     void resetShuffle(QString);
     bool isShuffleEnabled() const;
     void swapColumns(QTableView* tableview);
+    QStringList sortPreservingOrder(const QStringList&, const QStringList&);
     void setHvscSonglengthsFrequency(QString);
     void setHvscSonglengthsPathDownloaded(QString);
     QString getHvscSonglengthsFrequency();
@@ -433,6 +434,7 @@ private:
     void highlightPlaylistItem(QString playlist, int currentRow);
     bool initializeSocket();
     void createMenuWindowTabs();
+    void savePlayListSettings();
     void checkCommandLine(int argc, char* argv[]);
     void savePlayList(QString filename, QString newFilename);
     vector<PlaylistItem*> getPlayListEntriesM3U(QString filename);
