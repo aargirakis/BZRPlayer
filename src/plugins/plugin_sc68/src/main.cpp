@@ -276,7 +276,8 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 {
     auto* plugin = static_cast<pluginSc68*>(codec->plugindata);
 
-    if (sc68_process(plugin->sc68, buffer, plugin->waveformat.pcmblocksize) == SC68_ERROR)
+    //TODO int* casting
+    if (sc68_process(plugin->sc68, buffer, (int*)plugin->waveformat.pcmblocksize) == SC68_ERROR)
     {
         //cout << "FMOD_ERR_FORMAT play" << endl;
         return FMOD_ERR_FORMAT;

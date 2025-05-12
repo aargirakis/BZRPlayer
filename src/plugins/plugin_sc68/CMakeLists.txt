@@ -73,6 +73,10 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_STRING="")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_URL="")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_VERNUM)
 
+if (NOT WIN32) #TODO
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
+endif ()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
