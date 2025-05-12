@@ -173,7 +173,7 @@ Section "!${NAME} (required)"
   var /global releaseArchiveFilename
 
   ${If} $localReleaseArchivePath != ""
-    goto beforeUnpacking
+    goto beforeInstalling
   ${EndIf}
 
   StrCpy $releaseArchiveFilename "${RELEASE_ARCHIVE_FILENAME_UNVERSIONED}$version-win64.zip"
@@ -192,9 +192,15 @@ Section "!${NAME} (required)"
   downloadReleaseArchiveOk:
   DetailPrint "$releaseArchiveFilename successufully downloaded"
 
-  beforeUnpacking:
+  beforeInstalling:
   !insertmacro DetectRunningBzr2
   SetOutPath "$INSTDIR"
+
+  Delete $INSTDIR\*.*
+
+  Push "$INSTDIR"
+  Push "user"
+  Call RmDirsButOne
 
   nsisunz::UnzipToLog "${RELEASE_ARCHIVE_FILE_PATH}" "$INSTDIR"
   Pop $0
@@ -721,6 +727,39 @@ Function .onSelChange
   ${Next}
 
   onSelChangeEnd:
+FunctionEnd
+
+Function RmDirsButOne
+  Exch $R0
+  Exch
+  Exch $R1
+  Push $R2
+  Push $R3
+
+  ClearErrors
+  FindFirst $R3 $R2 "$R1\*.*"
+  IfErrors Exit
+
+  Top:
+  StrCmp $R2 "." Next
+  StrCmp $R2 ".." Next
+  StrCmp $R2 $R0 Next
+  IfFileExists "$R1\$R2\*.*" 0 Next
+  RmDir /r "$R1\$R2"
+
+  Next:
+  ClearErrors
+  FindNext $R3 $R2
+  IfErrors Exit
+  Goto Top
+
+  Exit:
+  FindClose $R3
+
+  Pop $R3
+  Pop $R2
+  Pop $R1
+  Pop $R0
 FunctionEnd
 
 Function saveRunButtonCheckState
