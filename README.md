@@ -96,16 +96,21 @@ Useful flags for dev/testing purposes:
 
 ### Linux
 
-In order to build BZR2 on **Arch-based** distros the following packages are required:
+In order to build BZR2 following packages are required:
 
-`base-devel` `cmake` `dos2unix` `libglvnd` `ninja` `patchutils` `qt6-base` `qt-advanced-docking-system`
-`qt6-declarative` `qt6-svg` `sdl2-compat` `vulkan-headers`
+- On **Arch-based** distros:
+  `base-devel` `cmake` `dos2unix` `libglvnd` `ninja` `patchutils` `qt6-base` `qt-advanced-docking-system`
+  `qt6-declarative` `qt6-svg` `sdl2-compat` `vulkan-headers`
 
-Instead, on **Debian-based** distros the following packages are required:
 
-`build-essential` `cmake` `dos2unix` `libglvnd0` `libsdl2-dev` `libvulkan-dev` `ninja-build` `patchutils` `qt6-base-dev`
-`qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
-[libqt-advanced-docking-system4.4.0-dev](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4.4.0_4.4.0-0_amd64.deb)
+- On **Debian-based** distros:`build-essential` `cmake` `dos2unix` `libglvnd0` `libsdl2-dev` `libvulkan-dev`
+  `ninja-build` `patchutils` `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
+  [libqt-advanced-docking-system4.4.0-dev](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4.4.0_4.4.0-0_amd64.deb)
+
+
+- On **Fedora-based** distros: `cmake` `dos2unix` `ninja-build` `patchutils` `qt6-qtbase-devel` `qt6-qtsvg-devel`
+  `sdl2-compat-devel` `vulkan-headers`
+  [libqtadvanceddockingsystem-qt6-devel](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqtadvanceddockingsystem-qt6-devel-4.4.0-0.x86_64.rpm)
 
 ---
 
@@ -125,14 +130,17 @@ ninja -C cmake-build
 
 #### Runtime dependencies
 
-For running BZR2 on **Arch-based** distros following packages are required:
+For running BZR2 following packages are required:
 
-`qt6-base` `qt-advanced-docking-system`
+- On **Arch-based** distros: `qt6-base` `qt-advanced-docking-system`
 
-Instead, on **Debian-based** distros the following packages are required:
 
-`libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6` `libqt-advanced-docking-system4.4.0`
-[libqt-advanced-docking-system4.4.0](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4.4.0_4.4.0-0_amd64.deb)
+- On **Debian-based** distros: `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
+  `libqt-advanced-docking-system4.4.0` [libqt-advanced-docking-system4.4.0](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4.4.0_4.4.0-0_amd64.deb)
+
+
+- On **Fedora-based** distros: `qt6-qtbase` `qt6-qtsvg`
+  [libqtadvanceddockingsystem-qt6](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqtadvanceddockingsystem-qt6-4.4.0-0.x86_64.rpm)
 
 #### Generated binaries
 

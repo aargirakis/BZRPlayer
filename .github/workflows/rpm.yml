@@ -1,0 +1,221 @@
+name: Rpm
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        run: |
+          echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
+          dnf update -y
+          dnf install -y cmake dos2unix ninja-build patchutils qt6-qtbase-private-devel qt6-qtsvg-devel rpm-build \
+                         rpmlint sdl2-compat-devel vulkan-headers
+
+      - name: Build qt-ads 4.4.0
+        run: |
+          mkdir -p ~/rpmbuild/{SOURCES,SPECS}
+
+          cat >~/rpmbuild/SPECS/libqtadvanceddockingsystem.spec <<'EOF'
+          %global debug_package %{nil}
+          %global source_date_epoch_from_changelog %{nil}
+
+          Name:           libqtadvanceddockingsystem
+          Version:        4.4.0
+          Release:        0
+          Summary:        Advanced Docking System for Qt
+          License:        LGPL-2.1-or-later
+          URL:            https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System
+          Source:         https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/archive/refs/tags/%{version}.tar.gz
+          BuildRequires:  cmake
+          BuildRequires:  ninja-build
+          BuildRequires:  qt6-qtbase-private-devel
+          Requires:       qt6-qtbase
+
+          %description
+          Qt Advanced Docking System lets you create customizable layouts using a full
+          featured window docking system similar to what is found in many popular
+          integrated development environments (IDEs) such as Visual Studio.
+
+          %package qt6
+          Summary:        Advanced Docking System for Qt
+          Group:          Development/Libraries
+
+          %description qt6
+          Qt Advanced Docking System lets you create customizable layouts using a full
+          featured window docking system similar to what is found in many popular
+          integrated development environments (IDEs) such as Visual Studio.
+
+          %package qt6-devel
+          Summary:        Development files for %{name}
+          Group:          Development/Header
+          Requires:       %{name}-qt6 = %{version}-%{release}
+
+          %description qt6-devel
+          The %{name}-qt6-devel package contains libraries and header files for
+          developing applications that use %{name}.
+
+          %prep
+          %setup -qn Qt-Advanced-Docking-System-%{version}
+
+          %build
+          %cmake -DCMAKE_PREFIX_PATH=%{_prefix} \
+                 -DCMAKE_BUILD_TYPE=Release \
+                 -DADS_VERSION=%{version} \
+                 -DQT_VERSION_MAJOR=6 \
+                 -DBUILD_EXAMPLES=OFF \
+                 -G Ninja
+          %cmake_build
+
+          %install
+          %cmake_install
+          mkdir -p %{buildroot}%{_defaultlicensedir}/%{name}-qt6
+          mv %{buildroot}%{_prefix}/license/ads/* %{buildroot}%{_defaultlicensedir}/%{name}-qt6
+
+          %files qt6
+          %license %{_defaultlicensedir}/%{name}-qt6/LICENSE
+          %license %{_defaultlicensedir}/%{name}-qt6/gnu-lgpl-v2.1.md
+          %{_libdir}/libqtadvanceddocking-qt6.so.%{version}
+
+          %files qt6-devel
+          %license %{_defaultlicensedir}/%{name}-qt6/LICENSE
+          %license %{_defaultlicensedir}/%{name}-qt6/gnu-lgpl-v2.1.md
+          %{_includedir}/qtadvanceddocking-qt6
+          %{_libdir}/libqtadvanceddocking-qt6.so
+          %{_libdir}/cmake/qtadvanceddocking-qt6
+          EOF
+
+          rpmlint ~/rpmbuild/SPECS/libqtadvanceddockingsystem.spec
+          rpmbuild --undefine=_disable_source_fetch -bb ~/rpmbuild/SPECS/libqtadvanceddockingsystem.spec
+          dnf install -y ~/rpmbuild/RPMS/x86_64/libqtadvanceddockingsystem-qt6-4.4.0-0.x86_64.rpm \
+                         ~/rpmbuild/RPMS/x86_64/libqtadvanceddockingsystem-qt6-devel-4.4.0-0.x86_64.rpm
+          mkdir ~/artifacts
+          mv ~/rpmbuild/RPMS/x86_64/libqtadvanceddockingsystem-qt6-4.4.0-0.x86_64.rpm \
+             ~/rpmbuild/RPMS/x86_64/libqtadvanceddockingsystem-qt6-devel-4.4.0-0.x86_64.rpm \
+             ~/artifacts
+          rm -rf ~/rpmbuild
+
+      - name: Build
+        run: |
+          mkdir -p ~/rpmbuild/{SOURCES,SPECS}
+
+          cat >~/rpmbuild/SPECS/bzr-player.spec <<'EOF'
+          %global debug_package %{nil}
+          %global source_date_epoch_from_changelog %{nil}
+
+          # workaround for making plugin_furnace.so, plugin_klystron & plugin_protrekkr.so work:
+          %global build_ldflags %{build_ldflags} -Wl,-z,lazy
+
+          Name:           bzr-player
+          Version:        ${{env.BZR2_VERSION}}
+          Release:        1
+          Summary:        Audio player supporting a wide array of multi-platform exotic file formats
+          Group:          Applications/Multimedia
+          License:        GPL-3.0-only
+          URL:            https://bzrplayer.blazer.nu
+          Source:         %{expand:%%(pwd)}
+          BuildRequires:  cmake
+          BuildRequires:  desktop-file-utils
+          BuildRequires:  dos2unix
+          BuildRequires:  libqtadvanceddockingsystem-qt6-devel
+          BuildRequires:  ninja-build
+          BuildRequires:  patchutils
+          BuildRequires:  qt6-qtbase-devel
+          BuildRequires:  qt6-qtsvg-devel
+          BuildRequires:  sdl2-compat-devel
+          BuildRequires:  vulkan-headers
+          Requires:       libqtadvanceddockingsystem-qt6
+          Requires:       qt6-qtbase
+          Requires:       qt6-qtsvg
+
+          %description
+          Audio player supporting a wide array of multi-platform exotic file formats
+
+          %prep
+          find %{_builddir} -mindepth 1 -delete
+          cp -af %{SOURCEURL0}/. %{_builddir}
+
+          %build
+          %cmake -DCMAKE_PREFIX_PATH=%{_prefix} \
+                 -DCMAKE_BUILD_TYPE=Release \
+                 -DOFFLINE_MODE=1 \
+                 -G Ninja
+          %cmake_build
+
+          %install
+          cp -r %{_builddir}/redhat-linux-build/output%{_prefix} %{buildroot}
+          install -Dm644 %{_builddir}/redhat-linux-build/output/LICENSE %{buildroot}%{_defaultlicensedir}/%{name}/LICENSE
+
+          for size in 16 32 48 64 128 256 512; do
+            install -Dm644 %{_builddir}/redhat-linux-build/output%{_datadir}/%{name}/data/resources/icon.png \
+              %{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/%{name}.png
+          done
+
+          install -Dm644 %{_builddir}/src/inst/x-bzr-player.xml %{buildroot}%{_datadir}/mime/packages/x-bzr-player.xml
+
+          mapfile -t mime_types_supported < <(sed -n "\|mime_types_supported=(| , \|)|{p; \|)|q}" %{_builddir}/src/inst/bzr2-wine_setup.sh |
+            sed -e 's:mime_types_supported=(::g' -e 's:)::g' -e 's: :\n:g' | sed '/^[[:space:]]*$/d')
+
+          for mime_type in "${mime_types_supported[@]}"; do
+            desktop_entry_mime_types="$desktop_entry_mime_types$mime_type;"
+          done
+
+          bzr2_desktop_content=$(
+            cat <<EOF2
+          [Desktop Entry]
+          Type=Application
+          Name=BZR Player
+          GenericName=Audio player
+          Comment=Audio player supporting a wide array of multi-platform exotic file formats
+          Exec=/usr/bin/bzr-player %U
+          Icon=bzr-player
+          Terminal=false
+          StartupNotify=false
+          Categories=AudioVideo;Audio;Music;Player;
+          MimeType=$desktop_entry_mime_types
+          EOF2
+
+          )
+
+          mkdir -p %{buildroot}%{_datadir}/applications
+          echo "$bzr2_desktop_content" > %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+          %check
+          desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+          %files
+          %{_bindir}/%{name}
+          %{_libdir}/%{name}
+          %{_datadir}/%{name}
+          %license %{_defaultlicensedir}/%{name}/LICENSE
+          %{_datadir}/icons/hicolor/16x16/apps/%{name}.png
+          %{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+          %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+          %{_datadir}/icons/hicolor/64x64/apps/%{name}.png
+          %{_datadir}/icons/hicolor/128x128/apps/%{name}.png
+          %{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+          %{_datadir}/icons/hicolor/512x512/apps/%{name}.png
+          %{_datadir}/applications/%{name}.desktop
+          %{_datadir}/mime/packages/x-bzr-player.xml
+          EOF
+
+          rpmlint ~/rpmbuild/SPECS/bzr-player.spec
+          rpmbuild -bb ~/rpmbuild/SPECS/bzr-player.spec
+          dnf install -y ~/rpmbuild/RPMS/x86_64/bzr-player-${{env.BZR2_VERSION}}-1.x86_64.rpm
+          mv ~/rpmbuild/RPMS/x86_64/bzr-player-${{env.BZR2_VERSION}}-1.x86_64.rpm ~/artifacts
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-rpm
+          path: |
+            ~/artifacts/libqtadvanceddockingsystem-qt6-4.4.0-0.x86_64.rpm
+            ~/artifacts/libqtadvanceddockingsystem-qt6-devel-4.4.0-0.x86_64.rpm
+            ~/artifacts/bzr-player-${{env.BZR2_VERSION}}-1.x86_64.rpm
