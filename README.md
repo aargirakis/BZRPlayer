@@ -107,6 +107,8 @@ Instead, on **Debian-based** distros the following packages are required:
 `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
 [libqt-advanced-docking-system4.4.0-dev](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4.4.0_4.4.0-0_amd64.deb)
 
+#TODO **RPM-based** distros
+
 ---
 
 Go to the project sources dir then start the configuration process executing:\
@@ -133,6 +135,8 @@ Instead, on **Debian-based** distros the following packages are required:
 
 `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6` `libqt-advanced-docking-system4.4.0`
 [libqt-advanced-docking-system4.4.0](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4.4.0_4.4.0-0_amd64.deb)
+
+#TODO **RPM-based** distros
 
 #### Generated binaries
 
