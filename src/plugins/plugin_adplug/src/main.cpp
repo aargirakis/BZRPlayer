@@ -37,7 +37,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_adplug_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG, // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_SUBSONG_MS, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
@@ -72,7 +72,9 @@ public:
     Copl* opl;
     FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned long samplesToWrite = 0;
-    unsigned long songlength;
+    unsigned int currentSubsong = -1;
+    unsigned int songlength = -1;
+    bool isSongEndReached = false;
     bool isContinuousPlaybackActive;
 };
 
@@ -235,7 +237,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
-    cout << "adplug trying to load: " << info->filename << "\n";
     plugin->player = CAdPlug::factory(info->filename, plugin->opl);
     if (!plugin->player)
     {
@@ -248,8 +249,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->waveformat.frequency = freq;
     plugin->waveformat.pcmblocksize = (bits >> 3) * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
-
-    plugin->songlength = plugin->player->songlength(-1); // it does a rewind: call it only before start playing
 
     codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;
@@ -269,11 +268,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     {
         info->instruments[j] = plugin->player->getinstrument(j);
     }
+
     info->plugin = PLUGIN_adplug;
     info->pluginName = PLUGIN_adplug_NAME;
     info->setSeekable(true);
 
-    cout << "adlib ok\n";
     return FMOD_OK;
 }
 
@@ -287,9 +286,20 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 {
     auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
 
+    if (plugin->currentSubsong != -1 && plugin->songlength == -1)
+    {
+        // songlength function does a rewind internally: call it only before start playing
+        plugin->songlength = static_cast<unsigned int>(plugin->player->songlength(static_cast<int>(plugin->currentSubsong)));
+    }
+
+    if (plugin->isSongEndReached && plugin->samplesToWrite == 0 && !plugin->isContinuousPlaybackActive)
+    {
+        return FMOD_ERR_FILE_EOF;
+    }
+
     while (plugin->samplesToWrite < plugin->waveformat.pcmblocksize)
     {
-        plugin->player->update();
+        plugin->isSongEndReached = !plugin->player->update();
         plugin->samplesToWrite += plugin->waveformat.frequency / plugin->player->getrefresh();
     }
 
@@ -298,52 +308,6 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     plugin->samplesToWrite -= plugin->waveformat.pcmblocksize;
 
     return FMOD_OK;
-
-    //    unsigned int numSamples = size;
-    //    auto maxSamples = numSamples;
-
-    ////            if (m_hasEnded)
-    ////            {
-    ////                m_hasEnded = false;
-    ////                return 0;
-    ////            }
-
-    //            auto remainingSamples = plugin->m_remainingSamples;
-    //            while (numSamples > 0)
-    //            {
-    //                if (remainingSamples > 0)
-    //                {
-    //                    auto samplesToAdd = min(numSamples, remainingSamples);
-
-    //                    //auto buf = reinterpret_cast<int16_t*>(output + samplesToAdd) - samplesToAdd * 2;
-    //                    plugin->opl->update((short*)buffer, samplesToAdd);
-
-    //                    remainingSamples -= samplesToAdd;
-    //                    numSamples -= samplesToAdd;
-
-    //                    //output = output->Convert(buf, samplesToAdd);
-    //                }
-    //                else if (plugin->player->update())
-    //                {
-    //                    remainingSamples = static_cast<uint32_t>(plugin->waveformat.frequency / plugin->player->getrefresh());
-    //                    //m_isStuck = 0;
-    //                }
-    ////                else if (m_isStuck == 1)
-    ////                {
-    ////                    m_player->rewind(m_subsongIndex);
-    ////                    m_isStuck++;
-    ////                }
-    //                else
-    //                {
-    //                    //m_isStuck++;
-    //                    //m_hasEnded = m_isStuck > 1 || numSamples != maxSamples;
-    //                    break;
-    //                }
-    //            }
-    //            plugin->m_remainingSamples = remainingSamples;
-
-    //            *read = maxSamples - numSamples;
-    //return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
@@ -373,14 +337,12 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
         plugin->player->seek(position);
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
+
+    if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        if (position < 0) position = 0;
-        plugin->player->rewind(position);
+        plugin->currentSubsong = position;
         return FMOD_OK;
     }
-    else
-    {
-        return FMOD_ERR_FORMAT;
-    }
+
+    return FMOD_ERR_FORMAT;
 }
