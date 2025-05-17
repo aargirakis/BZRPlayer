@@ -131,7 +131,7 @@ jobs:
           BuildRequires:  vulkan-headers
           
           #TODO
-          BuildRequires:  update-desktop-files
+          BuildRequires:  desktop-file-utils
 
           Requires:       qt6-qtbase
           Requires:       qt6-qtsvg
