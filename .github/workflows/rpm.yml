@@ -170,7 +170,7 @@ jobs:
           done
 
           bzr2_desktop_content=$(
-            cat <<EOF
+            cat <<EOF2
           [Desktop Entry]
           Type=Application
           Name=BZR Player
@@ -182,7 +182,7 @@ jobs:
           StartupNotify=false
           Categories=AudioVideo;Audio;Music;Player;
           MimeType=$desktop_entry_mime_types
-          EOF
+          EOF2
 
           )
 
