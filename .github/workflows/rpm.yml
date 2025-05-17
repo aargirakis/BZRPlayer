@@ -108,7 +108,7 @@ jobs:
 
           cat >~/rpmbuild/SPECS/bzr-player.spec <<'EOF'
           %global debug_package %{nil}
-          
+
           # workaround for making plugin_furnace.so, plugin_klystron & plugin_protrekkr.so work:
           %global build_ldflags %{build_ldflags} -Wl,-z,lazy
 
@@ -131,7 +131,7 @@ jobs:
           BuildRequires:  vulkan-headers
           
           #TODO
-          #BuildRequires:  update-desktop-files
+          BuildRequires:  update-desktop-files
 
           Requires:       qt6-qtbase
           Requires:       qt6-qtsvg
@@ -152,17 +152,50 @@ jobs:
           %cmake_build
 
           %install
-          mv -f %{_builddir}/redhat-linux-build/output/LICENSE %{buildroot}
-          mv -f %{_builddir}/redhat-linux-build/output%{_prefix} %{buildroot}
+          install -Dm644 %{_builddir}/redhat-linux-build/output/LICENSE %{buildroot}
+          install -dm755 %{_builddir}/redhat-linux-build/output%{_prefix} %{buildroot}
+          
+          for size in 16 32 48 64 128 256 512; do
+            install -Dm644 %{_builddir}/redhat-linux-build/output%{_datadir}/bzr-player/data/resources/icon.png \
+              %{buildroot}{_datadir}/icons/hicolor/${size}x${size}/apps/bzr-player.png
+          done
 
-          #%check
-          #desktop-file-validate %{buildroot}%{_datadir}/applications/bzr-player.desktop
+          install -Dm644 %{_builddir}/redhat-linux-build/src/inst/x-bzr-player.xml %{buildroot}%{_datadir}/mime/packages/x-bzr-player.xml
+
+          mapfile -t mime_types_supported < <(sed -n "\|mime_types_supported=(| , \|)|{p; \|)|q}" %{_builddir}/redhat-linux-build/src/inst/bzr2-wine_setup.sh |
+            sed -e 's:mime_types_supported=(::g' -e 's:)::g' -e 's: :\n:g' | sed '/^[[:space:]]*$/d')
+
+          for mime_type in "${mime_types_supported[@]}"; do
+            desktop_entry_mime_types="$desktop_entry_mime_types$mime_type;"
+          done
+
+          bzr2_desktop_content=$(
+            cat <<EOF
+          [Desktop Entry]
+          Type=Application
+          Name=BZR Player
+          GenericName=Audio player
+          Comment=Audio player supporting a wide array of multi-platform exotic file formats
+          Exec=/usr/bin/bzr-player %U
+          Icon=bzr-player
+          Terminal=false
+          StartupNotify=false
+          Categories=AudioVideo;Audio;Music;Player;
+          MimeType=$desktop_entry_mime_types
+          EOF
+
+          )
+
+          echo "$bzr2_desktop_content" > %{buildroot}%{_datadir}/applications/bzr-player.desktop
+
+          %check
+          desktop-file-validate %{_datadir}/applications/bzr-player.desktop
 
           %files
           %license /LICENSE
-          %{_bindir}/bzr-player
-          %{_libdir}/bzr-player
-          %{_datadir}/bzr-player
+          %{_bindir}
+          %{_libdir}
+          %{_datadir}
           EOF
 
           rpmlint ~/rpmbuild/SPECS/bzr-player.spec
