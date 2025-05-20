@@ -132,7 +132,7 @@ ninja -C cmake-build
 
 For running BZR2 following packages are required:
 
-- On **Arch-based** distros: `qt6-base` `qt-advanced-docking-system`
+- On **Arch-based** distros: `qt6-base` `qt6-svg` `qt-advanced-docking-system`
 
 
 - On **Debian-based** distros: `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
