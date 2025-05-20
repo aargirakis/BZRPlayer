@@ -25,7 +25,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/depackers/lhasa/*.c
         ${EXTERNAL_SOURCE_DIR}/src/loaders/*.c
         ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard/*.c
-        src/queue.c #TODO remove (and the queue.h include in common.h.patch)
+        src/queue.c
         src/main.cpp
 
         ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp)
@@ -50,7 +50,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/depackers/lhasa
         ${EXTERNAL_SOURCE_DIR}/src/loaders
         ${EXTERNAL_SOURCE_DIR}/src/loaders/prowizard
-        src #TODO remove
+        src
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})

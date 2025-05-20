@@ -137,5 +137,3 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
                 DEPENDS ${MODULES})
     endif ()
 endif ()
-
-#TODO queue.h & queue.c (in hivelytracker & libxmp plugins) should be replaced by c++ std::queue (as in plugin_libopenmpt's main.cpp)
