@@ -132,7 +132,7 @@ FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginVgmstream*>(codec->plugindata);
-    render_vgmstream(static_cast<sample_t*>(buffer), size, plugin->vgmstream);
+    render_vgmstream2(static_cast<sample_t*>(buffer), size, plugin->vgmstream);
     *read = size;
 
     return FMOD_OK;

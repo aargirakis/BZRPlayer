@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "vgmstream")
-set(VERSION "r1980")
+set(VERSION "r2023")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -14,7 +14,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/${NAME}/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "6b095f8159726c4a4a323c75d837c6092e56d026e60a98c4a30ce3d8d0911f56")
+set(SHA_256_HASH "4f4288f177cb12ecee7c2280a719044061195629947e08571e5c4484901b73bc")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" ""
 )
@@ -44,8 +44,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${FMOD_API_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE _VORBIS_CUSTOM_DECODER_H_)
-
-target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-implicit-function-declaration>)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
