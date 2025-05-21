@@ -1,5 +1,5 @@
---- src/common.h	2025-01-01 01:11:02.000000000 +0100
-+++ src/common.h	2025-01-02 15:15:35.288619702 +0100
+--- src/common.h	2025-05-11 10:10:20.000000000 +0200
++++ src/common.h	2025-05-21 16:43:12.143890425 +0200
 @@ -26,6 +26,7 @@
  #include <stdlib.h>
  #include <stdio.h>
@@ -8,17 +8,17 @@
  #include "xmp.h"
  
  #undef  LIBXMP_EXPORT_VAR
-@@ -556,7 +557,12 @@
+@@ -601,6 +602,13 @@
+ 	double scan_time_factor;	/* m->time_factor for most recent scan */
+ 	double current_time;		/* current time based on scan time factor */
  
- 	double current_time;
- 	double frame_time;
--
-+Queue patternPosBuffer;
-+Queue trackPosBuffer;
-+Queue posBuffer;
-+Queue vumeterBuffer;
-+Queue speedBuffer;
-+Queue bpmBuffer;
++	Queue patternPosBuffer;
++	Queue trackPosBuffer;
++	Queue posBuffer;
++	Queue vumeterBuffer;
++	Queue speedBuffer;
++	Queue bpmBuffer;
++
  	int loop_count;
  	int sequence;
  	unsigned char sequence_control[XMP_MAX_MOD_LENGTH];
