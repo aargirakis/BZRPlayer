@@ -91,7 +91,7 @@ jobs:
           install -Dm644 cmake-build/output/LICENSE "$bzr2_deb_name/usr/share/doc/bzr-player/copyright"
 
           for size in 16 32 48 64 128 256 512; do
-            install -Dm644 "$bzr2_deb_name/usr/share/bzr-player/data/resources/icon.png" \
+            install -Dm644 "$bzr2_deb_name/usr/share/bzr-player/resources/icon.png" \
               "$bzr2_deb_name/usr/share/icons/hicolor/${size}x${size}/apps/bzr-player.png"
           done
 

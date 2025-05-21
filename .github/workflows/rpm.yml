@@ -154,7 +154,7 @@ jobs:
           install -Dm644 %{_builddir}/redhat-linux-build/output/LICENSE %{buildroot}%{_defaultlicensedir}/%{name}/LICENSE
 
           for size in 16 32 48 64 128 256 512; do
-            install -Dm644 %{_builddir}/redhat-linux-build/output%{_datadir}/%{name}/data/resources/icon.png \
+            install -Dm644 %{_builddir}/redhat-linux-build/output%{_datadir}/%{name}/resources/icon.png \
               %{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/%{name}.png
           done
 
