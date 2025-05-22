@@ -136,7 +136,7 @@ For running BZR2 following packages are required:
 
 
 - On **Debian-based** distros: `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
-  `libqt-advanced-docking-system4.4.0` [libqt-advanced-docking-system4.4.0](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4.4.0_4.4.0-0_amd64.deb)
+  [libqt-advanced-docking-system4.4.0](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4.4.0_4.4.0-0_amd64.deb)
 
 
 - On **Fedora-based** distros: `qt6-qtbase` `qt6-qtsvg`
