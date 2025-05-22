@@ -85,6 +85,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     if (instanceExists) return;
 
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
     //Fonts needs to be added before the GUI
     QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "Roboto-Medium.ttf");
     QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "Roboto-Regular.ttf");
@@ -701,7 +703,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     createMenuWindowTabs();
 
     ui->labelFilename->installEventFilter(this);
-    ui->visualizer->installEventFilter(this);
     ui->dockWidgetContents_4->installEventFilter(this);
     visualizerFullScreen->installEventFilter(this);
     trackerFullScreen->installEventFilter(this);
