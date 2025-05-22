@@ -49,9 +49,41 @@ add_compile_options(-w) #TODO remove
 
 set(SUBDIRECTORIES_BY_MODULES
         app "src/app"
-
+        plugin_adplug "src/plugins/plugin_adplug"
+        plugin_asap "src/plugins/plugin_asap"
+        plugin_audiodecoder.wsr "src/plugins/plugin_audiodecoder.wsr"
+        plugin_audiofile "src/plugins/plugin_audiofile"
+        plugin_faad2 "src/plugins/plugin_faad2"
+        plugin_flod "src/plugins/plugin_flod"
+        plugin_furnace "src/plugins/plugin_furnace"
+        plugin_game-music-emu "src/plugins/plugin_game-music-emu"
+        plugin_highly_experimental "src/plugins/plugin_highly_experimental"  #check cmake TODO
+        plugin_highly_quixotic "src/plugins/plugin_highly_quixotic"          #check cmake TODO
+        plugin_highly_theoretical "src/plugins/plugin_highly_theoretical"    #check cmake TODO
+        plugin_hivelytracker "src/plugins/plugin_hivelytracker"
+        plugin_jaytrax "src/plugins/plugin_jaytrax"
+        plugin_kdm "src/plugins/plugin_kdm"                                  #TODO audio overdrive issue (check kdmeng.cpp)
+        plugin_klystron "src/plugins/plugin_klystron"
+        plugin_lazyusf2 "src/plugins/plugin_lazyusf2"
+        plugin_libfc14audiodecoder "src/plugins/plugin_libfc14audiodecoder"
+        plugin_libopenmpt "src/plugins/plugin_libopenmpt"
+        plugin_libpac "src/plugins/plugin_libpac"
+        plugin_libsidplayfp "src/plugins/plugin_libsidplayfp"
+        plugin_libstsound "src/plugins/plugin_libstsound"
+        plugin_libxmp "src/plugins/plugin_libxmp"
+        plugin_mdxmini "src/plugins/plugin_mdxmini"
+        plugin_organya-decoder "src/plugins/plugin_organya-decoder"
+        plugin_protrekkr "src/plugins/plugin_protrekkr"
+        plugin_sc68 "src/plugins/plugin_sc68"                                #TODO seeking it is now supported (should be implemented into main.cpp) #TODO also track length seems supported (see DisplayInfo function in sc68.c)
+        plugin_sndh-player "src/plugins/plugin_sndh-player"                  #check cmake TODO
+        plugin_sunvox_lib "src/plugins/plugin_sunvox_lib"                    #TODO add sv_unload_dll() (see sunvox_lib README)
+        plugin_tunes98_plug "src/plugins/plugin_tunes98_plug"                #check cmake TODO
+        plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO seeking it is now supported (should be implemented into main.cpp). #TODO add v2mz support (see sources/v2m dir for example files)
+        plugin_vgmplay-legacy "src/plugins/plugin_vgmplay-legacy"            #check cmake TODO
         plugin_vgmstream "src/plugins/plugin_vgmstream"
-
+        plugin_vio2sf "src/plugins/plugin_vio2sf"                            #check cmake TODO
+        plugin_webuade "src/plugins/plugin_webuade"        #TODO unfinished
+        plugin_zxtune "src/plugins/plugin_zxtune"
 )
 
 set(MODULES)
