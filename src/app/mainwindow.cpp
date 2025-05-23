@@ -4018,8 +4018,7 @@ void MainWindow::SaveSettings()
 
 void MainWindow::savePlayListSettings()
 {
-    QSettings settings(QApplication::applicationDirPath() + QDir::separator() + "user/settings.ini",
-                       QSettings::IniFormat);
+    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
     //Clear old playlist settings
     settings.remove("playlists");
 
