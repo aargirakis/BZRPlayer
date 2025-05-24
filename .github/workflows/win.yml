@@ -1,10 +1,12 @@
 name: Win
 
 on:
+  #TODO remove
+  push:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-bzr2:
     runs-on: windows-latest
 
     steps:
@@ -23,6 +25,8 @@ jobs:
       - name: Build
         shell: msys2 {0}
         run: |
+          #TODO remove
+          sed -i '/        plugin_/d' CMakeLists.txt
           cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=Release -DOFFLINE_MODE=1 -G Ninja
           ninja -C cmake-build
 
@@ -31,3 +35,41 @@ jobs:
         with:
           name: artifact-win
           path: cmake-build/output_release/*-win64.zip
+
+  build-nsis:
+    needs: build-bzr2
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        run: |
+          pacman-key --init
+          pacman -Sy archlinux-keyring --noconfirm
+          pacman -Syu --noconfirm git go
+          mkdir -m 777 yay_build
+          cd yay_build
+          useradd -m user
+          echo 'user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+          sudo -u user git clone https://aur.archlinux.org/yay.git
+          cd yay
+          sudo -u user makepkg -si --noconfirm
+          sudo -u user yay -Syu --noconfirm nsis-accesscontrol-bin nsis-inetc-bin nsis-nsarray-bin nsis-nsisunz-bin \
+                                            nsis-nsjson-bin nsis-nsprocess-bin nsis-nsrichedit-bin nsis-registry-bin
+
+      - name: Download
+        uses: actions/download-artifact@v4
+
+      - name: Build
+        run: |
+          ls -las
+          echo dummy1
+          find / grep x-bzr-player.xml
+          echo dummy2
+          ls -las
+          tar -xvvf artifact-win/BZR-Player-2.0.79-win64.zip
+          ls -las
