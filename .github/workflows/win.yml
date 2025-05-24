@@ -66,7 +66,10 @@ jobs:
 
       - name: Build
         run: |
-          unzip artifact-win/BZR-Player-2.0.79-win64.zip
-          ls -las artifact-win
+          unzip -q artifact-win/BZR-Player-2.0.79-win64.zip
+          ls -las a.
           cd src/inst/nsis
+          ls -las /usr/share/mime
+          ls -las /usr/share/mime/packages
+          cat /usr/share/mime/packages/freedesktop.org.xml
           makensis bzr2_setup.nsi
