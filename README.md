@@ -9,6 +9,7 @@ coded pretty much from scratch.
 
 - [Releases & changelogs](https://github.com/aargirakis/BZRPlayer/releases)
 - AUR package: [`bzr-player`](https://aur.archlinux.org/packages/bzr-player)
+#TODO remove unneded
 - Installers: [Windows](https://github.com/aargirakis/BZRPlayer/blob/main/src/inst/nsis/bzr2_setup.exe) -
   [Linux (Wine)](https://github.com/aargirakis/BZRPlayer/blob/main/src/inst/bzr2-wine_setup.sh)
 - [Old versions archive](https://github.com/aargirakis/BZRPlayer/tree/binaries_archive/binaries)
@@ -75,6 +76,7 @@ still missing.
 
 **NSIS** (3.10 or newer) with following plugins (check AUR entries) is required:
 
+#TODO remove unneded
 - [AccessControl](https://nsis.sourceforge.io/AccessControl_plug-in) `nsis-accesscontrol-bin`
 - [Inetc](https://nsis.sourceforge.io/Inetc_plug-in) `nsis-inetc-bin`
 - [NsArray](https://nsis.sourceforge.io/Arrays_in_NSIS) `nsis-nsarray-bin`
@@ -86,6 +88,8 @@ still missing.
 
 In order to build the Windows installer enter `src/inst/nsis` directory then execute: `makensis bzr2_setup.nsi`\
 As result of the building process (the Wine compatible) `bzr2_setup.exe` will be generated in the same directory.\
+
+#TODO remove unneded
 Since it is a self-updating installer, the latest installer version check is done at runtime (based on
 `bzr2_setup.exe_latest` file content generated at compile-time).\
 Useful flags for dev/testing purposes:
