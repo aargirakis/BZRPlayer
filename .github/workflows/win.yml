@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-bzr2:
     runs-on: windows-latest
 
     steps:
@@ -29,5 +29,49 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: artifact-win
-          path: cmake-build/output_release/*-win64.zip
+          name: artifacts-win
+          path: cmake-build/output_release/bzr-player-*-win64.zip
+
+  build-nsis:
+    needs: build-bzr2
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        run: |
+          echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
+          pacman-key --init
+          pacman -Syu --noconfirm archlinux-keyring git go shared-mime-info unzip
+          mkdir -m 777 yay_build
+          cd yay_build
+          useradd -m user
+          echo 'user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+          sudo -u user git clone https://aur.archlinux.org/yay.git
+          cd yay
+          sudo -u user makepkg -si --noconfirm
+          sudo -u user yay -Syu --noconfirm nsis-accesscontrol-bin nsis-nsarray-bin nsis-nsprocess-bin \
+                                            nsis-registry-bin
+
+      - name: Download
+        uses: actions/download-artifact@v4
+
+      - name: Build
+        run: |
+          unzip -q artifacts-win/bzr-player-${{env.BZR2_VERSION}}-win64.zip -d src/inst/nsis/bin
+          cd src/inst/nsis
+          makensis -DVERSION="${{env.BZR2_VERSION}}" bzr2_setup.nsi
+          mv bzr-player-${{env.BZR2_VERSION}}-win64.exe ../../../artifacts-win
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-win
+          path: |
+            artifacts-win/bzr-player-${{env.BZR2_VERSION}}-win64.zip
+            artifacts-win/bzr-player-${{env.BZR2_VERSION}}-win64.exe
+          overwrite: true

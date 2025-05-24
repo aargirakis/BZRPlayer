@@ -9,8 +9,7 @@ coded pretty much from scratch.
 
 - [Releases & changelogs](https://github.com/aargirakis/BZRPlayer/releases)
 - AUR package: [`bzr-player`](https://aur.archlinux.org/packages/bzr-player)
-- Installers: [Windows](https://github.com/aargirakis/BZRPlayer/blob/main/src/inst/nsis/bzr2_setup.exe) -
-  [Linux (Wine)](https://github.com/aargirakis/BZRPlayer/blob/main/src/inst/bzr2-wine_setup.sh)
+- [Linux Wine installer (deprecated)](https://github.com/aargirakis/BZRPlayer/blob/main/src/inst/bzr2-wine_setup.sh)
 - [Old versions archive](https://github.com/aargirakis/BZRPlayer/tree/binaries_archive/binaries)
 
 ## How To Build
@@ -76,23 +75,13 @@ still missing.
 **NSIS** (3.10 or newer) with following plugins (check AUR entries) is required:
 
 - [AccessControl](https://nsis.sourceforge.io/AccessControl_plug-in) `nsis-accesscontrol-bin`
-- [Inetc](https://nsis.sourceforge.io/Inetc_plug-in) `nsis-inetc-bin`
 - [NsArray](https://nsis.sourceforge.io/Arrays_in_NSIS) `nsis-nsarray-bin`
-- [Nsisunz](https://nsis.sourceforge.io/Nsisunz_plug-in) `nsis-nsisunz-bin`
-- [NsJSON](https://nsis.sourceforge.io/NsJSON_plug-in) `nsis-nsjson-bin`
 - [NsProcess](https://nsis.sourceforge.io/NsProcess_plugin) `nsis-nsprocess-bin`
-- [NsRichEdit](https://nsis.sourceforge.io/NsRichEdit_plug-in) `nsis-nsrichedit-bin`
 - [Registry](https://nsis.sourceforge.io/Registry_plug-in) `nsis-registry-bin`
 
-In order to build the Windows installer enter `src/inst/nsis` directory then execute: `makensis bzr2_setup.nsi`\
-As result of the building process (the Wine compatible) `bzr2_setup.exe` will be generated in the same directory.\
-Since it is a self-updating installer, the latest installer version check is done at runtime (based on
-`bzr2_setup.exe_latest` file content generated at compile-time).\
-Useful flags for dev/testing purposes:
-
-- `skipInstallerUpdate2` skip latest installer's version check/download: `bzr2_setup.exe /skipInstallerUpdate2`
-- `localReleaseArchivePath` install BZR2 from a local release archive:
-  `bzr2_setup.exe /localBinaryPath="<path_to_release_archive_file>"`
+In order to build the Windows installer put the target binaries in `src/inst/nsis/bin` then enter `src/inst/nsis`
+directory and execute: `makensis -DVERSION="<any_version>" bzr2_setup.nsi`\
+As result of the building process `bzr-player-<any_version>-win64.exe` will be generated in the same directory.
 
 ### Linux
 

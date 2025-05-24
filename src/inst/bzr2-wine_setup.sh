@@ -118,7 +118,9 @@ setup() {
 
   if ! $is_already_installed || [ "$force_reinstall" = y ]; then
 
-    if is_ge_than "$bzr2_version" "2.0.78"; then
+    if is_ge_than "$bzr2_version" "2.0.80"; then
+      bzr2_zip_filename="bzr-player-$bzr2_version-win64.zip"
+    elif is_ge_than "$bzr2_version" "2.0.78"; then
       bzr2_zip_filename="BZR-Player-$bzr2_version-win64.zip"
     else
       bzr2_zip_filename="BZR-Player-$bzr2_version.zip"

@@ -106,7 +106,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             set(CPACK_EXECUTABLE "${CMAKE_PREFIX_PATH}/bin/cpack")
         endif ()
 
-        set(CPACK_PACKAGE_NAME "BZR-Player")
+        set(CPACK_PACKAGE_NAME "bzr-player")
         set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
         set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-win64")
         set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
