@@ -50,7 +50,7 @@ jobs:
         run: |
           pacman-key --init
           pacman -Sy archlinux-keyring --noconfirm
-          pacman -Syu --noconfirm git go unzip
+          pacman -Syu --noconfirm git go shared-mime-info unzip
           mkdir -m 777 yay_build
           cd yay_build
           useradd -m user
