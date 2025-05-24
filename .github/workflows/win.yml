@@ -66,10 +66,7 @@ jobs:
 
       - name: Build
         run: |
-          ls -las
-          echo dummy1
-          find / grep x-bzr-player.xml
-          echo dummy2
-          ls -las
           tar -xvvf artifact-win/BZR-Player-2.0.79-win64.zip
-          ls -las
+          ls -las artifact-win
+          cd src/inst/nsis
+          makensis bzr2_setup.nsi
