@@ -36,7 +36,7 @@ main() {
     xdg-desktop-menu xdg-icon-resource xdg-mime xrdb
   )
   force_reinstall_default="n"
-  url_latest_version="https://bzrplayer.blazer.nu/latest-version.php"
+  url_latest_version="https://api.github.com/repos/aargirakis/BZRPlayer/releases/latest"
   urls_download=(
     "https://bzrplayer.blazer.nu/getFile.php?id="
     "https://github.com/aargirakis/BZRPlayer/releases/download"
@@ -231,7 +231,7 @@ check_bzr2_latest_version() {
 
     set +e
     local latest_version
-    latest_version=$(wget -qO- "$url_latest_version")
+    latest_version=$(wget -qO- "$url_latest_version" | grep '"tag_name":' | sed 's/.*"tag_name": "//;s/",.*//')
     local wget_result=$?
     set -e
 

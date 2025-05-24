@@ -40,7 +40,8 @@ CRCCheck force
 !define RELEASE_ARCHIVE_FILENAME_UNVERSIONED "BZR-Player-"
 !define RELEASE_ARCHIVE_FILE_PATH "$releaseArchiveFileDir\$releaseArchiveFilename"
 !define URL_MAIN "https://bzrplayer.blazer.nu"
-!define URL_LATEST_VERSION "${URL_MAIN}/latest-version.php"
+!define URL_LATEST_VERSION "https://api.github.com/repos/aargirakis/BZRPlayer/releases/latest"
+!define LATEST_VERSION_FILE_JSON "$TEMP\latest-version.json"
 !define URL_CHANGELOG "${URL_MAIN}/versions_json.php"
 !define URL_RELEASE_ARCHIVE "${URL_MAIN}/getFile.php?id=$version"
 !define URL_RELEASE_ARCHIVE_FALLBACK "https://github.com/aargirakis/BZRPlayer/releases/download/$version"
@@ -406,12 +407,13 @@ Function checkLatestVersion
     ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}" "DisplayVersion"
     StrCpy $alreadyInstalledVersion $0
 
-    inetc::get /RESUME "" /QUESTION "" /TOSTACK "${URL_LATEST_VERSION}" ""
+    inetc::get /RESUME "" /QUESTION "" "${URL_LATEST_VERSION}" "${LATEST_VERSION_FILE_JSON}"
     Pop $0
     ${If} $0 == "OK"
-      Pop $0
-      StrCpy $version $0
-      DetailPrint "latest version found: $1"
+      nsJSON::Set /file "${LATEST_VERSION_FILE_JSON}"
+      nsJSON::Get "tag_name"
+      Pop $version
+      DetailPrint "latest version found: $version"
     ${Else}
       DetailPrint "$0"
       StrCmp "$alreadyInstalledVersion" "" 0 canIgnoreLatestVersionCheck
@@ -772,6 +774,7 @@ Function saveRunButtonCheckState
 FunctionEnd
 
 Function .onGUIEnd
+  delete "${LATEST_VERSION_FILE_JSON}"
   delete "${CHANGELOG_FILE_JSON}"
   delete "${CHANGELOG_FILE_RTF}"
   delete "$PLUGINSDIR"
