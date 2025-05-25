@@ -84,12 +84,12 @@ public:
     void setHvscSonglengthsPathDownloaded(QString);
     QString getHvscSonglengthsFrequency();
     QString getHvscSonglengthsPathDownloaded();
-    qint64 getHvscSonglengthsDownloaded();
-    void DeleteWorkspace(QString workspace);
-    void CreateNewWorkspace(QString filename);
+    qint64 getHvscSonglengthsDownloaded() const;
+    void DeleteWorkspace(QString workspace) const;
+    void CreateNewWorkspace(const QString& filename);
     void DownloadFile();
     void setPosition(int offset = 0);
-    Effect* getEffect();
+    Effect* getEffect() const;
     void resetAll();
     void resetToDefaultColors();
     void changeStyleSheetColor();
@@ -98,33 +98,33 @@ public:
     void SaveSettings();
     void setOutputDevice(int outputDevice, QString);
     void setOutputDeviceSetting(int outputDevice);
-    int getOutputDevice();
+    int getOutputDevice() const;
     void setResetVolume(bool resetVolume);
-    bool getResetVolume();
-    int getResetVolumeValue();
+    bool getResetVolume() const;
+    int getResetVolumeValue() const;
     void setDefaultPlaymode(int defaultPlaymode);
-    int getDefaultPlaymode();
-    int getPlaylistRowHeight();
-    int getPlaylistsRowHeight();
-    int getNowPlayingFontSize();
-    bool getReverbEnabled();
-    void setReverbPreset(QString);
+    int getDefaultPlaymode() const;
+    int getPlaylistRowHeight() const;
+    int getPlaylistsRowHeight() const;
+    int getNowPlayingFontSize() const;
+    bool getReverbEnabled() const;
+    void setReverbPreset(const QString&);
     QString getReverbPreset();
     QString getIgnorePrefix();
     QString getIgnoreSuffix();
     void setIgnorePrefix(QString);
     void setIgnoreSuffix(QString);
     void setReverbEnabled(bool);
-    bool getNormalizeEnabled();
-    bool getDisplayMilliseconds();
-    bool getEnqueueItems();
-    bool getSystrayOnQuitEnabled();
+    bool getNormalizeEnabled() const;
+    bool getDisplayMilliseconds() const;
+    bool getEnqueueItems() const;
+    bool getSystrayOnQuitEnabled() const;
     void setNormalizeEnabled(bool);
-    int getNormalizeFadeTime();
+    int getNormalizeFadeTime() const;
     void setNormalizeFadeTime(int);
-    int getNormalizeThreshold();
+    int getNormalizeThreshold() const;
     void setNormalizeThreshold(int);
-    int getNormalizeMaxAmp();
+    int getNormalizeMaxAmp() const;
     void setNormalizeMaxAmp(int);
     void setResetVolumeValue(int value);
     void setSystrayOnQuitEnabled(bool enabled);
@@ -149,11 +149,11 @@ public:
     void setColorButtonHover(QString);
     void setColorDimmedText(QString);
 
-    void setColorVisualizerTop(QString);
-    void setColorVisualizerBottom(QString);
-    void setColorVisualizerMiddle(QString);
-    void setColorVisualizerPeakColor(QString);
-    void setColorVisualizerBackground(QString);
+    void setColorVisualizerTop(const QString&);
+    void setColorVisualizerBottom(const QString&);
+    void setColorVisualizerMiddle(const QString&);
+    void setColorVisualizerPeakColor(const QString&);
+    void setColorVisualizerBackground(const QString&);
     void setScrollerReflectionColor(QString);
     void setVUMeterPeaksEnabled(bool);
     void setVUMeterPeaksHeight(int);
@@ -227,7 +227,7 @@ private slots:
     void displayError(QAbstractSocket::SocketError socketError);
     void dockWindowClosed(bool);
     void slot_dockWidgetMenuChecked(ads::CDockWidget*);
-    void slot_LoadWorkspace(QString);
+    void slot_LoadWorkspace(const QString&);
     void quit();
     void muteVolume();
     void clickSysTrayIcon(QSystemTrayIcon::ActivationReason reason);
@@ -258,11 +258,11 @@ private slots:
     void exportInstrumentToWAV();
     void exportInstrumentToIFF();
     void muteAllChannels();
-    void unmuteAllChannels();
+    void unmuteAllChannels() const;
 
-    void selectAllLogWindow();
-    void copyLogWindow();
-    void clearLogWindow();
+    void selectAllLogWindow() const;
+    void copyLogWindow() const;
+    void clearLogWindow() const;
 
     //drag'n'drop
     void dragEnterEvent(QDragEnterEvent* event);
@@ -270,8 +270,7 @@ private slots:
     void dragMoveEvent(QDragMoveEvent* event);
 
     void on_positionSlider_sliderReleased();
-    void on_volumeSlider_sliderMoved();
-    void on_volumeSlider_sliderPressed();
+
 
     void on_playlist_itemDoubleClicked(const QModelIndex&);
 
@@ -291,11 +290,7 @@ private slots:
 
     void on_checkBoxLoop_clicked();
 
-    void on_volumeSlider_sliderReleased();
-
     void on_checkBoxVolumeOn_clicked();
-
-    void on_volumeSlider_sliderMoved(int position);
 
     void on_playlist_doubleClicked(const QModelIndex& index);
 
@@ -318,8 +313,6 @@ private slots:
     void on_actionQuit_triggered();
 
     void on_actionAbout_BZR_Player_triggered();
-
-    void on_pitchSlider_sliderReleased();
 
     void on_pitchSlider_valueChanged(int value);
 
@@ -429,12 +422,14 @@ private:
     bool initializeSocket();
     void createMenuWindowTabs();
     void checkCommandLine(int argc, char* argv[]);
+    void setupIcons();
+    void setupAdvancedDockingSystem();
     void savePlayList(QString filename, QString newFilename);
     vector<PlaylistItem*> getPlayListEntriesM3U(QString filename);
     void updateInstruments();
-    QStringList getFilesRecursive(QString, QString = "", bool = true);
-    bool addSong(QList<QUrl> urls, int, QString, bool);
-    void addSong(QStringList filenames, int, QString, bool);
+    QStringList getFilesRecursive(const QString&, const QString& = "", bool = true);
+    bool addSong(const QList<QUrl>& urls, int, QString, bool);
+    void addSong(const QStringList& filenames, int, QString, bool);
 
     void resetShuffle(QString);
 

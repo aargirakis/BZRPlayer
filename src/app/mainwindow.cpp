@@ -101,75 +101,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     windowTitle = PROJECT_NAME_VERSIONED;
     srand(time(NULL));
 
-    ads::CDockManager::setConfigFlags(ads::CDockManager::DefaultOpaqueConfig);
-    ads::CDockManager::setConfigFlag(ads::CDockManager::DockAreaHasTabsMenuButton, false);
-    ads::CDockManager::setConfigFlag(ads::CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
-
-    m_DockManager = new ads::CDockManager(this);
-
-    m_DockManager->setStyleSheet(
-        "QScrollBar:vertical {background-color: #282828/*background*/;     width: 15px;     margin: 0 3px 0 3px;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:vertical {     background-color: #404040/*medium*/;     min-height: 25px;     border-radius: 4px; } QScrollBar:horizontal {     background-color: #282828/*background*/;     height: 15px;     margin: 3px 0 3px 0;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:horizontal {     background-color: #404040/*medium*/;     min-width: 5px;     border-radius: 4px; } QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {     background: none; } QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {     background: none; } QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal {     background: none; } QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {     background: none; } QScrollBar::sub-line:vertical {     height: 0;     width: 0; } QScrollBar::add-line:vertical {     height: 0;     width: 0; } QScrollBar::sub-line:horizontal {     height: 0;     width: 0; } QScrollBar::add-line:horizontal {     height: 0;     width: 0; }QScrollArea#dockWidgetScrollArea {	background: #282828/*background*/;padding: 0px;	border: none;} ads--CDockWidgetTab QLabel {font-family:Roboto;font-size:14px;color:#b1b1b1/*dimmed text*/;}ads--CDockWidgetTab[activeTab=\"true\"] QLabel {color:#ffffff/*main text*/;}#tabCloseButton {margin-top: 0;background: none;border: none;}ads--CDockContainerWidget ads--CDockSplitter::handle {background: #161616/*behind-background*/;}ads--CDockAreaTitleBar { background: #282828/*background*/;}ads--CDockWidgetTab {background: #282828/*background*/}");
-
-
-    DockWidgetLogMessages = new ads::CDockWidget("Log Messages");
-    DockWidgetLogMessages->setWidget(ui->dockWidgetContents_9, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetLogMessages);
-    dockWidgets.append(DockWidgetLogMessages);
-
-    DockWidgetTitle = new ads::CDockWidget("Now Playing");
-    DockWidgetTitle->setWidget(ui->dockWidgetContents_5, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTitle);
-    dockWidgets.append(DockWidgetTitle);
-
-
-    DockWidgetChannels = new ads::CDockWidget("Channels");
-    DockWidgetChannels->setWidget(ui->dockWidgetContents_7);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetChannels);
-    dockWidgets.append(DockWidgetChannels);
-
-    DockWidgetTrackerView = new ads::CDockWidget("Tracker View");
-    DockWidgetTrackerView->setWidget(ui->dockWidgetContents_6, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTrackerView);
-    dockWidgets.append(DockWidgetTrackerView);
-
-    DockWidgetInfo = new ads::CDockWidget("Info");
-    DockWidgetInfo->setWidget(ui->dockWidgetContents_3, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetInfo);
-    dockWidgets.append(DockWidgetInfo);
-
-
-    DockWidgetVisualizer = new ads::CDockWidget("Visualizer");
-    DockWidgetVisualizer->setWidget(ui->dockWidgetContents_11, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetVisualizer);
-    dockWidgets.append(DockWidgetVisualizer);
-
-
-    DockWidgetPlaylists = new ads::CDockWidget("Playlists");
-    DockWidgetPlaylists->setWidget(ui->dockWidgetContents_8, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylists);
-    dockWidgets.append(DockWidgetPlaylists);
-
-    DockWidgetPlaylist = new ads::CDockWidget("Playlist");
-    DockWidgetPlaylist->setWidget(ui->dockWidgetContents_4, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylist);
-    dockWidgets.append(DockWidgetPlaylist);
-
-    DockWidgetInstruments = new ads::CDockWidget("Instruments");
-    DockWidgetInstruments->setWidget(ui->dockWidgetContents_10, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetInstruments);
-    dockWidgets.append(DockWidgetInstruments);
-
-    DockWidgetSamples = new ads::CDockWidget("Samples");
-    DockWidgetSamples->setWidget(ui->dockWidgetContents_2, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetSamples);
-    dockWidgets.append(DockWidgetSamples);
-
-    DockWidgetPlayControl = new ads::CDockWidget("Play Control");
-    DockWidgetPlayControl->setMinimumSizeHintMode(ads::CDockWidget::MinimumSizeHintFromContent);
-    DockWidgetPlayControl->setWidget(ui->dockWidgetContents, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetPlayControl);
-    dockWidgets.append(DockWidgetPlayControl);
-
+    setupAdvancedDockingSystem();
 
     ui->positionSlider->setValue(0);
     ui->labelFilename->setText("");
@@ -724,82 +656,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         l.at(0)->setForeground(QColor(colorMain.left(7)));
     }
 
-
-    QPixmap shuffleOn = ChangeSVGColor(":/resources/shuffle.svg", colorMain.left(7));
-    QPixmap shuffleOnHover = ChangeSVGColor(":/resources/shuffle.svg", colorMainHover.left(7));
-    QPixmap shuffleOff = ChangeSVGColor(":/resources/shuffle.svg", colorButton.left(7));
-    QPixmap shuffleOffHover = ChangeSVGColor(":/resources/shuffle.svg", colorButtonHover.left(7));
-
-    QPixmap speakerOn = ChangeSVGColor(":/resources/speaker.svg", colorButton.left(7));
-    QPixmap speakerOnHover = ChangeSVGColor(":/resources/speaker.svg", colorButtonHover.left(7));
-    QPixmap speakerOff = ChangeSVGColor(":/resources/speaker-off.svg", colorButton.left(7));
-    QPixmap speakerOffHover = ChangeSVGColor(":/resources/speaker-off.svg", colorButtonHover.left(7));
-
-
-    QPixmap play = ChangeSVGColor(":/resources/play.svg", colorButton.left(7));
-    QPixmap playHover = ChangeSVGColor(":/resources/play.svg", colorButtonHover.left(7));
-    QPixmap pause = ChangeSVGColor(":/resources/pause.svg", colorButton.left(7));
-    QPixmap pauseHover = ChangeSVGColor(":/resources/pause.svg", colorButtonHover.left(7));
-
-    QPixmap stop = ChangeSVGColor(":/resources/stop.svg", colorButton.left(7));
-    QPixmap stopHover = ChangeSVGColor(":/resources/stop.svg", colorButtonHover.left(7));
-
-    QPixmap prev = ChangeSVGColor(":/resources/prev.svg", colorButton.left(7));
-    QPixmap prevHover = ChangeSVGColor(":/resources/prev.svg", colorButtonHover.left(7));
-    QPixmap next = ChangeSVGColor(":/resources/next.svg", colorButton.left(7));
-    QPixmap nextHover = ChangeSVGColor(":/resources/next.svg", colorButtonHover.left(7));
-
-    QPixmap repeat = ChangeSVGColor(":/resources/repeat.svg", colorButton.left(7));
-    QPixmap repeatHover = ChangeSVGColor(":/resources/repeat.svg", colorButtonHover.left(7));
-    QPixmap repeat1 = ChangeSVGColor(":/resources/repeat-1.svg", colorMain.left(7));
-    QPixmap repeat1Hover = ChangeSVGColor(":/resources/repeat-1.svg", colorMainHover.left(7));
-    QPixmap repeatOn = ChangeSVGColor(":/resources/repeat.svg", colorMain.left(7));
-    QPixmap repeatOnHover = ChangeSVGColor(":/resources/repeat.svg", colorMainHover.left(7));
-
-    QPixmap add = ChangeSVGColor(":/resources/add.svg", colorButton.left(7));
-    QPixmap addHover = ChangeSVGColor(":/resources/add.svg", colorButtonHover.left(7));
-
-    QPixmap checkBoxOn = ChangeSVGColor(":/resources/checkbox-on.svg", colorMain.left(7));
-    QPixmap checkBoxOff = ChangeSVGColor(":/resources/checkbox-off.svg", colorBehindBackground.left(7));
-    QPixmap checkBoxOnDisabled = ChangeSVGColor(":/resources/checkbox-on-disabled.svg", colorMedium.left(7));
-    QPixmap checkBoxOffDisabled = ChangeSVGColor(":/resources/checkbox-off-disabled.svg", colorMedium.left(7));
-
-
-    icons["speaker-on"] = speakerOn;
-    icons["speaker-off"] = speakerOff;
-    icons["speaker-onHover"] = speakerOnHover;
-    icons["speaker-offHover"] = speakerOffHover;
-    icons["shuffle-on"] = shuffleOn;
-    icons["shuffle-onHover"] = shuffleOnHover;
-    icons["shuffle-off"] = shuffleOff;
-    icons["shuffle-offHover"] = shuffleOffHover;
-    icons["play"] = play;
-    icons["playHover"] = playHover;
-    icons["pause"] = pause;
-    icons["pauseHover"] = pauseHover;
-    icons["prev"] = prev;
-    icons["prevHover"] = prevHover;
-    icons["next"] = next;
-    icons["nextHover"] = nextHover;
-    icons["repeat"] = repeat;
-    icons["repeatHover"] = repeatHover;
-    icons["repeat-1"] = repeat1;
-    icons["repeat-1Hover"] = repeat1Hover;
-    icons["repeat-on"] = repeatOn;
-    icons["repeat-onHover"] = repeatOnHover;
-    icons["stop"] = stop;
-    icons["stopHover"] = stopHover;
-    icons["add"] = add;
-    icons["addHover"] = addHover;
-    icons["checkbox-on"] = checkBoxOn;
-    icons["checkbox-off"] = checkBoxOff;
-    icons["checkbox-on-disabled"] = checkBoxOnDisabled;
-    icons["checkbox-off-disabled"] = checkBoxOffDisabled;
-
-    ui->buttonPrev->setIcon(prev);
-    ui->buttonNext->setIcon(next);
-    ui->buttonStop->setIcon(stop);
-    ui->pushButtonNewPlaylist->setIcon(add);
+    setupIcons();
 
     ui->buttonPrev->installEventFilter(this);
     ui->buttonNext->installEventFilter(this);
@@ -812,14 +669,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     ui->Debug->moveCursor(QTextCursor::StartOfLine);
 
-
     on_buttonStop_clicked();
     updateButtons();
-    //        if(tableWidgetPlaylists[currentPlaylist]->item(currentRow,0))
-    //        {
     highlightPlaylistItem(currentPlaylist, currentRow);
-
-    //        }
     checkCommandLine(argc, argv);
 }
 
@@ -1757,7 +1609,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 /*!
  gets all files in the given directory recursively as a QStringList
  */
-QStringList MainWindow::getFilesRecursive(QString dirName, QString extension, bool clearStaticVar)
+QStringList MainWindow::getFilesRecursive(const QString& dirName, const QString& extension, bool clearStaticVar)
 {
     static QStringList list;
     if (clearStaticVar)
@@ -1796,7 +1648,7 @@ QStringList MainWindow::getFilesRecursive(QString dirName, QString extension, bo
  This QStringList is then passed on to addSong(QStringList)
  Returns false if an empty dir was drag'n'dropped, otherwise true
 */
-bool MainWindow::addSong(QList<QUrl> urls, int row, QString playlistName, bool createNewPlaylist)
+bool MainWindow::addSong(const QList<QUrl>& urls, int row, QString playlistName, bool createNewPlaylist)
 {
     QListIterator<QUrl> it(urls);
     QStringList stringList;
@@ -1842,7 +1694,7 @@ bool MainWindow::addSong(QList<QUrl> urls, int row, QString playlistName, bool c
  If createNewPlaylist is true, creates a new playlist with that playlist name
  previously specified.
 */
-void MainWindow::addSong(QStringList filenames, int row, QString playlistName, bool createNewPlaylist)
+void MainWindow::addSong(const QStringList& filenames, int row, QString playlistName, bool createNewPlaylist)
 {
     QListIterator<QString> it(filenames);
     while (it.hasNext())
@@ -2918,7 +2770,7 @@ void MainWindow::muteAllChannels()
     channels->muteAllChannels();
 }
 
-void MainWindow::unmuteAllChannels()
+void MainWindow::unmuteAllChannels() const
 {
     channels->unmuteAllChannels();
 }
@@ -3104,17 +2956,17 @@ void MainWindow::fullscreenTracker()
     trackerFullScreen->showFullScreen();
 }
 
-void MainWindow::selectAllLogWindow()
+void MainWindow::selectAllLogWindow() const
 {
     ui->Debug->selectAll();
 }
 
-void MainWindow::copyLogWindow()
+void MainWindow::copyLogWindow() const
 {
     ui->Debug->copy();
 }
 
-void MainWindow::clearLogWindow()
+void MainWindow::clearLogWindow() const
 {
     ui->Debug->clear();
 }
@@ -3694,7 +3546,7 @@ void MainWindow::setOutputDevice(int outputDevice, QString fullPath)
     m_outputDevice = outputDevice;
 }
 
-int MainWindow::getOutputDevice()
+int MainWindow::getOutputDevice() const
 {
     return m_outputDevice;
 }
@@ -3704,7 +3556,7 @@ void MainWindow::setResetVolume(bool resetVolume)
     m_resetVolume = resetVolume;
 }
 
-bool MainWindow::getResetVolume()
+bool MainWindow::getResetVolume() const
 {
     return m_resetVolume;
 }
@@ -3714,12 +3566,12 @@ void MainWindow::setDefaultPlaymode(int defaultPlaymode)
     m_defaultPlaymode = defaultPlaymode;
 }
 
-int MainWindow::getDefaultPlaymode()
+int MainWindow::getDefaultPlaymode() const
 {
     return m_defaultPlaymode;
 }
 
-void MainWindow::setReverbPreset(QString name)
+void MainWindow::setReverbPreset(const QString& name)
 {
     SoundManager::getInstance().setReverbPreset(name);
     m_reverbPreset = name;
@@ -3756,7 +3608,7 @@ void MainWindow::setReverbEnabled(bool reverb)
     SoundManager::getInstance().setReverbEnabled(reverb);
 }
 
-bool MainWindow::getReverbEnabled()
+bool MainWindow::getReverbEnabled() const
 {
     return m_reverbEnabled;
 }
@@ -3768,22 +3620,22 @@ void MainWindow::setNormalizeEnabled(bool normalize)
 }
 
 
-bool MainWindow::getNormalizeEnabled()
+bool MainWindow::getNormalizeEnabled() const
 {
     return m_normalizeEnabled;
 }
 
-bool MainWindow::getDisplayMilliseconds()
+bool MainWindow::getDisplayMilliseconds() const
 {
     return m_displayMilliseconds;
 }
 
-bool MainWindow::getEnqueueItems()
+bool MainWindow::getEnqueueItems() const
 {
     return m_enqueueItems;
 }
 
-bool MainWindow::getSystrayOnQuitEnabled()
+bool MainWindow::getSystrayOnQuitEnabled() const
 {
     return m_systrayOnQuitEnabled;
 }
@@ -3794,7 +3646,7 @@ void MainWindow::setNormalizeFadeTime(int fadeTime)
     SoundManager::getInstance().setNormalizeFadeTime(fadeTime);
 }
 
-int MainWindow::getNormalizeFadeTime()
+int MainWindow::getNormalizeFadeTime() const
 {
     return m_normalizeFadeTime;
 }
@@ -3805,7 +3657,7 @@ void MainWindow::setNormalizeThreshold(int threshold)
     m_normalizeThreshold = threshold;
 }
 
-int MainWindow::getNormalizeThreshold()
+int MainWindow::getNormalizeThreshold() const
 {
     return m_normalizeThreshold;
 }
@@ -3816,22 +3668,22 @@ void MainWindow::setNormalizeMaxAmp(int maxAmp)
     m_normalizeMaxAmp = maxAmp;
 }
 
-int MainWindow::getNormalizeMaxAmp()
+int MainWindow::getNormalizeMaxAmp() const
 {
     return m_normalizeMaxAmp;
 }
 
-int MainWindow::getResetVolumeValue()
+int MainWindow::getResetVolumeValue() const
 {
     return m_resetVolumeValue;
 }
 
-int MainWindow::getPlaylistRowHeight()
+int MainWindow::getPlaylistRowHeight() const
 {
     return playlistRowHeight;
 }
 
-qint64 MainWindow::getHvscSonglengthsDownloaded()
+qint64 MainWindow::getHvscSonglengthsDownloaded() const
 {
     return HvscSonglengthsDownloadedEpoch;
 }
@@ -3851,12 +3703,12 @@ void MainWindow::setHvscSonglengthsPathDownloaded(QString path)
     HvscSonglengthsPathDownloaded = path;
 }
 
-int MainWindow::getPlaylistsRowHeight()
+int MainWindow::getPlaylistsRowHeight() const
 {
     return playlistsRowHeight;
 }
 
-int MainWindow::getNowPlayingFontSize()
+int MainWindow::getNowPlayingFontSize() const
 {
     return nowPlayingFontSize;
 }
@@ -4049,66 +3901,6 @@ vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
             else if (!line.startsWith("#EXTM3U", Qt::CaseInsensitive) && !line.startsWith(
                 "#EXTINF", Qt::CaseInsensitive))
             {
-                //nezplug extended m3u, see http://www.proc.org.tohoku.ac.jp/befis/download/nezplug/stable/nezplug.txt
-                //NEZplug extend M3U playlist format(v0.6) for Winamp
-
-                //	filename::NSF,songno,title,time(h:m:s),loop(h:m:s/h:m:s-/-),fade(h:m:s)
-                //	filename  song file relative path(*.zip;*.nsf)
-                //	songno    1-based song no
-                //	title     song title
-                //	time      song play time   h * 3600 + m * 60 + s (sec)
-                //	Default time(5min) will be used, if time not specified.
-
-                //	loop(h:m:s)
-                //	loop length      h * 3600 + m * 60 + s (sec)
-                //	loop(h:m:s-)
-                //	loop start time  h * 3600 + m * 60 + s (sec)
-                //	loop(-)
-                //	loop length is equal to play time.
-                //	Song will not loop, if loop not specified,
-
-                //	fade      fadeout length   h * 3600 + m * 60 + s (sec)
-                //	Default fadeout length(5sec) will be used, if time not specified.
-
-                //2013-02-10
-                //                http://nezplug.sourceforge.net/in_nez.txt
-                //                Extended Playlist
-                //                -----------------
-
-                //                    NEZplug extend M3U playlist format(v0.9) for Winamp
-
-                //                    filename::NSF,[1 based songno|$songno],[title],[time(h:m:s)],[loop(h:m:s)][-],[fade(h:m:s)],[loopcount]
-                //                    filename::KSS,[0 based songno|$songno],[title],[time(h:m:s)],[loop(h:m:s)][-],[fade(h:m:s)],[loopcount]
-                //                    filename::GBR,[0 based songno|$songno],[title],[time(h:m:s)],[loop(h:m:s)][-],[fade(h:m:s)],[loopcount]
-                //                    filename::GBS,[0 based songno|$songno],[title],[time(h:m:s)],[loop(h:m:s)][-],[fade(h:m:s)],[loopcount]
-                //                    filename::HES,[0 based songno|$songno],[title],[time(h:m:s)],[loop(h:m:s)][-],[fade(h:m:s)],[loopcount]
-                //                    filename::AY ,[0 based songno|$songno],[title],[time(h:m:s)],[loop(h:m:s)][-],[fade(h:m:s)],[loopcount]
-                //                    filename::NEZ,[0 based songno|$songno],[title],[time(h:m:s)],[loop(h:m:s)][-],[fade(h:m:s)],[loopcount]
-
-                //                    filename  song file relative path(*.zip;*.nsf;*.kss;...)
-
-                //                    songno    0-based songno(::NSF playlist only has 1-based songno for historical reason.)
-                //                    $songno   0-based hexadecimal songno
-
-                //                    title     song title
-
-                //                    time      song play time   h * 3600 + m * 60 + s (sec)
-                //                                Default time(5min) will be used, if time not specified.
-
-                //                    loop(h:m:s)
-                //                              loop length      h * 3600 + m * 60 + s (sec)
-                //                    loop(h:m:s-)
-                //                              loop start time  h * 3600 + m * 60 + s (sec)
-                //                    loop(-)
-                //                              loop length is equal to play time.
-                //                                Song will not loop, if loop not specified,
-
-                //                    fade      fadeout length   h * 3600 + m * 60 + s (sec)
-                //                                Default fadeout length(5sec) will be used, if time not specified.
-
-                //                    loopcount
-                //                              loop count
-                //                                Default LoopCount will be used, if time not specified.
                 QStringList NEZlist = line.split(NEZPLAYLISTSPLITTER);
 
                 QStringList NEZParameterList;
@@ -4116,10 +3908,6 @@ vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
                 {
                     //Has extended NEZ info
                     line = NEZlist.at(0);
-                    //Seomthing like this to fix filenames with comma in them https://github.com/aargirakis/BZRPlayer/issues/422
-                    //QString filepath = NEZlist.at(1);
-                    //filepath = line.replace(',','_');
-                    //NEZlist[1]= filepath;
                     NEZParameterList = NEZlist.at(1).split(PLAYLISTFIELDSPLITTER);
                 }
                 QDir fileInPlayList(line);
@@ -4245,12 +4033,8 @@ vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
                         playlistItem->startSubsongPlayList = NEZParameterList.at(1).toInt(&subsongOK);
                     }
 
-                    //NSF is 0-based but we don't care about that for now
-                    //if(type.toLower()=="nsf") playlistItem->startSubsongPlayList--;
-
                     if (!subsongOK)
                     {
-                        //CLogFile::getInstance()->Print(LOGERROR,"'%s' in NEZ/m3u playlist is not a valid subsong index!", NEZParameterList.at(1).toStdString().c_str());
                         playlistItem->startSubsongPlayList = -1;
                     }
 
@@ -4261,21 +4045,6 @@ vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
                         playlistItem->artist = NEZParameterList.at(7);
                     }
                 }
-
-                //only used by internal .bpl-playlist
-                if (filename.endsWith("bpl"))
-                {
-                    if (NEZParameterList.size() > (5))
-                    {
-                        bool ok;
-                        int startTime = NEZParameterList.at(6).toInt(&ok);
-                        if (ok)
-                        {
-                            playlistItem->startTime = startTime;
-                        }
-                    }
-                }
-
 
                 if (!playlistItem->filename.isEmpty())
                 {
@@ -4654,19 +4423,19 @@ void MainWindow::setColorDimmedText(QString dimmedTextColor)
     changeStyleSheetColor();
 }
 
-void MainWindow::setColorVisualizerTop(QString newColor)
+void MainWindow::setColorVisualizerTop(const QString& newColor)
 {
     this->colorVisualizerTop = newColor;
     ui->visualizer->getEffect()->setColorVisualizerTop(QColor(newColor));
 }
 
-void MainWindow::setColorVisualizerBottom(QString newColor)
+void MainWindow::setColorVisualizerBottom(const QString& newColor)
 {
     this->colorVisualizerBottom = newColor;
     ui->visualizer->getEffect()->setColorVisualizerBottom(QColor(newColor));
 }
 
-void MainWindow::setColorVisualizerPeakColor(QString newColor)
+void MainWindow::setColorVisualizerPeakColor(const QString& newColor)
 {
     this->colorVisualizerPeak = newColor;
     ui->visualizer->getEffect()->setColorVisualizerPeakColor(newColor);
@@ -4684,19 +4453,19 @@ void MainWindow::setVUMeterPeaksHeight(int height)
     ui->visualizer->getEffect()->setHeightVisualizerPeak(height);
 }
 
-void MainWindow::setColorVisualizerMiddle(QString newColor)
+void MainWindow::setColorVisualizerMiddle(const QString& newColor)
 {
     this->colorVisualizerMiddle = newColor;
     ui->visualizer->getEffect()->setColorVisualizerMiddle(QColor(newColor));
 }
 
-void MainWindow::setColorVisualizerBackground(QString newColor)
+void MainWindow::setColorVisualizerBackground(const QString& newColor)
 {
     this->colorVisualizerBackground = newColor;
     ui->visualizer->getEffect()->setColorVisualizerBackground(QColor(newColor));
 }
 
-Effect* MainWindow::getEffect()
+Effect* MainWindow::getEffect() const
 {
     return ui->visualizer->getEffect();
 }
@@ -4817,24 +4586,6 @@ void MainWindow::muteVolume()
     updateButtons();
 }
 
-void MainWindow::on_volumeSlider_sliderReleased()
-{
-}
-
-
-void MainWindow::on_volumeSlider_sliderMoved(int position)
-{
-}
-
-void MainWindow::on_volumeSlider_sliderPressed()
-{
-}
-
-void MainWindow::on_volumeSlider_sliderMoved()
-{
-}
-
-
 void MainWindow::on_volumeSlider_valueChanged(int value)
 {
     int vol = value;
@@ -4909,11 +4660,6 @@ void MainWindow::on_actionAbout_BZR_Player_triggered()
     about about(this);
     about.exec();
 }
-
-void MainWindow::on_pitchSlider_sliderReleased()
-{
-}
-
 
 void MainWindow::on_pitchSlider_valueChanged(int value)
 {
@@ -5758,7 +5504,7 @@ void MainWindow::LoadWorkspaces()
     }
 }
 
-void MainWindow::DeleteWorkspace(QString workspace)
+void MainWindow::DeleteWorkspace(QString workspace) const
 {
     foreach(QAction *action, ui->menuRestore_Layout->actions())
     {
@@ -5778,7 +5524,7 @@ void MainWindow::DeleteWorkspace(QString workspace)
     }
 }
 
-void MainWindow::slot_LoadWorkspace(QString filename)
+void MainWindow::slot_LoadWorkspace(const QString& filename)
 {
     QSettings settings(userPath + LAYOUTS_DIR + "/" + filename, QSettings::IniFormat);
     if (!m_DockManager->restoreState(settings.value("dockingState").toByteArray()))
@@ -5787,7 +5533,7 @@ void MainWindow::slot_LoadWorkspace(QString filename)
     }
 }
 
-void MainWindow::CreateNewWorkspace(QString filename)
+void MainWindow::CreateNewWorkspace(const QString& filename)
 {
     QString fileNameAndExtension = filename + ".ini";
     QSettings settings(userPath + LAYOUTS_DIR + "/" + fileNameAndExtension, QSettings::IniFormat);
@@ -5856,7 +5602,157 @@ void MainWindow::swapColumns(QTableView* tableview)
     tableview->setColumnWidth(8, 175);
 
     tableview->horizontalHeader()->swapSections(1, 8);
-    //    tableview->horizontalHeader()->swapSections(1,8);
-    //    tableview->horizontalHeader()->swapSections(2,8);
-    //    tableview->horizontalHeader()->swapSections(3,8);
+
+}
+
+void MainWindow::setupIcons()
+{
+    QPixmap shuffleOn = ChangeSVGColor(":/resources/shuffle.svg", colorMain.left(7));
+    QPixmap shuffleOnHover = ChangeSVGColor(":/resources/shuffle.svg", colorMainHover.left(7));
+    QPixmap shuffleOff = ChangeSVGColor(":/resources/shuffle.svg", colorButton.left(7));
+    QPixmap shuffleOffHover = ChangeSVGColor(":/resources/shuffle.svg", colorButtonHover.left(7));
+
+    QPixmap speakerOn = ChangeSVGColor(":/resources/speaker.svg", colorButton.left(7));
+    QPixmap speakerOnHover = ChangeSVGColor(":/resources/speaker.svg", colorButtonHover.left(7));
+    QPixmap speakerOff = ChangeSVGColor(":/resources/speaker-off.svg", colorButton.left(7));
+    QPixmap speakerOffHover = ChangeSVGColor(":/resources/speaker-off.svg", colorButtonHover.left(7));
+
+
+    QPixmap play = ChangeSVGColor(":/resources/play.svg", colorButton.left(7));
+    QPixmap playHover = ChangeSVGColor(":/resources/play.svg", colorButtonHover.left(7));
+    QPixmap pause = ChangeSVGColor(":/resources/pause.svg", colorButton.left(7));
+    QPixmap pauseHover = ChangeSVGColor(":/resources/pause.svg", colorButtonHover.left(7));
+
+    QPixmap stop = ChangeSVGColor(":/resources/stop.svg", colorButton.left(7));
+    QPixmap stopHover = ChangeSVGColor(":/resources/stop.svg", colorButtonHover.left(7));
+
+    QPixmap prev = ChangeSVGColor(":/resources/prev.svg", colorButton.left(7));
+    QPixmap prevHover = ChangeSVGColor(":/resources/prev.svg", colorButtonHover.left(7));
+    QPixmap next = ChangeSVGColor(":/resources/next.svg", colorButton.left(7));
+    QPixmap nextHover = ChangeSVGColor(":/resources/next.svg", colorButtonHover.left(7));
+
+    QPixmap repeat = ChangeSVGColor(":/resources/repeat.svg", colorButton.left(7));
+    QPixmap repeatHover = ChangeSVGColor(":/resources/repeat.svg", colorButtonHover.left(7));
+    QPixmap repeat1 = ChangeSVGColor(":/resources/repeat-1.svg", colorMain.left(7));
+    QPixmap repeat1Hover = ChangeSVGColor(":/resources/repeat-1.svg", colorMainHover.left(7));
+    QPixmap repeatOn = ChangeSVGColor(":/resources/repeat.svg", colorMain.left(7));
+    QPixmap repeatOnHover = ChangeSVGColor(":/resources/repeat.svg", colorMainHover.left(7));
+
+    QPixmap add = ChangeSVGColor(":/resources/add.svg", colorButton.left(7));
+    QPixmap addHover = ChangeSVGColor(":/resources/add.svg", colorButtonHover.left(7));
+
+    QPixmap checkBoxOn = ChangeSVGColor(":/resources/checkbox-on.svg", colorMain.left(7));
+    QPixmap checkBoxOff = ChangeSVGColor(":/resources/checkbox-off.svg", colorBehindBackground.left(7));
+    QPixmap checkBoxOnDisabled = ChangeSVGColor(":/resources/checkbox-on-disabled.svg", colorMedium.left(7));
+    QPixmap checkBoxOffDisabled = ChangeSVGColor(":/resources/checkbox-off-disabled.svg", colorMedium.left(7));
+
+
+    icons["speaker-on"] = speakerOn;
+    icons["speaker-off"] = speakerOff;
+    icons["speaker-onHover"] = speakerOnHover;
+    icons["speaker-offHover"] = speakerOffHover;
+    icons["shuffle-on"] = shuffleOn;
+    icons["shuffle-onHover"] = shuffleOnHover;
+    icons["shuffle-off"] = shuffleOff;
+    icons["shuffle-offHover"] = shuffleOffHover;
+    icons["play"] = play;
+    icons["playHover"] = playHover;
+    icons["pause"] = pause;
+    icons["pauseHover"] = pauseHover;
+    icons["prev"] = prev;
+    icons["prevHover"] = prevHover;
+    icons["next"] = next;
+    icons["nextHover"] = nextHover;
+    icons["repeat"] = repeat;
+    icons["repeatHover"] = repeatHover;
+    icons["repeat-1"] = repeat1;
+    icons["repeat-1Hover"] = repeat1Hover;
+    icons["repeat-on"] = repeatOn;
+    icons["repeat-onHover"] = repeatOnHover;
+    icons["stop"] = stop;
+    icons["stopHover"] = stopHover;
+    icons["add"] = add;
+    icons["addHover"] = addHover;
+    icons["checkbox-on"] = checkBoxOn;
+    icons["checkbox-off"] = checkBoxOff;
+    icons["checkbox-on-disabled"] = checkBoxOnDisabled;
+    icons["checkbox-off-disabled"] = checkBoxOffDisabled;
+
+    ui->buttonPrev->setIcon(prev);
+    ui->buttonNext->setIcon(next);
+    ui->buttonStop->setIcon(stop);
+    ui->pushButtonNewPlaylist->setIcon(add);
+}
+
+void MainWindow::setupAdvancedDockingSystem()
+{
+    ads::CDockManager::setConfigFlags(ads::CDockManager::DefaultOpaqueConfig);
+    ads::CDockManager::setConfigFlag(ads::CDockManager::DockAreaHasTabsMenuButton, false);
+    ads::CDockManager::setConfigFlag(ads::CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
+
+    m_DockManager = new ads::CDockManager(this);
+
+    m_DockManager->setStyleSheet(
+            "QScrollBar:vertical {background-color: #282828/*background*/;     width: 15px;     margin: 0 3px 0 3px;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:vertical {     background-color: #404040/*medium*/;     min-height: 25px;     border-radius: 4px; } QScrollBar:horizontal {     background-color: #282828/*background*/;     height: 15px;     margin: 3px 0 3px 0;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:horizontal {     background-color: #404040/*medium*/;     min-width: 5px;     border-radius: 4px; } QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {     background: none; } QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {     background: none; } QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal {     background: none; } QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {     background: none; } QScrollBar::sub-line:vertical {     height: 0;     width: 0; } QScrollBar::add-line:vertical {     height: 0;     width: 0; } QScrollBar::sub-line:horizontal {     height: 0;     width: 0; } QScrollBar::add-line:horizontal {     height: 0;     width: 0; }QScrollArea#dockWidgetScrollArea {	background: #282828/*background*/;padding: 0px;	border: none;} ads--CDockWidgetTab QLabel {font-family:Roboto;font-size:14px;color:#b1b1b1/*dimmed text*/;}ads--CDockWidgetTab[activeTab=\"true\"] QLabel {color:#ffffff/*main text*/;}#tabCloseButton {margin-top: 0;background: none;border: none;}ads--CDockContainerWidget ads--CDockSplitter::handle {background: #161616/*behind-background*/;}ads--CDockAreaTitleBar { background: #282828/*background*/;}ads--CDockWidgetTab {background: #282828/*background*/}");
+
+
+    DockWidgetLogMessages = new ads::CDockWidget("Log Messages");
+    DockWidgetLogMessages->setWidget(ui->dockWidgetContents_9, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetLogMessages);
+    dockWidgets.append(DockWidgetLogMessages);
+
+    DockWidgetTitle = new ads::CDockWidget("Now Playing");
+    DockWidgetTitle->setWidget(ui->dockWidgetContents_5, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTitle);
+    dockWidgets.append(DockWidgetTitle);
+
+
+    DockWidgetChannels = new ads::CDockWidget("Channels");
+    DockWidgetChannels->setWidget(ui->dockWidgetContents_7);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetChannels);
+    dockWidgets.append(DockWidgetChannels);
+
+    DockWidgetTrackerView = new ads::CDockWidget("Tracker View");
+    DockWidgetTrackerView->setWidget(ui->dockWidgetContents_6, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTrackerView);
+    dockWidgets.append(DockWidgetTrackerView);
+
+    DockWidgetInfo = new ads::CDockWidget("Info");
+    DockWidgetInfo->setWidget(ui->dockWidgetContents_3, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetInfo);
+    dockWidgets.append(DockWidgetInfo);
+
+
+    DockWidgetVisualizer = new ads::CDockWidget("Visualizer");
+    DockWidgetVisualizer->setWidget(ui->dockWidgetContents_11, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetVisualizer);
+    dockWidgets.append(DockWidgetVisualizer);
+
+
+    DockWidgetPlaylists = new ads::CDockWidget("Playlists");
+    DockWidgetPlaylists->setWidget(ui->dockWidgetContents_8, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylists);
+    dockWidgets.append(DockWidgetPlaylists);
+
+    DockWidgetPlaylist = new ads::CDockWidget("Playlist");
+    DockWidgetPlaylist->setWidget(ui->dockWidgetContents_4, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylist);
+    dockWidgets.append(DockWidgetPlaylist);
+
+    DockWidgetInstruments = new ads::CDockWidget("Instruments");
+    DockWidgetInstruments->setWidget(ui->dockWidgetContents_10, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetInstruments);
+    dockWidgets.append(DockWidgetInstruments);
+
+    DockWidgetSamples = new ads::CDockWidget("Samples");
+    DockWidgetSamples->setWidget(ui->dockWidgetContents_2, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetSamples);
+    dockWidgets.append(DockWidgetSamples);
+
+    DockWidgetPlayControl = new ads::CDockWidget("Play Control");
+    DockWidgetPlayControl->setMinimumSizeHintMode(ads::CDockWidget::MinimumSizeHintFromContent);
+    DockWidgetPlayControl->setWidget(ui->dockWidgetContents, ads::CDockWidget::ForceNoScrollArea);
+    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetPlayControl);
+    dockWidgets.append(DockWidgetPlayControl);
+
 }
