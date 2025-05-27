@@ -35,6 +35,7 @@ public:
     {
         tempPath = "";
         dataPath = "";
+        libPath = "";
         userPath = "";
         mutedChannelsMask = "";
         filename = "";
@@ -225,6 +226,7 @@ public:
     string mutedChannelsMask;
     string tempPath;
     string dataPath;
+    string libPath;
     string userPath;
     string filename;
     string artist;

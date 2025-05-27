@@ -60,6 +60,7 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "Release")
 endif ()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE DATA_DIR="${DATA_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE LIB_DIR="${LIB_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE USER_DIR="${USER_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_FMOD_DIR="${PLUGINS_FMOD_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE RESOURCES_DIR="${RESOURCES_DIR}")

@@ -20,6 +20,7 @@
 using namespace std;
 
 inline QString dataPath;
+inline QString libPath;
 inline QString userPath;
 
 namespace Ui

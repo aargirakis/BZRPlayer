@@ -470,7 +470,7 @@ int SoundManager::getNumTags()
 
 void SoundManager::loadPlugin(string filename, int prority)
 {
-    string pluginsDir = QString(dataPath + PLUGINS_DIR + "/").toStdString();
+    string pluginsDir = QString(libPath + PLUGINS_DIR + "/").toStdString();
     const char* pluginPath = (pluginsDir += filename).c_str();
 
     result = FMOD_System_LoadPlugin(system, pluginPath, nullptr, prority);
@@ -623,6 +623,7 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
     m_Info1->clear();
     m_Info1->tempPath = QDir::tempPath().toStdString();
     m_Info1->dataPath = dataPath.toStdString();
+    m_Info1->libPath = libPath.toStdString();
     m_Info1->userPath = userPath.toStdString();
     m_Info1->filename = filename.toStdString();
     m_Info1->isPlayModeRepeatSongEnabled = isPlayModeRepeatSongEnabled;

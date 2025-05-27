@@ -85,7 +85,7 @@ FMOD_RESULT F_CALLBACK sunvoxopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
     auto *plugin = new pluginSunvoxLib(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    if (sv_load_dll2((plugin->info->dataPath + PLUGINS_DIR + "/" + SUNVOX_LIB).c_str()) == -1) {
+    if (sv_load_dll2((plugin->info->libPath + PLUGINS_DIR + "/" + SUNVOX_LIB).c_str()) == -1) {
         return FMOD_ERR_INTERNAL;
     }
 

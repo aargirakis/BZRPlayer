@@ -54,13 +54,16 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 #ifdef WIN32
     const QString exePath = QApplication::applicationDirPath();
     dataPath = exePath + DATA_DIR;
+    libPath = exePath + LIB_DIR;
     userPath = exePath + USER_DIR;
 #else
 #ifdef OUTPUT_DIR
     dataPath = fromUtf8OrLatin1(OUTPUT_DIR) + DATA_DIR;
+    libPath = fromUtf8OrLatin1(OUTPUT_DIR) + LIB_DIR;
     userPath = fromUtf8OrLatin1(OUTPUT_DIR) + "/" + USER_DIR;
 #else
     dataPath = fromUtf8OrLatin1(DATA_DIR);
+    libPath = fromUtf8OrLatin1(LIB_DIR);
     userPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QDir::separator() + USER_DIR;
 #endif
 #endif
