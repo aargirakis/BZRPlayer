@@ -5,20 +5,21 @@
 #     against a target file or directory content
 #
 # SYNOPSIS
-#     ./test.sh [-h|--help|--show-passed] target [MIME type]
+#     ./test.sh [-h|--help|--show-passed] target [--filter-ext=file extension (case insens)] [MIME type]
 #
 
 set -e
 
 hide_tests_pass=true
 requirements=(realpath xdg-mime)
-bold=$'\e[1m'
-bold_reset=$'\e[0m'
+text_bold=$'\e[1m'
+text_underline=$'\e[4m'
+text_reset=$'\e[0m'
 
 check_requirements() {
   for requirement in "${requirements[@]}"; do
     if ! type "$requirement" &>/dev/null; then
-      echo -e "\nplease install ${bold}$requirement${bold_reset}"
+      echo -e "\nplease install ${text_bold}$requirement${text_reset}"
       exit 1
     fi
   done
@@ -31,11 +32,11 @@ test_query_filetype() {
   if [ "$mime_actual" == "$mime_expected" ]; then
     ((test_query_filetype_passed += 1))
     if [ "$hide_tests_pass" = false ]; then
-      echo -e "[ ${bold}OK${bold_reset} ][expected: $mime_expected][actual: $mime_actual][$file]"
+      echo -e "[ ${text_bold}OK${text_reset} ][expected: $mime_expected][actual: $mime_actual][$file]"
     fi
   else
     ((test_query_filetype_failed += 1))
-    echo -e "[${bold}FAIL${bold_reset}][expected: $mime_expected][actual: $mime_actual][$file]"
+    echo -e "[${text_bold}FAIL${text_reset}][expected: $mime_expected][actual: $mime_actual][$file]"
   fi
 }
 
@@ -56,11 +57,11 @@ test_query_default_on_query_filetype() {
 
   if [ "$query_default_result" = "$desktop_expected" ]; then
     if [ "$hide_tests_pass" = false ]; then
-      echo -e "[ ${bold}OK${bold_reset} ][$mime_type][$query_default_result][$(basename "$file")]"
+      echo -e "[ ${text_bold}OK${text_reset} ][$mime_type][$query_default_result][$(basename "$file")]"
       return 0
     fi
   else
-    echo -e "[${bold}FAIL${bold_reset}][$mime_type][expected: $desktop_expected]\
+    echo -e "[${text_bold}FAIL${text_reset}][$mime_type][expected: $desktop_expected]\
 [actual: $query_default_result][$(basename "$file")]"
     return 1
   fi
@@ -68,18 +69,21 @@ test_query_default_on_query_filetype() {
 
 check_requirements
 
-help_string="Usage: $(basename "$0") [-h|--help|--show-passed] target [MIME type]"
+help_string="Usage: ${text_bold}$(basename "$0")${text_reset} \
+[${text_bold}-h${text_reset}|${text_bold}--help${text_reset}|${text_bold}--show-passed${text_reset}] \
+${text_underline}target${text_reset} [--filter-ext=${text_underline}file extension (case insens)${text_reset}] \
+[${text_underline}MIME type${text_reset}]\nExample: ./$(basename "$0") --show-passed . --filter-ext=mdx audio/x-mdx "
 
 opts_pointer=1
 
 if [ -z "${!opts_pointer}" ]; then
   echo "target arg is required"
-  echo "$help_string"
+  echo -e "$help_string"
   exit 1
 fi
 
 if [ "${!opts_pointer}" == "-h" ] || [ "${!opts_pointer}" == "--help" ]; then
-  echo "$help_string"
+  echo -e "$help_string"
   exit 0
 fi
 
@@ -110,18 +114,27 @@ else
 fi
 
 target=$(realpath -s "$target")
+((opts_pointer += 1))
+
+if [[ "${!opts_pointer}" =~ --filter-ext=([^[:space:]]+) ]]; then
+  extension="${BASH_REMATCH[1]}"
+  ((opts_pointer += 1))
+fi
 
 if [ $is_target_dir = true ]; then
-  readarray -d '' files < <(find "$target" -type f -print0)
+  if [ -z "$extension" ]; then
+    readarray -d '' files < <(find "$target" -type f -print0)
+  else
+    readarray -d '' files < <(find "$target" -type f -iname "*.$extension" -print0)
+  fi
 else
   files=("$target")
 fi
 
-((opts_pointer += 1))
 mime_provided="${!opts_pointer}"
 
 if [ -z "$mime_provided" ]; then
-  echo -e "\nTesting ${bold}BZR2 desktop entry association with provided target${bold_reset}...\n"
+  echo -e "\nTesting ${text_bold}BZR2 desktop entry association with provided target${text_reset}...\n"
 
   test_query_default_passed=0
   test_query_default_failed=0
@@ -135,12 +148,12 @@ if [ -z "$mime_provided" ]; then
     fi
   done
 
-  echo -e "\nTest results [${bold}xdg-mime query default${bold_reset}]:"
-  echo -e "Run ${bold}$((test_query_default_passed + test_query_default_failed))${bold_reset}, \
-  Passed ${bold}$((test_query_default_passed))${bold_reset}, \
-  Failed ${bold}$((test_query_default_failed))${bold_reset}"
+  echo -e "\nTest results [${text_bold}xdg-mime query default${text_reset}]:"
+  echo -e "Run ${text_bold}$((test_query_default_passed + test_query_default_failed))${text_reset}, \
+  Passed ${text_bold}$((test_query_default_passed))${text_reset}, \
+  Failed ${text_bold}$((test_query_default_failed))${text_reset}"
 else
-  echo -e "\nTesting ${bold}MIME type association with provided target${bold_reset}...\n"
+  echo -e "\nTesting ${text_bold}MIME type association with provided target${text_reset}...\n"
 
   mime_expected=$mime_provided
   test_query_filetype_passed=0
@@ -150,7 +163,7 @@ else
     test_query_filetype
   done
 
-  echo -e "\nTest results [${bold}xdg-mime query filetype${bold_reset}]:"
-  echo -e "Run ${bold}$((test_query_filetype_passed + test_query_filetype_failed))${bold_reset}: \
-  Passed ${bold}$test_query_filetype_passed${bold_reset}, Failed ${bold}$test_query_filetype_failed${bold_reset}"
+  echo -e "\nTest results [${text_bold}xdg-mime query filetype${text_reset}]:"
+  echo -e "Run ${text_bold}$((test_query_filetype_passed + test_query_filetype_failed))${text_reset}: \
+  Passed ${text_bold}$test_query_filetype_passed${text_reset}, Failed ${text_bold}$test_query_filetype_failed${text_reset}"
 fi
