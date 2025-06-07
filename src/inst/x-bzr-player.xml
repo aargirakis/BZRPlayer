@@ -361,13 +361,13 @@
     <mime-type type="audio/x-mdx">
         <comment>Sharp X68000 MDX audio</comment>
         <generic-icon name="audio-x-generic"/>
-        <magic>
+        <magic priority="40">
             <match type="big32" value="0x0d0a1a00" mask="0xffffff00" offset="0:1028">
                 <match type="big16" value="0x0014" offset="6:1045"/>
                 <match type="big16" value="0x0022" offset="6:1045"/>
             </match>
         </magic>
-        <glob pattern="*.mdx"/>
+        <glob pattern="*.mdx" weight="60"/>
     </mime-type>
     <mime-type type="audio/x-minipsf">
         <comment>MiniPSF audio</comment>
