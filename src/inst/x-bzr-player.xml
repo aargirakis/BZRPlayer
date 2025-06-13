@@ -662,12 +662,21 @@
         <generic-icon name="audio-x-generic"/>
         <glob pattern="sid.*"/>
         <glob pattern="sid1.*"/>
-        <glob pattern="sid2.*"/>
         <glob pattern="smn.*"/>
         <glob pattern="*.sid"/>
         <glob pattern="*.sid1"/>
-        <glob pattern="*.sid2"/>
         <glob pattern="*.smn"/>
+    </mime-type>
+    <mime-type type="audio/x-sidmon2">
+        <comment>SIDMon II audio</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="SIDMON II - THE MIDI VERSION" offset="58"/>
+        </magic>
+        <glob pattern="sid2.*"/>
+        <glob pattern="sidmonii.*"/>
+        <glob pattern="*.sid2"/>
+        <glob pattern="*.sidmonii"/>
     </mime-type>
     <mime-type type="audio/x-sndh">
         <comment>Atari SoundHeader audio</comment>
