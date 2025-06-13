@@ -817,6 +817,15 @@
         <glob pattern="*.vgm"/>
         <glob pattern="*.vgz"/>
     </mime-type>
+    <mime-type type="audio/x-xad">
+        <comment>eXotic ADlib audio</comment>
+        <acronym>XAD</acronym>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="XAD!" offset="0"/>
+        </magic>
+        <glob pattern="*.xad"/>
+    </mime-type>
     <mime-type type="audio/x-xm">
         <comment>FastTracker II audio</comment>
         <generic-icon name="audio-x-generic"/>
