@@ -145,6 +145,20 @@
         <glob pattern="*.dzp"/>
         <glob pattern="*.mkiio"/>
     </mime-type>
+    <mime-type type="audio/x-edlib">
+        <comment>EdLib audio</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="JCH" offset="0">
+                <match type="big32" value="0x260266" offset="3">
+                    <match type="byte" value="0x00" offset="6"/>
+                    <match type="byte" value="0x80" offset="6"/>
+                </match>
+            </match>
+        </magic>
+        <glob pattern="*.d00"/>
+        <glob pattern="*.d01"/>
+    </mime-type>
     <mime-type type="audio/x-fc">
         <comment>Future Composer audio</comment>
         <generic-icon name="audio-x-generic"/>
