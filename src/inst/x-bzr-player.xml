@@ -408,8 +408,8 @@
     <mime-type type="audio/x-ml">
         <comment>Musicline Editor audio</comment>
         <generic-icon name="audio-x-generic"/>
-        <glob pattern="*.ml"/>
         <glob pattern="ml.*"/>
+        <glob pattern="*.ml"/>
     </mime-type>
     <mime-type type="audio/x-mmdc">
         <comment>MED Packer audio</comment>
@@ -823,9 +823,8 @@
         <glob pattern="*.umx"/>
     </mime-type>
     <mime-type type="audio/x-v2m">
-        <comment>v2m file</comment>
+        <comment>Farbrausch V2M audio</comment>
         <generic-icon name="audio-x-generic"/>
-        <glob pattern="v2m.*"/>
         <glob pattern="*.v2m"/>
     </mime-type>
     <mime-type type="audio/x-vgm">
@@ -835,8 +834,6 @@
             <match type="string" value="Vgm " offset="0"/>
             <match type="big16" value="0x1f8b" offset="0"/>
         </magic>
-        <glob pattern="vgm.*"/>
-        <glob pattern="vgz.*"/>
         <glob pattern="*.vgm"/>
         <glob pattern="*.vgz"/>
     </mime-type>
