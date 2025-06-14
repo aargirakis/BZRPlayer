@@ -32,9 +32,16 @@
     </mime-type>
     <mime-type type="audio/x-aon">
         <comment>Art Of Noise audio</comment>
+        <acronym>AON</acronym>
         <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="AON4" offset="0"/>
+            <match type="string" value="AON8" offset="0"/>
+        </magic>
         <glob pattern="aon.*"/>
+        <glob pattern="aon8.*"/>
         <glob pattern="*.aon"/>
+        <glob pattern="*.aon8"/>
     </mime-type>
     <mime-type type="audio/x-amf">
         <comment>ASYLUM Music Format</comment>
