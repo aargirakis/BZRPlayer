@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "v2m-player")
-set(VERSION "c797efd8356c0fe56420314f3683c2255cfc44d1")
+set(VERSION "385ad6956202d09a2912ef91df9c44e13f9e4a84")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
@@ -12,10 +12,10 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
-set(FILENAME "${NAME}-${VERSION}.zip")
-set(FILENAME_URL "${VERSION}.zip")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
+set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/jgilje/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "a6ec966bc0fd95e1da43babe34aeff45f0b511664e51100907b5c25aae67b4d3")
+set(SHA_256_HASH "b98a6707445e81434ecc051a5be91155fda667eafff2933da2e4495677a4b13e")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
@@ -23,10 +23,12 @@ download_patch_and_add(
 )
 
 file(GLOB SOURCES
-        ${EXTERNAL_SOURCE_DIR}/src/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/ronan.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/sounddef.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/synth_core.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/v2mconv.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/v2mplayer.cpp
         src/main.cpp)
-
-list(REMOVE_ITEM SOURCES ${EXTERNAL_SOURCE_DIR}/src/tinyplayer.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
