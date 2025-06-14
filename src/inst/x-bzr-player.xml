@@ -200,7 +200,14 @@
     <mime-type type="audio/x-fp">
         <comment>Future Player audio</comment>
         <generic-icon name="audio-x-generic"/>
-        <glob pattern="fp.*"/>
+        <magic>
+            <match type="big32" value="0x000003f3" offset="0">
+                <match type="big32" value="0x70ff4e75" offset="32">
+                    <match type="string" value="F.PLAYER" offset="36"/>
+                </match>
+            </match>
+        </magic>
+        <glob pattern="fp.*" weight="60"/>
         <glob pattern="*.fp"/>
     </mime-type>
     <mime-type type="audio/x-fur">
