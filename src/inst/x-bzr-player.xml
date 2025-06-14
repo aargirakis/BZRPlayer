@@ -333,8 +333,25 @@
         <comment>Images Music System</comment>
         <acronym>IMS</acronym>
         <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="big32" value="0x00000001" offset="106">
+                <match type="big32" value="0x00000001" offset="166">
+                    <match type="big32" value="0x00000001" offset="256">
+                        <match type="big32" value="0x00000001" offset="286">
+                            <match type="big32" value="0x00000001" offset="316">
+                                <match type="big32" value="0x00000001" offset="376">
+                                    <match type="big32" value="0x00000000" offset="470"/>
+                                </match>
+                            </match>
+                        </match>
+                    </match>
+                </match>
+            </match>
+        </magic>
         <glob pattern="ims.*"/>
+        <glob pattern="is.*"/>
         <glob pattern="*.ims"/>
+        <glob pattern="*.is"/>
     </mime-type>
     <mime-type type="audio/x-it">
         <comment>Impulse Tracker audio</comment>
