@@ -525,26 +525,24 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
         *length = 1 + (get_max_subsongs() - get_min_subsongs());
         return FMOD_OK;
     }
+
+    int sub = plugin->currentSubsong;
+    if (get_min_subsongs() == 1)
+    {
+        sub = plugin->currentSubsong - 1;
+    }
+
+    int songLength;
+    if (plugin->uade_songlengths_enabled)
+    {
+        songLength = getLengthFromDatabase(plugin->info->filename.c_str(), sub, plugin->uade_songlengthspath.c_str());
+    }
     else
     {
-        int sub = plugin->currentSubsong;
-        if (get_min_subsongs() == 1)
-        {
-            sub = plugin->currentSubsong - 1;
-        }
-
-        int songLength;
-        if (plugin->uade_songlengths_enabled)
-        {
-            songLength = getLengthFromDatabase(plugin->info->filename.c_str(), sub, plugin->uade_songlengthspath.c_str());
-        }
-        else
-        {
-            songLength = 0;
-        }
-        *length = songLength;
-        return FMOD_OK;
+        songLength = 0;
     }
+    *length = songLength;
+    return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)

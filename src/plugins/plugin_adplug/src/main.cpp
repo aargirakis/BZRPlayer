@@ -100,7 +100,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     auto* plugin = new pluginAdplug(codec);
-    Info* info = static_cast<Info*>(userexinfo->userdata);
+    auto *info = static_cast<Info *>(userexinfo->userdata);
 
     //read config from disk
     string filename = info->userPath + PLUGINS_CONFIG_DIR + "/adplug.cfg";
@@ -125,7 +125,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     {
         while (getline(ifs, line))
         {
-            int i = line.find_first_of("=");
+            int i = line.find_first_of('=');
 
             if (i != -1)
             {
@@ -300,10 +300,10 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     while (plugin->samplesToWrite < plugin->waveformat.pcmblocksize)
     {
         plugin->isSongEndReached = !plugin->player->update();
-        plugin->samplesToWrite += plugin->waveformat.frequency / plugin->player->getrefresh();
+        plugin->samplesToWrite += static_cast<unsigned long>(plugin->waveformat.frequency / plugin->player->getrefresh());
     }
 
-    plugin->opl->update(static_cast<short*>(buffer), plugin->waveformat.pcmblocksize);
+    plugin->opl->update(static_cast<short*>(buffer), static_cast<int>(plugin->waveformat.pcmblocksize));
     *read = plugin->waveformat.pcmblocksize;
     plugin->samplesToWrite -= plugin->waveformat.pcmblocksize;
 
@@ -317,12 +317,10 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
         *length = plugin->player->getsubsongs();
-        return FMOD_OK;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
+    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
         *length = plugin->isContinuousPlaybackActive ? -1 : plugin->songlength;
-        return FMOD_OK;
     }
 
     return FMOD_OK;

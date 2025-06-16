@@ -79,13 +79,13 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    Info* info = static_cast<Info*>(userexinfo->userdata);
+    auto *info = static_cast<Info *>(userexinfo->userdata);
     FMOD_RESULT result;
 
     string filename_lowercase = info->filename;
     std::transform(filename_lowercase.begin(), filename_lowercase.end(), filename_lowercase.begin(), ::tolower);
-    if (filename_lowercase.substr(filename_lowercase.find_last_of(".") + 1) != "v2m" && filename_lowercase.substr(
-        filename_lowercase.find_last_of(".") + 1) != "v2")
+    if (const string ext = filename_lowercase.substr(filename_lowercase.find_last_of('.') + 1);
+        ext != "v2m" && ext != "v2")
     {
         return FMOD_ERR_FORMAT;
     }
@@ -93,7 +93,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
     /* Allocate space for buffer. */
-    unsigned char* myBuffer = new unsigned char[filesize];
+    auto *myBuffer = new unsigned char[filesize];
 
     //rewind file pointer
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
@@ -106,16 +106,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
 
     sdInit();
-    ssbase base;
-    int version = CheckV2MVersion(myBuffer, filesize, base);
-    if (version < 0)
+    if (ssbase base{}; CheckV2MVersion(myBuffer, filesize, base) < 0)
     {
         delete [] myBuffer;
         return FMOD_ERR_FORMAT;
     }
-    //cout << "v2m version: " << version << "\n";
-    //flush(cout);
-
 
     int converted_length;
     ConvertV2M(myBuffer, filesize, &plugin->convertedSong, &converted_length);
@@ -135,9 +130,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = 4096;
     plugin->waveformat.lengthpcm = 0xffffffff;
-
-    //cout << "length:" << plugin->player->Length() << "\n";
-    //flush(cout);
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;

@@ -72,9 +72,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    Info* info = static_cast<Info*>(userexinfo->userdata);
-
-    auto* plugin = new pluginAsap(codec);
+    auto *info = static_cast<Info *>(userexinfo->userdata);
+    auto *plugin = new pluginAsap(codec);
 
     unsigned int module_len;
     unsigned int bytesread;

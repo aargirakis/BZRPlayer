@@ -4,17 +4,16 @@
 #include <algorithm>
 #include "fmod_errors.h"
 #include "types.h"
+#include "info.h"
+#include <iostream>
+#include "plugins.h"
 
 extern "C" {
 #include "wsr_player.h"
 #include "ws_audio.h"
 }
 
-short* sample_buffer = NULL;
-
-#include "info.h"
-#include <iostream>
-#include "plugins.h"
+short* sample_buffer = nullptr;
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec);
@@ -80,18 +79,19 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    Info* info = static_cast<Info*>(userexinfo->userdata);
+    auto info = static_cast<Info *>(userexinfo->userdata);
 
 
     int freq = 44100;
     int channels = 2;
     SampleRate = freq;
 
-    pluginWsr* plugin = new pluginWsr(codec);
+    auto *plugin = new pluginWsr(codec);
     string filename_lowercase = info->filename;
     std::transform(filename_lowercase.begin(), filename_lowercase.end(), filename_lowercase.begin(), ::tolower);
     if (filename_lowercase.substr(filename_lowercase.find_last_of(".") + 1) != "wsr")
     {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
@@ -100,9 +100,10 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
     ROMSize = filesize;
     ROMBank = (ROMSize + 0xFFFF) >> 16;
-    ROM = (BYTE*)malloc(ROMBank * 0x10000);
+    ROM = static_cast<BYTE *>(malloc(ROMBank * 0x10000));
     if (!ROM)
     {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
     FMOD_RESULT result;
@@ -152,7 +153,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     {
         Update_WSR(40157, 0);
     }
-    ws_audio_update((short int*)buffer, size);
+    ws_audio_update(static_cast<short int *>(buffer), size);
     *read = size;
     return FMOD_OK;
 }
@@ -164,16 +165,13 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
     {
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
+    if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        if (position < 0) position = 0;
         Reset_WSR(position);
         return FMOD_OK;
     }
-    else
-    {
-        return FMOD_ERR_UNSUPPORTED;
-    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)

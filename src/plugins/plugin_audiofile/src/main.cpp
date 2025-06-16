@@ -78,10 +78,10 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 
 static bool invalidFile = false;
 
-bool fmemopen(void* buf, size_t size, const char* mode, string filename)
+bool fmemopen(void* buf, size_t size, const char* mode, const char *filename)
 {
-    FILE* f = fopen(filename.c_str(), "wb");
-    if (NULL == f)
+    FILE* f = fopen(filename, "wb");
+    if (f == nullptr)
         return NULL;
 
     fwrite(buf, size, 1, f);
@@ -101,14 +101,14 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     myBuffer = new unsigned char[filesize];
     FMOD_RESULT result;
 
-    Info* info = static_cast<Info*>(userexinfo->userdata);
+    auto info = static_cast<Info *>(userexinfo->userdata);
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
     plugin->tempFilename = info->tempPath + "/bzr_tempfile.tmp";
     bool ok = fmemopen(myBuffer, filesize, "r", plugin->tempFilename.c_str());
     delete[] myBuffer;
-    plugin->file = afOpenFile(plugin->tempFilename.c_str(), "r", NULL);
+    plugin->file = afOpenFile(plugin->tempFilename.c_str(), "r", nullptr);
     cout << "trying to open file: " << plugin->tempFilename.c_str() << "\n";
 
     if (!plugin->file)
@@ -119,7 +119,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
         return FMOD_ERR_FORMAT;
     }
 
-    switch (afGetFileFormat(plugin->file,NULL))
+    switch (afGetFileFormat(plugin->file, nullptr))
     {
     case AF_FILE_UNKNOWN:
         info->fileformat = "Unknown Audio File Library";
@@ -154,7 +154,6 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     case AF_FILE_VOC:
         info->fileformat = "Creative Voice File";
         return FMOD_ERR_FORMAT;
-        break;
     case AF_FILE_SAMPLEVISION:
         info->fileformat = "SampleVision";
         break;
@@ -162,7 +161,6 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
         //should not happen
         info->fileformat = "Unknown Audio File Library";
         return FMOD_ERR_FORMAT;
-        break;
     }
 
     channels = afGetChannels(plugin->file, AF_DEFAULT_TRACK);
@@ -192,7 +190,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
 
 FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 {
-    auto plugin = static_cast<pluginAudiofile*>(codec->plugindata);
+    auto plugin = static_cast<pluginAudiofile *>(codec->plugindata);
     //	if(!invalidFile)
     //	{
     //		afCloseFile(plugin->file); //why does this crash...?
@@ -203,12 +201,11 @@ FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
 
 FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    pluginAudiofile* plugin = static_cast<pluginAudiofile*>(codec->plugindata);
+    auto *plugin = static_cast<pluginAudiofile *>(codec->plugindata);
 
     if (seek_to_time >= 0)
     {
-        afSeekFrame(plugin->file, AF_DEFAULT_TRACK,
-                    (AFframecount)((seek_to_time / 1000) * plugin->waveformat.frequency));
+        afSeekFrame(plugin->file, AF_DEFAULT_TRACK, seek_to_time / 1000 * plugin->waveformat.frequency);
         seek_to_time = -1;
     }
 
