@@ -48,15 +48,16 @@ main() {
   bzr2_xml_url="https://github.com/aargirakis/BZRPlayer/raw/refs/heads/main/src/inst/x-bzr-player.xml"
   mime_types_supported=(
     application/ogg audio/flac audio/midi audio/mp2 audio/mpeg audio/prs.sid audio/vnd.wave audio/x-adlib-ims
-    audio/x-adlib-raw audio/x-ahx audio/x-aon audio/x-amf audio/x-cust audio/x-ddmf audio/x-deflemask audio/x-dsmi-amf
-    audio/x-dsmi-amf-hack audio/x-dw audio/x-dz audio/x-edlib audio/x-fc audio/x-fc-bsi audio/x-flac+ogg audio/x-fp
-    audio/x-fur audio/x-hip audio/x-hip-7v audio/x-hip-coso audio/x-hip-mcmd audio/x-hip-st audio/x-hip-st-coso
-    audio/x-hvl audio/x-ims audio/x-it audio/x-lds audio/x-m2 audio/x-mdx audio/x-minipsf audio/x-ml audio/x-mmdc
-    audio/x-mo3 audio/x-mod audio/x-mpegurl audio/x-mptm audio/x-nintendo-ds-strm audio/x-nintendo-ds-strm-ffta2
-    audio/x-np audio/x-ntk audio/x-okt audio/x-prun audio/x-psf audio/x-psm audio/x-pt3 audio/x-ptk audio/x-s3m
-    audio/x-sc2 audio/x-sc68 audio/x-scl audio/x-scn audio/x-sidmon audio/x-sidmon2 audio/x-sndh audio/x-sonix
-    audio/x-soundmon audio/x-spc audio/x-spl audio/x-stk audio/x-stm audio/x-sun audio/x-sunvox audio/x-symmod
-    audio/x-tfmx audio/x-tfmx-st audio/x-umx audio/x-v2m audio/x-vgm audio/x-vorbis+ogg audio/x-xad audio/x-xm
+    audio/x-adlib-raw audio/x-ahx audio/x-aon audio/x-amf audio/x-cust audio/x-ddmf audio/x-deflemask audio/x-dm
+    audio/x-dm2 audio/x-dsmi-amf audio/x-dsmi-amf-hack audio/x-dw audio/x-dz audio/x-edlib audio/x-fc audio/x-fc-bsi
+    audio/x-flac+ogg audio/x-fp audio/x-fur audio/x-hip audio/x-hip-7v audio/x-hip-coso audio/x-hip-mcmd audio/x-hip-st
+    audio/x-hip-st-coso audio/x-hvl audio/x-ims audio/x-it audio/x-lds audio/x-m2 audio/x-mdx audio/x-minipsf
+    audio/x-ml audio/x-mmdc audio/x-mo3 audio/x-mod audio/x-mpegurl audio/x-mptm audio/x-nintendo-ds-strm
+    audio/x-nintendo-ds-strm-ffta2 audio/x-np audio/x-ntk audio/x-okt audio/x-prun audio/x-psf audio/x-psm
+    audio/x-pt3 audio/x-ptk audio/x-s3m audio/x-sc2 audio/x-sc68 audio/x-scl audio/x-scn audio/x-sidmon audio/x-sidmon2
+    audio/x-sndh audio/x-sonix audio/x-soundmon audio/x-spc audio/x-spl audio/x-stk audio/x-stm audio/x-sun
+    audio/x-sunvox audio/x-symmod audio/x-tfmx audio/x-tfmx-st audio/x-umx audio/x-v2m audio/x-vgm audio/x-vorbis+ogg
+    audio/x-xad audio/x-xm
   )
 
   bold=$'\e[1m'

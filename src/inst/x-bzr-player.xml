@@ -85,6 +85,42 @@
         </magic>
         <glob pattern="*.dmf"/>
     </mime-type>
+    <mime-type type="audio/x-dm">
+        <comment>Delta Music</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="ALL " offset="0"/>
+        </magic>
+        <glob pattern="dm.*"/>
+        <glob pattern="*.dm"/>
+    </mime-type>
+    <mime-type type="audio/x-dm2">
+        <comment>Delta Music 2</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="big32" value="0x4a006700" offset="4">
+                <match type="big32" value="0x03b40c00" offset="12">
+                    <match type="big32" value="0x00016700" offset="20">
+                        <match type="big32" value="0x01ec0c00" offset="28">
+                            <match type="big32" value="0x0002670a" offset="36">
+                                <match type="big32" value="0x0c000003" offset="44">
+                                    <match type="big32" value="0x67127000" offset="52">
+                                        <match type="big32" value="0x4e7541fa" offset="60">
+                                            <match type="big32" value="0x0b680201" offset="68">
+                                                <match type="big32" value="0x003f1100" mask="0xffffff00" offset="76"/>
+                                            </match>
+                                        </match>
+                                    </match>
+                                </match>
+                            </match>
+                        </match>
+                    </match>
+                </match>
+            </match>
+        </magic>
+        <glob pattern="dm2.*"/>
+        <glob pattern="*.dm2"/>
+    </mime-type>
     <mime-type type="audio/x-dsmi-amf">
         <comment>DSMI Advanced Music Format</comment>
         <acronym>DSMI AMF</acronym>
