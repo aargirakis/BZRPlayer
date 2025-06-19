@@ -562,7 +562,6 @@
                 <match type="string" value="IMA " offset="8"/>
             </match>
         </magic>
-        <glob pattern="*.bin"/>
         <glob pattern="*.strm"/>
     </mime-type>
     <mime-type type="audio/x-np">
