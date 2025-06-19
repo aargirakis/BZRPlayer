@@ -4,6 +4,7 @@
 <!-- TODO currently unsupported: audio/ogg audio/x-opus+ogg application/x-ogg audio/rmid -->
 <!-- TODO DOSBox Raw OPL (DRO): https://moddingwiki.shikadi.net/wiki/DRO_Format -->
 <!-- TODO NP3 -->
+<!-- TODO Sonic Arranger mime currently does not supports Lionheart tracks -->
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
     <mime-type type="audio/rmid">
         <comment>RIFF MIDI (RMID)</comment>

@@ -758,6 +758,17 @@
         <glob pattern="*.snd"/>
         <glob pattern="*.sndh"/>
     </mime-type>
+    <mime-type type="audio/x-sonic">
+        <comment>Sonic Arranger audio</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="SOARV1.0STBL" offset="0"/>
+            <match type="big16" value="0x4efa" offset="0"/>
+        </magic>
+        <glob pattern="sa.*"/>
+        <glob pattern="*.pc"/>
+        <glob pattern="*.sa"/>
+    </mime-type>
     <mime-type type="audio/x-sonix">
         <comment>Aegis SONIX audio</comment>
         <generic-icon name="audio-x-generic"/>
