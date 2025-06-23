@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libopenmpt")
-set(VERSION "0.7.13")
+set(VERSION "0.8.1")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -16,7 +16,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(NAME_VERSIONED2 "${NAME}-${VERSION}+release")
 set(FILENAME "${NAME_VERSIONED2}.makefile.tar.gz")
 set(URL "https://lib.openmpt.org/files/${NAME}/src/${FILENAME}")
-set(SHA_256_HASH "3184069109d1d43c52f1258218a82e550213c37d8e3bcb79a8375be4765eb68c")
+set(SHA_256_HASH "6a495e567753df2176cb790c85b4e1b66db4044c9caa71b9166c5137160b41b9")
 set(UNPACKED_DIR "${NAME_VERSIONED2}")
 set(MAKE_ARGS
         OPENMPT123=0 TEST=0 EXAMPLES=0 SHARED_LIB=0 STATIC_LIB=1
