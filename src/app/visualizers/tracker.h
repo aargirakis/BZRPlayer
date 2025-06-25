@@ -13,7 +13,8 @@ public:
     void drawText(QString, QPainter*, int, int, int letterSpacing = 0);
     void setFont(BitmapFont);
     void paint(QPainter* painter, QPaintEvent* event);
-    void drawToPainter(QPainter* painter);
+    void drawPattern(QPainter* painter);
+    void drawVUMeters(QPainter* painter);
     bool m_render;
     int m_height;
     float m_scale;
@@ -28,7 +29,17 @@ public:
     unsigned int m_currentBPM;
     unsigned int m_currentRow;
 
+    unsigned int m_currentPatternBuffer;
+    unsigned int m_currentPositionBuffer;
+    unsigned int m_currentSpeedBuffer;
+    unsigned int m_currentBPMBuffer;
+    unsigned int m_currentRowBuffer;
+
+
 private:
+
+    QPixmap m_vuBuffer;
+    QSize m_lastVuSize;
     QPixmap m_backBuffer;
     QSize m_lastBufferSize;
     bool m_renderVUMeter;

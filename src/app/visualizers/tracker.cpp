@@ -369,7 +369,7 @@ void Tracker::drawText(QString text, QPainter* painter, int numPixels, int yPixe
     }
 }
 
-void Tracker::drawToPainter(QPainter* painter)
+void Tracker::drawPattern(QPainter* painter)
 {
     if (!m_render)
     {
@@ -397,6 +397,7 @@ void Tracker::drawToPainter(QPainter* painter)
     currentPattern = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODPATTERN);
     currentSpeed = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_SPEED);
     currentBPM = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_BPM);
+
 
     bool updateHively = false;
     if (isHivelyTracker)
@@ -2581,6 +2582,12 @@ void Tracker::drawToPainter(QPainter* painter)
     m_trackerview->paintAbove(painter, height, currentRow);
 
 
+
+}
+void Tracker::drawVUMeters(QPainter* painter)
+{
+    int height = m_trackerview->height();
+    int width = m_trackerview->width();
     if (m_render && m_renderVUMeter)
     {
         SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
@@ -2974,7 +2981,6 @@ void Tracker::drawToPainter(QPainter* painter)
             painter->fillRect(QRect(x, y, w, h), brush);
         }
     }
-
 }
 void Tracker::paint(QPainter* painter, QPaintEvent* event)
 {
@@ -2984,8 +2990,31 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     QSize renderSize = event->rect().size();
     bool sizeChanged = (renderSize != m_lastBufferSize);
 
-    if (sizeChanged || m_renderVUMeter)
+    unsigned int currentPattern = 0;
+    unsigned int currentRow = 0;
+    unsigned int currentPosition = 0;
+    unsigned int currentSpeed = 0;
+    unsigned int currentBPM = 0;
+
+    currentPosition = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODORDER);
+    currentRow = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODROW);
+    currentPattern = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODPATTERN);
+    currentSpeed = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_SPEED);
+    currentBPM = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_BPM);
+
+    bool trackerToUpdate;
+    trackerToUpdate = currentPosition!=m_currentPositionBuffer || currentRow!=m_currentRowBuffer ||
+            m_currentPattern!=m_currentPatternBuffer || m_currentSpeed!=m_currentSpeedBuffer || m_currentBPM!=m_currentBPMBuffer;
+
+
+    if (sizeChanged || trackerToUpdate)
     {
+        m_currentPositionBuffer = currentPosition;
+        m_currentRowBuffer = currentRow;
+        m_currentPatternBuffer = currentPattern;
+        m_currentSpeedBuffer = currentSpeed;
+        m_currentBPMBuffer = currentBPM;
+
         m_lastBufferSize = renderSize;
         m_backBuffer = QPixmap(renderSize);
         m_backBuffer.fill(Qt::black);
@@ -2996,10 +3025,24 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         float scaleY = float(renderSize.height()) / float(m_trackerview->height());
         m_scale = min(scaleX, scaleY);
         bufferPainter.scale(m_scale, m_scale);
-        drawToPainter(&bufferPainter);
+        drawPattern(&bufferPainter);
+    }
+
+    if (m_lastVuSize != renderSize || m_renderVUMeter)
+    {
+        m_lastVuSize = renderSize;
+        m_vuBuffer = QPixmap(renderSize);
+        m_vuBuffer.fill(Qt::transparent);
+
+        QPainter vuPainter(&m_vuBuffer);
+        vuPainter.setCompositionMode(QPainter::CompositionMode_Source);
+        vuPainter.setRenderHint(QPainter::Antialiasing, false);
+        vuPainter.scale(m_scale, m_scale);
+        drawVUMeters(&vuPainter);  // this only draws the VUs
     }
 
     painter->drawPixmap(0, 0, m_backBuffer);
+    painter->drawPixmap(0, 0, m_vuBuffer);
 }
 
 
