@@ -1,12 +1,14 @@
 #include "MEDPatternView.h"
 
-MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = 12;
     m_font = QFont("MED 3.21");
     m_font.setPixelSize(16);
     m_fontWidth = 16;
+    m_renderTop = true;
+    m_renderVUMeter = true;
 
     m_bitmapFont = BitmapFont("MED 3.21");
     m_bitmapFont3 = BitmapFont("MED 3.21 Compressed");
@@ -31,6 +33,32 @@ MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels, int scale
     m_channelxSpace = 0;
     m_width = 640;
     m_height = 512;
+
+    m_vumeterWidth = 24;
+    m_vumeterHeight = 128;
+    m_vumeterLeftOffset = 152;
+    m_vumeterHilightWidth = 4;
+    m_vumeterOffset = 144;
+    m_vumeterTopOffset = -6;
+
+    setupVUMeters();
+
+
+    //main color
+    m_linearGrad.setColorAt(0, QColor(187, 187, 187).rgb());
+    m_linearGrad.setColorAt(0.045, QColor(187, 187, 187).rgb());
+    m_linearGrad.setColorAt(0.04501, QColor(255, 34, 17).rgb()); //red
+    m_linearGrad.setColorAt(0.46, QColor(255, 255, 51).rgb()); //yellow
+    m_linearGrad.setColorAt(0.75, QColor(0, 255, 0).rgb()); // green
+    m_linearGrad.setColorAt(1, QColor(0, 136, 0).rgb()); // dark green
+
+    m_linearGradHiLite.setColorAt(0, QColor(187, 187, 187).rgb());
+    m_linearGradHiLite.setColorAt(1, QColor(187, 187, 187).rgb());
+
+    m_linearGradDark.setColorAt(0, QColor(187, 187, 187).rgb());
+    m_linearGradDark.setColorAt(1, QColor(187, 187, 187).rgb());
+
+
 }
 
 BitmapFont MEDPatternView::infoFont()
@@ -126,6 +154,114 @@ void MEDPatternView::paintBelow(QPainter* painter, int height, int currentRow)
     painter->fillRect(632, 0, 2, height, colorShadow);
 }
 
+void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+    if(QString(info->fileformat.c_str()).toLower().startsWith("octamed (mmd0"))
+    {
+        QColor colorBase(153, 153, 170);
+        QColor colorHilite(204, 204, 204);
+        QColor colorShadow(102, 102, 119);
+        int left = 0;
+
+        //left
+        painter->fillRect(left, 0, 4, 32, colorShadow);
+        painter->fillRect(left + 4, 4, 2, 28, colorBase);
+
+        //right
+        painter->fillRect(left + 636, 4, 4, 28, colorHilite);
+        painter->fillRect(left + 634, 30, 2, 2, colorBase);
+
+        //top
+        painter->fillRect(left + 4, 4, 632, 26, colorBase);
+        painter->fillRect(left + 1, 0, 639, 2, colorHilite);
+        painter->fillRect(left + 3, 2, 637, 2, colorHilite);
+
+        //bottom
+        painter->fillRect(left + 6, 30, 1, 2, colorHilite);
+        painter->fillRect(left + 7, 30, 627, 2, colorShadow);
+
+        //position info etc.
+        painter->fillRect(left + 6, 6, 154, 22, colorShadow);
+        painter->fillRect(left + 7, 8, 83, 2, colorHilite);
+        painter->fillRect(left + 91, 8, 67, 2, colorHilite);
+        painter->fillRect(left + 88, 10, 2, 16, colorHilite);
+        painter->fillRect(left + 156, 10, 2, 16, colorHilite);
+        painter->fillRect(left + 89, 26, 1, 2, colorHilite);
+        painter->fillRect(left + 157, 26, 1, 2, colorHilite);
+
+        painter->fillRect(left + 8, 10, 80, 16, colorBase);
+        painter->fillRect(left + 92, 10, 64, 16, colorBase);
+
+        painter->setPen(QColor(0, 0, 0));
+        drawText(QString("%1").arg(m_currentPosition + 1, 4, 10, QChar('0')), painter, left + 10, 24, infoFont());
+        drawText("/", painter, left + 44, 24, infoFont());
+        drawText(QString("%1").arg(info->numOrders, 4, 10, QChar('0')), painter, left + 54, 24, infoFont());
+        drawText(QString("%1").arg(m_currentPattern, 3, 10, QChar('0')), painter, left + 94, 24, infoFont());
+        drawText("/", painter, left + 120, 24, infoFont());
+        drawText(QString("%1").arg(info->numPatterns, 3, 10, QChar('0')), painter, left + 130, 24, infoFont());
+    }
+    else
+    {
+        m_topHeight = 28;
+        QColor colorBase(153, 153, 170);
+        QColor colorHilite(204, 204, 204);
+        QColor colorShadow(102, 102, 119);
+        int left = 0;
+
+        //background
+        painter->fillRect(left + 2, 0, 636, m_topHeight, colorBase);
+
+        //left
+        painter->fillRect(left, 0, 2, m_topHeight, colorShadow);
+
+
+        //right
+        painter->fillRect(left + 638, 2, 2, m_topHeight-2, colorHilite);
+
+        //top
+        painter->fillRect(left + 1, 0, 639, 2, colorHilite);
+
+
+        //bottom
+        painter->fillRect(left + 1, 26, 638, 2, colorShadow);
+
+        //position info etc.
+        painter->fillRect(left + 3, 4, 253, 22, colorShadow);
+        painter->fillRect(left + 4, 4, 83, 2, colorHilite);
+        painter->fillRect(left + 88, 4, 67, 2, colorHilite);
+        painter->fillRect(left + 156, 4, 35, 2, colorHilite);
+        painter->fillRect(left + 192, 4, 64, 2, colorHilite);
+        painter->fillRect(left + 85, 6, 2, 18, colorHilite);
+        painter->fillRect(left + 153, 6, 2, 18, colorHilite);
+        painter->fillRect(left + 189, 6, 2, 18, colorHilite);
+        painter->fillRect(left + 254, 6, 2, 18, colorHilite);
+        painter->fillRect(left + 86, 24, 1, 2, colorHilite);
+        painter->fillRect(left + 154, 24, 1, 2, colorHilite);
+        painter->fillRect(left + 190, 24, 1, 2, colorHilite);
+        painter->fillRect(left + 255, 24, 1, 2, colorHilite);
+
+        painter->fillRect(left + 5, 6, 80, 18, colorBase);
+        painter->fillRect(left + 89, 6, 64, 18, colorBase);
+        painter->fillRect(left + 157, 6, 32, 18, colorBase);
+        painter->fillRect(left + 193, 6, 61, 18, colorBase);
+
+        painter->setPen(QColor(0, 0, 0));
+
+        drawText(QString("%1").arg(m_currentPosition + 1, 4, 10, QChar('0')), painter, left + 6, 24, infoFont());
+        drawText("/", painter, left + 40, 24, infoFont());
+        drawText("/", painter, left + 41, 24, infoFont());
+        drawText(QString("%1").arg(info->numOrders, 4, 10, QChar('0')), painter, left + 50, 24, infoFont());
+        drawText(QString("%1").arg(m_currentPattern, 3, 10, QChar('0')), painter, left + 90, 24, infoFont());
+        drawText("/", painter, left + 116, 24, infoFont());
+        drawText("/", painter, left + 117, 24, infoFont());
+        drawText(QString("%1").arg(info->numPatterns, 3, 10, QChar('0')), painter, left + 126, 24, infoFont());
+        drawText("SPD", painter, left + 161, 24, infoFont());
+        drawText(QString("%1").arg(m_currentBPM, 3, 10, QChar('0')), painter, left + 196, 24, infoFont());
+        drawText("/", painter, left + 223, 24, infoFont());
+        drawText("/", painter, left + 224, 24, infoFont());
+        drawText(QString("%1").arg(m_currentSpeed, 2, 16, QChar('0')), painter, left + 235, 24, infoFont());
+    }
+}
 MEDPatternView::~MEDPatternView()
 {
 }

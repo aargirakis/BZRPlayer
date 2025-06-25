@@ -5,7 +5,7 @@
 class FastTracker26ChanPatternView : public FastTracker2PatternView
 {
 public:
-    FastTracker26ChanPatternView(Tracker* parent, unsigned int channels, int scale);
+    FastTracker26ChanPatternView(Tracker* parent, unsigned int channels);
     ~FastTracker26ChanPatternView();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);

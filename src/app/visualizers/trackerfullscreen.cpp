@@ -13,7 +13,7 @@ void TrackerFullScreen::paintEvent(QPaintEvent* event)
 {
     if (tracker)
     {
-        if ((tracker->m_render && SoundManager::getInstance().IsPlaying()) && (SoundManager::getInstance().m_Info1->
+        if ((tracker->m_trackerview!= nullptr && SoundManager::getInstance().IsPlaying()) && (SoundManager::getInstance().m_Info1->
             plugin == PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp ||
             SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker || SoundManager::getInstance().m_Info1->
             plugin == PLUGIN_sunvox_lib))

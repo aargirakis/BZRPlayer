@@ -5,7 +5,7 @@
 class OctaMEDPatternView : public MEDPatternView
 {
 public:
-    OctaMEDPatternView(Tracker* parent, unsigned int channels, int scale);
+    OctaMEDPatternView(Tracker* parent, unsigned int channels);
     ~OctaMEDPatternView();
     QString effect(BaseRow* row);
     QString parameter(BaseRow* row);

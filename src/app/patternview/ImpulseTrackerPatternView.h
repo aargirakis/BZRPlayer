@@ -5,7 +5,7 @@
 class ImpulseTrackerPatternView : public AbstractPatternView
 {
 public:
-    ImpulseTrackerPatternView(Tracker* parent, unsigned int channels, int scale);
+    ImpulseTrackerPatternView(Tracker* parent, unsigned int channels);
     ~ImpulseTrackerPatternView();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);

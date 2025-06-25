@@ -1,7 +1,7 @@
 #include "SoundFXPatternView.h"
 
-SoundFXPatternView::SoundFXPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+SoundFXPatternView::SoundFXPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     m_font = QFont("Sound FX V1.8");
     m_font.setPixelSize(16);

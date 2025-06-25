@@ -5,7 +5,7 @@
 class DigiBoosterProPatternView : public AbstractPatternView
 {
 public:
-    DigiBoosterProPatternView(Tracker* parent, unsigned int channels, int scale);
+    DigiBoosterProPatternView(Tracker* parent, unsigned int channels);
     ~DigiBoosterProPatternView();
     QFont currentRowFont();
     BitmapFont currentRowBitmapFont();

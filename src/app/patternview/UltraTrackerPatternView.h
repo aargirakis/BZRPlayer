@@ -5,7 +5,7 @@
 class UltraTrackerPatternView : public AbstractPatternView
 {
 public:
-    UltraTrackerPatternView(Tracker* parent, unsigned int channels, int scale);
+    UltraTrackerPatternView(Tracker* parent, unsigned int channels);
     ~UltraTrackerPatternView();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);

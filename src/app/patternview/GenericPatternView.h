@@ -5,7 +5,7 @@
 class GenericPatternView : public AbstractPatternView
 {
 public:
-    GenericPatternView(Tracker* parent, unsigned int channels, int scale);
+    GenericPatternView(Tracker* parent, unsigned int channels);
     ~GenericPatternView();
 
     void paintAbove(QPainter* painter, int height, int currentRow);

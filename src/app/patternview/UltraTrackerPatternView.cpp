@@ -1,7 +1,7 @@
 #include "UltraTrackerPatternView.h"
 
-UltraTrackerPatternView::UltraTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+UltraTrackerPatternView::UltraTrackerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = 48;
     rowNumberOffset = 0;

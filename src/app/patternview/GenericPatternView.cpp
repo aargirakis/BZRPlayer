@@ -1,14 +1,14 @@
 #include "GenericPatternView.h"
 
-GenericPatternView::GenericPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+GenericPatternView::GenericPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     rowNumberOffset = 0;
     octaveOffset = 48;
 
     m_font = QFont("AHX Thin");
-    m_font.setPixelSize(8 * m_scale);
-    m_fontWidth = m_scale * 6;
+    m_font.setPixelSize(8);
+    m_fontWidth = 6;
     m_font.setStyleStrategy(QFont::NoAntialias);
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =

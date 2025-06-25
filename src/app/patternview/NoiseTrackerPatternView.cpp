@@ -1,7 +1,7 @@
 #include "NoiseTrackerPatternView.h"
 
-NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     rowNumberOffset = 0;
     octaveOffset = 48;
@@ -18,6 +18,9 @@ NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, unsigned int c
     m_fontWidth = 8;
     m_fontHeight = 7;
     m_bitmapFont2 = BitmapFont("Protracker 1.0 Double Height");
+
+    m_renderTop = true;
+    m_renderVUMeter = true;
 
     m_RowEnd = m_SeparatorRowNumber = m_SeparatorChannel = " ";
     m_RowLength = 40;
@@ -36,6 +39,35 @@ NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, unsigned int c
     m_ibuttonNextSampleHeight = 11;
     m_ibuttonNextSampleX = 0;
     m_ibuttonNextSampleY = 33;
+
+
+    setupVUMeters();
+
+
+    //main color
+    m_linearGrad.setColorAt(0, QColor(189, 16, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.11, QColor(189, 50, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.36, QColor(189, 255, 0).rgb()); //yellow
+    m_linearGrad.setColorAt(0.81, QColor(0, 255, 0).rgb()); // green
+    m_linearGrad.setColorAt(0.87, QColor(0, 227, 0).rgb()); // green
+    m_linearGrad.setColorAt(0.95, QColor(0, 169, 0).rgb()); // green
+
+
+    //hilight color (left)
+    m_linearGradHiLite.setColorAt(0, QColor(255, 16, 0).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.11, QColor(255, 50, 0).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.36, QColor(255, 255, 0).rgb()); //yellow
+    m_linearGradHiLite.setColorAt(0.81, QColor(66, 255, 0).rgb()); // green
+    m_linearGradHiLite.setColorAt(1, QColor(0, 239, 0).rgb()); // dark green
+
+    //dark color (right)
+    m_linearGradDark.setColorAt(0, QColor(115, 16, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.11, QColor(111, 50, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.36, QColor(115, 255, 0).rgb()); //yellow
+    m_linearGradDark.setColorAt(0.74, QColor(0, 218, 0).rgb()); // green
+    m_linearGradDark.setColorAt(0.85, QColor(0, 166, 0).rgb()); // green
+    m_linearGradDark.setColorAt(0.93, QColor(0, 105, 0).rgb()); // green
+    m_linearGradDark.setColorAt(1, QColor(0, 96, 0).rgb()); // dark green
 }
 
 QFont NoiseTrackerPatternView::currentRowFont()
@@ -101,10 +133,10 @@ void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int curr
     //left border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine(left - 2, 0, left - 3, height);
+    painter->drawLine(left - 2, 0, left - 2, height);
     pen.setColor(colorBase);
     painter->setPen(pen);
-    painter->drawLine(((left - 1)), 0, ((left - 2)), height);
+    painter->drawLine(((left - 1)), 0, ((left - 1)), height);
     pen.setColor(colorShadow);
     painter->setPen(pen);
     painter->drawLine((left - 0), 0, (left - 0), height - 4);
@@ -120,13 +152,13 @@ void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int curr
         //channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
-        painter->drawLine((left + 25 + chan * 72), 0, (left + 24 + chan * 72), height);
+        painter->drawLine((left + 25 + chan * 72), 0, (left + 25 + chan * 72), height);
         pen.setColor(colorBase);
         painter->setPen(pen);
-        painter->drawLine((left + 26 + chan * 72), 0, (left + 25 + chan * 72), height);
+        painter->drawLine((left + 26 + chan * 72), 0, (left + 26 + chan * 72), height);
         pen.setColor(colorShadow);
         painter->setPen(pen);
-        painter->drawLine((left + 27 + chan * 72), 0, (left + 26 + chan * 72), (height) - 2);
+        painter->drawLine((left + 27 + chan * 72), 0, (left + 27 + chan * 72), (height) - 2);
         //1 pixel top antialiasing
         painter->fillRect((left + 25 + chan * 72), 32, 1, 1, colorBase);
         //1 pixel bottom antialiasing
@@ -136,13 +168,13 @@ void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int curr
     //right border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine(318, 0, 317, height);
+    painter->drawLine(318, 0, 318, height);
     pen.setColor(colorBase);
     painter->setPen(pen);
-    painter->drawLine(319, 0, 318, height);
+    painter->drawLine(319, 0, 319, height);
     pen.setColor(colorShadow);
     painter->setPen(pen);
-    painter->drawLine(320, 0, 319, height);
+    painter->drawLine(320, 0, 320, height);
     //1 pixel antialiasing
     painter->fillRect(318, 0, 1, 1, colorBase);
 

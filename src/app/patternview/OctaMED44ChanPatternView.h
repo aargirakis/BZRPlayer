@@ -5,7 +5,7 @@
 class OctaMED44ChanPatternView : public MEDPatternView
 {
 public:
-    OctaMED44ChanPatternView(Tracker* parent, unsigned int channels, int scale);
+    OctaMED44ChanPatternView(Tracker* parent, unsigned int channels);
     ~OctaMED44ChanPatternView();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);
