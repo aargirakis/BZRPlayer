@@ -369,8 +369,7 @@ void Tracker::drawText(QString text, QPainter* painter, int numPixels, int yPixe
     }
 }
 
-
-void Tracker::paint(QPainter* painter, QPaintEvent* event)
+void Tracker::drawToPainter(QPainter* painter)
 {
     if (!m_render)
     {
@@ -378,14 +377,6 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     }
     int height = m_trackerview->height();
     int width = m_trackerview->width();
-    float scaleX = float(event->rect().width()) / float(m_trackerview->width());
-    float scaleY = float(event->rect().height()) / float(m_trackerview->height());
-
-    m_scale = min(scaleX, scaleY);
-    painter->scale(m_scale, m_scale);
-
-    //painter->setRenderHint(QPainter::Antialiasing);
-    //painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
 
     setFont(m_trackerview->bitmapFont());
@@ -396,6 +387,10 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     unsigned int currentPosition = 0;
     unsigned int currentSpeed = 0;
     unsigned int currentBPM = 0;
+    bool isHivelyTracker = m_info->plugin == PLUGIN_hivelytracker;
+    bool islibopenmpt = m_info->plugin == PLUGIN_libopenmpt;
+    bool islibxmp = m_info->plugin == PLUGIN_libxmp;
+    bool issunvox = m_info->plugin == PLUGIN_sunvox_lib;
 
     currentPosition = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODORDER);
     currentRow = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODROW);
@@ -404,7 +399,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     currentBPM = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_BPM);
 
     bool updateHively = false;
-    if (m_info->plugin == PLUGIN_hivelytracker)
+    if (isHivelyTracker)
     {
         for (unsigned int v = 0; v < m_info->modTrackPositions.size(); v++)
         {
@@ -422,16 +417,11 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     }
 
 
-    if (true)
-    //if(currentRow!=m_currentRow || m_renderVUMeter || updateHively) //only redraw if it's a new row
+    if(currentRow!=m_currentRow || m_renderVUMeter || updateHively)
     {
         //Revert painter scaling and fill background rect
         QRect rect(0, 0, painter->window().width() / m_scale, painter->window().height() / m_scale);
         painter->fillRect(rect, QColor(0, 0, 0));
-        //cout << "painter->window().width()*m_scale " << painter->window().width()*m_scale << "\n";
-        //cout << "m_scale " << m_scale << "\n";
-        //cout << "painter->window().width() " << painter->window().width() << "\n";
-
 
         m_currentRow = currentRow;
         m_currentPattern = currentPattern; //used where one pattern per positions (mod/sfx)
@@ -439,12 +429,12 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         m_currentSpeed = currentSpeed;
         m_currentBPM = currentBPM;
 
-        if (m_info->plugin == PLUGIN_libopenmpt || m_info->plugin == PLUGIN_libxmp)
+        if (islibopenmpt || islibxmp)
         {
             m_info->modPatternRows = m_info->patterns[m_currentPattern].size() / m_info->numChannels;
         }
 
-        if (m_info->plugin == PLUGIN_hivelytracker)
+        if (isHivelyTracker)
         {
             m_currentTrackPositions = std::vector<unsigned char>(m_info->modTrackPositions.size());
             copy(m_info->modTrackPositions.begin(), m_info->modTrackPositions.end(), m_currentTrackPositions.begin());
@@ -454,12 +444,12 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         unsigned int j = 0;
         unsigned int i = 0;
         unsigned int outerLoopBreakValue = 0;
-        if (m_info->plugin == PLUGIN_hivelytracker)
+        if (isHivelyTracker)
         {
             outerLoopBreakValue = m_info->modPatternRows;
         }
 
-        else if (m_info->plugin == PLUGIN_libopenmpt || m_info->plugin == PLUGIN_libxmp)
+        else if (islibopenmpt || islibxmp)
         {
             i = 0;
             outerLoopBreakValue = m_info->patterns[m_currentPattern].size();
@@ -471,6 +461,10 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
 
         int libxmpNotes = 0;
         int yPixelPosition = 0;
+        const int yOffset = height / 2;
+        const QFont& currentRowFont = m_trackerview->currentRowFont();
+        const QFont& normalFont = m_trackerview->font();
+
         while (i < outerLoopBreakValue)
         {
             bool insideVisibleArea;
@@ -525,7 +519,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
 
             if (j == currentRow)
             {
-                yPixelPosition += (m_trackerview->currentRowFont().pixelSize() + m_trackerview->yOffsetRowAfter());
+                yPixelPosition += (currentRowFont.pixelSize() + m_trackerview->yOffsetRowAfter());
                 yPixelPosition -= m_trackerview->yOffsetCurrentRowBefore();
                 if (currentRow == 0)
                 {
@@ -576,9 +570,9 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             else
             {
                 yPixelPosition = ((m_trackerview->fontHeight() + m_trackerview->yOffsetRowAfter()) * j) - (currentRow *
-                    (m_trackerview->font().pixelSize() + m_trackerview->yOffsetRowAfter()));
+                                                                                                           (normalFont.pixelSize() + m_trackerview->yOffsetRowAfter()));
 
-                if (j > currentRow && m_trackerview->currentRowFont().pixelSize() > m_trackerview->font().pixelSize())
+                if (j > currentRow && currentRowFont.pixelSize() > normalFont.pixelSize())
                 {
                     yPixelPosition += m_trackerview->fontHeight() + m_trackerview->yOffsetRowAfter();
                 }
@@ -605,13 +599,13 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             {
                 painter->setPen(colorRowNumber);
                 drawText(m_trackerview->rowStart(), painter, m_trackerview->xOffsetRow() + numPixels,
-                         height / 2 + yPixelPosition);
+                         yOffset + yPixelPosition);
             }
             numPixels += (m_trackerview->rowStart().length() * fontWidth);
 
 
             if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->bitmapFontRownumber().
-                m_bitmapFontPath)
+                    m_bitmapFontPath)
             {
                 setFont(m_trackerview->currentRowBitmapFont());
                 fontWidth = m_trackerview->fontWidth();
@@ -624,7 +618,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             painter->setPen(colorRowNumber);
 
 
-            drawText(strRowNumber, painter, (m_trackerview->xOffsetRow() + numPixels), height / 2 + yPixelPosition);
+            drawText(strRowNumber, painter, (m_trackerview->xOffsetRow() + numPixels), yOffset + yPixelPosition);
 
 
             numPixels += (strRowNumber.length() * fontWidth) + m_trackerview->xOffsetSeparatorRowNumber();
@@ -649,19 +643,17 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 }
                 fontWidth = m_trackerview->fontWidth();
                 int k = 0;
-                if (m_info->plugin == PLUGIN_hivelytracker)
+                if (isHivelyTracker)
                 {
                     k = m_info->modTrackPositions.at(chan) * m_info->modPatternRows;
                 }
-                else if (m_info->plugin == PLUGIN_libopenmpt || m_info->plugin == PLUGIN_libxmp || m_info->plugin ==
-                    PLUGIN_sunvox_lib)
+                else if (islibopenmpt || islibxmp || issunvox)
                 {
                     k = chan;
                 }
 
                 BaseRow* row;
-                if (m_info->plugin == PLUGIN_libopenmpt || m_info->plugin == PLUGIN_libxmp || m_info->plugin ==
-                    PLUGIN_sunvox_lib)
+                if (islibopenmpt || islibxmp || issunvox)
                 {
                     row = m_info->patterns[m_currentPattern][libxmpNotes];
                     libxmpNotes++;
@@ -691,7 +683,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 }
 
                 if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
-                    bitmapFontRownumber().m_bitmapFontPath)
+                        bitmapFontRownumber().m_bitmapFontPath)
                 {
                     setFont(m_trackerview->currentRowBitmapFont());
                     fontWidth = m_trackerview->fontWidth();
@@ -703,10 +695,10 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 }
 
                 drawText(channelSeparator, painter, (m_trackerview->xOffsetRow() + numPixels),
-                         height / 2 + yPixelPosition);
+                         yOffset + yPixelPosition);
                 numPixels += channelSeparator.length() * fontWidth;
                 drawText(strRowNumberMultiple, painter, (m_trackerview->xOffsetRow() + numPixels),
-                         height / 2 + yPixelPosition);
+                         yOffset + yPixelPosition);
                 numPixels += strRowNumberMultiple.length() * fontWidth;
                 if (j == currentRow)
                 {
@@ -741,16 +733,16 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                     }
                 }
 
-                drawText(strNote, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                drawText(strNote, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
 
                 numPixels += strNote.length() * fontWidth;
                 fontWidth = m_trackerview->fontWidthSeparatorNote();
                 drawText(m_trackerview->separatorNote(), painter, m_trackerview->xOffsetRow() + numPixels,
-                         height / 2 + yPixelPosition);
+                         yOffset + yPixelPosition);
 
                 numPixels += m_trackerview->separatorNote().length() * fontWidth;
                 if (instrument == m_trackerview->emptyInstrument() && !m_trackerview->noEmptyInstrumentColor() && j !=
-                    currentRow)
+                                                                                                                  currentRow)
                 {
                     if (!alternateChannelColors)
                     {
@@ -774,7 +766,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 }
 
                 if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
-                    bitmapFontInstrument().m_bitmapFontPath)
+                        bitmapFontInstrument().m_bitmapFontPath)
                 {
                     setFont(m_trackerview->currentRowBitmapFont());
                     fontWidth = m_trackerview->fontWidth();
@@ -785,10 +777,10 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                     fontWidth = m_trackerview->fontWidthInstrument();
                 }
 
-                drawText(instrument, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                drawText(instrument, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                 numPixels += instrument.length() * fontWidth;
                 drawText(m_trackerview->separatorInstrument(), painter, m_trackerview->xOffsetRow() + numPixels,
-                         height / 2 + yPixelPosition);
+                         yOffset + yPixelPosition);
                 numPixels += m_trackerview->separatorInstrument().length() * fontWidth;
 
                 if (volume == m_trackerview->emptyVolume() && !m_trackerview->noEmptyVolumeColor() && j != currentRow)
@@ -813,16 +805,16 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         painter->setPen(colorEmptyAlt);
                     }
                 }
-                drawText(volume, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                drawText(volume, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                 numPixels += volume.length() * fontWidth;
                 drawText(m_trackerview->separatorVolume(), painter, m_trackerview->xOffsetRow() + numPixels,
-                         height / 2 + yPixelPosition);
+                         yOffset + yPixelPosition);
                 numPixels += m_trackerview->separatorVolume().length() * fontWidth;
 
                 if (!m_trackerview->effectsThenParametersEnabled())
                 {
                     if (effect == m_trackerview->emptyEffect() && !m_trackerview->noEmptyEffectColor() && j !=
-                        currentRow)
+                                                                                                          currentRow)
                     {
                         if (!alternateChannelColors)
                         {
@@ -838,7 +830,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         if (!alternateChannelColors)
                         {
                             if (m_trackerview->useInstrumentColorOnEffectAndParameterFrequency() && j % m_trackerview->
-                                useInstrumentColorOnEffectAndParameterFrequency() == 0)
+                                    useInstrumentColorOnEffectAndParameterFrequency() == 0)
                             {
                                 painter->setPen(colorInstrument);
                             }
@@ -850,7 +842,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         else
                         {
                             if (m_trackerview->useInstrumentColorOnEffectAndParameterFrequency() && j % m_trackerview->
-                                useInstrumentColorOnEffectAndParameterFrequency() == 0)
+                                    useInstrumentColorOnEffectAndParameterFrequency() == 0)
                             {
                                 painter->setPen(colorInstrumentAlt);
                             }
@@ -861,7 +853,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         }
                     }
                     if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
-                        bitmapFontEffects().m_bitmapFontPath)
+                            bitmapFontEffects().m_bitmapFontPath)
                     {
                         setFont(m_trackerview->currentRowBitmapFont());
                         fontWidth = m_trackerview->fontWidth();
@@ -872,14 +864,14 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         fontWidth = m_trackerview->fontWidthEffects();
                     }
 
-                    drawText(effect, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                    drawText(effect, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                     numPixels += effect.length() * fontWidth;
                     drawText(m_trackerview->separatorEffect(), painter, m_trackerview->xOffsetRow() + numPixels,
-                             height / 2 + yPixelPosition);
+                             yOffset + yPixelPosition);
                     numPixels += m_trackerview->separatorEffect().length() * fontWidth;
 
                     if (parameter == m_trackerview->emptyParameter() && !m_trackerview->noEmptyParameterColor() && j !=
-                        currentRow)
+                                                                                                                   currentRow)
                     {
                         if (!alternateChannelColors)
                         {
@@ -895,7 +887,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         if (!alternateChannelColors)
                         {
                             if (m_trackerview->useInstrumentColorOnEffectAndParameterFrequency() && j % m_trackerview->
-                                useInstrumentColorOnEffectAndParameterFrequency() == 0)
+                                    useInstrumentColorOnEffectAndParameterFrequency() == 0)
                             {
                                 painter->setPen(colorInstrument);
                             }
@@ -907,7 +899,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         else
                         {
                             if (m_trackerview->useInstrumentColorOnEffectAndParameterFrequency() && j % m_trackerview->
-                                useInstrumentColorOnEffectAndParameterFrequency() == 0)
+                                    useInstrumentColorOnEffectAndParameterFrequency() == 0)
                             {
                                 painter->setPen(colorInstrumentAlt);
                             }
@@ -918,7 +910,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         }
                     }
                     if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
-                        bitmapFontParameters().m_bitmapFontPath)
+                            bitmapFontParameters().m_bitmapFontPath)
                     {
                         setFont(m_trackerview->currentRowBitmapFont());
                         fontWidth = m_trackerview->fontWidth();
@@ -928,10 +920,10 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         setFont(m_trackerview->bitmapFontParameters());
                         fontWidth = m_trackerview->fontWidthParameters();
                     }
-                    drawText(parameter, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                    drawText(parameter, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                     numPixels += parameter.length() * fontWidth;
                     drawText(m_trackerview->separatorParameter(), painter, m_trackerview->xOffsetRow() + numPixels,
-                             height / 2 + yPixelPosition);
+                             yOffset + yPixelPosition);
                     numPixels += m_trackerview->separatorParameter().length() * fontWidth;
 
                     if (effect2 == m_trackerview->emptyEffect() && j != currentRow)
@@ -957,7 +949,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         }
                     }
                     if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
-                        bitmapFontEffects().m_bitmapFontPath)
+                            bitmapFontEffects().m_bitmapFontPath)
                     {
                         setFont(m_trackerview->currentRowBitmapFont());
                         fontWidth = m_trackerview->fontWidth();
@@ -967,14 +959,14 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         setFont(m_trackerview->bitmapFontEffects());
                         fontWidth = m_trackerview->fontWidthEffects();
                     }
-                    drawText(effect2, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                    drawText(effect2, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                     numPixels += effect2.length() * fontWidth;
                     drawText(m_trackerview->separatorEffect2(), painter, m_trackerview->xOffsetRow() + numPixels,
-                             height / 2 + yPixelPosition);
+                             yOffset + yPixelPosition);
                     numPixels += m_trackerview->separatorEffect2().length() * fontWidth;
 
                     if (parameter2 == m_trackerview->emptyParameter() && !m_trackerview->noEmptyParameter2Color() && j
-                        != currentRow)
+                                                                                                                     != currentRow)
                     {
                         if (!alternateChannelColors)
                         {
@@ -997,7 +989,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         }
                     }
                     if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
-                        bitmapFontParameters().m_bitmapFontPath)
+                            bitmapFontParameters().m_bitmapFontPath)
                     {
                         setFont(m_trackerview->currentRowBitmapFont());
                         fontWidth = m_trackerview->fontWidth();
@@ -1007,16 +999,16 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         setFont(m_trackerview->bitmapFontParameters());
                         fontWidth = m_trackerview->fontWidthParameters();
                     }
-                    drawText(parameter2, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                    drawText(parameter2, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                     numPixels += parameter2.length() * fontWidth;
                     drawText(m_trackerview->separatorParameter2(), painter, m_trackerview->xOffsetRow() + numPixels,
-                             height / 2 + yPixelPosition);
+                             yOffset + yPixelPosition);
                     numPixels += m_trackerview->separatorParameter2().length() * fontWidth;
                 }
                 else
                 {
                     if (effect == m_trackerview->emptyEffect() && !m_trackerview->noEmptyEffectColor() && j !=
-                        currentRow)
+                                                                                                          currentRow)
                     {
                         if (!alternateChannelColors)
                         {
@@ -1039,7 +1031,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         }
                     }
                     if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
-                        bitmapFontEffects().m_bitmapFontPath)
+                            bitmapFontEffects().m_bitmapFontPath)
                     {
                         setFont(m_trackerview->currentRowBitmapFont());
                         fontWidth = m_trackerview->fontWidth();
@@ -1049,14 +1041,14 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         setFont(m_trackerview->bitmapFontEffects());
                         fontWidth = m_trackerview->fontWidthEffects();
                     }
-                    drawText(effect, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                    drawText(effect, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                     numPixels += effect.length() * fontWidth;
                     drawText(m_trackerview->separatorEffect(), painter, m_trackerview->xOffsetRow() + numPixels,
-                             height / 2 + yPixelPosition);
+                             yOffset + yPixelPosition);
                     numPixels += m_trackerview->separatorEffect().length() * fontWidth;
 
                     if (effect2 == m_trackerview->emptyEffect() && !m_trackerview->noEmptyEffect2Color() && j !=
-                        currentRow)
+                                                                                                            currentRow)
                     {
                         if (!alternateChannelColors)
                         {
@@ -1078,14 +1070,14 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                             painter->setPen(colorEffect2Alt);
                         }
                     }
-                    drawText(effect2, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                    drawText(effect2, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                     numPixels += effect2.length() * fontWidth;
                     drawText(m_trackerview->separatorEffect2(), painter, m_trackerview->xOffsetRow() + numPixels,
-                             height / 2 + yPixelPosition);
+                             yOffset + yPixelPosition);
                     numPixels += m_trackerview->separatorEffect2().length() * fontWidth;
 
                     if (parameter == m_trackerview->emptyParameter() && !m_trackerview->noEmptyParameterColor() && j !=
-                        currentRow)
+                                                                                                                   currentRow)
                     {
                         if (!alternateChannelColors)
                         {
@@ -1108,7 +1100,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         }
                     }
                     if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
-                        bitmapFontParameters().m_bitmapFontPath)
+                            bitmapFontParameters().m_bitmapFontPath)
                     {
                         setFont(m_trackerview->currentRowBitmapFont());
                         fontWidth = m_trackerview->fontWidth();
@@ -1118,14 +1110,14 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                         setFont(m_trackerview->bitmapFontParameters());
                         fontWidth = m_trackerview->fontWidthParameters();
                     }
-                    drawText(parameter, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                    drawText(parameter, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                     numPixels += parameter.length() * fontWidth;
                     drawText(m_trackerview->separatorParameter(), painter, m_trackerview->xOffsetRow() + numPixels,
-                             height / 2 + yPixelPosition);
+                             yOffset + yPixelPosition);
                     numPixels += m_trackerview->separatorParameter().length() * fontWidth;
 
                     if (parameter2 == m_trackerview->emptyParameter() && !m_trackerview->noEmptyParameterColor() && j !=
-                        currentRow)
+                                                                                                                    currentRow)
                     {
                         if (!alternateChannelColors)
                         {
@@ -1147,10 +1139,10 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                             painter->setPen(colorParameter2Alt);
                         }
                     }
-                    drawText(parameter2, painter, m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                    drawText(parameter2, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                     numPixels += parameter2.length() * fontWidth;
                     drawText(m_trackerview->separatorParameter2(), painter, m_trackerview->xOffsetRow() + numPixels,
-                             height / 2 + yPixelPosition);
+                             yOffset + yPixelPosition);
                     numPixels += m_trackerview->separatorParameter2().length() * fontWidth;
                 }
             }
@@ -1159,7 +1151,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             if (m_trackerview->rowNumbersLastChannelEnabled())
             {
                 if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
-                    bitmapFontRownumber().m_bitmapFontPath)
+                        bitmapFontRownumber().m_bitmapFontPath)
                 {
                     setFont(m_trackerview->currentRowBitmapFont());
                     fontWidth = m_trackerview->fontWidth();
@@ -1171,7 +1163,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 }
                 painter->setPen(colorRowNumber);
                 drawText(m_trackerview->separatorRowNumberLast() + row, painter,
-                         m_trackerview->xOffsetRow() + numPixels, height / 2 + yPixelPosition);
+                         m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition);
                 numPixels += row.length() * fontWidth;
             }
 
@@ -1194,17 +1186,16 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             if (m_trackerview->linesBetweenRows() && j != currentRow && j != currentRow - 1)
             {
                 painter->fillRect(m_trackerview->xOffsetRow(),
-                                  height / 2 + yPixelPosition + m_trackerview->yOffsetRowHighlight(),
+                                  yOffset + yPixelPosition + m_trackerview->yOffsetRowHighlight(),
                                   m_trackerview->xOffsetRow() + numPixels - (m_trackerview->
-                                      highlightBackgroundOffset()), 1, QColor(0, 0, 0));
+                                          highlightBackgroundOffset()), 1, QColor(0, 0, 0));
             }
             j++;
-            if (m_info->plugin == PLUGIN_libopenmpt || m_info->plugin == PLUGIN_libxmp || m_info->plugin ==
-                PLUGIN_sunvox_lib)
+            if (islibopenmpt || islibxmp || issunvox)
             {
                 i += m_info->numChannels;
             }
-            else if (m_info->plugin == PLUGIN_hivelytracker)
+            else if (isHivelyTracker)
             {
                 i++;
             }
@@ -1458,7 +1449,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF targetPrev(left + 3, 35, 6, 7);
                 QRectF targetNext(left + 14, 35, 6, 7);
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "startrekker_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "startrekker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPrev, imageTop, sourcePrev);
                 painter->drawImage(targetNext, imageTop, sourceNext);
@@ -1472,8 +1463,8 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 drawText(QString("%1").arg(m_trackerview->getCurrentSample() + 1, 2, 10, QChar('0')), painter,
                          left + (24), top + (33));
                 drawText(
-                    QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
-                                  toUpper(), painter, left + (141), top + (33));
+                        QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
+                                toUpper(), painter, left + (141), top + (33));
 
                 //1px antialias
                 painter->fillRect(left, 32, 1, 1, colorBase);
@@ -1484,10 +1475,10 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             }
             else if ((QString(m_info->fileformat.c_str()).toLower().startsWith("protracker") && !
                     QString(m_info->fileformat.c_str()).toLower().startsWith("protracker xm")) ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("probably converted (m.k") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("unknown/converted (m.k") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("converted 15 ins") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("unknown or converted (M"))
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("probably converted (m.k") ||
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("unknown/converted (m.k") ||
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("converted 15 ins") ||
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("unknown or converted (M"))
             {
                 m_height = 32;
                 QColor colorBase(136, 136, 136);
@@ -1536,7 +1527,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF targetPrev(left + 3, 24, 6, 7);
                 QRectF targetNext(left + 14, 24, 6, 7);
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "protracker_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "protracker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPrev, imageTop, sourcePrev);
                 painter->drawImage(targetNext, imageTop, sourceNext);
@@ -1550,8 +1541,8 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 drawText(QString("%1").arg(m_trackerview->getCurrentSample() + 1, 2, 10, QChar('0')), painter,
                          left + (24), top + (22));
                 drawText(
-                    QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
-                                  toUpper(), painter, left + 141, top + 22);
+                        QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
+                                toUpper(), painter, left + 141, top + 22);
                 m_pen.setWidth(1);
 
                 m_pen.setColor(colorHilite);
@@ -1623,7 +1614,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF targetNext(left + 14, 24, 6, 7);
 
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "chiptracker_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "chiptracker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPosition, imageTop, sourcePosition);
                 painter->drawImage(targetPattern, imageTop, sourcePattern);
@@ -1697,8 +1688,8 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 drawText(QString("%1").arg(m_trackerview->getCurrentSample() + 1, 4, 16, QChar('0')).toUpper(), painter,
                          left + (24), top + (22));
                 drawText(
-                    QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
-                                  toUpper(), painter, left + (137), top + (22));
+                        QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
+                                toUpper(), painter, left + (137), top + (22));
             }
 
             else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ice tracker"))
@@ -1783,15 +1774,15 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 drawText(QString("%1").arg(m_trackerview->getCurrentSample() + 1, 2, 10, QChar('0')), painter,
                          left + (24), top + (22));
                 drawText(
-                    QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
-                                  toUpper(), painter, left + (141), top + (22));
+                        QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
+                                toUpper(), painter, left + (141), top + (22));
 
                 QRectF sourcePrev(0, 0, 6, 7);
                 QRectF sourceNext(6, 0, 6, 7);
                 QRectF targetPrev(left + 3, 24, 6, 7);
                 QRectF targetNext(left + 14, 24, 6, 7);
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "icetracker_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "icetracker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPrev, imageTop, sourcePrev);
                 painter->drawImage(targetNext, imageTop, sourceNext);
@@ -1894,21 +1885,21 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 drawText(QString("%1").arg(m_trackerview->getCurrentSample() + 1, 2, 10, QChar('0')), painter,
                          left + (24), top + (22));
                 drawText(
-                    QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
-                                  toUpper(), painter, left + (141), top + (22));
+                        QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
+                                toUpper(), painter, left + (141), top + (22));
                 QRectF sourcePrev(0, 0, 6, 7);
                 QRectF sourceNext(6, 0, 6, 7);
                 QRectF targetPrev(left + 3, 24, 6, 7);
                 QRectF targetNext(left + 14, 24, 6, 7);
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "noisetracker_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "noisetracker_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPrev, imageTop, sourcePrev);
                 painter->drawImage(targetNext, imageTop, sourceNext);
             }
             else if (QString(m_info->fileformat.c_str()).toLower().startsWith("fasttracker 2") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("skale tracker xm") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("madtracker 2.0 xm") || QString(
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("skale tracker xm") ||
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("madtracker 2.0 xm") || QString(
                     m_info->fileformat.c_str()).toLower().endsWith("xm 1.04"))
             {
                 m_height = 29;
@@ -2191,8 +2182,8 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 setFont(m_trackerview->infoFont());
                 painter->setPen(QColor(0, 0, 0));
                 drawText(
-                    QString("Block ") + QString::number(m_currentPattern) + "/" + QString::number(
-                        m_info->numPatterns - 1), painter, left + 30, 30);
+                        QString("Block ") + QString::number(m_currentPattern) + "/" + QString::number(
+                                m_info->numPatterns - 1), painter, left + 30, 30);
                 drawText("Song: " + QString(m_info->title.c_str()), painter, left + 6, 14);
             }
 
@@ -2258,12 +2249,12 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 drawText("Sc", painter, left + (77), 44);
                 drawText("Sq", painter, left + (166), 44);
                 drawText(
-                    QString("%1").arg(m_currentPosition + 1, 3, 10, QChar('0')) + "/" + QString("%1").arg(
-                        m_info->numOrders, 3, 10, QChar('0')), painter, left + (191), 44);
+                        QString("%1").arg(m_currentPosition + 1, 3, 10, QChar('0')) + "/" + QString("%1").arg(
+                                m_info->numOrders, 3, 10, QChar('0')), painter, left + (191), 44);
                 drawText("B", painter, left + (255), 44);
                 drawText(
-                    QString("%1").arg(m_currentPattern, 3, 10, QChar('0')) + "/" + QString("%1").arg(
-                        m_info->numPatterns - 1, 3, 10, QChar('0')) + ":", painter, left + (272), 44);
+                        QString("%1").arg(m_currentPattern, 3, 10, QChar('0')) + "/" + QString("%1").arg(
+                                m_info->numPatterns - 1, 3, 10, QChar('0')) + ":", painter, left + (272), 44);
 
                 //underline
                 painter->fillRect(left + (12), 42, 1, 2, colorShadow);
@@ -2295,7 +2286,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF target(left, top, imageWidth, imageHeight);
 
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "ahx_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "ahx_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(target, imageTop, source);
 
@@ -2333,7 +2324,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
 
 
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "hively_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "hively_top.png";
                 QImage imageTop(imagepath);
 
 
@@ -2451,7 +2442,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF target(left - 4, 0, imageWidth, imageHeight);
 
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "digibooster17_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "digibooster17_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(target, imageTop, source);
 
@@ -2501,7 +2492,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF sourcePrevSample(70, 0, 9, 7);
                 QRectF targetPrevSample(left + 14, 24, 9, 7);
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "ust_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "ust_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(targetPosition, imageTop, sourcePosition);
                 painter->drawImage(targetPattern, imageTop, sourcePattern);
@@ -2521,8 +2512,8 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 drawText(QString("%1").arg(m_trackerview->getCurrentSample() + 1, 2, 16, QChar('0')).toUpper(), painter,
                          left + (26), top + (22));
                 drawText(
-                    QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
-                                  toUpper(), painter, left + (143), top + (22));
+                        QString("%1").arg(m_info->samples[m_trackerview->getCurrentSample()].c_str(), -22, QChar('_')).
+                                toUpper(), painter, left + (143), top + (22));
                 m_pen.setWidth(1);
 
                 m_pen.setColor(colorHilite);
@@ -2571,7 +2562,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 QRectF target(left, 0, 320, 27);
 
                 QString imagepath = dataPath + RESOURCES_DIR +
-                    QDir::separator() + "trackerview" + QDir::separator() + "gmc_top.png";
+                                    QDir::separator() + "trackerview" + QDir::separator() + "gmc_top.png";
                 QImage imageTop(imagepath);
                 painter->drawImage(target, imageTop, source);
 
@@ -2607,7 +2598,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             LEFT_OFFSET = 61;
         }
         else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ultimate") ||
-            QString(m_info->fileformat.c_str()).toLower().startsWith("soundtracker"))
+                 QString(m_info->fileformat.c_str()).toLower().startsWith("soundtracker"))
         {
             HEIGHT = 48;
             WIDTH = 8;
@@ -2735,10 +2726,10 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 }
             }
             else if (QString(m_info->fileformat.c_str()).toLower().startsWith("noise") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("chiptracker") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("ice tracker") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("mnemotron") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("his master"))
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("chiptracker") ||
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("ice tracker") ||
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("mnemotron") ||
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("his master"))
             {
                 //main color
                 linearGrad.setColorAt(0, QColor(189, 16, 0).rgb()); //red
@@ -2770,7 +2761,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 painter->fillRect(rectLDark, QBrush(linearGradDark));
             }
             else if (QString(m_info->fileformat.c_str()).toLower().startsWith("pt3.6") || QString(
-                m_info->fileformat.c_str()).toLower().startsWith("pt4"))
+                    m_info->fileformat.c_str()).toLower().startsWith("pt4"))
             {
                 //main color
                 linearGrad.setColorAt(0, QColor(0, 0, 0).rgb()); //black
@@ -2814,8 +2805,8 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 painter->fillRect(rectLDark, QBrush(linearGradDark));
             }
             else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1") ||
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
             {
                 //main color
                 linearGrad.setColorAt(0, QColor(187, 187, 187).rgb());
@@ -2832,8 +2823,8 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
                 //painter->fillRect(0,0,width(),height(),QColor(255,0,0));
             }
             else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ultimate") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("soundtracker") ||
-                QString(m_info->fileformat.c_str()).toLower().startsWith("converted st2"))
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("soundtracker") ||
+                     QString(m_info->fileformat.c_str()).toLower().startsWith("converted st2"))
             {
                 //main color
                 linearGrad.setColorAt(0, QColor(156, 0, 0).rgb()); //red
@@ -2955,7 +2946,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             //draw background with opacity when enabled/disabled channels
             QBrush brush(m_trackerview->colorBackground());
             int x = m_trackerview->channelStart() + (i * m_trackerview->channelWidth()) + (i * m_trackerview->
-                channelxSpace());
+                    channelxSpace());
             int y = m_trackerview->topHeight();
             int w;
             if (i == 0) //first channel
@@ -2983,7 +2974,35 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
             painter->fillRect(QRect(x, y, w, h), brush);
         }
     }
+
 }
+void Tracker::paint(QPainter* painter, QPaintEvent* event)
+{
+    if (!m_render || !m_trackerview)
+        return;
+
+    QSize renderSize = event->rect().size();
+    bool sizeChanged = (renderSize != m_lastBufferSize);
+
+    if (sizeChanged || m_renderVUMeter)
+    {
+        m_lastBufferSize = renderSize;
+        m_backBuffer = QPixmap(renderSize);
+        m_backBuffer.fill(Qt::black);
+
+        QPainter bufferPainter(&m_backBuffer);
+
+        float scaleX = float(renderSize.width()) / float(m_trackerview->width());
+        float scaleY = float(renderSize.height()) / float(m_trackerview->height());
+        m_scale = min(scaleX, scaleY);
+        bufferPainter.scale(m_scale, m_scale);
+        drawToPainter(&bufferPainter);
+    }
+
+    painter->drawPixmap(0, 0, m_backBuffer);
+}
+
+
 
 
 void Tracker::drawVerticalEmboss(int xPos, int yPos, int height, QColor hilite, QColor shadow, QColor base,

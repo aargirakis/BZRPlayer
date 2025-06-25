@@ -13,6 +13,7 @@ public:
     void drawText(QString, QPainter*, int, int, int letterSpacing = 0);
     void setFont(BitmapFont);
     void paint(QPainter* painter, QPaintEvent* event);
+    void drawToPainter(QPainter* painter);
     bool m_render;
     int m_height;
     float m_scale;
@@ -28,6 +29,8 @@ public:
     unsigned int m_currentRow;
 
 private:
+    QPixmap m_backBuffer;
+    QSize m_lastBufferSize;
     bool m_renderVUMeter;
     bool m_renderTop;
 
