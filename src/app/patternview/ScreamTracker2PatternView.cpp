@@ -1,7 +1,7 @@
 #include "ScreamTracker2PatternView.h"
 
-ScreamTracker2PatternView::ScreamTracker2PatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+ScreamTracker2PatternView::ScreamTracker2PatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = 48;
     rowNumberOffset = 0;

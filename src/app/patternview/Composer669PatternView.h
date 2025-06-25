@@ -5,7 +5,7 @@
 class Composer669PatternView : public AbstractPatternView
 {
 public:
-    Composer669PatternView(Tracker* parent, unsigned int channels, int scale);
+    Composer669PatternView(Tracker* parent, unsigned int channels);
     ~Composer669PatternView();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);

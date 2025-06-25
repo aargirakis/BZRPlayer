@@ -1,7 +1,7 @@
 #include "OktalyzerPatternView.h"
 
-OktalyzerPatternView::OktalyzerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+OktalyzerPatternView::OktalyzerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     m_font = QFont("Oktalyzer");
     m_font.setPixelSize(16);

@@ -4,8 +4,8 @@
 #include <QApplication>
 #include <QDir>
 
-ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     rowNumberOffset = 0;
     octaveOffset = 48;
@@ -13,6 +13,8 @@ ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, unsigned int c
     m_font.setPixelSize(16);
     m_fontWidth = 12;
     m_font.setStyleStrategy(QFont::NoAntialias);
+    m_renderTop = true;
+    m_renderVUMeter = true;
 
     m_bitmapFont = BitmapFont("Protracker 3.61");
     m_fontWidth = 12;
@@ -37,6 +39,54 @@ ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, unsigned int c
     m_topHeight = 42;
     m_width = 640;
     m_height = 512;
+
+    m_vumeterWidth = 12;
+    m_vumeterHeight = 94;
+    m_vumeterLeftOffset = 90;
+    m_vumeterHilightWidth = 2;
+    m_vumeterOffset = 120;
+    m_vumeterTopOffset = -18;
+
+
+
+    setupVUMeters();
+//main color
+    m_linearGrad.setColorAt(0, QColor(0, 0, 0).rgb()); //black
+    m_linearGrad.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
+    m_linearGrad.setColorAt(0.02, QColor(75, 0, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.07, QColor(136, 17, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.12, QColor(170, 34, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.22, QColor(238, 102, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.39, QColor(255, 238, 0).rgb()); //yellow
+    m_linearGrad.setColorAt(0.48, QColor(238, 255, 0).rgb()); //yellow
+    m_linearGrad.setColorAt(0.64, QColor(153, 238, 0).rgb()); // green
+    m_linearGrad.setColorAt(1, QColor(17, 85, 0).rgb()); // green
+
+
+    //hilight color (left)
+    m_linearGradHiLite.setColorAt(0, QColor(0, 0, 0).rgb()); //black
+    m_linearGradHiLite.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
+    m_linearGradHiLite.setColorAt(0.02, QColor(136, 51, 51).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.07, QColor(187, 68, 51).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.12, QColor(221, 85, 51).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.22, QColor(255, 153, 51).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.39, QColor(255, 255, 51).rgb()); //yellow
+    m_linearGradHiLite.setColorAt(0.48, QColor(255, 255, 51).rgb()); //yellow
+    m_linearGradHiLite.setColorAt(0.64, QColor(204, 255, 51).rgb()); // green
+    m_linearGradHiLite.setColorAt(1, QColor(68, 136, 51).rgb()); // green
+
+    //dark color (right)
+    m_linearGradDark.setColorAt(0, QColor(0, 0, 0).rgb()); //black
+    m_linearGradDark.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
+    m_linearGradDark.setColorAt(0.02, QColor(34, 0, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.07, QColor(85, 0, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.12, QColor(119, 0, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.22, QColor(187, 51, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.39, QColor(204, 170, 0).rgb()); //yellow
+    m_linearGradDark.setColorAt(0.48, QColor(187, 204, 0).rgb()); //yellow
+    m_linearGradDark.setColorAt(0.64, QColor(102, 187, 51).rgb()); // green
+    m_linearGradDark.setColorAt(1, QColor(0, 34, 0).rgb()); // green
+
 }
 
 BitmapFont ProTracker36PatternView::infoFont()
@@ -63,7 +113,8 @@ void ProTracker36PatternView::paintAbove(QPainter* painter, int height, int curr
 
     QRectF sourceScrollBarBg(0, 0, 13, 4);
 
-    int numberOfScrollBarBgPieces = ((height - 14)) + 1;
+
+    int numberOfScrollBarBgPieces = ((this->height()-topHeight())/4)-1;
 
     for (int i = 0; i < numberOfScrollBarBgPieces; i++)
     {
@@ -71,11 +122,14 @@ void ProTracker36PatternView::paintAbove(QPainter* painter, int height, int curr
         painter->drawImage(targetLeftBar, spriteSheet, sourceScrollBarBg);
     }
 
-    painter->fillRect((518), 42, 1, height - (1), colorHilite);
-    painter->fillRect((519), 42, 1, height - (1), colorShadow);
-    painter->fillRect((533), 42, 1, height - (1), colorHilite);
-    painter->fillRect((534), 42, 1, height - (1), colorShadow);
-    painter->fillRect((535), 42, 1, height - (1), colorHilite);
+    painter->fillRect((518), 42, 1, height-topHeight()-1, colorHilite);
+    painter->fillRect((519), 42, 1, height-topHeight()-1, colorShadow);
+    painter->fillRect((533), 42, 1, height-topHeight()-1, colorHilite);
+    painter->fillRect((534), 42, 1, height-topHeight()-1, colorShadow);
+    painter->fillRect((535), 42, 1, height-topHeight()-1, colorHilite);
+
+    cout << "height: " << height << "\n";
+    fflush(stdout);
 
     float currentRowPos = currentRow / 64.0;
     int yPos = (currentRowPos * (height - 88)) + 44;
@@ -153,14 +207,14 @@ void ProTracker36PatternView::paintBelow(QPainter* painter, int height, int curr
     {
         //channel dividers
         painter->fillRect((38) + chan * 120, 0, 5, height, colorBase);
-        painter->fillRect((38) + chan * 120, 42, 2, height, colorHilite);
-        painter->fillRect((43) + chan * 120, 2, 2, height, colorShadow);
+        painter->fillRect((38) + chan * 120, 0, 2, height, colorHilite);
+        painter->fillRect((43) + chan * 120, 0, 2, height, colorShadow);
 
-        painter->fillRect((83) + chan * 120, 42, 1, height, colorHilite);
+        painter->fillRect((83) + chan * 120, 0, 1, height, colorHilite);
         painter->fillRect((84) + chan * 120, 2, 1, height, colorShadow);
-        painter->fillRect((107) + chan * 120, 42, 1, height, colorHilite);
+        painter->fillRect((107) + chan * 120, 0, 1, height, colorHilite);
         painter->fillRect((108) + chan * 120, 2, 1, height, colorShadow);
-        painter->fillRect((131) + chan * 120, 42, 1, height, colorHilite);
+        painter->fillRect((131) + chan * 120, 0, 1, height, colorHilite);
         painter->fillRect((132) + chan * 120, 2, 1, height, colorShadow);
 
 
@@ -182,6 +236,92 @@ void ProTracker36PatternView::paintBelow(QPainter* painter, int height, int curr
     painter->fillRect((8), (height / 2) - 16, 509, 14, colorBase);
 }
 
+void::ProTracker36PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+    m_topHeight = 41;
+    QColor colorBase(170, 170, 170);
+    QColor colorHilite(255, 255, 255);
+    QColor colorShadow(51, 0, 0);
+    QColor colorBlue(0, 0, 187);
+    int top = 0;
+    int left = 0;
+    QRect rectBg(left, 0, 544, m_topHeight);
+    painter->fillRect(rectBg, colorBase);
+
+    painter->setPen(colorShadow);
+
+    drawText("SONGNAME", painter, left + (4), top + (18), infoFont());
+    painter->setPen(colorHilite);
+    drawText("SONGNAME", painter, left + (3), top + (16), infoFont());
+    painter->setPen(QColor(colorShadow));
+    painter->setPen(colorBlue);
+
+    drawText(QString("%1").arg(info->title.c_str(), -20, QChar('_')), painter, left + (65), top + (18), infoFont2());
+    painter->setPen(colorShadow);
+
+    drawText("POSITION", painter, left + (234), top + (18), infoFont());
+    painter->setPen(colorHilite);
+    drawText("POSITION", painter, left + (233), top + (16), infoFont());
+    painter->setPen(colorShadow);
+    painter->setPen(QColor(colorShadow));
+    painter->setPen(colorBlue);
+
+    drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + (296), top + (18), infoFont2());
+    painter->setPen(colorShadow);
+
+    drawText("PATTERN", painter, left + (339), top + (18), infoFont());
+    painter->setPen(colorHilite);
+    drawText("PATTERN", painter, left + (338), top + (16), infoFont());
+    painter->setPen(colorBlue);
+
+    drawText(QString("%1").arg(m_currentPattern, 4, 10, QChar('0')), painter, left + (401), top + (18), infoFont2());
+    painter->setPen(colorShadow);
+
+    drawText("LENGTH", painter, left + (444), top + (18), infoFont());
+    painter->setPen(colorHilite);
+    drawText("LENGTH", painter, left + (443), top + (16), infoFont());
+    painter->setPen(QColor(colorShadow));
+    painter->setPen(colorBlue);
+
+    drawText(QString("%1").arg(info->numOrders, 4, 10, QChar('0')), painter, left + (506), top + (18), infoFont2());
+
+    painter->setPen(colorShadow);
+    drawText("POS", painter, left + (13), top + (38), infoFont());
+    painter->setPen(colorHilite);
+    drawText("POS", painter, left + (12), top + (36), infoFont());
+    for (int i = 0; i < 4; i++)
+    {
+        painter->setPen(QColor(colorShadow));
+        drawText("TRACK #" + QString::number(i + 1), painter, left + (69 + (120 * i)), top + (38), infoFont(), 1);
+        painter->setPen(colorHilite);
+        drawText("TRACK #" + QString::number(i + 1), painter, left + (68 + (120 * i)), top + (36), infoFont(), 1);
+    }
+
+    painter->fillRect(left, 0, 1, m_topHeight, colorHilite);
+    painter->fillRect(left + 543, 0, 1, m_topHeight, colorShadow);
+    painter->fillRect(left, 0, 543, 2, colorHilite);
+
+    painter->fillRect(left, 20, 543, 2, colorShadow);
+    painter->fillRect(left, 22, 543, 2, colorHilite);
+
+    //bevels
+    painter->fillRect(left + 228, 2, 1, 18, colorShadow);
+    painter->fillRect(left + 229, 2, 1, 18, colorHilite);
+    painter->fillRect(left + 333, 2, 1, 18, colorShadow);
+    painter->fillRect(left + 334, 2, 1, 18, colorHilite);
+    painter->fillRect(left + 438, 2, 1, 18, colorShadow);
+    painter->fillRect(left + 439, 2, 1, 18, colorHilite);
+    //bevels antialiasing
+    painter->fillRect(left, 20, 1, 2, colorBase);
+    painter->fillRect(left + 228, 0, 1, 2, colorBase);
+    painter->fillRect(left + 229, 20, 1, 2, colorBase);
+    painter->fillRect(left + 333, 0, 1, 2, colorBase);
+    painter->fillRect(left + 334, 20, 1, 2, colorBase);
+    painter->fillRect(left + 438, 0, 1, 2, colorBase);
+    painter->fillRect(left + 439, 20, 1, 2, colorBase);
+    painter->fillRect(left + 543, 0, 1, 2, colorBase);
+    painter->fillRect(left + 543, 22, 1, 2, colorBase);
+}
 ProTracker36PatternView::~ProTracker36PatternView()
 {
 }

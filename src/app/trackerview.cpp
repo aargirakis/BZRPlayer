@@ -8,6 +8,9 @@
 TrackerView::TrackerView(QWidget* parent)
     : QOpenGLWidget(parent)
 {
+    setUpdateBehavior(QOpenGLWidget::PartialUpdate);
+    setAttribute(Qt::WA_OpaquePaintEvent, true);
+    setAutoFillBackground(false);
     inited = false;
     tracker = new Tracker();
     this->installEventFilter(this);
@@ -27,7 +30,7 @@ Tracker* TrackerView::getTracker()
 
 void TrackerView::paintEvent(QPaintEvent* event)
 {
-    if (tracker == nullptr || !inited || !tracker->m_render || !SoundManager::getInstance().IsPlaying() || (
+    if (tracker == nullptr || !inited || tracker->m_trackerview== nullptr || !SoundManager::getInstance().IsPlaying() || (
         SoundManager::getInstance().m_Info1 == nullptr))
     {
         QPainter painter;
@@ -40,17 +43,17 @@ void TrackerView::paintEvent(QPaintEvent* event)
 
     if (tracker)
     {
-        if ((inited && tracker->m_render && SoundManager::getInstance().IsPlaying()) && (SoundManager::getInstance().
+        if ((inited && tracker->m_trackerview!=nullptr && SoundManager::getInstance().IsPlaying()) && (SoundManager::getInstance().
             m_Info1->plugin == PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp ||
             SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker || SoundManager::getInstance().m_Info1->
             plugin == PLUGIN_sunvox_lib))
         {
-            SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
             QPainter painter;
             painter.begin(this);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::SmoothPixmapTransform);
-            tracker->paint(&painter, event);
+            QPaintEvent full(rect());
+            tracker->paint(&painter, &full);
             painter.end();
         }
     }
@@ -66,7 +69,7 @@ bool TrackerView::eventFilter(QObject* obj, QEvent* event)
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         if (event->type() == QEvent::MouseButtonRelease && (mouseEvent->button() & Qt::LeftButton))
         {
-            if (tracker->m_render)
+            if (tracker->m_trackerview!=nullptr)
             {
                 int x = mouseEvent->pos().x() / tracker->m_scale;
                 int y = mouseEvent->pos().y() / tracker->m_scale;
@@ -94,16 +97,6 @@ bool TrackerView::eventFilter(QObject* obj, QEvent* event)
                     }
                 }
 
-                if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt)
-                {
-                    //check where we clicked and toggle channels
-                    //                    int channel = tracker->m_trackerview->getChannelClicked(mouseEvent->pos().x(),mouseEvent->pos().y());
-                    //                    if(channel>=0)
-                    //                    {
-                    //                        bool enable = this->parent()->getChannelEnabled(channel);
-                    //                        this->parent()->setChannelEnabled(channel,!enable);
-                    //                    }
-                }
             }
             return true;
         }

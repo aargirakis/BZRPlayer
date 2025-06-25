@@ -4,8 +4,8 @@
 #include <QApplication>
 #include <QDir>
 
-ScreamTracker3PatternView::ScreamTracker3PatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+ScreamTracker3PatternView::ScreamTracker3PatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = 24;
     volumeEnabled = true;

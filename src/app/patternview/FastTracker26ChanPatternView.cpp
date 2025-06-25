@@ -1,8 +1,8 @@
 #include "FastTracker26ChanPatternView.h"
 #include "visualizers/tracker.h"
 
-FastTracker26ChanPatternView::FastTracker26ChanPatternView(Tracker* parent, unsigned int channels, int scale)
-    : FastTracker2PatternView(parent, channels, scale)
+FastTracker26ChanPatternView::FastTracker26ChanPatternView(Tracker* parent, unsigned int channels)
+    : FastTracker2PatternView(parent, channels)
 {
     m_font = QFont("Fasttracker 2");
     m_bitmapFont = BitmapFont("Fasttracker 2");
@@ -48,8 +48,7 @@ void FastTracker26ChanPatternView::paintAbove(QPainter* painter, int height, int
         //top channels
         painter->fillRect((29) + chan * 96, 31, 94, 1, colorShadow);
         //channel number
-        Tracker* t = (Tracker*)this->parent();
-        t->drawText(QString::number(chan), painter, (28) + chan * 96 * m_fontWidth / 8, 43);
+        drawText(QString::number(chan), painter, (28) + chan * 96 * m_fontWidth / 8, 43, bitmapFont());
 
         //black line
         painter->fillRect((28) + chan * 96, 33, 1, 10, QColor(0, 0, 0));

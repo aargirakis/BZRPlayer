@@ -4,8 +4,8 @@
 #include <QApplication>
 #include <QDir>
 
-DigiBoosterProPatternView::DigiBoosterProPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+DigiBoosterProPatternView::DigiBoosterProPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = 24;
     m_font = QFont("DigiBoosterPro2");

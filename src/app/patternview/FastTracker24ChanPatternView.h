@@ -5,7 +5,7 @@
 class FastTracker24ChanPatternView : public FastTracker2PatternView
 {
 public:
-    FastTracker24ChanPatternView(Tracker* parent, unsigned int channels, int scale);
+    FastTracker24ChanPatternView(Tracker* parent, unsigned int channels);
     ~FastTracker24ChanPatternView();
     int fontWidthRownumber();
     QFont fontRownumber();

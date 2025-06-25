@@ -1,7 +1,7 @@
 #include "OctaMEDPatternView.h"
 
-OctaMEDPatternView::OctaMEDPatternView(Tracker* parent, unsigned int channels, int scale)
-    : MEDPatternView(parent, channels, scale)
+OctaMEDPatternView::OctaMEDPatternView(Tracker* parent, unsigned int channels)
+    : MEDPatternView(parent, channels)
 {
     octaveOffset = 12;
     m_font = QFont("OctaMED Pro 4");
@@ -27,6 +27,30 @@ OctaMEDPatternView::OctaMEDPatternView(Tracker* parent, unsigned int channels, i
     m_channelLastWidth = 104;
     m_channelxSpace = 1;
     m_topHeight = 32;
+
+    m_vumeterWidth = 24;
+    m_vumeterHeight = 128;
+    m_vumeterLeftOffset = 152;
+    m_vumeterHilightWidth = 4;
+    m_vumeterOffset = 144;
+    m_vumeterTopOffset = -21;
+
+    setupVUMeters();
+
+
+    //main color
+    m_linearGrad.setColorAt(0, QColor(187, 187, 187).rgb());
+    m_linearGrad.setColorAt(0.045, QColor(187, 187, 187).rgb());
+    m_linearGrad.setColorAt(0.04501, QColor(255, 34, 17).rgb()); //red
+    m_linearGrad.setColorAt(0.46, QColor(255, 255, 51).rgb()); //yellow
+    m_linearGrad.setColorAt(0.75, QColor(0, 255, 0).rgb()); // green
+    m_linearGrad.setColorAt(1, QColor(0, 136, 0).rgb()); // dark green
+
+    m_linearGradHiLite.setColorAt(0, QColor(187, 187, 187).rgb());
+    m_linearGradHiLite.setColorAt(1, QColor(187, 187, 187).rgb());
+
+    m_linearGradDark.setColorAt(0, QColor(187, 187, 187).rgb());
+    m_linearGradDark.setColorAt(1, QColor(187, 187, 187).rgb());
 }
 
 QString OctaMEDPatternView::effect(BaseRow* row)

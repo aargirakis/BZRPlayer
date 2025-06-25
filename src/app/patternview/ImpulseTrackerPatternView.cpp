@@ -1,7 +1,7 @@
 #include "ImpulseTrackerPatternView.h"
 
-ImpulseTrackerPatternView::ImpulseTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+ImpulseTrackerPatternView::ImpulseTrackerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = 12;
     volumeEnabled = true;

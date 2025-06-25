@@ -1,7 +1,7 @@
 #include "FastTracker24ChanPatternView.h"
 
-FastTracker24ChanPatternView::FastTracker24ChanPatternView(Tracker* parent, unsigned int channels, int scale)
-    : FastTracker2PatternView(parent, channels, scale)
+FastTracker24ChanPatternView::FastTracker24ChanPatternView(Tracker* parent, unsigned int channels)
+    : FastTracker2PatternView(parent, channels)
 {
     m_font = QFont("Fasttracker 2 16px");
     m_font.setPixelSize(8);

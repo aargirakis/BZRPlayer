@@ -1,7 +1,8 @@
 #include "StarTrekker13PatternView.h"
-
-StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+#include <QDir>
+#include "mainwindow.h"
+StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     rowNumberOffset = 0;
     octaveOffset = 48;
@@ -16,10 +17,13 @@ StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int
     m_fontWidth = 8;
     m_fontHeight = 7;
 
+    m_renderTop = true;
+    m_renderVUMeter = true;
+
     m_font.setStyleStrategy(QFont::NoAntialias);
     m_colorCurrentRowBackground = QColor(189, 138, 99);
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(156, 170, 33);
+    m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(156, 170, 33);
 
     m_fontWidth = 8;
     m_font.setStyleStrategy(QFont::NoAntialias);
@@ -40,6 +44,23 @@ StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int
     m_ibuttonNextSampleX = 0;
     m_ibuttonNextSampleY = 33;
     m_topHeight = 44;
+
+    m_vumeterTopOffset = -5;
+
+    setupVUMeters();
+
+
+    //main color
+    m_linearGrad.setColorAt(0, QColor(0, 0, 206).rgb());
+    m_linearGrad.setColorAt(1, QColor(33, 222, 222).rgb());
+
+    //hilight color (left)
+    m_linearGradHiLite.setColorAt(0, QColor(0, 0, 239).rgb());
+    m_linearGradHiLite.setColorAt(1, QColor(49, 255, 255).rgb());
+
+    //dark color (right)
+    m_linearGradDark.setColorAt(0, QColor(0, 0, 156).rgb());
+    m_linearGradDark.setColorAt(1, QColor(16, 189, 189).rgb());
 }
 
 QFont StarTrekker13PatternView::currentRowFont()
@@ -159,4 +180,124 @@ void StarTrekker13PatternView::paintBelow(QPainter* painter, int height, int cur
     painter->fillRect(((left)), (height / 2) - 2 + (topOffset), 24, 2, colorHilite);
     //leftmost current ror antialias
     painter->fillRect(((left - 1)), (height / 2) - 2 + (topOffset), 1, 2, colorBase);
+}
+void::StarTrekker13PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+    m_topHeight = 44;
+    QColor colorBase(189, 138, 99);
+    QColor colorHilite(222, 186, 156);
+    QColor colorShadow(140, 85, 49);
+    int top = 8;
+    int left = 0;
+    QRect rectBg(left, 0, 320, m_topHeight);
+    painter->fillRect(rectBg, colorBase);
+
+    painter->setPen(colorShadow);
+    drawText("POSITION", painter, left + (4), top + 1, infoFont(), -1);
+    painter->setPen(QColor(0, 0, 0));
+
+    drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + 71, top + 0, infoFont());
+    painter->setPen(colorHilite);
+    drawText("POSITION", painter, left + (3), top + 0, infoFont(),-1);
+    painter->setPen(colorShadow);
+    drawText("PATTERN", painter, left + (111), top + 1, infoFont(),-1);
+    painter->setPen(colorHilite);
+    drawText("PATTERN", painter, left + (110), top + 0, infoFont(),-1);
+    painter->setPen(QColor(0, 0, 0));
+
+    drawText(QString("%1").arg(m_currentPattern, 4, 10, QChar('0')), painter, left + (178), top + 0, infoFont());
+    painter->setPen(colorShadow);
+    drawText("LENGTH", painter, left + (4), top + (11) + 1, infoFont(),-1);
+    painter->setPen(colorHilite);
+    drawText("LENGTH", painter, left + (3), top + (11), infoFont(),-1);
+    painter->setPen(QColor(0, 0, 0));
+    Tracker* t = (Tracker*)this->parent();
+    drawText(QString("%1").arg(t->m_info->numOrders, 4, 10, QChar('0')), painter, left + (71), top + (11), infoFont());
+    painter->setPen(colorShadow);
+    drawText("RESTART", painter, left + (111), top + (11) + 1, infoFont(),-1);
+    painter->setPen(colorHilite);
+    drawText("RESTART", painter, left + (110), top + (11), infoFont(),-1);
+    painter->setPen(QColor(0, 0, 0));
+    drawText(QString("%1").arg(t->m_info->restart, 4, 10, QChar('0')), painter, left + (178), top + (11), infoFont());
+
+    painter->setPen(colorShadow);
+    drawText("SONGNAME:", painter, left + 4, top + 23, infoFont(),-1);
+    painter->setPen(colorHilite);
+    drawText("SONGNAME:", painter, left + (3), top + (22), infoFont(),-1);
+    painter->setPen(QColor(0, 0, 0));
+
+    drawText(QString("%1").arg(t->m_info->title.c_str(), -20, QChar('_')).toUpper(), painter, left + (72),
+             top + (22), infoFont());
+
+    m_pen.setWidth(1);
+
+    m_pen.setColor(colorHilite);
+    painter->setPen(m_pen);
+    painter->drawLine(left + 1, 0, left + (319), 0);
+
+    m_pen.setColor(colorShadow);
+    painter->setPen(m_pen);
+    painter->drawLine(left + 1, 10, left + (215), 10);
+    painter->drawLine(left + 1, 21, left + (319), 21);
+    painter->drawLine(left + 1, 32, left + (319), 32);
+
+    m_pen.setColor(colorHilite);
+    painter->setPen(m_pen);
+    painter->drawLine(left + 1, (11), left + (215), (11));
+    painter->drawLine(left + 1, (22), left + (319), (22));
+    painter->drawLine(left + 1, (33), left + (319), (33));
+
+    drawVerticalEmboss(left + 68, 0, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 107, 0, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 175, 0, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 214, 0, 10, colorHilite, colorShadow, colorBase, painter, true, false);
+    drawVerticalEmboss(left + 68, 11, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 107, 11, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 175, 11, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 214, 11, 10, colorHilite, colorShadow, colorBase, painter, true, false);
+    drawVerticalEmboss(left + 214, 0, 21, colorHilite, colorShadow, colorBase, painter, false, true);
+    drawVerticalEmboss(left + 10, 33, 10, colorHilite, colorShadow, colorBase, painter, true, true);
+    drawVerticalEmboss(left + 21, 33, 10, colorHilite, colorShadow, colorBase, painter, true, true);
+    drawVerticalEmboss(left + 44, 33, 10, colorHilite, colorShadow, colorBase, painter, true, true);
+
+    //far left emboss
+    drawVerticalEmboss(left - 1, 0, 10, colorHilite, colorShadow, colorBase, painter, false, true);
+    drawVerticalEmboss(left - 1, 11, 10, colorHilite, colorShadow, colorBase, painter, false, true);
+    drawVerticalEmboss(left - 1, 22, 10, colorHilite, colorShadow, colorBase, painter, false, true);
+    drawVerticalEmboss(left - 1, 33, 10, colorHilite, colorShadow, colorBase, painter, false, true);
+
+    //far right emboss
+    drawVerticalEmboss(left + (319), 0, 22, colorHilite, colorShadow, colorBase, painter, true, false);
+    drawVerticalEmboss(left + (319), 22, 11, colorHilite, colorShadow, colorBase, painter, true, false);
+    drawVerticalEmboss(left + (319), 33, 11, colorHilite, colorShadow, colorBase, painter, true, false);
+
+
+    QRectF sourcePrev(0, 0, 6, 7);
+    QRectF sourceNext(6, 0, 6, 7);
+    QRectF targetPrev(left + 3, 35, 6, 7);
+    QRectF targetNext(left + 14, 35, 6, 7);
+    QString imagepath = dataPath + RESOURCES_DIR +
+                        QDir::separator() + "trackerview" + QDir::separator() + "startrekker_top.png";
+    QImage imageTop(imagepath);
+    painter->drawImage(targetPrev, imageTop, sourcePrev);
+    painter->drawImage(targetNext, imageTop, sourceNext);
+
+    painter->setPen(colorShadow);
+    drawText("SAMPLENAME:", painter, left + (59), top + (33) + 1, infoFont(),-1);
+    painter->setPen(colorHilite);
+    drawText("SAMPLENAME:", painter, left + (58), top + (33), infoFont(),-1);
+    painter->setPen(QColor(0, 0, 0));
+
+    drawText(QString("%1").arg(getCurrentSample() + 1, 2, 10, QChar('0')), painter,
+             left + (24), top + (33), infoFont());
+    drawText(
+            QString("%1").arg(t->m_info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
+                    toUpper(), painter, left + (141), top + (33), infoFont());
+
+    //1px antialias
+    painter->fillRect(left, 32, 1, 1, colorBase);
+    painter->fillRect(left + 319, 33, 1, 1, colorBase);
+
+    //bottom shadow
+    painter->fillRect(left, 43, 320, 1, colorShadow);
 }

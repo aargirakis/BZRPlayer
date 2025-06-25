@@ -1,7 +1,9 @@
 #include "HivelyTrackerPatternView.h"
-
-HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+#include "mainwindow.h"
+#include "soundmanager.h"
+#include <QDir>
+HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     instrumentPad = true;
     instrumentHex = false;
@@ -14,6 +16,9 @@ HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int
     m_fontWidth = 8;
     m_fontHeight = 14;
     m_yOffsetRowAfter = 2;
+
+    m_renderTop = true;
+    m_renderVUMeter = true;
 
     m_colorCurrentRowBackground = QColor(68, 102, 136);
     m_colorCurrentRowForeground = m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect =
@@ -32,6 +37,15 @@ HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int
     m_channelxSpace = 1;
     m_topHeight = 104;
     m_bottomFrameHeight = 4;
+
+    m_vumeterHeight = 64;
+    m_vumeterWidth = 32;
+    m_vumeterLeftOffset = 67;
+    m_vumeterOffset = 120;
+    m_vumeterHilightWidth = 1;
+    m_vumeterTopOffset = -13;
+
+    setupVUMeters();
 }
 
 void HivelyTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)
@@ -81,37 +95,37 @@ void HivelyTrackerPatternView::paintAbove(QPainter* painter, int height, int cur
 
 
     //left frame
-    painter->fillRect(0, 104, 1, (height) - 2, colorBase);
-    QLinearGradient gradient1(QPointF(0, 0), QPointF(0, (height) - 2));
+    painter->fillRect(0, 104, 1, (height) - 2-m_topHeight, colorBase);
+    QLinearGradient gradient1(QPointF(0, 0), QPointF(0, (height) - 2-m_topHeight));
     gradient1.setColorAt(0, QColor(255, 255, 255).rgb());
     gradient1.setColorAt(0.5, colorHilite.rgb());
-    painter->fillRect(1, 104, 1, (height) - 2, QBrush(gradient1));
-    painter->fillRect(2, 105, 1, (height) - 4, QColor(34, 68, 102));
+    painter->fillRect(1, 104, 1, (height) - 2-m_topHeight, QBrush(gradient1));
+    painter->fillRect(2, 105, 1, (height) - 4-m_topHeight, QColor(34, 68, 102));
     painter->fillRect(2, 104, 1, 1, colorAntiAlias);
 
 
     //anti alias
-    painter->fillRect(0, (height) - 2, 1, 1, colorAntiAlias);
-    painter->fillRect(2, (height) - 4, 1, 1, colorAntiAlias);
+    painter->fillRect(0, (height-m_topHeight) - 2, 1, 1, colorAntiAlias);
+    painter->fillRect(2, (height-m_topHeight) - 4, 1, 1, colorAntiAlias);
 
     //right frame
-    QLinearGradient gradient7(QPointF(0, 0), QPointF(0, (height) - 2));
+    QLinearGradient gradient7(QPointF(0, 0), QPointF(0, (height) - 2-m_topHeight));
     gradient7.setColorAt(0.5, colorHilite);
     gradient7.setColorAt(1, QColor(238, 245, 252).rgb());
-    painter->fillRect((23 + m_channels * 120), 104, 1, (height) - 2, QBrush(gradient7));
-    painter->fillRect((24 + m_channels * 120), 104, 1, (height) - 2, colorBase);
-    QLinearGradient gradient2(QPointF(0, 0), QPointF(0, (height) - 2));
+    painter->fillRect((23 + m_channels * 120), 104, 1, (height) - 2-m_topHeight, QBrush(gradient7));
+    painter->fillRect((24 + m_channels * 120), 104, 1, (height) - 2-m_topHeight, colorBase);
+    QLinearGradient gradient2(QPointF(0, 0), QPointF(0, (height) - 2-m_topHeight));
     gradient2.setColorAt(0.5, QColor(151, 175, 209).rgb());
     gradient2.setColorAt(1, QColor(238, 245, 252).rgb());
-    painter->fillRect((25 + m_channels * 120), 104, 1, (height) - 2, QBrush(gradient2));
-    QLinearGradient gradient3(QPointF(0, 0), QPointF(0, (height) - 1));
+    painter->fillRect((25 + m_channels * 120), 104, 1, (height) - 2-m_topHeight, QBrush(gradient2));
+    QLinearGradient gradient3(QPointF(0, 0), QPointF(0, (height) - 1-m_topHeight));
     gradient3.setColorAt(0, QColor(43, 76, 111).rgb());
     gradient3.setColorAt(1, QColor(17, 51, 85).rgb());
-    painter->fillRect((26 + m_channels * 120), 104, 1, (height - 1), QBrush(gradient3));
-    QLinearGradient gradient5(QPointF(0, 0), QPointF(0, (height) - 1));
+    painter->fillRect((26 + m_channels * 120), 104, 1, (height - 1-m_topHeight), QBrush(gradient3));
+    QLinearGradient gradient5(QPointF(0, 0), QPointF(0, (height) - 1-m_topHeight));
     gradient5.setColorAt(0, QColor(26, 59, 93).rgb());
     gradient5.setColorAt(1, colorShadow);
-    painter->fillRect((27 + m_channels * 120), 104, 1, (height - 1), QBrush(gradient5));
+    painter->fillRect((27 + m_channels * 120), 104, 1, (height - 1-m_topHeight), QBrush(gradient5));
 
     //bottom frame
     painter->fillRect((3), (height) - 4, (20) + m_channels * 120, 1, colorBase);
@@ -125,8 +139,190 @@ void HivelyTrackerPatternView::paintAbove(QPainter* painter, int height, int cur
     gradient6.setColorAt(0.5, QColor(92, 106, 121).rgb());
     gradient6.setColorAt(1, QColor(82, 96, 108).rgb());
     painter->fillRect(0, (height) - 1, (28) + m_channels * 120, 1, QBrush(gradient6)); //gradient
+
+    //hide notes at top
+    painter->fillRect(200, 0, (m_channels * 120)-150, 90, QBrush(Qt::black));
 }
 
+void::HivelyTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+    m_topHeight = 104;
+    int top = 2;
+    int left = 0;
+    QColor colorBase(170, 204, 238);
+    QColor colorShadow(17, 51, 85);
+
+
+    QRect rectBg(0, 0, m_width, m_topHeight);
+    painter->fillRect(rectBg, QColor(0, 0, 0));
+
+
+    QString imagepath = dataPath + RESOURCES_DIR +
+                        QDir::separator() + "trackerview" + QDir::separator() + "hively_top.png";
+    QImage imageTop(imagepath);
+
+
+    QRectF sourceTrack(0, 0, 120, 25);
+
+    painter->setFont(m_font);
+    QPen pen(colorBase);
+    for (int i = 0; i < info->modTrackPositions.size(); i++)
+    {
+        QRectF targetTrack(left + (15) + (i * 120), m_topHeight - 25, 120, 25);
+        painter->drawImage(targetTrack, imageTop, sourceTrack);
+        pen.setColor(colorBase);
+        painter->setPen(pen);
+        m_font.setLetterSpacing(QFont::AbsoluteSpacing, 0);
+        painter->setFont(m_font);
+        painter->drawText(left + (108) + (i * 120), m_topHeight - 8,
+                          QString("%1").arg(info->modTrackPositions[i], 3, 10, QChar('0')));
+        pen.setColor(colorShadow);
+        painter->setPen(pen);
+        m_font.setLetterSpacing(QFont::AbsoluteSpacing, -1);
+        painter->setFont(m_font);
+        painter->drawText(left + (25) + (i * 120), m_topHeight - 7, "Track " + QString::number(i + 1));
+        pen.setColor(QColor(255, 255, 255));
+        painter->setPen(pen);
+        painter->drawText(left + (24) + (i * 120), m_topHeight - 8, "Track " + QString::number(i + 1));
+    }
+    m_font.setLetterSpacing(QFont::AbsoluteSpacing, 0);
+
+    QFont fontsmall = m_font;
+    fontsmall.setStyleStrategy(QFont::NoAntialias);
+
+    //song square
+    QRectF sourceSongs(166, 0, 337, 78);
+    QRectF targetSongs(left + 265, 0, 337, 78);
+    painter->drawImage(targetSongs, imageTop, sourceSongs);
+
+    //pattern, position etc. square
+    QRectF sourceInfo(503, 0, 263, 78);
+    QRectF targetInfo(left, 0, 263, 78);
+    painter->drawImage(targetInfo, imageTop, sourceInfo);
+
+
+    fontsmall.setPixelSize(13);
+    painter->setFont(fontsmall);
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 8, top + (24), "Position");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 7, top + (23), "Position");
+
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 8, top + (44), "Length");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 7, top + (43), "Length");
+
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 8, top + (64), "Restart");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 7, top + (63), "Restart");
+
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 130, top + (24), "Track Len");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 129, top + (23), "Track Len");
+
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 130, top + (44), "Subsongs");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 129, top + (43), "Subsongs");
+
+
+    painter->setFont(m_font);
+    pen.setColor(colorBase);
+    painter->setPen(pen);
+    painter->drawText(left + (96), top + (24), QString("%1").arg(m_currentPosition, 3, 10, QChar('0')));
+    painter->drawText(left + (96), top + (44), QString("%1").arg(info->numOrders, 3, 10, QChar('0')));
+    painter->drawText(left + (96), top + (64),
+                      QString("%1").arg(info->modPatternRestart, 3, 10, QChar('0')));
+    painter->drawText(left + (217), top + (24),
+                      QString("%1").arg(info->modPatternRows, 3, 10, QChar('0')));
+    painter->drawText(left + (217), top + (44), QString("%1").arg(info->numSubsongs, 3, 10, QChar('0')));
+    painter->drawText(left + (275), top + (43), QString(info->title.c_str()));
+
+    //far left frame
+    QRectF sourceLeftFrameSource(0, 25, 25, 25);
+    QRectF targetLeftFrameTarget(left, 79, 25, 25);
+    painter->drawImage(targetLeftFrameTarget, imageTop, sourceLeftFrameSource);
+
+    //right frame
+    QRectF rightFrameSource(18, 25, 13, 25);
+    QRectF rightFrameTarget(left + info->modTrackPositions.size() * 120 + (15), 79, 13, 25);
+    painter->drawImage(rightFrameTarget, imageTop, rightFrameSource);
+}
+void HivelyTrackerPatternView::drawVUMeters(QPainter* painter)
+{
+    SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
+
+    int height = m_height;
+
+    Tracker* t = (Tracker*)this->parent();
+    SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
+
+    int HEIGHT = m_vumeterHeight;
+    int WIDTH = m_vumeterWidth;
+    int LEFT_OFFSET = m_vumeterLeftOffset;
+    int VUMETER_OFFSET = m_vumeterOffset;
+    int HILIGHT_WIDTH = m_vumeterHilightWidth;
+    int TOP_OFFSET = m_vumeterTopOffset;
+    int maxHeight = HEIGHT;
+
+    painter->translate(0, (height / 2) - maxHeight + TOP_OFFSET);
+
+    for (int unsigned i = 0; i < t->m_info->numChannels; i++)
+    {
+        unsigned char volume = static_cast<unsigned char>(((t->m_info->modVUMeters[i] / 64.0) + 0.005) * 100);
+
+        int vumeterCurrentHeight = (volume * m_vumeterHeight / 100);
+
+        m_linearGrad = QLinearGradient(QPointF(0, m_vumeterHeight - vumeterCurrentHeight), QPointF(0, m_vumeterHeight));
+        m_linearGradHiLite = QLinearGradient(QPointF(0, m_vumeterHeight - vumeterCurrentHeight), QPointF(0, m_vumeterHeight));
+        m_linearGradDark = QLinearGradient(QPointF(0, m_vumeterHeight - vumeterCurrentHeight), QPointF(0, m_vumeterHeight));
+
+        m_linearGrad.setColorAt(0, QColor(255, 255, 255).rgb());
+        m_linearGrad.setColorAt(0.02, QColor(255, 255, 255).rgb());
+        m_linearGrad.setColorAt(0.02, QColor(228, 239, 249).rgb());
+        m_linearGrad.setColorAt(0.12, QColor(227, 238, 249).rgb());
+        m_linearGrad.setColorAt(0.15, QColor(230, 240, 250).rgb());
+        m_linearGrad.setColorAt(0.5, QColor(165, 199, 232).rgb());
+        m_linearGrad.setColorAt(1, QColor(88, 114, 139).rgb());
+
+        //hilight color (left)
+        m_linearGradHiLite.setColorAt(0, QColor(255, 255, 255).rgb());
+        m_linearGradHiLite.setColorAt(1, QColor(144, 175, 206).rgb());
+
+        //dark color (right)
+        m_linearGradDark.setColorAt(0, QColor(170, 170, 170).rgb());
+        m_linearGradDark.setColorAt(1, QColor(26, 45, 65).rgb());
+
+        int vuWidth = WIDTH;
+        int xPos = (i * VUMETER_OFFSET) + LEFT_OFFSET;
+
+
+        m_rectL = QRect(xPos, maxHeight - vumeterCurrentHeight, vuWidth, vumeterCurrentHeight);
+        m_rectLHiLite = QRect(xPos, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH, vumeterCurrentHeight);
+        m_rectLDark = QRect(xPos + vuWidth - HILIGHT_WIDTH, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH,
+                            vumeterCurrentHeight);
+
+        painter->fillRect(m_rectL, QBrush(m_linearGrad));
+        painter->fillRect(m_rectLHiLite, QBrush(m_linearGradHiLite));
+        painter->fillRect(m_rectLDark, QBrush(m_linearGradDark));
+
+    }
+
+
+}
 HivelyTrackerPatternView::~HivelyTrackerPatternView()
 {
 }
