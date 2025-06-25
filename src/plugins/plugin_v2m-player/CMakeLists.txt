@@ -38,7 +38,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE V2MPLAYER_SYNC_FUNCTIONS)
+target_compile_definitions(${PROJECT_NAME} PRIVATE RONAN V2MPLAYER_SYNC_FUNCTIONS)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
