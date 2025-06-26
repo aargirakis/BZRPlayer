@@ -15,6 +15,7 @@ public:
     void paint(QPainter* painter, QPaintEvent* event);
     void drawPattern(QPainter* painter);
     void drawVUMeters(QPainter* painter);
+    void drawTop(QPainter* painter);
     bool m_render;
     int m_height;
     float m_scale;
@@ -42,6 +43,8 @@ private:
     QSize m_lastVuSize;
     QPixmap m_backBuffer;
     QSize m_lastBufferSize;
+    QPixmap m_topBarBuffer;
+    QSize m_lastTopBarSize;
     bool m_renderVUMeter;
     bool m_renderTop;
 
