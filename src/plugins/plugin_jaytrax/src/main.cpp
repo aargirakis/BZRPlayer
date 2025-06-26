@@ -80,14 +80,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     FMOD_RESULT result;
     Info* info = static_cast<Info*>(userexinfo->userdata);
 
-
     auto* plugin = new pluginJaytrax(codec);
-
 
     unsigned int bytesread;
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
 
     plugin->myBuffer = new uint8_t[filesize];
 
@@ -111,7 +108,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = 0xffffffff;
-
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -141,7 +137,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 {
     auto* plugin = static_cast<pluginJaytrax*>(codec->plugindata);
 
-    jaytrax_renderChunk(plugin->jay, (int16_t*)buffer, size, plugin->waveformat.frequency);
+    jaytrax_renderChunk(plugin->jay, static_cast<int16_t *>(buffer), static_cast<int32_t>(size), plugin->waveformat.frequency);
 
     *read = size;
     return FMOD_OK;
@@ -161,9 +157,10 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
     if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
         plugin->jay->subsongNr = position;
-        plugin->length = (jaytrax_getLength(plugin->jay, position, 1,
-                                             plugin->waveformat.frequency) /
-            plugin->waveformat.frequency) * 1000.0;
+        plugin->length = jaytrax_getLength(plugin->jay, position, 1, plugin->waveformat.frequency)
+                         / plugin->waveformat.frequency * 1000;
+
+        jaytrax_changeSubsong(plugin->jay, position);
 
         return FMOD_OK;
     }
