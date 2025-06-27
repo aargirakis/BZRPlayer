@@ -12,6 +12,7 @@ public:
 
 private:
     static const string ID3V1_GENRES[];
+    static void addSubsongInfo(QTableWidget* tableInfo, int* row);
 };
 
 #endif // FILEINFOPARSER_H

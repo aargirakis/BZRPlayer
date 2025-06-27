@@ -87,6 +87,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
     tableInfo->setItem(row, 0, new QTableWidgetItem("Type"));
     tableInfo->setItem(row++, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->fileformat.c_str()));
 
+    addSubsongInfo(tableInfo, &row);
 
     if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_game_music_emu)
     {
@@ -286,9 +287,6 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
 
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_webuade)
     {
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numSubsongs)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Subsongs"));
         tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->md5New.c_str()));
         tableInfo->setItem(row++, 0, new QTableWidgetItem("MD5"));
     }
@@ -1806,4 +1804,20 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         tableInfo->item(i, 1)->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     }
     tableInfo->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+}
+
+void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
+    int currentSubsong = SoundManager::getInstance().m_Info1->currentSubsong;
+    int numSubsongs = SoundManager::getInstance().m_Info1->numSubsongs;
+
+    tableInfo->setItem(*row, 0, new QTableWidgetItem("Subsong"));
+    if (currentSubsong == 1 && numSubsongs == 1) {
+        tableInfo->setItem(
+            (*row)++, 1, new QTableWidgetItem("-"));
+    } else {
+        tableInfo->setItem(
+            (*row)++, 1, new QTableWidgetItem(
+                QString::number(currentSubsong) + "/" +
+                QString::number(numSubsongs)));
+    }
 }

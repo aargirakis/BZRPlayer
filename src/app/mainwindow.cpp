@@ -1847,6 +1847,7 @@ void MainWindow::getLength()
         }
         SoundManager::getInstance().m_Info1->numSubsongs = subsongs;
         addDebugText("subsongs: " + QString::number(subsongs));
+        SoundManager::getInstance().m_Info1->currentSubsong = currentSubsong;
         song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
         addDebugText("song_length_ms: " + QString::number(song_length_ms));
         if (song_length_ms == 0 || song_length_ms == 0xffffffff)

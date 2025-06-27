@@ -112,6 +112,7 @@ public:
         numChannelsStream = 0;
         startSubSong = 0;
         numSubsongs = 0;
+        currentSubsong = 0;
         modPatternRestart = 0;
         modPatternRows = 0;
         modVUMeters = nullptr;
@@ -325,6 +326,7 @@ public:
     unsigned int numChannelsStream;
     int startSubSong;
     int numSubsongs;
+    int currentSubsong;
 
     int loopPosition;
     int loopFrame;
