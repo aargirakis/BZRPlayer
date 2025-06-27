@@ -1,5 +1,5 @@
 --- Replayer_Windows/hvl_replay.c	2022-10-28 23:50:38.000000000 +0200
-+++ Replayer_Windows/hvl_replay.c	2024-09-21 11:33:59.193197880 +0200
++++ Replayer_Windows/hvl_replay.c	2025-06-27 12:48:48.587902862 +0200
 @@ -322,6 +322,9 @@
    }
    
@@ -30,19 +30,7 @@
    free( ht );
  }
  
-@@ -1169,7 +1178,10 @@
-         
-       if( voice->vc_HardCutRelease )
-       {
--        voice->vc_ADSR.rVolume = -(voice->vc_ADSRVolume - (voice->vc_Instrument->ins_Envelope.rVolume << 8)) / voice->vc_HardCutReleaseF;
-+        //voice->vc_ADSR.rVolume = -(voice->vc_ADSRVolume - (voice->vc_Instrument->ins_Envelope.rVolume << 8)) / voice->vc_HardCutReleaseF; //commented out
-+          voice->vc_ADSR.rVolume = 0; //copied from RePlayer
-+          if( voice->vc_ADSR.rFrames > 0) //copied from RePlayer
-+              voice->vc_ADSR.rVolume = -(voice->vc_ADSRVolume - (voice->vc_Instrument->ins_Envelope.rVolume << 8)) / voice->vc_ADSR.rFrames; //copied from RePlayer
-         voice->vc_ADSR.rFrames = voice->vc_HardCutReleaseF;
-         voice->vc_ADSR.aFrames = voice->vc_ADSR.dFrames = voice->vc_ADSR.sFrames = 0;
-       } else {
-@@ -1630,6 +1642,17 @@
+@@ -1630,6 +1639,17 @@
  {
    uint32 i;
  
@@ -60,7 +48,7 @@
    if( ht->ht_StepWaitFrames == 0 )
    {
      if( ht->ht_GetNewPosition )
-@@ -1688,6 +1711,23 @@
+@@ -1688,6 +1708,23 @@
  
    for( i=0; i<ht->ht_Channels; i++ )
      hvl_set_audio( &ht->ht_Voices[i], ht->ht_Frequency );
@@ -84,7 +72,7 @@
  }
  
  void hvl_mixchunk( struct hvl_tune *ht, uint32 samples, int8 *buf1, int8 *buf2, int32 bufmod )
-@@ -1809,3 +1849,66 @@
+@@ -1809,3 +1846,66 @@
      loops--;
    } while( loops );
  }
