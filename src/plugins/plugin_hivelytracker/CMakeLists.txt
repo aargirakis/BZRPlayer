@@ -1,22 +1,22 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "hivelytracker")
-set(VERSION "1.9")
+set(VERSION "f393ca7c6416f00bcb574b334a7e8b57dcb19eb2")
+string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "HivelyTracker" PARENT_SCOPE)
-set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
+set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-string(REPLACE "." "_" TAG "${VERSION}")
-set(NAME_VERSIONED "${NAME}-${VERSION}")
-set(NAME_TAGGED "${NAME}-${TAG}")
-set(FILENAME "${NAME_TAGGED}.zip")
-set(URL "https://github.com/pete-gordon/${NAME}/archive/refs/tags/V${TAG}.zip")
-set(SHA_256_HASH "22e5f98bf92502443510cacd9c3c1b8163063bf4108c215dce6d20a41d003e75")
-set(UNPACKED_DIR "${NAME_TAGGED}")
+set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
+set(FILENAME "${NAME}-${VERSION}.zip")
+set(FILENAME_URL "${VERSION_SHORT}.zip")
+set(URL "https://github.com/pete-gordon/${NAME}/archive/${FILENAME_URL}")
+set(SHA_256_HASH "cd5cc20fc7c0fe4d73ea90906b3e4c34be384cf79eba2bf511441a56efc71cec")
+set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
@@ -42,7 +42,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-fcommon>)
-target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-int-conversion>)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

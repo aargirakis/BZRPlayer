@@ -1,5 +1,5 @@
 --- Replayer_Windows/hvl_replay.c	2022-10-28 23:50:38.000000000 +0200
-+++ Replayer_Windows/hvl_replay.c	2025-06-27 12:48:48.587902862 +0200
++++ Replayer_Windows/hvl_replay.c	2025-06-27 13:43:08.169277816 +0200
 @@ -322,6 +322,9 @@
    }
    
@@ -68,7 +68,7 @@
 +            vumeters[i] = ht->ht_Voices[i].vc_AudioVolume;
 +        }
 +  }
-+  Enqueue(vumeters,ht->vumeterBuffer);
++  Enqueue((uintptr_t) vumeters,ht->vumeterBuffer);
  }
  
  void hvl_mixchunk( struct hvl_tune *ht, uint32 samples, int8 *buf1, int8 *buf2, int32 bufmod )
@@ -84,7 +84,7 @@
 +        int i = 0;
 +        for(i=0;i<ht->ht_Channels;i++)
 +        {
-+            unsigned char* test = Front(ht->vumeterBuffer);
++            unsigned char* test = (unsigned char *) Front(ht->vumeterBuffer);
 +            volumes[i]=test[i]/64.0*100;
 +        }
 +    }
