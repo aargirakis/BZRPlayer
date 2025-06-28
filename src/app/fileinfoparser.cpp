@@ -1,5 +1,4 @@
 #include "fileinfoparser.h"
-#include "fmod.hpp"
 #include "fmod_errors.h"
 #include "qdatetime.h"
 #include "soundmanager.h"
@@ -29,602 +28,260 @@ const string FileInfoParser::ID3V1_GENRES[] = {
     "Synthpop"
 };
 
-
-FileInfoParser::FileInfoParser()
-{
-}
+FileInfoParser::FileInfoParser() = default;
 
 void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playlistItem)
 {
-    unsigned int song_length_ms;
-    song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
-
-    if (song_length_ms == 0 || song_length_ms == 0xffffffff)
-    {
-        song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_SUBSONG_MS);
-    }
-
-    if (song_length_ms == 0)
-    {
-        song_length_ms = 0xffffffff;
-    }
-    if (song_length_ms == 0xffffffff && playlistItem->length > 0)
-    {
-        song_length_ms = playlistItem->length;
-    }
     tableInfo->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    int row = 0;
     tableInfo->clearContents();
-
     tableInfo->setRowCount(999);
 
     QFileInfo fileinfo(playlistItem->fullPath);
-    tableInfo->setItem(row, 0, new QTableWidgetItem("Filename"));
-    tableInfo->setItem(row++, 1, new QTableWidgetItem(fileinfo.fileName()));
-    tableInfo->setItem(row, 0, new QTableWidgetItem("Path"));
-    tableInfo->setItem(row++, 1, new QTableWidgetItem(fileinfo.path()));
-    tableInfo->setItem(row, 0, new QTableWidgetItem("Size"));
-    tableInfo->setItem(row++, 1, new QTableWidgetItem(groupDigits(fileinfo.size()) + " bytes"));
-    tableInfo->setItem(row, 0, new QTableWidgetItem("Last Modified"));
-    tableInfo->setItem(row++, 1, new QTableWidgetItem(fileinfo.lastModified().toString("yyyy-MM-dd hh:mm:ss")));
-    tableInfo->setItem(row, 0, new QTableWidgetItem("Created"));
-    tableInfo->setItem(row++, 1, new QTableWidgetItem(fileinfo.birthTime().toString("yyyy-MM-dd hh:mm:ss")));
-    tableInfo->setItem(row, 0, new QTableWidgetItem("Length"));
-    tableInfo->setItem(row++, 1, new QTableWidgetItem(msToNiceStringExact(song_length_ms, true)));
+    int row = 0;
 
-    tableInfo->setItem(row, 0, new QTableWidgetItem("Player Engine"));
-
-
-    if (SoundManager::getInstance().m_Info1->plugin == 0)
-    {
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(PLUGIN_fmod_NAME));
-    }
-    else
-    {
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->pluginName.c_str()));
-    }
-
-    tableInfo->setItem(row, 0, new QTableWidgetItem("Type"));
-    tableInfo->setItem(row++, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->fileformat.c_str()));
-
+    addInfo(tableInfo, &row, "Filename", fileinfo.fileName());
+    addInfo(tableInfo, &row, "Path", fileinfo.path());
+    addInfo(tableInfo, &row, "Size", groupDigits(fileinfo.size()) + " bytes");
+    addInfo(tableInfo, &row, "Last Modified", fileinfo.lastModified().toString("yyyy-MM-dd hh:mm:ss"));
+    addInfo(tableInfo, &row, "Created", fileinfo.birthTime().toString("yyyy-MM-dd hh:mm:ss"));
+    addLengthInfo(tableInfo, playlistItem, &row);
+    addInfo(tableInfo, &row, "Player Engine", SoundManager::getInstance().m_Info1->plugin == 0
+                                                  ? PLUGIN_fmod_NAME
+                                                  : SoundManager::getInstance().m_Info1->pluginName.c_str());
+    addInfo(tableInfo, &row, "Type", SoundManager::getInstance().m_Info1->fileformat.c_str());
     addSubsongInfo(tableInfo, &row);
 
     if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_game_music_emu)
     {
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Author"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Game"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game)));
-        if (!SoundManager::getInstance().m_Info1->comments.empty())
-        {
-            QString comments = fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments);
-            QPlainTextEdit* plainText = new QPlainTextEdit(comments);
-            plainText->setReadOnly(true);
-            plainText->setEnabled(true);
-            tableInfo->setItem(row, 0, new QTableWidgetItem("Comments"));
-            tableInfo->setRowHeight(row, 100);
-            tableInfo->setCellWidget(row, 1, plainText);
-            tableInfo->setItem(row++, 1, new QTableWidgetItem(comments));
-        }
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Copyright"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Dumper"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("System"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Channels"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+        addInfo(tableInfo, &row, "Dumper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper));
+        addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
     }
-    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_protrekkr)
+    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_protrekkr)
     {
-        //        tableInfo->setItem(row,0,new QTableWidgetItem("Title"));
-        //        tableInfo->setItem(row++,1,new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        //        tableInfo->setItem(row,0,new QTableWidgetItem("Author"));
-        //        tableInfo->setItem(row++,1,new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Channels"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
     }
-
-
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libsidplayfp)
-
     {
-        tableInfo->setItem(row, 0, new QTableWidgetItem("SID Format"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->fileformatSpecific.c_str()));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Author"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Copyright"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright)));
-        if (!SoundManager::getInstance().m_Info1->comments.empty())
-        {
-            QString comments = fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments);
-            QPlainTextEdit* plainText = new QPlainTextEdit(comments);
-            plainText->setReadOnly(true);
-            plainText->setEnabled(true);
-            tableInfo->setItem(row, 0, new QTableWidgetItem("Comments"));
-            tableInfo->setRowHeight(row, 100);
-            tableInfo->setCellWidget(row, 1, plainText);
-            tableInfo->setItem(
-                row++, 1, new QTableWidgetItem(comments));
-        }
-
-        string sidModel = "Unknown";
-        if (SoundManager::getInstance().m_Info1->sidModel == 1)
-        {
-            sidModel = "6581";
-        }
-        else if (SoundManager::getInstance().m_Info1->sidModel == 2)
-        {
-            sidModel = "8580";
-        }
-        else if (SoundManager::getInstance().m_Info1->sidModel == 3)
-        {
-            sidModel = "Any";
-        }
-        string clockSpeed = "Unknown";
-        if (SoundManager::getInstance().m_Info1->clockSpeed == 1)
-        {
-            clockSpeed = "PAL";
-        }
-        else if (SoundManager::getInstance().m_Info1->clockSpeed == 2)
-        {
-            clockSpeed = "NTSC";
-        }
-        else if (SoundManager::getInstance().m_Info1->clockSpeed == 3)
-        {
-            clockSpeed = "Any";
-        }
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Clock Speed"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(clockSpeed.c_str()));
-
-        string compatibility = "Unknown";
-        if (SoundManager::getInstance().m_Info1->compatibility == 0)
-        {
-            compatibility = "C64 compatible";
-        }
-        else if (SoundManager::getInstance().m_Info1->compatibility == 1)
-        {
-            compatibility = "PSID specific";
-        }
-        else if (SoundManager::getInstance().m_Info1->compatibility == 2)
-        {
-            compatibility = "Real C64 only";
-        }
-        else if (SoundManager::getInstance().m_Info1->compatibility == 3)
-        {
-            compatibility = "Requires C64 Basic";
-        }
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Compatibility"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(compatibility.c_str()));
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Song Speed"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem("$" + QString::number(SoundManager::getInstance().m_Info1->songSpeed, 16)));
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("SID Model"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(sidModel.c_str()));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Load Address"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem("$" + QString::number(SoundManager::getInstance().m_Info1->loadAddr, 16)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Init Address"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem("$" + QString::number(SoundManager::getInstance().m_Info1->initAddr, 16)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Play Address"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem("$" + QString::number(SoundManager::getInstance().m_Info1->playAddr, 16)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Start Subsong"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->startSubSong)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Replayer"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer)));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("MD5"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->md5New.c_str()));
-        tableInfo->setItem(row, 0, new QTableWidgetItem("MD5 Old"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->md5Old.c_str()));
+        addInfo(tableInfo, &row, "SID Format", SoundManager::getInstance().m_Info1->fileformatSpecific.c_str());
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+        addSidClockSpeed(tableInfo, &row);
+        addSidCompatibility(tableInfo, &row);
+        addInfo(tableInfo, &row, "Song Speed",
+                "$" + QString::number(SoundManager::getInstance().m_Info1->songSpeed, 16));
+        addSidModel(tableInfo, &row);
+        addInfo(tableInfo, &row, "Load Address",
+                "$" + QString::number(SoundManager::getInstance().m_Info1->loadAddr, 16));
+        addInfo(tableInfo, &row, "Init Address",
+                "$" + QString::number(SoundManager::getInstance().m_Info1->initAddr, 16));
+        addInfo(tableInfo, &row, "Play Address",
+                "$" + QString::number(SoundManager::getInstance().m_Info1->playAddr, 16));
+        addInfo(tableInfo, &row, "Start Subsong", QString::number(SoundManager::getInstance().m_Info1->startSubSong));
+        addInfo(tableInfo, &row, "Replayer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer));
+        addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
+        addInfo(tableInfo, &row, "MD5 Old", SoundManager::getInstance().m_Info1->md5Old.c_str());
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_vgmplay_legacy)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Author"));
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Game"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game)));
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("System"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system)));
-
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->date.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Release date"));
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Dumper"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper)));
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Chips used"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(
-                               QString(SoundManager::getInstance().m_Info1->chips.c_str()).left(
-                                   QString(SoundManager::getInstance().m_Info1->chips.c_str()).length() - 2)));
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Version"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(
-                               QString::number(SoundManager::getInstance().m_Info1->version >> 8) + "." +
-                               QString::number(SoundManager::getInstance().m_Info1->version & 0xFF)));
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Gain"));
-        tableInfo->setItem(
-            row++, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->gain, 'f', 2)));
-
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Length"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->loopInfo.c_str()));
-
-        if (!SoundManager::getInstance().m_Info1->comments.empty())
-        {
-            QString comments = fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments);
-            QPlainTextEdit* plainText = new QPlainTextEdit(comments);
-            plainText->setReadOnly(true);
-            plainText->setEnabled(true);
-            tableInfo->setItem(row, 0, new QTableWidgetItem("Comments"));
-            tableInfo->setRowHeight(row, 100);
-            tableInfo->setCellWidget(row, 1, plainText);
-            tableInfo->setItem(row++, 1, new QTableWidgetItem(comments));
-        }
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+        addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+        addInfo(tableInfo, &row, "Release date", SoundManager::getInstance().m_Info1->date.c_str());
+        addInfo(tableInfo, &row, "Dumper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper));
+        addInfo(tableInfo, &row, "Chips used",
+                QString(SoundManager::getInstance().m_Info1->chips.c_str()).left(
+                    QString(SoundManager::getInstance().m_Info1->chips.c_str()).length() - 2));
+        addInfo(tableInfo, &row, "Version", QString::number(SoundManager::getInstance().m_Info1->version >> 8) + "." +
+                                            QString::number(SoundManager::getInstance().m_Info1->version & 0xFF));
+        addInfo(tableInfo, &row, "Gain", QString::number(SoundManager::getInstance().m_Info1->gain, 'f', 2));
+        addInfo(tableInfo, &row, "Length", SoundManager::getInstance().m_Info1->loopInfo.c_str());
+        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
     }
-
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_webuade)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->md5New.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("MD5"));
+        addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Channels"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numPatterns)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Patterns"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->modPatternRows)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Pattern Length"));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+        addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+        addInfo(tableInfo, &row, "Pattern Length",
+                QString::number(SoundManager::getInstance().m_Info1->modPatternRows));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_klystron)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Channels"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numPatterns)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Pattern Rows"));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+        addInfo(tableInfo, &row, "Pattern Rows", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace)
     {
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Channels"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("System"));
+        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+        addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libfc14audiodecoder)
     {
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numUsedPatterns)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Used Patterns"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numSndModSeqs)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Snd Mod Seqs"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numVolModSeqs)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Vol Mod Seqs"));
+        addInfo(tableInfo, &row, "Used Patterns", QString::number(SoundManager::getInstance().m_Info1->numUsedPatterns));
+        addInfo(tableInfo, &row, "Snd Mod Seqs", QString::number(SoundManager::getInstance().m_Info1->numSndModSeqs));
+        addInfo(tableInfo, &row, "Vol Mod Seqs", QString::number(SoundManager::getInstance().m_Info1->numVolModSeqs));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libpac)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Channels"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numPatterns)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Sheets"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numOrders)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Positions"));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+        addInfo(tableInfo, &row, "Sheets", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+        addInfo(tableInfo, &row, "Positions", QString::number(SoundManager::getInstance().m_Info1->numOrders));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_adplug)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Artist"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        if (!SoundManager::getInstance().m_Info1->comments.empty())
-        {
-            QString comments = fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments);
-            QPlainTextEdit* plainText = new QPlainTextEdit(comments);
-            plainText->setReadOnly(true);
-            plainText->setEnabled(true);
-            tableInfo->setRowHeight(row, 100);
-            tableInfo->setCellWidget(row, 1, plainText);
-            tableInfo->setItem(row, 1, new QTableWidgetItem(comments));
-            tableInfo->setItem(row++, 0, new QTableWidgetItem("Description"));
-        }
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numPatterns)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Patterns"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numOrders)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Orders"));
+        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addMultilineInfo(tableInfo, &row, "Description", SoundManager::getInstance().m_Info1->comments);
+        addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+        addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_asap)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Author"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->date.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Creation Date"));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
+        addInfo(tableInfo, &row, "Creation Date", SoundManager::getInstance().m_Info1->date.c_str());
+
+        //TODO not handled
         if (SoundManager::getInstance().m_Info1->numChannels == 1)
         {
-            tableInfo->setItem(row, 1, new QTableWidgetItem("Mono"));
-            tableInfo->setItem(row++, 0, new QTableWidgetItem("Channels"));
+            addInfo(tableInfo, &row, "Channels", "Mono");
         }
         else if (SoundManager::getInstance().m_Info1->numChannels == 2)
         {
-            tableInfo->setItem(row, 1, new QTableWidgetItem("Stereo"));
-            tableInfo->setItem(row++, 0, new QTableWidgetItem("Channels"));
+            addInfo(tableInfo, &row, "Channels", "Stereo");
         }
-        string clockSpeed = "Unknown";
-        if (SoundManager::getInstance().m_Info1->clockSpeed == 1)
-        {
-            clockSpeed = "PAL";
-        }
-        else if (SoundManager::getInstance().m_Info1->clockSpeed == 0)
-        {
-            clockSpeed = "NTSC";
-        }
-        tableInfo->setItem(row, 0, new QTableWidgetItem("Clock Speed"));
-        tableInfo->setItem(row++, 1, new QTableWidgetItem(clockSpeed.c_str()));
+
+        addAsapClockSpeed(tableInfo, &row);
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_highly_experimental)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Artist"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Game"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Genre"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Copyright"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->date.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Year"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Ripper"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Volume"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Comments"));
+        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
     }
 	else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_lazyusf2)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Artist"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Game"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Genre"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Copyright"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->date.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Year"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Ripper"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Volume"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Comments"));
+        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_highly_theoretical)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Artist"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Game"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Genre"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Copyright"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->date.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Year"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Ripper"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Volume"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Comments"));
+        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_highly_quixotic)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Artist"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Game"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Genre"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Copyright"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->date.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Year"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Ripper"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Volume"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Comments"));
+        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
     }
-
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_vio2sf)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Artist"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Game"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Genre"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Copyright"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->date.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Year"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Ripper"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Volume"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Comments"));
+        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
     }
-
-    //    else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_zxtune)
-    //    {
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Title"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Author"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->replay)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Program"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Channels"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numPatterns)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Patterns"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numOrders)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Orders"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numFrames)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Frames"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->loopFrame)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Loop Frame"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->loopPosition)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Loop Position"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->initialTempo)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Initial Tempo"));
-    //        tableInfo->setItem(row,1,new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments)));
-    //        tableInfo->setItem(row++,0,new QTableWidgetItem("Comments"));
-    //    }
+    else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_zxtune)
+    {
+        // addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        // addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
+        // addInfo(tableInfo, &row, "Program", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->replay));
+        // addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+        // addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+        // addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
+        // addInfo(tableInfo, &row, "Frames", QString::number(SoundManager::getInstance().m_Info1->numFrames));
+        // addInfo(tableInfo, &row, "Loop Frame", QString::number(SoundManager::getInstance().m_Info1->loopFrame));
+        // addInfo(tableInfo, &row, "Loop Position", QString::number(SoundManager::getInstance().m_Info1->loopPosition));
+        // addInfo(tableInfo, &row, "Initial Tempo", QString::number(SoundManager::getInstance().m_Info1->initialTempo));
+        // addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
+    }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libstsound)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Author"));
-        if (!SoundManager::getInstance().m_Info1->comments.empty())
-        {
-            QString comments = fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments);
-            QPlainTextEdit* plainText = new QPlainTextEdit(comments);
-            plainText->setReadOnly(true);
-            plainText->setEnabled(true);
-            tableInfo->setItem(row, 1, new QTableWidgetItem(comments));
-            tableInfo->setItem(row++, 0, new QTableWidgetItem("Comments"));
-            tableInfo->setRowHeight(row, 100);
-            tableInfo->setCellWidget(row, 1, plainText);
-        }
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Song Player"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->songType.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Song Type"));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+        addInfo(tableInfo, &row, "Song Player", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer));
+        addInfo(tableInfo, &row, "Song Type", SoundManager::getInstance().m_Info1->songType.c_str());
     }
 
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_sc68)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Author"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->composer)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Composer"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Converter"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Ripper"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->replay.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Replay"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->hwname.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Hardware"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->rate)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Rate"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem("$" + QString::number(SoundManager::getInstance().m_Info1->address, 16)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Address"));
+        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
+        addInfo(tableInfo, &row, "Composer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->composer));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter));
+        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+        addInfo(tableInfo, &row, "Replay", SoundManager::getInstance().m_Info1->replay.c_str());
+        addInfo(tableInfo, &row, "Hardware", SoundManager::getInstance().m_Info1->hwname.c_str());
+        addInfo(tableInfo, &row, "Rate", QString::number(SoundManager::getInstance().m_Info1->rate));
+        addInfo(tableInfo, &row, "Address", "$" + QString::number(SoundManager::getInstance().m_Info1->address, 16));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_sndh_player)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Artist"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->date.c_str()));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Year"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->clockSpeed) + " Hz"));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Clock Speed"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Ripper"));
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Converter"));
+        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+        addInfo(tableInfo, &row, "Clock Speed",
+                QString::number(SoundManager::getInstance().m_Info1->clockSpeed) + " Hz");
+        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+        addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter));
     }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt)
     {
-        tableInfo->setItem(row, 1, new QTableWidgetItem(fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Title"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numChannels)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Channels"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numPatterns)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Patters"));
-        tableInfo->setItem(
-            row, 1, new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->numOrders)));
-        tableInfo->setItem(row++, 0, new QTableWidgetItem("Orders"));
-        if (!SoundManager::getInstance().m_Info1->comments.empty())
-        {
-            QString comments = fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments);
-            QPlainTextEdit* plainText = new QPlainTextEdit(comments);
-            plainText->setReadOnly(true);
-            plainText->setEnabled(true);
-            tableInfo->setItem(row, 1, new QTableWidgetItem(comments));
-            tableInfo->setRowHeight(row, 100);
-            tableInfo->setCellWidget(row, 1, plainText);
-            tableInfo->setItem(row++, 0, new QTableWidgetItem("Comments"));
-        }
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+        addInfo(tableInfo, &row, "Patters", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+        addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
+        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
     }
     else //use fmod to get the tag info
     {
@@ -645,7 +302,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                     if (tag.datatype == FMOD_TAGDATATYPE_STRING)
                     {
                         QString data;
-                        data = (char*)tag.data;
+                        data = static_cast<char *>(tag.data);
                         if (QString(tag.name) == "ARTIST")
                         {
                             tag.name = "Artist";
@@ -705,7 +362,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                         }
                         QString data;
                         QString DataAsString = QString::fromLatin1(static_cast<char*>(tag.data));
-                        data = (char*)tag.data;
+                        data = static_cast<char *>(tag.data);
                         if (QString(tag.name) == "GENRE")
                         {
                             tag.name = "Genre";
@@ -761,7 +418,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             hasWrittenID3V2Header = true;
                         }
                         QString data;
-                        QString DataAsString = data.fromUtf16((ushort*)tag.data);
+                        QString DataAsString = QString::fromUtf16(static_cast<ushort *>(tag.data));
                         if (QString(tag.name) == "TALB" || QString(tag.name) == "TAL")
                         {
                             tag.name = "Album Title";
@@ -999,7 +656,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             hasWrittenID3V2Header = true;
                         }
                         QString data;
-                        data = (char*)tag.data;
+                        data = static_cast<char *>(tag.data);
                         QString DataAsString = QString::fromUtf8(data.toStdString().c_str());
                         if (QString(tag.name) == "TALB" || QString(tag.name) == "TAL")
                         {
@@ -1465,12 +1122,12 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             tag.name = "Year";
                         }
 
-                        if (data.trimmed().length() > 0)
+                        if (!data.trimmed().isEmpty())
                         {
                             if (QString(tag.name) == "TXXX")
                             {
                                 tableInfo->setItem(row, 0, new QTableWidgetItem(data));
-                                char* tst = (char*)tag.data;
+                                char* tst = static_cast<char *>(tag.data);
                                 QString str;
                                 for (int i = data.length(); i < tag.datalen; i++)
                                 {
@@ -1549,7 +1206,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                     if (tag.datatype == FMOD_TAGDATATYPE_STRING_UTF8)
                     {
                         QString data;
-                        data = (char*)tag.data;
+                        data = static_cast<char *>(tag.data);
                         QString DataAsString = QString::fromUtf8(data.toStdString().c_str());
 
                         if (QString(tag.name).toUpper() == "ACOUSTID_FINGERPRINT")
@@ -1806,18 +1463,105 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
     tableInfo->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
 
+void FileInfoParser::addInfo(QTableWidget *tableInfo, int *row, const QString &label, const QString &value) {
+    tableInfo->setItem(*row, 0, new QTableWidgetItem(label));
+    tableInfo->setItem((*row)++, 1, new QTableWidgetItem(value));
+}
+
+void FileInfoParser::addMultilineInfo(QTableWidget *tableInfo, int *row, const QString &label, const string &value) {
+    if (!value.empty()) {
+        QString text = fromUtf8OrLatin1(value);
+        auto *plainText = new QPlainTextEdit(text);
+        plainText->setReadOnly(true);
+        plainText->setEnabled(true);
+        tableInfo->setRowHeight(*row, 100);
+        tableInfo->setCellWidget(*row, 1, plainText);
+        addInfo(tableInfo, row, label, text);
+    }
+}
+
+void FileInfoParser::addLengthInfo(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {
+    unsigned int song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
+
+    if (song_length_ms == 0 || song_length_ms == 0xffffffff) {
+        song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_SUBSONG_MS);
+    }
+    if (song_length_ms == 0) {
+        song_length_ms = 0xffffffff;
+    }
+    if (song_length_ms == 0xffffffff && playlistItem->length > 0) {
+        song_length_ms = playlistItem->length;
+    }
+
+    addInfo(tableInfo, row, "Length", msToNiceStringExact(song_length_ms, true));
+}
+
 void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
     int currentSubsong = SoundManager::getInstance().m_Info1->currentSubsong;
     int numSubsongs = SoundManager::getInstance().m_Info1->numSubsongs;
+    bool isSubsong = currentSubsong != 1 || numSubsongs != 1;
 
-    tableInfo->setItem(*row, 0, new QTableWidgetItem("Subsong"));
-    if (currentSubsong == 1 && numSubsongs == 1) {
-        tableInfo->setItem(
-            (*row)++, 1, new QTableWidgetItem("-"));
-    } else {
-        tableInfo->setItem(
-            (*row)++, 1, new QTableWidgetItem(
-                QString::number(currentSubsong) + "/" +
-                QString::number(numSubsongs)));
+    addInfo(tableInfo, row, "Subsong",
+            isSubsong ? QString::number(currentSubsong) + "/" + QString::number(numSubsongs) : "-");
+}
+
+void FileInfoParser::addSidClockSpeed(QTableWidget *tableInfo, int *row) {
+    string clockSpeed;
+    switch (SoundManager::getInstance().m_Info1->clockSpeed) {
+        case 1: clockSpeed = "PAL";
+            break;
+        case 2: clockSpeed = "NTSC";
+            break;
+        case 3: clockSpeed = "Any";
+            break;
+        default: clockSpeed = "Unknown";
     }
+
+    addInfo(tableInfo, row, "Clock Speed", clockSpeed.c_str());
+}
+
+void FileInfoParser::addSidCompatibility(QTableWidget *tableInfo, int *row) {
+    string compatibility;
+    switch (SoundManager::getInstance().m_Info1->compatibility) {
+        case 0: compatibility = "C64 compatible";
+            break;
+        case 1: compatibility = "PSID specific";
+            break;
+        case 2: compatibility = "Real C64 only";
+            break;
+        case 3: compatibility = "Requires C64 Basic";
+            break;
+        default: compatibility = "Unknown";
+    }
+
+    addInfo(tableInfo, row, "Compatibility", compatibility.c_str());
+}
+
+void FileInfoParser::addSidModel(QTableWidget *tableInfo, int *row) {
+    string sidModel;
+    switch (SoundManager::getInstance().m_Info1->sidModel) {
+        case 1: sidModel = "6581";
+            break;
+        case 2: sidModel = "8580";
+            break;
+        case 3: sidModel = "Any";
+            break;
+        default: sidModel = "Unknown";
+    }
+
+    addInfo(tableInfo, row, "SID Model", sidModel.c_str());
+}
+
+
+void FileInfoParser::addAsapClockSpeed(QTableWidget *tableInfo, int *row) {
+    string clockSpeed;
+    switch (SoundManager::getInstance().m_Info1->clockSpeed) {
+        case 0: clockSpeed = "NTSC";
+            break;
+        case 1: clockSpeed = "PAL";
+            break;
+        default: clockSpeed = "Unknown";
+    }
+
+    addInfo(tableInfo, row, "Clock Speed", clockSpeed.c_str());
 }
