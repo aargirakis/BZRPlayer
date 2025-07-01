@@ -194,11 +194,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
 
     //read sidid
-    string sidid_filename = info->dataPath + SIDID_CFG_DATA_PATH;
-    if (!readconfig(sidid_filename.c_str()))
-    {
-        info->songPlayer = identify(myBuffer, filesize);
-    }
+    string sididCfg = info->dataPath + SIDID_CFG_DATA_PATH;
+    info->songPlayer = identifyBufferFromConfig(sididCfg.c_str(), myBuffer, filesize);
 
     //read config from disk
     string filename = info->userPath + PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
