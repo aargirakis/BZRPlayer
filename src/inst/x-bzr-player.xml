@@ -894,6 +894,13 @@
         <glob pattern="mdst.*"/>
         <glob pattern="*.mdst"/>
     </mime-type>
+    <mime-type type="audio/x-tmc">
+        <comment>Theta Music Composer audio</comment>
+        <generic-icon name="audio-x-generic"/>
+        <glob pattern="*.tm2"/>
+        <glob pattern="*.tm8"/>
+        <glob pattern="*.tmc"/>
+    </mime-type>
     <mime-type type="audio/x-umx">
         <comment>umx file</comment>
         <generic-icon name="audio-x-generic"/>

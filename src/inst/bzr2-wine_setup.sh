@@ -56,8 +56,8 @@ main() {
     audio/x-nintendo-ds-strm-ffta2 audio/x-np audio/x-ntk audio/x-okt audio/x-prun audio/x-psf audio/x-psm
     audio/x-pt3 audio/x-ptk audio/x-s3m audio/x-sc2 audio/x-sc68 audio/x-scl audio/x-scn audio/x-sidmon audio/x-sidmon2
     audio/x-sndh audio/x-sonic audio/x-sonix audio/x-soundmon audio/x-spc audio/x-spl audio/x-stk audio/x-stm
-    audio/x-sun audio/x-sunvox audio/x-symmod audio/x-tfmx audio/x-tfmx-st audio/x-umx audio/x-v2m audio/x-vgm
-    audio/x-vorbis+ogg audio/x-xad audio/x-xm
+    audio/x-sun audio/x-sunvox audio/x-symmod audio/x-tfmx audio/x-tfmx-st audio/x-tmc audio/x-umx audio/x-v2m
+    audio/x-vgm audio/x-vorbis+ogg audio/x-xad audio/x-xm
   )
 
   bold=$'\e[1m'
