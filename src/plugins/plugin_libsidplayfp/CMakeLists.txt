@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libsidplayfp")
-set(VERSION "2.12.0")
+set(VERSION "2.15.0")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(URL "https://github.com/${NAME}/${NAME}/releases/download/v${VERSION}/${FILENAME}")
-set(SHA_256_HASH "bc4f4fa203dcf0736fe48c23dce9aa0db825370e5941e7595e4851efe6937cdc")
+set(SHA_256_HASH "42c28b9ef57998ad66bbbb3dfab00c6684715c643d9ccc9ac8da4d7cf296dd00")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
@@ -128,11 +128,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 set(VICE "vice")
-set(VICE_VERSION "3.8")
+set(VICE_VERSION "3.9")
 set(VICE_NAME_VERSIONED "${VICE}-${VICE_VERSION}")
 set(VICE_FILENAME "${VICE_NAME_VERSIONED}.tar.gz")
 set(VICE_URL "https://sourceforge.net/projects/${VICE}-emu/files/releases/${VICE_FILENAME}")
-set(VICE_SHA_256_HASH "1d7dc4d0f2bbcc2a871bb954ff4a5df63048dea9c16f5f1e9bc8260fa41a1004")
+set(VICE_SHA_256_HASH "40202b63455e26b87ecc63eb5a52322c6fa3f57cab12acf0c227cf9f4daec370")
 download_patch_and_add(
         ${VICE_NAME_VERSIONED} ${VICE_FILENAME} ${VICE_URL} ${VICE_SHA_256_HASH} false "" ""
 )
