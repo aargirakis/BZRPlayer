@@ -75,7 +75,7 @@ for mime_type in "${mime_types_supported[@]}"; do
   supportedFiletypes["$mime_comment"]="$mime_suffixes_onelined"
 done
 
-readarray -d '' supportedFiletypesSorted < <(printf "%s\0" "${!supportedFiletypes[@]}" | sort -z)
+readarray -d '' supportedFiletypesSorted < <(printf "%s\0" "${!supportedFiletypes[@]}" | sort -fz)
 
 echo -n "!macro addFiletypeAssociationsComponentContent" >>"$output_filename"
 
