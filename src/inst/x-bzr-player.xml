@@ -574,8 +574,14 @@
         <glob pattern="*.uni"/>
     </mime-type>
     <mime-type type="audio/x-mptm">
-        <comment>OpenMPT Module audio</comment>
+        <comment>OpenMPT MPTM audio</comment>
+        <acronym>MPTM</acronym>
+        <expanded-acronym>OpenMPT ModPlug Tracker Module</expanded-acronym>
         <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="IMPM" offset="0"/>
+            <match type="string" value="tpm." offset="0"/>
+        </magic>
         <glob pattern="*.mptm"/>
     </mime-type>
     <mime-type type="audio/x-nintendo-ds-strm">
