@@ -558,6 +558,7 @@
         <glob pattern="mmd3.*"/>
         <glob pattern="mod.*"/>
         <glob pattern="mtm.*"/>
+        <glob pattern="oct.*"/>
         <glob pattern="ult.*"/>
         <glob pattern="uni.*"/>
         <glob pattern="*.669"/>
@@ -570,6 +571,7 @@
         <glob pattern="*.mmd3"/>
         <glob pattern="*.mod"/>
         <glob pattern="*.mtm"/>
+        <glob pattern="*.oct"/>
         <glob pattern="*.ult"/>
         <glob pattern="*.uni"/>
     </mime-type>
