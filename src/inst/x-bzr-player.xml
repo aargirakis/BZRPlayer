@@ -405,6 +405,7 @@
     </mime-type>
     <mime-type type="audio/x-it">
         <comment>Impulse Tracker audio</comment>
+        <acronym>IT</acronym>
         <generic-icon name="audio-x-generic"/>
         <magic>
             <match type="string" value="IMPM" offset="0"/>
