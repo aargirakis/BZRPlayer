@@ -1,3 +1,4 @@
 bin/
 
+include/FiletypeAssociationsComponentUtil.nsh
 *.exe

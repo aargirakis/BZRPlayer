@@ -56,8 +56,7 @@ get_elements_of_array1_not_contained_in_array2() {
 
 mime_types_scan() {
   local mime_types_required=()
-  mapfile -t mime_types_required < <(sed -n "\|mime_types_supported=(| , \|)|{p; \|)|q}" "$bzr2_setup" |
-    sed -e 's:mime_types_supported=(::g' -e 's:)::g' -e 's: :\n:g' | sed '/^[[:space:]]*$/d')
+  mapfile -t mime_types_required <"$supported_mime_types_file"
   IFS=" " read -r -a mime_types_required <<<"$(tr ' ' '\n' <<<"${mime_types_required[@]}" | sort -u | tr '\n' ' ')"
   local mime_types_found=()
   mapfile -t mime_types_found < <(ls -d -1 "$samples_path"/*/)
@@ -203,8 +202,7 @@ No sample file found"
 
 check_requirements
 
-bzr2_setup_filename="bzr2-wine_setup.sh"
-bzr2_setup="$(dirname "$0")/../$bzr2_setup_filename"
+supported_mime_types_file="$(dirname "$0")/../supported_mime_types"
 bzr2_xml_filename="x-bzr-player.xml"
 bzr2_xml="$(dirname "$0")/../$bzr2_xml_filename"
 samples_path="$(dirname "$0")/samples"

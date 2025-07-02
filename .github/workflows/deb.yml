@@ -97,8 +97,7 @@ jobs:
 
           install -Dm644 src/inst/x-bzr-player.xml "$bzr2_deb_name/usr/share/mime/packages/x-bzr-player.xml"
 
-          mapfile -t mime_types_supported < <(sed -n "\|mime_types_supported=(| , \|)|{p; \|)|q}" "src/inst/bzr2-wine_setup.sh" |
-            sed -e 's:mime_types_supported=(::g' -e 's:)::g' -e 's: :\n:g' | sed '/^[[:space:]]*$/d')
+          mapfile -t mime_types_supported <"src/inst/supported_mime_types"
 
           for mime_type in "${mime_types_supported[@]}"; do
             desktop_entry_mime_types="$desktop_entry_mime_types$mime_type;"

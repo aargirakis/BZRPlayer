@@ -9,7 +9,6 @@ coded pretty much from scratch.
 
 - [Releases & changelogs](https://github.com/aargirakis/BZRPlayer/releases)
 - AUR package: [`bzr-player`](https://aur.archlinux.org/packages/bzr-player)
-- [Linux Wine installer (deprecated)](https://github.com/aargirakis/BZRPlayer/blob/main/src/inst/bzr2-wine_setup.sh)
 - [Old versions archive](https://github.com/aargirakis/BZRPlayer/tree/binaries_archive/binaries)
 
 ## How To Build

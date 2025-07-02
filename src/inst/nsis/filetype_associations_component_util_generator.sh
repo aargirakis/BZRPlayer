@@ -16,8 +16,7 @@ bold=$'\e[1m'
 bold_reset=$'\e[0m'
 requirements=(cat sed sort)
 bzr2_pkgname="bzr-player"
-bzr2_setup_filename="bzr2-wine_setup.sh"
-bzr2_setup="../$bzr2_setup_filename"
+supported_mime_types_file="../supported_mime_types"
 bzr2_xml_filename="x-$bzr2_pkgname.xml"
 bzr2_xml="../$bzr2_xml_filename"
 mime_dir_system="/usr/share/mime"
@@ -47,9 +46,7 @@ rm -rf "$output_filename"
 echo "$info_text" >>"$output_filename"
 
 mime_types_supported=()
-mapfile -t mime_types_supported < <(sed -n "\|mime_types_supported=(| , \|)|{p; \|)|q}" "$bzr2_setup" |
-  sed -e 's:mime_types_supported=(::g' -e 's:)::g' -e 's: :\n:g' | sed '/^[[:space:]]*$/d')
-IFS=" " read -r -a mime_types_supported <<<"$(tr ' ' '\n' <<<"${mime_types_supported[@]}" | sort -u | tr '\n' ' ')"
+mapfile -t mime_types_supported <"$supported_mime_types_file"
 
 bzr2_xml_content=$(cat "$bzr2_xml")
 declare -A supportedFiletypes=()
