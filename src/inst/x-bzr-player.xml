@@ -636,11 +636,26 @@
         </magic>
         <glob pattern="*.ntk"/>
     </mime-type>
-    <mime-type type="audio/x-okt">
+    <mime-type type="audio/x-okta">
         <comment>Oktalyzer audio</comment>
         <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="OKTASONG" offset="0">
+                <match type="string" value="CMOD" offset="8">
+                    <match type="string" value="SAMP" offset="24"/>
+                </match>
+            </match>
+        </magic>
+        <glob pattern="mod.*"/>
+        <glob pattern="ok.*"/>
         <glob pattern="okt.*"/>
+        <glob pattern="okta.*"/>
+        <glob pattern="song.*"/>
+        <glob pattern="*.mod"/>
+        <glob pattern="*.ok"/>
         <glob pattern="*.okt"/>
+        <glob pattern="*.okta"/>
+        <glob pattern="*.song"/>
     </mime-type>
     <mime-type type="audio/x-prun">
         <comment>prun audio</comment>
