@@ -10,7 +10,7 @@
         <glob pattern="*.ims"/>
     </mime-type>
     <mime-type type="audio/x-adlib-raw">
-        <comment>Raw OPL Capture</comment>
+        <comment>Raw OPL Capture audio</comment>
         <generic-icon name="audio-x-generic"/>
         <magic>
             <match type="string" value="RAWADATA" offset="0"/>
@@ -66,7 +66,7 @@
         <glob pattern="*.cust"/>
     </mime-type>
     <mime-type type="audio/x-ddmf">
-        <comment>DDMF (X-Tracker)</comment>
+        <comment>DDMF (X-Tracker) audio</comment>
         <expanded-acronym>Delusion Digital Music Format (X-Tracker)</expanded-acronym>
         <generic-icon name="audio-x-generic"/>
         <magic>
@@ -309,7 +309,7 @@
         <glob pattern="*.hipc"/>
     </mime-type>
     <mime-type type="audio/x-hip-mcmd">
-        <comment>MCMD (unofficial Jochen Hippel 7V clone) audio</comment>
+        <comment>MCMD (Jochen Hippel 7V clone) audio</comment>
         <generic-icon name="audio-x-generic"/>
         <magic>
             <match type="string" value="MCMD" offset="0"/>
@@ -634,7 +634,7 @@
         <glob pattern="*.okt"/>
     </mime-type>
     <mime-type type="audio/x-prun">
-        <comment>prun file</comment>
+        <comment>prun audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="prun.*"/>
         <glob pattern="pru2.*"/>
@@ -663,12 +663,12 @@
         <glob pattern="*.usf"/>
     </mime-type>
     <mime-type type="audio/x-psm">
-        <comment>psm file</comment>
+        <comment>psm audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="*.psm"/>
     </mime-type>
     <mime-type type="audio/x-pt3">
-        <comment>pt3 file</comment>
+        <comment>pt3 audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="*.pt3"/>
     </mime-type>
@@ -693,25 +693,25 @@
         <glob pattern="*.s3m"/>
     </mime-type>
     <mime-type type="audio/x-sc2">
-        <comment>sc2 file</comment>
+        <comment>sc2 audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="sc2.*"/>
         <glob pattern="*.sc2"/>
     </mime-type>
     <mime-type type="audio/x-sc68">
-        <comment>sc68 file</comment>
+        <comment>sc68 audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="sc68.*"/>
         <glob pattern="*.sc68"/>
     </mime-type>
     <mime-type type="audio/x-scl">
-        <comment>scl file</comment>
+        <comment>scl audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="scl.*"/>
         <glob pattern="*.scl"/>
     </mime-type>
     <mime-type type="audio/x-scn">
-        <comment>Sean Connolly</comment>
+        <comment>Sean Connolly audio</comment>
         <generic-icon name="audio-x-generic"/>
         <magic>
             <match type="big16" value="0x6000" offset="0">
@@ -838,7 +838,7 @@
         <glob pattern="*.spl"/>
     </mime-type>
     <mime-type type="audio/x-stk">
-        <comment>stk file</comment>
+        <comment>stk audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="stk.*"/>
         <glob pattern="*.stk"/>
@@ -855,7 +855,7 @@
         <glob pattern="*.stm"/>
     </mime-type>
     <mime-type type="audio/x-sun">
-        <comment>sun file</comment>
+        <comment>sun audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="sun.*"/>
         <glob pattern="*.sun"/>
@@ -902,7 +902,7 @@
         <glob pattern="*.tmc"/>
     </mime-type>
     <mime-type type="audio/x-umx">
-        <comment>umx file</comment>
+        <comment>umx audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="*.umx"/>
     </mime-type>
