@@ -661,8 +661,11 @@
         <comment>Prorunner 1.x audio</comment>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="pr1.*"/>
+        <glob pattern="pru1.*"/>
         <glob pattern="prun.*"/>
         <glob pattern="*.pr1"/>
+        <glob pattern="*.prorunner1"/>
+        <glob pattern="*.pru1"/>
         <glob pattern="*.prun"/>
     </mime-type>
     <mime-type type="audio/x-prun2">
@@ -680,6 +683,7 @@
         <glob pattern="*.mod"/>
         <glob pattern="*.pr"/>
         <glob pattern="*.prorunner"/>
+        <glob pattern="*.prorunner2"/>
         <glob pattern="*.pru"/>
         <glob pattern="*.prun"/>
         <glob pattern="*.pru2"/>
