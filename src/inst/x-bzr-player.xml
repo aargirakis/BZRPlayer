@@ -658,10 +658,29 @@
         <glob pattern="*.song"/>
     </mime-type>
     <mime-type type="audio/x-prun">
-        <comment>prun audio</comment>
+        <comment>Prorunner 1.x audio</comment>
         <generic-icon name="audio-x-generic"/>
+        <glob pattern="pr1.*"/>
+        <glob pattern="prun.*"/>
+        <glob pattern="*.pr1"/>
+        <glob pattern="*.prun"/>
+    </mime-type>
+    <mime-type type="audio/x-prun2">
+        <comment>Prorunner 2.x audio</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="SNT!" offset="0"/>
+        </magic>
+        <glob pattern="mod.*"/>
+        <glob pattern="pr.*"/>
+        <glob pattern="prorunner.*"/>
+        <glob pattern="pru.*"/>
         <glob pattern="prun.*"/>
         <glob pattern="pru2.*"/>
+        <glob pattern="*.mod"/>
+        <glob pattern="*.pr"/>
+        <glob pattern="*.prorunner"/>
+        <glob pattern="*.pru"/>
         <glob pattern="*.prun"/>
         <glob pattern="*.pru2"/>
     </mime-type>
