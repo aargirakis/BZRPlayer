@@ -253,6 +253,8 @@ FMOD_RESULT F_CALLBACK fcgetlength(FMOD_CODEC_STATE* codec, unsigned int* length
 {
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
+        //TODO single channel muting not working on linux with 'Debug' build type without adding this (dunno why):
+        *length = -1;
         return FMOD_OK;
     }
 
