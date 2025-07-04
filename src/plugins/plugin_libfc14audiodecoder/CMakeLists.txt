@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libfc14audiodecoder")
-set(VERSION "1.0.4")
+set(VERSION "1.0.6")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "libfc14audiodecoder" PARENT_SCOPE)
@@ -13,16 +13,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.bz2")
 set(URL "https://github.com/mschwendt/${NAME}/releases/download/${VERSION}/${FILENAME}")
-set(SHA_256_HASH "6b507d2f3c14657b0a1775c920474f4864ff9c651f8f7a4c1ab8faa3cc8c1a1e")
+set(SHA_256_HASH "61dca3499f9b4c231fb89a57a652957f96ce375eb965425f3f5a1ec4064e6a45")
 download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" "")
 
-set(SIZEOF_CHAR 1)
-set(SIZEOF_INT 4)
-set(SIZEOF_LONG_INT 4)
-set(SIZEOF_SHORT_INT 2)
 configure_file(
         ${EXTERNAL_SOURCE_DIR}/src/Config.h.in
         ${EXTERNAL_SOURCE_DIR}/src/Config.h
@@ -45,6 +39,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE FC_API_EXT_1)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
