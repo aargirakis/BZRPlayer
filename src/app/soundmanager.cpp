@@ -34,10 +34,6 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_libsidplayfp_LIB, 0);
     }
-    if (PLUGIN_libfc14audiodecoder_LIB != "")
-    {
-        loadPlugin(PLUGIN_libfc14audiodecoder_LIB, 0);
-    }
     if (PLUGIN_libopenmpt_LIB != "")
     {
         loadPlugin(PLUGIN_libopenmpt_LIB, 0);

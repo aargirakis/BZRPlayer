@@ -2556,44 +2556,6 @@ void MainWindow::updateInstruments()
             }
         }
 
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libfc14audiodecoder)
-        {
-            if (SoundManager::getInstance().m_Info1->numSamples > 0)
-            {
-                QStringList columnLabelsSamples;
-                columnLabelsSamples << tr("#") << tr("Size") << tr("Loopstart") << tr("Looplength");
-                ui->samples->setColumnCount(columnLabelsSamples.size());
-                ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
-                ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
-                ui->samples->setColumnWidth(1, sampleColumnSizeWidth);
-                ui->samples->setColumnWidth(2, sampleColumnLoopStartWidth);
-                ui->samples->setColumnWidth(3, sampleColumnLoopEndWidth);
-
-                ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
-
-                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++)
-                {
-                    ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    unsigned int size = SoundManager::getInstance().m_Info1->samplesSize[j];
-                    if (size > 0)
-                    {
-                        ui->samples->setItem(
-                            j, 1, new QTableWidgetItem(
-                                QString::number(SoundManager::getInstance().m_Info1->samplesSize[j])));
-                        ui->samples->setItem(j, 2, new QTableWidgetItem(
-                                                 QString::number(
-                                                     SoundManager::getInstance().m_Info1->samplesLoopStart[j])));
-                        ui->samples->setItem(j, 3, new QTableWidgetItem(
-                                                 QString::number(
-                                                     SoundManager::getInstance().m_Info1->samplesLoopLength[j])));
-                    }
-                }
-            }
-        }
         else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_klystron)
         {
             if (SoundManager::getInstance().m_Info1->numInstruments > 0)

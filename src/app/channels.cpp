@@ -81,7 +81,6 @@ void Channels::updateChannels()
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_libsidplayfp ||
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker ||
-                SoundManager::getInstance().m_Info1->plugin == PLUGIN_libfc14audiodecoder ||
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace ||
                 // SoundManager::getInstance().m_Info1->plugin==PLUGIN_sndh_player ||
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp))

@@ -421,11 +421,6 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_lazyusf2_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_lazyusf2_NAME));
     }
-    if (PLUGIN_libfc14audiodecoder_LIB != "")
-    {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libfc14audiodecoder_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libfc14audiodecoder_NAME));
-    }
     if (PLUGIN_libopenmpt_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libopenmpt_VERSION));
