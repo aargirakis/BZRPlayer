@@ -131,12 +131,6 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
         addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
     }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libfc14audiodecoder)
-    {
-        addInfo(tableInfo, &row, "Used Patterns", QString::number(SoundManager::getInstance().m_Info1->numUsedPatterns));
-        addInfo(tableInfo, &row, "Snd Mod Seqs", QString::number(SoundManager::getInstance().m_Info1->numSndModSeqs));
-        addInfo(tableInfo, &row, "Vol Mod Seqs", QString::number(SoundManager::getInstance().m_Info1->numVolModSeqs));
-    }
     else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libpac)
     {
         addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));

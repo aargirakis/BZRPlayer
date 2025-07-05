@@ -229,10 +229,10 @@ void Scroller::paint(QPainter* painter, QPaintEvent* event)
     painter->setOpacity(1);
 
     bool stereoEnabled = true;
-    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace || SoundManager::getInstance().m_Info1->plugin ==
-        PLUGIN_libfc14audiodecoder || SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
-        SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp || SoundManager::getInstance().m_Info1->plugin ==
-        PLUGIN_hivelytracker)
+    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace ||
+        SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
+        SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp ||
+        SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker)
     {
         stereoEnabled = false;
     }
