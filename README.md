@@ -152,7 +152,7 @@ Offline mode doesn't guarantee that the build will include the latest versions o
 
 - [BZR2 website](https://bzrplayer.blazer.nu)
 - [Patreon](https://www.patreon.com/bzrplayer)
-- [Discord](https://discord.com/channels/893241318120239124/893241440174477382)
+- [Discord](https://discord.gg/feEBce8cFe)
 
 ![bzr2 0 27](https://user-images.githubusercontent.com/10993634/201359947-2633341d-9ff6-4a59-bb9e-ce1794df9cba.png)
 
