@@ -93,14 +93,12 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_faad2_LIB, 99999);
     }
-    if (PLUGIN_mdxmini_LIB != "")
-    {
-        loadPlugin(PLUGIN_mdxmini_LIB, 99999);
-    }
+
     if (PLUGIN_zxtune_LIB != "")
     {
         loadPlugin(PLUGIN_zxtune_LIB, 99999);
     }
+
     if (PLUGIN_vgmplay_legacy_LIB != "")
     {
         loadPlugin(PLUGIN_vgmplay_legacy_LIB, 99999);
@@ -147,6 +145,12 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_libxmp_LIB, 99999);
     }
+
+    if (PLUGIN_mdxmini_LIB != "")
+    {
+        loadPlugin(PLUGIN_mdxmini_LIB, 99999);
+    }
+
     if (PLUGIN_adplug_LIB != "")
     {
         loadPlugin(PLUGIN_adplug_LIB, 99999);
