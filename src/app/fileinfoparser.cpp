@@ -277,6 +277,14 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
         addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
     }
+    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp)
+    {
+        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+        addInfo(tableInfo, &row, "Patters", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+        addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
+        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+    }
     else //use fmod to get the tag info
     {
         FMOD_TAG tag;
