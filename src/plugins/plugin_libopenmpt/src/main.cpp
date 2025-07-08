@@ -112,16 +112,30 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
     {
         return FMOD_ERR_FORMAT;
     }
-    char* smallBuffer;
-    smallBuffer = new char[4];
+
+    constexpr const char *farMagic = "FAR\xFE";
+    constexpr uint8_t farMagicOffset = 0;
+    constexpr uint8_t farMagicLength = 4;
+
+    constexpr const char *farCrLfEof = "\x0D\x0A\x1A";
+    constexpr uint8_t farCrLfEofOffset = 0x2C;
+    constexpr uint8_t farCrLfEofLength = 3;
+    constexpr uint8_t smallBufferLength = farCrLfEofOffset + farCrLfEofLength;
+
+    auto smallBuffer = new char[smallBufferLength];
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, smallBuffer, 4, &bytesread);
+    result = FMOD_CODEC_FILE_READ(codec, smallBuffer, smallBufferLength, &bytesread);
 
 
-    if ((smallBuffer[0] == 'M' && smallBuffer[1] == 'T' && smallBuffer[2] == 'h' && smallBuffer[3] == 'd') ||
-        smallBuffer[0] == 'R' && smallBuffer[1] == 'I' && smallBuffer[2] == 'F' && smallBuffer[3] == 'F')
-    //it's a midi file
+    if (
+        //skip midi file
+        (smallBuffer[0] == 'M' && smallBuffer[1] == 'T' && smallBuffer[2] == 'h' && smallBuffer[3] == 'd') ||
+        (smallBuffer[0] == 'R' && smallBuffer[1] == 'I' && smallBuffer[2] == 'F' && smallBuffer[3] == 'F') ||
+
+        //skip Farandole Composer module (as of today libxmp play this one really better)
+        (memcmp(&smallBuffer[farMagicOffset], farMagic, farMagicLength) == 0 &&
+         memcmp(&smallBuffer[farCrLfEofOffset], farCrLfEof, farCrLfEofLength) == 0))
     {
         delete[] smallBuffer;
         return FMOD_ERR_FORMAT;
