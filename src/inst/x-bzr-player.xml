@@ -202,6 +202,17 @@
         <glob pattern="*.d00"/>
         <glob pattern="*.d01"/>
     </mime-type>
+    <mime-type type="audio/x-far">
+        <comment>Farandole Composer audio</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="FAR\xFE" offset="0">
+                <match type="string" value="\x0D\x0A\x1A" offset="44"/>
+            </match>
+        </magic>
+        <glob pattern="*.fa"/>
+        <glob pattern="*.far"/>
+    </mime-type>
     <mime-type type="audio/x-fc">
         <comment>Future Composer audio</comment>
         <generic-icon name="audio-x-generic"/>
