@@ -30,9 +30,9 @@ settingsWindow::settingsWindow(QWidget* parent) :
     //    geo.setLeft(170);
     //    ui->groupBoxLibsid->setGeometry(geo);
 
-    //    geo = ui->groupBoxUADE->geometry();
+    //    geo = ui->groupBoxUade->geometry();
     //    geo.setLeft(170);
-    //    ui->groupBoxUADE->setGeometry(geo);
+    //    ui->groupBoxUade->setGeometry(geo);
 
     //    geo = ui->scrollArea->geometry();
     //    geo.setLeft(170);
@@ -125,15 +125,33 @@ settingsWindow::settingsWindow(QWidget* parent) :
 
     ui->SliderStereoSeparationOpenMPT->installEventFilter(this);
 
+    ui->comboBoxFreqUade->installEventFilter(this);
+    ui->comboBoxFreqUade->addItem("11025", "11025");
+    ui->comboBoxFreqUade->addItem("22050", "22050");
+    ui->comboBoxFreqUade->addItem("32000", "32000");
+    ui->comboBoxFreqUade->addItem("44100", "44100");
+    ui->comboBoxFreqUade->addItem("48000", "48000");
 
-    ui->sliderSilenceTimeOut->installEventFilter(this);
+    ui->comboBoxResamplerUade->installEventFilter(this);
+    ui->comboBoxResamplerUade->addItem("None", "none");
+    ui->comboBoxResamplerUade->addItem("Default", "default");
+    ui->comboBoxResamplerUade->addItem("Sinc (best for freqs > 44100)", "sinc");
 
-    ui->comboBoxReverb->installEventFilter(this);
+    ui->sliderPanningUade->installEventFilter(this);
+
+    ui->sliderSilenceTimeOutUade->installEventFilter(this);
+
+    ui->comboBoxFilterEmuModeUade->installEventFilter(this);
+    ui->comboBoxFilterEmuModeUade->addItem("A500", "a500");
+    ui->comboBoxFilterEmuModeUade->addItem("A1200", "a1200");
+
+    ui->comboBoxLedFilterUade->installEventFilter(this);
+    ui->comboBoxLedFilterUade->addItem("Auto", "Auto");
+    ui->comboBoxLedFilterUade->addItem("Always On", "Always On");
+    ui->comboBoxLedFilterUade->addItem("Always Off", "Always Off");
+
     ui->comboBox->installEventFilter(this);
-    ui->comboBoxFilter->installEventFilter(this);
-    ui->comboBoxFilter->addItem("Auto", "Auto");
-    ui->comboBoxFilter->addItem("Always On", "Always On");
-    ui->comboBoxFilter->addItem("Always Off", "Always Off");
+    ui->comboBoxReverb->installEventFilter(this);
 
     ui->comboBox->addItem("Default", FMOD_OUTPUTTYPE_AUTODETECT);
     ui->comboBox->addItem("No Sound", FMOD_OUTPUTTYPE_NOSOUND);
@@ -303,7 +321,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
         loadLibxmpSettings();
     }
 
-    loadUADESettings();
+    loadUadeSettings();
     loadlibopenmptSettings();
 
 
@@ -501,10 +519,10 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vio2sf_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vio2sf_NAME));
     }
-    if (PLUGIN_webuade_LIB != "")
+    if (PLUGIN_uade_LIB != "")
     {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_webuade_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_webuade_NAME));
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_uade_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_uade_NAME));
     }
     if (PLUGIN_zxtune_LIB != "")
     {
@@ -670,7 +688,11 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
             obj == ui->SliderNormalizerMaxAmp ||
             obj == ui->SliderNormalizerThreshold ||
             obj == ui->comboBoxReverb ||
-            obj == ui->comboBoxFilter ||
+            obj == ui->comboBoxFreqUade ||
+            obj == ui->comboBoxResamplerUade ||
+            obj == ui->sliderPanningUade ||
+            obj == ui->comboBoxFilterEmuModeUade ||
+            obj == ui->comboBoxLedFilterUade ||
             obj == ui->comboBox ||
             obj == ui->comboBoxStarsDirection ||
             obj == ui->sliderResolutionHeight ||
@@ -685,7 +707,7 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
             obj == ui->comboBoxDitherOpenMPT ||
             obj == ui->SliderStereoSeparationOpenMPT ||
             obj == ui->comboBoxHvscSonglengthsUpdateFrequency ||
-            obj == ui->sliderSilenceTimeOut ||
+            obj == ui->sliderSilenceTimeOutUade ||
             obj == ui->comboBoxEmulatorAdplug ||
             obj == ui->comboBoxFreqAdplug ||
             obj == ui->comboBoxPlaybackAdplug ||
@@ -737,7 +759,7 @@ void settingsWindow::on_buttonOK_clicked()
         saveLibxmpSettings();
     }
 
-    saveUADESettings();
+    saveUadeSettings();
     savelibopenmptSettings();
     mainWindow->SaveSettings();
 
@@ -964,7 +986,7 @@ void settingsWindow::loadLibxmpSettings()
     }
 }
 
-void settingsWindow::loadUADESettings()
+void settingsWindow::loadUadeSettings()
 {
     //read config from disk
     string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/uade.cfg";
@@ -979,11 +1001,17 @@ void settingsWindow::loadUADESettings()
     }
 
     //defaults
-    ui->comboBoxFilter->setCurrentIndex(0);
-    ui->checkBoxFilterEnabled->setChecked(false);
-    ui->sliderSilenceTimeOut->setValue(5);
-    ui->lineEditUADESonglength->setText("/uade.md5");
-    ui->checkBoxSongLengthUADE->setChecked(true);
+    ui->comboBoxFreqUade->setCurrentIndex(ui->comboBoxFreqUade->findData("48000"));
+    ui->comboBoxResamplerUade->setCurrentIndex(ui->comboBoxResamplerUade->findData("sinc"));
+    ui->checkBoxFilterEmuUade->setChecked(true);
+    ui->comboBoxFilterEmuModeUade->setCurrentIndex(1);
+    ui->comboBoxLedFilterUade->setCurrentIndex(0);
+    ui->sliderPanningUade->setValue(5);
+    ui->labelPanning4Uade->setText("0.5");
+    ui->sliderSilenceTimeOutUade->setValue(5);
+    ui->lineEditUadeSonglength->setText("/uade.md5");
+    ui->checkBoxSongLengthUade->setChecked(true);
+    ui->checkBoxContinuousPlaybackUade->setChecked(false);
 
     if (!useDefaults)
     {
@@ -995,68 +1023,94 @@ void settingsWindow::loadUADESettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("led_forced") == 0)
+                if (word.compare("frequency") == 0)
+                {
+                    int index = ui->comboBoxFreqUade->findData(value.c_str());
+                    ui->comboBoxFreqUade->setCurrentIndex(index);
+                }
+                else if (word.compare("resampler") == 0)
+                {
+                    int index = ui->comboBoxResamplerUade->findData(value.c_str());
+                    ui->comboBoxResamplerUade->setCurrentIndex(index);
+                }
+                else if (word.compare("filter_emu") == 0) {
+                    if (value.compare("true") == 0)
+                    {
+                        ui->checkBoxFilterEmuUade->setChecked(true);
+                    }
+                    else
+                    {
+                        ui->checkBoxFilterEmuUade->setChecked(false);
+                    }
+                }
+                else if (word.compare("filter_mode") == 0) {
+                    if (value.compare("a500") == 0)
+                    {
+                        ui->comboBoxFilterEmuModeUade->setCurrentIndex(0);
+                    }
+                    else
+                    {
+                        ui->comboBoxFilterEmuModeUade->setCurrentIndex(1);
+                    }
+                }
+                else if (word.compare("led_forced") == 0)
                 {
                     if (value.compare("auto") == 0)
                     {
-                        ui->comboBoxFilter->setCurrentIndex(0);
+                        ui->comboBoxLedFilterUade->setCurrentIndex(0);
                     }
                     else if (value.compare("on") == 0)
                     {
-                        ui->comboBoxFilter->setCurrentIndex(1);
+                        ui->comboBoxLedFilterUade->setCurrentIndex(1);
                     }
                     else
                     {
-                        ui->comboBoxFilter->setCurrentIndex(2);
+                        ui->comboBoxLedFilterUade->setCurrentIndex(2);
                     }
                 }
-                else if (word.compare("no_filter") == 0)
+                else if (word.compare("panning") == 0)
                 {
-                    if (value.compare("true") == 0)
-                    {
-                        ui->checkBoxFilterEnabled->setChecked(false);
-                    }
-                    else
-                    {
-                        ui->checkBoxFilterEnabled->setChecked(true);
-                    }
+                    ui->sliderPanningUade->setValue(stoi(value));
                 }
                 else if (word.compare("silence_timeout_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        ui->checkBoxSilenceTimeout->setChecked(true);
+                        ui->checkBoxSilenceTimeoutUade->setChecked(true);
                     }
                     else
                     {
-                        ui->checkBoxSilenceTimeout->setChecked(false);
+                        ui->checkBoxSilenceTimeoutUade->setChecked(false);
                     }
+                }
+                else if (word.compare("silence_timeout") == 0)
+                {
+                    ui->sliderSilenceTimeOutUade->setValue(atoi(value.c_str()));
+                }
+                else if (word.compare("continuous_playback") == 0)
+                {
+                    ui->checkBoxContinuousPlaybackUade->setChecked(value.compare("true") == 0);
                 }
                 else if (word.compare("uade_songlengths_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        ui->checkBoxSongLengthUADE->setChecked(true);
+                        ui->checkBoxSongLengthUade->setChecked(true);
                     }
                     else
                     {
-                        ui->checkBoxSongLengthUADE->setChecked(false);
+                        ui->checkBoxSongLengthUade->setChecked(false);
                     }
-                }
-
-                else if (word.compare("silence_timeout") == 0)
-                {
-                    ui->sliderSilenceTimeOut->setValue(atoi(value.c_str()));
                 }
                 else if (word.compare("uade_songlengths_path") == 0)
                 {
                     if (value == "")
                     {
-                        ui->lineEditUADESonglength->setText("/uade.md5");
+                        ui->lineEditUadeSonglength->setText("/uade.md5");
                     }
                     else
                     {
-                        ui->lineEditUADESonglength->setText(value.c_str());
+                        ui->lineEditUadeSonglength->setText(value.c_str());
                     }
                 }
             }
@@ -1224,7 +1278,7 @@ void settingsWindow::saveLibxmpSettings()
     ofs.close();
 }
 
-void settingsWindow::saveUADESettings()
+void settingsWindow::saveUadeSettings()
 {
     //save config to disk
     string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/uade.cfg";
@@ -1237,28 +1291,43 @@ void settingsWindow::saveUADESettings()
         return;
     }
 
+    QString filterMode;
 
-    QString filter;
-
-    if (ui->comboBoxFilter->currentIndex() == 0)
+    if (ui->comboBoxFilterEmuModeUade->currentIndex() == 0)
     {
-        filter = "auto";
-    }
-    else if (ui->comboBoxFilter->currentIndex() == 1)
-    {
-        filter = "on";
+        filterMode = "a500";
     }
     else
     {
-        filter = "off";
+        filterMode = "a1200";
     }
 
-    ofs << "uade_songlengths_path=" << ui->lineEditUADESonglength->text().toStdString().c_str() << "\n";
-    ofs << "led_forced=" << filter.toStdString().c_str() << "\n";
-    ofs << "no_filter=" << (ui->checkBoxFilterEnabled->isChecked()?"false":"true") << "\n";
-    ofs << "silence_timeout=" << ui->sliderSilenceTimeOut->value() << "\n";
-    ofs << "silence_timeout_enabled=" << (ui->checkBoxSilenceTimeout->isChecked()?"true":"false") << "\n";
-    ofs << "uade_songlengths_enabled=" << (ui->checkBoxSongLengthUADE->isChecked()?"true":"false") << "\n";
+    QString ledFilter;
+
+    if (ui->comboBoxLedFilterUade->currentIndex() == 0)
+    {
+        ledFilter = "auto";
+    }
+    else if (ui->comboBoxLedFilterUade->currentIndex() == 1)
+    {
+        ledFilter = "on";
+    }
+    else
+    {
+        ledFilter = "off";
+    }
+
+    ofs << "frequency=" << ui->comboBoxFreqUade->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "resampler=" << ui->comboBoxResamplerUade->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "filter_emu=" << (ui->checkBoxFilterEmuUade->isChecked()?"true":"false") << "\n";
+    ofs << "filter_mode=" << filterMode.toStdString().c_str() << "\n";
+    ofs << "led_forced=" << ledFilter.toStdString().c_str() << "\n";
+    ofs << "panning=" << ui->sliderPanningUade->value() << "\n";
+    ofs << "silence_timeout=" << ui->sliderSilenceTimeOutUade->value() << "\n";
+    ofs << "silence_timeout_enabled=" << (ui->checkBoxSilenceTimeoutUade->isChecked()?"true":"false") << "\n";
+    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackUade->isChecked()?"true":"false") << "\n";
+    ofs << "uade_songlengths_enabled=" << (ui->checkBoxSongLengthUade->isChecked()?"true":"false") << "\n";
+    ofs << "uade_songlengths_path=" << ui->lineEditUadeSonglength->text().toStdString().c_str() << "\n";
     ofs.close();
 }
 
@@ -1273,7 +1342,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
-        ui->groupBoxUADE->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME)
     {
@@ -1282,7 +1351,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
-        ui->groupBoxUADE->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME)
     {
@@ -1291,7 +1360,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(false);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
-        ui->groupBoxUADE->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME)
     {
@@ -1300,7 +1369,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(false);
         ui->groupBoxLibxmp->setHidden(true);
-        ui->groupBoxUADE->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME)
     {
@@ -1309,16 +1378,16 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(false);
-        ui->groupBoxUADE->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
     }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_webuade_NAME)
+    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_uade_NAME)
     {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
-        ui->groupBoxUADE->setHidden(false);
+        ui->groupBoxUade->setHidden(false);
     }
     else
     {
@@ -1327,7 +1396,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
-        ui->groupBoxUADE->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
     }
 }
 
@@ -1445,7 +1514,7 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxHivelytracker->setStyleSheet(stylesheet);
 
-    stylesheet = ui->groupBoxUADE->styleSheet();
+    stylesheet = ui->groupBoxUade->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
@@ -1454,7 +1523,7 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
-    ui->groupBoxUADE->setStyleSheet(stylesheet);
+    ui->groupBoxUade->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxLibsid->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -1653,7 +1722,7 @@ void settingsWindow::on_buttonVisualizer_clicked()
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
-    ui->groupBoxUADE->setHidden(true);
+    ui->groupBoxUade->setHidden(true);
 }
 
 
@@ -1668,7 +1737,7 @@ void settingsWindow::on_buttonGeneral_clicked()
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
-    ui->groupBoxUADE->setHidden(true);
+    ui->groupBoxUade->setHidden(true);
 }
 
 
@@ -1691,7 +1760,7 @@ void settingsWindow::on_buttonAppearance_clicked()
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
-    ui->groupBoxUADE->setHidden(true);
+    ui->groupBoxUade->setHidden(true);
 }
 
 void settingsWindow::on_buttonColorVUMeterTop_clicked()
@@ -2083,52 +2152,57 @@ void settingsWindow::on_checkBoxOnlyOneInstance_toggled(bool checked)
 }
 
 
-void settingsWindow::on_sliderSilenceTimeOut_valueChanged(int value)
+void settingsWindow::on_sliderPanningUade_valueChanged(int value)
+{
+    ui->labelPanning4Uade->setText(QString::number(static_cast<float>(value) / 10, 'f', 1));
+}
+
+void settingsWindow::on_sliderSilenceTimeOutUade_valueChanged(int value)
 {
     QString sec = "seconds";
     if (value == 1)
     {
         sec = "second";
     }
-    ui->labelSilenceTimeOut->setText(QString::number(value) + " " + sec);
+    ui->labelSilenceTimeOut2Uade->setText(QString::number(value) + " " + sec);
 }
 
 
-void settingsWindow::on_checkBoxSilenceTimeout_toggled(bool checked)
+void settingsWindow::on_checkBoxSilenceTimeoutUade_toggled(bool checked)
 {
-    bool checkedSilenceTimeout = ui->checkBoxSilenceTimeout->checkState() == Qt::Checked ? true : false;
+    bool checkedSilenceTimeout = ui->checkBoxSilenceTimeoutUade->checkState() == Qt::Checked ? true : false;
     if (checkedSilenceTimeout)
     {
-        ui->checkBoxSilenceTimeout->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelSilenceTimeOut->setEnabled(true);
-        ui->sliderSilenceTimeOut->setEnabled(true);
+        ui->checkBoxSilenceTimeoutUade->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelSilenceTimeOut2Uade->setEnabled(true);
+        ui->sliderSilenceTimeOutUade->setEnabled(true);
     }
     else
     {
-        ui->checkBoxSilenceTimeout->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelSilenceTimeOut->setEnabled(false);
-        ui->sliderSilenceTimeOut->setEnabled(false);
+        ui->checkBoxSilenceTimeoutUade->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelSilenceTimeOut2Uade->setEnabled(false);
+        ui->sliderSilenceTimeOutUade->setEnabled(false);
     }
 }
 
 
-void settingsWindow::on_buttonBrowseUADESonglengths_clicked()
+void settingsWindow::on_buttonBrowseUadeSonglengths_clicked()
 {
-    QString startFolder = ui->lineEditUADESonglength->text();
+    QString startFolder = ui->lineEditUadeSonglength->text();
     if (startFolder.compare("/uade.md5") == 0)
     {
-        startFolder = dataPath + PLUGIN_webuade_DIR + "/uade.md5";
+        startFolder = dataPath + PLUGIN_uade_DIR + "/uade.md5";
     }
     QString file = QFileDialog::getOpenFileName(this, "Choose your uade.md5", startFolder, "*.md5");
     if (!file.isEmpty())
     {
-        if (file.compare(dataPath + PLUGIN_webuade_DIR + "/uade.md5") == 0)
+        if (file.compare(dataPath + PLUGIN_uade_DIR + "/uade.md5") == 0)
         {
-            ui->lineEditUADESonglength->setText("/uade.md5");
+            ui->lineEditUadeSonglength->setText("/uade.md5");
         }
         else
         {
-            ui->lineEditUADESonglength->setText(file);
+            ui->lineEditUadeSonglength->setText(file);
         }
     }
 }
@@ -2703,29 +2777,33 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxFilterOpenMPT->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxFilterEnabled->isChecked())
+    if (ui->checkBoxFilterEmuUade->isChecked())
     {
-        ui->checkBoxFilterEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxFilterEmuUade->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxFilterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxFilterEmuUade->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxSilenceTimeout->isChecked())
+    if (ui->checkBoxSilenceTimeoutUade->isChecked())
     {
-        ui->checkBoxSilenceTimeout->setIcon(mainWindow->icons["checkbox-on"]);
-    }
-    else
-    {
-        ui->checkBoxSilenceTimeout->setIcon(mainWindow->icons["checkbox-off"]);
-    }
-    if (ui->checkBoxSongLengthUADE->isChecked())
-    {
-        ui->checkBoxSongLengthUADE->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxSilenceTimeoutUade->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxSongLengthUADE->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxSilenceTimeoutUade->setIcon(mainWindow->icons["checkbox-off"]);
+    }
+
+    ui->checkBoxContinuousPlaybackUade->setIcon(
+        mainWindow->icons[ui->checkBoxContinuousPlaybackUade->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
+    if (ui->checkBoxSongLengthUade->isChecked())
+    {
+        ui->checkBoxSongLengthUade->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBoxSongLengthUade->setIcon(mainWindow->icons["checkbox-off"]);
     }
     if (ui->checkBoxHvscSonglengthsEnabled->isChecked())
     {
@@ -2855,22 +2933,28 @@ void settingsWindow::on_checkBoxContinuousPlaybackHivelytracker_toggled()
         mainWindow->icons[(ui->checkBoxContinuousPlaybackHivelytracker->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
-void settingsWindow::on_checkBoxSongLengthUADE_toggled(bool checked)
+void settingsWindow::on_checkBoxContinuousPlaybackUade_toggled()
 {
-    bool checkedSongLengthUADE = ui->checkBoxSongLengthUADE->checkState() == Qt::Checked ? true : false;
-    if (checkedSongLengthUADE)
+    ui->checkBoxContinuousPlaybackUade->setIcon(
+        mainWindow->icons[(ui->checkBoxContinuousPlaybackUade->isChecked() ? "checkbox-on" : "checkbox-off")]);
+}
+
+void settingsWindow::on_checkBoxSongLengthUade_toggled(bool checked)
+{
+    bool checkedSongLengthUade = ui->checkBoxSongLengthUade->checkState() == Qt::Checked ? true : false;
+    if (checkedSongLengthUade)
     {
-        ui->checkBoxSongLengthUADE->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelUADESongFilePath->setEnabled(true);
-        ui->lineEditUADESonglength->setEnabled(true);
-        ui->buttonBrowseUADESonglengths->setEnabled(true);
+        ui->checkBoxSongLengthUade->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelUadeSongFilePath->setEnabled(true);
+        ui->lineEditUadeSonglength->setEnabled(true);
+        ui->buttonBrowseUadeSonglengths->setEnabled(true);
     }
     else
     {
-        ui->checkBoxSongLengthUADE->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelUADESongFilePath->setEnabled(false);
-        ui->lineEditUADESonglength->setEnabled(false);
-        ui->buttonBrowseUADESonglengths->setEnabled(false);
+        ui->checkBoxSongLengthUade->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelUadeSongFilePath->setEnabled(false);
+        ui->lineEditUadeSonglength->setEnabled(false);
+        ui->buttonBrowseUadeSonglengths->setEnabled(false);
     }
 }
 
@@ -2928,15 +3012,23 @@ void settingsWindow::on_checkBoxOnlyOneInstance_clicked()
 }
 
 
-void settingsWindow::on_checkBoxFilterEnabled_toggled(bool checked)
+void settingsWindow::on_checkBoxFilterEmuUade_toggled(bool checked)
 {
-    if (ui->checkBoxFilterEnabled->isChecked())
+    if (ui->checkBoxFilterEmuUade->isChecked())
     {
-        ui->checkBoxFilterEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxFilterEmuUade->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelFilterEmuModeUade->setEnabled(true);
+        ui->comboBoxFilterEmuModeUade->setEnabled(true);
+        ui->labelLedFilterUade->setEnabled(true);
+        ui->comboBoxLedFilterUade->setEnabled(true);
     }
     else
     {
-        ui->checkBoxFilterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxFilterEmuUade->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelFilterEmuModeUade->setEnabled(false);
+        ui->comboBoxFilterEmuModeUade->setEnabled(false);
+        ui->labelLedFilterUade->setEnabled(false);
+        ui->comboBoxLedFilterUade->setEnabled(false);
     }
 }
 

@@ -2076,7 +2076,16 @@ void MainWindow::PlaySong(int currentRow)
 
         int vol = ui->volumeSlider->value();
         SoundManager::getInstance().SetVolume((float)vol / 100);
+
+        /* TODO:
+         *  this workaround calculates the maximum pitch slider value (see ticket #623)
+         *  seems fmod can play at freqs slightly greater than 749700 (we should find the highest possible one)
+         */
+        float freq = SoundManager::getInstance().GetFrequency();
+        int pitchSliderMaxValue = 749700 / freq * 100;
+        ui->pitchSlider->setMaximum(pitchSliderMaxValue);
         SoundManager::getInstance().SetFrequency(ui->pitchSlider->value() / 100.0);
+
         addDebugText("Now after playing");
         //        addDebugText("startSubsongPlayList: " + QString::number(playlists[currentPlaylist].at(playlistNumber)->startSubsongPlayList));
         currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 3).data().toInt();
@@ -2358,7 +2367,7 @@ void MainWindow::updateInstruments()
                 }
             }
         }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_webuade)
+        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_uade)
         {
             if (SoundManager::getInstance().m_Info1->numSamples > 0)
             {

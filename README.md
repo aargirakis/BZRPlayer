@@ -86,18 +86,20 @@ As result of the building process `bzr-player-<any_version>-win64.exe` will be g
 
 In order to build BZR2 following packages are required:
 
-- On **Arch-based** distros:
+- On **Arch-based** distros:\
   `base-devel` `cmake` `dos2unix` `libglvnd` `ninja` `patchutils` `qt6-base` `qt-advanced-docking-system`
   `qt6-declarative` `qt6-svg` `sdl2-compat` `vulkan-headers`
 
 
-- On **Debian-based** distros:`build-essential` `cmake` `dos2unix` `libglvnd0` `libsdl2-dev` `libvulkan-dev`
+- On **Debian-based** distros:\
+  `build-essential` `cmake` `dos2unix` `libglvnd0` `libsdl2-dev` `libvulkan-dev`
   `ninja-build` `patchutils` `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
   [libqt-advanced-docking-system4.4.0-dev](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4.4.0_4.4.0-0_amd64.deb)
 
 
-- On **Fedora-based** distros: `cmake` `dos2unix` `ninja-build` `patchutils` `qt6-qtbase-devel` `qt6-qtsvg-devel`
-  `sdl2-compat-devel` `vulkan-headers`
+- On **Fedora-based** distros:\
+  `development-tools` (group), `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel`
+  `sdl2-compat-devel` `vulkan-headers` `which`
   [libqtadvanceddockingsystem-qt6-devel](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqtadvanceddockingsystem-qt6-devel-4.4.0-0.x86_64.rpm)
 
 ---
@@ -120,14 +122,17 @@ ninja -C cmake-build
 
 For running BZR2 following packages are required:
 
-- On **Arch-based** distros: `qt6-base` `qt6-svg` `qt-advanced-docking-system`
+- On **Arch-based** distros:\
+  `qt6-base` `qt6-svg` `qt-advanced-docking-system`
 
 
-- On **Debian-based** distros: `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
+- On **Debian-based** distros:\
+  `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
   [libqt-advanced-docking-system4.4.0](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4.4.0_4.4.0-0_amd64.deb)
 
 
-- On **Fedora-based** distros: `qt6-qtbase` `qt6-qtsvg`
+- On **Fedora-based** distros:\
+  `qt6-qtbase` `qt6-qtsvg`
   [libqtadvanceddockingsystem-qt6](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqtadvanceddockingsystem-qt6-4.4.0-0.x86_64.rpm)
 
 #### Generated binaries

@@ -45,6 +45,7 @@ public:
     void setNormalizeMaxAmp(int);
     void setNormalizeThreshold(int);
     void SetFrequency(float);
+    float GetFrequency();
     float getAudibility();
     int getSoundData(int channel);
     int getNumTags();

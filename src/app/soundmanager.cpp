@@ -82,9 +82,9 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_furnace_LIB, 1);
     }
-    if (PLUGIN_webuade_LIB != "")
+    if (PLUGIN_uade_LIB != "")
     {
-        loadPlugin(PLUGIN_webuade_LIB, 1);
+        loadPlugin(PLUGIN_uade_LIB, 1);
     }
 
     //loadPlugin("plugin_quartet.dll",1);
@@ -532,6 +532,11 @@ void SoundManager::SetPosition(unsigned int positon, FMOD_TIMEUNIT timeunit)
 void SoundManager::SetVolume(float vol)
 {
     FMOD_Channel_SetVolume(channel, vol);
+}
+
+float SoundManager::GetFrequency()
+{
+    return m_DefaultFrequency;
 }
 
 void SoundManager::SetFrequency(float percent)

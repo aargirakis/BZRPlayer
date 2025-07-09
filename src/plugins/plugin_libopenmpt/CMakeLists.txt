@@ -35,7 +35,7 @@ endif ()
 set(BUILD_BYPRODUCTS "bin/libopenmpt.a")
 download_patch_and_make(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches "${MAKE_ARGS}" ${BUILD_BYPRODUCTS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches "" "${MAKE_ARGS}" ${BUILD_BYPRODUCTS}
 )
 
 file(GLOB SOURCES
@@ -44,6 +44,8 @@ file(GLOB SOURCES
         ${CMAKE_SOURCE_DIR}/src/app/BaseRow.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
+
+add_dependencies(${PROJECT_NAME} ${NAME_VERSIONED})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/libopenmpt

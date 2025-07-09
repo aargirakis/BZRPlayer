@@ -16,8 +16,9 @@ jobs:
         run: |
           echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
           dnf update -y
-          dnf install -y cmake dos2unix ninja-build patchutils qt6-qtbase-private-devel qt6-qtsvg-devel rpm-build \
-                         rpmlint sdl2-compat-devel vulkan-headers
+          dnf group install -y development-tools
+          dnf install -y cmake dos2unix ninja-build qt6-qtbase-private-devel qt6-qtsvg-devel rpm-build \
+                         rpmlint sdl2-compat-devel vulkan-headers which
 
       - name: Build qt-ads 4.4.0
         run: |

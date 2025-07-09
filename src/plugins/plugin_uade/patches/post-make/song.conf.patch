@@ -1,0 +1,11 @@
+--- song.conf	2025-07-14 19:08:22.078491838 +0200
++++ song.conf	2025-07-15 07:57:29.950518235 +0200
+@@ -1,3 +1,8 @@
++md5=dc3eebe4cf99fd25286730fe4523c1dd    ignore_player_check comment: FredMon/- unknown/voodoo.fred
++md5=25640fcb437dba0d22214f38e426b415    ignore_player_check comment: FredMon/- unknown/voodoo-2.fred
++md5=9c561134ce626071f8b781b44b069469    ignore_player_check comment: FredMon/Ziphoid/fuzzball-ingame.fred
++md5=6a837119201b11003bbed437007ab631    ignore_player_check comment: FredMon/Ziphoid/fuzzball-title.fred
++md5=7d959535a41eb8716aee19e9a2922491    player=JochenHippel_UADE comment: Hippel/Jochen Hippel/prince.hip
+ md5=3bf3d506257b8b394444724a253ff26d	player=Jochen_Hippel_ST	 comment: Hippel ST/Jochen Hippel/airballtest.sog
+ md5=1cd1b3d1e9bc5568edb9375b92c1c515	player=Jochen_Hippel_ST	 comment: Hippel ST/Jochen Hippel/astaroth.sog
+ md5=8ee00ad1d1c6891c2b5f12c7d2e7e70a	player=Jochen_Hippel_ST	 comment: Hippel ST/Jochen Hippel/atomino ongame.sog

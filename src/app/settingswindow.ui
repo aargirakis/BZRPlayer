@@ -4342,7 +4342,7 @@ raster bars</string>
     </widget>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBoxUADE">
+  <widget class="QGroupBox" name="groupBoxUade">
    <property name="enabled">
     <bool>true</bool>
    </property>
@@ -4497,44 +4497,28 @@ QPushButton:hover
    <property name="flat">
     <bool>true</bool>
    </property>
-   <widget class="QCheckBox" name="checkBoxFilterEnabled">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>90</y>
-      <width>131</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>40</width>
-      <height>40</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_27">
+   <widget class="QLabel" name="labelFreqUade">
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>90</y>
-      <width>151</width>
-      <height>41</height>
+      <y>10</y>
+      <width>300</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Amiga Filter emulation</string>
+     <string>Frequency</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBoxFilter">
+   <widget class="QComboBox" name="comboBoxFreqUade">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>30</y>
-      <width>181</width>
+      <x>120</x>
+      <y>10</y>
+      <width>100</width>
       <height>31</height>
      </rect>
     </property>
@@ -4557,27 +4541,296 @@ QPushButton:hover
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_31">
+   <widget class="QLabel" name="labelResamplerUade">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>30</y>
-      <width>141</width>
+      <x>280</x>
+      <y>10</y>
+      <width>300</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Amiga LED Filter</string>
+     <string>Resampling method</string>
     </property>
    </widget>
-   <widget class="QSlider" name="sliderSilenceTimeOut">
+   <widget class="QComboBox" name="comboBoxResamplerUade">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>10</y>
+      <width>220</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelFilterEmuUade">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>70</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Amiga filter emulation</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxFilterEmuUade">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>70</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelFilterEmuModeUade">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>70</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Mode</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxFilterEmuModeUade">
     <property name="enabled">
      <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>190</y>
+      <x>315</x>
+      <y>70</y>
+      <width>100</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelLedFilterUade">
+    <property name="geometry">
+     <rect>
+      <x>485</x>
+      <y>70</y>
+      <width>130</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LED Filter</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxLedFilterUade">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>554</x>
+      <y>70</y>
+      <width>100</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelPanningUade">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>120</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="text">
+     <string>Panning (linear)</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelPanning2Uade">
+    <property name="geometry">
+     <rect>
+      <x>167</x>
+      <y>145</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Full Stereo</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelPanning3Uade">
+    <property name="geometry">
+     <rect>
+      <x>533</x>
+      <y>145</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Mono</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelPanning4Uade">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>120</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSlider" name="sliderPanningUade">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>130</y>
+      <width>351</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>10</number>
+    </property>
+    <property name="singleStep">
+     <number>1</number>
+    </property>
+    <property name="pageStep">
+     <number>1</number>
+    </property>
+    <property name="value">
+     <number>7</number>
+    </property>
+    <property name="sliderPosition">
+     <number>7</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSilenceTimeOut1Uade">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>195</y>
+      <width>261</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Silence Timeout</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxSilenceTimeoutUade">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>195</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QSlider" name="sliderSilenceTimeOutUade">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>205</y>
       <width>351</width>
       <height>22</height>
      </rect>
@@ -4598,14 +4851,14 @@ QPushButton:hover
      <enum>Qt::Orientation::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="labelSilenceTimeOut">
+   <widget class="QLabel" name="labelSilenceTimeOut2Uade">
     <property name="enabled">
      <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>180</y>
+      <x>600</x>
+      <y>195</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -4614,30 +4867,30 @@ QPushButton:hover
      <string>TextLabel</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_35">
+   <widget class="QLabel" name="labelContinuousPlaybackUade">
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>140</y>
+      <y>250</y>
       <width>261</width>
-      <height>41</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Silence Timeout</string>
+     <string>Continuous Playback</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBoxSilenceTimeout">
+   <widget class="QCheckBox" name="checkBoxContinuousPlaybackUade">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>180</y>
-      <width>121</width>
-      <height>41</height>
+      <x>230</x>
+      <y>250</y>
+      <width>151</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Enabled</string>
+     <string/>
     </property>
     <property name="iconSize">
      <size>
@@ -4646,27 +4899,43 @@ QPushButton:hover
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="buttonBrowseUADESonglengths">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>310</y>
-      <width>75</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelUADESongFilePath">
+   <widget class="QLabel" name="labelSongLengthUade">
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>309</y>
+      <y>295</y>
+      <width>180</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>UADE Songlengths Database</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxSongLengthUade">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>295</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelUadeSongFilePath">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>329</y>
       <width>231</width>
       <height>31</height>
      </rect>
@@ -4675,11 +4944,11 @@ QPushButton:hover
      <string>UADE Songlengths:</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEditUADESonglength">
+   <widget class="QLineEdit" name="lineEditUadeSonglength">
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>309</y>
+      <y>329</y>
       <width>430</width>
       <height>31</height>
      </rect>
@@ -4691,36 +4960,20 @@ QPushButton:hover
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBoxSongLengthUADE">
+   <widget class="QPushButton" name="buttonBrowseUadeSonglengths">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>270</y>
-      <width>121</width>
-      <height>41</height>
+      <x>610</x>
+      <y>330</y>
+      <width>75</width>
+      <height>29</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Enabled</string>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>40</width>
-      <height>40</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_37">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>230</y>
-      <width>261</width>
-      <height>41</height>
-     </rect>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
     <property name="text">
-     <string>UADE Songlengths Database</string>
+     <string>...</string>
     </property>
    </widget>
   </widget>
@@ -4731,7 +4984,7 @@ QPushButton:hover
    <property name="geometry">
     <rect>
      <x>170</x>
-     <y>220</y>
+     <y>250</y>
      <width>701</width>
      <height>361</height>
     </rect>

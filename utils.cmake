@@ -56,7 +56,7 @@ function(unpack file_to_unpack unpack_to unpack_to_parent_dir)
     set(EXTERNAL_SOURCE_DIR ${unpack_to} PARENT_SCOPE)
 endfunction()
 
-function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
+function(patch_sources target_name patches_dir target_dir)
     if (NOT patches_dir)
         return()
     endif ()
@@ -73,14 +73,14 @@ function(patch_sources target_name patches_dir EXTERNAL_SOURCE_DIR)
                     OUTPUT_VARIABLE FILE_TO_PATCH
             )
             execute_process(
-                    COMMAND dos2unix ${EXTERNAL_SOURCE_DIR}/${FILE_TO_PATCH}
+                    COMMAND dos2unix ${target_dir}/${FILE_TO_PATCH}
                     ERROR_QUIET
             )
         endif ()
 
         execute_process(
                 COMMAND patch
-                -ul -d ${EXTERNAL_SOURCE_DIR}
+                -ul -d ${target_dir}
                 -p0 -i ${PATCH_FILE}
                 RESULT_VARIABLE PATCH_RESULT
                 OUTPUT_VARIABLE PATCH_OUTPUT
@@ -140,12 +140,26 @@ function(download_patch_and_add target_name target_filename target_url
 endfunction()
 
 function(download_patch_and_make target_name target_filename target_url sha_256_hash
-        unpack_to_parent_dir target_unpacked_dir patches_dir make_args
-        build_byproducts)
+        unpack_to_parent_dir target_unpacked_dir patches_dir configure_command
+        make_args build_byproducts)
     download_and_patch(
             "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
             "${target_unpacked_dir}" "${patches_dir}"
     )
+
+    if (WIN32)
+        if (configure_command)
+            separate_arguments(configure_command UNIX_COMMAND "bash ${configure_command}")
+        else ()
+            set(configure_command rem)
+        endif ()
+    else ()
+        if (configure_command)
+            separate_arguments(configure_command UNIX_COMMAND "./${configure_command}")
+        else ()
+            set(configure_command :)
+        endif ()
+    endif ()
 
     if (WIN32)
         set(make_command mingw32-make AR=ar)
@@ -165,7 +179,7 @@ function(download_patch_and_make target_name target_filename target_url sha_256_
     ExternalProject_Add(
             ${target_name}
             SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
-            CONFIGURE_COMMAND ""
+            CONFIGURE_COMMAND ${configure_command}
             BUILD_COMMAND ${make_command}
             INSTALL_COMMAND ""
             BUILD_IN_SOURCE 1
