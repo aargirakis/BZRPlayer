@@ -149,31 +149,31 @@
 #define PLUGIN_tunes98_plug_NAME "@PLUGIN_tunes98_plug_NAME@"
 #define PLUGIN_tunes98_plug_VERSION "@PLUGIN_tunes98_plug_VERSION@"
 
-#define PLUGIN_v2m_player 29
+#define PLUGIN_uade 29
+#define PLUGIN_uade_LIB "@PLUGIN_uade_LIB@"
+#define PLUGIN_uade_NAME "@PLUGIN_uade_NAME@"
+#define PLUGIN_uade_VERSION "@PLUGIN_uade_VERSION@"
+#define PLUGIN_uade_DIR "@PLUGIN_uade_DIR@"
+
+#define PLUGIN_v2m_player 30
 #define PLUGIN_v2m_player_LIB "@PLUGIN_v2m-player_LIB@"
 #define PLUGIN_v2m_player_NAME "@PLUGIN_v2m-player_NAME@"
 #define PLUGIN_v2m_player_VERSION "@PLUGIN_v2m-player_VERSION@"
 
-#define PLUGIN_vgmplay_legacy 30
+#define PLUGIN_vgmplay_legacy 31
 #define PLUGIN_vgmplay_legacy_LIB "@PLUGIN_vgmplay-legacy_LIB@"
 #define PLUGIN_vgmplay_legacy_NAME "@PLUGIN_vgmplay-legacy_NAME@"
 #define PLUGIN_vgmplay_legacy_VERSION "@PLUGIN_vgmplay-legacy_VERSION@"
 
-#define PLUGIN_vgmstream 31
+#define PLUGIN_vgmstream 32
 #define PLUGIN_vgmstream_LIB "@PLUGIN_vgmstream_LIB@"
 #define PLUGIN_vgmstream_NAME "@PLUGIN_vgmstream_NAME@"
 #define PLUGIN_vgmstream_VERSION "@PLUGIN_vgmstream_VERSION@"
 
-#define PLUGIN_vio2sf 32
+#define PLUGIN_vio2sf 33
 #define PLUGIN_vio2sf_LIB "@PLUGIN_vio2sf_LIB@"
 #define PLUGIN_vio2sf_NAME "@PLUGIN_vio2sf_NAME@"
 #define PLUGIN_vio2sf_VERSION "@PLUGIN_vio2sf_VERSION@"
-
-#define PLUGIN_webuade 33
-#define PLUGIN_webuade_LIB "@PLUGIN_webuade_LIB@"
-#define PLUGIN_webuade_NAME "@PLUGIN_webuade_NAME@"
-#define PLUGIN_webuade_VERSION "@PLUGIN_webuade_VERSION@"
-#define PLUGIN_webuade_DIR "@PLUGIN_webuade_DIR@"
 
 #define PLUGIN_zxtune 34
 #define PLUGIN_zxtune_LIB "@PLUGIN_zxtune_LIB@"

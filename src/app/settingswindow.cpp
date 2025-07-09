@@ -501,10 +501,10 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vio2sf_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vio2sf_NAME));
     }
-    if (PLUGIN_webuade_LIB != "")
+    if (PLUGIN_uade_LIB != "")
     {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_webuade_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_webuade_NAME));
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_uade_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_uade_NAME));
     }
     if (PLUGIN_zxtune_LIB != "")
     {
@@ -1311,7 +1311,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibxmp->setHidden(false);
         ui->groupBoxUADE->setHidden(true);
     }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_webuade_NAME)
+    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_uade_NAME)
     {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -2117,12 +2117,12 @@ void settingsWindow::on_buttonBrowseUADESonglengths_clicked()
     QString startFolder = ui->lineEditUADESonglength->text();
     if (startFolder.compare("/uade.md5") == 0)
     {
-        startFolder = dataPath + PLUGIN_webuade_DIR + "/uade.md5";
+        startFolder = dataPath + PLUGIN_uade_DIR + "/uade.md5";
     }
     QString file = QFileDialog::getOpenFileName(this, "Choose your uade.md5", startFolder, "*.md5");
     if (!file.isEmpty())
     {
-        if (file.compare(dataPath + PLUGIN_webuade_DIR + "/uade.md5") == 0)
+        if (file.compare(dataPath + PLUGIN_uade_DIR + "/uade.md5") == 0)
         {
             ui->lineEditUADESonglength->setText("/uade.md5");
         }

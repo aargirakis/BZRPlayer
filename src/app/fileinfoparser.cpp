@@ -108,7 +108,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         addInfo(tableInfo, &row, "Length", SoundManager::getInstance().m_Info1->loopInfo.c_str());
         addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
     }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_webuade)
+    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_uade)
     {
         addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
     }
