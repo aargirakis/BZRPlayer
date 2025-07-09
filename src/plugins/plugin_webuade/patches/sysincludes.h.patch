@@ -1,7 +1,0 @@
---- src/include/sysincludes.h	2014-09-16 19:11:24.000000000 +0200
-+++ src/include/sysincludes.h	2024-09-21 11:33:59.423194942 +0200
-@@ -1,2 +1,2 @@
--#include <netinet/in.h>
--#include <sys/select.h>
-+//#include <netinet/in.h>
-+//#include <sys/select.h>

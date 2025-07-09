@@ -2358,7 +2358,7 @@ void MainWindow::updateInstruments()
                 }
             }
         }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_webuade)
+        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_uade)
         {
             if (SoundManager::getInstance().m_Info1->numSamples > 0)
             {
