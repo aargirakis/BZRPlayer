@@ -84,7 +84,49 @@ cmake_path(SET UADE_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${UADE_DATA_DI
 #TODO song.conf
 #TODO uadecore from uade is 5mb from audacious-uade is 1mb
 #TODO put uadecore in lib folder
-#TODO compare players & eagleplayer.conf
+#TODO compare players & eagleplayer.conf:
+
+#[[bzr2:  DariusZendeh prefixes=dz,dzp,mkiio
+matti: DariusZendeh prefixes=dz,mkiio
+
+bzr2:  MarkII prefixes=mk2,mkii,mii
+matti: MarkII prefixes=mk2,mkii
+
+bzr2:  PTK-Prowiz prefixes=mod_ntkamp epopt=type:m&k. always_ends
+matti: NoiseTracker prefixes=mod_ntkamp
+
+(snd is also for ZoundMonitor)
+bzr2:  RichardJoseph prefixes=rjp,sng
+matti: RichardJoseph prefixes=rj
+
+bzr2:  Quartet_ST prefixes=4v
+matti: Quartet_ST prefixes=qts
+
+bzr2:  ZoundMonitor prefixes=zm,sng
+matti: ZoundMonitor prefixes=sng
+
+bzr2:
+JochenHippel-CoSo prefixes=hipc,soc
+JochenHippel-CoSo prefixes=hipc
+JochenHippel prefixes=hip,mcmd_disabled detect_format_by_name
+Jochen_Hippel_ST prefixes=sog
+Hippel-ST_note prefixes=soc,hst
+
+matti:
+JochenHippel-CoSo_UADE prefixes=hipc
+JochenHippelCOSO prefixes=soc
+JochenHippel prefixes=hip,mcmd,sog
+Jochen_Hippel_ST prefixes=hst,sdc
+
+bzr2:  SoundTracker-Pro-I prefixes=stp
+matti: not found
+
+bzr2:  SymphoniePro prefixes=sym
+matti: not found
+
+bzr2:  Stonetracker prefixes=spm
+matti: not found]]
+
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
