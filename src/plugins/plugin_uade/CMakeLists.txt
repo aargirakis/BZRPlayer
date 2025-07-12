@@ -82,7 +82,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 cmake_path(SET UADE_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${UADE_DATA_DIR})
 
 #TODO song.conf
-#TODO uade.conf
 #TODO uadecore from uade is 5mb from audacious-uade is 1mb
 #TODO put uadecore in lib folder
 #TODO compare players & eagleplayer.conf
