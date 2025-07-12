@@ -92,7 +92,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${EXTERNAL_SOURCE_DIR}/players ${UADE_DATA_PATH}/players
         #
         #        #TODO where they come from?
-        #        #TODO why MusicMaker-4V, MusicMaker-8V & onEscapee should overwrite the uade bundled ones?
         #        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         #        ${CMAKE_CURRENT_SOURCE_DIR}/dist/players ${UADE_DATA_PATH}/players
         #
