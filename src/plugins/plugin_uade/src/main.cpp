@@ -334,14 +334,14 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     uade_config_set_option(uadeConfig, UC_SILENCE_TIMEOUT_VALUE,
                            plugin->silence_timeout_enabled ? plugin->silence_timeout.c_str() : "-1");
 
+
+    //TODO uadeConfig->no_filter = plugin->no_filter; //Turn filter emulation off.
+    //TODO none should grey out led filter and set it to always off
+    uade_config_set_option(uadeConfig, UC_FILTER_TYPE, "a1200"); //TODO "a500", "none"
+
     if (plugin->led_forced) {
         uade_config_set_option(uadeConfig, UC_FORCE_LED, plugin->led_state ? "on" : "off");
     }
-
-    //TODO
-    uadeConfig->no_filter = plugin->no_filter; //Turn filter emulation off.
-    uade_config_set_option(uadeConfig, UC_FILTER_TYPE, "a1200");
-
 
     uade_config_set_option(uadeConfig, UC_RESAMPLER, "sinc");
     uade_config_set_option(uadeConfig, UC_PANNING_VALUE, "0.7");
