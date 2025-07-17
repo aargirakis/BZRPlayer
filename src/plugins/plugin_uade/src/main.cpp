@@ -333,6 +333,13 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     uade_config_set_option(uadeConfig, UC_ENABLE_TIMEOUTS, nullptr);
     uade_config_set_option(uadeConfig, UC_SILENCE_TIMEOUT_VALUE,
                            plugin->silence_timeout_enabled ? plugin->silence_timeout.c_str() : "-1");
+
+    //TODO
+    uadeConfig->led_forced = plugin->led_forced; //Force led
+    uadeConfig->led_state = plugin->led_state; //Forced led state
+    //uade_config_set_option(uadeConfig, UC_FORCE_LED, nullptr);
+
+
     uade_config_set_option(uadeConfig, UC_FILTER_TYPE, "a1200");
     uade_config_set_option(uadeConfig, UC_RESAMPLER, "sinc");
     uade_config_set_option(uadeConfig, UC_PANNING_VALUE, "0.7");
@@ -341,8 +348,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     //TODO
     //uade_config_set_option(uadeConfig, UC_SUBSONG_TIMEOUT_VALUE, to_string(PRECALC_TIMEOUT).c_str());
 
-    uadeConfig->led_forced = plugin->led_forced; //Force led
-    uadeConfig->led_state = plugin->led_state; //Forced led state
     uadeConfig->no_filter = plugin->no_filter; //Turn filter emulation off.
 
     plugin->uadeState = uade_new_state(uadeConfig);
@@ -521,11 +526,11 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
         return FMOD_ERR_FILE_NOTFOUND;
     }
 
-    //TODO renderedBytes never reach value 0 when uade.md5 provides the song length
-    //TODO also this check is not needed anymore since we use uade_read_notification
-    //if (renderedBytes == 0) {
-    //    return FMOD_ERR_FILE_EOF;
-    //}
+    // renderedBytes never reach value 0 when uade.md5 provides the song length
+    // when song length is available, this check *might* be still useful if no UADE_NOTIFICATION_SONG_END is received
+    if (renderedBytes == 0) {
+        return FMOD_ERR_FILE_EOF;
+    }
 
     *read = plugin->waveformat.pcmblocksize;
 
