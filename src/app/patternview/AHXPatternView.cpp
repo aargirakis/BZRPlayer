@@ -1,4 +1,7 @@
+#include <QDir>
 #include "AHXPatternView.h"
+#include "visualizers/tracker.h"
+#include "mainwindow.h"
 
 AHXPatternView::AHXPatternView(Tracker* parent, unsigned int channels, int scale)
     : AbstractPatternView(parent, channels, scale)
@@ -86,6 +89,48 @@ void AHXPatternView::paintAbove(QPainter* painter, int height, int currentRow)
     painter->drawLine((320), 0, (320), height - 1);
 }
 
+void AHXPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+    //TODO
+    //some characters missing in font, copyright symbol, maybe others
+
+    m_height = 42;
+    int top = 0;
+    int left = 0;
+    QColor colorBase(140, 134, 146);
+    QColor colorHilite(255, 255, 255);
+    QColor colorShadow(82, 89, 99);
+
+
+    int imageWidth = 320;
+    int imageHeight = 42;
+
+    QRectF source(0, 0, imageWidth, imageHeight);
+    QRectF target(left, top, imageWidth, imageHeight);
+
+    QString imagepath = dataPath + RESOURCES_DIR +
+                        QDir::separator() + "trackerview" + QDir::separator() + "ahx_top.png";
+    QImage imageTop(imagepath);
+    painter->drawImage(target, imageTop, source);
+
+
+    QPen pen(colorHilite);
+    pen.setColor(colorHilite);
+    painter->setPen(pen);
+
+    for (int i = 0; i < info->modTrackPositions.size(); i++)
+    {
+        drawText(QString("%1").arg(info->modTrackPositions[i], 3, 10, QChar('0')), painter,
+                 left + (32) + (i * 72), top + (40),infoFont());
+    }
+
+    drawText(QString("%1").arg(m_currentPosition, 3, 10, QChar('0')), painter, left + 26, top + (11),infoFont());
+    drawText(QString("%1").arg(info->numOrders, 3, 10, QChar('0')), painter, left + 76, top + (11),infoFont());
+    drawText(QString("%1").arg(info->modPatternRestart, 3, 10, QChar('0')), painter, left + 126,top + (11),infoFont());
+    drawText(QString("%1").arg(info->modPatternRows, 3, 10, QChar('0')), painter, left + 176, top + (11),infoFont());
+    drawText(QString("%1").arg(info->numSubsongs, 3, 10, QChar('0')), painter, left + 219, top + (11),infoFont());
+    drawText("#blablbla", painter, left + (33), top + (24),infoFont());
+}
 void AHXPatternView::paintBelow(QPainter* painter, int height, int currentRow)
 {
     //current row marker
@@ -111,6 +156,8 @@ void AHXPatternView::paintBelow(QPainter* painter, int height, int currentRow)
     painter->drawLine((14), 0, (14), height - 1);
     painter->setPen(pen);
 }
+
+
 
 AHXPatternView::~AHXPatternView()
 {

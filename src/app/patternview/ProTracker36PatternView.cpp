@@ -182,6 +182,92 @@ void ProTracker36PatternView::paintBelow(QPainter* painter, int height, int curr
     painter->fillRect((8), (height / 2) - 16, 509, 14, colorBase);
 }
 
+void::ProTracker36PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+    m_height = 41;
+    QColor colorBase(170, 170, 170);
+    QColor colorHilite(255, 255, 255);
+    QColor colorShadow(51, 0, 0);
+    QColor colorBlue(0, 0, 187);
+    int top = 0;
+    int left = 0;
+    QRect rectBg(left, 0, 544, m_height);
+    painter->fillRect(rectBg, colorBase);
+
+    painter->setPen(colorShadow);
+
+    drawText("SONGNAME", painter, left + (4), top + (18), infoFont());
+    painter->setPen(colorHilite);
+    drawText("SONGNAME", painter, left + (3), top + (16), infoFont());
+    painter->setPen(QColor(colorShadow));
+    painter->setPen(colorBlue);
+
+    drawText(QString("%1").arg(info->title.c_str(), -20, QChar('_')), painter, left + (65), top + (18), infoFont2());
+    painter->setPen(colorShadow);
+
+    drawText("POSITION", painter, left + (234), top + (18), infoFont());
+    painter->setPen(colorHilite);
+    drawText("POSITION", painter, left + (233), top + (16), infoFont());
+    painter->setPen(colorShadow);
+    painter->setPen(QColor(colorShadow));
+    painter->setPen(colorBlue);
+
+    drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + (296), top + (18), infoFont2());
+    painter->setPen(colorShadow);
+
+    drawText("PATTERN", painter, left + (339), top + (18), infoFont());
+    painter->setPen(colorHilite);
+    drawText("PATTERN", painter, left + (338), top + (16), infoFont());
+    painter->setPen(colorBlue);
+
+    drawText(QString("%1").arg(m_currentPattern, 4, 10, QChar('0')), painter, left + (401), top + (18), infoFont2());
+    painter->setPen(colorShadow);
+
+    drawText("LENGTH", painter, left + (444), top + (18), infoFont());
+    painter->setPen(colorHilite);
+    drawText("LENGTH", painter, left + (443), top + (16), infoFont());
+    painter->setPen(QColor(colorShadow));
+    painter->setPen(colorBlue);
+
+    drawText(QString("%1").arg(info->numOrders, 4, 10, QChar('0')), painter, left + (506), top + (18), infoFont2());
+
+    painter->setPen(colorShadow);
+    drawText("POS", painter, left + (13), top + (38), infoFont());
+    painter->setPen(colorHilite);
+    drawText("POS", painter, left + (12), top + (36), infoFont());
+    for (int i = 0; i < 4; i++)
+    {
+        painter->setPen(QColor(colorShadow));
+        drawText("TRACK #" + QString::number(i + 1), painter, left + (69 + (120 * i)), top + (38), infoFont(), 1);
+        painter->setPen(colorHilite);
+        drawText("TRACK #" + QString::number(i + 1), painter, left + (68 + (120 * i)), top + (36), infoFont(), 1);
+    }
+
+    painter->fillRect(left, 0, 1, m_height, colorHilite);
+    painter->fillRect(left + 543, 0, 1, m_height, colorShadow);
+    painter->fillRect(left, 0, 543, 2, colorHilite);
+
+    painter->fillRect(left, 20, 543, 2, colorShadow);
+    painter->fillRect(left, 22, 543, 2, colorHilite);
+
+    //bevels
+    painter->fillRect(left + 228, 2, 1, 18, colorShadow);
+    painter->fillRect(left + 229, 2, 1, 18, colorHilite);
+    painter->fillRect(left + 333, 2, 1, 18, colorShadow);
+    painter->fillRect(left + 334, 2, 1, 18, colorHilite);
+    painter->fillRect(left + 438, 2, 1, 18, colorShadow);
+    painter->fillRect(left + 439, 2, 1, 18, colorHilite);
+    //bevels antialiasing
+    painter->fillRect(left, 20, 1, 2, colorBase);
+    painter->fillRect(left + 228, 0, 1, 2, colorBase);
+    painter->fillRect(left + 229, 20, 1, 2, colorBase);
+    painter->fillRect(left + 333, 0, 1, 2, colorBase);
+    painter->fillRect(left + 334, 20, 1, 2, colorBase);
+    painter->fillRect(left + 438, 0, 1, 2, colorBase);
+    painter->fillRect(left + 439, 20, 1, 2, colorBase);
+    painter->fillRect(left + 543, 0, 1, 2, colorBase);
+    painter->fillRect(left + 543, 22, 1, 2, colorBase);
+}
 ProTracker36PatternView::~ProTracker36PatternView()
 {
 }

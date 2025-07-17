@@ -10,8 +10,7 @@ class Tracker
 {
 public:
     Tracker();
-    void drawText(QString, QPainter*, int, int, int letterSpacing = 0);
-    void setFont(BitmapFont);
+
     void paint(QPainter* painter, QPaintEvent* event);
     void drawPattern(QPainter* painter);
     void drawVUMeters(QPainter* painter);

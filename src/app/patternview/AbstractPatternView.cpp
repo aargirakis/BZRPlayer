@@ -244,6 +244,7 @@ QFont AbstractPatternView::fontRownumber()
     return m_font;
 }
 
+
 void AbstractPatternView::paintAbove(__attribute__((unused)) QPainter* painter, __attribute__((unused)) int height,
                                      __attribute__((unused)) int currentRow)
 {
@@ -254,6 +255,58 @@ void AbstractPatternView::paintBelow(__attribute__((unused)) QPainter* painter, 
 {
 }
 
+void AbstractPatternView::paintTop(QPainter* painter, Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+
+}
+void AbstractPatternView::drawText(QString text, QPainter* painter, int numPixels, int yPixelPosition, BitmapFont font, int letterSpacing)
+{
+    if (yPixelPosition >height() || numPixels > painter->window().width() / m_scale || yPixelPosition <
+                                                                                       0 || yPixelPosition > painter->window().height() / m_scale)
+    {
+        return;
+    }
+    //Hack for Hivelytracker which uses a true type font
+    if ((m_font.family() != "DejaVu Sans Mono"))
+    {
+        int x = numPixels;
+        for (int i = 0; i < text.length(); i++)
+        {
+            if (font.m_characterWidths.isEmpty())
+            {
+                x = numPixels + (font.m_fontWidth * i);
+                if (letterSpacing != 0)
+                {
+                    x += letterSpacing * i;
+                }
+                int y = yPixelPosition - (font.m_fontHeight);
+                painter->drawPixmap(x, y, font.m_fontWidth, font.m_fontHeight, font.m_characterMap,
+                                    font.m_characterPositions.value(text.at(i)).x(),
+                                    font.m_characterPositions.value(text.at(i)).y(), font.m_fontWidth,
+                                    font.m_fontHeight);
+            }
+                //variable width font
+            else
+            {
+                if (letterSpacing != 0)
+                {
+                    x += letterSpacing * i;
+                }
+                int y = yPixelPosition - (font.m_fontHeight);
+                painter->drawPixmap(x, y, font.m_characterWidths.value(text.at(i)), font.m_fontHeight,
+                                    font.m_characterMap, font.m_characterPositions.value(text.at(i)).x(),
+                                    font.m_characterPositions.value(text.at(i)).y(),
+                                    font.m_characterWidths.value(text.at(i)), font.m_fontHeight);
+                x += font.m_characterWidths.value(text.at(i));
+            }
+        }
+    }
+    else
+    {
+        painter->setFont(m_font);
+        painter->drawText(numPixels, yPixelPosition, text);
+    }
+}
 /* check which channel x, y is */
 int AbstractPatternView::getChannelClicked(int x, int y)
 {
@@ -349,4 +402,18 @@ QString AbstractPatternView::rowNumber(int rowNumber)
     QString rowNumberStr = QString::number(rowNumber + rowNumberOffset, base).toUpper();
     rowNumberStr = rowNumberPad && rowNumberStr.length() == 1 ? "0" + rowNumberStr : rowNumberStr;
     return rowNumberStr;
+}
+void AbstractPatternView::drawVerticalEmboss(int xPos, int yPos, int height, QColor hilite, QColor shadow, QColor base,
+                                 QPainter* painter, bool left, bool right)
+{
+    if (left)
+    {
+        painter->fillRect(xPos, (1 + yPos), 1, (height - 1), shadow);
+        painter->fillRect(xPos, (yPos), 1, 1, base);
+    }
+    if (right)
+    {
+        painter->fillRect(xPos + (1), (yPos), 1, height, hilite);
+        painter->fillRect(xPos + (1), (yPos + height), 1, 1, base);
+    }
 }

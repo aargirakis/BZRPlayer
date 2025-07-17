@@ -47,7 +47,9 @@ if (NOT WIN32)
     endif ()
 endif ()
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES}
+        patternview/Text.cpp
+        patternview/Text.h)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_PREFIX_PATH}/include/qtadvanceddocking-qt${QT_VERSION_MAJOR}

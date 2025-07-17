@@ -31,15 +31,15 @@ void OctaMED44ChanPatternView::paintAbove(QPainter* painter, int height, int cur
     painter->setPen(pen);
 
     //vumeter bottom and channel numbers
-    Tracker* t = (Tracker*)this->parent();
+
     for (unsigned int i = 0; i < m_channels; i++)
     {
         painter->fillRect((152) + 144 * i, (height) - (22), 4, 2, QColor(170, 170, 170));
         painter->fillRect((156) + 144 * i, (height) - (22), 16, 2, QColor(0, 136, 0));
         painter->fillRect((172) + 144 * i, (height) - (22), 4, 2, QColor(187, 187, 187));
-        t->drawText(QString::number(i), painter, (120 + (i * 144)), 44);
+        drawText(QString::number(i), painter, (120 + (i * 144)), 44, bitmapFont());
     }
-    t->drawText("4", painter, 56, 60);
+    drawText("4", painter, 56, 60, bitmapFont());
     //channel separators
     for (unsigned int chan = 0; chan < m_channels - 1; chan++)
     {
@@ -79,7 +79,8 @@ void OctaMED44ChanPatternView::paintAbove(QPainter* painter, int height, int cur
 
     painter->setPen(colorHilite);
 
-    t->drawText(QString(t->m_info->title.c_str()).left(25), painter, 406, height - 2);
+    Tracker* t = (Tracker*)this->parent();
+    drawText(QString(t->m_info->title.c_str()).left(25), painter, 406, height - 2,bitmapFont());
 }
 
 void OctaMED44ChanPatternView::paintBelow(QPainter* painter, int height, int currentRow)

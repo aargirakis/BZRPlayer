@@ -1,4 +1,6 @@
+#include <QDir>
 #include "ProTracker1PatternView.h"
+#include "mainwindow.h"
 
 ProTracker1PatternView::ProTracker1PatternView(Tracker* parent, unsigned int channels, int scale)
     : AbstractPatternView(parent, channels, scale)
@@ -184,7 +186,117 @@ void ProTracker1PatternView::paintBelow(QPainter* painter, int height, int curre
     //1 pixel antialiasing
     painter->fillRect(317, 32, 1, 1, colorBase);
 }
+void::ProTracker1PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+    m_height = 32;
+    QColor colorBase(136, 136, 136);
+    QColor colorHilite(187, 187, 187);
+    QColor colorShadow(85, 85, 85);
+    int top = 8;
+    int left = 0;
+    QRect rectBg(left, 0, 319, m_height);
+    painter->fillRect(rectBg, colorBase);
 
+    painter->setPen(colorShadow);
+    drawText("POSITION", painter, left + (4), top + 1, infoFont(), -1);
+    painter->setPen(QColor(0, 0, 0));
+
+    drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + 71, top + 0, infoFont());
+
+    painter->setPen(colorHilite);
+    drawText("POSITION", painter, left + (3), top, infoFont(), -1);
+    painter->setPen(colorShadow);
+    drawText("PATTERN", painter, left + (111), top + 1, infoFont(), -1);
+    painter->setPen(colorHilite);
+    drawText("PATTERN", painter, left + (110), top + 0, infoFont(), -1);
+    painter->setPen(QColor(0, 0, 0));
+
+    drawText(QString("%1").arg(m_currentPattern, 4, 10, QChar('0')), painter, left + (178), top + 0, infoFont());
+
+    painter->setPen(colorShadow);
+    drawText("LENGTH", painter, left + (218), top + 1, infoFont(), -1);
+    painter->setPen(colorHilite);
+    drawText("LENGTH", painter, left + (217), top + 0, infoFont(), -1);
+    painter->setPen(QColor(0, 0, 0));
+
+    drawText(QString("%1").arg(info->numOrders, 4, 10, QChar('0')), painter, left + (285), top + 0, infoFont());
+
+    painter->setPen(colorShadow);
+    drawText("SONGNAME:", painter, left + (73), top + (11) + 1, infoFont(), -1);
+    painter->setPen(colorHilite);
+    drawText("SONGNAME:", painter, left + (72), top + (11), infoFont(), -1);
+    painter->setPen(QColor(0, 0, 0));
+
+    drawText(QString("%1").arg(info->title.c_str(), -20, QChar('_')).toUpper(), painter, left + (141),
+             top + (11),infoFont());
+
+    QRectF sourcePrev(0, 0, 6, 7);
+    QRectF sourceNext(6, 0, 6, 7);
+    QRectF targetPrev(left + 3, 24, 6, 7);
+    QRectF targetNext(left + 14, 24, 6, 7);
+    QString imagepath = dataPath + RESOURCES_DIR +
+                        QDir::separator() + "trackerview" + QDir::separator() + "protracker_top.png";
+    QImage imageTop(imagepath);
+    painter->drawImage(targetPrev, imageTop, sourcePrev);
+    painter->drawImage(targetNext, imageTop, sourceNext);
+
+    painter->setPen(colorShadow);
+    drawText("SAMPLENAME:", painter, left + (59), top + (22) + 1, infoFont(), -1);
+    painter->setPen(colorHilite);
+    drawText("SAMPLENAME:", painter, left + (58), top + (22), infoFont(), -1);
+    painter->setPen(QColor(0, 0, 0));
+
+    Tracker* t = (Tracker*)this->parent();
+    drawText(QString("%1").arg(getCurrentSample() + 1, 2, 10, QChar('0')), painter,
+             left + (24), top + (22),infoFont());
+    drawText(
+            QString("%1").arg(t->m_info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
+                    toUpper(), painter, left + 141, top + 22,infoFont());
+    m_pen.setWidth(1);
+
+    m_pen.setColor(colorHilite);
+    painter->setPen(m_pen);
+    painter->drawLine(left, 0, left + (319), 0);
+
+    m_pen.setColor(colorShadow);
+    painter->setPen(m_pen);
+    painter->drawLine(left, 10, left + 319, 10);
+
+    m_pen.setColor(colorHilite);
+    painter->setPen(m_pen);
+    painter->drawLine(left, 11, left + 319, 11);
+
+    m_pen.setColor(colorShadow);
+    painter->setPen(m_pen);
+    painter->drawLine(left, 21, left + 319, 21);
+
+    m_pen.setColor(colorHilite);
+    painter->setPen(m_pen);
+    painter->drawLine(left, 22, left + 319, 22);
+
+
+    drawVerticalEmboss(left + 10, 22, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 21, 22, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 44, 22, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 68, 0, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 107, 0, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 175, 0, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 214, 0, 10, colorHilite, colorShadow, colorBase, painter);
+    drawVerticalEmboss(left + 281, 0, 10, colorHilite, colorShadow, colorBase, painter);
+
+    //far left emboss
+    drawVerticalEmboss(left - 1, 0, 10, colorHilite, colorShadow, colorBase, painter, false, true);
+    drawVerticalEmboss(left - 1, 11, 10, colorHilite, colorShadow, colorBase, painter, false, true);
+    //drawVerticalEmboss(left-1,22,16,colorHilite,colorShadow,colorBase,painter,false,true);
+    m_pen.setColor(colorHilite);
+    painter->setPen(m_pen);
+    painter->drawLine(left + 1, 22, left + 1, 33);
+
+    //far right emboss
+    drawVerticalEmboss(left + (319), 0, 11, colorHilite, colorShadow, colorBase, painter, true, false);
+    drawVerticalEmboss(left + (319), 11, 10, colorHilite, colorShadow, colorBase, painter, true, false);
+    drawVerticalEmboss(left + (319), 22, 10, colorHilite, colorShadow, colorBase, painter, true, false);
+}
 ProTracker1PatternView::~ProTracker1PatternView()
 {
 }

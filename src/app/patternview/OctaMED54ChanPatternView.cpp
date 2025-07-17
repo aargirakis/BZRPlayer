@@ -62,15 +62,14 @@ void OctaMED54ChanPatternView::paintAbove(QPainter* painter, int height, int cur
     QPen pen(colorWhite);
     painter->setPen(pen);
     painter->setFont(font);
-    Tracker* t = (Tracker*)this->parent();
-    t->setFont(infoFont());
+
     //vumeter bottom and channel numbers
     for (unsigned int i = 0; i < m_channels; i++)
     {
         painter->fillRect((152) + 144 * i, (height) - (8), 4, 2, QColor(170, 170, 170));
         painter->fillRect((156) + 144 * i, (height) - (8), 16, 2, QColor(0, 136, 0));
         painter->fillRect((172) + 144 * i, (height) - (8), 4, 2, QColor(187, 187, 187));
-        t->drawText(QString::number(i), painter, (120 + (i * 144)), 70);
+        drawText(QString::number(i), painter, (120 + (i * 144)), 70,infoFont());
     }
     painter->fillRect(0, height - 6, 640, 6, QColor(0, 0, 0));
     painter->fillRect(0, height - 6, 639, 2, colorWhite);
@@ -79,7 +78,7 @@ void OctaMED54ChanPatternView::paintAbove(QPainter* painter, int height, int cur
     painter->fillRect(1, height - 2, 1, 2, QColor(0, 0, 0));
 
 
-    t->drawText("4", painter, 56, 86);
+    drawText("4", painter, 56, 86,infoFont());
     //channel separators
     for (unsigned int chan = 0; chan < m_channels - 1; chan++)
     {

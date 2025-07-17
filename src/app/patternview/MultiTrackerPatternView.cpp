@@ -1,4 +1,5 @@
 #include "MultiTrackerPatternView.h"
+#include "visualizers/tracker.h"
 
 MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
     : AbstractPatternView(parent, channels, scale)
@@ -141,5 +142,23 @@ QString MultiTrackerPatternView::note(BaseRow* row)
     else
     {
         return QString(NOTES[note]).replace("-", "'");
+    }
+}
+void::MultiTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+    m_height = 25;
+    QColor colorBase(0, 0, 85);
+
+    Tracker* t = (Tracker*)this->parent();
+    int numChannels = t->m_info->numChannels;
+    int top = 16;
+    int left = 0;
+    QRect rectBg(left, 0, (64 + (numChannels * 72)), m_height);
+    painter->fillRect(rectBg, colorBase);
+
+    painter->setPen(QColor(255, 255, 255));
+    for (int i = 0; i < numChannels; i++)
+    {
+        drawText("Track:" + QString::number(i + 1), painter, left + ((40 + i * 72)), top,infoFont());
     }
 }

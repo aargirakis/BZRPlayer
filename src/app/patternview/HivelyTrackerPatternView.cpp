@@ -1,5 +1,6 @@
 #include "HivelyTrackerPatternView.h"
-
+#include "mainwindow.h"
+#include <QDir>
 HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
     : AbstractPatternView(parent, channels, scale)
 {
@@ -127,6 +128,123 @@ void HivelyTrackerPatternView::paintAbove(QPainter* painter, int height, int cur
     painter->fillRect(0, (height) - 1, (28) + m_channels * 120, 1, QBrush(gradient6)); //gradient
 }
 
+void::HivelyTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
+{
+    m_height = 104;
+    int top = 2;
+    int left = 0;
+    QColor colorBase(170, 204, 238);
+    QColor colorShadow(17, 51, 85);
+
+
+    QRect rectBg(0, 0, m_width, m_height);
+    painter->fillRect(rectBg, QColor(0, 0, 0));
+
+
+    QString imagepath = dataPath + RESOURCES_DIR +
+                        QDir::separator() + "trackerview" + QDir::separator() + "hively_top.png";
+    QImage imageTop(imagepath);
+
+
+    QRectF sourceTrack(0, 0, 120, 25);
+
+    painter->setFont(m_font);
+    QPen pen(colorBase);
+    for (int i = 0; i < info->modTrackPositions.size(); i++)
+    {
+        QRectF targetTrack(left + (15) + (i * 120), m_height - 25, 120, 25);
+        painter->drawImage(targetTrack, imageTop, sourceTrack);
+        pen.setColor(colorBase);
+        painter->setPen(pen);
+        m_font.setLetterSpacing(QFont::AbsoluteSpacing, 0);
+        painter->setFont(m_font);
+        painter->drawText(left + (108) + (i * 120), m_height - 8,
+                          QString("%1").arg(info->modTrackPositions[i], 3, 10, QChar('0')));
+        pen.setColor(colorShadow);
+        painter->setPen(pen);
+        m_font.setLetterSpacing(QFont::AbsoluteSpacing, -1);
+        painter->setFont(m_font);
+        painter->drawText(left + (25) + (i * 120), m_height - 7, "Track " + QString::number(i + 1));
+        pen.setColor(QColor(255, 255, 255));
+        painter->setPen(pen);
+        painter->drawText(left + (24) + (i * 120), m_height - 8, "Track " + QString::number(i + 1));
+    }
+    m_font.setLetterSpacing(QFont::AbsoluteSpacing, 0);
+
+    QFont fontsmall = m_font;
+    fontsmall.setStyleStrategy(QFont::NoAntialias);
+
+    //song square
+    QRectF sourceSongs(166, 0, 337, 78);
+    QRectF targetSongs(left + 265, 0, 337, 78);
+    painter->drawImage(targetSongs, imageTop, sourceSongs);
+
+    //pattern, position etc. square
+    QRectF sourceInfo(503, 0, 263, 78);
+    QRectF targetInfo(left, 0, 263, 78);
+    painter->drawImage(targetInfo, imageTop, sourceInfo);
+
+
+    fontsmall.setPixelSize(13);
+    painter->setFont(fontsmall);
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 8, top + (24), "Position");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 7, top + (23), "Position");
+
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 8, top + (44), "Length");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 7, top + (43), "Length");
+
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 8, top + (64), "Restart");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 7, top + (63), "Restart");
+
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 130, top + (24), "Track Len");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 129, top + (23), "Track Len");
+
+    pen.setColor(colorShadow);
+    painter->setPen(pen);
+    painter->drawText(left + 130, top + (44), "Subsongs");
+    pen.setColor(QColor(255, 255, 255));
+    painter->setPen(pen);
+    painter->drawText(left + 129, top + (43), "Subsongs");
+
+
+    painter->setFont(m_font);
+    pen.setColor(colorBase);
+    painter->setPen(pen);
+    painter->drawText(left + (96), top + (24), QString("%1").arg(m_currentPosition, 3, 10, QChar('0')));
+    painter->drawText(left + (96), top + (44), QString("%1").arg(info->numOrders, 3, 10, QChar('0')));
+    painter->drawText(left + (96), top + (64),
+                      QString("%1").arg(info->modPatternRestart, 3, 10, QChar('0')));
+    painter->drawText(left + (217), top + (24),
+                      QString("%1").arg(info->modPatternRows, 3, 10, QChar('0')));
+    painter->drawText(left + (217), top + (44), QString("%1").arg(info->numSubsongs, 3, 10, QChar('0')));
+    painter->drawText(left + (275), top + (43), QString(info->title.c_str()));
+
+    //far left frame
+    QRectF sourceLeftFrameSource(0, 25, 25, 25);
+    QRectF targetLeftFrameTarget(left, 79, 25, 25);
+    painter->drawImage(targetLeftFrameTarget, imageTop, sourceLeftFrameSource);
+
+    //right frame
+    QRectF rightFrameSource(18, 25, 13, 25);
+    QRectF rightFrameTarget(left + info->modTrackPositions.size() * 120 + (15), 79, 13, 25);
+    painter->drawImage(rightFrameTarget, imageTop, rightFrameSource);
+}
 HivelyTrackerPatternView::~HivelyTrackerPatternView()
 {
 }

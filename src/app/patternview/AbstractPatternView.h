@@ -3,6 +3,7 @@
 #include <QPainter>
 #include "BaseRow.h"
 #include "bitmapfont.h"
+#include "info.h"
 
 class Tracker;
 class AbstractPatternView
@@ -40,6 +41,10 @@ public:
 
     virtual void paintAbove(QPainter* painter, int height, int currentRow);
     virtual void paintBelow(QPainter* painter, int height, int currentRow);
+    virtual void paintTop(QPainter* painter, Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow);
+    virtual void drawText(QString text, QPainter* painter, int numPixels, int yPixelPosition, BitmapFont font, int letterSpacing=0);
+    virtual void drawVerticalEmboss(int xPos, int yPos, int height, QColor hilite, QColor shadow, QColor base,
+                                         QPainter* painter, bool left = true, bool right = true);
 
     virtual unsigned int height(){return m_height;}
     virtual unsigned int width(){return m_width;}
@@ -142,6 +147,7 @@ public:
     virtual unsigned int topHeight(){return m_topHeight;}
 
 
+
     virtual ~AbstractPatternView();
 
     QString emptyNote(){return m_emptyNote;}
@@ -174,6 +180,7 @@ protected:
     unsigned int m_bottomFrameHeight;
     int m_scale;
 
+    QPen m_pen;
     int m_fontWidth;
     int m_fontHeight;
     int m_fontWidthEffects;
