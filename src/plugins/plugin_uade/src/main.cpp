@@ -72,7 +72,7 @@ public:
     int led_forced;
     int led_state;
     int no_filter;
-    int silence_timeout;
+    string silence_timeout;
     bool silence_timeout_enabled;
     bool uade_songlengths_enabled;
     int currentSubsong;
@@ -267,7 +267,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                 }
                 else if (word.compare("silence_timeout") == 0)
                 {
-                    plugin->silence_timeout = atoi(value.c_str());
+                    plugin->silence_timeout = value;
                 }
                 else if (word.compare("silence_timeout_enabled") == 0)
                 {
@@ -316,35 +316,34 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     char uade_core[PATH_MAX];
     snprintf(uade_core, PATH_MAX, "%s%s/%s", plugin->info->dataPath.c_str(),UADE_DATA_DIR, UADE_CORE);
 
+    //TODO uade default:
+    //TODO uade_set_filter_type(uc, NULL);
+    //TODO uc->frequency = UADE_DEFAULT_FREQUENCY;
+    //TODO uc->gain = 1.0;
+    //TODO uc->panning = 0.7;
+    //TODO uc->silence_timeout = 20;
+    //TODO uc->subsong_timeout = 512;
+    //TODO uc->timeout = -1;
+    //TODO uc->use_timeouts = 1;
+
     uade_config_set_option(uadeConfig, UC_BASE_DIR, uade_basedir);
     uade_config_set_option(uadeConfig, UC_UADECORE_FILE, uade_core);
     uade_config_set_option(uadeConfig, UC_NO_CONTENT_DB, nullptr);
-    uade_config_set_option(uadeConfig, UC_FREQUENCY, to_string(plugin->waveformat.frequency).c_str());
+    uade_config_set_option(uadeConfig, UC_ONE_SUBSONG, nullptr);
+    uade_config_set_option(uadeConfig, UC_ENABLE_TIMEOUTS, nullptr);
+    uade_config_set_option(uadeConfig, UC_SILENCE_TIMEOUT_VALUE,
+                           plugin->silence_timeout_enabled ? plugin->silence_timeout.c_str() : "-1");
     uade_config_set_option(uadeConfig, UC_FILTER_TYPE, "a1200");
     uade_config_set_option(uadeConfig, UC_RESAMPLER, "sinc");
     uade_config_set_option(uadeConfig, UC_PANNING_VALUE, "0.7");
     uade_config_set_option(uadeConfig, UC_NO_HEADPHONES, nullptr);
 
     //TODO
-    //uade_config_set_option(uadeConfig, UC_TIMEOUT_VALUE, "-1");
-    //uade_config_set_option(uadeConfig, UC_DISABLE_TIMEOUTS, nullptr);
     //uade_config_set_option(uadeConfig, UC_SUBSONG_TIMEOUT_VALUE, to_string(PRECALC_TIMEOUT).c_str());
-    //uade_config_set_option(uadeConfig, UC_SILENCE_TIMEOUT_VALUE,to_string(SILENCE_TIMEOUT).c_str());
 
     uadeConfig->led_forced = plugin->led_forced; //Force led
     uadeConfig->led_state = plugin->led_state; //Forced led state
     uadeConfig->no_filter = plugin->no_filter; //Turn filter emulation off.
-    if (!plugin->silence_timeout_enabled)
-    {
-        uadeConfig->silence_timeout = -1;
-    }
-    else
-    {
-        uadeConfig->silence_timeout = plugin->silence_timeout;
-    }
-
-    uadeConfig->use_timeouts = 1;
-    uadeConfig->timeout = -1;
 
     plugin->uadeState = uade_new_state(uadeConfig);
 
@@ -502,14 +501,31 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     ssize_t renderedBytes = uade_read(
         buffer, plugin->waveformat.pcmblocksize * plugin->waveformat.channels * sizeof(int16_t), plugin->uadeState);
 
+    uade_notification un;
+    while (uade_read_notification(&un, plugin->uadeState)) {
+        switch (un.type) {
+            case UADE_NOTIFICATION_MESSAGE:
+                cout << "Amiga message: " << un.msg << endl;
+                break;
+            case UADE_NOTIFICATION_SONG_END:
+                cout << (un.song_end.happy ? "" : "bad ") << "song end" << ": " << un.song_end.reason << endl;
+                return FMOD_ERR_FILE_EOF;
+            default:
+                cout << "Unknown libuade notification" << endl;
+                break;
+        }
+        uade_cleanup_notification(&un);
+    }
+
     if (renderedBytes < 0) {
         return FMOD_ERR_FILE_NOTFOUND;
     }
 
     //TODO renderedBytes never reach value 0 when uade.md5 provides the song length
-    if (renderedBytes == 0) {
-        return FMOD_ERR_FILE_EOF;
-    }
+    //TODO also this check is not needed anymore since we use uade_read_notification
+    //if (renderedBytes == 0) {
+    //    return FMOD_ERR_FILE_EOF;
+    //}
 
     *read = plugin->waveformat.pcmblocksize;
 
@@ -540,9 +556,13 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     if (plugin->uade_songlengths_enabled)
     {
         songLength = getLengthFromDatabase(plugin->info->filename.c_str(),  sub, plugin->uadeSongInfo->modulemd5, plugin->uade_songlengthspath.c_str());
+
         //TODO track length adjustment (for fmod pre-buffering skip workaround)
-        double offset = 1000 * (16384.0 / (plugin->waveformat.frequency * plugin->waveformat.channels * FMOD_SOUND_FORMAT_PCM16));
-        songLength += offset;
+        if (songLength != 0) {
+            double offset = 1000 * (16384.0 / (plugin->waveformat.frequency * plugin->waveformat.channels *
+                                               FMOD_SOUND_FORMAT_PCM16));
+            songLength += offset;
+        }
     }
     else
     {
