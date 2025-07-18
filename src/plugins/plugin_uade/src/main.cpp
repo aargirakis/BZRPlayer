@@ -345,8 +345,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         uade_config_set_option(uadeConfig, UC_FORCE_LED, plugin->led_state ? "on" : "off");
     }
 
-    //TODO filtering is affected?
+    //TODO resampling is affected by filtering?
+    //TODO add "default" & "none"
+    //TODO is "sinc" the best option for default 44100?
     uade_config_set_option(uadeConfig, UC_RESAMPLER, "sinc");
+
     uade_config_set_option(uadeConfig, UC_PANNING_VALUE, "0.7");
     uade_config_set_option(uadeConfig, UC_NO_HEADPHONES, nullptr);
 
