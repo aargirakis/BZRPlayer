@@ -135,9 +135,9 @@ private slots:
 
     void on_checkBoxOnlyOneInstance_toggled(bool checked);
 
-    void on_sliderSilenceTimeOut_valueChanged(int value);
+    void on_sliderSilenceTimeOutUADE_valueChanged(int value);
 
-    void on_checkBoxSilenceTimeout_toggled(bool checked);
+    void on_checkBoxSilenceTimeoutUADE_toggled(bool checked);
 
     void on_buttonBrowseUADESonglengths_clicked();
 

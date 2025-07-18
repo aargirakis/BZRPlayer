@@ -4707,13 +4707,7 @@ QPushButton:hover
               <enum>Qt::Orientation::Horizontal</enum>
           </property>
       </widget>
-
-
-
-
-
-
-   <widget class="QSlider" name="sliderSilenceTimeOut">
+   <widget class="QSlider" name="sliderSilenceTimeOutUADE">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -4741,7 +4735,7 @@ QPushButton:hover
      <enum>Qt::Orientation::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="labelSilenceTimeOut">
+   <widget class="QLabel" name="labelSilenceTimeOutUADE">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -4770,7 +4764,7 @@ QPushButton:hover
      <string>Silence Timeout</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBoxSilenceTimeout">
+   <widget class="QCheckBox" name="checkBoxSilenceTimeoutUADE">
     <property name="geometry">
      <rect>
       <x>40</x>

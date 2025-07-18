@@ -127,7 +127,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
 
     ui->sliderPanningUADE->installEventFilter(this);
 
-    ui->sliderSilenceTimeOut->installEventFilter(this);
+    ui->sliderSilenceTimeOutUADE->installEventFilter(this);
 
     ui->comboBoxFilterEmuModeUADE->installEventFilter(this);
     ui->comboBoxFilterEmuModeUADE->addItem("A500", "a500");
@@ -693,7 +693,7 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
             obj == ui->comboBoxDitherOpenMPT ||
             obj == ui->SliderStereoSeparationOpenMPT ||
             obj == ui->comboBoxHvscSonglengthsUpdateFrequency ||
-            obj == ui->sliderSilenceTimeOut ||
+            obj == ui->sliderSilenceTimeOutUADE ||
             obj == ui->comboBoxEmulatorAdplug ||
             obj == ui->comboBoxFreqAdplug ||
             obj == ui->comboBoxPlaybackAdplug ||
@@ -990,7 +990,7 @@ void settingsWindow::loadUADESettings()
     ui->checkBoxFilterEmuUADE->setChecked(true);
     ui->comboBoxFilterEmuModeUADE->setCurrentIndex(1);
     ui->comboBoxLedFilterUADE->setCurrentIndex(0);
-    ui->sliderSilenceTimeOut->setValue(5);
+    ui->sliderSilenceTimeOutUADE->setValue(5);
     ui->lineEditUADESonglength->setText("/uade.md5");
     ui->checkBoxSongLengthUADE->setChecked(true);
 
@@ -1043,11 +1043,11 @@ void settingsWindow::loadUADESettings()
                 {
                     if (value.compare("true") == 0)
                     {
-                        ui->checkBoxSilenceTimeout->setChecked(true);
+                        ui->checkBoxSilenceTimeoutUADE->setChecked(true);
                     }
                     else
                     {
-                        ui->checkBoxSilenceTimeout->setChecked(false);
+                        ui->checkBoxSilenceTimeoutUADE->setChecked(false);
                     }
                 }
                 else if (word.compare("uade_songlengths_enabled") == 0)
@@ -1064,7 +1064,7 @@ void settingsWindow::loadUADESettings()
 
                 else if (word.compare("silence_timeout") == 0)
                 {
-                    ui->sliderSilenceTimeOut->setValue(atoi(value.c_str()));
+                    ui->sliderSilenceTimeOutUADE->setValue(atoi(value.c_str()));
                 }
                 else if (word.compare("uade_songlengths_path") == 0)
                 {
@@ -1285,8 +1285,8 @@ void settingsWindow::saveUADESettings()
     ofs << "filter_emu=" << (ui->checkBoxFilterEmuUADE->isChecked()?"true":"false") << "\n";
     ofs << "filter_mode=" << filterMode.toStdString().c_str() << "\n";
     ofs << "led_forced=" << ledFilter.toStdString().c_str() << "\n";
-    ofs << "silence_timeout=" << ui->sliderSilenceTimeOut->value() << "\n";
-    ofs << "silence_timeout_enabled=" << (ui->checkBoxSilenceTimeout->isChecked()?"true":"false") << "\n";
+    ofs << "silence_timeout=" << ui->sliderSilenceTimeOutUADE->value() << "\n";
+    ofs << "silence_timeout_enabled=" << (ui->checkBoxSilenceTimeoutUADE->isChecked()?"true":"false") << "\n";
     ofs << "uade_songlengths_enabled=" << (ui->checkBoxSongLengthUADE->isChecked()?"true":"false") << "\n";
     ofs.close();
 }
@@ -2112,31 +2112,31 @@ void settingsWindow::on_checkBoxOnlyOneInstance_toggled(bool checked)
 }
 
 
-void settingsWindow::on_sliderSilenceTimeOut_valueChanged(int value)
+void settingsWindow::on_sliderSilenceTimeOutUADE_valueChanged(int value)
 {
     QString sec = "seconds";
     if (value == 1)
     {
         sec = "second";
     }
-    ui->labelSilenceTimeOut->setText(QString::number(value) + " " + sec);
+    ui->labelSilenceTimeOutUADE->setText(QString::number(value) + " " + sec);
 }
 
 
-void settingsWindow::on_checkBoxSilenceTimeout_toggled(bool checked)
+void settingsWindow::on_checkBoxSilenceTimeoutUADE_toggled(bool checked)
 {
-    bool checkedSilenceTimeout = ui->checkBoxSilenceTimeout->checkState() == Qt::Checked ? true : false;
+    bool checkedSilenceTimeout = ui->checkBoxSilenceTimeoutUADE->checkState() == Qt::Checked ? true : false;
     if (checkedSilenceTimeout)
     {
-        ui->checkBoxSilenceTimeout->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelSilenceTimeOut->setEnabled(true);
-        ui->sliderSilenceTimeOut->setEnabled(true);
+        ui->checkBoxSilenceTimeoutUADE->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelSilenceTimeOutUADE->setEnabled(true);
+        ui->sliderSilenceTimeOutUADE->setEnabled(true);
     }
     else
     {
-        ui->checkBoxSilenceTimeout->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelSilenceTimeOut->setEnabled(false);
-        ui->sliderSilenceTimeOut->setEnabled(false);
+        ui->checkBoxSilenceTimeoutUADE->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelSilenceTimeOutUADE->setEnabled(false);
+        ui->sliderSilenceTimeOutUADE->setEnabled(false);
     }
 }
 
@@ -2740,13 +2740,13 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxFilterEmuUADE->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxSilenceTimeout->isChecked())
+    if (ui->checkBoxSilenceTimeoutUADE->isChecked())
     {
-        ui->checkBoxSilenceTimeout->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxSilenceTimeoutUADE->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxSilenceTimeout->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxSilenceTimeoutUADE->setIcon(mainWindow->icons["checkbox-off"]);
     }
     if (ui->checkBoxSongLengthUADE->isChecked())
     {
