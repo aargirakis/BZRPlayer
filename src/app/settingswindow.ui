@@ -4620,8 +4620,8 @@ QPushButton:hover
       <widget class="QLabel" name="labelPanningUADE">
           <property name="geometry">
               <rect>
-                  <x>30</x>
-                  <y>145</y>
+                  <x>40</x>
+                  <y>140</y>
                   <width>121</width>
                   <height>41</height>
               </rect>
@@ -4636,8 +4636,8 @@ QPushButton:hover
       <widget class="QLabel" name="labelPanning2UADE">
           <property name="geometry">
               <rect>
-                  <x>157</x>
-                  <y>170</y>
+                  <x>167</x>
+                  <y>165</y>
                   <width>121</width>
                   <height>41</height>
               </rect>
@@ -4649,8 +4649,8 @@ QPushButton:hover
       <widget class="QLabel" name="labelPanning3UADE">
           <property name="geometry">
               <rect>
-                  <x>523</x>
-                  <y>170</y>
+                  <x>533</x>
+                  <y>165</y>
                   <width>121</width>
                   <height>41</height>
               </rect>
@@ -4662,29 +4662,25 @@ QPushButton:hover
       <widget class="QLabel" name="labelPanning4UADE">
           <property name="geometry">
               <rect>
-                  <x>560</x>
-                  <y>145</y>
+                  <x>570</x>
+                  <y>140</y>
                   <width>131</width>
                   <height>41</height>
               </rect>
-          </property>
-          <property name="text">
-              <string>0.7</string>
           </property>
       </widget>
       <widget class="QSlider" name="sliderPanningUADE">
           <property name="geometry">
               <rect>
-                  <x>190</x>
-                  <y>155</y>
+                  <x>200</x>
+                  <y>150</y>
                   <width>351</width>
                   <height>22</height>
               </rect>
           </property>
-<!--          TODO-->
-<!--          <property name="styleSheet">-->
-<!--              <string notr="true"/>-->
-<!--          </property>-->
+          <property name="styleSheet">
+              <string notr="true"/>
+          </property>
           <property name="minimum">
               <number>0</number>
           </property>

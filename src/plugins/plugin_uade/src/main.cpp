@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <sstream>
 #include <iterator>
 #include "fmod_errors.h"
@@ -73,6 +74,7 @@ public:
     string filter_mode;
     int led_forced;
     int led_state;
+    string panning;
     string silence_timeout;
     bool silence_timeout_enabled;
     bool uade_songlengths_enabled;
@@ -226,6 +228,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->filter_mode = "a1200";
     plugin->led_forced = 0;
     plugin->led_state = 0;
+    plugin->panning = "0.5";
     plugin->silence_timeout = 5;
     plugin->silence_timeout_enabled = true;
     plugin->uade_songlengths_enabled = true;
@@ -270,6 +273,12 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                         plugin->led_forced = 1;
                         plugin->led_state = 0;
                     }
+                }
+                else if (word.compare("panning") == 0)
+                {
+                    std::ostringstream oss;
+                    oss << std::fixed << std::setprecision(1) << atof(value.c_str()) / 10;
+                    plugin->panning = oss.str();
                 }
                 else if (word.compare("silence_timeout") == 0)
                 {
@@ -350,7 +359,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     //TODO "sinc" should be the best option for freqs > 44100?
     uade_config_set_option(uadeConfig, UC_RESAMPLER, "default");
 
-    uade_config_set_option(uadeConfig, UC_PANNING_VALUE, "0.7");
+    uade_config_set_option(uadeConfig, UC_PANNING_VALUE, plugin->panning.c_str());
     uade_config_set_option(uadeConfig, UC_NO_HEADPHONES, nullptr);
 
     //TODO

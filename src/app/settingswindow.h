@@ -137,6 +137,8 @@ private slots:
 
     void on_sliderSilenceTimeOutUADE_valueChanged(int value);
 
+    void on_sliderPanningUADE_valueChanged(int value);
+
     void on_checkBoxSilenceTimeoutUADE_toggled(bool checked);
 
     void on_buttonBrowseUADESonglengths_clicked();

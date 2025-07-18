@@ -990,6 +990,8 @@ void settingsWindow::loadUADESettings()
     ui->checkBoxFilterEmuUADE->setChecked(true);
     ui->comboBoxFilterEmuModeUADE->setCurrentIndex(1);
     ui->comboBoxLedFilterUADE->setCurrentIndex(0);
+    ui->sliderPanningUADE->setValue(5);
+    ui->labelPanning4UADE->setText("0.5");
     ui->sliderSilenceTimeOutUADE->setValue(5);
     ui->lineEditUADESonglength->setText("/uade.md5");
     ui->checkBoxSongLengthUADE->setChecked(true);
@@ -1038,6 +1040,10 @@ void settingsWindow::loadUADESettings()
                     {
                         ui->comboBoxLedFilterUADE->setCurrentIndex(2);
                     }
+                }
+                else if (word.compare("panning") == 0)
+                {
+                    ui->sliderPanningUADE->setValue(atoi(value.c_str()));
                 }
                 else if (word.compare("silence_timeout_enabled") == 0)
                 {
@@ -1285,6 +1291,7 @@ void settingsWindow::saveUADESettings()
     ofs << "filter_emu=" << (ui->checkBoxFilterEmuUADE->isChecked()?"true":"false") << "\n";
     ofs << "filter_mode=" << filterMode.toStdString().c_str() << "\n";
     ofs << "led_forced=" << ledFilter.toStdString().c_str() << "\n";
+    ofs << "panning=" << ui->sliderPanningUADE->value() << "\n";
     ofs << "silence_timeout=" << ui->sliderSilenceTimeOutUADE->value() << "\n";
     ofs << "silence_timeout_enabled=" << (ui->checkBoxSilenceTimeoutUADE->isChecked()?"true":"false") << "\n";
     ofs << "uade_songlengths_enabled=" << (ui->checkBoxSongLengthUADE->isChecked()?"true":"false") << "\n";
@@ -2111,6 +2118,11 @@ void settingsWindow::on_checkBoxOnlyOneInstance_toggled(bool checked)
     }
 }
 
+
+void settingsWindow::on_sliderPanningUADE_valueChanged(int value)
+{
+    ui->labelPanning4UADE->setText(QString::number(static_cast<float>(value) / 10, 'f', 1));
+}
 
 void settingsWindow::on_sliderSilenceTimeOutUADE_valueChanged(int value)
 {
