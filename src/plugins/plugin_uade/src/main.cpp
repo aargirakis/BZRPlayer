@@ -69,9 +69,10 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
 
     Info* info;
+    int filter_emu;
+    string filter_mode;
     int led_forced;
     int led_state;
-    int no_filter;
     string silence_timeout;
     bool silence_timeout_enabled;
     bool uade_songlengths_enabled;
@@ -221,9 +222,10 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
     //defaults
+    plugin->filter_emu = 1;
+    plugin->filter_mode = "a1200";
     plugin->led_forced = 0;
     plugin->led_state = 0;
-    plugin->no_filter = 1;
     plugin->silence_timeout = 5;
     plugin->silence_timeout_enabled = true;
     plugin->uade_songlengths_enabled = true;
@@ -237,7 +239,22 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("led_forced") == 0)
+                if (word.compare("filter_emu") == 0)
+                {
+                    if (value.compare("true") == 0)
+                    {
+                        plugin->filter_emu = 1;
+                    }
+                    else
+                    {
+                        plugin->filter_emu = 0;
+                    }
+                }
+                else if (word.compare("filter_mode") == 0)
+                {
+                    plugin->filter_mode = value;
+                }
+                else if (word.compare("led_forced") == 0)
                 {
                     if (value.compare("auto") == 0)
                     {
@@ -252,17 +269,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                     {
                         plugin->led_forced = 1;
                         plugin->led_state = 0;
-                    }
-                }
-                else if (word.compare("no_filter") == 0)
-                {
-                    if (value.compare("true") == 0)
-                    {
-                        plugin->no_filter = 1;
-                    }
-                    else
-                    {
-                        plugin->no_filter = 0;
                     }
                 }
                 else if (word.compare("silence_timeout") == 0)
@@ -333,15 +339,13 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     uade_config_set_option(uadeConfig, UC_ENABLE_TIMEOUTS, nullptr);
     uade_config_set_option(uadeConfig, UC_SILENCE_TIMEOUT_VALUE,
                            plugin->silence_timeout_enabled ? plugin->silence_timeout.c_str() : "-1");
-
-    //TODO add add "a500" filter preference
-    //TODO Turning filter emulation off ("none") should also grey out the led filter and set it to "always off"
-    uade_config_set_option(uadeConfig, UC_FILTER_TYPE, plugin->no_filter ? "none" : "a1200");
+    uade_config_set_option(uadeConfig, UC_FILTER_TYPE, plugin->filter_emu ? plugin->filter_mode.c_str() : "none");
 
     if (plugin->led_forced) {
         uade_config_set_option(uadeConfig, UC_FORCE_LED, plugin->led_state ? "on" : "off");
     }
 
+    //TODO filtering is affected?
     uade_config_set_option(uadeConfig, UC_RESAMPLER, "sinc");
     uade_config_set_option(uadeConfig, UC_PANNING_VALUE, "0.7");
     uade_config_set_option(uadeConfig, UC_NO_HEADPHONES, nullptr);

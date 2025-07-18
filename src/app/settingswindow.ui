@@ -4497,13 +4497,26 @@ QPushButton:hover
    <property name="flat">
     <bool>true</bool>
    </property>
-   <widget class="QCheckBox" name="checkBoxFilterEnabled">
+   <widget class="QLabel" name="labelFilterEmuUADE">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>0</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Amiga filter emulation</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxFilterEmuUADE">
     <property name="geometry">
      <rect>
       <x>190</x>
-      <y>90</y>
+      <y>0</y>
       <width>131</width>
-      <height>41</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -4516,25 +4529,28 @@ QPushButton:hover
      </size>
     </property>
    </widget>
-   <widget class="QLabel" name="label_27">
+   <widget class="QLabel" name="labelFilterEmuModeUADE">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>90</y>
+      <x>60</x>
+      <y>45</y>
       <width>151</width>
-      <height>41</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Amiga Filter emulation</string>
+     <string>Mode</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBoxFilter">
+   <widget class="QComboBox" name="comboBoxFilterEmuModeUADE">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>30</y>
-      <width>181</width>
+      <x>150</x>
+      <y>45</y>
+      <width>100</width>
       <height>31</height>
      </rect>
     </property>
@@ -4557,17 +4573,48 @@ QPushButton:hover
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_31">
+   <widget class="QLabel" name="labelLedFilterUADE">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>30</y>
+      <x>60</x>
+      <y>85</y>
       <width>141</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Amiga LED Filter</string>
+     <string>LED Filter</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxLedFilterUADE">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>85</y>
+      <width>100</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QSlider" name="sliderSilenceTimeOut">

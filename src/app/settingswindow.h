@@ -210,7 +210,7 @@ private slots:
 
     void on_checkBoxOnlyOneInstance_clicked();
 
-    void on_checkBoxFilterEnabled_toggled(bool checked);
+    void on_checkBoxFilterEmuUADE_toggled(bool checked);
 
     void on_checkBoxSystrayOnQuit_toggled(bool checked);
 
