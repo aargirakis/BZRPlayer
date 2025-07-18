@@ -345,10 +345,10 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         uade_config_set_option(uadeConfig, UC_FORCE_LED, plugin->led_state ? "on" : "off");
     }
 
-    //TODO resampling is affected by filtering?
-    //TODO add "default" & "none"
-    //TODO is "sinc" the best option for default 44100?
-    uade_config_set_option(uadeConfig, UC_RESAMPLER, "sinc");
+    //TODO is resampling affected by filtering?
+    //TODO add "sinc" & "none" resampling methods
+    //TODO "sinc" should be the best option for freqs > 44100?
+    uade_config_set_option(uadeConfig, UC_RESAMPLER, "default");
 
     uade_config_set_option(uadeConfig, UC_PANNING_VALUE, "0.7");
     uade_config_set_option(uadeConfig, UC_NO_HEADPHONES, nullptr);
