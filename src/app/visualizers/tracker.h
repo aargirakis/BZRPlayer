@@ -62,32 +62,6 @@ private:
 
     BitmapFont m_font;
 
-    unsigned char m_cAHXFontSize = 1;
-    unsigned char m_cChipTrackerFontSize = 1;
-    unsigned char m_cComposer669FontSize = 1;
-    unsigned char m_cDigiBoosterFontSize = 1;
-    unsigned char m_cDigiBoosterProFontSize = 1;
-    unsigned char m_cFasttracker1FontSize = 1;
-    unsigned char m_cFasttracker2FontSize = 1;
-    unsigned char m_cGMCFontSize = 1;
-    unsigned char m_cHivelyFontSize = 3;
-    unsigned char m_cIceTrackerFontSize = 1;
-    unsigned char m_cImpulseTracker2FontSize = 1;
-    unsigned char m_cMEDFontSize = 1;
-    unsigned char m_cOctaMEDSSFontSize = 1;
-    unsigned char m_cMultiTrackerFontSize = 1;
-    unsigned char m_cOktalyzerFontSize = 1;
-    unsigned char m_cProTrackerFontSize = 1;
-    unsigned char m_cProTracker36FontSize = 1;
-    unsigned char m_cScreamTracker2FontSize = 1;
-    unsigned char m_cScreamTracker3FontSize = 1;
-    unsigned char m_cSFXFontSize = 1;
-    unsigned char m_cSoundTracker2FontSize = 1;
-    unsigned char m_cSoundTracker26FontSize = 1;
-    unsigned char m_cStarTrekkerFontSize = 1;
-    unsigned char m_cTakeTrackerFontSize = 1;
-    unsigned char m_cUltimateSoundTrackerFontSize = 1;
-    unsigned char m_cUltraTrackerFontSize = 1;
 
     bool eventFilter(QObject* obj, QEvent* event);
 };

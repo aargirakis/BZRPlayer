@@ -4,8 +4,8 @@
 #include <QApplication>
 #include <QDir>
 
-Composer669PatternView::Composer669PatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+Composer669PatternView::Composer669PatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     m_font.setPixelSize(8);
     m_fontWidth = 8;

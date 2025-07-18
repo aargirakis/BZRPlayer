@@ -5,7 +5,7 @@
 class MEDPatternView : public AbstractPatternView
 {
 public:
-    MEDPatternView(Tracker* parent, unsigned int channels, int scale);
+    MEDPatternView(Tracker* parent, unsigned int channels);
     ~MEDPatternView();
     BitmapFont infoFont();
     QString effect(BaseRow* row);

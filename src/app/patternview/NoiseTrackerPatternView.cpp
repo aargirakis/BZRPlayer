@@ -1,7 +1,7 @@
 #include "NoiseTrackerPatternView.h"
 
-NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     rowNumberOffset = 0;
     octaveOffset = 48;

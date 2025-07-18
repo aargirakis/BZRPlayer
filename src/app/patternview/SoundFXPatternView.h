@@ -5,7 +5,7 @@
 class SoundFXPatternView : public AbstractPatternView
 {
 public:
-    SoundFXPatternView(Tracker* parent, unsigned int channels, int scale);
+    SoundFXPatternView(Tracker* parent, unsigned int channels);
     ~SoundFXPatternView();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);

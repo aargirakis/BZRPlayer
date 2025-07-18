@@ -5,7 +5,7 @@
 class UltimateSoundTrackerPatternView : public AbstractPatternView
 {
 public:
-    UltimateSoundTrackerPatternView(Tracker* parent, unsigned int channels, int scale);
+    UltimateSoundTrackerPatternView(Tracker* parent, unsigned int channels);
     ~UltimateSoundTrackerPatternView();
     QFont currentRowFont();
     BitmapFont currentRowBitmapFont();

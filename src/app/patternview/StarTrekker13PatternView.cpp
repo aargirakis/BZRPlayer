@@ -1,8 +1,9 @@
 #include "StarTrekker13PatternView.h"
 #include <QDir>
 #include "mainwindow.h"
-StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale) {
+StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
+{
     rowNumberOffset = 0;
     octaveOffset = 48;
     m_font2 = QFont("Startrekker 1.3 Double Height");

@@ -1,7 +1,7 @@
 #include "OctaMEDPatternView.h"
 
-OctaMEDPatternView::OctaMEDPatternView(Tracker* parent, unsigned int channels, int scale)
-    : MEDPatternView(parent, channels, scale)
+OctaMEDPatternView::OctaMEDPatternView(Tracker* parent, unsigned int channels)
+    : MEDPatternView(parent, channels)
 {
     octaveOffset = 12;
     m_font = QFont("OctaMED Pro 4");

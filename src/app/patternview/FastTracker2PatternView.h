@@ -5,7 +5,7 @@
 class FastTracker2PatternView : public AbstractPatternView
 {
 public:
-    FastTracker2PatternView(Tracker* parent, unsigned int channels, int scale);
+    FastTracker2PatternView(Tracker* parent, unsigned int channels);
     ~FastTracker2PatternView();
     QFont fontEffects();
     int fontWidthEffects();

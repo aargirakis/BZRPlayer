@@ -1,8 +1,8 @@
 #include "FastTracker26ChanPatternView.h"
 #include "visualizers/tracker.h"
 
-FastTracker26ChanPatternView::FastTracker26ChanPatternView(Tracker* parent, unsigned int channels, int scale)
-    : FastTracker2PatternView(parent, channels, scale)
+FastTracker26ChanPatternView::FastTracker26ChanPatternView(Tracker* parent, unsigned int channels)
+    : FastTracker2PatternView(parent, channels)
 {
     m_font = QFont("Fasttracker 2");
     m_bitmapFont = BitmapFont("Fasttracker 2");

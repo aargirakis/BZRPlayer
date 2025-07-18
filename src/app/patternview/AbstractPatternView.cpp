@@ -2,12 +2,11 @@
 #include <QApplication>
 #include <QDir>
 
-AbstractPatternView::AbstractPatternView(Tracker* parent, unsigned int channels, int scale)
+AbstractPatternView::AbstractPatternView(Tracker* parent, unsigned int channels)
 {
     m_trackerWindow = parent;
     m_width = 320;
     m_height = 256;
-    m_scale = scale + 1;
     m_channels = channels;
     m_fontWidth = 8;
     m_fontHeight = 7;
@@ -272,8 +271,8 @@ void AbstractPatternView::paintTop(QPainter* painter, Info* info, unsigned int m
 }
 void AbstractPatternView::drawText(QString text, QPainter* painter, int numPixels, int yPixelPosition, BitmapFont font, int letterSpacing)
 {
-    if (yPixelPosition >height() || numPixels > painter->window().width() / m_scale || yPixelPosition <
-                                                                                       0 || yPixelPosition > painter->window().height() / m_scale)
+    if (yPixelPosition >height() || numPixels > painter->window().width() || yPixelPosition <
+                                                                                       0 || yPixelPosition > painter->window().height())
     {
         return;
     }

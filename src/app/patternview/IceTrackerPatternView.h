@@ -5,7 +5,7 @@
 class IceTrackerPatternView : public AbstractPatternView
 {
 public:
-    IceTrackerPatternView(Tracker* parent, unsigned int channels, int scale);
+    IceTrackerPatternView(Tracker* parent, unsigned int channels);
     ~IceTrackerPatternView();
     QFont currentRowFont();
     BitmapFont currentRowBitmapFont();

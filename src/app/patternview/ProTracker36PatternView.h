@@ -5,7 +5,7 @@
 class ProTracker36PatternView : public AbstractPatternView
 {
 public:
-    ProTracker36PatternView(Tracker* parent, unsigned int channels, int scale);
+    ProTracker36PatternView(Tracker* parent, unsigned int channels);
     ~ProTracker36PatternView();
     BitmapFont infoFont();
     BitmapFont infoFont2();

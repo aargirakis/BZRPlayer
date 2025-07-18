@@ -11,7 +11,7 @@ class AbstractPatternView
 
 
 public:
-    AbstractPatternView(Tracker *parent, unsigned int channels, int scale);
+    AbstractPatternView(Tracker *parent, unsigned int channels);
 
 
 
@@ -48,7 +48,6 @@ public:
 
     virtual unsigned int height(){return m_height;}
     virtual unsigned int width(){return m_width;}
-    virtual int scale(){return m_scale;}
     virtual QColor colorEmpty(){return m_colorEmpty;}
     virtual QColor colorDefault(){return m_colorDefault;}
     virtual QColor colorInstrument(){return m_ColorInstrument;}
@@ -190,7 +189,6 @@ protected:
     unsigned int m_channels;
     unsigned int m_topHeight;
     unsigned int m_bottomFrameHeight;
-    int m_scale;
 
     QPen m_pen;
     int m_fontWidth;

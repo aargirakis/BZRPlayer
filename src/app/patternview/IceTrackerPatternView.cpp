@@ -2,8 +2,8 @@
 #include <QDir>
 #include "mainwindow.h"
 
-IceTrackerPatternView::IceTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+IceTrackerPatternView::IceTrackerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     rowNumberOffset = 0;
     octaveOffset = 48;

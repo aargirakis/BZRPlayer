@@ -5,7 +5,7 @@
 class OctaMEDSoundstudioPatternView : public AbstractPatternView
 {
 public:
-    OctaMEDSoundstudioPatternView(Tracker* parent, unsigned int channels, int scale);
+    OctaMEDSoundstudioPatternView(Tracker* parent, unsigned int channels);
     ~OctaMEDSoundstudioPatternView();
     BitmapFont infoFont();
     QString instrument(BaseRow* row);

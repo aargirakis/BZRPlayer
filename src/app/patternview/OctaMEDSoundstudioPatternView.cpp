@@ -1,8 +1,8 @@
 #include "OctaMEDSoundstudioPatternView.h"
 #include "visualizers/tracker.h"
 
-OctaMEDSoundstudioPatternView::OctaMEDSoundstudioPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+OctaMEDSoundstudioPatternView::OctaMEDSoundstudioPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = -12;
     m_font = QFont("AHX Thin");

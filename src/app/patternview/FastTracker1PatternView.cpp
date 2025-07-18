@@ -1,7 +1,7 @@
 #include "FastTracker1PatternView.h"
 
-FastTracker1PatternView::FastTracker1PatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+FastTracker1PatternView::FastTracker1PatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = 48;
     rowNumberOffset = 0;

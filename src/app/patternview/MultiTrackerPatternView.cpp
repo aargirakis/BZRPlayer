@@ -1,8 +1,8 @@
 #include "MultiTrackerPatternView.h"
 #include "visualizers/tracker.h"
 
-MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     m_font = QFont("MultiTracker");
     m_font.setPixelSize(8);

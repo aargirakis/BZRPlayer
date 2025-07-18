@@ -6,7 +6,7 @@
 class AHXPatternView : public AbstractPatternView
 {
 public:
-    AHXPatternView(Tracker* parent, unsigned int channels, int scale);
+    AHXPatternView(Tracker* parent, unsigned int channels);
     BitmapFont infoFont();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);

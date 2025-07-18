@@ -2,8 +2,8 @@
 #include "ProTracker1PatternView.h"
 #include "mainwindow.h"
 
-ProTracker1PatternView::ProTracker1PatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+ProTracker1PatternView::ProTracker1PatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     rowNumberOffset = 0;
     octaveOffset = 48;

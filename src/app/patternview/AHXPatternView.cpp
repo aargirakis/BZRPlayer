@@ -3,8 +3,8 @@
 #include "visualizers/tracker.h"
 #include "mainwindow.h"
 
-AHXPatternView::AHXPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+AHXPatternView::AHXPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     instrumentPad = true;
     instrumentHex = false;

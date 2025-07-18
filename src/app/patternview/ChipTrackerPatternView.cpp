@@ -2,8 +2,8 @@
 #include <QDir>
 #include "mainwindow.h"
 
-ChipTrackerPatternView::ChipTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+ChipTrackerPatternView::ChipTrackerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     rowNumberOffset = 0;
     octaveOffset = 12;

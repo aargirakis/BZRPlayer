@@ -5,7 +5,7 @@
 class GameMusicCreatorPatternView : public AbstractPatternView
 {
 public:
-    GameMusicCreatorPatternView(Tracker* parent, unsigned int channels, int scale);
+    GameMusicCreatorPatternView(Tracker* parent, unsigned int channels);
     ~GameMusicCreatorPatternView();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);

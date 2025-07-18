@@ -1,8 +1,8 @@
 #include "OctaMED54ChanPatternView.h"
 #include "visualizers/tracker.h"
 
-OctaMED54ChanPatternView::OctaMED54ChanPatternView(Tracker* parent, unsigned int channels, int scale)
-    : MEDPatternView(parent, channels, scale)
+OctaMED54ChanPatternView::OctaMED54ChanPatternView(Tracker* parent, unsigned int channels)
+    : MEDPatternView(parent, channels)
 {
     octaveOffset = 12;
     effectPad = true;

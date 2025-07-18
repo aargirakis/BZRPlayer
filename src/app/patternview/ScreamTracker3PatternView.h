@@ -5,7 +5,7 @@
 class ScreamTracker3PatternView : public AbstractPatternView
 {
 public:
-    ScreamTracker3PatternView(Tracker* parent, unsigned int channels, int scale);
+    ScreamTracker3PatternView(Tracker* parent, unsigned int channels);
     ~ScreamTracker3PatternView();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);

@@ -5,7 +5,7 @@
 class ChipTrackerPatternView : public AbstractPatternView
 {
 public:
-    ChipTrackerPatternView(Tracker* parent, unsigned int channels, int scale);
+    ChipTrackerPatternView(Tracker* parent, unsigned int channels);
     ~ChipTrackerPatternView();
     QFont currentRowFont();
     BitmapFont currentRowBitmapFont();

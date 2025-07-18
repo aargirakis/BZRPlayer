@@ -1,8 +1,8 @@
 #include "HivelyTrackerPatternView.h"
 #include "mainwindow.h"
 #include <QDir>
-HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     instrumentPad = true;
     instrumentHex = false;

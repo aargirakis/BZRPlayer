@@ -4,8 +4,8 @@
 #include <QApplication>
 #include <QDir>
 
-GameMusicCreatorPatternView::GameMusicCreatorPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+GameMusicCreatorPatternView::GameMusicCreatorPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = 48;
     m_font = QFont("Game Music Creator");

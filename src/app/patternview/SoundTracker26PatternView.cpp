@@ -2,8 +2,8 @@
 #include <QDir>
 #include "mainwindow.h"
 
-SoundTracker26PatternView::SoundTracker26PatternView(Tracker* parent, unsigned int channels, int scale)
-    : NoiseTrackerPatternView(parent, channels, scale)
+SoundTracker26PatternView::SoundTracker26PatternView(Tracker* parent, unsigned int channels)
+    : NoiseTrackerPatternView(parent, channels)
 {
     m_ibuttonPrevSampleWidth = 11;
     m_ibuttonPrevSampleHeight = 11;

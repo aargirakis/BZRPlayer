@@ -1,8 +1,8 @@
 #include "OctaMED44ChanPatternView.h"
 #include "visualizers/tracker.h"
 
-OctaMED44ChanPatternView::OctaMED44ChanPatternView(Tracker* parent, unsigned int channels, int scale)
-    : MEDPatternView(parent, channels, scale)
+OctaMED44ChanPatternView::OctaMED44ChanPatternView(Tracker* parent, unsigned int channels)
+    : MEDPatternView(parent, channels)
 {
     effectPad = true;
     m_emptyEffect = "00";

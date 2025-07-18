@@ -1,7 +1,7 @@
 #include "MEDPatternView.h"
 
-MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
+MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels)
+    : AbstractPatternView(parent, channels)
 {
     octaveOffset = 12;
     m_font = QFont("MED 3.21");

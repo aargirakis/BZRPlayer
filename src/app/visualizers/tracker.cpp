@@ -78,13 +78,7 @@ void Tracker::init()
     }
     m_render = true;
 
-    if (false)
-    {
-        m_trackerview = new GenericPatternView(this, m_info->numChannels, m_cSFXFontSize);
-        m_renderVUMeter = false;
-        m_renderTop = false;
-    }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (fa08)"))
+    if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (fa08)"))
     {
         m_trackerview = 0;
         m_render = false;
@@ -98,22 +92,22 @@ void Tracker::init()
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("SunVox"))
     {
-        m_trackerview = new SoundFXPatternView(this, m_info->numChannels, m_cSFXFontSize);
+        m_trackerview = new SoundFXPatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (6chn") ||
         QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (8chn") ||
         QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (16ch"))
     {
-        m_trackerview = new FastTracker1PatternView(this, m_info->numChannels, m_cFasttracker1FontSize);
+        m_trackerview = new FastTracker1PatternView(this, m_info->numChannels);
         m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("soundfx"))
     {
-        m_trackerview = new SoundFXPatternView(this, m_info->numChannels, m_cSFXFontSize);
+        m_trackerview = new SoundFXPatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ice tracker"))
     {
-        m_trackerview = new IceTrackerPatternView(this, m_info->numChannels, m_cIceTrackerFontSize);
+        m_trackerview = new IceTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
     }
@@ -121,11 +115,11 @@ void Tracker::init()
     {
         m_renderTop = true;
         m_renderVUMeter = true;
-        m_trackerview = new ProTracker36PatternView(this, m_info->numChannels, m_cProTracker36FontSize);
+        m_trackerview = new ProTracker36PatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (flt4"))
     {
-        m_trackerview = new StarTrekker13PatternView(this, m_info->numChannels, m_cStarTrekkerFontSize);
+        m_trackerview = new StarTrekker13PatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
     }
@@ -137,7 +131,7 @@ void Tracker::init()
             m_info->fileformat.c_str()).
         toLower().startsWith("unknown or converted (M"))
     {
-        m_trackerview = new ProTracker1PatternView(this, m_info->numChannels, m_cProTrackerFontSize);
+        m_trackerview = new ProTracker1PatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
         m_height = 32;
@@ -145,20 +139,20 @@ void Tracker::init()
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("noise") || QString(m_info->fileformat.c_str()).
         toLower().startsWith("his master"))
     {
-        m_trackerview = new NoiseTrackerPatternView(this, m_info->numChannels, m_cProTrackerFontSize);
+        m_trackerview = new NoiseTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("mnemotron"))
     {
-        m_trackerview = new SoundTracker26PatternView(this, m_info->numChannels, m_cSoundTracker26FontSize);
+        m_trackerview = new SoundTracker26PatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
     }
 
     else if (QString(m_info->fileformat.c_str()).toLower() == "soundtracker")
     {
-        m_trackerview = new UltimateSoundTrackerPatternView(this, m_info->numChannels, m_cUltimateSoundTrackerFontSize);
+        m_trackerview = new UltimateSoundTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
     }
@@ -166,38 +160,38 @@ void Tracker::init()
 
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("game music creator"))
     {
-        m_trackerview = new GameMusicCreatorPatternView(this, m_info->numChannels, m_cGMCFontSize);
+        m_trackerview = new GameMusicCreatorPatternView(this, m_info->numChannels);
         m_renderVUMeter = false;
         m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()) == "AHX")
     {
-        m_trackerview = new AHXPatternView(this, m_info->numChannels, m_cAHXFontSize);
+        m_trackerview = new AHXPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("chiptracker"))
     {
-        m_trackerview = new ChipTrackerPatternView(this, m_info->numChannels, m_cChipTrackerFontSize);
+        m_trackerview = new ChipTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
     }
 
     else if (QString(m_info->fileformat.c_str()) == "HivelyTracker")
     {
-        m_trackerview = new HivelyTrackerPatternView(this, m_info->numChannels, m_cHivelyFontSize);
+        m_trackerview = new HivelyTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
     }
 
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("scream tracker 3"))
     {
-        m_trackerview = new ScreamTracker3PatternView(this, m_info->numChannels, m_cScreamTracker3FontSize);
+        m_trackerview = new ScreamTracker3PatternView(this, m_info->numChannels);
     }
 
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("scream tracker 2"))
     {
-        m_trackerview = new ScreamTracker2PatternView(this, m_info->numChannels, m_cScreamTracker2FontSize);
+        m_trackerview = new ScreamTracker2PatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("fasttracker 2") ||
         QString(m_info->fileformat.c_str()).toLower().startsWith("skale tracker xm") ||
@@ -207,60 +201,60 @@ void Tracker::init()
         m_renderTop = true;
         if (m_info->numChannels > 6)
         {
-            m_trackerview = new FastTracker2PatternView(this, m_info->numChannels, m_cFasttracker2FontSize);
+            m_trackerview = new FastTracker2PatternView(this, m_info->numChannels);
         }
         else if (m_info->numChannels > 4)
         {
-            m_trackerview = new FastTracker26ChanPatternView(this, m_info->numChannels, m_cFasttracker2FontSize);
+            m_trackerview = new FastTracker26ChanPatternView(this, m_info->numChannels);
         }
         else
         {
-            m_trackerview = new FastTracker24ChanPatternView(this, m_info->numChannels, m_cFasttracker2FontSize);
+            m_trackerview = new FastTracker24ChanPatternView(this, m_info->numChannels);
         }
     }
 
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0"))
     {
-        m_trackerview = new MEDPatternView(this, m_info->numChannels, m_cMEDFontSize);
+        m_trackerview = new MEDPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
         m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("impulse"))
     {
-        m_trackerview = new ImpulseTrackerPatternView(this, m_info->numChannels, m_cImpulseTracker2FontSize);
+        m_trackerview = new ImpulseTrackerPatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("composer 669"))
     {
-        m_trackerview = new Composer669PatternView(this, m_info->numChannels, m_cComposer669FontSize);
+        m_trackerview = new Composer669PatternView(this, m_info->numChannels);
         m_height = 16;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ultratracker"))
     {
-        m_trackerview = new UltraTrackerPatternView(this, m_info->numChannels, m_cUltraTrackerFontSize);
+        m_trackerview = new UltraTrackerPatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("digibooster pro"))
     {
-        m_trackerview = new DigiBoosterProPatternView(this, m_info->numChannels, m_cDigiBoosterProFontSize);
+        m_trackerview = new DigiBoosterProPatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("digibooster"))
     {
-        m_trackerview = new DigiBooster17PatternView(this, m_info->numChannels, m_cDigiBoosterFontSize);
+        m_trackerview = new DigiBooster17PatternView(this, m_info->numChannels);
         m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("oktalyzer"))
     {
-        m_trackerview = new OktalyzerPatternView(this, m_info->numChannels, m_cOktalyzerFontSize);
+        m_trackerview = new OktalyzerPatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1"))
     {
         m_renderTop = true;
         if (m_info->numChannels > 4)
         {
-            m_trackerview = new OctaMEDPatternView(this, m_info->numChannels, m_cMEDFontSize);
+            m_trackerview = new OctaMEDPatternView(this, m_info->numChannels);
         }
         else
         {
-            m_trackerview = new OctaMED44ChanPatternView(this, m_info->numChannels, m_cMEDFontSize);
+            m_trackerview = new OctaMED44ChanPatternView(this, m_info->numChannels);
             m_renderVUMeter = true;
         }
     }
@@ -268,29 +262,29 @@ void Tracker::init()
     {
         if (m_info->numChannels > 4)
         {
-            m_trackerview = new OctaMED5ChanPatternView(this, m_info->numChannels, m_cMEDFontSize);
+            m_trackerview = new OctaMED5ChanPatternView(this, m_info->numChannels);
             m_renderTop = true;
         }
         else
         {
-            m_trackerview = new OctaMED54ChanPatternView(this, m_info->numChannels, m_cMEDFontSize);
+            m_trackerview = new OctaMED54ChanPatternView(this, m_info->numChannels);
             m_renderVUMeter = true;
             m_renderTop = true;
         }
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd3"))
     {
-        m_trackerview = new OctaMEDSoundstudioPatternView(this, m_info->numChannels, m_cOctaMEDSSFontSize);
+        m_trackerview = new OctaMEDSoundstudioPatternView(this, m_info->numChannels);
         m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("multitracker"))
     {
         m_renderTop = true;
-        m_trackerview = new MultiTrackerPatternView(this, m_info->numChannels, m_cMultiTrackerFontSize);
+        m_trackerview = new MultiTrackerPatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("mdx"))
     {
-        m_trackerview = new MultiTrackerPatternView(this, m_info->numChannels, m_cMultiTrackerFontSize);
+        m_trackerview = new MultiTrackerPatternView(this, m_info->numChannels);
     }
     else
     {
