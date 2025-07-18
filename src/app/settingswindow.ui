@@ -4636,20 +4636,7 @@ QPushButton:hover
       <widget class="QLabel" name="labelPanning2UADE">
           <property name="geometry">
               <rect>
-                  <x>170</x>
-                  <y>170</y>
-                  <width>121</width>
-                  <height>41</height>
-              </rect>
-          </property>
-          <property name="text">
-              <string>Mono</string>
-          </property>
-      </widget>
-      <widget class="QLabel" name="labelPanning3UADE">
-          <property name="geometry">
-              <rect>
-                  <x>508</x>
+                  <x>157</x>
                   <y>170</y>
                   <width>121</width>
                   <height>41</height>
@@ -4659,7 +4646,33 @@ QPushButton:hover
               <string>Full Stereo</string>
           </property>
       </widget>
-      <widget class="QSlider" name="sliderPanning2UADE">
+      <widget class="QLabel" name="labelPanning3UADE">
+          <property name="geometry">
+              <rect>
+                  <x>523</x>
+                  <y>170</y>
+                  <width>121</width>
+                  <height>41</height>
+              </rect>
+          </property>
+          <property name="text">
+              <string>Mono</string>
+          </property>
+      </widget>
+      <widget class="QLabel" name="labelPanning4UADE">
+          <property name="geometry">
+              <rect>
+                  <x>560</x>
+                  <y>145</y>
+                  <width>131</width>
+                  <height>41</height>
+              </rect>
+          </property>
+          <property name="text">
+              <string>0.7</string>
+          </property>
+      </widget>
+      <widget class="QSlider" name="sliderPanningUADE">
           <property name="geometry">
               <rect>
                   <x>190</x>
@@ -4676,16 +4689,19 @@ QPushButton:hover
               <number>0</number>
           </property>
           <property name="maximum">
+              <number>10</number>
+          </property>
+          <property name="singleStep">
               <number>1</number>
           </property>
           <property name="pageStep">
-              <number>0.1</number>
+              <number>1</number>
           </property>
           <property name="value">
-              <number>0.7</number>
+              <number>7</number>
           </property>
           <property name="sliderPosition">
-              <number>0.7</number>
+              <number>7</number>
           </property>
           <property name="orientation">
               <enum>Qt::Orientation::Horizontal</enum>
