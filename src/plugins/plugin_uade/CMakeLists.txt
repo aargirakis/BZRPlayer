@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
 set(FILENAME "${NAME}-dev.tar.gz")
 set(URL "https://gitlab.com/mvtiaine/${NAME}/-/archive/dev/${NAME}-dev.tar.gz")
-set(SHA_256_HASH "9c582b775f502ca97a89b20a4c2bc5d5bac4f554f20717012fd0d14ae8f7dbb7")
+set(SHA_256_HASH "9edf953781187442f1e99bf8fd8e7cb35aef256b537e15ebf99f71b86e5a80c4")
 set(UNPACKED_DIR "${NAME}-dev")
 set(CONFIGURE_COMMAND "configure CFLAGS=\"-DDISABLE_BENCODETOOLS -DDISABLE_ZAKALWE\" \
 --without-avx2 --without-uade123 --without-uadefs --without-uadesimple --without-write-audio --without-vasm \
