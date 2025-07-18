@@ -4636,14 +4636,27 @@ QPushButton:hover
       <widget class="QLabel" name="labelPanning2UADE">
           <property name="geometry">
               <rect>
-                  <x>560</x>
-                  <y>145</y>
+                  <x>170</x>
+                  <y>170</y>
                   <width>121</width>
                   <height>41</height>
               </rect>
           </property>
           <property name="text">
-              <string>TextLabel</string>
+              <string>Mono</string>
+          </property>
+      </widget>
+      <widget class="QLabel" name="labelPanning3UADE">
+          <property name="geometry">
+              <rect>
+                  <x>508</x>
+                  <y>170</y>
+                  <width>121</width>
+                  <height>41</height>
+              </rect>
+          </property>
+          <property name="text">
+              <string>Full Stereo</string>
           </property>
       </widget>
       <widget class="QSlider" name="sliderPanning2UADE">
