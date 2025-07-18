@@ -11,10 +11,10 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
-set(FILENAME "${NAME}-dev.tar.gz")
-set(URL "https://gitlab.com/mvtiaine/${NAME}/-/archive/dev/${NAME}-dev.tar.gz")
-set(SHA_256_HASH "9edf953781187442f1e99bf8fd8e7cb35aef256b537e15ebf99f71b86e5a80c4")
-set(UNPACKED_DIR "${NAME}-dev")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
+set(URL "https://gitlab.com/mvtiaine/${NAME}/-/archive/${VERSION}/${FILENAME}")
+set(SHA_256_HASH "d6cf842016bc5e20a1db0ae0dbecec57f6ce7b6361daa74d60c81fd56baca9f0")
+set(UNPACKED_DIR "${NAME}-${VERSION}")
 set(CONFIGURE_COMMAND "configure CFLAGS=\"-DDISABLE_BENCODETOOLS -DDISABLE_ZAKALWE\" \
 --without-avx2 --without-uade123 --without-uadefs --without-uadesimple --without-write-audio --without-vasm \
 --bencode-tools-prefix=/dev/null --libzakalwe-prefix=/dev/null")
