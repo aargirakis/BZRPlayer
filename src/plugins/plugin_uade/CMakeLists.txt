@@ -16,7 +16,7 @@ set(URL "https://gitlab.com/mvtiaine/${NAME}/-/archive/dev/${NAME}-dev.tar.gz")
 set(SHA_256_HASH "9c582b775f502ca97a89b20a4c2bc5d5bac4f554f20717012fd0d14ae8f7dbb7")
 set(UNPACKED_DIR "${NAME}-dev")
 set(CONFIGURE_COMMAND "configure CFLAGS=\"-DDISABLE_BENCODETOOLS -DDISABLE_ZAKALWE\" \
---without-uade123 --without-uadefs --without-uadesimple --without-write-audio --without-avx2 \
+--without-avx2 --without-uade123 --without-uadefs --without-uadesimple --without-write-audio --without-vasm \
 --bencode-tools-prefix=/dev/null --libzakalwe-prefix=/dev/null")
 set(BUILD_BYPRODUCTS "src/frontends/libuade/libuade.a")
 download_patch_and_make(
