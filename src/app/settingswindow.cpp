@@ -125,6 +125,8 @@ settingsWindow::settingsWindow(QWidget* parent) :
 
     ui->SliderStereoSeparationOpenMPT->installEventFilter(this);
 
+    ui->sliderPanningUADE->installEventFilter(this);
+
     ui->sliderSilenceTimeOut->installEventFilter(this);
 
     ui->comboBoxFilterEmuModeUADE->installEventFilter(this);
@@ -674,6 +676,7 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
             obj == ui->SliderNormalizerMaxAmp ||
             obj == ui->SliderNormalizerThreshold ||
             obj == ui->comboBoxReverb ||
+            obj == ui->sliderPanningUADE ||
             obj == ui->comboBoxFilterEmuModeUADE ||
             obj == ui->comboBoxLedFilterUADE ||
             obj == ui->comboBox ||
