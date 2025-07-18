@@ -37,6 +37,51 @@ ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, unsigned int c
     m_topHeight = 42;
     m_width = 640;
     m_height = 512;
+
+    m_vumeterWidth = 12;
+    m_vumeterHeight = 94;
+    m_vumeterLeftOffset = 90;
+    m_vumeterHilightWidth = 2;
+    m_vumeterOffset = 120;
+    m_vumeterTopOffset = -18;
+
+//main color
+    m_linearGrad.setColorAt(0, QColor(0, 0, 0).rgb()); //black
+    m_linearGrad.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
+    m_linearGrad.setColorAt(0.02, QColor(75, 0, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.07, QColor(136, 17, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.12, QColor(170, 34, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.22, QColor(238, 102, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.39, QColor(255, 238, 0).rgb()); //yellow
+    m_linearGrad.setColorAt(0.48, QColor(238, 255, 0).rgb()); //yellow
+    m_linearGrad.setColorAt(0.64, QColor(153, 238, 0).rgb()); // green
+    m_linearGrad.setColorAt(1, QColor(17, 85, 0).rgb()); // green
+
+
+    //hilight color (left)
+    m_linearGradHiLite.setColorAt(0, QColor(0, 0, 0).rgb()); //black
+    m_linearGradHiLite.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
+    m_linearGradHiLite.setColorAt(0.02, QColor(136, 51, 51).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.07, QColor(187, 68, 51).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.12, QColor(221, 85, 51).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.22, QColor(255, 153, 51).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.39, QColor(255, 255, 51).rgb()); //yellow
+    m_linearGradHiLite.setColorAt(0.48, QColor(255, 255, 51).rgb()); //yellow
+    m_linearGradHiLite.setColorAt(0.64, QColor(204, 255, 51).rgb()); // green
+    m_linearGradHiLite.setColorAt(1, QColor(68, 136, 51).rgb()); // green
+
+    //dark color (right)
+    m_linearGradDark.setColorAt(0, QColor(0, 0, 0).rgb()); //black
+    m_linearGradDark.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
+    m_linearGradDark.setColorAt(0.02, QColor(34, 0, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.07, QColor(85, 0, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.12, QColor(119, 0, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.22, QColor(187, 51, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.39, QColor(204, 170, 0).rgb()); //yellow
+    m_linearGradDark.setColorAt(0.48, QColor(187, 204, 0).rgb()); //yellow
+    m_linearGradDark.setColorAt(0.64, QColor(102, 187, 51).rgb()); // green
+    m_linearGradDark.setColorAt(1, QColor(0, 34, 0).rgb()); // green
+
 }
 
 BitmapFont ProTracker36PatternView::infoFont()

@@ -35,6 +35,10 @@ AHXPatternView::AHXPatternView(Tracker* parent, unsigned int channels, int scale
     m_channelxSpace = 2;
     m_topHeight = 44;
     m_bottomFrameHeight = 2;
+
+    m_vumeterWidth = 16;
+    m_vumeterLeftOffset = 58;
+    m_vumeterTopOffset = -9;
 }
 
 BitmapFont AHXPatternView::infoFont()

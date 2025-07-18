@@ -42,6 +42,27 @@ UltimateSoundTrackerPatternView::UltimateSoundTrackerPatternView(Tracker* parent
     m_ibuttonNextSampleHeight = 7;
     m_ibuttonNextSampleX = 2;
     m_ibuttonNextSampleY = 24;
+
+    m_vumeterHeight = 48;
+    m_vumeterWidth = 22;
+    m_vumeterLeftOffset = 61;
+
+    m_linearGrad.setColorAt(0, QColor(156, 0, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.250000000, QColor(156, 0, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.250000001, QColor(0, 140, 0).rgb()); //green
+    m_linearGrad.setColorAt(1, QColor(0, 140, 0).rgb()); // green
+
+    //hilight color (left)
+    m_linearGradHiLite.setColorAt(0, QColor(189, 0, 0).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.250000000, QColor(189, 0, 0).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.250000001, QColor(0, 173, 0).rgb()); //green
+    m_linearGradHiLite.setColorAt(1, QColor(0, 173, 0).rgb()); // green
+
+    //dark color (right)
+    m_linearGradDark.setColorAt(0, QColor(115, 0, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.250000000, QColor(115, 0, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.250000001, QColor(0, 99, 0).rgb()); //green
+    m_linearGradDark.setColorAt(1, QColor(0, 99, 0).rgb()); // green
 }
 
 QFont UltimateSoundTrackerPatternView::currentRowFont()

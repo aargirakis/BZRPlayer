@@ -167,6 +167,18 @@ public:
     BitmapFont m_bitmapFontParameters;
     BitmapFont m_bitmapFontRownumber;
 
+    //VU-meters
+    int m_vumeterHeight;
+    int m_vumeterWidth;
+    int m_vumeterLeftOffset;
+    int m_vumeterOffset;
+    int m_vumeterHilightWidth;
+    int m_vumeterTopOffset;
+
+    QLinearGradient m_linearGrad;
+    QLinearGradient m_linearGradHiLite;
+    QLinearGradient m_linearGradDark;
+
 protected:
     Tracker* m_trackerWindow;
 
@@ -316,6 +328,9 @@ protected:
     unsigned int m_ibuttonNextSampleHeight;
     unsigned int m_ibuttonNextSampleX;
     unsigned int m_ibuttonNextSampleY;
+
+
+
 
     static const char* NOTES[109];
 };

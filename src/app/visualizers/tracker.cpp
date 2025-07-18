@@ -1173,81 +1173,12 @@ void Tracker::drawVUMeters(QPainter* painter)
     {
         SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
 
-        int HEIGHT = 47;
-        int WIDTH = 10;
-        int LEFT_OFFSET = 55;
-        int VUMETER_OFFSET = 72;
-        int HILIGHT_WIDTH = 2;
-        TOP_OFFSET = -6;
-        if (QString(m_info->fileformat.c_str()).toLower().startsWith("taketracker"))
-        {
-            HEIGHT = 48;
-            WIDTH = 22;
-            LEFT_OFFSET = 61;
-        }
-        else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ultimate") ||
-                 QString(m_info->fileformat.c_str()).toLower().startsWith("soundtracker"))
-        {
-            HEIGHT = 48;
-            WIDTH = 8;
-            LEFT_OFFSET = 56;
-        }
-        else if (QString(m_info->fileformat.c_str()).toLower().startsWith("startrekker"))
-        {
-            TOP_OFFSET = -5;
-        }
-        else if (QString(m_info->fileformat.c_str()) == "AHX")
-        {
-            WIDTH = 16;
-            LEFT_OFFSET = 58;
-            TOP_OFFSET = -9;
-        }
-        else if (QString(m_info->fileformat.c_str()) == "HivelyTracker")
-        {
-            HEIGHT = 64;
-            WIDTH = 32;
-            LEFT_OFFSET = 67;
-            VUMETER_OFFSET = 120;
-            HILIGHT_WIDTH = 1;
-            TOP_OFFSET = -13;
-        }
-        else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0"))
-        {
-            WIDTH = 24;
-            HEIGHT = 128;
-            LEFT_OFFSET = 152;
-            HILIGHT_WIDTH = 4;
-            VUMETER_OFFSET = 144;
-            TOP_OFFSET = -6;
-        }
-        else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1"))
-        {
-            WIDTH = 24;
-            HEIGHT = 128;
-            LEFT_OFFSET = 152;
-            HILIGHT_WIDTH = 4;
-            VUMETER_OFFSET = 144;
-            TOP_OFFSET = -21;
-        }
-        else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
-        {
-            WIDTH = 24;
-            HEIGHT = 128;
-            LEFT_OFFSET = 152;
-            HILIGHT_WIDTH = 4;
-            VUMETER_OFFSET = 144;
-            TOP_OFFSET = -6;
-        }
-        else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (patt"))
-        {
-            WIDTH = 12;
-            HEIGHT = 94;
-            LEFT_OFFSET = 90;
-            HILIGHT_WIDTH = 2;
-            VUMETER_OFFSET = 120;
-            TOP_OFFSET = -18;
-        }
-
+        int HEIGHT = m_trackerview->m_vumeterHeight;
+        int WIDTH = m_trackerview->m_vumeterWidth;
+        int LEFT_OFFSET = m_trackerview->m_vumeterLeftOffset;
+        int VUMETER_OFFSET = m_trackerview->m_vumeterOffset;
+        int HILIGHT_WIDTH = m_trackerview->m_vumeterHilightWidth;
+        TOP_OFFSET = -m_trackerview->m_vumeterTopOffset;
 
         maxHeight = HEIGHT;
 
@@ -1281,162 +1212,11 @@ void Tracker::drawVUMeters(QPainter* painter)
                             vumeterCurrentHeight);
 
 
-            QLinearGradient linearGrad(QPointF(0, 0), QPointF(0, maxHeight));
-            QLinearGradient linearGradHiLite(QPointF(0, 0), QPointF(0, maxHeight));
-            QLinearGradient linearGradDark(QPointF(0, 0), QPointF(0, maxHeight));
+            QLinearGradient linearGrad = m_trackerview->m_linearGrad;
+            QLinearGradient linearGradHiLite = m_trackerview->m_linearGradHiLite;
+            QLinearGradient linearGradDark = m_trackerview->m_linearGradDark;
 
-
-            if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (flt4"))
-            {
-                //main color
-                linearGrad.setColorAt(0, QColor(0, 0, 206).rgb());
-                linearGrad.setColorAt(1, QColor(33, 222, 222).rgb());
-
-                //hilight color (left)
-                linearGradHiLite.setColorAt(0, QColor(0, 0, 239).rgb());
-                linearGradHiLite.setColorAt(1, QColor(49, 255, 255).rgb());
-
-                //dark color (right)
-                linearGradDark.setColorAt(0, QColor(0, 0, 156).rgb());
-                linearGradDark.setColorAt(1, QColor(16, 189, 189).rgb());
-
-                painter->fillRect(rectL, QBrush(linearGrad));
-                painter->fillRect(rectLHiLite, QBrush(linearGradHiLite));
-                painter->fillRect(rectLDark, QBrush(linearGradDark));
-            }
-            else if (QString(m_info->fileformat.c_str()).toLower().startsWith("taketracker"))
-            {
-                painter->setCompositionMode(QPainter::CompositionMode_Lighten);
-                for (int i = 0; i < 6; i++)
-                {
-                    QRect rectL(xPos + (i * 4), maxHeight - vumeterCurrentHeight, 2, vumeterCurrentHeight);
-                    painter->fillRect(rectL, QBrush(QColor(255, 255, 0, 170)));
-                }
-            }
-            else if (QString(m_info->fileformat.c_str()).toLower().startsWith("noise") ||
-                     QString(m_info->fileformat.c_str()).toLower().startsWith("chiptracker") ||
-                     QString(m_info->fileformat.c_str()).toLower().startsWith("ice tracker") ||
-                     QString(m_info->fileformat.c_str()).toLower().startsWith("mnemotron") ||
-                     QString(m_info->fileformat.c_str()).toLower().startsWith("his master"))
-            {
-                //main color
-                linearGrad.setColorAt(0, QColor(189, 16, 0).rgb()); //red
-                linearGrad.setColorAt(0.11, QColor(189, 50, 0).rgb()); //red
-                linearGrad.setColorAt(0.36, QColor(189, 255, 0).rgb()); //yellow
-                linearGrad.setColorAt(0.81, QColor(0, 255, 0).rgb()); // green
-                linearGrad.setColorAt(0.87, QColor(0, 227, 0).rgb()); // green
-                linearGrad.setColorAt(0.95, QColor(0, 169, 0).rgb()); // green
-
-
-                //hilight color (left)
-                linearGradHiLite.setColorAt(0, QColor(255, 16, 0).rgb()); //red
-                linearGradHiLite.setColorAt(0.11, QColor(255, 50, 0).rgb()); //red
-                linearGradHiLite.setColorAt(0.36, QColor(255, 255, 0).rgb()); //yellow
-                linearGradHiLite.setColorAt(0.81, QColor(66, 255, 0).rgb()); // green
-                linearGradHiLite.setColorAt(1, QColor(0, 239, 0).rgb()); // dark green
-
-                //dark color (right)
-                linearGradDark.setColorAt(0, QColor(115, 16, 0).rgb()); //red
-                linearGradDark.setColorAt(0.11, QColor(111, 50, 0).rgb()); //red
-                linearGradDark.setColorAt(0.36, QColor(115, 255, 0).rgb()); //yellow
-                linearGradDark.setColorAt(0.74, QColor(0, 218, 0).rgb()); // green
-                linearGradDark.setColorAt(0.85, QColor(0, 166, 0).rgb()); // green
-                linearGradDark.setColorAt(0.93, QColor(0, 105, 0).rgb()); // green
-                linearGradDark.setColorAt(1, QColor(0, 96, 0).rgb()); // dark green
-
-                painter->fillRect(rectL, QBrush(linearGrad));
-                painter->fillRect(rectLHiLite, QBrush(linearGradHiLite));
-                painter->fillRect(rectLDark, QBrush(linearGradDark));
-            }
-            else if (QString(m_info->fileformat.c_str()).toLower().startsWith("pt3.6") || QString(
-                    m_info->fileformat.c_str()).toLower().startsWith("pt4"))
-            {
-                //main color
-                linearGrad.setColorAt(0, QColor(0, 0, 0).rgb()); //black
-                linearGrad.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
-                linearGrad.setColorAt(0.02, QColor(75, 0, 0).rgb()); //red
-                linearGrad.setColorAt(0.07, QColor(136, 17, 0).rgb()); //red
-                linearGrad.setColorAt(0.12, QColor(170, 34, 0).rgb()); //red
-                linearGrad.setColorAt(0.22, QColor(238, 102, 0).rgb()); //red
-                linearGrad.setColorAt(0.39, QColor(255, 238, 0).rgb()); //yellow
-                linearGrad.setColorAt(0.48, QColor(238, 255, 0).rgb()); //yellow
-                linearGrad.setColorAt(0.64, QColor(153, 238, 0).rgb()); // green
-                linearGrad.setColorAt(1, QColor(17, 85, 0).rgb()); // green
-
-
-                //hilight color (left)
-                linearGradHiLite.setColorAt(0, QColor(0, 0, 0).rgb()); //black
-                linearGradHiLite.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
-                linearGradHiLite.setColorAt(0.02, QColor(136, 51, 51).rgb()); //red
-                linearGradHiLite.setColorAt(0.07, QColor(187, 68, 51).rgb()); //red
-                linearGradHiLite.setColorAt(0.12, QColor(221, 85, 51).rgb()); //red
-                linearGradHiLite.setColorAt(0.22, QColor(255, 153, 51).rgb()); //red
-                linearGradHiLite.setColorAt(0.39, QColor(255, 255, 51).rgb()); //yellow
-                linearGradHiLite.setColorAt(0.48, QColor(255, 255, 51).rgb()); //yellow
-                linearGradHiLite.setColorAt(0.64, QColor(204, 255, 51).rgb()); // green
-                linearGradHiLite.setColorAt(1, QColor(68, 136, 51).rgb()); // green
-
-                //dark color (right)
-                linearGradDark.setColorAt(0, QColor(0, 0, 0).rgb()); //black
-                linearGradDark.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
-                linearGradDark.setColorAt(0.02, QColor(34, 0, 0).rgb()); //red
-                linearGradDark.setColorAt(0.07, QColor(85, 0, 0).rgb()); //red
-                linearGradDark.setColorAt(0.12, QColor(119, 0, 0).rgb()); //red
-                linearGradDark.setColorAt(0.22, QColor(187, 51, 0).rgb()); //red
-                linearGradDark.setColorAt(0.39, QColor(204, 170, 0).rgb()); //yellow
-                linearGradDark.setColorAt(0.48, QColor(187, 204, 0).rgb()); //yellow
-                linearGradDark.setColorAt(0.64, QColor(102, 187, 51).rgb()); // green
-                linearGradDark.setColorAt(1, QColor(0, 34, 0).rgb()); // green
-
-                painter->fillRect(rectL, QBrush(linearGrad));
-                painter->fillRect(rectLHiLite, QBrush(linearGradHiLite));
-                painter->fillRect(rectLDark, QBrush(linearGradDark));
-            }
-            else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0") ||
-                     QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1") ||
-                     QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
-            {
-                //main color
-                linearGrad.setColorAt(0, QColor(187, 187, 187).rgb());
-                linearGrad.setColorAt(0.045, QColor(187, 187, 187).rgb());
-                linearGrad.setColorAt(0.04501, QColor(255, 34, 17).rgb()); //red
-                linearGrad.setColorAt(0.46, QColor(255, 255, 51).rgb()); //yellow
-                linearGrad.setColorAt(0.75, QColor(0, 255, 0).rgb()); // green
-                linearGrad.setColorAt(1, QColor(0, 136, 0).rgb()); // dark green
-
-
-                painter->fillRect(rectL, QBrush(linearGrad));
-                painter->fillRect(rectLHiLite, QBrush(QColor(187, 187, 187)));
-                painter->fillRect(rectLDark, QBrush(QColor(187, 187, 187)));
-                //painter->fillRect(0,0,width(),height(),QColor(255,0,0));
-            }
-            else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ultimate") ||
-                     QString(m_info->fileformat.c_str()).toLower().startsWith("soundtracker") ||
-                     QString(m_info->fileformat.c_str()).toLower().startsWith("converted st2"))
-            {
-                //main color
-                linearGrad.setColorAt(0, QColor(156, 0, 0).rgb()); //red
-                linearGrad.setColorAt(0.250000000, QColor(156, 0, 0).rgb()); //red
-                linearGrad.setColorAt(0.250000001, QColor(0, 140, 0).rgb()); //green
-                linearGrad.setColorAt(1, QColor(0, 140, 0).rgb()); // green
-
-                //hilight color (left)
-                linearGradHiLite.setColorAt(0, QColor(189, 0, 0).rgb()); //red
-                linearGradHiLite.setColorAt(0.250000000, QColor(189, 0, 0).rgb()); //red
-                linearGradHiLite.setColorAt(0.250000001, QColor(0, 173, 0).rgb()); //green
-                linearGradHiLite.setColorAt(1, QColor(0, 173, 0).rgb()); // green
-
-                //dark color (right)
-                linearGradDark.setColorAt(0, QColor(115, 0, 0).rgb()); //red
-                linearGradDark.setColorAt(0.250000000, QColor(115, 0, 0).rgb()); //red
-                linearGradDark.setColorAt(0.250000001, QColor(0, 99, 0).rgb()); //green
-                linearGradDark.setColorAt(1, QColor(0, 99, 0).rgb()); // green
-
-                painter->fillRect(rectL, QBrush(linearGrad));
-                painter->fillRect(rectLHiLite, QBrush(linearGradHiLite));
-                painter->fillRect(rectLDark, QBrush(linearGradDark));
-            }
-            else if (QString(m_info->fileformat.c_str()) == "AHX")
+            if (QString(m_info->fileformat.c_str()) == "AHX")
             {
                 //painter->setCompositionMode(QPainter::CompositionMode_Lighten);
                 QColor col(255, 255, 255);
@@ -1482,27 +1262,9 @@ void Tracker::drawVUMeters(QPainter* painter)
                 painter->fillRect(rectLHiLite, QBrush(linearGradHiLite));
                 painter->fillRect(rectLDark, QBrush(linearGradDark));
             }
-            else //protracker
+            else
             {
-                //main color
-                linearGrad.setColorAt(0, QColor(255, 16, 0).rgb()); //red
-                linearGrad.setColorAt(0.13, QColor(255, 48, 0).rgb()); //red
-                linearGrad.setColorAt(0.4, QColor(255, 255, 0).rgb()); //yellow
-                linearGrad.setColorAt(1, QColor(0, 255, 0).rgb()); // green
 
-
-                //hilight color (left)
-                linearGradHiLite.setColorAt(0, QColor(255, 69, 49).rgb()); //red
-                linearGradHiLite.setColorAt(0.13, QColor(255, 104, 52).rgb()); //red
-                linearGradHiLite.setColorAt(0.34, QColor(255, 255, 52).rgb()); //yellow
-                linearGradHiLite.setColorAt(0.54, QColor(255, 255, 52).rgb()); //yellow
-                linearGradHiLite.setColorAt(1, QColor(49, 255, 49).rgb()); // green
-
-                //dark color (right)
-                linearGradDark.setColorAt(0, QColor(206, 0, 0).rgb()); //red
-                linearGradDark.setColorAt(0.21, QColor(206, 47, 0).rgb()); //red
-                linearGradDark.setColorAt(0.4, QColor(204, 204, 0).rgb()); //yellow
-                linearGradDark.setColorAt(1, QColor(0, 187, 0).rgb()); // green
 
                 painter->fillRect(rectL, QBrush(linearGrad));
                 painter->fillRect(rectLHiLite, QBrush(linearGradHiLite));

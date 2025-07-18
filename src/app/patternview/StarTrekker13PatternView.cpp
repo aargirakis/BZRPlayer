@@ -2,8 +2,7 @@
 #include <QDir>
 #include "mainwindow.h"
 StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int channels, int scale)
-    : AbstractPatternView(parent, channels, scale)
-{
+    : AbstractPatternView(parent, channels, scale) {
     rowNumberOffset = 0;
     octaveOffset = 48;
     m_font2 = QFont("Startrekker 1.3 Double Height");
@@ -20,7 +19,7 @@ StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int
     m_font.setStyleStrategy(QFont::NoAntialias);
     m_colorCurrentRowBackground = QColor(189, 138, 99);
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(156, 170, 33);
+    m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(156, 170, 33);
 
     m_fontWidth = 8;
     m_font.setStyleStrategy(QFont::NoAntialias);
@@ -41,6 +40,20 @@ StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int
     m_ibuttonNextSampleX = 0;
     m_ibuttonNextSampleY = 33;
     m_topHeight = 44;
+
+    m_vumeterTopOffset = -5;
+
+    //main color
+    m_linearGrad.setColorAt(0, QColor(0, 0, 206).rgb());
+    m_linearGrad.setColorAt(1, QColor(33, 222, 222).rgb());
+
+    //hilight color (left)
+    m_linearGradHiLite.setColorAt(0, QColor(0, 0, 239).rgb());
+    m_linearGradHiLite.setColorAt(1, QColor(49, 255, 255).rgb());
+
+    //dark color (right)
+    m_linearGradDark.setColorAt(0, QColor(0, 0, 156).rgb());
+    m_linearGradDark.setColorAt(1, QColor(16, 189, 189).rgb());
 }
 
 QFont StarTrekker13PatternView::currentRowFont()

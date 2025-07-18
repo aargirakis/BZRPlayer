@@ -31,6 +31,29 @@ MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels, int scale
     m_channelxSpace = 0;
     m_width = 640;
     m_height = 512;
+
+    m_vumeterWidth = 24;
+    m_vumeterHeight = 128;
+    m_vumeterLeftOffset = 152;
+    m_vumeterHilightWidth = 4;
+    m_vumeterOffset = 144;
+    m_vumeterTopOffset = -6;
+
+    //main color
+    m_linearGrad.setColorAt(0, QColor(187, 187, 187).rgb());
+    m_linearGrad.setColorAt(0.045, QColor(187, 187, 187).rgb());
+    m_linearGrad.setColorAt(0.04501, QColor(255, 34, 17).rgb()); //red
+    m_linearGrad.setColorAt(0.46, QColor(255, 255, 51).rgb()); //yellow
+    m_linearGrad.setColorAt(0.75, QColor(0, 255, 0).rgb()); // green
+    m_linearGrad.setColorAt(1, QColor(0, 136, 0).rgb()); // dark green
+
+    m_linearGradHiLite.setColorAt(0, QColor(187, 187, 187).rgb());
+    m_linearGradHiLite.setColorAt(1, QColor(187, 187, 187).rgb());
+
+    m_linearGradDark.setColorAt(0, QColor(187, 187, 187).rgb());
+    m_linearGradDark.setColorAt(1, QColor(187, 187, 187).rgb());
+
+
 }
 
 BitmapFont MEDPatternView::infoFont()

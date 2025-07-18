@@ -132,6 +132,17 @@ AbstractPatternView::AbstractPatternView(Tracker* parent, unsigned int channels,
 
     m_bottomFrameHeight = 3;
     m_topHeight = 33;
+
+    m_vumeterHeight = 47;
+    m_vumeterWidth = 10;
+    m_vumeterLeftOffset = 55;
+    m_vumeterOffset = 72;
+    m_vumeterHilightWidth = 2;
+    m_vumeterTopOffset = -6;
+
+    m_linearGrad = QLinearGradient(QPointF(0, 0), QPointF(0, m_vumeterHeight));
+    m_linearGradHiLite = QLinearGradient(QPointF(0, 0), QPointF(0, m_vumeterHeight));
+    m_linearGradDark = QLinearGradient(QPointF(0, 0), QPointF(0, m_vumeterHeight));
 }
 
 const char* AbstractPatternView::NOTES[109] =

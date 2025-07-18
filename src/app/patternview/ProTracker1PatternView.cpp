@@ -39,6 +39,26 @@ ProTracker1PatternView::ProTracker1PatternView(Tracker* parent, unsigned int cha
     m_ibuttonNextSampleHeight = 11;
     m_ibuttonNextSampleX = 0;
     m_ibuttonNextSampleY = 22;
+
+    //main color
+    m_linearGrad.setColorAt(0, QColor(255, 16, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.13, QColor(255, 48, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.4, QColor(255, 255, 0).rgb()); //yellow
+    m_linearGrad.setColorAt(1, QColor(0, 255, 0).rgb()); // green
+
+
+    //hilight color (left)
+    m_linearGradHiLite.setColorAt(0, QColor(255, 69, 49).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.13, QColor(255, 104, 52).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.34, QColor(255, 255, 52).rgb()); //yellow
+    m_linearGradHiLite.setColorAt(0.54, QColor(255, 255, 52).rgb()); //yellow
+    m_linearGradHiLite.setColorAt(1, QColor(49, 255, 49).rgb()); // green
+
+    //dark color (right)
+    m_linearGradDark.setColorAt(0, QColor(206, 0, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.21, QColor(206, 47, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.4, QColor(204, 204, 0).rgb()); //yellow
+    m_linearGradDark.setColorAt(1, QColor(0, 187, 0).rgb()); // green
 }
 
 BitmapFont ProTracker1PatternView::currentRowBitmapFont()

@@ -40,6 +40,32 @@ IceTrackerPatternView::IceTrackerPatternView(Tracker* parent, unsigned int chann
     m_ibuttonNextSampleHeight = 11;
     m_ibuttonNextSampleX = 0;
     m_ibuttonNextSampleY = 22;
+
+
+    //main color
+    m_linearGrad.setColorAt(0, QColor(189, 16, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.11, QColor(189, 50, 0).rgb()); //red
+    m_linearGrad.setColorAt(0.36, QColor(189, 255, 0).rgb()); //yellow
+    m_linearGrad.setColorAt(0.81, QColor(0, 255, 0).rgb()); // green
+    m_linearGrad.setColorAt(0.87, QColor(0, 227, 0).rgb()); // green
+    m_linearGrad.setColorAt(0.95, QColor(0, 169, 0).rgb()); // green
+
+
+    //hilight color (left)
+    m_linearGradHiLite.setColorAt(0, QColor(255, 16, 0).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.11, QColor(255, 50, 0).rgb()); //red
+    m_linearGradHiLite.setColorAt(0.36, QColor(255, 255, 0).rgb()); //yellow
+    m_linearGradHiLite.setColorAt(0.81, QColor(66, 255, 0).rgb()); // green
+    m_linearGradHiLite.setColorAt(1, QColor(0, 239, 0).rgb()); // dark green
+
+    //dark color (right)
+    m_linearGradDark.setColorAt(0, QColor(115, 16, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.11, QColor(111, 50, 0).rgb()); //red
+    m_linearGradDark.setColorAt(0.36, QColor(115, 255, 0).rgb()); //yellow
+    m_linearGradDark.setColorAt(0.74, QColor(0, 218, 0).rgb()); // green
+    m_linearGradDark.setColorAt(0.85, QColor(0, 166, 0).rgb()); // green
+    m_linearGradDark.setColorAt(0.93, QColor(0, 105, 0).rgb()); // green
+    m_linearGradDark.setColorAt(1, QColor(0, 96, 0).rgb()); // dark green
 }
 
 QFont IceTrackerPatternView::currentRowFont()
