@@ -4617,6 +4617,73 @@ QPushButton:hover
      <bool>false</bool>
     </property>
    </widget>
+      <widget class="QLabel" name="labelPanningUADE">
+          <property name="geometry">
+              <rect>
+                  <x>30</x>
+                  <y>145</y>
+                  <width>121</width>
+                  <height>41</height>
+              </rect>
+          </property>
+          <property name="lineWidth">
+              <number>1</number>
+          </property>
+          <property name="text">
+              <string>Panning (linear)</string>
+          </property>
+      </widget>
+      <widget class="QLabel" name="labelPanning2UADE">
+          <property name="geometry">
+              <rect>
+                  <x>560</x>
+                  <y>145</y>
+                  <width>121</width>
+                  <height>41</height>
+              </rect>
+          </property>
+          <property name="text">
+              <string>TextLabel</string>
+          </property>
+      </widget>
+      <widget class="QSlider" name="sliderPanning2UADE">
+          <property name="geometry">
+              <rect>
+                  <x>190</x>
+                  <y>155</y>
+                  <width>351</width>
+                  <height>22</height>
+              </rect>
+          </property>
+<!--          TODO-->
+<!--          <property name="styleSheet">-->
+<!--              <string notr="true"/>-->
+<!--          </property>-->
+          <property name="minimum">
+              <number>0</number>
+          </property>
+          <property name="maximum">
+              <number>1</number>
+          </property>
+          <property name="pageStep">
+              <number>0.1</number>
+          </property>
+          <property name="value">
+              <number>0.7</number>
+          </property>
+          <property name="sliderPosition">
+              <number>0.7</number>
+          </property>
+          <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+      </widget>
+
+
+
+
+
+
    <widget class="QSlider" name="sliderSilenceTimeOut">
     <property name="enabled">
      <bool>false</bool>
@@ -4624,7 +4691,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>190</x>
-      <y>190</y>
+      <y>240</y>
       <width>351</width>
       <height>22</height>
      </rect>
@@ -4652,7 +4719,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>560</x>
-      <y>180</y>
+      <y>230</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -4665,7 +4732,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>140</y>
+      <y>200</y>
       <width>261</width>
       <height>41</height>
      </rect>
@@ -4678,7 +4745,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>180</y>
+      <y>230</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -4697,7 +4764,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>610</x>
-      <y>310</y>
+      <y>330</y>
       <width>75</width>
       <height>29</height>
      </rect>
@@ -4713,7 +4780,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>309</y>
+      <y>329</y>
       <width>231</width>
       <height>31</height>
      </rect>
@@ -4726,7 +4793,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>309</y>
+      <y>329</y>
       <width>430</width>
       <height>31</height>
      </rect>
@@ -4741,15 +4808,15 @@ QPushButton:hover
    <widget class="QCheckBox" name="checkBoxSongLengthUADE">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>270</y>
+      <x>230</x>
+      <y>285</y>
       <width>121</width>
       <height>41</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Enabled</string>
-    </property>
+       <property name="text">
+           <string/>
+       </property>
     <property name="iconSize">
      <size>
       <width>40</width>
@@ -4757,12 +4824,12 @@ QPushButton:hover
      </size>
     </property>
    </widget>
-   <widget class="QLabel" name="label_37">
+   <widget class="QLabel" name="labelSongLengthUADE">
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>230</y>
-      <width>261</width>
+      <y>285</y>
+      <width>180</width>
       <height>41</height>
      </rect>
     </property>
@@ -4778,7 +4845,7 @@ QPushButton:hover
    <property name="geometry">
     <rect>
      <x>170</x>
-     <y>220</y>
+     <y>250</y>
      <width>701</width>
      <height>361</height>
     </rect>
