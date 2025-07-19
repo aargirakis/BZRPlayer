@@ -21,7 +21,7 @@ coded pretty much from scratch.
 `mingw-w64-ucrt-x86_64-qt-advanced-docking-system` `mingw-w64-ucrt-x86_64-SDL2` `mingw-w64-ucrt-x86_64-toolchain`
 `openssl-devel` `patch`
 
-From the MSYS2 **ucrt64.exe** command prompt go to the project sources dir (take in mind Unix-style paths are
+From the MSYS2 **ucrt64.exe** command prompt go to the project sources dir (keep in mind Unix-style paths are
 required), then start the configuration process executing:\
 `cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
 
