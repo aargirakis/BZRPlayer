@@ -2,6 +2,7 @@
 #include "FileLoader.h"
 #include <cstring>
 #include <cstdio>
+#include <format>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -276,9 +277,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                 }
                 else if (word.compare("panning") == 0)
                 {
-                    std::ostringstream oss;
-                    oss << std::fixed << std::setprecision(1) << atof(value.c_str()) / 10;
-                    plugin->panning = oss.str();
+                    int x = stoi(value);
+                    plugin->panning = std::format("{}.{}", x / 10, x % 10);
                 }
                 else if (word.compare("silence_timeout") == 0)
                 {
