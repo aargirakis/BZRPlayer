@@ -76,7 +76,7 @@ else ()
 endif ()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_DATA_DIR="${UADE_DATA_DIR}")
-target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_CORE="${UADE_CORE}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_CORE_PATH="${UADE_DATA_DIR}/${UADE_CORE}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE EMSCRIPTEN)
 
@@ -104,6 +104,7 @@ cmake_path(SET UADE_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${UADE_DATA_DI
 #TODO check https://github.com/mvtiaine/audacious-uade/commit/6445062c77dceb5182f550d057e64724349e4e41
 #TODO uadecore from uade is 5mb from audacious-uade is 1mb
 #TODO put uadecore in lib folder
+#TODO eagleplayer.conf.patch
 #TODO compare players & eagleplayer.conf:
 
 #[[bzr2:  DariusZendeh prefixes=dz,dzp,mkiio

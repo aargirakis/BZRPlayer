@@ -169,7 +169,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
             totalTick == 0 ||
             dataSize == 0 ||
             nrCommand == 0 ||
-            filesize < (unsigned)(70 + dataSize))
+            filesize < (70 + dataSize))
         {
             //This is "probably" not IMPlay Song Format
         }
@@ -208,7 +208,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     //		nrCommand == 0 ||
     //		fp.filesize(f) < (unsigned)(HEADER_LEN + dataSize))
 
-    unsigned char* myBuffer = new unsigned char[filesize];
+    auto myBuffer = new unsigned char[filesize];
     FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, nullptr);
 
@@ -326,10 +326,10 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     uade_config_set_option(uadeConfig, UC_VERBOSE, nullptr);
 
     char uade_basedir[PATH_MAX];
-    snprintf(uade_basedir, PATH_MAX, "%s%s", plugin->info->dataPath.c_str(),UADE_DATA_DIR);
+    snprintf(uade_basedir, PATH_MAX, "%s%s", plugin->info->dataPath.c_str(), UADE_DATA_DIR);
 
     char uade_core[PATH_MAX];
-    snprintf(uade_core, PATH_MAX, "%s%s/%s", plugin->info->dataPath.c_str(),UADE_DATA_DIR, UADE_CORE);
+    snprintf(uade_core, PATH_MAX, "%s%s", plugin->info->dataPath.c_str(), UADE_CORE_PATH);
 
     //TODO uade default:
     //TODO uc->silence_timeout = 20;
