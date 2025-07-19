@@ -230,7 +230,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->led_forced = 0;
     plugin->led_state = 0;
     plugin->panning = "0.5";
-    plugin->silence_timeout = 5;
+    plugin->silence_timeout = "5";
     plugin->silence_timeout_enabled = true;
     plugin->uade_songlengths_enabled = true;
     if (!useDefaults)
