@@ -332,10 +332,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     snprintf(uade_core, PATH_MAX, "%s%s/%s", plugin->info->dataPath.c_str(),UADE_DATA_DIR, UADE_CORE);
 
     //TODO uade default:
-    //TODO uade_set_filter_type(uc, NULL);
-    //TODO uc->frequency = UADE_DEFAULT_FREQUENCY;
-    //TODO uc->gain = 1.0;
-    //TODO uc->panning = 0.7;
     //TODO uc->silence_timeout = 20;
     //TODO uc->subsong_timeout = 512;
     //TODO uc->timeout = -1;
@@ -376,19 +372,16 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     plugin->currentSubsong = -1;
 
-    int ret = uade_play_from_buffer(plugin->info->filename.c_str(), myBuffer, filesize, plugin->currentSubsong,
-                                    plugin->uadeState);
-
-    if (ret <= 0) {
+    if (uade_play_from_buffer(plugin->info->filename.c_str(), myBuffer, filesize, plugin->currentSubsong,
+                              plugin->uadeState) <= 0) {
         cout << "Can not play " << plugin->info->filename << endl;
         return FMOD_ERR_FORMAT;
     }
 
     plugin->uadeSongInfo = uade_get_song_info(plugin->uadeState);
 
-    //TODO check this:
+    //TODO check these:
     plugin->uadeSongInfo->duration;
-
     plugin->uadeSongInfo->songbytes;
     plugin->uadeSongInfo->subsongbytes;
     //TODO info->subsongbytes * 10) / bytespersecond;
