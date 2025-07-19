@@ -1172,7 +1172,7 @@ void Tracker::drawVUMeters(QPainter* painter)
         int LEFT_OFFSET = m_trackerview->m_vumeterLeftOffset;
         int VUMETER_OFFSET = m_trackerview->m_vumeterOffset;
         int HILIGHT_WIDTH = m_trackerview->m_vumeterHilightWidth;
-        TOP_OFFSET = -m_trackerview->m_vumeterTopOffset;
+        TOP_OFFSET = m_trackerview->m_vumeterTopOffset;
 
         maxHeight = HEIGHT;
 
