@@ -146,14 +146,14 @@ QString MultiTrackerPatternView::note(BaseRow* row)
 }
 void::MultiTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 25;
+    m_topHeight = 25;
     QColor colorBase(0, 0, 85);
 
     Tracker* t = (Tracker*)this->parent();
     int numChannels = t->m_info->numChannels;
     int top = 16;
     int left = 0;
-    QRect rectBg(left, 0, (64 + (numChannels * 72)), m_height);
+    QRect rectBg(left, 0, (64 + (numChannels * 72)), m_topHeight);
     painter->fillRect(rectBg, colorBase);
 
     painter->setPen(QColor(255, 255, 255));

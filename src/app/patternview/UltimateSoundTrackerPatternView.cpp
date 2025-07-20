@@ -44,8 +44,8 @@ UltimateSoundTrackerPatternView::UltimateSoundTrackerPatternView(Tracker* parent
     m_ibuttonNextSampleY = 24;
 
     m_vumeterHeight = 48;
-    m_vumeterWidth = 22;
-    m_vumeterLeftOffset = 61;
+    m_vumeterWidth = 8;
+    m_vumeterLeftOffset = 56;
 
     m_linearGrad.setColorAt(0, QColor(156, 0, 0).rgb()); //red
     m_linearGrad.setColorAt(0.250000000, QColor(156, 0, 0).rgb()); //red
@@ -182,13 +182,13 @@ void UltimateSoundTrackerPatternView::paintBelow(QPainter* painter, int height, 
 
 void::UltimateSoundTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 32;
+    m_topHeight = 32;
     QColor colorBase(156, 117, 82);
     QColor colorHilite(173, 138, 99);
     QColor colorShadow(82, 48, 16);
     int top = 8;
     int left = 0;
-    QRect rectBg(left, 0, 320, m_height);
+    QRect rectBg(left, 0, 320, m_topHeight);
     painter->fillRect(rectBg, colorBase);
 
 

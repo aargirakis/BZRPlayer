@@ -98,7 +98,6 @@ void AHXPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_curre
     //TODO
     //some characters missing in font, copyright symbol, maybe others
 
-    m_height = 42;
     int top = 0;
     int left = 0;
     QColor colorBase(140, 134, 146);

@@ -111,7 +111,7 @@ void OctaMED5ChanPatternView::paintBelow(QPainter* painter, int height, int curr
 
 void::OctaMED5ChanPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 54;
+    m_topHeight = 54;
     QColor colorBase(156, 154, 156);
     QColor colorHilite(255, 255, 255);
     QColor colorShadow(0, 0, 0);
@@ -123,7 +123,7 @@ void::OctaMED5ChanPatternView::paintTop(QPainter* painter,Info* info, unsigned i
 
 
     //background
-    painter->fillRect(left, 0, 640, m_height, colorBase);
+    painter->fillRect(left, 0, 640, m_topHeight, colorBase);
     painter->fillRect(left, 0, 640, 20, colorHilite);
     painter->fillRect(left, 20, 640, 4, colorShadow);
     painter->fillRect(left, 50, 640, 4, colorShadow);

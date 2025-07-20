@@ -255,13 +255,13 @@ void IceTrackerPatternView::paintBelow(QPainter* painter, int height, int curren
 }
 void::IceTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 32;
+    m_topHeight = 32;
     QColor colorBase(115, 138, 156);
     QColor colorHilite(173, 186, 206);
     QColor colorShadow(66, 85, 115);
     int top = 8;
     int left = 0;
-    QRect rectBg(left, 0, 319, m_height);
+    QRect rectBg(left, 0, 319, m_topHeight);
     painter->fillRect(rectBg, colorBase);
 
     painter->setPen(colorShadow);

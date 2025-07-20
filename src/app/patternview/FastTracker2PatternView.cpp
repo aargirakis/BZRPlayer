@@ -341,7 +341,7 @@ void FastTracker2PatternView::paintBelow(QPainter* painter, int height, int curr
 }
 void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 29;
+    m_topHeight = 29;
     QColor colorBase(73, 117, 130);
     QColor colorHilite(138, 219, 243);
     QColor colorShadow(24, 40, 44);
@@ -353,27 +353,27 @@ void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned i
     if (t->m_info->numChannels > 4 && t->m_info->numChannels < 7)
     {
         painter->fillRect(left, 0, 55 + (t->m_info->numChannels * 96 * fontWidth() / 8),
-                          m_height, colorBase);
+                          m_topHeight, colorBase);
     }
     else
     {
         painter->fillRect(left, 0, 55 + (t->m_info->numChannels * 72 * fontWidth() / 8),
-                          m_height, colorBase);
+                          m_topHeight, colorBase);
     }
 
     //left
-    painter->fillRect(left, 0, 1, m_height - 1, colorHilite);
+    painter->fillRect(left, 0, 1, m_topHeight - 1, colorHilite);
 
     //right
     if (t->m_info->numChannels > 4 && t->m_info->numChannels < 7)
     {
         painter->fillRect(left + 55 + (t->m_info->numChannels * 96 * fontWidth() / 8), 0, 1,
-                          m_height, colorShadow);
+                          m_topHeight, colorShadow);
     }
     else
     {
         painter->fillRect(left + 55 + (t->m_info->numChannels * 72 * fontWidth() / 8), 0, 1,
-                          m_height, colorShadow);
+                          m_topHeight, colorShadow);
     }
 
     //top
@@ -391,12 +391,12 @@ void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned i
     //bottom
     if (t->m_info->numChannels > 4 && t->m_info->numChannels < 7)
     {
-        painter->fillRect(left, m_height - 1,
+        painter->fillRect(left, m_topHeight - 1,
                           55 + (t->m_info->numChannels * 96 * fontWidth() / 8), 1, colorShadow);
     }
     else
     {
-        painter->fillRect(left, m_height - 1,
+        painter->fillRect(left, m_topHeight - 1,
                           55 + (t->m_info->numChannels * 72 * fontWidth() / 8), 1, colorShadow);
     }
 
@@ -414,8 +414,8 @@ void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned i
 
     drawText(QString("%1").arg(t->m_info->restart, 2, 16, QChar('0')).toUpper(), painter, left + 58, 26,infoFont2());
     //bevel
-    painter->fillRect(left + (75), 1, 1, (m_height - 2), colorShadow);
-    painter->fillRect(left + (76), 1, 1, (m_height - 2), colorHilite);
+    painter->fillRect(left + (75), 1, 1, (m_topHeight - 2), colorShadow);
+    painter->fillRect(left + (76), 1, 1, (m_topHeight - 2), colorHilite);
 
     painter->setPen(colorShadow);
     drawText("BPM", painter, left + 80, 15,infoFont2());
@@ -431,8 +431,8 @@ void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned i
 
     drawText(QString("%1").arg(m_currentSpeed, 2, 16, QChar('0')).toUpper(), painter, left + 115, 26,infoFont());
     //bevel
-    painter->fillRect(left + (132), 1, 1, (m_height - 2), colorShadow);
-    painter->fillRect(left + (133), 1, 1, (m_height - 2), colorHilite);
+    painter->fillRect(left + (132), 1, 1, (m_topHeight - 2), colorShadow);
+    painter->fillRect(left + (133), 1, 1, (m_topHeight - 2), colorHilite);
 
 
     painter->setPen(colorShadow);
@@ -460,9 +460,9 @@ void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned i
     painter->fillRect(left + (frameOffsetX + 2), (frameOffsetY + 3), 1, 13, colorShadow);
     painter->fillRect(left + (frameOffsetX + 3), (frameOffsetY + 3), 160, 12, QColor(0, 0, 0));
 
-    painter->fillRect(left + (frameOffsetX - 1), 1, 1, (m_height - 2), colorShadow);
-    painter->fillRect(left + (frameOffsetX + 165), 1, 1, (m_height - 2), colorShadow);
-    painter->fillRect(left + (frameOffsetX + 166), 1, 1, (m_height - 2), colorHilite);
+    painter->fillRect(left + (frameOffsetX - 1), 1, 1, (m_topHeight - 2), colorShadow);
+    painter->fillRect(left + (frameOffsetX + 165), 1, 1, (m_topHeight - 2), colorShadow);
+    painter->fillRect(left + (frameOffsetX + 166), 1, 1, (m_topHeight - 2), colorHilite);
 
     painter->setPen(colorWhite);
 

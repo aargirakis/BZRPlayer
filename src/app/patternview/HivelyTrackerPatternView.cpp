@@ -137,14 +137,14 @@ void HivelyTrackerPatternView::paintAbove(QPainter* painter, int height, int cur
 
 void::HivelyTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 104;
+    m_topHeight = 104;
     int top = 2;
     int left = 0;
     QColor colorBase(170, 204, 238);
     QColor colorShadow(17, 51, 85);
 
 
-    QRect rectBg(0, 0, m_width, m_height);
+    QRect rectBg(0, 0, m_width, m_topHeight);
     painter->fillRect(rectBg, QColor(0, 0, 0));
 
 
@@ -159,22 +159,22 @@ void::HivelyTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned 
     QPen pen(colorBase);
     for (int i = 0; i < info->modTrackPositions.size(); i++)
     {
-        QRectF targetTrack(left + (15) + (i * 120), m_height - 25, 120, 25);
+        QRectF targetTrack(left + (15) + (i * 120), m_topHeight - 25, 120, 25);
         painter->drawImage(targetTrack, imageTop, sourceTrack);
         pen.setColor(colorBase);
         painter->setPen(pen);
         m_font.setLetterSpacing(QFont::AbsoluteSpacing, 0);
         painter->setFont(m_font);
-        painter->drawText(left + (108) + (i * 120), m_height - 8,
+        painter->drawText(left + (108) + (i * 120), m_topHeight - 8,
                           QString("%1").arg(info->modTrackPositions[i], 3, 10, QChar('0')));
         pen.setColor(colorShadow);
         painter->setPen(pen);
         m_font.setLetterSpacing(QFont::AbsoluteSpacing, -1);
         painter->setFont(m_font);
-        painter->drawText(left + (25) + (i * 120), m_height - 7, "Track " + QString::number(i + 1));
+        painter->drawText(left + (25) + (i * 120), m_topHeight - 7, "Track " + QString::number(i + 1));
         pen.setColor(QColor(255, 255, 255));
         painter->setPen(pen);
-        painter->drawText(left + (24) + (i * 120), m_height - 8, "Track " + QString::number(i + 1));
+        painter->drawText(left + (24) + (i * 120), m_topHeight - 8, "Track " + QString::number(i + 1));
     }
     m_font.setLetterSpacing(QFont::AbsoluteSpacing, 0);
 

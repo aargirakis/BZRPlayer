@@ -213,7 +213,7 @@ void OctaMEDSoundstudioPatternView::paintBelow(QPainter* painter, int height, in
 }
 void::OctaMEDSoundstudioPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 32;
+    m_topHeight = 32;
     QColor colorBase(156, 154, 156);
     QColor colorHilite(255, 255, 255);
     QColor colorShadow(0, 0, 0);
@@ -236,11 +236,11 @@ void::OctaMEDSoundstudioPatternView::paintTop(QPainter* painter,Info* info, unsi
     //left
     painter->fillRect(left, 16, 1, 16, colorHilite);
     //right
-    painter->fillRect(left + (24 + (minChannels * 60)), 16, 1, m_height, colorShadow);
+    painter->fillRect(left + (24 + (minChannels * 60)), 16, 1, m_topHeight, colorShadow);
     //top
     painter->fillRect(left, 16, (25 + (minChannels * 60)), 1, colorHilite);
     //bottom
-    painter->fillRect(left, m_height - (1), (25 + (minChannels * 60)), 1, colorShadow);
+    painter->fillRect(left, m_topHeight - (1), (25 + (minChannels * 60)), 1, colorShadow);
 
     painter->setPen(QColor(0, 0, 0));
     drawText(

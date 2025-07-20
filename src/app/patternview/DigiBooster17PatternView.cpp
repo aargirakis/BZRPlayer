@@ -125,7 +125,6 @@ void DigiBooster17PatternView::paintBelow(QPainter* painter, int height, int cur
 }
 void::DigiBooster17PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 46;
         QColor fontColor(222, 186, 140);
 
         int top = 18;

@@ -58,13 +58,13 @@ void SoundTracker26PatternView::paintBelow(QPainter* painter, int height, int cu
 }
 void::SoundTracker26PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 32;
+    m_topHeight = 32;
     QColor colorBase(115, 117, 115);
     QColor colorHilite(173, 170, 173);
     QColor colorShadow(66, 69, 66);
     int top = 8;
     int left = 0;
-    QRect rectBg(left, 0, 320, m_height);
+    QRect rectBg(left, 0, 320, m_topHeight);
     painter->fillRect(rectBg, colorBase);
 
     painter->setPen(colorShadow);

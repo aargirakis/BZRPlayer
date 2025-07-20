@@ -177,13 +177,13 @@ void StarTrekker13PatternView::paintBelow(QPainter* painter, int height, int cur
 }
 void::StarTrekker13PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 44;
+    m_topHeight = 44;
     QColor colorBase(189, 138, 99);
     QColor colorHilite(222, 186, 156);
     QColor colorShadow(140, 85, 49);
     int top = 8;
     int left = 0;
-    QRect rectBg(left, 0, 320, m_height);
+    QRect rectBg(left, 0, 320, m_topHeight);
     painter->fillRect(rectBg, colorBase);
 
     painter->setPen(colorShadow);

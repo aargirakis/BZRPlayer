@@ -47,12 +47,12 @@ void FastTracker1PatternView::paintBelow(QPainter* painter, int height, int curr
 
 void::FastTracker1PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 31;
+    m_topHeight = 31;
     QColor colorBase(146, 146, 162);
     QColor colorHilite(255, 255, 255);
     int top = 16;
     int left = 0 + 12;
-    QRect rectBg(0, 0, m_width, m_height);
+    QRect rectBg(0, 0, m_width, m_topHeight);
     painter->fillRect(rectBg, colorBase);
 
     painter->setPen(QColor(255, 255, 255));
@@ -84,15 +84,15 @@ void::FastTracker1PatternView::paintTop(QPainter* painter,Info* info, unsigned i
 
     m_pen.setColor(colorHilite);
     painter->setPen(m_pen);
-    painter->drawLine(0, m_height - 1, m_width - 1, m_height - 1);
+    painter->drawLine(0, m_topHeight - 1, m_width - 1, m_topHeight - 1);
 
     m_pen.setColor(colorHilite);
     painter->setPen(m_pen);
-    painter->drawLine(1, 0, 1, m_height - 1);
+    painter->drawLine(1, 0, 1, m_topHeight - 1);
 
     m_pen.setColor(colorHilite);
     painter->setPen(m_pen);
-    painter->drawLine(m_width, 0, m_width, m_height - 1);
+    painter->drawLine(m_width, 0, m_width, m_topHeight - 1);
 
     m_pen.setColor(colorHilite);
     painter->setPen(m_pen);
@@ -104,7 +104,7 @@ void::FastTracker1PatternView::paintTop(QPainter* painter,Info* info, unsigned i
 
     m_pen.setColor(colorHilite);
     painter->setPen(m_pen);
-    painter->drawLine(left + (409), 0, left + (409), m_height - 1);
+    painter->drawLine(left + (409), 0, left + (409), m_topHeight - 1);
 }
 FastTracker1PatternView::~FastTracker1PatternView()
 {

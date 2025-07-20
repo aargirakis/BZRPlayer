@@ -153,7 +153,6 @@ void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_curr
 {
     if(QString(info->fileformat.c_str()).toLower().startsWith("octamed (mmd0"))
     {
-        m_height = 32;
         QColor colorBase(153, 153, 170);
         QColor colorHilite(204, 204, 204);
         QColor colorShadow(102, 102, 119);
@@ -198,21 +197,21 @@ void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_curr
     }
     else
     {
-        m_height = 28;
+        m_topHeight = 28;
         QColor colorBase(153, 153, 170);
         QColor colorHilite(204, 204, 204);
         QColor colorShadow(102, 102, 119);
         int left = 0;
 
         //background
-        painter->fillRect(left + 2, 0, 636, m_height, colorBase);
+        painter->fillRect(left + 2, 0, 636, m_topHeight, colorBase);
 
         //left
-        painter->fillRect(left, 0, 2, m_height, colorShadow);
+        painter->fillRect(left, 0, 2, m_topHeight, colorShadow);
 
 
         //right
-        painter->fillRect(left + 638, 2, 2, m_height, colorHilite);
+        painter->fillRect(left + 638, 2, 2, m_topHeight, colorHilite);
 
         //top
         painter->fillRect(left + 1, 0, 639, 2, colorHilite);

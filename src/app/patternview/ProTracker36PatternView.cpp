@@ -229,14 +229,14 @@ void ProTracker36PatternView::paintBelow(QPainter* painter, int height, int curr
 
 void::ProTracker36PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    m_height = 41;
+    m_topHeight = 41;
     QColor colorBase(170, 170, 170);
     QColor colorHilite(255, 255, 255);
     QColor colorShadow(51, 0, 0);
     QColor colorBlue(0, 0, 187);
     int top = 0;
     int left = 0;
-    QRect rectBg(left, 0, 544, m_height);
+    QRect rectBg(left, 0, 544, m_topHeight);
     painter->fillRect(rectBg, colorBase);
 
     painter->setPen(colorShadow);
@@ -288,8 +288,8 @@ void::ProTracker36PatternView::paintTop(QPainter* painter,Info* info, unsigned i
         drawText("TRACK #" + QString::number(i + 1), painter, left + (68 + (120 * i)), top + (36), infoFont(), 1);
     }
 
-    painter->fillRect(left, 0, 1, m_height, colorHilite);
-    painter->fillRect(left + 543, 0, 1, m_height, colorShadow);
+    painter->fillRect(left, 0, 1, m_topHeight, colorHilite);
+    painter->fillRect(left + 543, 0, 1, m_topHeight, colorShadow);
     painter->fillRect(left, 0, 543, 2, colorHilite);
 
     painter->fillRect(left, 20, 543, 2, colorShadow);
