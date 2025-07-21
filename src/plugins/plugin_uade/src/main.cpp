@@ -352,8 +352,9 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     if (plugin->isContinuousPlaybackActive) {
         uade_config_set_option(uadeConfig, UC_NO_EP_END, nullptr);
         uade_config_set_option(uadeConfig, UC_DISABLE_TIMEOUTS, nullptr);
+        uade_config_set_option(uadeConfig, UC_TIMEOUT_VALUE, "-1");
+        uade_config_set_option(uadeConfig, UC_SUBSONG_TIMEOUT_VALUE, "-1");
         uade_config_set_option(uadeConfig, UC_SILENCE_TIMEOUT_VALUE, "-1");
-        uade_config_set_option(uadeConfig, UC_SUBSONG_TIMEOUT_VALUE, to_string(-1).c_str());
     } else {
         uade_config_set_option(uadeConfig, UC_ENABLE_TIMEOUTS, nullptr);
         uade_config_set_option(uadeConfig, UC_SILENCE_TIMEOUT_VALUE,
@@ -366,7 +367,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         uade_config_set_option(uadeConfig, UC_FORCE_LED, plugin->led_state ? "on" : "off");
     }
 
-    //TODO is resampling affected by filtering?
     //TODO add "sinc" & "none" resampling methods
     //TODO "sinc" should be the best option for freqs > 44100?
     uade_config_set_option(uadeConfig, UC_RESAMPLER, "default");
