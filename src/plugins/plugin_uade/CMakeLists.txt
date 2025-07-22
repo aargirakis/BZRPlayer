@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "uade")
-set(VERSION "99326f2a11543969ccba4acf5094586ce594bc45")
+set(VERSION "b8be8fb35c103267518f783ef451d908f94944dc")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
 set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(URL "https://gitlab.com/mvtiaine/${NAME}/-/archive/${VERSION}/${FILENAME}")
-set(SHA_256_HASH "d6cf842016bc5e20a1db0ae0dbecec57f6ce7b6361daa74d60c81fd56baca9f0")
+set(SHA_256_HASH "b7628e95d2e2d54f7afc793156474c0efd775a7ec31776f53c0d52ec2c07e61c")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
