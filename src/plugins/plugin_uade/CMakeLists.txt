@@ -53,7 +53,6 @@ endif ()
 set(PLUGIN_${NAME}_VERSION "${UADE_VERSION} (${VERSION_SHORT})" PARENT_SCOPE)
 
 #TODO disable vasm compilation
-#TODO win: Package 'ao' not found
 
 file(GLOB SOURCES
         src/flod/*.cpp #TODO

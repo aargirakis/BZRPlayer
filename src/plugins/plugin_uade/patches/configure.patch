@@ -1,0 +1,28 @@
+--- configure	2025-07-15 16:50:52.000000000 +0200
++++ configure	2025-07-22 08:50:42.884018107 +0200
+@@ -484,16 +484,18 @@
+ AOFLAGS=""
+ AOLIBS="-lao"
+ if test -n "$PKG_CONFIG" ; then
++  if test "$useuade123" = "yes" || test "$useuadesimple" = "yes" ; then
+     AOFLAGS=$($PKG_CONFIG --cflags ao --short-errors)
+     if test "$?" != "0"; then
+-	if test "$useuade123" = "yes" ; then
+-	    echo ""
+-	    echo "Can not compile uade123. Please install libao (including development kit)."
+-	    echo ""
+-	    useuade123="no"
+-	fi
++      echo ""
++      echo "Can not compile uade123 or uadesimple. Please install libao (including development kit)."
++      echo ""
++      useuade123="no"
++      useuadesimple="no"
++    else
++      AOLIBS=$($PKG_CONFIG --libs ao --short-errors)
+     fi
+-    AOLIBS=$($PKG_CONFIG --libs ao --short-errors)
++  fi
+ fi
+ 
+ pkgconfigdir="$prefix/lib/pkgconfig"
