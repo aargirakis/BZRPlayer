@@ -34,6 +34,7 @@ public:
     unsigned int m_currentSpeedBuffer;
     unsigned int m_currentBPMBuffer;
     unsigned int m_currentRowBuffer;
+    unsigned int m_lastSample;
 
 
 private:
@@ -46,6 +47,8 @@ private:
     QSize m_lastTopBarSize;
     bool m_renderVUMeter;
     bool m_renderTop;
+
+    unsigned  int m_currentSample;
 
     QPen m_pen;
     float m_fColorHueCounter;

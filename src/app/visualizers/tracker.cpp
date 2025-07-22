@@ -1333,6 +1333,16 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     unsigned int currentSpeed = 0;
     unsigned int currentBPM = 0;
 
+    unsigned int currentSample = m_trackerview->getCurrentSample();
+
+    unsigned int previousOldSample = m_trackerview->getCurrentSample();
+    bool updateSample= false;
+    if(m_currentSample != previousOldSample)
+    {
+        m_currentSample=m_trackerview->getCurrentSample();
+        updateSample=true;
+    }
+
     currentPosition = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODORDER);
     currentRow = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODROW);
     currentPattern = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODPATTERN);
@@ -1346,7 +1356,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
 
     bool topToUpdate;
     topToUpdate = currentPosition!=m_currentPositionBuffer  ||
-                      m_currentPattern!=m_currentPatternBuffer || m_currentSpeed!=m_currentSpeedBuffer || m_currentBPM!=m_currentBPMBuffer;
+                      m_currentPattern!=m_currentPatternBuffer || m_currentSpeed!=m_currentSpeedBuffer || m_currentBPM!=m_currentBPMBuffer || updateSample;
 
     if (sizeChanged || trackerToUpdate)
     {

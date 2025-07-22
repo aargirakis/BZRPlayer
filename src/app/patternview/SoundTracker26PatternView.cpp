@@ -14,10 +14,6 @@ SoundTracker26PatternView::SoundTracker26PatternView(Tracker* parent, unsigned i
     m_ibuttonNextSampleX = 0;
     m_ibuttonNextSampleY = 22;
 
-    m_vumeterHeight = 48;
-    m_vumeterWidth = 22;
-    m_vumeterLeftOffset = 61;
-
 
     //main color
     m_linearGrad.setColorAt(0, QColor(189, 16, 0).rgb()); //red
