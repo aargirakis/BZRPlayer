@@ -83,8 +83,9 @@ else ()
 endif ()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_DATA_DIR="${UADE_DATA_DIR}")
-target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_CORE_PATH="${UADE_DATA_DIR}/${UADE_CORE}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_CORE="${UADE_CORE}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_DIR="${PLUGINS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE EMSCRIPTEN)
 
 add_library(LIBUADE_STATIC STATIC IMPORTED GLOBAL)
@@ -109,7 +110,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 cmake_path(SET UADE_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${UADE_DATA_DIR})
 
 #TODO check https://github.com/mvtiaine/audacious-uade/commit/6445062c77dceb5182f550d057e64724349e4e41
-#TODO put uadecore in lib folder
 #TODO eagleplayer.conf.patch
 #TODO eagleplayer.conf:
 
@@ -146,6 +146,8 @@ JochenHippel prefixes=hip,mcmd,sog
 Jochen_Hippel_ST prefixes=hst,sdc
 ]]
 
+cmake_path(SET UADE_LIB_DIR NORMALIZE ${OUTPUT_DIR}${LIB_DIR}${PLUGINS_DIR})
+
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${EXTERNAL_SOURCE_DIR}/players ${UADE_DATA_PATH}/players
@@ -155,9 +157,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${EXTERNAL_SOURCE_DIR}/eagleplayer.conf
         ${EXTERNAL_SOURCE_DIR}/${SONG_CONF}
         ${EXTERNAL_SOURCE_DIR}/uade.conf
-        ${EXTERNAL_SOURCE_DIR}/src/${UADE_CORE}
         ${EXTERNAL_SOURCE_DIR}/uaerc
         ${CMAKE_CURRENT_SOURCE_DIR}/dist/${UADE_SONGLENGTHS}
         ${UADE_DATA_PATH}
+
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${EXTERNAL_SOURCE_DIR}/src/${UADE_CORE}
+        ${UADE_LIB_DIR}
 
         VERBATIM)

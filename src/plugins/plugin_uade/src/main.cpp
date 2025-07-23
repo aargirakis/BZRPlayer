@@ -336,7 +336,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     snprintf(uade_basedir, PATH_MAX, "%s%s", plugin->info->dataPath.c_str(), UADE_DATA_DIR);
 
     char uade_core[PATH_MAX];
-    snprintf(uade_core, PATH_MAX, "%s%s", plugin->info->dataPath.c_str(), UADE_CORE_PATH);
+    snprintf(uade_core, PATH_MAX, "%s%s/%s", plugin->info->libPath.c_str(), PLUGINS_DIR, UADE_CORE);
 
     //TODO uade default:
     //TODO uc->silence_timeout = 20;
