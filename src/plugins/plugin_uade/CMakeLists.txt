@@ -111,7 +111,7 @@ cmake_path(SET UADE_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${UADE_DATA_DI
 #TODO check https://github.com/mvtiaine/audacious-uade/commit/6445062c77dceb5182f550d057e64724349e4e41
 #TODO put uadecore in lib folder
 #TODO eagleplayer.conf.patch
-#TODO compare players & eagleplayer.conf:
+#TODO eagleplayer.conf:
 
 #[[bzr2:  DariusZendeh prefixes=dz,dzp,mkiio
 matti: DariusZendeh prefixes=dz,mkiio
@@ -144,24 +144,11 @@ JochenHippel-CoSo_UADE prefixes=hipc
 JochenHippelCOSO prefixes=soc
 JochenHippel prefixes=hip,mcmd,sog
 Jochen_Hippel_ST prefixes=hst,sdc
-
-bzr2:  SoundTracker-Pro-I prefixes=stp
-matti: not found
-
-bzr2:  SymphoniePro prefixes=sym
-matti: not found
-
-bzr2:  Stonetracker prefixes=spm
-matti: not found]]
+]]
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${EXTERNAL_SOURCE_DIR}/players ${UADE_DATA_PATH}/players
-        #
-        #        #TODO where they come from?
-        #        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        #        ${CMAKE_CURRENT_SOURCE_DIR}/dist/players ${UADE_DATA_PATH}/players
-        #
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR}/amigasrc/score/score
@@ -172,4 +159,5 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${EXTERNAL_SOURCE_DIR}/uaerc
         ${CMAKE_CURRENT_SOURCE_DIR}/dist/${UADE_SONGLENGTHS}
         ${UADE_DATA_PATH}
+
         VERBATIM)
