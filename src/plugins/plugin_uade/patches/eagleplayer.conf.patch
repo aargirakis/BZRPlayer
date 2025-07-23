@@ -1,0 +1,28 @@
+--- eagleplayer.conf	2025-07-23 19:46:07.523225086 +0200
++++ eagleplayer.conf	2025-07-23 20:00:45.012540765 +0200
+@@ -21,7 +21,7 @@
+ CoreDesign		prefixes=core
+ custom			prefixes=cus,cust,custom
+ CustomMade		prefixes=cm,rk,rkb	ignore_player_check
+-DariusZendeh		prefixes=dz,mkiio
++DariusZendeh		prefixes=dz,dzp,mkiio
+ DaveLowe		prefixes=dl
+ DaveLowe_Deli		prefixes=dl_deli
+ DaveLoweNew		prefixes=dln
+@@ -75,7 +75,7 @@
+ MajorTom		prefixes=hn,mtp2,thn,arp
+ Mark_Cooksey		prefixes=mc,mcr
+ Mark_Cooksey_Old	prefixes=mco
+-MarkII			prefixes=mk2,mkii
++MarkII			prefixes=mii,mk2,mkii
+ MartinWalker		prefixes=avp,mw
+ Maximum_Effect		prefixes=max
+ MCMD			prefixes=mcmd_org
+@@ -178,5 +178,5 @@
+ DirkBialluch		prefixes=tpu
+ Quartet			prefixes=qpa
+ Quartet_PSG		prefixes=sqt
+-Quartet_ST		prefixes=qts
+-ZoundMonitor		prefixes=sng
++Quartet_ST		prefixes=4v,qts
++ZoundMonitor		prefixes=sng,zm
