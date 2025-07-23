@@ -23,12 +23,13 @@ else ()
 endif ()
 
 set(CONFIGURE_COMMAND "configure ${CFLAGS} \
---without-avx2 --without-uade123 --without-uadefs --without-uadesimple --without-write-audio --without-vasm \
+--only-uadecore --without-avx2 \
 --bencode-tools-prefix=/dev/null --libzakalwe-prefix=/dev/null")
+set(MAKE_ARGS uadecore libuade)
 set(BUILD_BYPRODUCTS "src/frontends/libuade/libuade.a")
 download_patch_and_make(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
-        ${CONFIGURE_COMMAND} "" ${BUILD_BYPRODUCTS}
+        ${CONFIGURE_COMMAND} "${MAKE_ARGS}" ${BUILD_BYPRODUCTS}
 )
 
 set(SONG_CONF "song.conf")
@@ -109,7 +110,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 cmake_path(SET UADE_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${UADE_DATA_DIR})
 
-#TODO check https://github.com/mvtiaine/audacious-uade/commit/6445062c77dceb5182f550d057e64724349e4e41
 #TODO eagleplayer.conf.patch
 #TODO eagleplayer.conf:
 
