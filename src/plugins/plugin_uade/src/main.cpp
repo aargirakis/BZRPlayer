@@ -23,9 +23,6 @@ extern "C" {
 
 const string TYPE_PREFIX = "type: ";
 unsigned int getLengthFromDatabase(const char*, int, const char*, const char*);
-int test_p40a(unsigned char* data);
-int test_p40b(unsigned char* data);
-int test_p41a(unsigned char* data);
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec);
@@ -338,12 +335,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     char uade_core[PATH_MAX];
     snprintf(uade_core, PATH_MAX, "%s%s/%s", plugin->info->libPath.c_str(), PLUGINS_DIR, UADE_CORE);
 
-    //TODO uade default:
-    //TODO uc->silence_timeout = 20;
-    //TODO uc->subsong_timeout = 512;
-    //TODO uc->timeout = -1;
-    //TODO uc->use_timeouts = 1;
-
     uade_config_set_option(uadeConfig, UC_BASE_DIR, uade_basedir);
     uade_config_set_option(uadeConfig, UC_UADECORE_FILE, uade_core);
     uade_config_set_option(uadeConfig, UC_NO_CONTENT_DB, nullptr);
@@ -367,15 +358,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         uade_config_set_option(uadeConfig, UC_FORCE_LED, plugin->led_state ? "on" : "off");
     }
 
-    //TODO add "sinc" & "none" resampling methods
-    //TODO "sinc" should be the best option for freqs > 44100?
+    //TODO add "sinc" & "none" resampling methods ("sinc" should be the best option for freqs > 44100?)
     uade_config_set_option(uadeConfig, UC_RESAMPLER, "default");
 
     uade_config_set_option(uadeConfig, UC_PANNING_VALUE, plugin->panning.c_str());
     uade_config_set_option(uadeConfig, UC_NO_HEADPHONES, nullptr);
-
-    //TODO
-    //uade_config_set_option(uadeConfig, UC_SUBSONG_TIMEOUT_VALUE, to_string(PRECALC_TIMEOUT).c_str());
 
 #ifndef NDEBUG
     uade_config_set_option(uadeConfig, UC_VERBOSE, nullptr);
@@ -401,12 +388,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     plugin->uadeSongInfo = uade_get_song_info(plugin->uadeState);
 
-    //TODO check these:
-    plugin->uadeSongInfo->duration;
-    plugin->uadeSongInfo->songbytes;
-    plugin->uadeSongInfo->subsongbytes;
-    //TODO info->subsongbytes * 10) / bytespersecond;
-
     if (plugin->uadeSongInfo->formatname[0]) {
         string str(plugin->uadeSongInfo->formatname);
         plugin->info->fileformat = str.starts_with(TYPE_PREFIX)?
@@ -423,32 +404,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->info->plugin = PLUGIN_uade;
     plugin->info->pluginName = PLUGIN_uade_NAME;
 
-    //TODO still needed these thePlayer packed checks?
-    unsigned char* packBuffer;
-    packBuffer = new unsigned char[2048];
-
-    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, packBuffer, 2048, nullptr);
-
-    int p40a = test_p40a(packBuffer);
-    int p40b = test_p40b(packBuffer);
-    int p41a = test_p41a(packBuffer);
-
-    //TODO still needed these The Player checks?
-    if (!p40a)
-    {
-        plugin->info->fileformat = "The Player 4.0a";
-    }
-    else if (!p40b)
-    {
-        plugin->info->fileformat = "The Player 4.0b";
-    }
-    else if (!p41a)
-    {
-        plugin->info->fileformat = "The Player 4.1a";
-    }
-
-    //TODO some of these strings will be now different (need to be checked)
     if (plugin->info->fileformat == "BenDaglish" || plugin->info->fileformat == "DeltaMusic1.3" || plugin->info->fileformat ==
         "DeltaMusic2.0" || plugin->info->fileformat == "DavidWhittaker"
         || plugin->info->fileformat == "Fred" || plugin->info->fileformat == "Infogrames" || plugin->info->fileformat ==
@@ -518,14 +473,17 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 {
     auto *plugin = static_cast<pluginUade *>(codec->plugindata);
 
-    //TODO fmod pre buffers 16384 bytes of audio before start the real audio playback
-    //TODO this (bad) workaround skips the fmod pre-buffering in order to avoid initial playback pops (issue #616)
-    //TODO this effectively postpones the uade rendered data, so also track lengh has been adjusted to avoid ending prematurely
-    //TODO sample tracks:
-    //TODO anarchy_in_the_kitchen.ac1d
-    //TODO rjp.ingame_1 (chaos engine): begin of all subsongs
-    //TODO comic bakery.hip: 2nd subsong (which is silent itself)
-    //TODO moreover, with a proper fix the first Simulcra.cust note should flawlessly plays
+    /*
+     * TODO:
+     *  fmod pre buffers 16384 bytes of audio before start the real audio playback
+     *  this (bad) workaround skips the fmod pre-buffering in order to avoid initial playback pops (issue #616)
+     *  this effectively postpones the uade rendered data, so also track lengh has been adjusted to avoid ending prematurely
+     *  sample tracks:
+     *  anarchy_in_the_kitchen.ac1d
+     *  rjp.ingame_1 (chaos engine): begin of all subsongs
+     *  comic bakery.hip: 2nd subsong (which is silent itself)
+     *  moreover, with a proper fix the first Simulcra.cust note should flawlessly plays
+     */
     if (plugin->isPreBuffering) {
         plugin->isPreBuffering = false;
         *read = 16384;
@@ -555,8 +513,10 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
         return FMOD_ERR_FILE_NOTFOUND;
     }
 
-    // renderedBytes never reach value 0 when uade.md5 provides the song length
-    // when song length is available, this check *might* be still useful if no UADE_NOTIFICATION_SONG_END is received
+    /*
+     * renderedBytes should never reach value 0 when uade.md5 provides the song length
+     * however this check *might* be still useful if no UADE_NOTIFICATION_SONG_END is received
+     */
     if (renderedBytes == 0) {
         return FMOD_ERR_FILE_EOF;
     }
@@ -575,7 +535,6 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     }
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
-        //TODO use plugin->uinfo->subsongs.cur?
         *length = 1 + (plugin->uadeSongInfo->subsongs.max - plugin->uadeSongInfo->subsongs.min);
         return FMOD_OK;
     }
@@ -591,7 +550,7 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
     {
         songLength = getLengthFromDatabase(plugin->info->filename.c_str(),  sub, plugin->uadeSongInfo->modulemd5, plugin->uade_songlengthspath.c_str());
 
-        //TODO track length adjustment (for fmod pre-buffering skip workaround)
+        // track length adjustment (for fmod pre-buffering skip workaround)
         if (songLength != 0) {
             double offset = 1000 * (16384.0 / (plugin->waveformat.frequency * plugin->waveformat.channels *
                                                FMOD_SOUND_FORMAT_PCM16));
@@ -717,25 +676,4 @@ unsigned int getLengthFromDatabase(const char* filename, int subsong, const char
         cout << "Couldn't find song length for: " << filename << ". Hash <" << md5 << ">\n";
     }
     return length;
-}
-
-int test_p40a(uint8_t* data)
-{
-    if (data[0] != 'P' || data[1] != '4' || data[2] != '0' || data[3] != 'A')
-        return -1;
-    return 0;
-}
-
-int test_p40b(uint8_t* data)
-{
-    if (data[0] != 'P' || data[1] != '4' || data[2] != '0' || data[3] != 'B')
-        return -1;
-    return 0;
-}
-
-int test_p41a(uint8_t* data)
-{
-    if (data[0] != 'P' || data[1] != '4' || data[2] != '1' || data[3] != 'A')
-        return -1;
-    return 0;
 }
