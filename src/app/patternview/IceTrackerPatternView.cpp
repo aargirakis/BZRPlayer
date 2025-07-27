@@ -229,13 +229,13 @@ void IceTrackerPatternView::paintBelow(QPainter* painter, int height, int curren
     //right border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine(318, 0, 317, height);
+    painter->drawLine(318, 0, 318, height);
     pen.setColor(colorBase);
     painter->setPen(pen);
-    painter->drawLine(319, 0, 318, height);
+    painter->drawLine(319, 0, 319, height);
     pen.setColor(colorShadow);
     painter->setPen(pen);
-    painter->drawLine(320, 0, 319, height);
+    painter->drawLine(320, 0, 320, height);
 
 
     //1 pixel antialiasing
