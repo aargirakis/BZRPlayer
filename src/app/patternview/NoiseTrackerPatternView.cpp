@@ -126,10 +126,10 @@ void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int curr
     //left border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine(left - 2, 0, left - 3, height);
+    painter->drawLine(left - 2, 0, left - 2, height);
     pen.setColor(colorBase);
     painter->setPen(pen);
-    painter->drawLine(((left - 1)), 0, ((left - 2)), height);
+    painter->drawLine(((left - 1)), 0, ((left - 1)), height);
     pen.setColor(colorShadow);
     painter->setPen(pen);
     painter->drawLine((left - 0), 0, (left - 0), height - 4);
@@ -161,13 +161,13 @@ void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int curr
     //right border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine(318, 0, 317, height);
+    painter->drawLine(318, 0, 318, height);
     pen.setColor(colorBase);
     painter->setPen(pen);
-    painter->drawLine(319, 0, 318, height);
+    painter->drawLine(319, 0, 319, height);
     pen.setColor(colorShadow);
     painter->setPen(pen);
-    painter->drawLine(320, 0, 319, height);
+    painter->drawLine(320, 0, 320, height);
     //1 pixel antialiasing
     painter->fillRect(318, 0, 1, 1, colorBase);
 
