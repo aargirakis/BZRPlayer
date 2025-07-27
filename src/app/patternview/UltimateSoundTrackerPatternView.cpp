@@ -117,13 +117,13 @@ void UltimateSoundTrackerPatternView::paintBelow(QPainter* painter, int height, 
     //left border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine(((left - 2)), 0, ((left - 2)), height);
+    painter->drawLine(((left - 3)), 0, ((left - 3)), height);
     pen.setColor(colorBase);
     painter->setPen(pen);
-    painter->drawLine(((left - 1)), 0, ((left - 1)), height);
+    painter->drawLine(((left - 2)), 0, ((left - 2)), height);
     pen.setColor(colorShadow);
     painter->setPen(pen);
-    painter->drawLine(((left - 0)), 0, ((left - 0)), height);
+    painter->drawLine(((left - 1)), 0, ((left - 1)), height);
 
 
     for (unsigned int chan = 0; chan < m_channels; chan++)
