@@ -1351,7 +1351,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
 
     bool trackerToUpdate;
     trackerToUpdate = currentPosition!=m_currentPositionBuffer || currentRow!=m_currentRowBuffer ||
-            m_currentPattern!=m_currentPatternBuffer || m_currentSpeed!=m_currentSpeedBuffer || m_currentBPM!=m_currentBPMBuffer;
+            m_currentPattern!=m_currentPatternBuffer;
 
 
     bool topToUpdate;
@@ -1363,9 +1363,6 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         m_currentPositionBuffer = currentPosition;
         m_currentRowBuffer = currentRow;
         m_currentPatternBuffer = currentPattern;
-        m_currentSpeedBuffer = currentSpeed;
-        m_currentBPMBuffer = currentBPM;
-
         m_lastBufferSize = renderSize;
         m_backBuffer = QPixmap(renderSize);
         m_backBuffer.fill(Qt::black);
