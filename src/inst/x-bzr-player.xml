@@ -381,6 +381,17 @@
         <glob pattern="*.hst"/>
         <glob pattern="*.soc"/>
     </mime-type>
+    <mime-type type="audio/x-hot">
+        <comment>Anders 0land audio</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="mpl1\0" offset="0"/>
+            <match type="string" value="mpl2\0" offset="0"/>
+            <match type="string" value="mpl3\0" offset="0"/>
+        </magic>
+        <glob pattern="hot.*"/>
+        <glob pattern="*.hot"/>
+    </mime-type>
     <mime-type type="audio/x-hvl">
         <comment>Hively Tracker audio</comment>
         <acronym>HVL</acronym>
