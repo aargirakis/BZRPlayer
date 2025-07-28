@@ -28,7 +28,9 @@
             </match>
         </magic>
         <glob pattern="ahx.*"/>
+        <glob pattern="thx.*"/>
         <glob pattern="*.ahx"/>
+        <glob pattern="*.thx"/>
     </mime-type>
     <mime-type type="audio/x-aon">
         <comment>Art Of Noise audio</comment>
