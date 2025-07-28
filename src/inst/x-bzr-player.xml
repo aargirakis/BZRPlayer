@@ -64,8 +64,10 @@
         </magic>
         <glob pattern="cus.*"/>
         <glob pattern="cust.*"/>
+        <glob pattern="custom.*"/>
         <glob pattern="*.cus"/>
         <glob pattern="*.cust"/>
+        <glob pattern="*.custom"/>
     </mime-type>
     <mime-type type="audio/x-ddmf">
         <comment>DDMF (X-Tracker) audio</comment>
