@@ -110,7 +110,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = 2;
+    plugin->waveformat.channels = UADE_CHANNELS;
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = 2048 * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = 0xffffffff;
@@ -495,7 +495,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     }
 
     ssize_t renderedBytes = uade_read(
-        buffer, plugin->waveformat.pcmblocksize * plugin->waveformat.channels * sizeof(int16_t), plugin->uadeState);
+        buffer, plugin->waveformat.pcmblocksize * UADE_BYTES_PER_FRAME, plugin->uadeState);
 
     uade_notification un;
     while (uade_read_notification(&un, plugin->uadeState)) {
