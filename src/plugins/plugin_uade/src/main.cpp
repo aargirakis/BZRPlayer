@@ -352,6 +352,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                                plugin->silence_timeout_enabled ? plugin->silence_timeout.c_str() : "-1");
     }
 
+    uade_config_set_option(uadeConfig, UC_FREQUENCY, to_string(plugin->waveformat.frequency).c_str());
     uade_config_set_option(uadeConfig, UC_FILTER_TYPE, plugin->filter_emu ? plugin->filter_mode.c_str() : "none");
 
     if (plugin->led_forced) {
