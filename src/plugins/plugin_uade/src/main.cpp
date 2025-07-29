@@ -81,7 +81,11 @@ public:
     string uade_songlengthspath;
     uade_state *uadeState;
     const struct uade_song_info *uadeSongInfo;
-    bool isPreBuffering = true;
+    unsigned int filesize;
+    unsigned char *myBufferP;
+    bool setPositionWithTimeunitSubSongHasBeenInvoked = false;
+    unsigned int totalSkippedBytes = 0;
+    bool isUadeSeekInvocationAllowed = false;
 };
 
 #ifdef __cplusplus
@@ -99,15 +103,14 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 
 FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    if (filesize == 4294967295) //stream
+    auto *plugin = new pluginUade(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
+
+    FMOD_CODEC_FILE_SIZE(codec, &plugin->filesize);
+    if (plugin->filesize == 4294967295) //stream
     {
         return FMOD_ERR_FORMAT;
     }
-
-    auto* plugin = new pluginUade(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = UADE_CHANNELS;
@@ -137,7 +140,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     delete[] smallBuffer;
 
     //check if it's a IMPlay Song Format (UADE might pick it up as "Images Music System"
-    if (filesize >= 62)
+    if (plugin->filesize >= 62)
     {
         unsigned char* testBuffer;
         testBuffer = new unsigned char[62];
@@ -167,7 +170,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
             totalTick == 0 ||
             dataSize == 0 ||
             nrCommand == 0 ||
-            filesize < (70 + dataSize))
+            plugin->filesize < (70 + dataSize))
         {
             //This is "probably" not IMPlay Song Format
         }
@@ -206,9 +209,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     //		nrCommand == 0 ||
     //		fp.filesize(f) < (unsigned)(HEADER_LEN + dataSize))
 
-    auto myBuffer = new unsigned char[filesize];
+    auto myBuffer = new unsigned char[plugin->filesize];
+    plugin->myBufferP = myBuffer;
+
     FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, nullptr);
+    FMOD_CODEC_FILE_READ(codec, myBuffer, plugin->filesize, nullptr);
 
     auto const *info = static_cast<Info *>(userexinfo->userdata);
 
@@ -381,7 +386,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     plugin->currentSubsong = -1;
 
-    if (uade_play_from_buffer(plugin->info->filename.c_str(), myBuffer, filesize, plugin->currentSubsong,
+    if (uade_play_from_buffer(plugin->info->filename.c_str(), myBuffer, plugin->filesize, plugin->currentSubsong,
                               plugin->uadeState) <= 0) {
         cout << "Can not play " << plugin->info->filename << endl;
         return FMOD_ERR_FORMAT;
@@ -417,13 +422,13 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     )
     {
         //read samples
-        char* d = new char[filesize];
+        char* d = new char[plugin->filesize];
         FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-        FMOD_CODEC_FILE_READ(codec, d, filesize, nullptr);
+        FMOD_CODEC_FILE_READ(codec, d, plugin->filesize, nullptr);
 
         auto* fileLoader = new FileLoader();
 
-        AmigaPlayer* player = fileLoader->load((signed short*)d, filesize, plugin->info->filename.c_str());
+        AmigaPlayer* player = fileLoader->load((signed short*)d, plugin->filesize, plugin->info->filename.c_str());
 
         delete fileLoader;
         delete[] d;
@@ -475,24 +480,24 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     auto *plugin = static_cast<pluginUade *>(codec->plugindata);
 
     /*
-     * TODO:
-     *  fmod pre buffers 16384 bytes of audio before start the real audio playback
-     *  this (bad) workaround skips the fmod pre-buffering in order to avoid initial playback pops (issue #616)
-     *  this effectively postpones the uade rendered data, so also track lengh has been adjusted to avoid ending prematurely
-     *  the workaround works for these sample tracks:
-     *  anarchy_in_the_kitchen.ac1d
-     *  rjp.ingame_1 (chaos engine): begin of all subsongs
-     *  comic bakery.hip: 2nd subsong (which is silent itself)
-     *  while still does not work for:
-     *  Golden_Axe.dw & Menace.dw subsongs
-     *  moreover, with a proper fix the first Simulcra.cust note (first subsong) should flawlessly plays,
-     *  instead it currently sounds fragmented
+     * when track playback starts fmod pre-buffers some audio bytes,
+     * however this happens before setposition with FMOD_TIMEUNIT_SUBSONG postype is invoked,
+     * so before bzr2 can be aware of any subsong neither change it:
+     * this leads to breaking those scenario where a track has first subsong immediately ending (e.g. rjp.ingame_1),
+     * causing bzr2 to play only the first subsong instead of goind to the next one.
+     * the following workaround forces the uade playback
+     * to start only after setposition with FMOD_TIMEUNIT_SUBSONG postype has been invoked
+     * (skipping the fmod pre-buffering meanwhile).
+     * since the uade rendered data playback is effectively postponed
+     * track length is then adjusted to avoid a premature ending
      */
-    if (plugin->isPreBuffering) {
-        plugin->isPreBuffering = false;
-        *read = 16384;
+    if (!plugin->setPositionWithTimeunitSubSongHasBeenInvoked) {
+        *read = 8;
+        plugin->totalSkippedBytes += *read;
         return FMOD_OK;
     }
+
+    plugin->isUadeSeekInvocationAllowed = true;
 
     ssize_t renderedBytes = uade_read(
         buffer, plugin->waveformat.pcmblocksize * UADE_BYTES_PER_FRAME, plugin->uadeState);
@@ -506,12 +511,14 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
             case UADE_NOTIFICATION_SONG_END:
                 cout << (un.song_end.happy ? "" : "bad ") << "song end" << ": " << un.song_end.reason << endl;
 
-                /* TODO:
-                 *  when UADE_NOTIFICATION_SONG_END is notified too early,
-                 *  returning FMOD_ERR_FILE_EOF or FMOD_ERR_FILE_NOTFOUND
-                 *  seems not having any effect on playback, which continues
+                /*
+                 * when UADE_NOTIFICATION_SONG_END is notified too early,
+                 * (eg Turrican 2 mdat.world_1, last subsong)
+                 * returning FMOD_ERR_FILE_EOF or FMOD_ERR_FILE_NOTFOUND
+                 * seems not having any effect on playback, which continues
                  */
                 return FMOD_ERR_FORMAT;
+
             default:
                 cout << "Unknown libuade notification" << endl;
                 break;
@@ -562,8 +569,9 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 
         // track length adjustment (for fmod pre-buffering skip workaround)
         if (songLength != 0) {
-            double offset = 1000 * (16384.0 / (plugin->waveformat.frequency * plugin->waveformat.channels *
-                                               FMOD_SOUND_FORMAT_PCM16));
+            double offset = 1000 * (static_cast<double>(plugin->totalSkippedBytes) / (
+                                        plugin->waveformat.frequency * plugin->waveformat.channels *
+                                        FMOD_SOUND_FORMAT_PCM16));
             songLength += offset;
         }
     }
@@ -578,13 +586,42 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
 FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginUade*>(codec->plugindata);
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
-        uade_seek(UADE_SEEK_SUBSONG_RELATIVE, position / 1000, plugin->currentSubsong, plugin->uadeState);
+
+    if (postype == FMOD_TIMEUNIT_MS) {
+        /*
+         * issue #616 workaround:
+         *
+         * uade_seek might be used for initial subsong setting,
+         * introduces it audio pops, also when invoked before any uade_read:
+         * so, in order to avoid any audio pop when playback starts,
+         * uade_stop & uade_play_from_buffer are invoked for initial subsong setting.
+         *
+         * after the subsong has been set uade_seek invocations must be allowed again
+         * (for catching user's playback seeking actions).
+         *
+         * two different strategies can be used:
+         *
+         * 1) allow it after the second setposition (with FMOD_TIMEUNIT_MS) invocation (using a counter)
+         *    the first invocation (coming from a fmod internal call) happens before fmod pre-buffering stage
+         *    and the second one (coming from bzr2 code) happens after the subsong has been already set
+         *
+         * 2) allow it after fmod pre-buffering stage (using a bool)
+         *    since it means the subsong has been already set
+         *
+         * the 2nd strategy has been preferred since it is more straightforward
+         * and does not strictly depend on non-plugin audio code details
+         */
+        if (plugin->isUadeSeekInvocationAllowed) {
+            uade_seek(UADE_SEEK_SUBSONG_RELATIVE, position / 1000, plugin->currentSubsong, plugin->uadeState);
+        }
+
         return FMOD_OK;
     }
+
     if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
+        plugin->setPositionWithTimeunitSubSongHasBeenInvoked = true;
+
         if (plugin->uadeSongInfo->subsongs.max - plugin->uadeSongInfo->subsongs.min == 0)
         {
             return FMOD_OK;
@@ -599,6 +636,12 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
         }
 
         plugin->currentSubsong = position;
+
+        uade_stop(plugin->uadeState);
+        uade_play_from_buffer(plugin->info->filename.c_str(), plugin->myBufferP, plugin->filesize,
+                              plugin->currentSubsong,
+                              plugin->uadeState);
+
         return FMOD_OK;
     }
     return FMOD_OK;
