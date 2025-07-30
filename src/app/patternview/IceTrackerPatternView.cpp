@@ -41,6 +41,8 @@ IceTrackerPatternView::IceTrackerPatternView(Tracker* parent, unsigned int chann
     m_ibuttonNextSampleX = 0;
     m_ibuttonNextSampleY = 22;
 
+    setupVUMeters();
+
 
     //main color
     m_linearGrad.setColorAt(0, QColor(189, 16, 0).rgb()); //red

@@ -44,6 +44,9 @@ StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int
 
     m_vumeterTopOffset = -5;
 
+    setupVUMeters();
+
+
     //main color
     m_linearGrad.setColorAt(0, QColor(0, 0, 206).rgb());
     m_linearGrad.setColorAt(1, QColor(33, 222, 222).rgb());

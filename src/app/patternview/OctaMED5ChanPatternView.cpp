@@ -41,6 +41,9 @@ OctaMED5ChanPatternView::OctaMED5ChanPatternView(Tracker* parent, unsigned int c
     m_vumeterHilightWidth = 4;
     m_vumeterOffset = 144;
     m_vumeterTopOffset = -6;
+
+    setupVUMeters();
+
 }
 
 QString OctaMED5ChanPatternView::effect(BaseRow* row)

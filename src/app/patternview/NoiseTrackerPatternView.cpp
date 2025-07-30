@@ -37,6 +37,10 @@ NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, unsigned int c
     m_ibuttonNextSampleX = 0;
     m_ibuttonNextSampleY = 33;
 
+
+    setupVUMeters();
+
+
     //main color
     m_linearGrad.setColorAt(0, QColor(189, 16, 0).rgb()); //red
     m_linearGrad.setColorAt(0.11, QColor(189, 50, 0).rgb()); //red

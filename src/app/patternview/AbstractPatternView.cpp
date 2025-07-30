@@ -163,6 +163,13 @@ AbstractPatternView::~AbstractPatternView()
 }
 
 
+void AbstractPatternView::setupVUMeters()
+{
+    m_linearGrad = QLinearGradient(QPointF(0, 0), QPointF(0, m_vumeterHeight));
+    m_linearGradHiLite = QLinearGradient(QPointF(0, 0), QPointF(0, m_vumeterHeight));
+    m_linearGradDark = QLinearGradient(QPointF(0, 0), QPointF(0, m_vumeterHeight));
+}
+
 QString AbstractPatternView::note(BaseRow* row)
 {
     int note = row->note;

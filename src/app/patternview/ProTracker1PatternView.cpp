@@ -40,6 +40,8 @@ ProTracker1PatternView::ProTracker1PatternView(Tracker* parent, unsigned int cha
     m_ibuttonNextSampleX = 0;
     m_ibuttonNextSampleY = 22;
 
+    setupVUMeters();
+
     //main color
     m_linearGrad.setColorAt(0, QColor(255, 16, 0).rgb()); //red
     m_linearGrad.setColorAt(0.13, QColor(255, 48, 0).rgb()); //red

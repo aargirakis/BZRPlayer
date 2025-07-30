@@ -35,6 +35,9 @@ OctaMEDPatternView::OctaMEDPatternView(Tracker* parent, unsigned int channels)
     m_vumeterOffset = 144;
     m_vumeterTopOffset = -21;
 
+    setupVUMeters();
+
+
     //main color
     m_linearGrad.setColorAt(0, QColor(187, 187, 187).rgb());
     m_linearGrad.setColorAt(0.045, QColor(187, 187, 187).rgb());

@@ -40,6 +40,8 @@ HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int
     m_vumeterOffset = 120;
     m_vumeterHilightWidth = 1;
     m_vumeterTopOffset = -13;
+
+    setupVUMeters();
 }
 
 void HivelyTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)

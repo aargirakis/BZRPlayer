@@ -47,6 +47,10 @@ UltimateSoundTrackerPatternView::UltimateSoundTrackerPatternView(Tracker* parent
     m_vumeterWidth = 8;
     m_vumeterLeftOffset = 56;
 
+
+    setupVUMeters();
+
+
     m_linearGrad.setColorAt(0, QColor(156, 0, 0).rgb()); //red
     m_linearGrad.setColorAt(0.250000000, QColor(156, 0, 0).rgb()); //red
     m_linearGrad.setColorAt(0.250000001, QColor(0, 140, 0).rgb()); //green

@@ -15,6 +15,7 @@ public:
 
 
 
+    void setupVUMeters();
     virtual QString effect(BaseRow* row);
     virtual QString parameter(BaseRow* row);
     virtual QString effect2(BaseRow* row);

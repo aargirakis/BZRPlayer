@@ -45,6 +45,8 @@ ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, unsigned int c
     m_vumeterOffset = 120;
     m_vumeterTopOffset = -18;
 
+
+    setupVUMeters();
 //main color
     m_linearGrad.setColorAt(0, QColor(0, 0, 0).rgb()); //black
     m_linearGrad.setColorAt(0.01999, QColor(0, 0, 0).rgb()); //black
