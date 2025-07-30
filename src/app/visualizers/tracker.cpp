@@ -50,7 +50,6 @@ Tracker::Tracker()
 void Tracker::init()
 {
     m_info = SoundManager::getInstance().m_Info1;
-    m_render = false;
     m_fColorHueCounter = 0;
     m_fColorLightnessCounter = 0;
     m_fColorLightnessdirection = 0.3f;
@@ -58,37 +57,18 @@ void Tracker::init()
     m_fColorSaturationdirection = 0.75f;
     if (m_info == nullptr)
     {
+        m_trackerview = nullptr;
         return;
-    }
-
-    if (m_info == nullptr)
-    {
-        m_trackerview = 0;
-        m_render = false;
     }
 
     if (m_info->plugin != PLUGIN_libxmp && m_info->plugin != PLUGIN_hivelytracker && m_info->plugin != PLUGIN_libopenmpt
         && m_info->plugin != PLUGIN_sunvox_lib)
     {
-        m_trackerview = 0;
-        m_render = false;
+        m_trackerview = nullptr;
         return;
     }
-    m_render = true;
 
-    if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (fa08)"))
-    {
-        m_trackerview = 0;
-        m_render = false;
-        return;
-    }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (cd81)"))
-    {
-        m_trackerview = 0;
-        m_render = false;
-        return;
-    }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("SunVox"))
+    if (QString(m_info->fileformat.c_str()).toLower().startsWith("SunVox"))
     {
         m_trackerview = new SoundFXPatternView(this, m_info->numChannels);
     }
@@ -252,8 +232,7 @@ void Tracker::init()
     }
     else
     {
-        m_trackerview = 0;
-        m_render = false;
+        m_trackerview = m_trackerview = nullptr;
         return;
     }
 
@@ -275,7 +254,7 @@ void Tracker::init()
 
 void Tracker::drawPattern(QPainter* painter)
 {
-    if (!m_render)
+    if (m_trackerview==nullptr)
     {
         return;
     }
@@ -1127,7 +1106,7 @@ void Tracker::drawVUMeters(QPainter* painter)
 {
     int height = m_trackerview->height();
     int width = m_trackerview->width();
-    if (m_render && m_trackerview->m_renderVUMeter)
+    if (m_trackerview!=nullptr && m_trackerview->m_renderVUMeter)
     {
         SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
 
@@ -1285,7 +1264,7 @@ void Tracker::drawVUMeters(QPainter* painter)
 }
 void Tracker::paint(QPainter* painter, QPaintEvent* event)
 {
-    if (!m_render || !m_trackerview)
+    if (m_trackerview==nullptr)
         return;
 
     QSize renderSize = event->rect().size();

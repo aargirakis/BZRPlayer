@@ -27,7 +27,7 @@ Tracker* TrackerView::getTracker()
 
 void TrackerView::paintEvent(QPaintEvent* event)
 {
-    if (tracker == nullptr || !inited || !tracker->m_render || !SoundManager::getInstance().IsPlaying() || (
+    if (tracker == nullptr || !inited || tracker->m_trackerview== nullptr || !SoundManager::getInstance().IsPlaying() || (
         SoundManager::getInstance().m_Info1 == nullptr))
     {
         QPainter painter;
@@ -40,7 +40,7 @@ void TrackerView::paintEvent(QPaintEvent* event)
 
     if (tracker)
     {
-        if ((inited && tracker->m_render && SoundManager::getInstance().IsPlaying()) && (SoundManager::getInstance().
+        if ((inited && tracker->m_trackerview!=nullptr && SoundManager::getInstance().IsPlaying()) && (SoundManager::getInstance().
             m_Info1->plugin == PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp ||
             SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker || SoundManager::getInstance().m_Info1->
             plugin == PLUGIN_sunvox_lib))
@@ -66,7 +66,7 @@ bool TrackerView::eventFilter(QObject* obj, QEvent* event)
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         if (event->type() == QEvent::MouseButtonRelease && (mouseEvent->button() & Qt::LeftButton))
         {
-            if (tracker->m_render)
+            if (tracker->m_trackerview!=nullptr)
             {
                 int x = mouseEvent->pos().x() / tracker->m_scale;
                 int y = mouseEvent->pos().y() / tracker->m_scale;
