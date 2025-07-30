@@ -24,6 +24,7 @@ OctaMED54ChanPatternView::OctaMED54ChanPatternView(Tracker* parent, unsigned int
 
     m_bitmapFont3 = BitmapFont("OctaMED Pro 4");
     m_topHeight = 52;
+    m_renderVUMeter = true;
 }
 
 QString OctaMED54ChanPatternView::effect(BaseRow* row)

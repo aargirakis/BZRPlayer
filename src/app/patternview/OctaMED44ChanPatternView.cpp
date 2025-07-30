@@ -19,6 +19,7 @@ OctaMED44ChanPatternView::OctaMED44ChanPatternView(Tracker* parent, unsigned int
 
     m_topHeight = 28;
     m_bottomFrameHeight = 20;
+    m_renderVUMeter = true;
 }
 
 void OctaMED44ChanPatternView::paintAbove(QPainter* painter, int height, int currentRow)

@@ -29,6 +29,7 @@ UltimateSoundTrackerPatternView::UltimateSoundTrackerPatternView(Tracker* parent
     m_xOffsetRow = 9;
 
     m_renderTop = true;
+    m_renderVUMeter = true;
 
     //for dimming channels
     m_xChannelStart = 30;

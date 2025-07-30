@@ -14,6 +14,7 @@ ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, unsigned int c
     m_fontWidth = 12;
     m_font.setStyleStrategy(QFont::NoAntialias);
     m_renderTop = true;
+    m_renderVUMeter = true;
 
     m_bitmapFont = BitmapFont("Protracker 3.61");
     m_fontWidth = 12;

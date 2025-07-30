@@ -168,6 +168,7 @@ public:
     BitmapFont m_bitmapFontRownumber;
 
     bool m_renderTop;
+    bool m_renderVUMeter;
 
     //VU-meters
     int m_vumeterHeight;

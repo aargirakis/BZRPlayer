@@ -34,6 +34,7 @@ GameMusicCreatorPatternView::GameMusicCreatorPatternView(Tracker* parent, unsign
     m_bottomFrameHeight = 8;
     m_topHeight = 27;
     m_renderTop = true;
+    m_renderVUMeter = false;
 }
 
 void GameMusicCreatorPatternView::paintAbove(QPainter* painter, int height, int currentRow)

@@ -18,6 +18,7 @@ StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, unsigned int
     m_fontHeight = 7;
 
     m_renderTop = true;
+    m_renderVUMeter = true;
 
     m_font.setStyleStrategy(QFont::NoAntialias);
     m_colorCurrentRowBackground = QColor(189, 138, 99);

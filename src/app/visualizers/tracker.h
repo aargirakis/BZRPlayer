@@ -45,8 +45,7 @@ private:
     QSize m_lastBufferSize;
     QPixmap m_topBarBuffer;
     QSize m_lastTopBarSize;
-    bool m_renderVUMeter;
-    bool m_renderTop;
+
 
     unsigned  int m_currentSample;
 

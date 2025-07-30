@@ -51,7 +51,6 @@ void Tracker::init()
 {
     m_info = SoundManager::getInstance().m_Info1;
     m_render = false;
-    m_renderVUMeter = false;
     m_fColorHueCounter = 0;
     m_fColorLightnessCounter = 0;
     m_fColorLightnessdirection = 0.3f;
@@ -106,17 +105,14 @@ void Tracker::init()
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ice tracker"))
     {
         m_trackerview = new IceTrackerPatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (patt"))
     {
-        m_renderVUMeter = true;
         m_trackerview = new ProTracker36PatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (flt4"))
     {
         m_trackerview = new StarTrekker13PatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
     }
     else if ((QString(m_info->fileformat.c_str()).toLower().startsWith("protracker") && !
             QString(m_info->fileformat.c_str()).toLower().startsWith("protracker xm")) ||
@@ -127,48 +123,40 @@ void Tracker::init()
         toLower().startsWith("unknown or converted (M"))
     {
         m_trackerview = new ProTracker1PatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
         m_height = 32;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("noise") || QString(m_info->fileformat.c_str()).
         toLower().startsWith("his master"))
     {
         m_trackerview = new NoiseTrackerPatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("mnemotron"))
     {
         m_trackerview = new SoundTracker26PatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
     }
 
     else if (QString(m_info->fileformat.c_str()).toLower() == "soundtracker")
     {
         m_trackerview = new UltimateSoundTrackerPatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
     }
 
 
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("game music creator"))
     {
         m_trackerview = new GameMusicCreatorPatternView(this, m_info->numChannels);
-        m_renderVUMeter = false;
     }
     else if (QString(m_info->fileformat.c_str()) == "AHX")
     {
         m_trackerview = new AHXPatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("chiptracker"))
     {
         m_trackerview = new ChipTrackerPatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
     }
 
     else if (QString(m_info->fileformat.c_str()) == "HivelyTracker")
     {
         m_trackerview = new HivelyTrackerPatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
     }
 
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("scream tracker 3"))
@@ -202,7 +190,6 @@ void Tracker::init()
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0"))
     {
         m_trackerview = new MEDPatternView(this, m_info->numChannels);
-        m_renderVUMeter = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("impulse"))
     {
@@ -238,7 +225,6 @@ void Tracker::init()
         else
         {
             m_trackerview = new OctaMED44ChanPatternView(this, m_info->numChannels);
-            m_renderVUMeter = true;
         }
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
@@ -250,7 +236,6 @@ void Tracker::init()
         else
         {
             m_trackerview = new OctaMED54ChanPatternView(this, m_info->numChannels);
-            m_renderVUMeter = true;
         }
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd3"))
@@ -334,7 +319,7 @@ void Tracker::drawPattern(QPainter* painter)
     }
 
 
-    if(currentRow!=m_currentRow || m_renderVUMeter || updateHively)
+    if(currentRow!=m_currentRow || m_trackerview->m_renderVUMeter || updateHively)
     {
         //Revert painter scaling and fill background rect
         QRect rect(0, 0, painter->window().width() / m_scale, painter->window().height() / m_scale);
@@ -1142,7 +1127,7 @@ void Tracker::drawVUMeters(QPainter* painter)
 {
     int height = m_trackerview->height();
     int width = m_trackerview->width();
-    if (m_render && m_renderVUMeter)
+    if (m_render && m_trackerview->m_renderVUMeter)
     {
         SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
 
@@ -1248,7 +1233,7 @@ void Tracker::drawVUMeters(QPainter* painter)
 
 
     //move painter back up (was moved down when painted vumeters)
-    if (m_renderVUMeter)
+    if (m_trackerview->m_renderVUMeter)
     {
         if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0") ||
             QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1") ||
@@ -1355,7 +1340,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         drawPattern(&bufferPainter);
     }
 
-    if (m_lastVuSize != renderSize || m_renderVUMeter)
+    if (m_lastVuSize != renderSize || m_trackerview->m_renderVUMeter)
     {
         m_lastVuSize = renderSize;
         m_vuBuffer = QPixmap(renderSize);

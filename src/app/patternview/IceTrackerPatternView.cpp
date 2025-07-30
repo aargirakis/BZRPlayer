@@ -19,6 +19,7 @@ IceTrackerPatternView::IceTrackerPatternView(Tracker* parent, unsigned int chann
     m_fontWidth = 8;
     m_fontHeight = 7;
     m_renderTop = true;
+    m_renderVUMeter = true;
 
 
     m_ColorRowNumberBackground = m_ColorWindowBackground = "738a9c";

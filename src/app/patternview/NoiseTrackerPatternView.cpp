@@ -20,6 +20,7 @@ NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, unsigned int c
     m_bitmapFont2 = BitmapFont("Protracker 1.0 Double Height");
 
     m_renderTop = true;
+    m_renderVUMeter = true;
 
     m_RowEnd = m_SeparatorRowNumber = m_SeparatorChannel = " ";
     m_RowLength = 40;
