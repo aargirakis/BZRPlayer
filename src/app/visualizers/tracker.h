@@ -15,7 +15,6 @@ public:
     void drawPattern(QPainter* painter);
     void drawVUMeters(QPainter* painter);
     void drawTop(QPainter* painter);
-    int m_height;
     float m_scale;
     void init();
     int TOP_OFFSET;

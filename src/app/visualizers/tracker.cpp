@@ -103,7 +103,6 @@ void Tracker::init()
         toLower().startsWith("unknown or converted (M"))
     {
         m_trackerview = new ProTracker1PatternView(this, m_info->numChannels);
-        m_height = 32;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("noise") || QString(m_info->fileformat.c_str()).
         toLower().startsWith("his master"))
@@ -119,7 +118,6 @@ void Tracker::init()
     {
         m_trackerview = new UltimateSoundTrackerPatternView(this, m_info->numChannels);
     }
-
 
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("game music creator"))
     {
@@ -178,7 +176,6 @@ void Tracker::init()
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("composer 669"))
     {
         m_trackerview = new Composer669PatternView(this, m_info->numChannels);
-        m_height = 16;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ultratracker"))
     {
