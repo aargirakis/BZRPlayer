@@ -47,6 +47,7 @@ FastTracker2PatternView::FastTracker2PatternView(Tracker* parent, unsigned int c
     m_SeparatorInstrument = "'";
     m_ColorRowNumberHighLightFrequency = 4;
     m_ColorRowNumberHighLight = QColor(255, 255, 255);
+    m_renderTop = true;
 
 
     m_colorCurrentRowBackground = QColor(73, 117, 130);

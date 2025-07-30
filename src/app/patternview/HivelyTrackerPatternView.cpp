@@ -16,6 +16,8 @@ HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int
     m_fontHeight = 14;
     m_yOffsetRowAfter = 2;
 
+    m_renderTop = true;
+
     m_colorCurrentRowBackground = QColor(68, 102, 136);
     m_colorCurrentRowForeground = m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect =
         m_ColorParameter = m_ColorEffect2 = m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(170, 204, 238);

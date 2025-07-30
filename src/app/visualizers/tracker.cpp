@@ -52,7 +52,6 @@ void Tracker::init()
     m_info = SoundManager::getInstance().m_Info1;
     m_render = false;
     m_renderVUMeter = false;
-    m_renderTop = false;
     m_fColorHueCounter = 0;
     m_fColorLightnessCounter = 0;
     m_fColorLightnessdirection = 0.3f;
@@ -99,7 +98,6 @@ void Tracker::init()
         QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (16ch"))
     {
         m_trackerview = new FastTracker1PatternView(this, m_info->numChannels);
-        m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("soundfx"))
     {
@@ -109,11 +107,9 @@ void Tracker::init()
     {
         m_trackerview = new IceTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (patt"))
     {
-        m_renderTop = true;
         m_renderVUMeter = true;
         m_trackerview = new ProTracker36PatternView(this, m_info->numChannels);
     }
@@ -121,7 +117,6 @@ void Tracker::init()
     {
         m_trackerview = new StarTrekker13PatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
     }
     else if ((QString(m_info->fileformat.c_str()).toLower().startsWith("protracker") && !
             QString(m_info->fileformat.c_str()).toLower().startsWith("protracker xm")) ||
@@ -133,7 +128,6 @@ void Tracker::init()
     {
         m_trackerview = new ProTracker1PatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
         m_height = 32;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("noise") || QString(m_info->fileformat.c_str()).
@@ -141,20 +135,17 @@ void Tracker::init()
     {
         m_trackerview = new NoiseTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("mnemotron"))
     {
         m_trackerview = new SoundTracker26PatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
     }
 
     else if (QString(m_info->fileformat.c_str()).toLower() == "soundtracker")
     {
         m_trackerview = new UltimateSoundTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
     }
 
 
@@ -162,26 +153,22 @@ void Tracker::init()
     {
         m_trackerview = new GameMusicCreatorPatternView(this, m_info->numChannels);
         m_renderVUMeter = false;
-        m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()) == "AHX")
     {
         m_trackerview = new AHXPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("chiptracker"))
     {
         m_trackerview = new ChipTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
     }
 
     else if (QString(m_info->fileformat.c_str()) == "HivelyTracker")
     {
         m_trackerview = new HivelyTrackerPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
     }
 
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("scream tracker 3"))
@@ -198,7 +185,6 @@ void Tracker::init()
         QString(m_info->fileformat.c_str()).toLower().startsWith("madtracker 2.0 xm") ||
         QString(m_info->fileformat.c_str()).toLower().endsWith("xm 1.04"))
     {
-        m_renderTop = true;
         if (m_info->numChannels > 6)
         {
             m_trackerview = new FastTracker2PatternView(this, m_info->numChannels);
@@ -217,7 +203,6 @@ void Tracker::init()
     {
         m_trackerview = new MEDPatternView(this, m_info->numChannels);
         m_renderVUMeter = true;
-        m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("impulse"))
     {
@@ -239,7 +224,6 @@ void Tracker::init()
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("digibooster"))
     {
         m_trackerview = new DigiBooster17PatternView(this, m_info->numChannels);
-        m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("oktalyzer"))
     {
@@ -247,7 +231,6 @@ void Tracker::init()
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1"))
     {
-        m_renderTop = true;
         if (m_info->numChannels > 4)
         {
             m_trackerview = new OctaMEDPatternView(this, m_info->numChannels);
@@ -263,23 +246,19 @@ void Tracker::init()
         if (m_info->numChannels > 4)
         {
             m_trackerview = new OctaMED5ChanPatternView(this, m_info->numChannels);
-            m_renderTop = true;
         }
         else
         {
             m_trackerview = new OctaMED54ChanPatternView(this, m_info->numChannels);
             m_renderVUMeter = true;
-            m_renderTop = true;
         }
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd3"))
     {
         m_trackerview = new OctaMEDSoundstudioPatternView(this, m_info->numChannels);
-        m_renderTop = true;
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("multitracker"))
     {
-        m_renderTop = true;
         m_trackerview = new MultiTrackerPatternView(this, m_info->numChannels);
     }
     else if (QString(m_info->fileformat.c_str()).toLower().startsWith("mdx"))
@@ -1389,7 +1368,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         drawVUMeters(&vuPainter);  // this only draws the VUs
     }
     // Repaint Top bar layer
-    if ((renderSize != m_lastTopBarSize || topToUpdate) && m_renderTop)
+    if ((renderSize != m_lastTopBarSize || topToUpdate) && m_trackerview->m_renderTop)
     {
         m_currentPositionBuffer = currentPosition;
         m_currentPatternBuffer = currentPattern;

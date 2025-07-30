@@ -28,6 +28,8 @@ AHXPatternView::AHXPatternView(Tracker* parent, unsigned int channels)
     m_xOffsetRow = 14;
     m_xOffsetSeparatorRowNumber = -3;
 
+    m_renderTop = true;
+
     //for dimming channels
     m_xChannelStart = 32;
     m_channelWidth = 70;

@@ -42,6 +42,7 @@ DigiBooster17PatternView::DigiBooster17PatternView(Tracker* parent, unsigned int
     m_channelxSpace = 3;
     m_topHeight = 46;
     m_bottomFrameHeight = 6;
+    m_renderTop = true;
 }
 
 QFont DigiBooster17PatternView::currentRowFont()

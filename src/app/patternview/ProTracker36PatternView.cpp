@@ -13,6 +13,7 @@ ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, unsigned int c
     m_font.setPixelSize(16);
     m_fontWidth = 12;
     m_font.setStyleStrategy(QFont::NoAntialias);
+    m_renderTop = true;
 
     m_bitmapFont = BitmapFont("Protracker 3.61");
     m_fontWidth = 12;
@@ -44,6 +45,7 @@ ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, unsigned int c
     m_vumeterHilightWidth = 2;
     m_vumeterOffset = 120;
     m_vumeterTopOffset = -18;
+
 
 
     setupVUMeters();

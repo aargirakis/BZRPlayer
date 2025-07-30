@@ -7,6 +7,7 @@ MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels)
     m_font = QFont("MED 3.21");
     m_font.setPixelSize(16);
     m_fontWidth = 16;
+    m_renderTop = true;
 
     m_bitmapFont = BitmapFont("MED 3.21");
     m_bitmapFont3 = BitmapFont("MED 3.21 Compressed");

@@ -17,6 +17,7 @@ ProTracker1PatternView::ProTracker1PatternView(Tracker* parent, unsigned int cha
     m_fontWidth = 8;
     m_fontHeight = 7;
     m_font.setStyleStrategy(QFont::NoAntialias);
+    m_renderTop = true;
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
         m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(50, 50, 255);

@@ -7,6 +7,7 @@ FastTracker1PatternView::FastTracker1PatternView(Tracker* parent, unsigned int c
     rowNumberOffset = 0;
     m_font = QFont("FastTracker 1.0");
     m_font.setPixelSize(16);
+    m_renderTop = true;
 
 
     m_bitmapFont = BitmapFont("FastTracker 1.0");

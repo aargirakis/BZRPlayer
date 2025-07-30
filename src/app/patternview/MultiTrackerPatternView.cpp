@@ -7,6 +7,7 @@ MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, unsigned int c
     m_font = QFont("MultiTracker");
     m_font.setPixelSize(8);
     m_fontWidth = 8;
+    m_renderTop = true;
 
     m_bitmapFont = BitmapFont("MultiTracker");
     m_fontWidth = 8;

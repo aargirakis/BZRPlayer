@@ -10,6 +10,7 @@ AbstractPatternView::AbstractPatternView(Tracker* parent, unsigned int channels)
     m_channels = channels;
     m_fontWidth = 8;
     m_fontHeight = 7;
+    m_renderTop = false;
 
     effectHex = true;
     effectPad = false;

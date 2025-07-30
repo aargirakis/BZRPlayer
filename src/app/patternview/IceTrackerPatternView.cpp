@@ -18,6 +18,7 @@ IceTrackerPatternView::IceTrackerPatternView(Tracker* parent, unsigned int chann
     m_bitmapFont2 = BitmapFont("Protracker 1.0 Double Height");
     m_fontWidth = 8;
     m_fontHeight = 7;
+    m_renderTop = true;
 
 
     m_ColorRowNumberBackground = m_ColorWindowBackground = "738a9c";
