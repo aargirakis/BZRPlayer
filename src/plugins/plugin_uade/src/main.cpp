@@ -68,15 +68,6 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
 
     Info* info;
-    int filter_emu;
-    string frequency;
-    string resampler;
-    string filter_mode;
-    int led_forced;
-    int led_state;
-    string panning;
-    string silence_timeout;
-    bool silence_timeout_enabled;
     bool uade_songlengths_enabled;
     bool isContinuousPlaybackActive;
     int currentSubsong;
@@ -221,15 +212,15 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
     //defaults
-    plugin->frequency = "48000";
-    plugin->resampler = "sinc";
-    plugin->filter_emu = 1;
-    plugin->filter_mode = "a1200";
-    plugin->led_forced = 0;
-    plugin->led_state = 0;
-    plugin->panning = "0.5";
-    plugin->silence_timeout = "5";
-    plugin->silence_timeout_enabled = true;
+    string frequency = "48000";
+    string resampler = "sinc";
+    int filter_emu = 1;
+    string filter_mode = "a1200";
+    int led_forced = 0;
+    int led_state = 0;
+    string panning = "0.5";
+    string silence_timeout = "5";
+    bool silence_timeout_enabled = true;
     plugin->uade_songlengths_enabled = true;
     plugin->isContinuousPlaybackActive = false;
 
@@ -245,62 +236,62 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                 string value = line.substr(i + 1);
                 if (word.compare("frequency") == 0)
                 {
-                    plugin->frequency = value;
+                    frequency = value;
                 }
                 else if (word.compare("resampler") == 0)
                 {
-                    plugin->resampler = value;
+                    resampler = value;
                 }
                 else if (word.compare("filter_emu") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        plugin->filter_emu = 1;
+                        filter_emu = 1;
                     }
                     else
                     {
-                        plugin->filter_emu = 0;
+                        filter_emu = 0;
                     }
                 }
                 else if (word.compare("filter_mode") == 0)
                 {
-                    plugin->filter_mode = value;
+                    filter_mode = value;
                 }
                 else if (word.compare("led_forced") == 0)
                 {
                     if (value.compare("auto") == 0)
                     {
-                        plugin->led_forced = 0;
+                        led_forced = 0;
                     }
                     else if (value.compare("on") == 0)
                     {
-                        plugin->led_forced = 1;
-                        plugin->led_state = 1;
+                        led_forced = 1;
+                        led_state = 1;
                     }
                     else
                     {
-                        plugin->led_forced = 1;
-                        plugin->led_state = 0;
+                        led_forced = 1;
+                        led_state = 0;
                     }
                 }
                 else if (word.compare("panning") == 0)
                 {
                     int x = stoi(value);
-                    plugin->panning = std::format("{}.{}", x / 10, x % 10);
+                    panning = std::format("{}.{}", x / 10, x % 10);
                 }
                 else if (word.compare("silence_timeout") == 0)
                 {
-                    plugin->silence_timeout = value;
+                    silence_timeout = value;
                 }
                 else if (word.compare("silence_timeout_enabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        plugin->silence_timeout_enabled = true;
+                        silence_timeout_enabled = true;
                     }
                     else
                     {
-                        plugin->silence_timeout_enabled = false;
+                        silence_timeout_enabled = false;
                     }
                 }
                 else if (word.compare("continuous_playback") == 0)
@@ -330,7 +321,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = UADE_CHANNELS;
-    plugin->waveformat.frequency = stoi(plugin->frequency);
+    plugin->waveformat.frequency = stoi(frequency);
     plugin->waveformat.pcmblocksize = 2048 * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = 0xffffffff;
 
@@ -366,18 +357,18 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     } else {
         uade_config_set_option(uadeConfig, UC_ENABLE_TIMEOUTS, nullptr);
         uade_config_set_option(uadeConfig, UC_SILENCE_TIMEOUT_VALUE,
-                               plugin->silence_timeout_enabled ? plugin->silence_timeout.c_str() : "-1");
+                               silence_timeout_enabled ? silence_timeout.c_str() : "-1");
     }
 
-    uade_config_set_option(uadeConfig, UC_FREQUENCY, plugin->frequency.c_str());
-    uade_config_set_option(uadeConfig, UC_RESAMPLER, plugin->resampler.c_str());
-    uade_config_set_option(uadeConfig, UC_FILTER_TYPE, plugin->filter_emu ? plugin->filter_mode.c_str() : "none");
+    uade_config_set_option(uadeConfig, UC_FREQUENCY, frequency.c_str());
+    uade_config_set_option(uadeConfig, UC_RESAMPLER, resampler.c_str());
+    uade_config_set_option(uadeConfig, UC_FILTER_TYPE, filter_emu ? filter_mode.c_str() : "none");
 
-    if (plugin->led_forced) {
-        uade_config_set_option(uadeConfig, UC_FORCE_LED, plugin->led_state ? "on" : "off");
+    if (led_forced) {
+        uade_config_set_option(uadeConfig, UC_FORCE_LED, led_state ? "on" : "off");
     }
 
-    uade_config_set_option(uadeConfig, UC_PANNING_VALUE, plugin->panning.c_str());
+    uade_config_set_option(uadeConfig, UC_PANNING_VALUE, panning.c_str());
     uade_config_set_option(uadeConfig, UC_NO_HEADPHONES, nullptr);
 
 #ifndef NDEBUG
