@@ -534,6 +534,11 @@ void SoundManager::SetVolume(float vol)
     FMOD_Channel_SetVolume(channel, vol);
 }
 
+float SoundManager::GetFrequency()
+{
+    return m_DefaultFrequency;
+}
+
 void SoundManager::SetFrequency(float percent)
 {
     FMOD_Channel_SetFrequency(channel, percent * m_DefaultFrequency);
