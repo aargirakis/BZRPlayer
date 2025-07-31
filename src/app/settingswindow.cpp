@@ -125,6 +125,18 @@ settingsWindow::settingsWindow(QWidget* parent) :
 
     ui->SliderStereoSeparationOpenMPT->installEventFilter(this);
 
+    ui->comboBoxFreqUADE->installEventFilter(this);
+    ui->comboBoxFreqUADE->addItem("11025", "11025");
+    ui->comboBoxFreqUADE->addItem("22050", "22050");
+    ui->comboBoxFreqUADE->addItem("32000", "32000");
+    ui->comboBoxFreqUADE->addItem("44100", "44100");
+    ui->comboBoxFreqUADE->addItem("48000", "48000");
+
+    ui->comboBoxResamplerUADE->installEventFilter(this);
+    ui->comboBoxResamplerUADE->addItem("None", "none");
+    ui->comboBoxResamplerUADE->addItem("Default", "default");
+    ui->comboBoxResamplerUADE->addItem("Sinc (best for freqs > 44100)", "sinc");
+
     ui->sliderPanningUADE->installEventFilter(this);
 
     ui->sliderSilenceTimeOutUADE->installEventFilter(this);
@@ -676,6 +688,8 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
             obj == ui->SliderNormalizerMaxAmp ||
             obj == ui->SliderNormalizerThreshold ||
             obj == ui->comboBoxReverb ||
+            obj == ui->comboBoxFreqUADE ||
+            obj == ui->comboBoxResamplerUADE ||
             obj == ui->sliderPanningUADE ||
             obj == ui->comboBoxFilterEmuModeUADE ||
             obj == ui->comboBoxLedFilterUADE ||
@@ -987,6 +1001,8 @@ void settingsWindow::loadUADESettings()
     }
 
     //defaults
+    ui->comboBoxFreqUADE->setCurrentIndex(ui->comboBoxFreqUADE->findData("48000"));
+    ui->comboBoxResamplerUADE->setCurrentIndex(ui->comboBoxResamplerUADE->findData("sinc"));
     ui->checkBoxFilterEmuUADE->setChecked(true);
     ui->comboBoxFilterEmuModeUADE->setCurrentIndex(1);
     ui->comboBoxLedFilterUADE->setCurrentIndex(0);
@@ -1007,7 +1023,17 @@ void settingsWindow::loadUADESettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("filter_emu") == 0) {
+                if (word.compare("frequency") == 0)
+                {
+                    int index = ui->comboBoxFreqUADE->findData(value.c_str());
+                    ui->comboBoxFreqUADE->setCurrentIndex(index);
+                }
+                else if (word.compare("resampler") == 0)
+                {
+                    int index = ui->comboBoxResamplerUADE->findData(value.c_str());
+                    ui->comboBoxResamplerUADE->setCurrentIndex(index);
+                }
+                else if (word.compare("filter_emu") == 0) {
                     if (value.compare("true") == 0)
                     {
                         ui->checkBoxFilterEmuUADE->setChecked(true);
@@ -1291,6 +1317,8 @@ void settingsWindow::saveUADESettings()
         ledFilter = "off";
     }
 
+    ofs << "frequency=" << ui->comboBoxFreqUADE->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "resampler=" << ui->comboBoxResamplerUADE->currentData().toString().toStdString().c_str() << "\n";
     ofs << "filter_emu=" << (ui->checkBoxFilterEmuUADE->isChecked()?"true":"false") << "\n";
     ofs << "filter_mode=" << filterMode.toStdString().c_str() << "\n";
     ofs << "led_forced=" << ledFilter.toStdString().c_str() << "\n";

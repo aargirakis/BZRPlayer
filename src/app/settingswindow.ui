@@ -4497,11 +4497,99 @@ QPushButton:hover
    <property name="flat">
     <bool>true</bool>
    </property>
-   <widget class="QLabel" name="labelFilterEmuUADE">
+   <widget class="QLabel" name="labelFreqUADE">
     <property name="geometry">
      <rect>
       <x>40</x>
       <y>10</y>
+      <width>300</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Frequency</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxFreqUADE">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>10</y>
+      <width>100</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelResamplerUADE">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>10</y>
+      <width>300</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Resampling method</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxResamplerUADE">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>10</y>
+      <width>220</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelFilterEmuUADE">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>70</y>
       <width>151</width>
       <height>31</height>
      </rect>
@@ -4514,7 +4602,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>190</x>
-      <y>10</y>
+      <y>70</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -4532,8 +4620,8 @@ QPushButton:hover
    <widget class="QLabel" name="labelFilterEmuModeUADE">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>45</y>
+      <x>270</x>
+      <y>70</y>
       <width>151</width>
       <height>31</height>
      </rect>
@@ -4548,8 +4636,8 @@ QPushButton:hover
     </property>
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>45</y>
+      <x>315</x>
+      <y>70</y>
       <width>100</width>
       <height>31</height>
      </rect>
@@ -4576,9 +4664,9 @@ QPushButton:hover
    <widget class="QLabel" name="labelLedFilterUADE">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>45</y>
-      <width>141</width>
+      <x>485</x>
+      <y>70</y>
+      <width>130</width>
       <height>31</height>
      </rect>
     </property>
@@ -4592,8 +4680,8 @@ QPushButton:hover
     </property>
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>45</y>
+      <x>554</x>
+      <y>70</y>
       <width>100</width>
       <height>31</height>
      </rect>
@@ -4621,7 +4709,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>100</y>
+      <y>120</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -4637,7 +4725,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>167</x>
-      <y>125</y>
+      <y>145</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -4650,7 +4738,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>533</x>
-      <y>125</y>
+      <y>145</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -4663,7 +4751,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>100</y>
+      <y>120</y>
       <width>131</width>
       <height>41</height>
      </rect>
@@ -4673,7 +4761,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>110</y>
+      <y>130</y>
       <width>351</width>
       <height>22</height>
      </rect>
@@ -4703,14 +4791,46 @@ QPushButton:hover
      <enum>Qt::Orientation::Horizontal</enum>
     </property>
    </widget>
+   <widget class="QLabel" name="labelSilenceTimeOut1UADE">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>195</y>
+      <width>261</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Silence Timeout</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxSilenceTimeoutUADE">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>195</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+   </widget>
    <widget class="QSlider" name="sliderSilenceTimeOutUADE">
     <property name="enabled">
      <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>200</y>
+      <x>230</x>
+      <y>205</y>
       <width>351</width>
       <height>22</height>
      </rect>
@@ -4731,27 +4851,14 @@ QPushButton:hover
      <enum>Qt::Orientation::Horizontal</enum>
     </property>
    </widget>
-      <widget class="QLabel" name="labelSilenceTimeOut1UADE">
-          <property name="geometry">
-              <rect>
-                  <x>40</x>
-                  <y>160</y>
-                  <width>261</width>
-                  <height>41</height>
-              </rect>
-          </property>
-          <property name="text">
-              <string>Silence Timeout</string>
-          </property>
-      </widget>
    <widget class="QLabel" name="labelSilenceTimeOut2UADE">
     <property name="enabled">
      <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>190</y>
+      <x>600</x>
+      <y>195</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -4764,7 +4871,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>245</y>
+      <y>250</y>
       <width>261</width>
       <height>31</height>
      </rect>
@@ -4777,7 +4884,7 @@ QPushButton:hover
     <property name="geometry">
      <rect>
       <x>230</x>
-      <y>245</y>
+      <y>250</y>
       <width>151</width>
       <height>31</height>
      </rect>
@@ -4792,39 +4899,36 @@ QPushButton:hover
      </size>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBoxSilenceTimeoutUADE">
+   <widget class="QLabel" name="labelSongLengthUADE">
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>190</y>
-      <width>121</width>
-      <height>41</height>
+      <y>295</y>
+      <width>180</width>
+      <height>34</height>
      </rect>
     </property>
     <property name="text">
-     <string>Enabled</string>
+     <string>UADE Songlengths Database</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxSongLengthUADE">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>295</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
     <property name="iconSize">
      <size>
       <width>40</width>
       <height>40</height>
      </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="buttonBrowseUADESonglengths">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>330</y>
-      <width>75</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="text">
-     <string>...</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelUADESongFilePath">
@@ -4856,36 +4960,20 @@ QPushButton:hover
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBoxSongLengthUADE">
+   <widget class="QPushButton" name="buttonBrowseUADESonglengths">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>285</y>
-      <width>121</width>
-      <height>41</height>
+      <x>610</x>
+      <y>330</y>
+      <width>75</width>
+      <height>29</height>
      </rect>
     </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>40</width>
-      <height>40</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelSongLengthUADE">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>285</y>
-      <width>180</width>
-      <height>41</height>
-     </rect>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
     <property name="text">
-     <string>UADE Songlengths Database</string>
+     <string>...</string>
     </property>
    </widget>
   </widget>

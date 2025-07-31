@@ -69,6 +69,8 @@ public:
 
     Info* info;
     int filter_emu;
+    string frequency;
+    string resampler;
     string filter_mode;
     int led_forced;
     int led_state;
@@ -111,17 +113,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     {
         return FMOD_ERR_FORMAT;
     }
-
-    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = UADE_CHANNELS;
-    plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = 2048 * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = 0xffffffff;
-
-    codec->waveformat = &(plugin->waveformat);
-    codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
 
     char* smallBuffer;
     smallBuffer = new char[4];
@@ -230,6 +221,8 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     }
 
     //defaults
+    plugin->frequency = "48000";
+    plugin->resampler = "sinc";
     plugin->filter_emu = 1;
     plugin->filter_mode = "a1200";
     plugin->led_forced = 0;
@@ -250,7 +243,15 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("filter_emu") == 0)
+                if (word.compare("frequency") == 0)
+                {
+                    plugin->frequency = value;
+                }
+                else if (word.compare("resampler") == 0)
+                {
+                    plugin->resampler = value;
+                }
+                else if (word.compare("filter_emu") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
@@ -327,6 +328,17 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         ifs.close();
     }
 
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = UADE_CHANNELS;
+    plugin->waveformat.frequency = stoi(plugin->frequency);
+    plugin->waveformat.pcmblocksize = 2048 * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = 0xffffffff;
+
+    codec->waveformat = &(plugin->waveformat);
+    codec->numsubsounds = 0;
+    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
+    codec->plugindata = plugin; /* user data value */
+
     if (plugin->uade_songlengthspath.empty() || plugin->uade_songlengthspath == "/uade.md5")
     {
         plugin->uade_songlengthspath = plugin->info->dataPath + UADE_DATA_DIR + "/uade.md5";
@@ -357,15 +369,13 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
                                plugin->silence_timeout_enabled ? plugin->silence_timeout.c_str() : "-1");
     }
 
-    uade_config_set_option(uadeConfig, UC_FREQUENCY, to_string(plugin->waveformat.frequency).c_str());
+    uade_config_set_option(uadeConfig, UC_FREQUENCY, plugin->frequency.c_str());
+    uade_config_set_option(uadeConfig, UC_RESAMPLER, plugin->resampler.c_str());
     uade_config_set_option(uadeConfig, UC_FILTER_TYPE, plugin->filter_emu ? plugin->filter_mode.c_str() : "none");
 
     if (plugin->led_forced) {
         uade_config_set_option(uadeConfig, UC_FORCE_LED, plugin->led_state ? "on" : "off");
     }
-
-    //TODO add "sinc" & "none" resampling methods ("sinc" should be the best option for freqs > 44100?)
-    uade_config_set_option(uadeConfig, UC_RESAMPLER, "default");
 
     uade_config_set_option(uadeConfig, UC_PANNING_VALUE, plugin->panning.c_str());
     uade_config_set_option(uadeConfig, UC_NO_HEADPHONES, nullptr);
