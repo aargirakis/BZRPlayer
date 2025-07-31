@@ -45,7 +45,6 @@ void TrackerView::paintEvent(QPaintEvent* event)
             SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker || SoundManager::getInstance().m_Info1->
             plugin == PLUGIN_sunvox_lib))
         {
-            SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
             QPainter painter;
             painter.begin(this);
             painter.setRenderHint(QPainter::Antialiasing);
@@ -94,16 +93,6 @@ bool TrackerView::eventFilter(QObject* obj, QEvent* event)
                     }
                 }
 
-                if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt)
-                {
-                    //check where we clicked and toggle channels
-                    //                    int channel = tracker->m_trackerview->getChannelClicked(mouseEvent->pos().x(),mouseEvent->pos().y());
-                    //                    if(channel>=0)
-                    //                    {
-                    //                        bool enable = this->parent()->getChannelEnabled(channel);
-                    //                        this->parent()->setChannelEnabled(channel,!enable);
-                    //                    }
-                }
             }
             return true;
         }
