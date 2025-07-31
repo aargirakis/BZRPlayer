@@ -135,13 +135,13 @@ private slots:
 
     void on_checkBoxOnlyOneInstance_toggled(bool checked);
 
-    void on_sliderSilenceTimeOutUADE_valueChanged(int value);
+    void on_sliderSilenceTimeOutUade_valueChanged(int value);
 
-    void on_sliderPanningUADE_valueChanged(int value);
+    void on_sliderPanningUade_valueChanged(int value);
 
-    void on_checkBoxSilenceTimeoutUADE_toggled(bool checked);
+    void on_checkBoxSilenceTimeoutUade_toggled(bool checked);
 
-    void on_buttonBrowseUADESonglengths_clicked();
+    void on_buttonBrowseUadeSonglengths_clicked();
 
     void on_buttonSelectionColor_clicked();
 
@@ -204,9 +204,9 @@ private slots:
 
     void on_sliderRasterbarsOpacity_valueChanged(int value);
 
-    void on_checkBoxContinuousPlaybackUADE_toggled();
+    void on_checkBoxContinuousPlaybackUade_toggled();
 
-    void on_checkBoxSongLengthUADE_toggled(bool checked);
+    void on_checkBoxSongLengthUade_toggled(bool checked);
 
     void on_checkBoxFilterOpenMPT_toggled(bool checked);
 
@@ -214,7 +214,7 @@ private slots:
 
     void on_checkBoxOnlyOneInstance_clicked();
 
-    void on_checkBoxFilterEmuUADE_toggled(bool checked);
+    void on_checkBoxFilterEmuUade_toggled(bool checked);
 
     void on_checkBoxSystrayOnQuit_toggled(bool checked);
 
@@ -232,9 +232,9 @@ private:
     void loadHivelytrackerSettings();
     void saveHivelytrackerSettings();
     void loadSidplaySettings();
-    void saveUADESettings();
+    void saveUadeSettings();
     void savelibopenmptSettings();
-    void loadUADESettings();
+    void loadUadeSettings();
     void loadlibopenmptSettings();
     void loadLibxmpSettings();
     void saveLibxmpSettings();
