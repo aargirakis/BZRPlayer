@@ -50,11 +50,7 @@ Tracker::Tracker()
 void Tracker::init()
 {
     m_info = SoundManager::getInstance().m_Info1;
-    m_fColorHueCounter = 0;
-    m_fColorLightnessCounter = 0;
-    m_fColorLightnessdirection = 0.3f;
-    m_fColorSaturationCounter = 0;
-    m_fColorSaturationdirection = 0.75f;
+
     if (m_info == nullptr)
     {
         m_trackerview = nullptr;
@@ -68,58 +64,63 @@ void Tracker::init()
         return;
     }
 
-    if (QString(m_info->fileformat.c_str()).toLower().startsWith("SunVox"))
+    m_fColorHueCounter = 0;
+    m_fColorLightnessCounter = 0;
+    m_fColorLightnessdirection = 0.3f;
+    m_fColorSaturationCounter = 0;
+    m_fColorSaturationdirection = 0.75f;
+
+    QString fileFormat = QString::fromStdString(m_info->fileformat).toLower();
+    if (fileFormat.startsWith("SunVox"))
     {
         m_trackerview = new SoundFXPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (6chn") ||
-        QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (8chn") ||
-        QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (16ch"))
+    else if (fileFormat.startsWith("protracker mod (6chn") ||
+            fileFormat.startsWith("protracker mod (8chn") ||
+            fileFormat.startsWith("protracker mod (16ch"))
     {
         m_trackerview = new FastTracker1PatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("soundfx"))
+    else if (fileFormat.startsWith("soundfx"))
     {
         m_trackerview = new SoundFXPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ice tracker"))
+    else if (fileFormat.startsWith("ice tracker"))
     {
         m_trackerview = new IceTrackerPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (patt"))
+    else if (fileFormat.startsWith("protracker mod (patt"))
     {
         m_trackerview = new ProTracker36PatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("protracker mod (flt4"))
+    else if (fileFormat.startsWith("protracker mod (flt4"))
     {
         m_trackerview = new StarTrekker13PatternView(this, m_info->numChannels);
     }
-    else if ((QString(m_info->fileformat.c_str()).toLower().startsWith("protracker") && !
-            QString(m_info->fileformat.c_str()).toLower().startsWith("protracker xm")) ||
-        QString(m_info->fileformat.c_str()).toLower().startsWith("probably converted (m.k") ||
-        QString(m_info->fileformat.c_str()).toLower().startsWith("unknown/converted (m.k") ||
-        QString(m_info->fileformat.c_str()).toLower().startsWith("converted 15 ins") || QString(
-            m_info->fileformat.c_str()).
-        toLower().startsWith("unknown or converted (M"))
+    else if ((fileFormat.startsWith("protracker") && !
+                                                             fileFormat.startsWith("protracker xm")) ||
+            fileFormat.startsWith("probably converted (m.k") ||
+            fileFormat.startsWith("unknown/converted (m.k") ||
+            fileFormat.startsWith("converted 15 ins") || fileFormat.startsWith("unknown or converted (M"))
     {
         m_trackerview = new ProTracker1PatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("noise") || QString(m_info->fileformat.c_str()).
+    else if (fileFormat.startsWith("noise") || QString(m_info->fileformat.c_str()).
         toLower().startsWith("his master"))
     {
         m_trackerview = new NoiseTrackerPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("mnemotron"))
+    else if (fileFormat.startsWith("mnemotron"))
     {
         m_trackerview = new SoundTracker26PatternView(this, m_info->numChannels);
     }
 
-    else if (QString(m_info->fileformat.c_str()).toLower() == "soundtracker")
+    else if (fileFormat == "soundtracker")
     {
         m_trackerview = new UltimateSoundTrackerPatternView(this, m_info->numChannels);
     }
 
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("game music creator"))
+    else if (fileFormat.startsWith("game music creator"))
     {
         m_trackerview = new GameMusicCreatorPatternView(this, m_info->numChannels);
     }
@@ -127,7 +128,7 @@ void Tracker::init()
     {
         m_trackerview = new AHXPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("chiptracker"))
+    else if (fileFormat.startsWith("chiptracker"))
     {
         m_trackerview = new ChipTrackerPatternView(this, m_info->numChannels);
     }
@@ -137,19 +138,19 @@ void Tracker::init()
         m_trackerview = new HivelyTrackerPatternView(this, m_info->numChannels);
     }
 
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("scream tracker 3"))
+    else if (fileFormat.startsWith("scream tracker 3"))
     {
         m_trackerview = new ScreamTracker3PatternView(this, m_info->numChannels);
     }
 
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("scream tracker 2"))
+    else if (fileFormat.startsWith("scream tracker 2"))
     {
         m_trackerview = new ScreamTracker2PatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("fasttracker 2") ||
-        QString(m_info->fileformat.c_str()).toLower().startsWith("skale tracker xm") ||
-        QString(m_info->fileformat.c_str()).toLower().startsWith("madtracker 2.0 xm") ||
-        QString(m_info->fileformat.c_str()).toLower().endsWith("xm 1.04"))
+    else if (fileFormat.startsWith("fasttracker 2") ||
+            fileFormat.startsWith("skale tracker xm") ||
+            fileFormat.startsWith("madtracker 2.0 xm") ||
+            fileFormat.endsWith("xm 1.04"))
     {
         if (m_info->numChannels > 6)
         {
@@ -165,35 +166,35 @@ void Tracker::init()
         }
     }
 
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0"))
+    else if (fileFormat.startsWith("octamed (mmd0"))
     {
         m_trackerview = new MEDPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("impulse"))
+    else if (fileFormat.startsWith("impulse"))
     {
         m_trackerview = new ImpulseTrackerPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("composer 669"))
+    else if (fileFormat.startsWith("composer 669"))
     {
         m_trackerview = new Composer669PatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("ultratracker"))
+    else if (fileFormat.startsWith("ultratracker"))
     {
         m_trackerview = new UltraTrackerPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("digibooster pro"))
+    else if (fileFormat.startsWith("digibooster pro"))
     {
         m_trackerview = new DigiBoosterProPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("digibooster"))
+    else if (fileFormat.startsWith("digibooster"))
     {
         m_trackerview = new DigiBooster17PatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("oktalyzer"))
+    else if (fileFormat.startsWith("oktalyzer"))
     {
         m_trackerview = new OktalyzerPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1"))
+    else if (fileFormat.startsWith("octamed (mmd1"))
     {
         if (m_info->numChannels > 4)
         {
@@ -204,7 +205,7 @@ void Tracker::init()
             m_trackerview = new OctaMED44ChanPatternView(this, m_info->numChannels);
         }
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
+    else if (fileFormat.startsWith("octamed (mmd2"))
     {
         if (m_info->numChannels > 4)
         {
@@ -215,15 +216,11 @@ void Tracker::init()
             m_trackerview = new OctaMED54ChanPatternView(this, m_info->numChannels);
         }
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd3"))
+    else if (fileFormat.startsWith("octamed (mmd3"))
     {
         m_trackerview = new OctaMEDSoundstudioPatternView(this, m_info->numChannels);
     }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("multitracker"))
-    {
-        m_trackerview = new MultiTrackerPatternView(this, m_info->numChannels);
-    }
-    else if (QString(m_info->fileformat.c_str()).toLower().startsWith("mdx"))
+    else if (fileFormat.startsWith("multitracker") || fileFormat.startsWith("mdx"))
     {
         m_trackerview = new MultiTrackerPatternView(this, m_info->numChannels);
     }
