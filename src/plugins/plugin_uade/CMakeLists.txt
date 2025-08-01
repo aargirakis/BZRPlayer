@@ -38,7 +38,7 @@ set(SONG_CONF_URL "https://raw.githubusercontent.com/mvtiaine/audacious-uade/ref
 set(DESTINATION_PATH "${EXTERNAL_SOURCE_DIR}")
 download_to(${SONG_CONF} ${SONG_CONF_URL} "ce2ae365913d55a157114bb40818a3ba062c64b2008e02614fefda859f961505" ${DESTINATION_PATH} true "")
 
-patch_sources(${NAME_VERSIONED} ${CMAKE_CURRENT_SOURCE_DIR}/patches ${EXTERNAL_SOURCE_DIR})
+patch_sources(${NAME_VERSIONED} ${CMAKE_CURRENT_SOURCE_DIR}/patches/post-make ${EXTERNAL_SOURCE_DIR})
 
 file(READ "${EXTERNAL_SOURCE_DIR}/version" UADE_VERSION)
 string(REPLACE "\r" "" UADE_VERSION "${UADE_VERSION}")
