@@ -47,6 +47,8 @@ public:
     virtual void drawVerticalEmboss(int xPos, int yPos, int height, QColor hilite, QColor shadow, QColor base,
                                          QPainter* painter, bool left = true, bool right = true);
 
+    virtual void updateEnabledChannels(int height, QPainter* painter);
+
     virtual unsigned int height(){return m_height;}
     virtual unsigned int width(){return m_width;}
     virtual QColor colorEmpty(){return m_colorEmpty;}

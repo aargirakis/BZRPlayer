@@ -1223,41 +1223,7 @@ void Tracker::drawVUMeters(QPainter* painter)
         }
     }
 
-    for (int i = 0; i < m_info->numChannels; i++)
-    {
-        if (SoundManager::getInstance().isChannelMuted(i))
-        {
-            //draw background with opacity when enabled/disabled channels
-            QBrush brush(m_trackerview->colorBackground());
-            int x = m_trackerview->channelStart() + (i * m_trackerview->channelWidth()) + (i * m_trackerview->
-                    channelxSpace());
-            int y = m_trackerview->topHeight();
-            int w;
-            if (i == 0) //first channel
-            {
-                w = m_trackerview->channelFirstWidth();
-            }
-            else if (i == m_info->numChannels - 1) //last channel
-            {
-                if (m_trackerview->channelFirstWidth() != m_trackerview->channelWidth())
-                {
-                    x = x - (m_trackerview->channelWidth() - m_trackerview->channelFirstWidth());
-                }
-
-                w = m_trackerview->channelLastWidth();
-            }
-            else
-            {
-                if (m_trackerview->channelFirstWidth() != m_trackerview->channelWidth())
-                {
-                    x = x - (m_trackerview->channelWidth() - m_trackerview->channelFirstWidth());
-                }
-                w = m_trackerview->channelWidth();
-            }
-            int h = height - y - m_trackerview->bottomFrameHeight();
-            painter->fillRect(QRect(x, y, w, h), brush);
-        }
-    }
+    m_trackerview->updateEnabledChannels(height, painter);
 }
 void Tracker::paint(QPainter* painter, QPaintEvent* event)
 {

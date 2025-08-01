@@ -1,6 +1,8 @@
 #include "AbstractPatternView.h"
 #include <QApplication>
 #include <QDir>
+#include "mainwindow.h"
+#include "soundmanager.h"
 
 AbstractPatternView::AbstractPatternView(Tracker* parent, unsigned int channels)
 {
@@ -434,5 +436,43 @@ void AbstractPatternView::drawVerticalEmboss(int xPos, int yPos, int height, QCo
     {
         painter->fillRect(xPos + (1), (yPos), 1, height, hilite);
         painter->fillRect(xPos + (1), (yPos + height), 1, 1, base);
+    }
+}
+void AbstractPatternView::updateEnabledChannels(int height, QPainter* painter)
+{
+    Tracker* t = (Tracker*)this->parent();
+    for (int unsigned i = 0; i < t->m_info->numChannels; i++)
+    {
+        if (SoundManager::getInstance().isChannelMuted(i))
+        {
+            //draw background with opacity when enabled/disabled channels
+            QBrush brush(m_colorBackground);
+            int x = m_xChannelStart + (i * m_channelWidth) + (i * m_channelxSpace);
+            int y = m_topHeight;
+            int w;
+            if (i == 0) //first channel
+            {
+                w = channelFirstWidth();
+            }
+            else if (i == t->m_info->numChannels - 1) //last channel
+            {
+                if (channelFirstWidth() != m_channelWidth)
+                {
+                    x = x - (m_channelWidth - channelFirstWidth());
+                }
+                w = channelLastWidth();
+            }
+            else
+            {
+                if (channelFirstWidth() != m_channelWidth)
+                {
+                    x = x - (m_channelWidth - channelFirstWidth());
+                }
+                w = m_channelWidth;
+            }
+
+            int h = height - y - m_bottomFrameHeight;
+            painter->fillRect(QRect(x, y, w, h), brush);
+        }
     }
 }
