@@ -503,6 +503,16 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
     ssize_t renderedBytes = uade_read(
         buffer, plugin->waveformat.pcmblocksize * UADE_BYTES_PER_FRAME, plugin->uadeState);
 
+    /* read variable must be set before checking notifications,
+     * in order inform fmod how many audio bytes still left to play in case of song end notification
+     * otherwise, tracks that ends too early (e.g. last subsong of Turrican 2 mdat.world_1)
+     * will continue play forever.
+     * moreover, its value must be renderedBytes and not fixed (ie plugin->waveformat.pcmblocksize),
+     * otherwise, after a song end notification the audio bytes still left to play will include
+     * (part of) looped track data, producing a final audio pop.
+     */
+    *read = renderedBytes / UADE_BYTES_PER_FRAME;
+
     uade_notification un;
     while (uade_read_notification(&un, plugin->uadeState)) {
         switch (un.type) {
@@ -512,13 +522,8 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
             case UADE_NOTIFICATION_SONG_END:
                 cout << (un.song_end.happy ? "" : "bad ") << "song end" << ": " << un.song_end.reason << endl;
 
-                /*
-                 * when UADE_NOTIFICATION_SONG_END is notified too early,
-                 * (eg Turrican 2 mdat.world_1, last subsong)
-                 * returning FMOD_ERR_FILE_EOF or FMOD_ERR_FILE_NOTFOUND
-                 * seems not having any effect on playback, which continues
-                 */
-                return FMOD_ERR_FORMAT;
+                //FMOD_ERR_FILE_EOF is used here in order to let fmod playing the remaining audio bytes
+                return FMOD_ERR_FILE_EOF;
 
             default:
                 cout << "Unknown libuade notification" << endl;
@@ -527,6 +532,7 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
         uade_cleanup_notification(&un);
     }
 
+    // should never happen (unless the file is just deleted instants before)
     if (renderedBytes < 0) {
         return FMOD_ERR_FILE_NOTFOUND;
     }
@@ -536,10 +542,8 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
      * however this check *might* be still useful if no UADE_NOTIFICATION_SONG_END is received
      */
     if (renderedBytes == 0) {
-        return FMOD_ERR_FILE_EOF;
+        return FMOD_ERR_FORMAT;
     }
-
-    *read = plugin->waveformat.pcmblocksize;
 
     return FMOD_OK;
 }
