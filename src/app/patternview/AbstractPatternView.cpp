@@ -298,8 +298,7 @@ void AbstractPatternView::drawVUMeters(QPainter* painter)
 
 
     if (QString(t->m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0") ||
-        QString(t->m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1") ||
-        QString(t->m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
+        QString(t->m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1"))
     {
         painter->translate(0, (height) - maxHeight + TOP_OFFSET);
     }
