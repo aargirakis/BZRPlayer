@@ -17,8 +17,6 @@ public:
     void drawTop(QPainter* painter);
     float m_scale;
     void init();
-    int TOP_OFFSET;
-    int maxHeight;
     Info* m_info;
     AbstractPatternView* m_trackerview;
     unsigned int m_currentPattern;
@@ -40,19 +38,19 @@ private:
     QPixmap m_vuBuffer;
     QSize m_lastVuSize;
     QPixmap m_backBuffer;
+    QPixmap m_muteBuffer;
     QSize m_lastBufferSize;
     QPixmap m_topBarBuffer;
     QSize m_lastTopBarSize;
+
+    QSize m_lastMuteSize;
+    std::vector<bool> m_prevMuteState;
 
 
     unsigned  int m_currentSample;
 
     QPen m_pen;
-    float m_fColorHueCounter;
-    float m_fColorLightnessCounter;
-    float m_fColorLightnessdirection;
-    float m_fColorSaturationCounter;
-    float m_fColorSaturationdirection;
+
 
     void drawVerticalEmboss(int xPos, int yPos, int height, QColor hilite, QColor shadow, QColor base,
                             QPainter* painter, bool left = true, bool right = true);

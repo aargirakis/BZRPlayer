@@ -280,6 +280,58 @@ void AbstractPatternView::paintTop(QPainter* painter, Info* info, unsigned int m
 {
 
 }
+void AbstractPatternView::drawVUMeters(QPainter* painter)
+{
+    int height = m_height;
+    int width = m_width;
+
+    Tracker* t = (Tracker*)this->parent();
+    SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
+
+    int HEIGHT = m_vumeterHeight;
+    int WIDTH = m_vumeterWidth;
+    int LEFT_OFFSET = m_vumeterLeftOffset;
+    int VUMETER_OFFSET = m_vumeterOffset;
+    int HILIGHT_WIDTH = m_vumeterHilightWidth;
+    int TOP_OFFSET = m_vumeterTopOffset;
+    int maxHeight = HEIGHT;
+
+
+    if (QString(t->m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0") ||
+        QString(t->m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1") ||
+        QString(t->m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
+    {
+        painter->translate(0, (height) - maxHeight + TOP_OFFSET);
+    }
+    else
+    {
+        painter->translate(0, (height / 2) - maxHeight + TOP_OFFSET);
+    }
+
+    for (int unsigned i = 0; i < t->m_info->numChannels; i++)
+    {
+        unsigned char volume = static_cast<unsigned char>(((t->m_info->modVUMeters[i] / 64.0) + 0.005) * 100);
+        //volume is between 0-100. 0.005 for rounding
+
+        int vumeterCurrentHeight = (volume * HEIGHT / 100);
+
+        int vuWidth = WIDTH;
+        int xPos = (i * VUMETER_OFFSET) + LEFT_OFFSET;
+
+
+        m_rectL = QRect(xPos, maxHeight - vumeterCurrentHeight, vuWidth, vumeterCurrentHeight);
+        m_rectLHiLite = QRect(xPos, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH, vumeterCurrentHeight);
+        m_rectLDark = QRect(xPos + vuWidth - HILIGHT_WIDTH, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH,
+                        vumeterCurrentHeight);
+
+        painter->fillRect(m_rectL, QBrush(m_linearGrad));
+        painter->fillRect(m_rectLHiLite, QBrush(m_linearGradHiLite));
+        painter->fillRect(m_rectLDark, QBrush(m_linearGradDark));
+
+    }
+
+
+}
 void AbstractPatternView::drawText(QString text, QPainter* painter, int numPixels, int yPixelPosition, BitmapFont font, int letterSpacing)
 {
     if (yPixelPosition >height() || numPixels > painter->window().width() || yPixelPosition <
@@ -438,7 +490,24 @@ void AbstractPatternView::drawVerticalEmboss(int xPos, int yPos, int height, QCo
         painter->fillRect(xPos + (1), (yPos + height), 1, 1, base);
     }
 }
-void AbstractPatternView::updateEnabledChannels(int height, QPainter* painter)
+std::vector<bool> AbstractPatternView::getChannelMuteMask()
+{
+    std::vector<bool> muteMask;
+
+    Tracker* t = dynamic_cast<Tracker*>(this->parent());
+    if (!t || !t->m_info)
+        return muteMask;
+
+    muteMask.resize(t->m_info->numChannels);
+
+    for (unsigned int i = 0; i < t->m_info->numChannels; i++)
+    {
+        muteMask[i] = SoundManager::getInstance().isChannelMuted(i);
+    }
+
+    return muteMask;
+}
+void AbstractPatternView::updateEnabledChannels(QPainter* painter)
 {
     Tracker* t = (Tracker*)this->parent();
     for (int unsigned i = 0; i < t->m_info->numChannels; i++)
@@ -471,7 +540,7 @@ void AbstractPatternView::updateEnabledChannels(int height, QPainter* painter)
                 w = m_channelWidth;
             }
 
-            int h = height - y - m_bottomFrameHeight;
+            int h = m_height - y - m_bottomFrameHeight;
             painter->fillRect(QRect(x, y, w, h), brush);
         }
     }

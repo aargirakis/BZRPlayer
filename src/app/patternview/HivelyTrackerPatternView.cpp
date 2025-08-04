@@ -1,5 +1,6 @@
 #include "HivelyTrackerPatternView.h"
 #include "mainwindow.h"
+#include "soundmanager.h"
 #include <QDir>
 HivelyTrackerPatternView::HivelyTrackerPatternView(Tracker* parent, unsigned int channels)
     : AbstractPatternView(parent, channels)
@@ -256,6 +257,68 @@ void::HivelyTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned 
     QRectF rightFrameSource(18, 25, 13, 25);
     QRectF rightFrameTarget(left + info->modTrackPositions.size() * 120 + (15), 79, 13, 25);
     painter->drawImage(rightFrameTarget, imageTop, rightFrameSource);
+}
+void HivelyTrackerPatternView::drawVUMeters(QPainter* painter)
+{
+    SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
+
+    int height = m_height;
+
+    Tracker* t = (Tracker*)this->parent();
+    SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
+
+    int HEIGHT = m_vumeterHeight;
+    int WIDTH = m_vumeterWidth;
+    int LEFT_OFFSET = m_vumeterLeftOffset;
+    int VUMETER_OFFSET = m_vumeterOffset;
+    int HILIGHT_WIDTH = m_vumeterHilightWidth;
+    int TOP_OFFSET = m_vumeterTopOffset;
+    int maxHeight = HEIGHT;
+
+    painter->translate(0, (height / 2) - maxHeight + TOP_OFFSET);
+
+    for (int unsigned i = 0; i < t->m_info->numChannels; i++)
+    {
+        unsigned char volume = static_cast<unsigned char>(((t->m_info->modVUMeters[i] / 64.0) + 0.005) * 100);
+
+        int vumeterCurrentHeight = (volume * m_vumeterHeight / 100);
+
+        m_linearGrad = QLinearGradient(QPointF(0, m_vumeterHeight - vumeterCurrentHeight), QPointF(0, m_vumeterHeight));
+        m_linearGradHiLite = QLinearGradient(QPointF(0, m_vumeterHeight - vumeterCurrentHeight), QPointF(0, m_vumeterHeight));
+        m_linearGradDark = QLinearGradient(QPointF(0, m_vumeterHeight - vumeterCurrentHeight), QPointF(0, m_vumeterHeight));
+
+        m_linearGrad.setColorAt(0, QColor(255, 255, 255).rgb());
+        m_linearGrad.setColorAt(0.02, QColor(255, 255, 255).rgb());
+        m_linearGrad.setColorAt(0.02, QColor(228, 239, 249).rgb());
+        m_linearGrad.setColorAt(0.12, QColor(227, 238, 249).rgb());
+        m_linearGrad.setColorAt(0.15, QColor(230, 240, 250).rgb());
+        m_linearGrad.setColorAt(0.5, QColor(165, 199, 232).rgb());
+        m_linearGrad.setColorAt(1, QColor(88, 114, 139).rgb());
+
+        //hilight color (left)
+        m_linearGradHiLite.setColorAt(0, QColor(255, 255, 255).rgb());
+        m_linearGradHiLite.setColorAt(1, QColor(144, 175, 206).rgb());
+
+        //dark color (right)
+        m_linearGradDark.setColorAt(0, QColor(170, 170, 170).rgb());
+        m_linearGradDark.setColorAt(1, QColor(26, 45, 65).rgb());
+
+        int vuWidth = WIDTH;
+        int xPos = (i * VUMETER_OFFSET) + LEFT_OFFSET;
+
+
+        m_rectL = QRect(xPos, maxHeight - vumeterCurrentHeight, vuWidth, vumeterCurrentHeight);
+        m_rectLHiLite = QRect(xPos, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH, vumeterCurrentHeight);
+        m_rectLDark = QRect(xPos + vuWidth - HILIGHT_WIDTH, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH,
+                            vumeterCurrentHeight);
+
+        painter->fillRect(m_rectL, QBrush(m_linearGrad));
+        painter->fillRect(m_rectLHiLite, QBrush(m_linearGradHiLite));
+        painter->fillRect(m_rectLDark, QBrush(m_linearGradDark));
+
+    }
+
+
 }
 HivelyTrackerPatternView::~HivelyTrackerPatternView()
 {

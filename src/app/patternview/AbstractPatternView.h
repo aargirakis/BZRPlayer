@@ -43,11 +43,13 @@ public:
     virtual void paintAbove(QPainter* painter, int height, int currentRow);
     virtual void paintBelow(QPainter* painter, int height, int currentRow);
     virtual void paintTop(QPainter* painter, Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow);
+    virtual void drawVUMeters(QPainter* painter);
     virtual void drawText(QString text, QPainter* painter, int numPixels, int yPixelPosition, BitmapFont font, int letterSpacing=0);
     virtual void drawVerticalEmboss(int xPos, int yPos, int height, QColor hilite, QColor shadow, QColor base,
                                          QPainter* painter, bool left = true, bool right = true);
 
-    virtual void updateEnabledChannels(int height, QPainter* painter);
+    virtual void updateEnabledChannels(QPainter* painter);
+    virtual std::vector<bool> getChannelMuteMask();
 
     virtual unsigned int height(){return m_height;}
     virtual unsigned int width(){return m_width;}
@@ -313,6 +315,10 @@ protected:
     int m_yOffsetRowHighlight;
     int m_xOffsetSeparatorRowNumber;
     unsigned int m_RowLength;
+
+    QRect m_rectL;
+    QRect m_rectLHiLite;
+    QRect m_rectLDark;
 
     //used for enabling/disabling channels using the mouse
     int m_xChannelStart;

@@ -64,11 +64,6 @@ void Tracker::init()
         return;
     }
 
-    m_fColorHueCounter = 0;
-    m_fColorLightnessCounter = 0;
-    m_fColorLightnessdirection = 0.3f;
-    m_fColorSaturationCounter = 0;
-    m_fColorSaturationdirection = 0.75f;
 
     QString fileFormat = QString::fromStdString(m_info->fileformat).toLower();
     if (fileFormat.startsWith("SunVox"))
@@ -226,7 +221,7 @@ void Tracker::init()
     }
     else
     {
-        m_trackerview = m_trackerview = nullptr;
+        m_trackerview = nullptr;
         return;
     }
 
@@ -1098,129 +1093,7 @@ void Tracker::drawTop(QPainter* painter)
 }
 void Tracker::drawVUMeters(QPainter* painter)
 {
-    int height = m_trackerview->height();
-    int width = m_trackerview->width();
-    if (m_trackerview!=nullptr && m_trackerview->m_renderVUMeter)
-    {
-        SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
-
-        int HEIGHT = m_trackerview->m_vumeterHeight;
-        int WIDTH = m_trackerview->m_vumeterWidth;
-        int LEFT_OFFSET = m_trackerview->m_vumeterLeftOffset;
-        int VUMETER_OFFSET = m_trackerview->m_vumeterOffset;
-        int HILIGHT_WIDTH = m_trackerview->m_vumeterHilightWidth;
-        TOP_OFFSET = m_trackerview->m_vumeterTopOffset;
-
-        maxHeight = HEIGHT;
-
-
-        if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0") ||
-            QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1") ||
-            QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
-        {
-            painter->translate(0, (height) - maxHeight + TOP_OFFSET);
-        }
-        else
-        {
-            painter->translate(0, (height / 2) - maxHeight + TOP_OFFSET);
-        }
-
-        for (int unsigned i = 0; i < m_info->numChannels; i++)
-        {
-            unsigned char volume = static_cast<unsigned char>(((m_info->modVUMeters[i] / 64.0) + 0.005) * 100);
-            //volume is between 0-100. 0.005 for rounding
-
-
-            int vumeterCurrentHeight = (volume * HEIGHT / 100);
-
-            int vuWidth = WIDTH;
-            int xPos = (i * VUMETER_OFFSET) + LEFT_OFFSET;
-
-
-            QRect rectL(xPos, maxHeight - vumeterCurrentHeight, vuWidth, vumeterCurrentHeight);
-            QRect rectLHiLite(xPos, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH, vumeterCurrentHeight);
-            QRect rectLDark(xPos + vuWidth - HILIGHT_WIDTH, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH,
-                            vumeterCurrentHeight);
-
-
-            QLinearGradient linearGrad = m_trackerview->m_linearGrad;
-            QLinearGradient linearGradHiLite = m_trackerview->m_linearGradHiLite;
-            QLinearGradient linearGradDark = m_trackerview->m_linearGradDark;
-
-            if (QString(m_info->fileformat.c_str()) == "AHX")
-            {
-                //painter->setCompositionMode(QPainter::CompositionMode_Lighten);
-                QColor col(255, 255, 255);
-                col.setHsl(static_cast<int>(m_fColorHueCounter), static_cast<int>(m_fColorSaturationCounter), 127);
-                painter->fillRect(rectL, QBrush(col));
-                m_fColorHueCounter += 1;
-                m_fColorLightnessCounter += m_fColorLightnessdirection;
-                if (m_fColorLightnessCounter > 255 or m_fColorLightnessCounter < 0)
-                {
-                    m_fColorLightnessdirection *= -1;
-                }
-                m_fColorSaturationCounter += m_fColorSaturationdirection;
-                if (m_fColorSaturationCounter > 255 or m_fColorSaturationCounter < 0)
-                {
-                    m_fColorSaturationdirection *= -1;
-                }
-                if (m_fColorHueCounter > 255) m_fColorHueCounter = 0;
-            }
-            else if (QString(m_info->fileformat.c_str()) == "HivelyTracker")
-            {
-                QLinearGradient linearGrad(QPointF(0, maxHeight - vumeterCurrentHeight), QPointF(0, maxHeight));
-                QLinearGradient linearGradHiLite(QPointF(0, maxHeight - vumeterCurrentHeight), QPointF(0, maxHeight));
-                QLinearGradient linearGradDark(QPointF(0, maxHeight - vumeterCurrentHeight), QPointF(0, maxHeight));
-
-
-                linearGrad.setColorAt(0, QColor(255, 255, 255).rgb());
-                linearGrad.setColorAt(0.02, QColor(255, 255, 255).rgb());
-                linearGrad.setColorAt(0.02, QColor(228, 239, 249).rgb());
-                linearGrad.setColorAt(0.12, QColor(227, 238, 249).rgb());
-                linearGrad.setColorAt(0.15, QColor(230, 240, 250).rgb());
-                linearGrad.setColorAt(0.5, QColor(165, 199, 232).rgb());
-                linearGrad.setColorAt(1, QColor(88, 114, 139).rgb());
-
-                //hilight color (left)
-                linearGradHiLite.setColorAt(0, QColor(255, 255, 255).rgb());
-                linearGradHiLite.setColorAt(1, QColor(144, 175, 206).rgb());
-
-                //dark color (right)
-                linearGradDark.setColorAt(0, QColor(170, 170, 170).rgb());
-                linearGradDark.setColorAt(1, QColor(26, 45, 65).rgb());
-
-                painter->fillRect(rectL, QBrush(linearGrad));
-                painter->fillRect(rectLHiLite, QBrush(linearGradHiLite));
-                painter->fillRect(rectLDark, QBrush(linearGradDark));
-            }
-            else
-            {
-
-
-                painter->fillRect(rectL, QBrush(linearGrad));
-                painter->fillRect(rectLHiLite, QBrush(linearGradHiLite));
-                painter->fillRect(rectLDark, QBrush(linearGradDark));
-            }
-        }
-    }
-
-
-    //move painter back up (was moved down when painted vumeters)
-    if (m_trackerview->m_renderVUMeter)
-    {
-        if (QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd0") ||
-            QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd1") ||
-            QString(m_info->fileformat.c_str()).toLower().startsWith("octamed (mmd2"))
-        {
-            painter->translate(0, -1 * ((height) - maxHeight + TOP_OFFSET));
-        }
-        else
-        {
-            painter->translate(0, -1 * ((height / 2) - maxHeight + TOP_OFFSET));
-        }
-    }
-
-    m_trackerview->updateEnabledChannels(height, painter);
+    m_trackerview->drawVUMeters(painter);
 }
 void Tracker::paint(QPainter* painter, QPaintEvent* event)
 {
@@ -1307,13 +1180,29 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         drawTop(&topPainter);
     }
 
+    std::vector<bool> currentMuteState = m_trackerview->getChannelMuteMask(); // <-- you’ll implement this
+    bool muteChanged = (currentMuteState != m_prevMuteState);
+    bool renderSizeChanged = (m_lastMuteSize != renderSize);
+
+    if (muteChanged || renderSizeChanged) {
+        m_lastMuteSize = renderSize;
+        m_muteBuffer = QPixmap(renderSize);
+        m_muteBuffer.fill(Qt::transparent);
+
+        QPainter mutePainter(&m_muteBuffer);
+        mutePainter.scale(m_scale, m_scale);
+
+        if (std::any_of(currentMuteState.begin(), currentMuteState.end(), [](bool b) { return b; })) {
+            m_trackerview->updateEnabledChannels(&mutePainter);
+        }
+
+        m_prevMuteState = currentMuteState;
+    }
+
     // Composite all layers to screen
     painter->drawPixmap(0, 0, m_backBuffer);
     painter->drawPixmap(0, 0, m_vuBuffer);
     painter->drawPixmap(0, 0, m_topBarBuffer);
+    painter->drawPixmap(0, 0, m_muteBuffer);
+
 }
-
-
-
-
-

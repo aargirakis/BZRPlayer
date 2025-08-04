@@ -2,6 +2,7 @@
 #include "AHXPatternView.h"
 #include "visualizers/tracker.h"
 #include "mainwindow.h"
+#include "soundmanager.h"
 
 AHXPatternView::AHXPatternView(Tracker* parent, unsigned int channels)
     : AbstractPatternView(parent, channels)
@@ -43,6 +44,13 @@ AHXPatternView::AHXPatternView(Tracker* parent, unsigned int channels)
     m_vumeterWidth = 16;
     m_vumeterLeftOffset = 58;
     m_vumeterTopOffset = -9;
+
+
+    m_fColorHueCounter = 0;
+    m_fColorLightnessCounter = 0;
+    m_fColorLightnessdirection = 0.3f;
+    m_fColorSaturationCounter = 0;
+    m_fColorSaturationdirection = 0.75f;
 
     setupVUMeters();
 
@@ -167,7 +175,65 @@ void AHXPatternView::paintBelow(QPainter* painter, int height, int currentRow)
     painter->setPen(pen);
 }
 
+void AHXPatternView::drawVUMeters(QPainter* painter)
+{
+    int height = m_height;
+    int width = m_width;
 
+    Tracker* t = (Tracker*)this->parent();
+    SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
+
+    int HEIGHT = m_vumeterHeight;
+    int WIDTH = m_vumeterWidth;
+    int LEFT_OFFSET = m_vumeterLeftOffset;
+    int VUMETER_OFFSET = m_vumeterOffset;
+    int HILIGHT_WIDTH = m_vumeterHilightWidth;
+    int TOP_OFFSET = m_vumeterTopOffset;
+    int maxHeight = HEIGHT;
+
+    painter->translate(0, (height / 2) - maxHeight + TOP_OFFSET);
+
+    for (int unsigned i = 0; i < t->m_info->numChannels; i++)
+    {
+        unsigned char volume = static_cast<unsigned char>(((t->m_info->modVUMeters[i] / 64.0) + 0.005) * 100);
+        //volume is between 0-100. 0.005 for rounding
+
+        int vumeterCurrentHeight = (volume * HEIGHT / 100);
+
+        int vuWidth = WIDTH;
+        int xPos = (i * VUMETER_OFFSET) + LEFT_OFFSET;
+
+
+        m_rectL = QRect(xPos, maxHeight - vumeterCurrentHeight, vuWidth, vumeterCurrentHeight);
+        m_rectLHiLite = QRect(xPos, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH, vumeterCurrentHeight);
+        m_rectLDark = QRect(xPos + vuWidth - HILIGHT_WIDTH, maxHeight - vumeterCurrentHeight, HILIGHT_WIDTH,
+                            vumeterCurrentHeight);
+
+        painter->fillRect(m_rectL, QBrush(m_linearGrad));
+        painter->fillRect(m_rectLHiLite, QBrush(m_linearGradHiLite));
+        painter->fillRect(m_rectLDark, QBrush(m_linearGradDark));
+
+        //painter->setCompositionMode(QPainter::CompositionMode_Lighten);
+        QColor col(255, 255, 255);
+        col.setHsl(static_cast<int>(m_fColorHueCounter), static_cast<int>(m_fColorSaturationCounter), 127);
+        painter->fillRect(m_rectL, QBrush(col));
+        m_fColorHueCounter += 1;
+        m_fColorLightnessCounter += m_fColorLightnessdirection;
+        if (m_fColorLightnessCounter > 255 or m_fColorLightnessCounter < 0)
+        {
+            m_fColorLightnessdirection *= -1;
+        }
+        m_fColorSaturationCounter += m_fColorSaturationdirection;
+        if (m_fColorSaturationCounter > 255 or m_fColorSaturationCounter < 0)
+        {
+            m_fColorSaturationdirection *= -1;
+        }
+        if (m_fColorHueCounter > 255) m_fColorHueCounter = 0;
+
+
+    }
+
+}
 
 AHXPatternView::~AHXPatternView()
 {
