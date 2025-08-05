@@ -1247,7 +1247,6 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     if (m_trackerview->m_renderTop)
         painter->drawPixmap(0, 0, m_topBarBuffer);
 
-    if (muteChanged)
         painter->drawPixmap(0, 0, m_muteBuffer);
 
 }
