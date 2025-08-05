@@ -241,7 +241,7 @@ void Tracker::init()
     }
 }
 
-void Tracker::drawPattern(QPainter* painter)
+void Tracker::drawPattern(QPainter* painter, int visibleWidth)
 {
     if (m_trackerview==nullptr)
     {
@@ -484,14 +484,51 @@ void Tracker::drawPattern(QPainter* painter)
                 m_trackerview->drawText(strRowNumber, painter, (m_trackerview->xOffsetRow() + numPixels), yOffset + yPixelPosition,m_trackerview->bitmapFontRownumber());
             }
 
-
-
-
-
-
             numPixels += (strRowNumber.length() * fontWidth) + m_trackerview->xOffsetSeparatorRowNumber();
 
-            for (int chan = 0; chan < m_info->numChannels; chan++)
+            const int viewLeft = 0; // You may support horizontal scrolling later
+            const int viewRight = visibleWidth;
+
+            const int channelWidth = m_trackerview->channelWidth() + m_trackerview->channelxSpace(); // total pixel width per channel
+            const int firstChannelWidth = m_trackerview->channelFirstWidth();
+            const int lastChannelWidth = m_trackerview->channelLastWidth();
+
+            int x = m_trackerview->channelStart(); // Start X position of channel 0
+
+            int firstVisibleChannel = 0;
+            int lastVisibleChannel = m_info->numChannels - 1;
+
+            for (int i = 0; i < m_info->numChannels; ++i) {
+                int chanWidth = (i == 0) ? firstChannelWidth :
+                                (i == m_info->numChannels - 1) ? lastChannelWidth :
+                                channelWidth;
+
+                int xEnd = x + chanWidth;
+
+                if (xEnd >= viewLeft) {
+                    firstVisibleChannel = i;
+                    break;
+                }
+                x = xEnd;
+            }
+
+            x = m_trackerview->channelStart();
+
+            for (int i = 0; i < m_info->numChannels; ++i) {
+                int chanWidth = (i == 0) ? firstChannelWidth :
+                                (i == m_info->numChannels - 1) ? lastChannelWidth :
+                                channelWidth;
+
+                int xEnd = x + chanWidth;
+
+                if (x >= viewRight) {
+                    lastVisibleChannel = i;
+                    break;
+                }
+                x = xEnd;
+            }
+
+            for (int chan = firstVisibleChannel; chan <= lastVisibleChannel; chan++)
             {
                 bool alternateChannelColors = false;
                 if (m_trackerview->alternateChannelColorsFrequency())
@@ -1148,8 +1185,9 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         float scaleX = float(renderSize.width()) / float(m_trackerview->width());
         float scaleY = float(renderSize.height()) / float(m_trackerview->height());
         m_scale = min(scaleX, scaleY);
+        int visibleWidth = renderSize.width() / m_scale;
         bufferPainter.scale(m_scale, m_scale);
-        drawPattern(&bufferPainter);
+        drawPattern(&bufferPainter, visibleWidth);
     }
 
     if (m_lastVuSize != renderSize || m_trackerview->m_renderVUMeter)
