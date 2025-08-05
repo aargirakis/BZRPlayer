@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "sndh-player")
-set(VERSION "0.79")
+set(VERSION "0.80")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "SNDH-Archive-Player" PARENT_SCOPE)
@@ -14,7 +14,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "v${VERSION}.tar.gz")
 set(URL "https://github.com/arnaud-carre/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "c5e66cc2a724c8f4e88683c904d54805ff1c0e4b22cf3d45697e681cdcab6845")
+set(SHA_256_HASH "357d3ad345480c21077329cb494ea5d56407a41bacc791bce8e86285fc738ff6")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
@@ -38,8 +38,6 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}
         ${EXTERNAL_SOURCE_DIR}/AtariAudio
-        # ${EXTERNAL_SOURCE_DIR}/AtariAudio/external            #TODO remove?
-        # ${EXTERNAL_SOURCE_DIR}/AtariAudio/external/Musashi    #TODO remove?
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
