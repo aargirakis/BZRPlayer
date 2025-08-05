@@ -1200,7 +1200,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         vuPainter.setCompositionMode(QPainter::CompositionMode_Source);
         vuPainter.setRenderHint(QPainter::Antialiasing, false);
         vuPainter.scale(m_scale, m_scale);
-        drawVUMeters(&vuPainter);  // this only draws the VUs
+        drawVUMeters(&vuPainter);
     }
     // Repaint Top bar layer
     if ((renderSize != m_lastTopBarSize || topToUpdate) && m_trackerview->m_renderTop)
@@ -1218,7 +1218,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         drawTop(&topPainter);
     }
 
-    std::vector<bool> currentMuteState = m_trackerview->getChannelMuteMask(); // <-- you’ll implement this
+    std::vector<bool> currentMuteState = m_trackerview->getChannelMuteMask();
     bool muteChanged = (currentMuteState != m_prevMuteState);
     bool renderSizeChanged = (m_lastMuteSize != renderSize);
 
@@ -1238,9 +1238,16 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     }
 
     // Composite all layers to screen
+
     painter->drawPixmap(0, 0, m_backBuffer);
-    painter->drawPixmap(0, 0, m_vuBuffer);
-    painter->drawPixmap(0, 0, m_topBarBuffer);
-    painter->drawPixmap(0, 0, m_muteBuffer);
+
+    if (m_trackerview->m_renderVUMeter)
+        painter->drawPixmap(0, 0, m_vuBuffer);
+
+    if (m_trackerview->m_renderTop)
+        painter->drawPixmap(0, 0, m_topBarBuffer);
+
+    if (muteChanged)
+        painter->drawPixmap(0, 0, m_muteBuffer);
 
 }
