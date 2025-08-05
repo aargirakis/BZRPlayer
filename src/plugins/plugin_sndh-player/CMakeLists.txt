@@ -43,6 +43,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${FMOD_API_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE _strdup=strdup)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

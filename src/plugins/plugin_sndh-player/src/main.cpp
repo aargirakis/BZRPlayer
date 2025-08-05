@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 #include <string>
 #include <queue>
 #include "fmod_errors.h"
@@ -56,6 +57,7 @@ public:
     SndhFile* sndh;
     queue<uint32_t*> oscBuffer;
     unsigned int m_subsongIndex = 0;
+    bool isContinuousPlaybackActive;
     uint32_t m_hash = 0;
 
     int32_t GetTickCountFromSc68() const
@@ -188,9 +190,45 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     plugin->BuildHash(plugin->sndh);
     plugin->sndh->InitSubSong(1);
 
+    //read config from disk
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/sndh-player.cfg";
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail())
+    {
+        //The file could not be opened
+        useDefaults = true;
+    }
+
+    //defaults
+    plugin->isContinuousPlaybackActive = false;
+
+    if (!useDefaults)
+    {
+        string line;
+        while (getline(ifs, line))
+        {
+            int i = line.find_first_of("=");
+
+            if (i != -1)
+            {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word == "continuous_playback")
+                {
+                    plugin->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                }
+            }
+        }
+        ifs.close();
+    }
+
+
+
+
 
     int channels = 1;
-
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = channels;
@@ -286,18 +324,24 @@ FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, 
         }
 
         plugin->info->clockSpeed = subsongInfo.playerTickRate;
-        unsigned int ticks = subsongInfo.playerTickCount;
-        if (ticks == 0)
-        {
-            ticks = plugin->GetTickCountFromSc68();
+
+        if (plugin->isContinuousPlaybackActive) {
+            *length = -1;
+        } else {
+            unsigned int ticks = subsongInfo.playerTickCount;
+            if (ticks == 0) {
+                ticks = plugin->GetTickCountFromSc68();
+            }
+            unsigned int milliseconds = (ticks * subsongInfo.samplePerTick) / (plugin->waveformat.frequency / 1000);
+            *length = milliseconds;
         }
-        unsigned int milliseconds = (ticks * subsongInfo.samplePerTick) / (plugin->waveformat.frequency / 1000);
-        *length = milliseconds;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
+
+    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
         *length = plugin->sndh->GetSubsongCount();
     }
+
     return FMOD_OK;
 }
 

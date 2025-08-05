@@ -154,6 +154,8 @@ private slots:
 
     void on_checkBoxContinuousPlaybackHivelytracker_toggled();
 
+    void on_checkBoxContinuousPlaybackSndhPlayer_toggled();
+
     void on_SliderStereoSeparationOpenMPT_valueChanged(int value);
 
     void on_checkBoxContinuousPlaybackOpenMPT_toggled();
@@ -226,21 +228,22 @@ private slots:
 
 private:
     void updateColorButtons();
+    void forceUpdateToSliders();
+    void updateCheckBoxes();
 
     void loadAdplugSettings();
     void saveAdplugSettings();
     void loadHivelytrackerSettings();
     void saveHivelytrackerSettings();
-    void loadSidplaySettings();
-    void saveUadeSettings();
-    void savelibopenmptSettings();
-    void loadUadeSettings();
     void loadlibopenmptSettings();
+    void savelibopenmptSettings();
     void loadLibxmpSettings();
     void saveLibxmpSettings();
-    void forceUpdateToSliders();
-    void updateCheckBoxes();
-
+    void loadSidplaySettings();
+    void loadSndhPlayerSettings();
+    void saveSndhPlayerSettings();
+    void loadUadeSettings();
+    void saveUadeSettings();
 
     MainWindow* mainWindow;
     Ui::settingsWindow* ui;

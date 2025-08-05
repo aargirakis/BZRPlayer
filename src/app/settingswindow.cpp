@@ -321,6 +321,11 @@ settingsWindow::settingsWindow(QWidget* parent) :
         loadLibxmpSettings();
     }
 
+    if (PLUGIN_sndh_player_LIB != "")
+    {
+        loadSndhPlayerSettings();
+    }
+
     loadUadeSettings();
     loadlibopenmptSettings();
 
@@ -759,6 +764,11 @@ void settingsWindow::on_buttonOK_clicked()
         saveLibxmpSettings();
     }
 
+    if (PLUGIN_sndh_player_LIB != "")
+    {
+        saveSndhPlayerSettings();
+    }
+
     saveUadeSettings();
     savelibopenmptSettings();
     mainWindow->SaveSettings();
@@ -1185,6 +1195,41 @@ void settingsWindow::loadSidplaySettings()
     }
 }
 
+void settingsWindow::loadSndhPlayerSettings()
+{
+    //read config from disk
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/sndh-player.cfg";
+    ifstream ifs(filename.c_str());
+    string line;
+    bool useDefaults = false;
+    if (ifs.fail())
+    {
+        //The file could not be opened
+        useDefaults = true;
+    }
+    //defaults
+    ui->checkBoxContinuousPlaybackSndhPlayer->setChecked(false);
+
+    if (!useDefaults)
+    {
+        while (getline(ifs, line))
+        {
+            int i = line.find_first_of("=");
+
+            if (i != -1)
+            {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word.compare("continuous_playback") == 0)
+                {
+                    ui->checkBoxContinuousPlaybackSndhPlayer->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+        ifs.close();
+    }
+}
+
 void settingsWindow::saveAdplugSettings()
 {
     //save config to disk
@@ -1331,6 +1376,22 @@ void settingsWindow::saveUadeSettings()
     ofs.close();
 }
 
+void settingsWindow::saveSndhPlayerSettings()
+{
+    //save config to disk
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/sndh-player.cfg";
+    ofstream ofs(filename.c_str());
+    string line;
+
+    if (ofs.fail())
+    {
+        //The file could not be opened
+        return;
+    }
+    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackSndhPlayer->isChecked() ? "true" : "false") << "\n";
+    ofs.close();
+}
+
 void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
 {
     int row = item->row();
@@ -1342,6 +1403,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME)
@@ -1351,6 +1413,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME)
@@ -1360,6 +1423,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(false);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME)
@@ -1369,6 +1433,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(false);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME)
@@ -1378,6 +1443,17 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(false);
+        ui->groupBoxSndhPlayer->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
+    }
+    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_sndh_player_NAME)
+    {
+        ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLibOpenMPT->setHidden(true);
+        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(false);
         ui->groupBoxUade->setHidden(true);
     }
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_uade_NAME)
@@ -1387,6 +1463,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(false);
     }
     else
@@ -1396,6 +1473,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
     }
 }
@@ -1557,6 +1635,17 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxLibxmp->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxSndhPlayer->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxSndhPlayer->setStyleSheet(stylesheet);
 }
 
 void settingsWindow::setUiLineEditHvscSonglengthTextForcingRelativePaths(const QString& text) {
@@ -1722,6 +1811,7 @@ void settingsWindow::on_buttonVisualizer_clicked()
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
+    ui->groupBoxSndhPlayer->setHidden(true);
     ui->groupBoxUade->setHidden(true);
 }
 
@@ -1738,6 +1828,7 @@ void settingsWindow::on_buttonGeneral_clicked()
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
     ui->groupBoxUade->setHidden(true);
+    ui->groupBoxSndhPlayer->setHidden(true);
 }
 
 
@@ -1761,6 +1852,7 @@ void settingsWindow::on_buttonAppearance_clicked()
     ui->groupBoxLibsid->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
     ui->groupBoxUade->setHidden(true);
+    ui->groupBoxSndhPlayer->setHidden(true);
 }
 
 void settingsWindow::on_buttonColorVUMeterTop_clicked()
@@ -2766,6 +2858,9 @@ void settingsWindow::updateCheckBoxes()
     ui->checkBoxContinuousPlaybackHivelytracker->setIcon(
         mainWindow->icons[ui->checkBoxContinuousPlaybackHivelytracker->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
+    ui->checkBoxContinuousPlaybackSndhPlayer->setIcon(
+        mainWindow->icons[ui->checkBoxContinuousPlaybackSndhPlayer->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
     ui->checkBoxContinuousPlaybackOpenMPT->setIcon(
         mainWindow->icons[ui->checkBoxContinuousPlaybackOpenMPT->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
@@ -2931,6 +3026,12 @@ void settingsWindow::on_checkBoxContinuousPlaybackHivelytracker_toggled()
 {
     ui->checkBoxContinuousPlaybackHivelytracker->setIcon(
         mainWindow->icons[(ui->checkBoxContinuousPlaybackHivelytracker->isChecked() ? "checkbox-on" : "checkbox-off")]);
+}
+
+void settingsWindow::on_checkBoxContinuousPlaybackSndhPlayer_toggled()
+{
+    ui->checkBoxContinuousPlaybackSndhPlayer->setIcon(
+        mainWindow->icons[(ui->checkBoxContinuousPlaybackSndhPlayer->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
 void settingsWindow::on_checkBoxContinuousPlaybackUade_toggled()
