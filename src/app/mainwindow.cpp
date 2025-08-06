@@ -347,6 +347,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     addDebugText("m_muteVolume: " + QString::number(m_muteVolume));
     addDebugText("m_resetVolume: " + QString::number(m_resetVolume));
 
+    ui->volumeSlider->setDefaultValue(100);
 
     int vol = settings.value("volume", 100).toInt();
     if (m_resetVolume) {
