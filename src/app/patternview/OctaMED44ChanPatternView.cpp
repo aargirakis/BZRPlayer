@@ -45,7 +45,7 @@ void OctaMED44ChanPatternView::paintAbove(QPainter* painter, int height, int cur
     //channel separators
     for (unsigned int chan = 0; chan < m_channels - 1; chan++)
     {
-        painter->fillRect((207 + chan * 144), 28, 2, height - (2.0), colorPink);
+        painter->fillRect((207 + chan * 144), 28, 2, height - 28, colorPink);
         painter->fillRect((207 + chan * 144), (height / 2) - 17, 2, 18, colorRed);
     }
 
