@@ -71,7 +71,7 @@ public:
     bool isContinuousPlaybackActive;
     int currentSubsong;
     string uade_songlengthspath;
-    uade_state *uadeState;
+    uade_state *uadeState = nullptr;
     const struct uade_song_info *uadeSongInfo;
     unsigned int filesize;
     unsigned char *myBufferP;
@@ -469,7 +469,11 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
 FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
 {
     auto* plugin = static_cast<pluginUade*>(codec->plugindata);
-    uade_cleanup_state(plugin->uadeState);
+
+    if (plugin != nullptr) {
+        uade_cleanup_state(plugin->uadeState);
+    }
+
     delete plugin;
     return FMOD_OK;
 }
