@@ -216,7 +216,7 @@ void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_curr
 
 
         //right
-        painter->fillRect(left + 638, 2, 2, m_topHeight, colorHilite);
+        painter->fillRect(left + 638, 2, 2, m_topHeight-2, colorHilite);
 
         //top
         painter->fillRect(left + 1, 0, 639, 2, colorHilite);
