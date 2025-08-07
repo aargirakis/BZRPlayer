@@ -270,6 +270,16 @@
         </magic>
         <glob pattern="*.fur"/>
     </mime-type>
+    <mime-type type="audio/x-gmc">
+        <comment>Game Music Creator audio</comment>
+        <acronym>GMC</acronym>
+        <generic-icon name="audio-x-generic"/>
+        <magic priority="40">
+            <match type="big32" value="0x00000000" mask="0xffffff00" offset="240"/>
+        </magic>
+        <glob pattern="gmc.*"/>
+        <glob pattern="*.gmc"/>
+    </mime-type>
     <mime-type type="audio/x-hip">
         <comment>Jochen Hippel audio</comment>
         <generic-icon name="audio-x-generic"/>
