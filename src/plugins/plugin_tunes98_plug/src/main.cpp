@@ -48,13 +48,13 @@ public:
     ~pluginTunes98()
     {
         //delete some stuff
-        delete[] myBuffer;
-        myBuffer = 0;
         S98_Close(s98);
+        delete[] myBuffer;
+        myBuffer = nullptr;
     }
 
-    FILE* fp;
-    BYTE* myBuffer;
+    uint8_t* smallBuffer;
+    uint8_t* myBuffer;
     Info* info;
     void* s98;
     SOUNDINFO s98info;
@@ -86,40 +86,43 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     auto* plugin = new pluginTunes98(codec);
     plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    plugin->fp = fopen(plugin->info->filename.c_str(), "rb");
+    int smallBufferSize = 4;
+    uint8_t* smallBuffer = new uint8_t[smallBufferSize];
 
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
+    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    FMOD_CODEC_FILE_READ(codec, smallBuffer, smallBufferSize, nullptr);
 
-    plugin->myBuffer = new BYTE[filesize];
-
-    // buffer will store the DWORD read from the file
-    fread(plugin->myBuffer, 1, filesize, plugin->fp);
-
-    if (plugin->myBuffer[0] == 'S' && plugin->myBuffer[1] == '9' && plugin->myBuffer[2] == '8' && plugin->myBuffer[3] == '3')
+    if (smallBuffer[0] == 'S' && smallBuffer[1] == '9' && smallBuffer[2] == '8' && smallBuffer[3] == '3')
     {
         plugin->info->fileformat = "S98 V.3";
     }
-    else if (plugin->myBuffer[0] == 'S' && plugin->myBuffer[1] == '9' && plugin->myBuffer[2] == '8' && plugin->myBuffer[3] == '2')
+    else if (smallBuffer[0] == 'S' && smallBuffer[1] == '9' && smallBuffer[2] == '8' && smallBuffer[3] == '2')
     {
         plugin->info->fileformat = "S98 V.2";
     }
-    else if (plugin->myBuffer[0] == 'S' && plugin->myBuffer[1] == '9' && plugin->myBuffer[2] == '8' && plugin->myBuffer[3] == '1')
+    else if (smallBuffer[0] == 'S' && smallBuffer[1] == '9' && smallBuffer[2] == '8' && smallBuffer[3] == '1')
     {
         plugin->info->fileformat = "S98 V.1";
     }
-    else if (plugin->myBuffer[0] == 'S' && plugin->myBuffer[1] == '9' && plugin->myBuffer[2] == '8' && plugin->myBuffer[3] == '0')
+    else if (smallBuffer[0] == 'S' && smallBuffer[1] == '9' && smallBuffer[2] == '8' && smallBuffer[3] == '0')
     {
         plugin->info->fileformat = "S98 V.0";
     }
     else
     {
-        delete plugin->myBuffer;
         return FMOD_ERR_FORMAT;
     }
 
+    unsigned int filesize;
+    FMOD_CODEC_FILE_SIZE(codec, &filesize);
+
+    plugin->myBuffer = new uint8_t[filesize];
+
+    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, nullptr);
+
     plugin->s98info.dwSamplesPerSec = 44100;
-    plugin->s98 = S98_OpenFromBuffer(plugin->myBuffer, filesize, &plugin->s98info);
+    plugin->s98 = S98_OpenFromBuffer( plugin->myBuffer, filesize, &plugin->s98info);
 
     if (!plugin->s98)
     {
