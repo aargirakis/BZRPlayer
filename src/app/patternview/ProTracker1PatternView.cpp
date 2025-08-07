@@ -118,7 +118,7 @@ void ProTracker1PatternView::paintBelow(QPainter* painter, int height, int curre
     //left border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine(left - 3, 0, left - 3, height);
+    painter->drawLine(left - 3, 0, left - 3, height-1);
     pen.setColor(colorBase);
     painter->setPen(pen);
     painter->drawLine(left - 2, 0, left - 2, height);
@@ -157,13 +157,13 @@ void ProTracker1PatternView::paintBelow(QPainter* painter, int height, int curre
         //channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
-        painter->drawLine((left + 24 + chan * 72), 0, (left + 24 + chan * 72), height);
+        painter->drawLine((left + 24 + chan * 72), 0, (left + 24 + chan * 72), height-1);
         pen.setColor(colorBase);
         painter->setPen(pen);
-        painter->drawLine((left + 25 + chan * 72), 0, (left + 25 + chan * 72), height);
+        painter->drawLine((left + 25 + chan * 72), 0, (left + 25 + chan * 72), height-1);
         pen.setColor(colorShadow);
         painter->setPen(pen);
-        painter->drawLine((left + 26 + chan * 72), 0, (left + 26 + chan * 72), (height) - 4);
+        painter->drawLine((left + 26 + chan * 72), 0, (left + 26 + chan * 72), (height-1));
         //1 pixel top antialiasing
         painter->fillRect((left + 23 + chan * 72), 32, 1, 1, colorBase);
         painter->fillRect((left + 25 + chan * 72), (height) - 3, 1, 1, colorBase);
