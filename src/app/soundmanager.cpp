@@ -444,6 +444,7 @@ void SoundManager::checkFmodError(const FMOD_RESULT result, const QString &msg) 
 
 void SoundManager::stop() const {
     FMOD_Channel_Stop(channel);
+    FMOD_ChannelGroup_Stop(channelGroup);
     //    FMOD_OUTPUTTYPE outputType = static_cast<FMOD_OUTPUTTYPE>(currentDevice);
     //    if(outputType==FMOD_OUTPUTTYPE_WAVWRITER)
     //    {
@@ -524,6 +525,10 @@ void SoundManager::release() const {
 
 void SoundManager::shutdown() const {
     FMOD_Sound_Release(sound);
+    FMOD_DSP_Release(dspNormalizer);
+    FMOD_DSP_Release(dspFft);
+    FMOD_DSP_Release(dspReverb);
+    FMOD_ChannelGroup_Release(channelGroup);
     FMOD_System_Release(system);
 }
 
