@@ -152,13 +152,13 @@ void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int curr
         //channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
-        painter->drawLine((left + 25 + chan * 72), 0, (left + 24 + chan * 72), height);
+        painter->drawLine((left + 25 + chan * 72), 0, (left + 25 + chan * 72), height);
         pen.setColor(colorBase);
         painter->setPen(pen);
-        painter->drawLine((left + 26 + chan * 72), 0, (left + 25 + chan * 72), height);
+        painter->drawLine((left + 26 + chan * 72), 0, (left + 26 + chan * 72), height);
         pen.setColor(colorShadow);
         painter->setPen(pen);
-        painter->drawLine((left + 27 + chan * 72), 0, (left + 26 + chan * 72), (height) - 2);
+        painter->drawLine((left + 27 + chan * 72), 0, (left + 27 + chan * 72), (height) - 2);
         //1 pixel top antialiasing
         painter->fillRect((left + 25 + chan * 72), 32, 1, 1, colorBase);
         //1 pixel bottom antialiasing
