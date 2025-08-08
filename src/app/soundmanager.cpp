@@ -534,14 +534,14 @@ void SoundManager::SetVolume(float vol)
     FMOD_Channel_SetVolume(channel, vol);
 }
 
-float SoundManager::GetFrequency()
+float SoundManager::GetNominalFrequency()
 {
-    return m_DefaultFrequency;
+    return m_nominalFrequency;
 }
 
-void SoundManager::SetFrequency(float percent)
+void SoundManager::SetFrequencyByMultiplier(float percent)
 {
-    FMOD_Channel_SetFrequency(channel, percent * m_DefaultFrequency);
+    FMOD_Channel_SetFrequency(channel, percent * m_nominalFrequency);
 }
 
 void SoundManager::SetMute(bool mute)
@@ -581,7 +581,7 @@ void SoundManager::PlayAudio(bool startPaused)
     m_mutedChannelsMask = 0;
     m_mutedChannelsMaskString = "";
     FMOD_System_PlaySound(system, soundPlay, channelgroup, startPaused, &channel);
-    FMOD_Channel_GetFrequency(channel, &m_DefaultFrequency);
+    FMOD_Channel_GetFrequency(channel, &m_nominalFrequency);
     //DebugWindow::instance()->addText("SoundManager: PlaySound");
 }
 

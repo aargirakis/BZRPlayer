@@ -44,8 +44,8 @@ public:
     void setNormalizeFadeTime(int);
     void setNormalizeMaxAmp(int);
     void setNormalizeThreshold(int);
-    void SetFrequency(float);
-    float GetFrequency();
+    void SetFrequencyByMultiplier(float);
+    float GetNominalFrequency();
     float getAudibility();
     int getSoundData(int channel);
     int getNumTags();
@@ -66,7 +66,7 @@ private:
     FMOD_DSP* dspFFT;
     FMOD_REVERB_PROPERTIES currentReverbPreset;
     int currentDevice;
-    float m_DefaultFrequency;
+    float m_nominalFrequency;
     unsigned int m_mutedChannelsMask;
     QString m_mutedChannelsMaskString;
 };

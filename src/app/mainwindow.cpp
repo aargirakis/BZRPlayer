@@ -2082,10 +2082,10 @@ void MainWindow::PlaySong(int currentRow)
          *  this workaround calculates the maximum pitch slider value (see ticket #623)
          *  seems fmod can play at freqs slightly greater than 749700 (we should find the highest possible one)
          */
-        float freq = SoundManager::getInstance().GetFrequency();
+        float freq = SoundManager::getInstance().GetNominalFrequency();
         int pitchSliderMaxValue = 749700 / freq * 100;
         ui->pitchSlider->setMaximum(pitchSliderMaxValue);
-        SoundManager::getInstance().SetFrequency(ui->pitchSlider->value() / 100.0);
+        SoundManager::getInstance().SetFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
 
         addDebugText("Now after playing");
         //        addDebugText("startSubsongPlayList: " + QString::number(playlists[currentPlaylist].at(playlistNumber)->startSubsongPlayList));
@@ -4667,7 +4667,7 @@ void MainWindow::on_actionAbout_BZR_Player_triggered()
 
 void MainWindow::on_pitchSlider_valueChanged(int value)
 {
-    SoundManager::getInstance().SetFrequency(ui->pitchSlider->value() / 100.0);
+    SoundManager::getInstance().SetFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
     ui->labelPitchValue->setText(QString::number(ui->pitchSlider->value()) + " %");
 }
 
