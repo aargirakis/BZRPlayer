@@ -139,6 +139,9 @@ void HivelyTrackerPatternView::paintAbove(QPainter* painter, int height, int cur
     gradient6.setColorAt(0.5, QColor(92, 106, 121).rgb());
     gradient6.setColorAt(1, QColor(82, 96, 108).rgb());
     painter->fillRect(0, (height) - 1, (28) + m_channels * 120, 1, QBrush(gradient6)); //gradient
+
+    //hide notes at top
+    painter->fillRect(200, 0, (m_channels * 120)-150, 90, QBrush(Qt::black));
 }
 
 void::HivelyTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
