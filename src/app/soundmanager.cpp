@@ -508,6 +508,7 @@ void SoundManager::ERRCHECK(FMOD_RESULT result, QString extra)
 void SoundManager::Stop()
 {
     channel->stop();
+    channelgroup->stop();
     //    FMOD_OUTPUTTYPE outputtype = static_cast<FMOD_OUTPUTTYPE>(currentDevice);
     //    if(outputtype==FMOD_OUTPUTTYPE_WAVWRITER)
     //    {
@@ -592,6 +593,10 @@ void SoundManager::Release()
 void SoundManager::ShutDown()
 {
     sound->release();
+    dspNormalizer->release();
+    dspFFT->release();
+    dspReverb->release();
+    channelgroup->release();
     system->release();
 }
 
