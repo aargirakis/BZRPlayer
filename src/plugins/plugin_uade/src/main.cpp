@@ -62,6 +62,7 @@ public:
     ~pluginUade()
     {
         //delete some stuff
+        delete myBuffer;
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -74,7 +75,7 @@ public:
     uade_state *uadeState = nullptr;
     const struct uade_song_info *uadeSongInfo;
     unsigned int filesize;
-    unsigned char *myBufferP;
+    uint8_t* myBuffer;
     bool setPositionWithTimeunitSubSongHasBeenInvoked = false;
     unsigned int totalSkippedBytes = 0;
     bool isUadeSeekInvocationAllowed = false;
@@ -104,8 +105,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
         return FMOD_ERR_FORMAT;
     }
 
-    char* smallBuffer;
-    smallBuffer = new char[4];
+    auto* smallBuffer = new uint8_t[4];
     FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     FMOD_CODEC_FILE_READ(codec, smallBuffer, 4, nullptr);
     if (((smallBuffer[0] == 'M' && smallBuffer[1] == 'T' && smallBuffer[2] == 'h' && smallBuffer[3] == 'd') ||
@@ -124,7 +124,7 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     if (plugin->filesize >= 62)
     {
         unsigned char* testBuffer;
-        testBuffer = new unsigned char[62];
+        testBuffer = new uint8_t[62];
         FMOD_CODEC_FILE_SEEK(codec, 0, 0);
         FMOD_CODEC_FILE_READ(codec, testBuffer, 62, nullptr);
 
@@ -189,12 +189,6 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     //		dataSize == 0 ||
     //		nrCommand == 0 ||
     //		fp.filesize(f) < (unsigned)(HEADER_LEN + dataSize))
-
-    auto myBuffer = new unsigned char[plugin->filesize];
-    plugin->myBufferP = myBuffer;
-
-    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, myBuffer, plugin->filesize, nullptr);
 
     auto const *info = static_cast<Info *>(userexinfo->userdata);
 
@@ -383,10 +377,15 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     uade_enable_uadecore_log_collection(plugin->uadeState);
 #endif
 
+    plugin->myBuffer = new uint8_t[plugin->filesize];
+
+    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, plugin->filesize, nullptr);
+
     plugin->currentSubsong = -1;
 
-    if (uade_play_from_buffer(plugin->info->filename.c_str(), myBuffer, plugin->filesize, plugin->currentSubsong,
-                              plugin->uadeState) <= 0) {
+    if (uade_play_from_buffer(plugin->info->filename.c_str(), plugin->myBuffer, plugin->filesize, plugin->currentSubsong,
+                                  plugin->uadeState) <= 0) {
         cout << "Can not play " << plugin->info->filename << endl;
         return FMOD_ERR_FORMAT;
     }
@@ -638,7 +637,7 @@ FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsign
         plugin->currentSubsong = position;
 
         uade_stop(plugin->uadeState);
-        uade_play_from_buffer(plugin->info->filename.c_str(), plugin->myBufferP, plugin->filesize,
+        uade_play_from_buffer(plugin->info->filename.c_str(), plugin->myBuffer, plugin->filesize,
                               plugin->currentSubsong,
                               plugin->uadeState);
 
