@@ -41,8 +41,10 @@
             <match type="string" value="AON8" offset="0"/>
         </magic>
         <glob pattern="aon.*"/>
+        <glob pattern="aon4.*"/>
         <glob pattern="aon8.*"/>
         <glob pattern="*.aon"/>
+        <glob pattern="*.aon4"/>
         <glob pattern="*.aon8"/>
     </mime-type>
     <mime-type type="audio/x-amf">
@@ -95,8 +97,12 @@
         <magic>
             <match type="string" value="ALL " offset="0"/>
         </magic>
+        <glob pattern="dlm1.*"/>
         <glob pattern="dm.*"/>
+        <glob pattern="dm1.*"/>
+        <glob pattern="*.dlm1"/>
         <glob pattern="*.dm"/>
+        <glob pattern="*.dm1"/>
     </mime-type>
     <mime-type type="audio/x-dm2">
         <comment>Delta Music 2</comment>
@@ -122,7 +128,9 @@
                 </match>
             </match>
         </magic>
+        <glob pattern="dlm2.*"/>
         <glob pattern="dm2.*"/>
+        <glob pattern="*.dlm2"/>
         <glob pattern="*.dm2"/>
     </mime-type>
     <mime-type type="audio/x-dsmi-amf">
@@ -171,8 +179,10 @@
         </magic>
         <glob pattern="dw.*"/>
         <glob pattern="dwold.*"/>
+        <glob pattern="oldw.*"/>
         <glob pattern="*.dw"/>
         <glob pattern="*.dwold"/>
+        <glob pattern="*.oldw"/>
     </mime-type>
     <mime-type type="audio/x-dz">
         <comment>Darius Zendeh Player audio</comment>
@@ -227,6 +237,8 @@
         <glob pattern="fc.*"/>
         <glob pattern="fc13.*"/>
         <glob pattern="fc14.*"/>
+        <glob pattern="fc3.*"/>
+        <glob pattern="fc4.*"/>
         <glob pattern="fcm.*"/>
         <glob pattern="fut.*"/>
         <glob pattern="smc.*"/>
@@ -234,6 +246,8 @@
         <glob pattern="*.fc"/>
         <glob pattern="*.fc13"/>
         <glob pattern="*.fc14"/>
+        <glob pattern="*.fc3"/>
+        <glob pattern="*.fc4"/>
         <glob pattern="*.fcm"/>
         <glob pattern="*.fut"/>
         <glob pattern="*.smc"/>
@@ -245,8 +259,12 @@
         <magic>
             <match type="string" value="FUCO" offset="0"/>
         </magic>
+        <glob pattern="bfc.*"/>
         <glob pattern="bsi.*"/>
+        <glob pattern="fc-bsi.*"/>
+        <glob pattern="*.bfc"/>
         <glob pattern="*.bsi"/>
+        <glob pattern="*.fc-bsi"/>
     </mime-type>
     <mime-type type="audio/x-fp">
         <comment>Future Player audio</comment>
@@ -387,8 +405,10 @@
         </magic>
         <sub-class-of type="audio/x-hip"/>
         <glob pattern="hst.*"/>
+        <glob pattern="sdc.*"/>
         <glob pattern="soc.*"/>
         <glob pattern="*.hst"/>
+        <glob pattern="*.sdc"/>
         <glob pattern="*.soc"/>
     </mime-type>
     <mime-type type="audio/x-hot">
@@ -803,7 +823,9 @@
                 </match>
             </match>
         </magic>
+        <glob pattern="s-c.*"/>
         <glob pattern="scn.*"/>
+        <glob pattern="*.s-c"/>
         <glob pattern="*.scn"/>
     </mime-type>
     <mime-type type="audio/x-sidmon">
@@ -849,8 +871,10 @@
             <match type="big16" value="0x4efa" offset="0"/>
         </magic>
         <glob pattern="sa.*"/>
+        <glob pattern="sa-p.*"/>
         <glob pattern="*.pc"/>
         <glob pattern="*.sa"/>
+        <glob pattern="*.sa-p"/>
     </mime-type>
     <mime-type type="audio/x-sonix">
         <comment>Aegis SONIX audio</comment>
