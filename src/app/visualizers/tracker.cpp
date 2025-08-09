@@ -1186,6 +1186,8 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         float scaleY = float(renderSize.height()) / float(m_trackerview->height());
         m_scale = min(scaleX, scaleY);
         int visibleWidth = renderSize.width() / m_scale;
+        bufferPainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+        bufferPainter.setRenderHint(QPainter::Antialiasing, true);
         bufferPainter.scale(m_scale, m_scale);
         drawPattern(&bufferPainter, visibleWidth);
     }
@@ -1214,6 +1216,8 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         m_topBarBuffer.fill(Qt::transparent);
 
         QPainter topPainter(&m_topBarBuffer);
+        topPainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+        topPainter.setRenderHint(QPainter::Antialiasing, true);
         topPainter.scale(m_scale, m_scale);
         drawTop(&topPainter);
     }

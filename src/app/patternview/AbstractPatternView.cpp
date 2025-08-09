@@ -334,8 +334,7 @@ void AbstractPatternView::drawVUMeters(QPainter* painter)
 }
 void AbstractPatternView::drawText(QString text, QPainter* painter, int numPixels, int yPixelPosition, BitmapFont font, int letterSpacing)
 {
-    if (yPixelPosition >height() || numPixels > painter->window().width() || yPixelPosition <
-                                                                                       0 || yPixelPosition > painter->window().height())
+    if (yPixelPosition >height() || yPixelPosition < 0 || yPixelPosition > painter->window().height())
     {
         return;
     }
