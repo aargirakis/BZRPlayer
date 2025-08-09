@@ -962,7 +962,14 @@
         <glob pattern="*.stm"/>
     </mime-type>
     <mime-type type="audio/x-sun">
-        <comment>sun audio</comment>
+        <comment>SUNtronic audio</comment>
+        <magic>
+            <match type="big32" value="0x48e7fffe" offset="0">
+                <match type="big32" value="0x4dfa0000" mask="0xffff0000" offset="4">
+                    <match type="big16" value="0x4a2e" offset="8"/>
+                </match>
+            </match>
+        </magic>
         <generic-icon name="audio-x-generic"/>
         <glob pattern="sun.*"/>
         <glob pattern="*.sun"/>
