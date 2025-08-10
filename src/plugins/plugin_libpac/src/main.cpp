@@ -8,12 +8,12 @@
 #include "info.h"
 #include "plugins.h"
 
-FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
-FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec);
-FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
-FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
-FMOD_RESULT F_CALLBACK getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
-FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
+FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
+FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec);
+FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
+FMOD_RESULT F_CALL setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
+FMOD_RESULT F_CALL getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 
 
 FMOD_CODEC_DESCRIPTION codecDescription =
@@ -92,7 +92,7 @@ bool fmemopen(void* buf, size_t size, const char* mode, string filename)
     return true;
 }
 
-FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
+FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     Info* info = static_cast<Info*>(userexinfo->userdata);
 
@@ -200,13 +200,13 @@ FMOD_RESULT F_CALLBACK open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CR
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK close(FMOD_CODEC_STATE* codec)
+FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
     delete static_cast<pluginLibpac*>(codec->plugindata);
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginLibpac*>(codec->plugindata);
     pac_read(plugin->pac_module, buffer, size);
@@ -215,14 +215,14 @@ FMOD_RESULT F_CALLBACK read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int 
 }
 
 
-FMOD_RESULT F_CALLBACK setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
+FMOD_RESULT F_CALL setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginLibpac*>(codec->plugindata);
     pac_seek(plugin->pac_module, (position / 1000) * plugin->waveformat.frequency,SEEK_SET);
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
+FMOD_RESULT F_CALL getposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginLibpac*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS_REAL)

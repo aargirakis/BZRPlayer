@@ -12,13 +12,13 @@
 #include "info.h"
 #include "plugins.h"
 
-FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
-FMOD_RESULT F_CALLBACK libopenmptclose(FMOD_CODEC_STATE* codec);
-FMOD_RESULT F_CALLBACK libopenmptread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
-FMOD_RESULT F_CALLBACK libopenmptgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
-FMOD_RESULT F_CALLBACK libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALL libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
+FMOD_RESULT F_CALL libopenmptclose(FMOD_CODEC_STATE* codec);
+FMOD_RESULT F_CALL libopenmptread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
+FMOD_RESULT F_CALL libopenmptgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
+FMOD_RESULT F_CALL libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                              FMOD_TIMEUNIT postype);
-FMOD_RESULT F_CALLBACK libopenmptgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
+FMOD_RESULT F_CALL libopenmptgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 
 
 FMOD_CODEC_DESCRIPTION codecDescription =
@@ -96,7 +96,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
+FMOD_RESULT F_CALL libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
 
@@ -363,13 +363,13 @@ FMOD_RESULT F_CALLBACK libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermod
     }
 }
 
-FMOD_RESULT F_CALLBACK libopenmptclose(FMOD_CODEC_STATE* codec)
+FMOD_RESULT F_CALL libopenmptclose(FMOD_CODEC_STATE* codec)
 {
     delete static_cast<pluginLibopenmpt*>(codec->plugindata);
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK libopenmptread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+FMOD_RESULT F_CALL libopenmptread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
     plugin->mod->read_interleaved_stereo(plugin->waveformat.frequency, size, (short*)buffer);
@@ -397,7 +397,7 @@ FMOD_RESULT F_CALLBACK libopenmptread(FMOD_CODEC_STATE* codec, void* buffer, uns
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK libopenmptgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
+FMOD_RESULT F_CALL libopenmptgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
     auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
 
@@ -425,7 +425,7 @@ FMOD_RESULT F_CALLBACK libopenmptgetlength(FMOD_CODEC_STATE* codec, unsigned int
     }
 }
 
-FMOD_RESULT F_CALLBACK libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALL libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                              FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
@@ -493,7 +493,7 @@ FMOD_RESULT F_CALLBACK libopenmptsetposition(FMOD_CODEC_STATE* codec, int subsou
     return FMOD_ERR_UNSUPPORTED;;
 }
 
-FMOD_RESULT F_CALLBACK libopenmptgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
+FMOD_RESULT F_CALL libopenmptgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
 

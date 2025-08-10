@@ -44,10 +44,10 @@ typedef struct
 } aacinfo;
 
 
-FMOD_RESULT F_CALLBACK aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
-FMOD_RESULT F_CALLBACK aacclose(FMOD_CODEC_STATE* codec);
-FMOD_RESULT F_CALLBACK aacread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
-FMOD_RESULT F_CALLBACK aacsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALL aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
+FMOD_RESULT F_CALL aacclose(FMOD_CODEC_STATE* codec);
+FMOD_RESULT F_CALL aacread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
+FMOD_RESULT F_CALL aacsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
@@ -136,7 +136,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 #endif
 
 
-FMOD_RESULT F_CALLBACK aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
+FMOD_RESULT F_CALL aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     pluginFaad2* plugin = new pluginFaad2(codec);
 
@@ -247,7 +247,7 @@ FMOD_RESULT F_CALLBACK aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK aacclose(FMOD_CODEC_STATE* codec)
+FMOD_RESULT F_CALL aacclose(FMOD_CODEC_STATE* codec)
 {
     auto plugin = static_cast<pluginFaad2*>(codec->plugindata);
     //    NeAACDecClose(plugin->x->neaac);
@@ -255,7 +255,7 @@ FMOD_RESULT F_CALLBACK aacclose(FMOD_CODEC_STATE* codec)
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK aacread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+FMOD_RESULT F_CALL aacread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto plugin = static_cast<pluginFaad2*>(codec->plugindata);
     memset(buffer, 0, size);
@@ -320,7 +320,7 @@ FMOD_RESULT F_CALLBACK aacread(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK aacsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALL aacsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype)
 {
     auto plugin = static_cast<pluginFaad2*>(codec->plugindata);

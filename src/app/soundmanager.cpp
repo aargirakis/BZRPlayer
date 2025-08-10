@@ -17,7 +17,7 @@ void SoundManager::Init(int device, QString outputfilename)
     result = FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_LOG, FMOD_DEBUG_MODE_FILE, 0, "fmodlog.txt");
     ERRCHECK(result);
     unsigned int version;
-    result = FMOD_System_GetVersion(system, &version);
+    result = FMOD_System_GetVersion(system, &version, nullptr);
     ERRCHECK(result);
 
     if (version < FMOD_VERSION)

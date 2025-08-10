@@ -26,13 +26,13 @@ void ERRCHECK(FMOD_RESULT result)
     }
 }
 
-FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
-FMOD_RESULT F_CALLBACK sidclose(FMOD_CODEC_STATE* codec);
-FMOD_RESULT F_CALLBACK sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
-FMOD_RESULT F_CALLBACK sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
+FMOD_RESULT F_CALL sidclose(FMOD_CODEC_STATE* codec);
+FMOD_RESULT F_CALL sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
+FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
-FMOD_RESULT F_CALLBACK sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
-FMOD_RESULT F_CALLBACK sidgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
+FMOD_RESULT F_CALL sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
+FMOD_RESULT F_CALL sidgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
 unsigned int getLengthFromSIDDatabase(string databasefile, bool newDatabaseVersion, string sidfilename, int subsong);
 string md5_new;
 string md5_old;
@@ -132,7 +132,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
+FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
 
@@ -514,7 +514,7 @@ FMOD_RESULT F_CALLBACK sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+FMOD_RESULT F_CALL sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
     //    bool skipClick=true;
@@ -544,7 +544,7 @@ FMOD_RESULT F_CALLBACK sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
@@ -599,13 +599,13 @@ FMOD_RESULT F_CALLBACK sidsetposition(FMOD_CODEC_STATE* codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;
 }
 
-FMOD_RESULT F_CALLBACK sidclose(FMOD_CODEC_STATE* codec)
+FMOD_RESULT F_CALL sidclose(FMOD_CODEC_STATE* codec)
 {
     delete static_cast<pluginLibsidplayfp*>(codec->plugindata);
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
+FMOD_RESULT F_CALL sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
     auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
 
@@ -634,7 +634,7 @@ FMOD_RESULT F_CALLBACK sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     }
 }
 
-FMOD_RESULT F_CALLBACK sidgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
+FMOD_RESULT F_CALL sidgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
 

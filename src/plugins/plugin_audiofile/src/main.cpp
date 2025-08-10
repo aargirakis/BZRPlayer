@@ -7,10 +7,10 @@
 #include "info.h"
 #include "plugins.h"
 
-FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
-FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec);
-FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
-FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
+FMOD_RESULT F_CALL fcclose(FMOD_CODEC_STATE* codec);
+FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
+FMOD_RESULT F_CALL fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
@@ -89,7 +89,7 @@ bool fmemopen(void* buf, size_t size, const char* mode, const char *filename)
     return true;
 }
 
-FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
+FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     auto plugin = new pluginAudiofile(codec);
     double rate;
@@ -188,7 +188,7 @@ FMOD_RESULT F_CALLBACK fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
+FMOD_RESULT F_CALL fcclose(FMOD_CODEC_STATE* codec)
 {
     auto plugin = static_cast<pluginAudiofile *>(codec->plugindata);
     //	if(!invalidFile)
@@ -199,7 +199,7 @@ FMOD_RESULT F_CALLBACK fcclose(FMOD_CODEC_STATE* codec)
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto *plugin = static_cast<pluginAudiofile *>(codec->plugindata);
 
@@ -217,7 +217,7 @@ FMOD_RESULT F_CALLBACK fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned in
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALLBACK fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+FMOD_RESULT F_CALL fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
     seek_to_time = position;
