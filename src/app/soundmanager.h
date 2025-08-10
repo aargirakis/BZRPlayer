@@ -1,5 +1,6 @@
 #ifndef SOUNDMANAGER_H
 #define SOUNDMANAGER_H
+#include "fmod.hpp"
 #include "fmod_errors.h"
 #include "info.h"
 #include <string>
@@ -37,7 +38,7 @@ public:
     void SetVolume(float volume);
     void SetMute(bool mute);
     bool LoadSound(QString filename, bool isPlayModeRepeatSongEnabled);
-    const char* getFMODSoundFormat(FMOD_SOUND* sound);
+    const char* getFMODSoundFormat(FMOD::Sound* sound);
     void setReverbEnabled(bool);
     void setReverbPreset(QString preset);
     void setNormalizeEnabled(bool);
@@ -56,15 +57,15 @@ private:
     {
     }
 
-    FMOD_SYSTEM* system;
-    FMOD_SOUND* soundPlay;
-    FMOD_CHANNEL* channel = nullptr;
-    FMOD_RESULT result;
-    FMOD_CHANNELGROUP* channelgroup;
-    FMOD_DSP* dspNormalizer;
-    FMOD_DSP* dspReverb;
-    FMOD_DSP* dspFFT;
+    FMOD::System *system;
+    FMOD::Sound* sound;
+    FMOD::Channel* channel = nullptr;
+    FMOD::ChannelGroup* channelgroup;
+    FMOD::DSP* dspNormalizer;
+    FMOD::DSP* dspReverb;
+    FMOD::DSP* dspFFT;
     FMOD_REVERB_PROPERTIES currentReverbPreset;
+    FMOD_RESULT result;
     int currentDevice;
     float m_nominalFrequency;
     unsigned int m_mutedChannelsMask;
