@@ -444,6 +444,11 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_lazyusf2_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_lazyusf2_NAME));
     }
+    if (PLUGIN_libkss_LIB != "")
+    {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libkss_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libkss_NAME));
+    }
     if (PLUGIN_libopenmpt_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libopenmpt_VERSION));

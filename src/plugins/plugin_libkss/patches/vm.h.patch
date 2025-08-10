@@ -1,0 +1,21 @@
+--- src/vm/vm.h	2024-08-27 18:21:33.000000000 +0200
++++ src/vm/vm.h	2025-08-11 13:23:48.129153973 +0200
+@@ -1,12 +1,12 @@
+ #ifndef _VM_H_
+ #define _VM_H_
+ 
+-#include "emu2149/emu2149.h"
+-#include "emu2212/emu2212.h"
+-#include "emu2413/emu2413.h"
+-#include "emu8950/emu8950.h"
+-#include "emu76489/emu76489.h"
+-#include "kmz80/kmz80.h"
++#include "emu2149.h"
++#include "emu2212.h"
++#include "emu2413.h"
++#include "emu8950.h"
++#include "emu76489.h"
++#include "kmz80.h"
+ 
+ #include "mmap.h"
+ #include "detect.h"

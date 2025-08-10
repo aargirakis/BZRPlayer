@@ -66,6 +66,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_kdm "src/plugins/plugin_kdm"                                  #TODO audio overdrive issue (check kdmeng.cpp)
         plugin_klystron "src/plugins/plugin_klystron"
         plugin_lazyusf2 "src/plugins/plugin_lazyusf2"
+        plugin_libkss "src/plugins/plugin_libkss"
         plugin_libopenmpt "src/plugins/plugin_libopenmpt"
         plugin_libpac "src/plugins/plugin_libpac"
         plugin_libsidplayfp "src/plugins/plugin_libsidplayfp"

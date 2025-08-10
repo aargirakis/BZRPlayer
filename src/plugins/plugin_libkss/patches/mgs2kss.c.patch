@@ -1,0 +1,11 @@
+--- src/kss/mgs2kss.c	2024-08-27 18:21:33.000000000 +0200
++++ src/kss/mgs2kss.c	2025-08-11 13:41:25.152235259 +0200
+@@ -6,7 +6,7 @@
+ 
+ static uint8_t MGSDRV[0x2000] = {
+ #if !defined(EXCLUDE_DRIVER_ALL) && !defined(EXCLUDE_DRIVER_MGSDRV)
+-#include "drivers/mgsdrv.h"
++#include "mgsdrv.h"
+ #endif
+ };
+ static uint32_t mgsdrv_size = sizeof(MGSDRV);

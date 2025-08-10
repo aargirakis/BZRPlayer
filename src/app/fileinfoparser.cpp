@@ -1,5 +1,4 @@
 #include "fileinfoparser.h"
-#include "fmod_errors.h"
 #include "qdatetime.h"
 #include "soundmanager.h"
 #include "various.h"
@@ -283,6 +282,10 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
         addInfo(tableInfo, &row, "Patters", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
         addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
+        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+    }
+    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libkss)
+    {
         addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
     }
     else //use fmod to get the tag info

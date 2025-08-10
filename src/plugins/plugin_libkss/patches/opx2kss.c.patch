@@ -1,0 +1,11 @@
+--- src/kss/opx2kss.c	2024-08-27 18:21:33.000000000 +0200
++++ src/kss/opx2kss.c	2025-08-11 13:42:17.959733378 +0200
+@@ -5,7 +5,7 @@
+ 
+ static uint8_t OPXDRV[16384] = {
+ #if !defined(EXCLUDE_DRIVER_ALL) && !defined(EXCLUDE_DRIVER_OPX4KSS)
+-#include "drivers/opx4kss.h"
++#include "opx4kss.h"
+ #endif
+ };
+ static uint32_t opxdrv_size = sizeof(OPXDRV);

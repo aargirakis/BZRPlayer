@@ -1,0 +1,11 @@
+--- src/kss/bgm2kss.c	2024-08-27 18:21:33.000000000 +0200
++++ src/kss/bgm2kss.c	2025-08-11 13:32:39.127324257 +0200
+@@ -5,7 +5,7 @@
+ 
+ static uint8_t KINROU[8192] = {
+ #if !defined(EXCLUDE_DRIVER_ALL) && !defined(EXCLUDE_DRIVER_KINROU)
+-#include "drivers/kinrou5.h"
++#include "kinrou5.h"
+ #endif
+ };
+ static uint32_t kinrou_size = sizeof(KINROU);
