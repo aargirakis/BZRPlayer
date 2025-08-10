@@ -102,6 +102,10 @@ void SoundManager::Init(int device, QString outputfilename)
     {
         loadPlugin(PLUGIN_vgmplay_legacy_LIB, 99999);
     }
+    if (PLUGIN_libkss_LIB != "")
+    {
+        loadPlugin(PLUGIN_libkss_LIB, 99999);
+    }
     if (PLUGIN_game_music_emu_LIB != "")
     {
         loadPlugin(PLUGIN_game_music_emu_LIB, 99999);

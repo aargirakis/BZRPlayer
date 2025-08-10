@@ -1,0 +1,11 @@
+--- src/rconv/psg_rconv.h	2024-08-27 18:21:33.000000000 +0200
++++ src/rconv/psg_rconv.h	2025-08-11 13:23:48.132487357 +0200
+@@ -1,7 +1,7 @@
+ #ifndef _PSG_RCONV_H_
+ #define _PSG_RCONV_H_
+ 
+-#include "emu2149/emu2149.h"
++#include "emu2149.h"
+ 
+ #ifdef __cplusplus
+ extern "C"

@@ -1,0 +1,11 @@
+--- src/kss/mbm2kss.c	2024-08-27 18:21:33.000000000 +0200
++++ src/kss/mbm2kss.c	2025-08-11 13:45:20.765948153 +0200
+@@ -36,7 +36,7 @@
+ 
+ #if !defined(EXCLUDE_DRIVER_ALL) && !defined(EXCLUDE_DRIVER_MBR143)
+ static uint8_t drv_code[] = {
+-#include "drivers/mbr143.h"
++#include "mbr143.h"
+ };
+ #else
+ static uint8_t drv_code[8192];

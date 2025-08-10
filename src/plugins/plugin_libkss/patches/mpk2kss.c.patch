@@ -1,0 +1,19 @@
+--- src/kss/mpk2kss.c	2024-08-27 18:21:33.000000000 +0200
++++ src/kss/mpk2kss_edit.c	2025-08-11 13:38:30.146150297 +0200
+@@ -5,14 +5,14 @@
+ 
+ static uint8_t MPKDRV106[8192] = {
+ #if !defined(EXCLUDE_DRIVER_ALL) && !defined(EXCLUDE_DRIVER_MPK106)
+-#include "drivers/mpk106.h"
++#include "mpk106.h"
+ #endif
+ };
+ static uint32_t mpkdrv106_size = sizeof(MPKDRV106);
+ 
+ static uint8_t MPKDRV103[8192] = {
+ #if !defined(EXCLUDE_DRIVER_ALL) && !defined(EXCLUDE_DRIVER_MPK106)
+-#include "drivers/mpk103.h"
++#include "mpk103.h"
+ #endif
+ };
+ static uint32_t mpkdrv103_size = sizeof(MPKDRV103);
