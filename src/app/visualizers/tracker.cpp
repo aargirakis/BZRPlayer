@@ -1185,11 +1185,11 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         float scaleX = float(renderSize.width()) / float(m_trackerview->width());
         float scaleY = float(renderSize.height()) / float(m_trackerview->height());
         m_scale = min(scaleX, scaleY);
-        int visibleWidth = renderSize.width() / m_scale;
+        m_visibleWidth = renderSize.width() / m_scale;
         bufferPainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
         bufferPainter.setRenderHint(QPainter::Antialiasing, true);
         bufferPainter.scale(m_scale, m_scale);
-        drawPattern(&bufferPainter, visibleWidth);
+        drawPattern(&bufferPainter, m_visibleWidth);
     }
 
     if (m_lastVuSize != renderSize || m_trackerview->m_renderVUMeter)

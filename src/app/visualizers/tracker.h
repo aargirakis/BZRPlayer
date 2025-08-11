@@ -16,6 +16,7 @@ public:
     void drawVUMeters(QPainter* painter);
     void drawTop(QPainter* painter);
     float m_scale;
+    int m_visibleWidth;
     void init();
     Info* m_info;
     AbstractPatternView* m_trackerview;
