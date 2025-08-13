@@ -5201,11 +5201,13 @@ void MainWindow::changeStyleSheetColor()
     settingsWindow.changeStyleSheetColor();
 }
 
-void MainWindow::on_buttonStop_clicked()
-{
+void MainWindow::on_buttonStop_clicked() {
     resetAll();
     SoundManager::getInstance().ShutDown();
-    SoundManager::getInstance().Init(FMOD_OUTPUTTYPE_NOSOUND, ""); //Set sound device to silent
+
+    if (SoundManager::getInstance().isWavWriterDeviceSelected()) {
+        SoundManager::getInstance().Init(FMOD_OUTPUTTYPE_NOSOUND, ""); //Set sound device to silent
+    }
 }
 
 void MainWindow::resetAll()
