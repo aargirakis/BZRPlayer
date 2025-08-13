@@ -9,10 +9,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(VERSION "56ba876ad30cbdd4ea7e330df7f9bb19ec899ed4")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
-set(FILENAME "${NAME}-${VERSION}.zip")
-set(FILENAME_URL "${VERSION}.zip")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
+set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/cadaver/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "c2ede25e575623dd55f3ab8da771127e7e51f784db604915ef80ea049c9cf710")
+set(SHA_256_HASH "893e4e375279b9b9efeb21580b4b907286282fa77b338dff1038639e3fa27d47")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}

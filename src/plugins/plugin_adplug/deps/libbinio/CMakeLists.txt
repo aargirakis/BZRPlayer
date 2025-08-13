@@ -9,10 +9,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(VERSION "1.5")
 set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(NAME_VERSIONED2 "${NAME}-${NAME}-${VERSION}")
-set(FILENAME "${NAME_VERSIONED2}.zip")
-set(FILENAME_URL "${NAME_VERSIONED}.zip")
+set(FILENAME "${NAME_VERSIONED2}.tar.gz")
+set(FILENAME_URL "${NAME_VERSIONED}.tar.gz")
 set(URL "https://github.com/adplug/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "fd00c22d9ad3d4b5c90c4428d49719d0549f6a15cf5c612ffd5c9ba6c10689b9")
+set(SHA_256_HASH "b05e3ceebe059903b21357bb7fe3cbbabeb2fa9b857a7257c9b507f027437ea7")
 set(UNPACKED_DIR "${NAME_VERSIONED2}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""

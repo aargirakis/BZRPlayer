@@ -12,10 +12,10 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
-set(FILENAME "${NAME}-${VERSION}.zip")
-set(FILENAME_URL "${VERSION_SHORT}.zip")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
+set(FILENAME_URL "${VERSION_SHORT}.tar.gz")
 set(URL "https://github.com/pete-gordon/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "cd5cc20fc7c0fe4d73ea90906b3e4c34be384cf79eba2bf511441a56efc71cec")
+set(SHA_256_HASH "523de29ec7da41cd1e308e08297ec18f5545cc59d6e90cc61b0015ad01d5baba")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}

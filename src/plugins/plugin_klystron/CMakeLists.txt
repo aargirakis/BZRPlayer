@@ -14,10 +14,10 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
-set(FILENAME "${NAME}-${VERSION}.zip")
-set(FILENAME_URL "${VERSION}.zip")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
+set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/kometbomb/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "32744f21bb452ea5f9388d522a56c9f977659b05273544280eed0bb1d73ac3f3")
+set(SHA_256_HASH "c7e14815c9acbcea80d25972dda5f05ff8fc8bc2f1a527bf0b8d4b78c872cc29")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}

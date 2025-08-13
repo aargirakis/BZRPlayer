@@ -13,10 +13,10 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION}")
-set(FILENAME "${NAME_VERSIONED}.zip")
-set(FILENAME_URL "${VERSION}.zip")
+set(FILENAME "${NAME_VERSIONED}.tar.gz")
+set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/vgmrips/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "c797f4ac00dd9b390b3323fc2d584924eca2625b09bca9c0f8ade771ff4a681d")
+set(SHA_256_HASH "bc771d561fafbf60d3b6688b21da25dc2b0ee7f4aa2184a7acef3f36ffd5e0d2")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" ""
 )
