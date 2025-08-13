@@ -25,6 +25,76 @@ void SoundManager::Init(int device, QString outputfilename)
                FMOD_VERSION);
     }
 
+    currentDevice = device;
+    printf("Setting ouput to: %i\n", currentDevice);
+    FMOD_OUTPUTTYPE outputtype = static_cast<FMOD_OUTPUTTYPE>(device);
+    result = FMOD_System_SetOutput(system, outputtype);
+    ERRCHECK(result);
+
+    if (outputtype != FMOD_OUTPUTTYPE_WAVWRITER)
+    {
+        printf("FMOD_System_Init: %i\n", currentDevice);
+        result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, nullptr);
+        ERRCHECK(result);
+    }
+    else
+    {
+        QString outputPath = outputfilename;
+
+        QDir pathDir(userPath + "/recordings");
+        if (!pathDir.exists())
+        {
+            QDir().mkdir(userPath + "/recordings");
+        }
+
+        outputPath = userPath + "/recordings/" + outputfilename;
+        cout << "filename: " << outputPath.toStdString().c_str() << "\n";
+
+
+        QDateTime date = QDateTime::currentDateTime();
+        QString formattedTime = date.toString("yyyy.MM.dd - hh.mm.ss.ms");
+        QString outputPathFile = outputPath + " " + formattedTime + ".wav";
+
+        printf("FMOD_System_Init: WAVWRITER %i\n", currentDevice);
+
+        cout << "filename complete: " << outputPathFile.toStdString().c_str() << "\n";
+        result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, (char*)(outputPathFile.toStdString().c_str()));
+        ERRCHECK(result);
+        printf("WAVWRITER is set\n");
+    }
+
+
+    cout << "FMOD_System_CreateChannelGroup(system,"",&channelgroup)\n";
+    FMOD_System_CreateChannelGroup(system, "", &channelgroup);
+    ERRCHECK(result);
+
+    cout << "FMOD_System_CreateDSPByType(system,FMOD_DSP_TYPE_NORMALIZE, &dspNormalizer)\n";
+    result = FMOD_System_CreateDSPByType(system, FMOD_DSP_TYPE_NORMALIZE, &dspNormalizer);
+    ERRCHECK(result);
+
+    cout << "FMOD_System_CreateDSPByType(system,FMOD.DSP_TYPE.FFT, &dspFFT)\n";
+    result = FMOD_System_CreateDSPByType(system, FMOD_DSP_TYPE_FFT, &dspFFT);
+    ERRCHECK(result);
+    cout << "FMOD_DSP_SetActive(dspFFT,true)\n";
+    FMOD_DSP_SetActive(dspFFT, true);
+    ERRCHECK(result);
+    cout << "FMOD_DSP_SetParameterInt(dspFFT,FMOD_DSP_FFT_WINDOW_HANNING,1024*2\n";
+    result = FMOD_DSP_SetParameterInt(dspFFT, FMOD_DSP_FFT_WINDOW_HANNING, 16 * 2);
+    ERRCHECK(result);
+    cout << "FMOD_ChannelGroup_AddDSP(channelgroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspFFT)\n";
+    FMOD_ChannelGroup_AddDSP(channelgroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspFFT);
+    ERRCHECK(result);
+
+    cout << "FMOD_ChannelGroup_AddDSP(channelgroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspNormalizer))\n";
+    FMOD_ChannelGroup_AddDSP(channelgroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspNormalizer);
+    ERRCHECK(result);
+
+    cout << "FMOD_DSP_SetActive(dspNormalizer,true)\n";
+    FMOD_DSP_SetActive(dspNormalizer, true);
+    ERRCHECK(result);
+}
+
+void SoundManager::loadPluginChain() {
     if (PLUGIN_klystron_LIB != "")
     {
         loadPlugin(PLUGIN_klystron_LIB, 99999);
@@ -176,77 +246,7 @@ void SoundManager::Init(int device, QString outputfilename)
     }
 
     //loadPlugin("plugin_wavpack.dll",99999);
-
-
-    currentDevice = device;
-    FMOD_OUTPUTTYPE outputtype = static_cast<FMOD_OUTPUTTYPE>(device);
-    printf("Setting ouput to: %i\n", currentDevice);
-    result = FMOD_System_SetOutput(system, outputtype);
-    ERRCHECK(result);
-
-    if (outputtype != FMOD_OUTPUTTYPE_WAVWRITER)
-    {
-        printf("FMOD_System_Init: %i\n", currentDevice);
-        result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, nullptr);
-        ERRCHECK(result);
-    }
-    else
-    {
-        QString outputPath = outputfilename;
-
-        QDir pathDir(userPath + "/recordings");
-        if (!pathDir.exists())
-        {
-            QDir().mkdir(userPath + "/recordings");
-        }
-
-        outputPath = userPath + "/recordings/" + outputfilename;
-        cout << "filename: " << outputPath.toStdString().c_str() << "\n";
-
-
-        QDateTime date = QDateTime::currentDateTime();
-        QString formattedTime = date.toString("yyyy.MM.dd - hh.mm.ss.ms");
-        QString outputPathFile = outputPath + " " + formattedTime + ".wav";
-
-        printf("FMOD_System_Init: WAVWRITER %i\n", currentDevice);
-
-        cout << "filename complete: " << outputPathFile.toStdString().c_str() << "\n";
-        result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, (char*)(outputPathFile.toStdString().c_str()));
-        ERRCHECK(result);
-        printf("WAVWRITER is set\n");
-    }
-
-
-    cout << "FMOD_System_CreateChannelGroup(system,"",&channelgroup)\n";
-    FMOD_System_CreateChannelGroup(system, "", &channelgroup);
-    ERRCHECK(result);
-
-    cout << "FMOD_System_CreateDSPByType(system,FMOD_DSP_TYPE_NORMALIZE, &dspNormalizer)\n";
-    result = FMOD_System_CreateDSPByType(system, FMOD_DSP_TYPE_NORMALIZE, &dspNormalizer);
-    ERRCHECK(result);
-
-    cout << "FMOD_System_CreateDSPByType(system,FMOD.DSP_TYPE.FFT, &dspFFT)\n";
-    result = FMOD_System_CreateDSPByType(system, FMOD_DSP_TYPE_FFT, &dspFFT);
-    ERRCHECK(result);
-    cout << "FMOD_DSP_SetActive(dspFFT,true)\n";
-    FMOD_DSP_SetActive(dspFFT, true);
-    ERRCHECK(result);
-    cout << "FMOD_DSP_SetParameterInt(dspFFT,FMOD_DSP_FFT_WINDOW_HANNING,1024*2\n";
-    result = FMOD_DSP_SetParameterInt(dspFFT, FMOD_DSP_FFT_WINDOW_HANNING, 16 * 2);
-    ERRCHECK(result);
-    cout << "FMOD_ChannelGroup_AddDSP(channelgroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspFFT)\n";
-    FMOD_ChannelGroup_AddDSP(channelgroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspFFT);
-    ERRCHECK(result);
-
-    cout << "FMOD_ChannelGroup_AddDSP(channelgroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspNormalizer))\n";
-    FMOD_ChannelGroup_AddDSP(channelgroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspNormalizer);
-    ERRCHECK(result);
-
-    cout << "FMOD_DSP_SetActive(dspNormalizer,true)\n";
-    FMOD_DSP_SetActive(dspNormalizer, true);
-    ERRCHECK(result);
 }
-
 
 int SoundManager::getSoundData(int channel)
 {
@@ -527,6 +527,10 @@ bool SoundManager::IsPlaying()
     return playing;
 }
 
+bool SoundManager::isWavWriterDeviceSelected() {
+    return static_cast<FMOD_OUTPUTTYPE>(currentDevice) == FMOD_OUTPUTTYPE_WAVWRITER;
+}
+
 void SoundManager::SetPosition(unsigned int positon, FMOD_TIMEUNIT timeunit)
 {
     FMOD_Channel_SetPosition(channel, positon, timeunit);
@@ -646,6 +650,9 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
     //DebugWindow::instance()->addText("Loading " + filename + " for playing");
     cout << "FMOD_System_CreateSound\n";
     flush(cout);
+
+    loadPluginChain();
+
     result = FMOD_System_CreateSound(system, filename.toStdString().c_str(),
                                      FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_LOOP_OFF | FMOD_MPEGSEARCH,
                                      &extrainfo1, &sound);

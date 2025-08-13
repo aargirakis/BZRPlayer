@@ -18,11 +18,13 @@ public:
 
     Info* m_Info1;
     void Init(int device, QString outputFilename);
+    void loadPluginChain();
     void loadPlugin(string filename, int priority);
     void ERRCHECK(FMOD_RESULT result);
     void ERRCHECK(FMOD_RESULT result, QString string);
     void Stop();
     bool IsPlaying();
+    bool isWavWriterDeviceSelected();
 
     void PlayAudio(bool startPaused);
     void Release();
