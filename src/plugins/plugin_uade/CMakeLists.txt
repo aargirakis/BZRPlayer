@@ -23,7 +23,9 @@ else ()
 endif ()
 
 set(CONFIGURE_COMMAND "configure ${CFLAGS} \
---only-uadecore --without-vasm --bencode-tools-prefix=/dev/null --libzakalwe-prefix=/dev/null")
+--only-uadecore --without-vasm \
+--bindir=/dev/null --mandir=/dev/null --prefix=/dev/null --sharedir=/dev/null \
+--bencode-tools-prefix=/dev/null --libzakalwe-prefix=/dev/null")
 set(MAKE_ARGS uadecore staticlibuade)
 set(BUILD_BYPRODUCTS "src/frontends/common/libuade.a")
 download_patch_and_make(
