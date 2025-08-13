@@ -11,10 +11,10 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION}")
-set(FILENAME "${NAME_VERSIONED}.zip")
-set(FILENAME_URL "v${VERSION}.zip")
+set(FILENAME "${NAME_VERSIONED}.tar.gz")
+set(FILENAME_URL "v${VERSION}.tar.gz")
 set(URL "https://github.com/mistydemeo/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "5377613b212020d79c478a04b24ded9e9a2365c8271e48973eb3360b434d9e60")
+set(SHA_256_HASH "9b623b365e893a769084f7a2effedc9ece453c6e3861c571ba503f045471a0e0")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches

@@ -12,7 +12,7 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
-set(FILENAME "${NAME}-${VERSION}.zip")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/cpcsdk/${NAME}/archive/${FILENAME_URL}")
 set(SHA_256_HASH "97aed95140622236c8d596b7b45313f9f14ffe0d1f47b8de8496eba2802ef0d6")

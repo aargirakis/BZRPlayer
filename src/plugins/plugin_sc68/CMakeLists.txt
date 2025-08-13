@@ -15,12 +15,12 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}-${REVISION}")
-set(FILENAME "${NAME}-${VERSION}.zip")
-set(FILENAME_URL "${VERSION}.zip")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
+set(FILENAME_URL "${VERSION}.tar.gz")
 # since sourceforge (https://sourceforge.net/p/sc68/code/HEAD) doesn't provide a stable/permanent tarball url,
 # an (outdated) github mirror it is used here
 set(URL "https://github.com/Zeinok/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "67a7bed2b4bff56eae543bb90c4f44bb08544ef0e5752b6eb3f1eb569ccf2104")
+set(SHA_256_HASH "08b2d2b0f17fd3a2aebca17b76b4e6aaa880cb42688f45ba5968724ec7dca2e0")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}

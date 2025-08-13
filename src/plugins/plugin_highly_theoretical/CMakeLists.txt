@@ -16,9 +16,9 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
-set(FILENAME "${NAME}-${VERSION}.zip")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(URL "https://gitlab.com/kode54/${NAME}/-/archive/${VERSION}/${FILENAME}")
-set(SHA_256_HASH "110f4995531b1567c347d90261e0954cadfc78fd1a7024766d778851c83537d9")
+set(SHA_256_HASH "8a96b64fa00888ea58e9469abd714cb3ed7ea0a5d1da38c1bac276637e8604da")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
