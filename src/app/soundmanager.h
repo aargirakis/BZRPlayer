@@ -57,7 +57,7 @@ private:
     }
 
     FMOD_SYSTEM* system;
-    FMOD_SOUND* soundPlay;
+    FMOD_SOUND* sound;
     FMOD_CHANNEL* channel = nullptr;
     FMOD_RESULT result;
     FMOD_CHANNELGROUP* channelgroup;

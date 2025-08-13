@@ -6,7 +6,6 @@
 #include "qdir.h"
 #include <QFile>
 #include <QDebug>
-#include <QApplication>
 #include "plugins.h"
 
 void SoundManager::Init(int device, QString outputfilename)
@@ -249,7 +248,7 @@ int SoundManager::getSoundData(int channel)
 {
     FMOD_DSP_PARAMETER_FFT* fft = 0;
 
-    result = FMOD_DSP_GetParameterData(dspFFT, FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fft, 0, 0, 0);
+    result = FMOD_DSP_GetParameterData(dspFFT, FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fft, nullptr, nullptr, 0);
 
     float val = 0;
     //for (int channel = 0; channel < fft->numchannels; channel++)
@@ -275,7 +274,7 @@ int SoundManager::getSoundData(int channel)
     //    flush(cout);
 
 
-    //result = FMOD_System_GetSoftwareFormat(system,&rate , 0, 0);
+    //result = FMOD_System_GetSoftwareFormat(system,&rate , nullptr, nullptr);
     //    nyquist = windowsize / 2;
 
     //                for (chan = 0; chan < 2; chan++)
@@ -328,7 +327,7 @@ void SoundManager::setReverbEnabled(bool enabled)
     }
     else
     {
-        result = FMOD_System_SetReverbProperties(system, 0, 0);
+        result = FMOD_System_SetReverbProperties(system, 0, nullptr);
         ERRCHECK(result);
     }
 }
@@ -458,13 +457,13 @@ void SoundManager::setNormalizeEnabled(bool enabled)
 
 FMOD_RESULT SoundManager::getTag(const char* name, int index, FMOD_TAG* tag)
 {
-    return FMOD_Sound_GetTag(soundPlay, name, index, tag);
+    return FMOD_Sound_GetTag(sound, name, index, tag);
 }
 
 int SoundManager::getNumTags()
 {
     int numTags;
-    FMOD_Sound_GetNumTags(soundPlay, &numTags, 0);
+    FMOD_Sound_GetNumTags(sound, &numTags, nullptr);
     return numTags;
 }
 
@@ -560,7 +559,7 @@ unsigned int SoundManager::GetLength(FMOD_TIMEUNIT timeunit)
 {
     unsigned int song_length_ms;
     //DebugWindow::instance()->addText("SoundManager: GetLength, Timeunit: " + QString::number(timeunit));
-    FMOD_Sound_GetLength(soundPlay, &song_length_ms, timeunit);
+    FMOD_Sound_GetLength(sound, &song_length_ms, timeunit);
     return song_length_ms;
 }
 
@@ -580,19 +579,19 @@ void SoundManager::PlayAudio(bool startPaused)
 {
     m_mutedChannelsMask = 0;
     m_mutedChannelsMaskString = "";
-    FMOD_System_PlaySound(system, soundPlay, channelgroup, startPaused, &channel);
+    FMOD_System_PlaySound(system, sound, channelgroup, startPaused, &channel);
     FMOD_Channel_GetFrequency(channel, &m_nominalFrequency);
     //DebugWindow::instance()->addText("SoundManager: PlaySound");
 }
 
 void SoundManager::Release()
 {
-    FMOD_Sound_Release(soundPlay);
+    FMOD_Sound_Release(sound);
 }
 
 void SoundManager::ShutDown()
 {
-    FMOD_Sound_Release(soundPlay);
+    FMOD_Sound_Release(sound);
     FMOD_System_Release(system);
 }
 
@@ -645,7 +644,7 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
     flush(cout);
     result = FMOD_System_CreateSound(system, filename.toStdString().c_str(),
                                      FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_LOOP_OFF | FMOD_MPEGSEARCH,
-                                     &extrainfo1, &soundPlay);
+                                     &extrainfo1, &sound);
 
     if (m_Info1->pluginName.empty()) {
         m_Info1->pluginName = PLUGIN_fmod_NAME;
@@ -659,13 +658,13 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
     FMOD_SOUND_FORMAT format;
     int channels;
     int bits;
-    FMOD_Sound_GetFormat(soundPlay, &type, &format, &channels, &bits);
+    FMOD_Sound_GetFormat(sound, &type, &format, &channels, &bits);
     m_Info1->numChannelsStream = channels;
     if (result == FMOD_OK)
     {
         if (m_Info1->plugin == 0) //FMOD
         {
-            m_Info1->fileformat = getFMODSoundFormat(soundPlay);
+            m_Info1->fileformat = getFMODSoundFormat(sound);
         }
         return true;
     }
@@ -682,7 +681,7 @@ const char* SoundManager::getFMODSoundFormat(FMOD_SOUND* sound)
 {
     FMOD_SOUND_TYPE type;
     const char* format;
-    FMOD_Sound_GetFormat(sound, &type,NULL,NULL,NULL);
+    FMOD_Sound_GetFormat(sound, &type, nullptr, nullptr, nullptr);
     if (type != FMOD_SOUND_TYPE_UNKNOWN)
     {
         switch (type)
