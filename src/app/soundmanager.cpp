@@ -701,10 +701,19 @@ const char* SoundManager::getFMODSoundFormat(FMOD_SOUND* sound)
             format = "AIFF";
             break;
         case FMOD_SOUND_TYPE_ASF:
-            format = "WMA/ASF/WMV";
+            format = "ASF/WMA/WMV";
+            break;
+        case FMOD_SOUND_TYPE_AT9:
+            format = "Sony ATRAC9 (FSB)";
+            break;
+        case FMOD_SOUND_TYPE_AUDIOQUEUE:
+            format = "Apple Audio Queue";
             break;
         case FMOD_SOUND_TYPE_DLS:
-            format = "FMOD Downloadable Sound Bank";
+            format = "Downloadable Sound Bank";
+            break;
+        case FMOD_SOUND_TYPE_FADPCM:
+            format = "FADPCM (FSB)";
             break;
         case FMOD_SOUND_TYPE_FLAC:
             format = "FLAC";
@@ -715,6 +724,12 @@ const char* SoundManager::getFMODSoundFormat(FMOD_SOUND* sound)
         case FMOD_SOUND_TYPE_IT:
             format = "Impulse Tracker";
             break;
+        case FMOD_SOUND_TYPE_MEDIA_FOUNDATION:
+            format = "MMF (FSB)";
+            break;
+        case FMOD_SOUND_TYPE_MEDIACODEC:
+            format = "Google Media Codec";
+            break;
         case FMOD_SOUND_TYPE_MIDI:
             format = "MIDI";
             break;
@@ -722,10 +737,13 @@ const char* SoundManager::getFMODSoundFormat(FMOD_SOUND* sound)
             format = "Protracker/Fasttracker";
             break;
         case FMOD_SOUND_TYPE_MPEG:
-            format = "MP2/MP3 MPEG";
+            format = "MP2/MP3/RIFF";
             break;
         case FMOD_SOUND_TYPE_OGGVORBIS:
             format = "Ogg vorbis";
+            break;
+        case FMOD_SOUND_TYPE_OPUS:
+            format = "Opus (FSB)";
             break;
         case FMOD_SOUND_TYPE_PLAYLIST:
             format = "ASX/PLS/M3U/WAX playlist";
@@ -739,6 +757,9 @@ const char* SoundManager::getFMODSoundFormat(FMOD_SOUND* sound)
         case FMOD_SOUND_TYPE_USER:
             format = "User created sound";
             break;
+        case FMOD_SOUND_TYPE_VORBIS:
+            format = "Vorbis (FSB)";
+            break;
         case FMOD_SOUND_TYPE_WAV:
             format = "Microsoft WAV";
             break;
@@ -746,7 +767,7 @@ const char* SoundManager::getFMODSoundFormat(FMOD_SOUND* sound)
             format = "FastTracker 2 XM";
             break;
         case FMOD_SOUND_TYPE_XMA:
-            format = "Xbox360 XMA";
+            format = "Xbox Media Audio (FSB)";
             break;
         default:
             format = "Unknown format";
