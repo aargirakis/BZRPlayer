@@ -1063,6 +1063,7 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth)
 
             if (m_trackerview->rowNumbersLastChannelEnabled())
             {
+                painter->setPen(m_trackerview->colorDefault());
                 if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
                         bitmapFontRownumber().m_bitmapFontPath)
                 {
