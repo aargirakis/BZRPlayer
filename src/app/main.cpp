@@ -10,6 +10,9 @@ int main(int argc, char* argv[])
     }
 #endif
 
+    // see https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/issues/732
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
     QApplication a(argc, argv);
     MainWindow w(argc, argv);
     //w.show();
