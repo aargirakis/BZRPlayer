@@ -95,37 +95,37 @@ void HivelyTrackerPatternView::paintAbove(QPainter* painter, int height, int cur
 
 
     //left frame
-    painter->fillRect(0, 104, 1, (height) - 2, colorBase);
-    QLinearGradient gradient1(QPointF(0, 0), QPointF(0, (height) - 2));
+    painter->fillRect(0, 104, 1, (height) - 2-m_topHeight, colorBase);
+    QLinearGradient gradient1(QPointF(0, 0), QPointF(0, (height) - 2-m_topHeight));
     gradient1.setColorAt(0, QColor(255, 255, 255).rgb());
     gradient1.setColorAt(0.5, colorHilite.rgb());
-    painter->fillRect(1, 104, 1, (height) - 2, QBrush(gradient1));
-    painter->fillRect(2, 105, 1, (height) - 4, QColor(34, 68, 102));
+    painter->fillRect(1, 104, 1, (height) - 2-m_topHeight, QBrush(gradient1));
+    painter->fillRect(2, 105, 1, (height) - 4-m_topHeight, QColor(34, 68, 102));
     painter->fillRect(2, 104, 1, 1, colorAntiAlias);
 
 
     //anti alias
-    painter->fillRect(0, (height) - 2, 1, 1, colorAntiAlias);
-    painter->fillRect(2, (height) - 4, 1, 1, colorAntiAlias);
+    painter->fillRect(0, (height-m_topHeight) - 2, 1, 1, colorAntiAlias);
+    painter->fillRect(2, (height-m_topHeight) - 4, 1, 1, colorAntiAlias);
 
     //right frame
-    QLinearGradient gradient7(QPointF(0, 0), QPointF(0, (height) - 2));
+    QLinearGradient gradient7(QPointF(0, 0), QPointF(0, (height) - 2-m_topHeight));
     gradient7.setColorAt(0.5, colorHilite);
     gradient7.setColorAt(1, QColor(238, 245, 252).rgb());
-    painter->fillRect((23 + m_channels * 120), 104, 1, (height) - 2, QBrush(gradient7));
-    painter->fillRect((24 + m_channels * 120), 104, 1, (height) - 2, colorBase);
-    QLinearGradient gradient2(QPointF(0, 0), QPointF(0, (height) - 2));
+    painter->fillRect((23 + m_channels * 120), 104, 1, (height) - 2-m_topHeight, QBrush(gradient7));
+    painter->fillRect((24 + m_channels * 120), 104, 1, (height) - 2-m_topHeight, colorBase);
+    QLinearGradient gradient2(QPointF(0, 0), QPointF(0, (height) - 2-m_topHeight));
     gradient2.setColorAt(0.5, QColor(151, 175, 209).rgb());
     gradient2.setColorAt(1, QColor(238, 245, 252).rgb());
-    painter->fillRect((25 + m_channels * 120), 104, 1, (height) - 2, QBrush(gradient2));
-    QLinearGradient gradient3(QPointF(0, 0), QPointF(0, (height) - 1));
+    painter->fillRect((25 + m_channels * 120), 104, 1, (height) - 2-m_topHeight, QBrush(gradient2));
+    QLinearGradient gradient3(QPointF(0, 0), QPointF(0, (height) - 1-m_topHeight));
     gradient3.setColorAt(0, QColor(43, 76, 111).rgb());
     gradient3.setColorAt(1, QColor(17, 51, 85).rgb());
-    painter->fillRect((26 + m_channels * 120), 104, 1, (height - 1), QBrush(gradient3));
-    QLinearGradient gradient5(QPointF(0, 0), QPointF(0, (height) - 1));
+    painter->fillRect((26 + m_channels * 120), 104, 1, (height - 1-m_topHeight), QBrush(gradient3));
+    QLinearGradient gradient5(QPointF(0, 0), QPointF(0, (height) - 1-m_topHeight));
     gradient5.setColorAt(0, QColor(26, 59, 93).rgb());
     gradient5.setColorAt(1, colorShadow);
-    painter->fillRect((27 + m_channels * 120), 104, 1, (height - 1), QBrush(gradient5));
+    painter->fillRect((27 + m_channels * 120), 104, 1, (height - 1-m_topHeight), QBrush(gradient5));
 
     //bottom frame
     painter->fillRect((3), (height) - 4, (20) + m_channels * 120, 1, colorBase);
