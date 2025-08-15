@@ -203,14 +203,14 @@ void ProTracker36PatternView::paintBelow(QPainter* painter, int height, int curr
     {
         //channel dividers
         painter->fillRect((38) + chan * 120, 0, 5, height, colorBase);
-        painter->fillRect((38) + chan * 120, 42, 2, height, colorHilite);
-        painter->fillRect((43) + chan * 120, 2, 2, height, colorShadow);
+        painter->fillRect((38) + chan * 120, 0, 2, height, colorHilite);
+        painter->fillRect((43) + chan * 120, 0, 2, height, colorShadow);
 
-        painter->fillRect((83) + chan * 120, 42, 1, height, colorHilite);
+        painter->fillRect((83) + chan * 120, 0, 1, height, colorHilite);
         painter->fillRect((84) + chan * 120, 2, 1, height, colorShadow);
-        painter->fillRect((107) + chan * 120, 42, 1, height, colorHilite);
+        painter->fillRect((107) + chan * 120, 0, 1, height, colorHilite);
         painter->fillRect((108) + chan * 120, 2, 1, height, colorShadow);
-        painter->fillRect((131) + chan * 120, 42, 1, height, colorHilite);
+        painter->fillRect((131) + chan * 120, 0, 1, height, colorHilite);
         painter->fillRect((132) + chan * 120, 2, 1, height, colorShadow);
 
 
