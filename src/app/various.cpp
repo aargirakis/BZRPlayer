@@ -117,7 +117,7 @@ QString msToNiceStringExact(unsigned int lenms, bool displayMilliseconds)
         ss4 >> strMin;
         songLength = strMin + ":" + strSec + strMs;
     }
-    if (lenms == 0xffffffff)
+    if (lenms == -1)
     {
         if (displayMilliseconds)
         {

@@ -111,7 +111,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     plugin->waveformat.channels = ASAPInfo_GetChannels(plugin->asap_info);
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
 
     //    if(duration!=-1)
     //    {

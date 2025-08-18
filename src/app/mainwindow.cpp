@@ -1852,7 +1852,7 @@ void MainWindow::getLength()
         SoundManager::getInstance().m_Info1->currentSubsong = currentSubsong;
         song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
         addDebugText("song_length_ms: " + QString::number(song_length_ms));
-        if (song_length_ms == 0 || song_length_ms == 0xffffffff)
+        if (song_length_ms == 0 || song_length_ms == -1)
         {
             song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_SUBSONG_MS);
             addDebugText("song_length_ms: " + QString::number(song_length_ms));
@@ -1861,13 +1861,13 @@ void MainWindow::getLength()
 
         if (song_length_ms == 0)
         {
-            song_length_ms = 0xffffffff;
+            song_length_ms = -1;
         }
-        //        if(song_length_ms==0xffffffff && playlists[currentPlaylist].at(currentRow)->length>0)
+        //        if(song_length_ms==-1 && playlists[currentPlaylist].at(currentRow)->length>0)
         //        {
         //            song_length_ms=playlists[currentPlaylist].at(currentRow)->length;
         //        }
-        if (song_length_ms == 0xffffffff)
+        if (song_length_ms == -1)
         {
             ui->positionSlider->setMaximum(0);
         }

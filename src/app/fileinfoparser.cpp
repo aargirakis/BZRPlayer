@@ -1488,13 +1488,13 @@ void FileInfoParser::addMultilineInfo(QTableWidget *tableInfo, int *row, const Q
 void FileInfoParser::addLengthInfo(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {
     unsigned int song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
 
-    if (song_length_ms == 0 || song_length_ms == 0xffffffff) {
+    if (song_length_ms == 0 || song_length_ms == -1) {
         song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_SUBSONG_MS);
     }
     if (song_length_ms == 0) {
-        song_length_ms = 0xffffffff;
+        song_length_ms = -1;
     }
-    if (song_length_ms == 0xffffffff && playlistItem->length > 0) {
+    if (song_length_ms == -1 && playlistItem->length > 0) {
         song_length_ms = playlistItem->length;
     }
 

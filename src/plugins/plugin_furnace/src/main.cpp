@@ -148,7 +148,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     plugin->waveformat.channels = channels;
     plugin->waveformat.frequency = freq;
     plugin->waveformat.pcmblocksize = kMaxSamples;
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
 
 
     codec->waveformat = &plugin->waveformat;
@@ -329,7 +329,7 @@ FMOD_RESULT F_CALL setposition(FMOD_CODEC_STATE* codec, int subsound, unsigned i
 
 FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    *length = 0xffffffff;
+    *length = -1;
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         return FMOD_OK;

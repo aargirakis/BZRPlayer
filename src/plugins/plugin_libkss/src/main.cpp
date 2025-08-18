@@ -89,7 +89,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 48000;
     plugin->waveformat.pcmblocksize = 2048 * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;

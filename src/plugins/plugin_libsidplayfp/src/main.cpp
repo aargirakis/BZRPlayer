@@ -416,7 +416,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.frequency = cfg.frequency;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = 0xffffffff; //inifite length
+    plugin->waveformat.lengthpcm = -1; //infinite length
 
     codec->waveformat = &(plugin->waveformat);
     codec->numsubsounds = 0;

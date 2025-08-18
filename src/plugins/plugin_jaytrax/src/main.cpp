@@ -107,7 +107,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -171,7 +171,7 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
     auto* plugin = static_cast<pluginJaytrax*>(codec->plugindata);
     if (lengthtype == FMOD_TIMEUNIT_MS)
     {
-        *length = 0xffffffff;
+        *length = -1;
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {

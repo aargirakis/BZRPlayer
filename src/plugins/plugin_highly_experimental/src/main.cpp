@@ -218,7 +218,7 @@ public:
     int psfType = 0;
     Info* info;
     std::unordered_map<std::string, std::string> m_tags;
-    uint64_t m_length;
+    unsigned int m_length;
 
     struct LoaderState
     {
@@ -343,7 +343,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     plugin->waveformat.channels = channels;
     plugin->waveformat.frequency = 48000;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = plugin->m_length * plugin->waveformat.frequency / 1000; //0xffffffff;
+    plugin->waveformat.lengthpcm = plugin->m_length * plugin->waveformat.frequency / 1000; //-1;
 
 
     codec->waveformat = &plugin->waveformat;
@@ -471,9 +471,9 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
         }
         else
         {
-            *length = 0xffffffff;
+            *length = -1;
         }
-        *length = 0xffffffff;
+        *length = -1;
         return FMOD_OK;
     }
 }

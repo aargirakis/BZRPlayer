@@ -115,7 +115,6 @@ public:
                 if (length > 0)
 				{
                     plugin->m_length = length;
-
 				}
             }
         }
@@ -181,7 +180,7 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info* info;
     std::unordered_map<std::string, std::string> m_tags;
-    uint64_t m_length=0;
+    unsigned int m_length = 0;
     uint8_t* m_lazyState = nullptr;
 
         struct LoaderState
@@ -281,7 +280,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     plugin->waveformat.channels = channels;
     plugin->waveformat.frequency = freq;
     plugin->waveformat.pcmblocksize = 2;
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
 
 
     codec->waveformat = &plugin->waveformat;
@@ -371,7 +370,7 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
         }
         else
         {
-            *length = 0xffffffff;
+            *length = -1;
         }
         plugin->info->numSubsongs = 1;
         return FMOD_OK;

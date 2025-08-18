@@ -146,7 +146,7 @@ FMOD_RESULT F_CALL aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     plugin->waveformat.channels = 2;
 
 
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
     // codec->filesize;// / waveformat.blockalign;   /* bytes converted to PCM samples */;
 
     codec->waveformat = &(plugin->waveformat);
@@ -220,7 +220,7 @@ FMOD_RESULT F_CALL aacopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
         plugin->waveformat.frequency = x->sr;
         plugin->waveformat.channels = x->nch;
         plugin->waveformat.pcmblocksize = 512 * plugin->waveformat.channels; /* 2 = 16bit pcm */
-        plugin->waveformat.lengthpcm = 0xffffffff;
+        plugin->waveformat.lengthpcm = -1;
         // codec->filesize;// / waveformat.blockalign;   /* bytes converted to PCM samples */;
 
         if (byt < 0)

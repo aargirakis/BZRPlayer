@@ -202,7 +202,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     if (length > 0xfffff || length == 0)
     //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
     {
-        length = 0xffffffff;
+        length = -1;
     }
     plugin->waveformat.lengthpcm = length;
 
@@ -299,7 +299,7 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
         if (*length > 0xfffff || *length == 0)
         //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
         {
-            *length = 0xffffffff;
+            *length = -1;
         }
     }
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG)

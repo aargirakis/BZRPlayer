@@ -249,7 +249,7 @@ FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREA
     xmp_get_frame_info(plugin->xmp, &plugin->fi);
 
 
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
     (plugin->fi.total_time / 1000.0) * freq;
 
     xmp_set_player(plugin->xmp,XMP_PLAYER_INTERP, interpolation);

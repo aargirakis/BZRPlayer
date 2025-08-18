@@ -240,7 +240,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = freq;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
 
     //// If file doesn't have overall length, it might have intro and loop lengths
     //   if ( plugin->info.length <= 0 )
@@ -358,7 +358,7 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
         }
         else
         {
-            *length = 0xffffffff;
+            *length = -1;
         }
         return FMOD_OK;
     }

@@ -339,7 +339,7 @@ public:
     Info* info;
     std::unordered_map<std::string, std::string> m_tags;
     int32_t ms_interpolation = 0;
-    uint64_t m_length;
+    unsigned int m_length;
     NDS_state m_ndsState = {};
 
     struct LoaderState
@@ -419,7 +419,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->m_length = 0xffffffff;
+    plugin->m_length = -1;
     if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, nullptr, nullptr, plugin->InfoMetaPSF, plugin, 0,
                  nullptr, nullptr))
     {
@@ -452,7 +452,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     plugin->waveformat.channels = channels;
     plugin->waveformat.frequency = freq;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
 
 
     codec->waveformat = &plugin->waveformat;
@@ -555,7 +555,7 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
         }
         else
         {
-            *length = 0xffffffff;
+            *length = -1;
         }
         plugin->info->numSubsongs = 1;
         return FMOD_OK;

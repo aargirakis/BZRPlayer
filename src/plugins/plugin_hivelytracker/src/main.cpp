@@ -213,7 +213,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
         plugin->subsongslengths[i] = hvl_GetLen(plugin->m_tune);
     }
 
-    plugin->waveformat.lengthpcm = 0xffffffff;
+    plugin->waveformat.lengthpcm = -1;
     plugin->info->title = plugin->m_tune->ht_Name;
     plugin->info->numChannels = plugin->m_tune->ht_Channels;
     plugin->info->numPatterns = plugin->m_tune->ht_TrackNr;

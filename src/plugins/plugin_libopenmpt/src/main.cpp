@@ -265,7 +265,7 @@ FMOD_RESULT F_CALL libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
         plugin->waveformat.channels = 2;
         plugin->waveformat.frequency = 44100;
         plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-        plugin->waveformat.lengthpcm = 0xffffffff;
+        plugin->waveformat.lengthpcm = -1;
         //plugin->mod->get_duration_seconds()*plugin->waveformat.frequency;
 
         codec->waveformat = &(plugin->waveformat);
