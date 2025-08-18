@@ -54,6 +54,14 @@ public:
         repeatSong = 2
     };
 
+    enum loopPointsState {
+        INACTIVE = 0,
+        DISABLED = 1,
+        UNSET = 2,
+        A_SET = 3,
+        B_SET = 4
+    };
+
     enum dropWidget
     {
         DropIgnore = 0,
@@ -296,6 +304,12 @@ private slots:
 
     void on_checkBoxLoop_clicked();
 
+    void on_checkBoxLoopPointA_clicked();
+
+    void on_checkBoxLoopPointB_clicked();
+
+    void on_checkBoxLoopPointAny_clicked();
+
     void on_checkBoxVolumeOn_clicked();
 
     void on_playlist_doubleClicked(const QModelIndex& index);
@@ -468,8 +482,11 @@ private:
     playmode Playmode;
     bool buttonNextClicked;
 
-
     unsigned int song_length_ms;
+
+    loopPointsState loopPointsState;
+    unsigned int loopPointA;
+    unsigned int loopPointB;
 
     QMap<QString, QVector<unsigned int>> m_ShufflePlayed;
     QMap<QString, QVector<unsigned int>> m_ShuffleToBePlayed;
