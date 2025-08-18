@@ -80,7 +80,6 @@ public:
     Info* info;
     openmpt::module_ext* mod;
     FMOD_CODEC_WAVEFORMAT waveformat;
-    bool isContinuousPlaybackActive;
 };
 
 #ifdef __cplusplus
@@ -168,7 +167,7 @@ FMOD_RESULT F_CALL libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
         string emulate_amiga_filter = "1";
         string amiga_filter = "auto";
         string dither = "1";
-        plugin->isContinuousPlaybackActive = false;
+        info->isContinuousPlaybackActive = false;
 
         if (!useDefaults)
         {
@@ -186,7 +185,7 @@ FMOD_RESULT F_CALL libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
                     }
                     else if (word.compare("continuous_playback") == 0)
                     {
-                        plugin->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare(
+                        info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare(
                             "true") == 0;
                     }
                     else if (word.compare("interpolation_filter") == 0)
@@ -250,7 +249,7 @@ FMOD_RESULT F_CALL libopenmptopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, F
         std::map<std::string, std::string> ctls
         {
             {"seek.sync_samples", "1"},
-            {"play.at_end", plugin->isContinuousPlaybackActive ? "continue" : "stop"},
+            {"play.at_end", info->isContinuousPlaybackActive ? "continue" : "stop"},
             {"render.resampler.emulate_amiga", emulate_amiga_filter},
             {"render.resampler.emulate_amiga_type", amiga_filter},
             {"dither", dither}
@@ -404,14 +403,7 @@ FMOD_RESULT F_CALL libopenmptgetlength(FMOD_CODEC_STATE* codec, unsigned int* le
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS || lengthtype ==
         FMOD_TIMEUNIT_MUTE_VOICE)
     {
-        if (plugin->isContinuousPlaybackActive)
-        {
-            *length = 0xffffffff;
-        }
-        else
-        {
-            *length = plugin->mod->get_duration_seconds() * 1000;
-        }
+        *length = plugin->mod->get_duration_seconds() * 1000;
         return FMOD_OK;
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)

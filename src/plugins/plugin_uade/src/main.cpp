@@ -69,7 +69,6 @@ public:
 
     Info* info;
     bool uade_songlengths_enabled;
-    bool isContinuousPlaybackActive;
     int currentSubsong;
     string uade_songlengthspath;
     uade_state *uadeState = nullptr;
@@ -120,7 +119,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
 
     delete[] smallBuffer;
 
-    auto const *info = static_cast<Info *>(userexinfo->userdata);
+    auto *info = static_cast<Info *>(userexinfo->userdata);
 
     //read config from disk
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/uade.cfg";
@@ -144,7 +143,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     string silence_timeout = "5";
     bool silence_timeout_enabled = true;
     plugin->uade_songlengths_enabled = true;
-    plugin->isContinuousPlaybackActive = false;
+    info->isContinuousPlaybackActive = false;
 
     if (!useDefaults)
     {
@@ -219,7 +218,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
                 }
                 else if (word == "continuous_playback")
                 {
-                    plugin->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
+                    info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
                 }
                 else if (word == "uade_songlengths_path")
                 {
@@ -270,7 +269,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     uade_config_set_option(uadeConfig, UC_NO_CONTENT_DB, nullptr);
     uade_config_set_option(uadeConfig, UC_ONE_SUBSONG, nullptr);
 
-    if (plugin->isContinuousPlaybackActive) {
+    if (info->isContinuousPlaybackActive) {
         uade_config_set_option(uadeConfig, UC_NO_EP_END, nullptr);
         uade_config_set_option(uadeConfig, UC_DISABLE_TIMEOUTS, nullptr);
         uade_config_set_option(uadeConfig, UC_TIMEOUT_VALUE, "-1");
@@ -497,7 +496,7 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
     }
 
     unsigned int songLength;
-    if (plugin->uade_songlengths_enabled && !plugin->isContinuousPlaybackActive)
+    if (plugin->uade_songlengths_enabled)
     {
         songLength = getLengthFromDatabase(plugin->info->filename.c_str(), sub, plugin->uadeSongInfo->modulemd5,
                                            plugin->uade_songlengthspath.c_str());

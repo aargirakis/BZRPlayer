@@ -70,12 +70,12 @@ public:
 
     CPlayer* player;
     Copl* opl;
+    Info* info;
     FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned long samplesToWrite = 0;
     unsigned int currentSubsong = -1;
     unsigned int songlength = -1;
     bool isSongEndReached = false;
-    bool isContinuousPlaybackActive;
 };
 
 /*
@@ -100,10 +100,10 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     auto* plugin = new pluginAdplug(codec);
-    auto *info = static_cast<Info *>(userexinfo->userdata);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     //read config from disk
-    string filename = info->userPath + PLUGINS_CONFIG_DIR + "/adplug.cfg";
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/adplug.cfg";
     ifstream ifs(filename.c_str());
     string line;
 
@@ -119,7 +119,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     int bits = 16; //TODO didn't added to preferences yet since 8bit still sounds too loud (distorted)
     plugin->waveformat.channels = 2;
     bool harmonic = true;
-    plugin->isContinuousPlaybackActive = false;
+    plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults)
     {
@@ -160,7 +160,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
                 }
                 else if (word.compare("continuous_playback") == 0)
                 {
-                    plugin->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare(
+                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value.compare(
                         "true") == 0;
                 }
             }
@@ -237,7 +237,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->player = CAdPlug::factory(info->filename, plugin->opl);
+    plugin->player = CAdPlug::factory(plugin->info->filename, plugin->opl);
     if (!plugin->player)
     {
         delete plugin->player;
@@ -255,23 +255,23 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds.
     codec->plugindata = plugin; // user data value
 
-    info->fileformat = plugin->player->gettype();
-    info->artist = plugin->player->getauthor();
-    info->title = plugin->player->gettitle();
-    info->comments = plugin->player->getdesc();
-    info->numInstruments = plugin->player->getinstruments();
-    info->numPatterns = plugin->player->getpatterns();
-    info->numOrders = plugin->player->getorders();
+    plugin->info->fileformat = plugin->player->gettype();
+    plugin->info->artist = plugin->player->getauthor();
+    plugin->info->title = plugin->player->gettitle();
+    plugin->info->comments = plugin->player->getdesc();
+    plugin->info->numInstruments = plugin->player->getinstruments();
+    plugin->info->numPatterns = plugin->player->getpatterns();
+    plugin->info->numOrders = plugin->player->getorders();
 
-    info->instruments = new string[info->numInstruments];
-    for (int j = 0; j < info->numInstruments; j++)
+    plugin->info->instruments = new string[plugin->info->numInstruments];
+    for (int j = 0; j < plugin->info->numInstruments; j++)
     {
-        info->instruments[j] = plugin->player->getinstrument(j);
+        plugin->info->instruments[j] = plugin->player->getinstrument(j);
     }
 
-    info->plugin = PLUGIN_adplug;
-    info->pluginName = PLUGIN_adplug_NAME;
-    info->setSeekable(true);
+    plugin->info->plugin = PLUGIN_adplug;
+    plugin->info->pluginName = PLUGIN_adplug_NAME;
+    plugin->info->setSeekable(true);
 
     return FMOD_OK;
 }
@@ -292,7 +292,7 @@ FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size
         plugin->songlength = static_cast<unsigned int>(plugin->player->songlength(static_cast<int>(plugin->currentSubsong)));
     }
 
-    if (plugin->isSongEndReached && plugin->samplesToWrite == 0 && !plugin->isContinuousPlaybackActive)
+    if (plugin->isSongEndReached && plugin->samplesToWrite == 0 && !plugin->info->isContinuousPlaybackActive)
     {
         return FMOD_ERR_FILE_EOF;
     }
@@ -320,7 +320,7 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
     }
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
-        *length = plugin->isContinuousPlaybackActive ? -1 : plugin->songlength;
+        *length = plugin->songlength;
     }
 
     return FMOD_OK;

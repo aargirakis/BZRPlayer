@@ -108,8 +108,6 @@ public:
     bool mute[9];
 
     bool hvscSonglengthsDataBaseEnabled;
-    bool isContinuousPlaybackActive;
-
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -237,7 +235,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     bool forcec64Model = false;
 
     plugin->hvscSonglengthsDataBaseEnabled = true;
-    plugin->isContinuousPlaybackActive = false;
+    info->isContinuousPlaybackActive = false;
 
     if (!useDefaults)
     {
@@ -360,7 +358,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
                 }
                 else if (word.compare("continuous_playback") == 0)
                 {
-                    plugin->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare("true") == 0;
+                    info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value.compare("true") == 0;
                 }
             }
         }
@@ -619,7 +617,7 @@ FMOD_RESULT F_CALL sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, F
         string databasefile = plugin->hvscSonglengthsFile;
         const SidTuneInfo* s = plugin->tune->getInfo();
         unsigned int sidLength = 0;
-        if (plugin->hvscSonglengthsDataBaseEnabled && !plugin->isContinuousPlaybackActive)
+        if (plugin->hvscSonglengthsDataBaseEnabled)
         {
             sidLength = getLengthFromSIDDatabase(databasefile, true, plugin->info->filename, s->currentSong());
         }

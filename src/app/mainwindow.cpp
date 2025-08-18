@@ -1232,8 +1232,11 @@ void MainWindow::timerProgress()
         }
     }
 
-    if (playStarted)
-    {
+    if (playStarted) {
+        if (SoundManager::getInstance().m_Info1 != nullptr &&
+            SoundManager::getInstance().m_Info1->isContinuousPlaybackActive) {
+            return;
+        }
         if (currentMs >= song_length_ms || (!SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().
             GetPaused()))
         {

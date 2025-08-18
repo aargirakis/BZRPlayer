@@ -349,6 +349,7 @@ public:
     unsigned char* modVUMeters;
 
     bool isPlayModeRepeatSongEnabled;
+    bool isContinuousPlaybackActive;
 
 private:
     bool seekable;

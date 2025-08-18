@@ -135,7 +135,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
 
     //defaults
     uint32 defstereo = 4;
-    bool isContinuousPlaybackActive = false;
+    plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults)
     {
@@ -153,7 +153,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
                 }
                 else if (word.compare("continuous_playback") == 0)
                 {
-                    isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value.compare(
+                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value.compare(
                         "true") == 0;
                 }
             }
@@ -209,13 +209,8 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     plugin->subsongslengths = new unsigned int[subsongs];
     for (int i = 0; i < subsongs; i++)
     {
-        if (isContinuousPlaybackActive)
-            plugin->subsongslengths[i] = -1;
-        else
-        {
-            hvl_InitSubsong(plugin->m_tune, i);
-            plugin->subsongslengths[i] = hvl_GetLen(plugin->m_tune);
-        }
+        hvl_InitSubsong(plugin->m_tune, i);
+        plugin->subsongslengths[i] = hvl_GetLen(plugin->m_tune);
     }
 
     plugin->waveformat.lengthpcm = 0xffffffff;

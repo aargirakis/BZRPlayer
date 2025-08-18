@@ -57,7 +57,6 @@ public:
     SndhFile* sndh;
     queue<uint32_t*> oscBuffer;
     unsigned int m_subsongIndex = 0;
-    bool isContinuousPlaybackActive;
     uint32_t m_hash = 0;
 
     int32_t GetTickCountFromSc68() const
@@ -202,7 +201,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     }
 
     //defaults
-    plugin->isContinuousPlaybackActive = false;
+    plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults)
     {
@@ -217,7 +216,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
                 string value = line.substr(i + 1);
                 if (word == "continuous_playback")
                 {
-                    plugin->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
             }
         }
@@ -325,16 +324,12 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
 
         plugin->info->clockSpeed = subsongInfo.playerTickRate;
 
-        if (plugin->isContinuousPlaybackActive) {
-            *length = -1;
-        } else {
-            unsigned int ticks = subsongInfo.playerTickCount;
-            if (ticks == 0) {
-                ticks = plugin->GetTickCountFromSc68();
-            }
-            unsigned int milliseconds = (ticks * subsongInfo.samplePerTick) / (plugin->waveformat.frequency / 1000);
-            *length = milliseconds;
+        unsigned int ticks = subsongInfo.playerTickCount;
+        if (ticks == 0) {
+            ticks = plugin->GetTickCountFromSc68();
         }
+        unsigned int milliseconds = (ticks * subsongInfo.samplePerTick) / (plugin->waveformat.frequency / 1000);
+        *length = milliseconds;
     }
 
     else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
