@@ -10,6 +10,8 @@
         <file>resources/stop.svg</file>
         <file>resources/repeat.svg</file>
         <file>resources/repeat-1.svg</file>
+        <file>resources/loop-point-a.svg</file>
+        <file>resources/loop-point-b.svg</file>
         <file>resources/speaker.svg</file>
         <file>resources/speaker-off.svg</file>
         <file>resources/pause.svg</file>

@@ -675,6 +675,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     ui->checkBoxShuffle->installEventFilter(this);
     ui->checkBoxVolumeOn->installEventFilter(this);
     ui->checkBoxLoop->installEventFilter(this);
+    ui->checkBoxLoopPointA->installEventFilter(this);
+    ui->checkBoxLoopPointB->installEventFilter(this);
     ui->pushButtonNewPlaylist->installEventFilter(this);
 
     ui->Debug->moveCursor(QTextCursor::StartOfLine);
@@ -798,19 +800,22 @@ void MainWindow::on_positionSlider_sliderReleased()
 
 void MainWindow::setPosition(int offset)
 {
-    int currentpos = ui->positionSlider->value();
-    int maxpos = ui->positionSlider->maximum();
-    int pos = currentpos + offset;
-    if (pos >= maxpos)
-    {
-        pos--;
+    int currentPos = ui->positionSlider->value();
+    int targetPos = currentPos + offset;
+
+    if (loopPointsState == B_SET && targetPos > loopPointB) {
+        targetPos = loopPointA;
+    } else {
+        int maxPos = ui->positionSlider->maximum();
+        if (targetPos >= maxPos) {
+            targetPos--;
+        } else if (targetPos < 0) {
+            targetPos = 0;
+        }
     }
-    else if (pos < 0)
-    {
-        pos = 0;
-    }
-    SoundManager::getInstance().SetPosition(pos, FMOD_TIMEUNIT_MS);
-    addDebugText("Set position to " + QString::number(pos));
+
+    SoundManager::getInstance().SetPosition(targetPos, FMOD_TIMEUNIT_MS);
+    addDebugText("Set position to " + QString::number(targetPos));
 }
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event)
@@ -974,6 +979,23 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
                 ui->checkBoxLoop->setIcon(icons["repeat-1Hover"]);
             }
         }
+        else if (obj == ui->checkBoxLoopPointA || obj == ui->checkBoxLoopPointB) {
+            switch (loopPointsState) {
+                case A_SET:
+                    ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-on-hover"]);
+                    ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-off-hover"]);
+                    break;
+                case B_SET:
+                    ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-on-hover"]);
+                    ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-on-hover"]);
+                    break;
+                case UNSET:
+                    ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-off-hover"]);
+                    ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-off-hover"]);
+                    break;
+                default: ;
+            }
+        }
     }
     else if (event->type() == QEvent::Leave)
     {
@@ -1041,6 +1063,23 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
             else
             {
                 ui->checkBoxLoop->setIcon(icons["repeat-1"]);
+            }
+        }
+        else if (obj == ui->checkBoxLoopPointA || obj == ui->checkBoxLoopPointB) {
+            switch (loopPointsState) {
+                case UNSET:
+                    ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-off"]);
+                    ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-off"]);
+                    break;
+                case A_SET:
+                    ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-on"]);
+                    ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-off"]);
+                    break;
+                case B_SET:
+                    ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-on"]);
+                    ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-on"]);
+                    break;
+                default: ;
             }
         }
     }
@@ -1232,15 +1271,19 @@ void MainWindow::timerProgress()
     }
 
     if (playStarted) {
+        if (loopPointsState == B_SET && currentMs > loopPointB) {
+            setPosition(loopPointA - loopPointB);
+            return;
+        }
+
         if (SoundManager::getInstance().m_Info1 != nullptr &&
             (SoundManager::getInstance().m_Info1->isContinuousPlaybackActive ||
              SoundManager::getInstance().m_Info1->isSeamlessLoopActive)) {
             return;
         }
 
-        if (currentMs >= song_length_ms || (!SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().
-            GetPaused()))
-        {
+        if (currentMs >= song_length_ms ||
+            (!SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())) {
             playNextSong(false);
         }
     }
@@ -1284,6 +1327,42 @@ void MainWindow::updateButtons()
     else
     {
         ui->checkBoxLoop->setIcon(icons["repeat"]);
+    }
+    if (SoundManager::getInstance().IsPlaying()) {
+        if (SoundManager::getInstance().m_Info1->getSeekable() &&
+            song_length_ms != -1 && !SoundManager::getInstance().m_Info1->isContinuousPlaybackActive) {
+            switch (loopPointsState) {
+                case A_SET:
+                    ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-on"]);
+                    ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-off"]);
+                    break;
+                case B_SET:
+                    ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-on"]);
+                    ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-on"]);
+                    break;
+                case INACTIVE:
+                    loopPointsState = UNSET;
+                case UNSET:
+                    ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-off"]);
+                    ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-off"]);
+                    ui->checkBoxLoopPointA->setToolTip("Set starting loop point");
+                    ui->checkBoxLoopPointB->setToolTip(ui->checkBoxLoopPointA->toolTip());
+                    break;
+                default: ;
+            }
+        } else {
+            loopPointsState = DISABLED;
+            ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-off-disabled"]);
+            ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-off-disabled"]);
+            ui->checkBoxLoopPointA->setToolTip("Loop points not available");
+            ui->checkBoxLoopPointB->setToolTip(ui->checkBoxLoopPointA->toolTip());
+        }
+    } else {
+        loopPointsState = INACTIVE;
+        ui->checkBoxLoopPointA->setIcon(icons["loop-point-a-off"]);
+        ui->checkBoxLoopPointB->setIcon(icons["loop-point-b-off"]);
+        ui->checkBoxLoopPointA->setToolTip("");
+        ui->checkBoxLoopPointB->setToolTip("");
     }
     if (m_muteVolume)
     {
@@ -4286,6 +4365,44 @@ void MainWindow::on_checkBoxLoop_clicked()
     updateButtons();
 }
 
+void MainWindow::on_checkBoxLoopPointB_clicked() {
+    on_checkBoxLoopPointAny_clicked();
+}
+
+void MainWindow::on_checkBoxLoopPointA_clicked() {
+    on_checkBoxLoopPointAny_clicked();
+}
+
+void MainWindow::on_checkBoxLoopPointAny_clicked() {
+
+    switch (loopPointsState) {
+        case UNSET:
+            loopPointA = ui->positionSlider->value();
+            loopPointsState = A_SET;
+            ui->checkBoxLoopPointA->setToolTip("Set ending loop point");
+            break;
+        case A_SET:
+            if (ui->positionSlider->value() > loopPointA) {
+                loopPointB = ui->positionSlider->value();
+            } else {
+                loopPointB = loopPointA;
+                loopPointA = ui->positionSlider->value();
+            }
+            loopPointsState = B_SET;
+            ui->checkBoxLoopPointA->setToolTip("Disable loop points");
+            break;
+        case B_SET:
+            loopPointsState = UNSET;
+            ui->checkBoxLoopPointA->setToolTip("Set starting loop point");
+            break;
+        default:
+            return;
+    }
+
+    ui->checkBoxLoopPointB->setToolTip(ui->checkBoxLoopPointA->toolTip());
+    updateButtons();
+}
+
 void MainWindow::clickSysTrayIcon(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::Trigger)
@@ -4843,6 +4960,16 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorMainHoverOld, colorMainHover);
     ui->checkBoxLoop->setStyleSheet(stylesheet);
 
+    stylesheet = ui->checkBoxLoopPointA->styleSheet();
+    stylesheet.replace(colorMainOld, colorMain);
+    stylesheet.replace(colorMainHoverOld, colorMainHover);
+    ui->checkBoxLoopPointA->setStyleSheet(stylesheet);
+
+    stylesheet = ui->checkBoxLoopPointB->styleSheet();
+    stylesheet.replace(colorMainOld, colorMain);
+    stylesheet.replace(colorMainHoverOld, colorMainHover);
+    ui->checkBoxLoopPointB->setStyleSheet(stylesheet);
+
     stylesheet = ui->bottom_2->styleSheet();
     stylesheet.replace(colorBackgroundOld, colorBackground);
     ui->bottom_2->setStyleSheet(stylesheet);
@@ -5125,6 +5252,16 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorButtonOld, colorButton);
     stylesheet.replace(colorButtonHoverOld, colorButtonHover);
     ui->checkBoxLoop->setStyleSheet(stylesheet);
+
+    stylesheet = ui->checkBoxLoopPointA->styleSheet();
+    stylesheet.replace(colorButtonOld, colorButton);
+    stylesheet.replace(colorButtonHoverOld, colorButtonHover);
+    ui->checkBoxLoopPointA->setStyleSheet(stylesheet);
+
+    stylesheet = ui->checkBoxLoopPointB->styleSheet();
+    stylesheet.replace(colorButtonOld, colorButton);
+    stylesheet.replace(colorButtonHoverOld, colorButtonHover);
+    ui->checkBoxLoopPointB->setStyleSheet(stylesheet);
 
     stylesheet = ui->pushButtonNewPlaylist->styleSheet();
     stylesheet.replace(colorButtonOld, colorButton);
@@ -5678,6 +5815,17 @@ void MainWindow::setupIcons()
     QPixmap repeatOn = ChangeSVGColor(":/resources/repeat.svg", colorMain.left(7));
     QPixmap repeatOnHover = ChangeSVGColor(":/resources/repeat.svg", colorMainHover.left(7));
 
+    QPixmap loopPointAOffDisabled = ChangeSVGColor(":/resources/loop-point-a.svg", colorMedium.left(7));
+    QPixmap loopPointBOffDisabled = ChangeSVGColor(":/resources/loop-point-b.svg", colorMedium.left(7));
+    QPixmap loopPointAOff = ChangeSVGColor(":/resources/loop-point-a.svg", colorButton.left(7));
+    QPixmap loopPointAOffHover = ChangeSVGColor(":/resources/loop-point-a.svg", colorButtonHover.left(7));
+    QPixmap loopPointAOn = ChangeSVGColor(":/resources/loop-point-a.svg", colorMain.left(7));
+    QPixmap loopPointAOnHover = ChangeSVGColor(":/resources/loop-point-a.svg", colorMainHover.left(7));
+    QPixmap loopPointBOff = ChangeSVGColor(":/resources/loop-point-b.svg", colorButton.left(7));
+    QPixmap loopPointBOffHover = ChangeSVGColor(":/resources/loop-point-b.svg", colorButtonHover.left(7));
+    QPixmap loopPointBOn = ChangeSVGColor(":/resources/loop-point-b.svg", colorMain.left(7));
+    QPixmap loopPointBOnHover = ChangeSVGColor(":/resources/loop-point-b.svg", colorMainHover.left(7));
+
     QPixmap add = ChangeSVGColor(":/resources/add.svg", colorButton.left(7));
     QPixmap addHover = ChangeSVGColor(":/resources/add.svg", colorButtonHover.left(7));
 
@@ -5710,6 +5858,16 @@ void MainWindow::setupIcons()
     icons["repeat-1Hover"] = repeat1Hover;
     icons["repeat-on"] = repeatOn;
     icons["repeat-onHover"] = repeatOnHover;
+    icons["loop-point-a-off-disabled"] = loopPointAOffDisabled;
+    icons["loop-point-b-off-disabled"] = loopPointBOffDisabled;
+    icons["loop-point-a-off"] = loopPointAOff;
+    icons["loop-point-a-off-hover"] = loopPointAOffHover;
+    icons["loop-point-a-on"] = loopPointAOn;
+    icons["loop-point-a-on-hover"] = loopPointAOnHover;
+    icons["loop-point-b-off"] = loopPointBOff;
+    icons["loop-point-b-off-hover"] = loopPointBOffHover;
+    icons["loop-point-b-on"] = loopPointBOn;
+    icons["loop-point-b-on-hover"] = loopPointBOnHover;
     icons["stop"] = stop;
     icons["stopHover"] = stopHover;
     icons["add"] = add;

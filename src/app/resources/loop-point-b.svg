@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="10.969mm"
+   height="19.753mm"
+   viewBox="0 0 10.968997 19.752999"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="loop-point-b.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="5.6568543"
+     inkscape:cx="-62.490562"
+     inkscape:cy="31.377863"
+     inkscape:window-width="2752"
+     inkscape:window-height="1078"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       id="grid1"
+       units="mm"
+       originx="0"
+       originy="0"
+       spacingx="0.99999998"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="stroke-width:1.2186"
+       d="M 0.001568,0.00209665 H 7.3131866 A 3.6558082,3.6558082 0 0 1 10.03672,6.0951201 3.6558082,3.6558082 0 0 1 7.3131866,12.188122 H 0.001568 Z M 7.3131866,7.3137301 h -4.874411 v 2.4372063 h 4.874411 a 1.2186032,1.2186032 0 0 0 0,-2.4372063 z m 0,-4.87442 h -4.874411 v 2.43721 h 4.874411 a 1.2186079,1.2186079 0 1 0 0,-2.43721 z"
+       id="path4" />
+    <path
+       style="stroke-width:1.02372"
+       d="m 5.4193556,19.751535 a 4.0948748,4.0948748 0 0 1 -4.09487,-4.09488 v -2.04744 h 2.04743 v 2.04744 a 2.0474373,2.0474373 0 0 0 2.04744,2.04745 h 3.07115 v 2.04743 z"
+       id="path5-7" />
+  </g>
+</svg>
