@@ -211,8 +211,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
 
 
-    unsigned int length = 0xfffff;
-    if (length > 0xfffff || length == 0)
+    unsigned int length = -1;
+    if (length > -1 || length == 0)
     //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
     {
         length = -1;
@@ -320,8 +320,8 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
         cout << "length: " << "" << endl;
-        *length = 0xfffff;
-        if (*length > 0xfffff || *length == 0)
+        *length = -1;
+        if (*length > -1 || *length == 0)
         //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
         {
             *length = -1;
