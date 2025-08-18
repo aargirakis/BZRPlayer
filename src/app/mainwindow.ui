@@ -1476,7 +1476,7 @@ QCheckBox:hover
              </property>
              <property name="minimumSize">
               <size>
-               <width>216</width>
+               <width>248</width>
                <height>44</height>
               </size>
              </property>
@@ -1762,7 +1762,7 @@ QPushButton:hover
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset>
+                 <iconset resource="resource.qrc">
                   <normaloff>:/resources/stop.svg</normaloff>:/resources/stop.svg</iconset>
                 </property>
                 <property name="iconSize">
@@ -1873,10 +1873,9 @@ QCheckBox:hover
                  <string notr="true">
 QCheckBox
 {
-
 	color:#b7b7b7/*button*/;
 	font-size: 34px;
-margin-left:-21px
+	margin-left: -21px
 }
 QCheckBox::indicator {
 
@@ -1892,11 +1891,11 @@ QCheckBox::checked {
 }
 
 QCheckBox::checked:hover { 
-	color: #00c09e/*main hover*/; 
+	color: #00c09e/*main hover*/;
 }
 
 QCheckBox::indeterminate:hover { 
-    color: #00c09e/*main hover*/; 
+    color: #00c09e/*main hover*/;
 }
 
 QCheckBox:hover
@@ -1919,6 +1918,81 @@ QCheckBox:hover
                 </property>
                 <property name="tristate">
                  <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="6">
+               <widget class="QCheckBox" name="checkBoxLoopPoints">
+                <property name="minimumSize">
+                 <size>
+                  <width>26</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Arial</family>
+                  <pointsize>-1</pointsize>
+                 </font>
+                </property>
+                <property name="focusPolicy">
+                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                </property>
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">
+                                 QCheckBox
+                                 {
+                                 color:#b7b7b7/*button*/;
+                                 font-size: 34px;
+                                 margin-left: -21px
+                                 }
+                                 QCheckBox::indicator {
+
+                                 font-size: 24px;
+                                 color:#b7b7b7/*button*/;
+                                 image:none;
+                                 }
+                                 QCheckBox::indeterminate {
+                                 color:#009379/*main*/;
+                                 }
+                                 QCheckBox::checked {
+                                 color:#009379/*main*/;
+                                 }
+
+                                 QCheckBox::checked:hover {
+                                 color: #00c09e/*main hover*/;
+                                 }
+
+                                 QCheckBox::indeterminate:hover {
+                                 color: #00c09e/*main hover*/;
+                                 }
+
+                                 QCheckBox:hover
+                                 {
+                                 color: #ffffff/*button hover*/;
+                                 }</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="resource.qrc">
+                  <normaloff>:/resources/loop-points.svg</normaloff>:/resources/loop-points.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>34</width>
+                  <height>34</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -2068,7 +2142,7 @@ background-color:#009379/*main*/;
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>40</width>
+               <width>152</width>
                <height>20</height>
               </size>
              </property>
@@ -2459,9 +2533,9 @@ background-color:#282828/*background*/;
 }
 QDockWidget::close-button, QDockWidget::float-button {
     background: #282828/*background*/;
-    icon-size: 12px;
 	border: none;
     background: transparent;
+    icon-size: 12px;
 }
 
 QDockWidget::title {

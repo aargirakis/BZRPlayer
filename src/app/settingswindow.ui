@@ -891,7 +891,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>280</x>
-       <y>220</y>
+       <y>200</y>
        <width>191</width>
        <height>31</height>
       </rect>
@@ -920,13 +920,58 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>220</y>
+       <y>200</y>
        <width>231</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>Enqueue items in one instance mode</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxShowLoopPoints">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>250</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/resources/checkbox-off.svg</normaloff>
+       <normalon>:/resources/checkbox-on.svg</normalon>
+       <disabledoff>:/resources/checkbox-off-disabled.svg</disabledoff>
+       <disabledon>:/resources/checkbox-on-disabled.svg</disabledon>:/resources/checkbox-off.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelShowLoopPoints">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>250</y>
+       <width>231</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show loop points button</string>
      </property>
     </widget>
    </widget>

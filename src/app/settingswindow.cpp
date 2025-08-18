@@ -8,7 +8,6 @@
 #include <cmath>
 #include <fstream>
 #include <QDebug>
-#include <QFontDatabase>
 #include "plugins.h"
 
 settingsWindow::settingsWindow(QWidget* parent) :
@@ -179,6 +178,9 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->checkBoxEnqueueItems->setChecked(mainWindow->getEnqueueItems());
     ui->checkBoxEnqueueItems->setEnabled(mainWindow->isOnlyOneInstanceEnabled());
     ui->labelEnqueueItems->setEnabled(mainWindow->isOnlyOneInstanceEnabled());
+
+    ui->checkBoxShowLoopPoints->setChecked(mainWindow->getShowCheckBoxLoopPoints());
+    mainWindow->showCheckBoxLoopPoints(mainWindow->getShowCheckBoxLoopPoints());
 
     ui->checkBoxResetVolume->setChecked(mainWindow->getResetVolume());
     ui->sliderResetVolumeToValue->setValue(mainWindow->getResetVolumeValue());
@@ -2583,6 +2585,10 @@ void settingsWindow::on_checkBoxEnqueueItems_toggled(bool checked)
     }
 }
 
+void settingsWindow::on_checkBoxShowLoopPoints_toggled(const bool checked) const {
+    ui->checkBoxShowLoopPoints->setIcon(mainWindow->icons[checked ? "checkbox-on" : "checkbox-off"]);
+    mainWindow->showCheckBoxLoopPoints(checked);
+}
 
 void settingsWindow::on_checkBoxVUMeterEnabled_toggled(bool checked)
 {
@@ -3361,6 +3367,14 @@ void settingsWindow::updateCheckBoxes()
         {
             ui->checkBoxEnqueueItems->setIcon(mainWindow->icons["checkbox-off-disabled"]);
         }
+    }
+    if (ui->checkBoxShowLoopPoints->isChecked())
+    {
+        ui->checkBoxShowLoopPoints->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBoxShowLoopPoints->setIcon(mainWindow->icons["checkbox-off"]);
     }
 }
 

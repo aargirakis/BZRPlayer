@@ -173,6 +173,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     m_enqueueItems = settings.value("enqueueitems", false).toBool();
 
+    isShownCheckBoxLoopPoints = settings.value("showlooppoints", false).toBool();
+
     m_normalizeEnabled = settings.value("normalizeenabled", false).toBool();
     m_normalizeFadeTime = settings.value("normalizefadetime", 5000).toInt();
     m_normalizeThreshold = settings.value("normalizethreshold", 10).toInt();
@@ -684,6 +686,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     ui->checkBoxShuffle->installEventFilter(this);
     ui->checkBoxVolumeOn->installEventFilter(this);
     ui->checkBoxLoop->installEventFilter(this);
+    ui->checkBoxLoopPoints->installEventFilter(this);
     ui->pushButtonNewPlaylist->installEventFilter(this);
 
     ui->Debug->moveCursor(QTextCursor::StartOfLine);
@@ -805,21 +808,22 @@ void MainWindow::on_positionSlider_sliderReleased()
     setPosition();
 }
 
-void MainWindow::setPosition(int offset)
-{
-    int currentpos = ui->positionSlider->value();
-    int maxpos = ui->positionSlider->maximum();
-    int pos = currentpos + offset;
-    if (pos >= maxpos)
-    {
-        pos--;
+void MainWindow::setPosition(int offset) {
+    const int currentPos = ui->positionSlider->value();
+    int targetPos = currentPos + offset;
+
+    if (loopPointsState == B_SET && targetPos > loopPointB) {
+        targetPos = loopPointA;
+    } else {
+        if (const int maxPos = ui->positionSlider->maximum(); targetPos >= maxPos) {
+            targetPos--;
+        } else if (targetPos < 0) {
+            targetPos = 0;
+        }
     }
-    else if (pos < 0)
-    {
-        pos = 0;
-    }
-    SoundManager::getInstance().SetPosition(pos, FMOD_TIMEUNIT_MS);
-    addDebugText("Set position to " + QString::number(pos));
+
+    SoundManager::getInstance().SetPosition(targetPos, FMOD_TIMEUNIT_MS);
+    addDebugText("Set position to " + QString::number(targetPos));
 }
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event)
@@ -983,6 +987,20 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
                 ui->checkBoxLoop->setIcon(icons["repeat-1Hover"]);
             }
         }
+        else if (obj == ui->checkBoxLoopPoints) {
+            switch (loopPointsState) {
+                case A_SET:
+                    ui->checkBoxLoopPoints->setIcon(icons["loop-point-a-on-hover"]);
+                    break;
+                case B_SET:
+                    ui->checkBoxLoopPoints->setIcon(icons["loop-points-on-hover"]);
+                    break;
+                case UNSET:
+                    ui->checkBoxLoopPoints->setIcon(icons["loop-points-off-hover"]);
+                    break;
+                default: ;
+            }
+        }
     }
     else if (event->type() == QEvent::Leave)
     {
@@ -1050,6 +1068,20 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
             else
             {
                 ui->checkBoxLoop->setIcon(icons["repeat-1"]);
+            }
+        }
+        else if (obj == ui->checkBoxLoopPoints) {
+            switch (loopPointsState) {
+                case UNSET:
+                    ui->checkBoxLoopPoints->setIcon(icons["loop-points-off"]);
+                    break;
+                case A_SET:
+                    ui->checkBoxLoopPoints->setIcon(icons["loop-point-a-on"]);
+                    break;
+                case B_SET:
+                    ui->checkBoxLoopPoints->setIcon(icons["loop-points-on"]);
+                    break;
+                default: ;
             }
         }
     }
@@ -1243,15 +1275,19 @@ void MainWindow::timerProgress()
     }
 
     if (playStarted) {
+        if (loopPointsState == B_SET && currentMs > loopPointB) {
+            setPosition(loopPointA - loopPointB);
+            return;
+        }
+
         if (SoundManager::getInstance().m_Info1 != nullptr &&
             (SoundManager::getInstance().m_Info1->isContinuousPlaybackActive ||
              SoundManager::getInstance().m_Info1->isSeamlessLoopActive)) {
             return;
         }
 
-        if (currentMs >= song_length_ms || (!SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().
-            GetPaused()))
-        {
+        if (currentMs >= song_length_ms ||
+            (!SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())) {
             playNextSong(false);
         }
     }
@@ -1295,6 +1331,34 @@ void MainWindow::updateButtons()
     else
     {
         ui->checkBoxLoop->setIcon(icons["repeat"]);
+    }
+    if (SoundManager::getInstance().IsPlaying()) {
+        if (SoundManager::getInstance().m_Info1->getSeekable() &&
+            song_length_ms != -1 && !SoundManager::getInstance().m_Info1->isContinuousPlaybackActive) {
+            switch (loopPointsState) {
+                case A_SET:
+                    ui->checkBoxLoopPoints->setIcon(icons["loop-point-a-on"]);
+                    break;
+                case B_SET:
+                    ui->checkBoxLoopPoints->setIcon(icons["loop-points-on"]);
+                    break;
+                case INACTIVE:
+                    loopPointsState = UNSET;
+                case UNSET:
+                    ui->checkBoxLoopPoints->setIcon(icons["loop-points-off"]);
+                    ui->checkBoxLoopPoints->setToolTip("Set starting loop point");
+                    break;
+                default: ;
+            }
+        } else {
+            loopPointsState = DISABLED;
+            ui->checkBoxLoopPoints->setIcon(icons["loop-points-off-disabled"]);
+            ui->checkBoxLoopPoints->setToolTip("Loop points not available");
+        }
+    } else {
+        loopPointsState = INACTIVE;
+        ui->checkBoxLoopPoints->setIcon(icons["loop-points-off"]);
+        ui->checkBoxLoopPoints->setToolTip("");
     }
     if (m_muteVolume)
     {
@@ -1638,6 +1702,11 @@ void MainWindow::dragMoveEvent(QDragMoveEvent* event)
         event->ignore();
         DropWidget = DropIgnore;
     }
+}
+
+void MainWindow::showCheckBoxLoopPoints(const bool show) {
+    ui->checkBoxLoopPoints->setVisible(show);
+    isShownCheckBoxLoopPoints = show;
 }
 
 void MainWindow::dropEvent(QDropEvent* event)
@@ -3669,6 +3738,10 @@ bool MainWindow::getEnqueueItems() const
     return m_enqueueItems;
 }
 
+bool MainWindow::getShowCheckBoxLoopPoints() const {
+    return isShownCheckBoxLoopPoints;
+}
+
 bool MainWindow::getSystrayOnQuitEnabled() const
 {
     return m_systrayOnQuitEnabled;
@@ -3776,6 +3849,7 @@ void MainWindow::SaveSettings()
 
     settings.setValue("enqueueitems", m_enqueueItems);
 
+    settings.setValue("showlooppoints", isShownCheckBoxLoopPoints);
 
     settings.setValue("normalizeenabled", m_normalizeEnabled);
     settings.setValue("normalizefadetime", m_normalizeFadeTime);
@@ -4314,6 +4388,34 @@ void MainWindow::on_checkBoxLoop_clicked()
         ui->checkBoxLoop->setToolTip("Disable repeat");
         Playmode = repeatSong;
     }
+    updateButtons();
+}
+
+void MainWindow::on_checkBoxLoopPoints_clicked() {
+    switch (loopPointsState) {
+        case UNSET:
+            loopPointA = ui->positionSlider->value();
+            loopPointsState = A_SET;
+            ui->checkBoxLoopPoints->setToolTip("Set ending loop point");
+            break;
+        case A_SET:
+            if (ui->positionSlider->value() > loopPointA) {
+                loopPointB = ui->positionSlider->value();
+            } else {
+                loopPointB = loopPointA;
+                loopPointA = ui->positionSlider->value();
+            }
+            loopPointsState = B_SET;
+            ui->checkBoxLoopPoints->setToolTip("Disable loop points");
+            break;
+        case B_SET:
+            loopPointsState = UNSET;
+            ui->checkBoxLoopPoints->setToolTip("Set starting loop point");
+            break;
+        default:
+            return;
+    }
+
     updateButtons();
 }
 
@@ -4874,6 +4976,11 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorMainHoverOld, colorMainHover);
     ui->checkBoxLoop->setStyleSheet(stylesheet);
 
+    stylesheet = ui->checkBoxLoopPoints->styleSheet();
+    stylesheet.replace(colorMainOld, colorMain);
+    stylesheet.replace(colorMainHoverOld, colorMainHover);
+    ui->checkBoxLoopPoints->setStyleSheet(stylesheet);
+
     stylesheet = ui->bottom_2->styleSheet();
     stylesheet.replace(colorBackgroundOld, colorBackground);
     ui->bottom_2->setStyleSheet(stylesheet);
@@ -5156,6 +5263,11 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorButtonOld, colorButton);
     stylesheet.replace(colorButtonHoverOld, colorButtonHover);
     ui->checkBoxLoop->setStyleSheet(stylesheet);
+
+    stylesheet = ui->checkBoxLoopPoints->styleSheet();
+    stylesheet.replace(colorButtonOld, colorButton);
+    stylesheet.replace(colorButtonHoverOld, colorButtonHover);
+    ui->checkBoxLoopPoints->setStyleSheet(stylesheet);
 
     stylesheet = ui->pushButtonNewPlaylist->styleSheet();
     stylesheet.replace(colorButtonOld, colorButton);
@@ -5511,30 +5623,35 @@ void MainWindow::getSocketData()
     }
 }
 
-QPixmap MainWindow::ChangeSVGColor(QString filename, QString color)
-{
-    // open svg resource load contents to qbytearray
-    QFile file(filename);
-    file.open(QIODevice::ReadOnly);
-    QByteArray baData = file.readAll();
-    // load svg contents to xml document and edit contents
-    QDomDocument doc;
-    doc.setContent(baData);
-    // recurivelly change color
-    SetAttrRecur(doc.documentElement(), "path", "rect", "fill", color);
-    // create svg renderer with edited contents
-    QSvgRenderer svgRenderer(doc.toByteArray());
-    // create pixmap target (could be a QImage)
-    QPixmap pix(svgRenderer.defaultSize());
-    pix.fill(Qt::transparent);
-    // create painter to act over pixmap
-    QPainter pixPainter(&pix);
-    // use renderer to render over painter which paints on pixmap
-    svgRenderer.render(&pixPainter);
+QPixmap MainWindow::ChangeSVGColor(const QString &svgPath, const QColor &color, const QRectF *region,
+                                   const QColor &color2) {
+    QSvgRenderer renderer(svgPath);
+    const QSize size = renderer.defaultSize();
+    QPixmap pixmap(size);
+    pixmap.fill(Qt::transparent);
 
-    return pix;
+    QPainter painter(&pixmap);
+    renderer.render(&painter);
+
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+
+    if (region) {
+        if (color2 != nullptr) {
+            painter.fillRect(pixmap.rect(), color2);
+        }
+
+        const QRectF regionPx(region->x() * size.width(),
+                              region->y() * size.height(),
+                              region->width() * size.width(),
+                              region->height() * size.height());
+        painter.setClipRect(regionPx);
+    }
+
+    painter.fillRect(pixmap.rect(), color);
+    painter.end();
+
+    return pixmap;
 }
-
 
 void MainWindow::SetAttrRecur(QDomElement elem, QString strtagname, QString strtagname2, QString strattr,
                               QString strattrval)
@@ -5709,6 +5826,16 @@ void MainWindow::setupIcons()
     QPixmap repeatOn = ChangeSVGColor(":/resources/repeat.svg", colorMain.left(7));
     QPixmap repeatOnHover = ChangeSVGColor(":/resources/repeat.svg", colorMainHover.left(7));
 
+    QPixmap loopPointsOffDisabled = ChangeSVGColor(":/resources/loop-points.svg", colorMedium.left(7));
+    QPixmap loopPointsOff = ChangeSVGColor(":/resources/loop-points.svg", colorButton.left(7));
+    QPixmap loopPointsOffHover = ChangeSVGColor(":/resources/loop-points.svg", colorButtonHover.left(7));
+    QPixmap loopPointAOn = ChangeSVGColor(":/resources/loop-points.svg", colorMain.left(7),
+                                          new QRectF(0.35, 0, 1, 1), colorButton.left(7));
+    QPixmap loopPointsOn = ChangeSVGColor(":/resources/loop-points.svg", colorMain.left(7));
+    QPixmap loopPointAOnHover = ChangeSVGColor(":/resources/loop-points.svg", colorMainHover.left(7),
+                                               new QRectF(0.35, 0, 1, 1), colorButtonHover.left(7));
+    QPixmap loopPointsOnHover = ChangeSVGColor(":/resources/loop-points.svg", colorMainHover.left(7));
+
     QPixmap add = ChangeSVGColor(":/resources/add.svg", colorButton.left(7));
     QPixmap addHover = ChangeSVGColor(":/resources/add.svg", colorButtonHover.left(7));
 
@@ -5741,6 +5868,13 @@ void MainWindow::setupIcons()
     icons["repeat-1Hover"] = repeat1Hover;
     icons["repeat-on"] = repeatOn;
     icons["repeat-onHover"] = repeatOnHover;
+    icons["loop-points-off-disabled"] = loopPointsOffDisabled;
+    icons["loop-points-off"] = loopPointsOff;
+    icons["loop-points-off-hover"] = loopPointsOffHover;
+    icons["loop-point-a-on"] = loopPointAOn;
+    icons["loop-points-on"] = loopPointsOn;
+    icons["loop-point-a-on-hover"] = loopPointAOnHover;
+    icons["loop-points-on-hover"] = loopPointsOnHover;
     icons["stop"] = stop;
     icons["stopHover"] = stopHover;
     icons["add"] = add;

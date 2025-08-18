@@ -181,6 +181,8 @@ private slots:
 
     void on_checkBoxEnqueueItems_toggled(bool checked);
 
+    void on_checkBoxShowLoopPoints_toggled(bool checked) const;
+
     void on_checkBoxVUMeterEnabled_toggled(bool checked);
 
     void on_checkBoxScrollerEnabled_toggled(bool checked);
