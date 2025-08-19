@@ -657,7 +657,7 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
                                      FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_LOOP_OFF | FMOD_MPEGSEARCH,
                                      &extrainfo1, &sound);
 
-    if (m_Info1->pluginName.empty()) {
+    if (m_Info1->plugin == PLUGIN_fmod) {
         m_Info1->pluginName = PLUGIN_fmod_NAME;
     }
 
@@ -673,7 +673,7 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
     m_Info1->numChannelsStream = channels;
     if (result == FMOD_OK)
     {
-        if (m_Info1->plugin == 0) //FMOD
+        if (m_Info1->plugin == PLUGIN_fmod)
         {
             m_Info1->fileformat = getFMODSoundFormat(sound);
         }

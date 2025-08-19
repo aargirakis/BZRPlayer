@@ -44,9 +44,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
     addInfo(tableInfo, &row, "Last Modified", fileinfo.lastModified().toString("yyyy-MM-dd hh:mm:ss"));
     addInfo(tableInfo, &row, "Created", fileinfo.birthTime().toString("yyyy-MM-dd hh:mm:ss"));
     addLengthInfo(tableInfo, playlistItem, &row);
-    addInfo(tableInfo, &row, "Player Engine", SoundManager::getInstance().m_Info1->plugin == 0
-                                                  ? PLUGIN_fmod_NAME
-                                                  : SoundManager::getInstance().m_Info1->pluginName.c_str());
+    addInfo(tableInfo, &row, "Player Engine", SoundManager::getInstance().m_Info1->pluginName.c_str());
     addInfo(tableInfo, &row, "Type", SoundManager::getInstance().m_Info1->fileformat.c_str());
     addSubsongInfo(tableInfo, &row);
 

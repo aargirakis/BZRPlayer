@@ -2124,7 +2124,7 @@ void MainWindow::PlaySong(int currentRow)
         QString artist = "";
         if (pi.info->title != "")
         {
-            if (SoundManager::getInstance().m_Info1->plugin == 0)
+            if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
             {
                 filename = pi.info->title.c_str();
             }
@@ -2136,7 +2136,7 @@ void MainWindow::PlaySong(int currentRow)
 
         if (pi.info->artist != "")
         {
-            if (SoundManager::getInstance().m_Info1->plugin == 0)
+            if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
             {
                 artist = pi.info->artist.c_str();
             }
@@ -2147,7 +2147,7 @@ void MainWindow::PlaySong(int currentRow)
         }
         else if (pi.info->author != "")
         {
-            if (SoundManager::getInstance().m_Info1->plugin == 0)
+            if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
             {
                 artist = pi.info->author.c_str();
             }
@@ -2158,7 +2158,7 @@ void MainWindow::PlaySong(int currentRow)
         }
         else if (pi.info->composer != "")
         {
-            if (SoundManager::getInstance().m_Info1->plugin == 0)
+            if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
             {
                 artist = pi.info->composer.c_str();
             }
