@@ -146,6 +146,8 @@ public:
         playAddr = 0;
         songSpeed = 0;
         compatibility = 0;
+
+        isContinuousPlaybackActive = false;
     }
 
     void clearMemory()
