@@ -555,7 +555,7 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
 				plugin->player->mute(0, i, true);
 			}
             plugin->seekPosition = position;
-            plugin->player->fastForward(3000);
+            plugin->player->fastForward(100*32);
         }
         else if (position == 0)
         {
@@ -569,7 +569,7 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
 			}
             plugin->seekPosition = position;
             plugin->player->load(plugin->tune);
-            plugin->player->fastForward(3000);
+            plugin->player->fastForward(100*32);
         }
 
         return FMOD_OK;
