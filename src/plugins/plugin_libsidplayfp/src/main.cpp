@@ -106,8 +106,8 @@ public:
     string hvscSonglengthsFile;
     unsigned int seekPosition;
     bool mute[9];
-
     bool hvscSonglengthsDataBaseEnabled;
+    bool isSeeking = false;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -415,7 +415,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     plugin->player->load(plugin->tune);
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.frequency = cfg.frequency;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = 1024 * plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1; //infinite length
 
     codec->waveformat = &(plugin->waveformat);
@@ -527,18 +527,37 @@ FMOD_RESULT F_CALL sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int s
     //            while(plugin->player->timeMs()<10);
     //        }
     //    }
-    plugin->player->play((short int*)buffer, size << 1);
-    if (plugin->player->timeMs() >= plugin->seekPosition)
-    {
-        plugin->player->fastForward(100);
-		for(int i=0;i<9;i++)
-		{
-			plugin->player->mute(0, i, plugin->mute[i]);
-		}
 
+    unsigned int toRead;
+
+    if (plugin->isSeeking) {
+        if (plugin->player->timeMs() < plugin->seekPosition) {
+            /*
+             * the current way playback & seeking are implemented leads to inaccurate seeking position:
+             * higher is the number of rendered samples (per each fmod read) during seeking
+             * and higher will be the difference between actual vs expected seeking position.
+             * in order to fix the seeking position accuracy issue here
+             * the minimum possible number of samples are rendered during the seeking (which is less than 1msec).
+             * a better way would be to calculate the number of samples left for arriving to the desired position,
+             * but this needs a whole redesign
+             */
+            plugin->player->play(static_cast<short int *>(buffer), 16 * plugin->waveformat.channels);
+            toRead = 16;
+        } else {
+            for (int i = 0; i < 9; i++) {
+                plugin->player->mute(0, i, plugin->mute[i]);
+            }
+
+            plugin->player->fastForward(100);
+            plugin->isSeeking = false;
+            toRead = 0;
+        }
+    } else {
+        plugin->player->play(static_cast<short int *>(buffer), plugin->waveformat.pcmblocksize);
+        toRead = plugin->waveformat.pcmblocksize / plugin->waveformat.channels;
     }
-    *read = size;
 
+    *read = toRead;
     return FMOD_OK;
 }
 
@@ -548,39 +567,32 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
     auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS)
     {
-        if (position > plugin->player->timeMs())
-        {
-			for(int i=0;i<9;i++)
-			{
-				plugin->player->mute(0, i, true);
-			}
-            plugin->seekPosition = position;
-            plugin->player->fastForward(100*32);
-        }
-        else if (position == 0)
-        {
+        if (position == 0) {
             plugin->player->load(plugin->tune);
-        }
-        else if (position <= plugin->player->timeMs())
-        {
-			for(int i=0;i<9;i++)
-			{
-				plugin->player->mute(0, i, true);
-			}
+        } else {
+            for (int i = 0; i < 9; i++) {
+                plugin->player->mute(0, i, true);
+            }
+
             plugin->seekPosition = position;
-            plugin->player->load(plugin->tune);
-            plugin->player->fastForward(100*32);
+
+            if (position <= plugin->player->timeMs()) {
+                plugin->player->load(plugin->tune);
+            }
+
+            plugin->player->fastForward(100 * 32);
+            plugin->isSeeking = true;
         }
 
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
+    if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
         plugin->tune->selectSong(position + 1);
         plugin->player->load(plugin->tune);
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
 		for(int i=0;i<9;i++)
 		{
@@ -592,8 +604,10 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
             plugin->player->mute(i / 3, i % 3, (position >> i & 1));
             plugin->mute[i] = position >> i & 1;
         }
+
         return FMOD_OK;
     }
+
     return FMOD_ERR_UNSUPPORTED;
 }
 
