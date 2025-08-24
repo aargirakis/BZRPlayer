@@ -1182,8 +1182,6 @@ void MainWindow::refreshInfo()
 void MainWindow::timerProgress()
 {
     unsigned int currentMs = 0;
-    unsigned int currentMsSubsong = 0;
-
 
     if (SoundManager::getInstance().IsPlaying())
     {
@@ -1216,19 +1214,16 @@ void MainWindow::timerProgress()
             }
         }
 
-        QString timeToShow;
-        currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MS);
-        currentMsSubsong = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_SUBSONG_MS);
-        if (currentMsSubsong == 0)
+        currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_SUBSONG_MS);
+        if (currentMs == 0)
         {
-            currentMsSubsong = currentMs;
+            currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MS);;
         }
 
         if (!ui->positionSlider->isSliderDown())
         {
-            timeToShow = msToNiceStringExact(currentMsSubsong, m_displayMilliseconds);
-            ui->labelTimer_2->setText(timeToShow);
-            ui->positionSlider->setValue(currentMsSubsong);
+            ui->labelTimer_2->setText(msToNiceStringExact(currentMs, m_displayMilliseconds));
+            ui->positionSlider->setValue(static_cast<int>(currentMs));
         }
     }
 
