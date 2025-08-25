@@ -233,6 +233,8 @@ private:
 
     void loadAdplugSettings();
     void saveAdplugSettings();
+    void loadFmodSettings();
+    void saveFmodSettings();
     void loadHivelytrackerSettings();
     void saveHivelytrackerSettings();
     void loadlibopenmptSettings();

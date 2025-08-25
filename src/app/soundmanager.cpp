@@ -653,12 +653,28 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
 
     loadPluginChain();
 
-    result = FMOD_System_CreateSound(system, filename.toStdString().c_str(),
-                                     FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_LOOP_OFF | FMOD_MPEGSEARCH,
-                                     &extrainfo1, &sound);
+    constexpr FMOD_MODE fmodMode = FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_MPEGSEARCH;
+
+    result = FMOD_System_CreateSound(system, filename.toStdString().c_str(), fmodMode, &extrainfo1, &sound);
+
+    //TODO remove
+    m_Info1->isSeamlessLoopActive = true;
 
     if (m_Info1->plugin == PLUGIN_fmod) {
         m_Info1->pluginName = PLUGIN_fmod_NAME;
+
+         //TODO load fmod.cfg
+
+        if (m_Info1->isPlayModeRepeatSongEnabled && m_Info1->isSeamlessLoopActive) {
+            FMOD_Sound_SetMode(sound, fmodMode | FMOD_LOOP_NORMAL);
+            //TODO
+            //FMOD_Sound_SetLoopCount(sound, FMOD_LOOP_NORMAL);
+            //FMOD_Channel_SetLoopCount(channel, -1);
+        } else {
+            FMOD_Sound_SetMode(sound, fmodMode | FMOD_LOOP_OFF);
+        }
+    } else {
+        FMOD_Sound_SetMode(sound, fmodMode | FMOD_LOOP_OFF);
     }
 
     cout << "FMOD_System_CreateSound done\n";

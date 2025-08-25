@@ -303,11 +303,12 @@ settingsWindow::settingsWindow(QWidget* parent) :
     QString thumbP(mainWindow->getEffect()->getPrinterFont().left(extensionPos) + ".thumb.png");
     ui->buttonPrinterFontImage->setIcon(QIcon(thumbP));
 
+    loadFmodSettings();
+
     if (PLUGIN_adplug_LIB != "")
     {
         loadAdplugSettings();
     }
-
     if (PLUGIN_hivelytracker_LIB != "")
     {
         loadHivelytrackerSettings();
@@ -320,7 +321,6 @@ settingsWindow::settingsWindow(QWidget* parent) :
     {
         loadLibxmpSettings();
     }
-
     if (PLUGIN_sndh_player_LIB != "")
     {
         loadSndhPlayerSettings();
@@ -751,11 +751,12 @@ void settingsWindow::on_buttonOK_clicked()
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
     updateScrollText();
 
+    saveFmodSettings();
+
     if (PLUGIN_adplug_LIB != "")
     {
         saveAdplugSettings();
     }
-
     if (PLUGIN_hivelytracker_LIB != "")
     {
         saveHivelytrackerSettings();
@@ -768,7 +769,6 @@ void settingsWindow::on_buttonOK_clicked()
     {
         saveLibxmpSettings();
     }
-
     if (PLUGIN_sndh_player_LIB != "")
     {
         saveSndhPlayerSettings();
@@ -847,6 +847,41 @@ void settingsWindow::loadAdplugSettings()
                 else if (word.compare("continuous_playback") == 0)
                 {
                     ui->checkBoxContinuousPlaybackAdplug->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+        ifs.close();
+    }
+}
+
+void settingsWindow::loadFmodSettings()
+{
+    //read config from disk
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/fmod.cfg";
+    ifstream ifs(filename.c_str());
+    string line;
+    bool useDefaults = false;
+    if (ifs.fail())
+    {
+        //The file could not be opened
+        useDefaults = true;
+    }
+    //defaults
+  //  ui->checkBoxSeamlessLoopFmod->setChecked(false);
+
+    if (!useDefaults)
+    {
+        while (getline(ifs, line))
+        {
+            int i = line.find_first_of("=");
+
+            if (i != -1)
+            {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word.compare("seamless_loop") == 0)
+                {
+              //      ui->checkBoxSeamlessLoopFmod->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1251,6 +1286,22 @@ void settingsWindow::saveAdplugSettings()
     ofs << "frequency=" << ui->comboBoxFreqAdplug->currentData().toString().toStdString().c_str() << "\n";
     ofs << "playback=" << ui->comboBoxPlaybackAdplug->currentData().toString().toStdString().c_str() << "\n";
     ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackAdplug->isChecked() ? "true" : "false") << "\n";
+    ofs.close();
+}
+
+void settingsWindow::saveFmodSettings()
+{
+    //save config to disk
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/fmod.cfg";
+    ofstream ofs(filename.c_str());
+    string line;
+
+    if (ofs.fail())
+    {
+        //The file could not be opened
+        return;
+    }
+  //  ofs << "seamless_loop=" << (ui->checkBoxSeamlessLoopFmod->isChecked()?"true":"false") << "\n";
     ofs.close();
 }
 
