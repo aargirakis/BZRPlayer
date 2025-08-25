@@ -624,21 +624,20 @@ bool SoundManager::isChannelMuted(unsigned int channel)
     return muted;
 }
 
-bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
+bool SoundManager::LoadSound(QString filename, Info* info)
 {
     Stop();
     Release();
     m_mutedChannelsMask = 0;
     m_mutedChannelsMaskString = "";
-    m_Info1 = new Info();
-    m_Info1->clearMemory();
-    m_Info1->clear();
+
+    m_Info1 = info;
     m_Info1->tempPath = QDir::tempPath().toStdString();
     m_Info1->dataPath = dataPath.toStdString();
     m_Info1->libPath = libPath.toStdString();
     m_Info1->userPath = userPath.toStdString();
     m_Info1->filename = filename.toStdString();
-    m_Info1->isPlayModeRepeatSongEnabled = isPlayModeRepeatSongEnabled;
+
     FMOD_CREATESOUNDEXINFO extrainfo1;
     memset(&extrainfo1, 0, sizeof(FMOD_CREATESOUNDEXINFO));
     extrainfo1.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
@@ -653,12 +652,18 @@ bool SoundManager::LoadSound(QString filename, bool isPlayModeRepeatSongEnabled)
 
     loadPluginChain();
 
-    result = FMOD_System_CreateSound(system, filename.toStdString().c_str(),
-                                     FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_LOOP_OFF | FMOD_MPEGSEARCH,
-                                     &extrainfo1, &sound);
+    constexpr FMOD_MODE fmodMode = FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_MPEGSEARCH;
+
+    result = FMOD_System_CreateSound(system, filename.toStdString().c_str(), fmodMode | FMOD_LOOP_OFF, &extrainfo1,
+                                     &sound);
 
     if (m_Info1->plugin == PLUGIN_fmod) {
         m_Info1->pluginName = PLUGIN_fmod_NAME;
+
+        if (m_Info1->isPlayModeRepeatSongEnabled && m_Info1->isFmodSeamlessLoopEnabled) {
+            m_Info1->isSeamlessLoopActive = true;
+            FMOD_Sound_SetMode(sound, fmodMode | FMOD_LOOP_NORMAL);
+        }
     }
 
     cout << "FMOD_System_CreateSound done\n";

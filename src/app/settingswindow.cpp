@@ -303,11 +303,12 @@ settingsWindow::settingsWindow(QWidget* parent) :
     QString thumbP(mainWindow->getEffect()->getPrinterFont().left(extensionPos) + ".thumb.png");
     ui->buttonPrinterFontImage->setIcon(QIcon(thumbP));
 
+    loadFmodSettings();
+
     if (PLUGIN_adplug_LIB != "")
     {
         loadAdplugSettings();
     }
-
     if (PLUGIN_hivelytracker_LIB != "")
     {
         loadHivelytrackerSettings();
@@ -320,7 +321,6 @@ settingsWindow::settingsWindow(QWidget* parent) :
     {
         loadLibxmpSettings();
     }
-
     if (PLUGIN_sndh_player_LIB != "")
     {
         loadSndhPlayerSettings();
@@ -751,11 +751,12 @@ void settingsWindow::on_buttonOK_clicked()
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
     updateScrollText();
 
+    saveFmodSettings();
+
     if (PLUGIN_adplug_LIB != "")
     {
         saveAdplugSettings();
     }
-
     if (PLUGIN_hivelytracker_LIB != "")
     {
         saveHivelytrackerSettings();
@@ -768,7 +769,6 @@ void settingsWindow::on_buttonOK_clicked()
     {
         saveLibxmpSettings();
     }
-
     if (PLUGIN_sndh_player_LIB != "")
     {
         saveSndhPlayerSettings();
@@ -852,6 +852,43 @@ void settingsWindow::loadAdplugSettings()
         }
         ifs.close();
     }
+}
+
+void settingsWindow::loadFmodSettings()
+{
+    //read config from disk
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/fmod.cfg";
+    ifstream ifs(filename.c_str());
+    string line;
+    bool useDefaults = false;
+    if (ifs.fail())
+    {
+        //The file could not be opened
+        useDefaults = true;
+    }
+    //defaults
+    ui->checkBoxSeamlessLoopFmod->setChecked(false);
+
+    if (!useDefaults)
+    {
+        while (getline(ifs, line))
+        {
+            int i = line.find_first_of("=");
+
+            if (i != -1)
+            {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word.compare("seamless_loop") == 0)
+                {
+                    ui->checkBoxSeamlessLoopFmod->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+        ifs.close();
+    }
+
+    mainWindow->setFmodSeamlessLoopEnabled(ui->checkBoxSeamlessLoopFmod->isChecked());
 }
 
 void settingsWindow::loadHivelytrackerSettings()
@@ -1254,6 +1291,27 @@ void settingsWindow::saveAdplugSettings()
     ofs.close();
 }
 
+void settingsWindow::saveFmodSettings()
+{
+    //save config to disk
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/fmod.cfg";
+    ofstream ofs(filename.c_str());
+    string line;
+
+    if (ofs.fail())
+    {
+        //The file could not be opened
+        return;
+    }
+
+    bool isFmodSeamlessLoopEnabled = ui->checkBoxSeamlessLoopFmod->isChecked();
+
+    ofs << "seamless_loop=" << (isFmodSeamlessLoopEnabled ? "true" : "false") << "\n";
+    ofs.close();
+
+    mainWindow->setFmodSeamlessLoopEnabled(isFmodSeamlessLoopEnabled);
+}
+
 void settingsWindow::saveHivelytrackerSettings()
 {
     //save config to disk
@@ -1404,6 +1462,18 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_adplug_NAME)
     {
         ui->groupBoxAdplug->setHidden(false);
+        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLibOpenMPT->setHidden(true);
+        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
+    }
+    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_fmod_NAME)
+    {
+        ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(false);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1414,6 +1484,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME)
     {
         ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(false);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1424,6 +1495,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME)
     {
         ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(false);
         ui->groupBoxLibsid->setHidden(true);
@@ -1434,6 +1506,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME)
     {
         ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(false);
@@ -1444,6 +1517,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME)
     {
         ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1454,6 +1528,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_sndh_player_NAME)
     {
         ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1464,6 +1539,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_uade_NAME)
     {
         ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1474,6 +1550,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
     else
     {
         ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibOpenMPT->setHidden(true);
         ui->groupBoxLibsid->setHidden(true);
@@ -1585,6 +1662,17 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxAdplug->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxFmod->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxFmod->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxHivelytracker->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -1812,6 +1900,7 @@ void settingsWindow::on_buttonVisualizer_clicked()
     ui->scrollAreaVisualizer->setHidden(false);
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
+    ui->groupBoxFmod->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
@@ -1828,6 +1917,7 @@ void settingsWindow::on_buttonGeneral_clicked()
     ui->scrollAreaVisualizer->setHidden(true);
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
+    ui->groupBoxFmod->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
@@ -1852,6 +1942,7 @@ void settingsWindow::on_buttonAppearance_clicked()
     ui->tableWidgetPlugins->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
+    ui->groupBoxFmod->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibOpenMPT->setHidden(true);
     ui->groupBoxLibsid->setHidden(true);
@@ -2869,6 +2960,9 @@ void settingsWindow::updateCheckBoxes()
     ui->checkBoxContinuousPlaybackOpenMPT->setIcon(
         mainWindow->icons[ui->checkBoxContinuousPlaybackOpenMPT->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
+    ui->checkBoxSeamlessLoopFmod->setIcon(
+        mainWindow->icons[ui->checkBoxSeamlessLoopFmod->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
     if (ui->checkBoxFilterOpenMPT->isChecked())
     {
         ui->checkBoxFilterOpenMPT->setIcon(mainWindow->icons["checkbox-on"]);
@@ -3043,6 +3137,11 @@ void settingsWindow::on_checkBoxContinuousPlaybackUade_toggled()
 {
     ui->checkBoxContinuousPlaybackUade->setIcon(
         mainWindow->icons[(ui->checkBoxContinuousPlaybackUade->isChecked() ? "checkbox-on" : "checkbox-off")]);
+}
+
+void settingsWindow::on_checkBoxSeamlessLoopFmod_toggled() {
+    ui->checkBoxSeamlessLoopFmod->setIcon(
+        mainWindow->icons[(ui->checkBoxSeamlessLoopFmod->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
 void settingsWindow::on_checkBoxSongLengthUade_toggled(bool checked)

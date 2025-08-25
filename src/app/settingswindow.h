@@ -156,6 +156,8 @@ private slots:
 
     void on_checkBoxContinuousPlaybackSndhPlayer_toggled();
 
+    void on_checkBoxSeamlessLoopFmod_toggled();
+
     void on_SliderStereoSeparationOpenMPT_valueChanged(int value);
 
     void on_checkBoxContinuousPlaybackOpenMPT_toggled();
@@ -233,6 +235,8 @@ private:
 
     void loadAdplugSettings();
     void saveAdplugSettings();
+    void loadFmodSettings();
+    void saveFmodSettings();
     void loadHivelytrackerSettings();
     void saveHivelytrackerSettings();
     void loadlibopenmptSettings();

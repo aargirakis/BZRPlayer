@@ -1229,9 +1229,11 @@ void MainWindow::timerProgress()
 
     if (playStarted) {
         if (SoundManager::getInstance().m_Info1 != nullptr &&
-            SoundManager::getInstance().m_Info1->isContinuousPlaybackActive) {
+            (SoundManager::getInstance().m_Info1->isContinuousPlaybackActive ||
+             SoundManager::getInstance().m_Info1->isSeamlessLoopActive)) {
             return;
         }
+
         if (currentMs >= song_length_ms || (!SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().
             GetPaused()))
         {
@@ -1469,7 +1471,14 @@ bool MainWindow::loadSound(QString fullPath)
     QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0);
     tableWidgetPlaylists[currentPlaylist]->scrollTo(index);
     repaint();
-    bool loadOK = sm.LoadSound(fullPath, Playmode == repeatSong);
+
+    auto* info = new Info();
+    info->clearMemory();
+    info->clear();
+    info->isPlayModeRepeatSongEnabled = Playmode == repeatSong;
+    info->isFmodSeamlessLoopEnabled = getFmodSeamlessLoopEnabled();
+
+    bool loadOK = sm.LoadSound(fullPath, info);
 
     if (loadOK)
     {
@@ -4672,6 +4681,14 @@ void MainWindow::on_positionSlider_valueChanged(int value)
 {
     QString timeToShow = QString(msToNiceStringExact(value, m_displayMilliseconds));
     ui->labelTimer_2->setText(timeToShow);
+}
+
+void MainWindow::setFmodSeamlessLoopEnabled(bool seamlessLoop) {
+    isFmodSeamlessLoopEnabled = seamlessLoop;
+}
+
+bool MainWindow::getFmodSeamlessLoopEnabled() {
+    return isFmodSeamlessLoopEnabled;
 }
 
 const QString& MainWindow::getColorMain() const

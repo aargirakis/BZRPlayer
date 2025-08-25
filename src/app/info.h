@@ -148,6 +148,8 @@ public:
         compatibility = 0;
 
         isContinuousPlaybackActive = false;
+        isFmodSeamlessLoopEnabled = false;
+        isSeamlessLoopActive = false;
     }
 
     void clearMemory()
@@ -352,6 +354,8 @@ public:
 
     bool isPlayModeRepeatSongEnabled;
     bool isContinuousPlaybackActive;
+    bool isFmodSeamlessLoopEnabled;
+    bool isSeamlessLoopActive;
 
 private:
     bool seekable;

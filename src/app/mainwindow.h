@@ -175,6 +175,9 @@ public:
 
     unsigned int getFontSize(QRect, QFont, QString);
 
+    void setFmodSeamlessLoopEnabled(bool seamlessLoop);
+    bool getFmodSeamlessLoopEnabled();
+
     const QString& getColorMain() const;
     const QString& getColorMainHover() const;
     const QString& getColorMedium() const;
@@ -533,6 +536,8 @@ private:
     int m_normalizeMaxAmp;
 
     bool m_enqueueItems;
+
+    bool isFmodSeamlessLoopEnabled;
 
     void ERRCHECK(FMOD_RESULT);
 
