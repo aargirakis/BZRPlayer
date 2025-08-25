@@ -310,13 +310,14 @@ void AbstractPatternView::drawVUMeters(QPainter* painter)
 
     for (int unsigned i = 0; i < t->m_info->numChannels; i++)
     {
-        unsigned char volume = static_cast<unsigned char>(((t->m_info->modVUMeters[i] / 64.0) + 0.005) * 100);
-        //volume is between 0-100. 0.005 for rounding
+        unsigned char volume = static_cast<unsigned char>(t->m_info->modVUMeters[i]);
+        //volume is between 0-100
 
-        int vumeterCurrentHeight = (volume * HEIGHT / 100);
+        int vumeterCurrentHeight = static_cast<float>(volume)/100*HEIGHT;
 
         int vuWidth = WIDTH;
         int xPos = (i * VUMETER_OFFSET) + LEFT_OFFSET;
+
 
 
         m_rectL = QRect(xPos, maxHeight - vumeterCurrentHeight, vuWidth, vumeterCurrentHeight);
