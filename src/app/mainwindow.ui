@@ -1927,13 +1927,13 @@ QCheckBox:hover
                  <widget class="QCheckBox" name="checkBoxLoopPointB">
                   <property name="minimumSize">
                    <size>
-                    <width>18</width>
+                    <width>13</width>
                     <height>18</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>18</width>
+                    <width>13</width>
                     <height>18</height>
                    </size>
                   </property>
@@ -1993,7 +1993,7 @@ color: #ffffff/*button hover*/;
                   </property>
                   <property name="iconSize">
                    <size>
-                    <width>18</width>
+                    <width>13</width>
                     <height>18</height>
                    </size>
                   </property>
@@ -2003,13 +2003,13 @@ color: #ffffff/*button hover*/;
                  <widget class="QCheckBox" name="checkBoxLoopPointA">
                   <property name="minimumSize">
                    <size>
-                    <width>18</width>
+                    <width>13</width>
                     <height>18</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>18</width>
+                    <width>13</width>
                     <height>18</height>
                    </size>
                   </property>
@@ -2032,7 +2032,7 @@ QCheckBox
 
 color:#b7b7b7/*button*/;
 font-size: 34px;
-margin-left: -24px;
+margin-left: -22px;
 }
 QCheckBox::indicator {
 
@@ -2069,7 +2069,7 @@ color: #ffffff/*button hover*/;
                   </property>
                   <property name="iconSize">
                    <size>
-                    <width>18</width>
+                    <width>13</width>
                     <height>18</height>
                    </size>
                   </property>
