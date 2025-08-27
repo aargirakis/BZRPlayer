@@ -568,7 +568,9 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
     if (postype == FMOD_TIMEUNIT_MS)
     {
         if (position == 0) {
-            plugin->player->load(plugin->tune);
+            if (plugin->player->timeMs() != 0) {
+                plugin->player->load(plugin->tune);
+            }
         } else {
             for (int i = 0; i < 9; i++) {
                 plugin->player->mute(0, i, true);
@@ -589,7 +591,6 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
     if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
         plugin->tune->selectSong(position + 1);
-        plugin->player->load(plugin->tune);
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
