@@ -2100,9 +2100,16 @@ void MainWindow::PlaySong(int currentRow)
             currentSubsong = 1;
         }
 
-
         SoundManager::getInstance().SetPosition(currentSubsong - 1, FMOD_TIMEUNIT_SUBSONG);
+
+        /*
+         * FMOD Channel SetPosition callback with timeunit FMOD_TIMEUNIT_MS and position 0
+         * is already internally invoked by FMOD System CreateSound
+         * (along with other callbacks, including the read one for the pre-buffering):
+         * however here it must be called again after having been set the subsong
+         */
         SoundManager::getInstance().SetPosition(0, FMOD_TIMEUNIT_MS);
+
         addDebugText("Mute is:" + QString::number(m_muteVolume));
         SoundManager::getInstance().SetMute(m_muteVolume);
         SoundManager::getInstance().Pause(false);
