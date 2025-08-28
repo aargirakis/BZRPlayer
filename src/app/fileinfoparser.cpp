@@ -7,24 +7,199 @@
 #include <QPlainTextEdit>
 #include "plugins.h"
 
-const string FileInfoParser::ID3V1_GENRES[] = {
-    "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age",
-    "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska",
-    "Death Metal", "Pranks", "Soundtrack", "Euro-Techno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion",
-    "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "AlternRock",
-    "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic",
-    "Darkwave", "Techno-Industrial", "Electronic", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult",
-    "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Jungle", "Native American", "Cabaret", "New Wave", "Psychadelic",
-    "Rave", "Showtunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",
-    "Rock & Roll", "Hard Rock", "Folk", "Folk-Rock", "National Folk", "Swing", "Fast Fusion", "Bebob", "Latin",
-    "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock",
-    "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson",
-    "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club",
-    "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhythmic Soul", "Freestyle", "Duet", "Punk Rock",
-    "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club - House", "Hardcore", "Terror",
-    "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal",
-    "Crossover", "Contemporary Christian", "Christian Rock", "Merengue", "Salsa", "Thrash Metal", "Anime", "JPop",
-    "Synthpop"
+const string FileInfoParser::ID3V1_GENRES[id3v1GenresMax + 1] = {
+    "Blues", // 0
+    "Classic Rock", // 1
+    "Country", // 2
+    "Dance", // 3
+    "Disco", // 4
+    "Funk", // 5
+    "Grunge", // 6
+    "Hip Hop", // 7
+    "Jazz", // 8
+    "Metal", // 9
+    "New Age", // 10
+    "Oldies", // 11
+    "Other", // 12
+    "Pop", // 13
+    "R&B", // 14
+    "Rap", // 15
+    "Reggae", // 16
+    "Rock", // 17
+    "Techno", // 18
+    "Industrial", // 19
+    "Alternative", // 20
+    "Ska", // 21
+    "Death Metal", // 22
+    "Pranks", // 23
+    "Soundtrack", // 24
+    "Eurotechno", // 25
+    "Ambient", // 26
+    "Trip-Hop", // 27
+    "Vocal", // 28
+    "Jazz-Funk", // 29
+    "Fusion", // 30
+    "Trance", // 31
+    "Classical", // 32
+    "Instrumental", // 33
+    "Acid", // 34
+    "House", // 35
+    "Game", // 36
+    "Sound Clip", // 37
+    "Gospel", // 38
+    "Noise", // 39
+    "Alternative Rock", // 40
+    "Bass", // 41
+    "Soul", // 42
+    "Punk", // 43
+    "Space", // 44
+    "Meditative", // 45
+    "Instrumental Pop", // 46
+    "Instrumental Rock", // 47
+    "Ethnic", // 48
+    "Gothic", // 49
+    "Dark Wave", // 50
+    "Techno-Industrial", // 51
+    "Electronic", // 52
+    "Pop-Folk", // 53
+    "Eurodance", // 54
+    "Dream", // 55
+    "Southern Rock", // 56
+    "Comedy", // 57
+    "Cult", // 58
+    "Gangsta", // 59
+    "Top 40", // 60
+    "Christian Rap", // 61
+    "Pop-Funk", // 62
+    "Jungle", // 63
+    "Native American", // 64
+    "Cabaret", // 65
+    "New Wave", // 66
+    "Psychedelic", // 67
+    "Rave", // 68
+    "Showtunes", // 69
+    "Trailer", // 70
+    "Lo-Fi", // 71
+    "Tribal", // 72
+    "Acid Punk", // 73
+    "Acid Jazz", // 74
+    "Polka", // 75
+    "Retro", // 76
+    "Musical", // 77
+    "Rock & Roll", // 78
+    "Hard Rock", // 79
+    "Folk", // 80
+    "Folk Rock", // 81
+    "National Folk", // 82
+    "Swing", // 83
+    "Fast Fusion", // 84
+    "Bebop", // 85
+    "Latin", // 86
+    "Revival", // 87
+    "Celtic", // 88
+    "Bluegrass", // 89
+    "Avant-Garde", // 90
+    "Gothic Rock", // 91
+    "Progressive Rock", // 92
+    "Psychedelic Rock", // 93
+    "Symphonic Rock", // 94
+    "Slow Rock", // 95
+    "Big Band", // 96
+    "Chorus", // 97
+    "Easy Listening", // 98
+    "Acoustic", // 99
+    "Humour", // 100
+    "Speech", // 101
+    "Chanson", // 102
+    "Opera", // 103
+    "Chamber Music", // 104
+    "Sonata", // 105
+    "Symphony", // 106
+    "Booty Bass", // 107
+    "Primus", // 108
+    "Porn Groove", // 109
+    "Satire", // 110
+    "Slow Jam", // 111
+    "Club", // 112
+    "Tango", // 113
+    "Samba", // 114
+    "Folklore", // 115
+    "Ballad", // 116
+    "Power Ballad", // 117
+    "Rhythmic Soul", // 118
+    "Freestyle", // 119
+    "Duet", // 120
+    "Punk Rock", // 121
+    "Drum Solo", // 122
+    "A Cappella", // 123
+    "Euro House", // 124
+    "Dancehall", // 125
+    "Goa", // 126
+    "Drum & Bass", // 127
+    "Club-House", // 128
+    "Hardcore", // 129
+    "Terror", // 130
+    "Indie", // 131
+    "Britpop", // 132
+    "Worldbeat", // 133
+    "Polsk Punk", // 134
+    "Beat Music", // 135
+    "Christian Gangsta Rap", // 136
+    "Heavy Metal", // 137
+    "Black Metal", // 138
+    "Crossover", // 139
+    "Contemporary Christian", // 140
+    "Christian Rock", // 141
+    "Merengue", // 142
+    "Salsa", // 143
+    "Thrash Metal", // 144
+    "Anime", // 145
+    "Jpop", // 146
+    "Synth-Pop", // 147
+    "Abstract", // 148
+    "Art Rock", // 149
+    "Baroque", // 150
+    "Bhangra", // 151
+    "Big Beat", // 152
+    "Breakbeat", // 153
+    "Chillout", // 154
+    "Downtempo", // 155
+    "Dub", // 156
+    "EBM", // 157
+    "Eclectic", // 158
+    "Electro", // 159
+    "Electroclash", // 160
+    "Emo", // 161
+    "Experimental", // 162
+    "Garage", // 163
+    "Global", // 164
+    "IDM", // 165
+    "Illbient", // 166
+    "Industro-Goth", // 167
+    "Jam Band", // 168
+    "Krautrock", // 169
+    "Leftfield", // 170
+    "Lounge", // 171
+    "Math Rock", // 172
+    "New Romantic", // 173
+    "Nu-Breakz", // 174
+    "Post-Punk", // 175
+    "Post-Rock", // 176
+    "Psytrance", // 177
+    "Shoegaze", // 178
+    "Space Rock", // 179
+    "Trop Rock", // 180
+    "World Music", // 181
+    "Neoclassical", // 182
+    "Audiobook", // 183
+    "Audio Theatre", // 184
+    "Neue Deutsche Welle", // 185
+    "Podcast", // 186
+    "Indie Rock", // 187
+    "G-Funk", // 188
+    "Dubstep", // 189
+    "Garage Rock", // 190
+    "Psybient" // 191
 };
 
 FileInfoParser::FileInfoParser() = default;
@@ -370,11 +545,13 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             tag.name = "Genre";
 
                             QString data = static_cast<char *>(tag.data);
+                            bool isConversionOk;
+                            unsigned int index = data.toUInt(&isConversionOk);
 
-                            if (data.toInt() > 0 && data.toInt() < 128) {
-                                DataAsString = ID3V1_GENRES[data.toInt()].c_str();
-                            } else {
+                            if (!isConversionOk || index > id3v1GenresMax) {
                                 DataAsString = "";
+                            } else {
+                                DataAsString = ID3V1_GENRES[index].c_str();
                             }
                         } else {
                             DataAsString = QString::fromLatin1(static_cast<char *>(tag.data)).trimmed();
@@ -1162,15 +1339,13 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                                 {
                                     QStringList list;
                                     list << match.captured(1);
-                                    int number = list[0].toInt();
-                                    //check if number is 0-147
-                                    if (number >= 0 && number <= 147)
-                                    {
-                                        tableInfo->setItem(row, 1, new QTableWidgetItem(ID3V1_GENRES[number].c_str()));
-                                    }
-                                    else
-                                    {
+                                    bool isConversionOk;
+                                    unsigned int index = list[0].toUInt(&isConversionOk);
+
+                                    if (!isConversionOk || index > id3v1GenresMax) {
                                         tableInfo->setItem(row, 1, new QTableWidgetItem(data));
+                                    } else {
+                                        tableInfo->setItem(row, 1, new QTableWidgetItem(ID3V1_GENRES[index].c_str()));
                                     }
                                 }
                                 else if (data == "(RX)")

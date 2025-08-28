@@ -340,7 +340,6 @@ private:
     void SetAttrRecur(QDomElement elem, QString strtagname, QString strtagname2, QString strattr, QString strattrval);
 
     dropWidget DropWidget;
-    static const string ID3V1_GENRES[];
     static const QString VERSION;
     QTcpServer* tcpServer;
     QTcpSocket* tcpClient;

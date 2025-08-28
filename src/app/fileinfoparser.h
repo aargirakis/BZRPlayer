@@ -11,6 +11,7 @@ public:
     static void updateFileInfo(QTableWidget*, PlaylistItem*);
 
 private:
+    static constexpr unsigned int id3v1GenresMax = 191;
     static const string ID3V1_GENRES[];
 
     static void addInfo(QTableWidget *tableInfo, int *row, const QString &label, const QString &value);
