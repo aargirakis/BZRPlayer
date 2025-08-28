@@ -363,47 +363,39 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             row++;
                             hasWrittenID3V1Header = true;
                         }
-                        QString data;
-                        QString DataAsString = QString::fromLatin1(static_cast<char*>(tag.data));
-                        data = static_cast<char *>(tag.data);
-                        if (QString(tag.name) == "GENRE")
-                        {
+
+                        QString DataAsString;
+
+                        if (QString(tag.name) == "GENRE") {
                             tag.name = "Genre";
-                            if (data.toInt() > 0 && data.toInt() < 128)
-                            {
+
+                            QString data = static_cast<char *>(tag.data);
+
+                            if (data.toInt() > 0 && data.toInt() < 128) {
                                 DataAsString = ID3V1_GENRES[data.toInt()].c_str();
-                            }
-                            else
-                            {
+                            } else {
                                 DataAsString = "";
                             }
+                        } else {
+                            DataAsString = QString::fromLatin1(static_cast<char *>(tag.data)).trimmed();
+
+                            if (QString(tag.name) == "COMMENT") {
+                                tag.name = "Comment";
+                            } else if (QString(tag.name) == "ARTIST") {
+                                tag.name = "Artist";
+                                playlistItem->info->artist = DataAsString.toStdString();
+                            } else if (QString(tag.name) == "TITLE") {
+                                tag.name = "Title";
+                                playlistItem->info->title = DataAsString.toStdString();
+                            } else if (QString(tag.name) == "ALBUM") {
+                                tag.name = "Album";
+                            } else if (QString(tag.name) == "YEAR") {
+                                tag.name = "Year";
+                            } else if (QString(tag.name) == "TRACK") {
+                                tag.name = "Track";
+                            }
                         }
-                        else if (QString(tag.name) == "ARTIST")
-                        {
-                            tag.name = "Artist";
-                            playlistItem->info->artist = DataAsString.toStdString();
-                        }
-                        else if (QString(tag.name) == "TITLE")
-                        {
-                            tag.name = "Title";
-                            playlistItem->info->title = DataAsString.toStdString();
-                        }
-                        else if (QString(tag.name) == "COMMENT")
-                        {
-                            tag.name = "Comment";
-                        }
-                        else if (QString(tag.name) == "ALBUM")
-                        {
-                            tag.name = "Album";
-                        }
-                        else if (QString(tag.name) == "YEAR")
-                        {
-                            tag.name = "Year";
-                        }
-                        else if (QString(tag.name) == "TRACK")
-                        {
-                            tag.name = "Track";
-                        }
+
                         tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
                         tableInfo->setItem(row, 1, new QTableWidgetItem(DataAsString));
                         row++;
