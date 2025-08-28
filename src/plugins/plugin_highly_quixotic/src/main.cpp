@@ -460,7 +460,7 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
 {
     auto* plugin = static_cast<pluginHighlyQ*>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_MS)
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
         if (plugin->m_length > 0)
         {
@@ -470,7 +470,10 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
         {
             *length = -1;
         }
+
         plugin->info->numSubsongs = 1;
         return FMOD_OK;
     }
+
+    return FMOD_ERR_UNSUPPORTED;
 }
