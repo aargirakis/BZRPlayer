@@ -419,7 +419,7 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
 {
     auto* plugin = static_cast<pluginHighlyTheo*>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_MS)
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
         if (plugin->m_length > 0)
         {
@@ -429,10 +429,10 @@ FMOD_RESULT F_CALL getlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD
         {
             *length = -1;
         }
+
         plugin->info->numSubsongs = 1;
         return FMOD_OK;
     }
 
-    /* TODO crash (both 32/64bit) when running in debug mode due to missing return statement:
-     * TODO however, adding it will break track lengths */
+    return FMOD_ERR_UNSUPPORTED;
 }
