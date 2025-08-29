@@ -113,7 +113,8 @@ void ProTracker36PatternView::paintAbove(QPainter* painter, int height, int curr
 
     QRectF sourceScrollBarBg(0, 0, 13, 4);
 
-    int numberOfScrollBarBgPieces = ((height - 14)) + 1;
+
+    int numberOfScrollBarBgPieces = ((this->height()-topHeight())/4)-1;
 
     for (int i = 0; i < numberOfScrollBarBgPieces; i++)
     {
@@ -121,11 +122,14 @@ void ProTracker36PatternView::paintAbove(QPainter* painter, int height, int curr
         painter->drawImage(targetLeftBar, spriteSheet, sourceScrollBarBg);
     }
 
-    painter->fillRect((518), 42, 1, height - (1), colorHilite);
-    painter->fillRect((519), 42, 1, height - (1), colorShadow);
-    painter->fillRect((533), 42, 1, height - (1), colorHilite);
-    painter->fillRect((534), 42, 1, height - (1), colorShadow);
-    painter->fillRect((535), 42, 1, height - (1), colorHilite);
+    painter->fillRect((518), 42, 1, height-topHeight()-1, colorHilite);
+    painter->fillRect((519), 42, 1, height-topHeight()-1, colorShadow);
+    painter->fillRect((533), 42, 1, height-topHeight()-1, colorHilite);
+    painter->fillRect((534), 42, 1, height-topHeight()-1, colorShadow);
+    painter->fillRect((535), 42, 1, height-topHeight()-1, colorHilite);
+
+    cout << "height: " << height << "\n";
+    fflush(stdout);
 
     float currentRowPos = currentRow / 64.0;
     int yPos = (currentRowPos * (height - 88)) + 44;
