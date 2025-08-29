@@ -363,7 +363,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    plugin->info->fileformat = "Capcom QSound";
+    plugin->info->fileformat = "Capcom Q-Sound (QSF)";
 
     plugin->info->plugin = PLUGIN_highly_quixotic;
     plugin->info->pluginName = PLUGIN_highly_quixotic_NAME;
