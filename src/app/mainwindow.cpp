@@ -928,7 +928,9 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         {
             if (SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())
             {
-                ui->buttonPlay_2->setIcon(icons["pauseHover"]);
+                if (!SoundManager::getInstance().isWavWriterDeviceSelected()) {
+                    ui->buttonPlay_2->setIcon(icons["pauseHover"]);
+                }
             }
             else
             {
@@ -995,7 +997,9 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         {
             if (SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())
             {
-                ui->buttonPlay_2->setIcon(icons["pause"]);
+                if (!SoundManager::getInstance().isWavWriterDeviceSelected()) {
+                    ui->buttonPlay_2->setIcon(icons["pause"]);
+                }
             }
             else
             {
@@ -1244,14 +1248,21 @@ void MainWindow::timerProgress()
 
 void MainWindow::updateButtons()
 {
-    if (SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())
-    {
-        ui->buttonPlay_2->setIcon(icons["pause"]);
-        ui->buttonPlay_2->setToolTip("Pause");
+    if (SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused()) {
+        if (SoundManager::getInstance().isWavWriterDeviceSelected()) {
+            ui->buttonPlay_2->setEnabled(false);
+            ui->buttonPlay_2->setIcon(icons["pause-disabled"]);
+            ui->buttonPlay_2->setToolTip("Pause not available");
+        }
+        else {
+            ui->buttonPlay_2->setIcon(icons["pause"]);
+            ui->buttonPlay_2->setToolTip("Pause");
+        }
     }
     else
     {
-        ui->buttonPlay_2->setIcon(icons["play"]);
+            ui->buttonPlay_2->setEnabled(true);
+            ui->buttonPlay_2->setIcon(icons["play"]);
         ui->buttonPlay_2->setToolTip("Play");
     }
     if (isShuffleEnabled())
@@ -5650,6 +5661,7 @@ void MainWindow::setupIcons()
     QPixmap playHover = ChangeSVGColor(":/resources/play.svg", colorButtonHover.left(7));
     QPixmap pause = ChangeSVGColor(":/resources/pause.svg", colorButton.left(7));
     QPixmap pauseHover = ChangeSVGColor(":/resources/pause.svg", colorButtonHover.left(7));
+    QPixmap pauseDisabled = ChangeSVGColor(":/resources/pause.svg", colorMain.left(7));
 
     QPixmap stop = ChangeSVGColor(":/resources/stop.svg", colorButton.left(7));
     QPixmap stopHover = ChangeSVGColor(":/resources/stop.svg", colorButtonHover.left(7));
@@ -5687,6 +5699,7 @@ void MainWindow::setupIcons()
     icons["playHover"] = playHover;
     icons["pause"] = pause;
     icons["pauseHover"] = pauseHover;
+    icons["pause-disabled"] = pauseDisabled;
     icons["prev"] = prev;
     icons["prevHover"] = prevHover;
     icons["next"] = next;
