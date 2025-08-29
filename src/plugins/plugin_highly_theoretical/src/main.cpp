@@ -328,11 +328,11 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
 
     if (psfType == 0x12)
     {
-        plugin->info->fileformat = "Dreamcast";
+        plugin->info->fileformat = "Dreamcast (DSF)";
     }
     else
     {
-        plugin->info->fileformat = "Saturn";
+        plugin->info->fileformat = "Sega Saturn (SSF)";
     }
     plugin->info->plugin = PLUGIN_highly_theoretical;
     plugin->info->pluginName = PLUGIN_highly_theoretical_NAME;
