@@ -4258,16 +4258,16 @@ void MainWindow::on_checkBoxLoop_clicked()
     if (ui->checkBoxLoop->checkState() == Qt::Unchecked)
     {
         Playmode = normal;
-        ui->checkBoxLoop->setToolTip(("Enable repeat"));
+        ui->checkBoxLoop->setToolTip("Enable repeat");
     }
     else if (ui->checkBoxLoop->checkState() == Qt::PartiallyChecked)
     {
         Playmode = repeatPlaylist;
-        ui->checkBoxLoop->setToolTip(("Enable repeat one"));
+        ui->checkBoxLoop->setToolTip("Enable repeat one");
     }
     else
     {
-        ui->checkBoxLoop->setToolTip(("Disable repeat"));
+        ui->checkBoxLoop->setToolTip("Disable repeat");
         Playmode = repeatSong;
     }
     updateButtons();
