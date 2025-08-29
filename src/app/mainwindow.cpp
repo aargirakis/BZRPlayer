@@ -1247,10 +1247,12 @@ void MainWindow::updateButtons()
     if (SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())
     {
         ui->buttonPlay_2->setIcon(icons["pause"]);
+        ui->buttonPlay_2->setToolTip("Pause");
     }
     else
     {
         ui->buttonPlay_2->setIcon(icons["play"]);
+        ui->buttonPlay_2->setToolTip("Play");
     }
     if (isShuffleEnabled())
     {
