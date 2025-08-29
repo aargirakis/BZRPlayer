@@ -290,7 +290,7 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
 
     plugin->info->plugin = PLUGIN_lazyusf2;
     plugin->info->pluginName = PLUGIN_lazyusf2_NAME;
-    plugin->info->fileformat = "N64";
+    plugin->info->fileformat = "Nintendo 64 (USF)";
 
     if (keyExists(plugin->m_tags, "title"))
     {
