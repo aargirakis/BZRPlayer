@@ -356,11 +356,11 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
     if (plugin->psfType == 1)
     {
         plugin->waveformat.frequency = 44100;
-        plugin->info->fileformat = "PS1";
+        plugin->info->fileformat = "PlayStation (PSF1)";
     }
     else if (plugin->psfType == 2)
     {
-        plugin->info->fileformat = "PS2";
+        plugin->info->fileformat = "PlayStation 2 (PSF2)";
     }
     plugin->info->numSamples = 0;
 
