@@ -12,7 +12,7 @@ OctaMEDSoundstudioPatternView::OctaMEDSoundstudioPatternView(Tracker* parent, un
     m_bitmapFont = BitmapFont("AHX Thin");
     m_fontWidth = 6;
     m_fontHeight = 8;
-
+    m_renderTop = true;
     m_bitmapFont2 = BitmapFont("OctaMED Soundstudio");
 
     rowNumberOffset = 0;
