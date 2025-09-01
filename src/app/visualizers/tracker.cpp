@@ -513,7 +513,7 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 x = xEnd;
             }
 
-            x = m_trackerview->channelStart();
+            x = contentX0;
 
             for (int i = 0; i < m_info->numChannels; ++i) {
                 int chanWidth = (i == 0) ? firstChannelWidth :
@@ -1176,19 +1176,21 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         m_currentRowBuffer = currentRow;
         m_currentPatternBuffer = currentPattern;
         m_lastBufferSize = renderSize;
+
         m_backBuffer = QPixmap(renderSize);
         m_backBuffer.fill(Qt::black);
 
         QPainter bufferPainter(&m_backBuffer);
 
-        float scaleX = float(renderSize.width()) / float(m_trackerview->width());
-        float scaleY = float(renderSize.height()) / float(m_trackerview->height());
-        m_scale = min(scaleX, scaleY);
+        const float scaleX = float(renderSize.width())  / float(m_trackerview->width());
+        const float scaleY = float(renderSize.height()) / float(m_trackerview->height());
+        m_scale = std::min(scaleX, scaleY);
         m_visibleWidth = renderSize.width() / m_scale;
+
         bufferPainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
         bufferPainter.setRenderHint(QPainter::Antialiasing, true);
         bufferPainter.scale(m_scale, m_scale);
-        drawPattern(&bufferPainter, m_visibleWidth);
+        drawPattern(&bufferPainter, m_visibleWidth, true);
     }
 
     if (m_lastVuSize != renderSize || m_trackerview->m_renderVUMeter)
@@ -1241,27 +1243,6 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     }
 
     // Composite all layers to screen
-
-    if (m_backBuffer.isNull()
-        || m_backBuffer.size() != renderSize
-        || sizeChanged)               // <— already true while resizing
-    {
-        // build/refresh m_backBuffer exactly like you do in the sizeChanged branch
-        m_lastBufferSize = renderSize;
-        m_backBuffer = QPixmap(renderSize);
-        m_backBuffer.fill(Qt::black);
-
-        QPainter bufferPainter(&m_backBuffer);
-        const float scaleX = float(renderSize.width())  / float(m_trackerview->width());
-        const float scaleY = float(renderSize.height()) / float(m_trackerview->height());
-        m_scale = std::min(scaleX, scaleY);
-        m_visibleWidth = renderSize.width() / m_scale;
-
-        bufferPainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
-        bufferPainter.setRenderHint(QPainter::Antialiasing, true);
-        bufferPainter.scale(m_scale, m_scale);
-        drawPattern(&bufferPainter, m_visibleWidth, true);
-    }
 
     painter->drawPixmap(0, 0, m_backBuffer);
 
