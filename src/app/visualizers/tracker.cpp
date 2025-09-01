@@ -814,18 +814,18 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                             }
                         }
                     }
-                    BitmapFont font1;
+
                     if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
                             bitmapFontParameters().m_bitmapFontPath)
                     {
                         font = m_trackerview->currentRowBitmapFont();
-                        m_trackerview->drawText(parameter, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition,font1);
+                        m_trackerview->drawText(parameter, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition,font);
                         fontWidth = m_trackerview->fontWidth();
                     }
                     else
                     {
                         font = m_trackerview->bitmapFontParameters();
-                        m_trackerview->drawText(parameter, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition,font1);
+                        m_trackerview->drawText(parameter, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition,font);
                         fontWidth = m_trackerview->fontWidthParameters();
                     }
 
@@ -856,8 +856,7 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                             painter->setPen(colorEffect2Alt);
                         }
                     }
-                    BitmapFont font2;
-                    if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
+                         if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->
                             bitmapFontEffects().m_bitmapFontPath)
                     {
                         font = m_trackerview->currentRowBitmapFont();
@@ -868,10 +867,10 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                         font = m_trackerview->bitmapFontEffects();
                         fontWidth = m_trackerview->fontWidthEffects();
                     }
-                    m_trackerview->drawText(effect2, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition,font2);
-                    numPixels += effect2.length() * fontWidth,font2;
+                    m_trackerview->drawText(effect2, painter, m_trackerview->xOffsetRow() + numPixels, yOffset + yPixelPosition,font);
+                    numPixels += effect2.length() * fontWidth,font;
                     m_trackerview->drawText(m_trackerview->separatorEffect2(), painter, m_trackerview->xOffsetRow() + numPixels,
-                             yOffset + yPixelPosition,font2);
+                             yOffset + yPixelPosition,font);
                     numPixels += m_trackerview->separatorEffect2().length() * fontWidth;
 
                     if (parameter2 == m_trackerview->emptyParameter() && !m_trackerview->noEmptyParameter2Color() && j
