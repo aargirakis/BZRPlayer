@@ -657,12 +657,23 @@ bool SoundManager::LoadSound(QString filename, Info* info)
     result = FMOD_System_CreateSound(system, filename.toStdString().c_str(), fmodMode | FMOD_LOOP_OFF, &extrainfo1,
                                      &sound);
 
-    if (m_Info1->plugin == PLUGIN_fmod) {
-        m_Info1->pluginName = PLUGIN_fmod_NAME;
+    if (m_Info1->plugin != PLUGIN_adplug &&
+        m_Info1->plugin != PLUGIN_hivelytracker &&
+        m_Info1->plugin != PLUGIN_libopenmpt &&
+        m_Info1->plugin != PLUGIN_libsidplayfp &&
+        m_Info1->plugin != PLUGIN_libxmp &&
+        m_Info1->plugin != PLUGIN_sndh_player &&
+        m_Info1->plugin != PLUGIN_uade
+    ) {
+        m_Info1->isContinuousPlaybackActive = false;
 
-        if (m_Info1->isPlayModeRepeatSongEnabled && m_Info1->isFmodSeamlessLoopEnabled) {
-            m_Info1->isSeamlessLoopActive = true;
-            FMOD_Sound_SetMode(sound, fmodMode | FMOD_LOOP_NORMAL);
+        if (m_Info1->plugin == PLUGIN_fmod) {
+            m_Info1->pluginName = PLUGIN_fmod_NAME;
+
+            if (m_Info1->isPlayModeRepeatSongEnabled && m_Info1->isFmodSeamlessLoopEnabled) {
+                m_Info1->isSeamlessLoopActive = true;
+                FMOD_Sound_SetMode(sound, fmodMode | FMOD_LOOP_NORMAL);
+            }
         }
     }
 
