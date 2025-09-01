@@ -8,6 +8,9 @@
 TrackerView::TrackerView(QWidget* parent)
     : QOpenGLWidget(parent)
 {
+    setUpdateBehavior(QOpenGLWidget::PartialUpdate);
+    setAttribute(Qt::WA_OpaquePaintEvent, true);
+    setAutoFillBackground(false);
     inited = false;
     tracker = new Tracker();
     this->installEventFilter(this);
@@ -49,7 +52,8 @@ void TrackerView::paintEvent(QPaintEvent* event)
             painter.begin(this);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::SmoothPixmapTransform);
-            tracker->paint(&painter, event);
+            QPaintEvent full(rect());
+            tracker->paint(&painter, &full);
             painter.end();
         }
     }

@@ -12,7 +12,7 @@ public:
     Tracker();
 
     void paint(QPainter* painter, QPaintEvent* event);
-    void drawPattern(QPainter* painter, int visibleWidth);
+    void drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw=false);
     void drawVUMeters(QPainter* painter);
     void drawTop(QPainter* painter);
     float m_scale;

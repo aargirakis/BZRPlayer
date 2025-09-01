@@ -241,7 +241,7 @@ void Tracker::init()
     }
 }
 
-void Tracker::drawPattern(QPainter* painter, int visibleWidth)
+void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
 {
     if (m_trackerview==nullptr)
     {
@@ -287,7 +287,7 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth)
     }
 
 
-    if(currentRow!=m_currentRow || m_trackerview->m_renderVUMeter || updateHively)
+    if(currentRow!=m_currentRow || m_trackerview->m_renderVUMeter || updateHively || forceRedraw)
     {
         //Revert painter scaling and fill background rect
         QRect rect(0, 0, painter->window().width() / m_scale, painter->window().height() / m_scale);
@@ -329,7 +329,7 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth)
         m_trackerview->paintBelow(painter, height, currentRow);
 
 
-        int libxmpNotes = 0;
+
         int yPixelPosition = 0;
         const int yOffset = height / 2;
         const QFont& currentRowFont = m_trackerview->currentRowFont();
@@ -493,7 +493,8 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth)
             const int firstChannelWidth = m_trackerview->channelFirstWidth();
             const int lastChannelWidth = m_trackerview->channelLastWidth();
 
-            int x = m_trackerview->channelStart(); // Start X position of channel 0
+            const int contentX0 = m_trackerview->xOffsetRow() + numPixels;
+            int x = contentX0;
 
             int firstVisibleChannel = 0;
             int lastVisibleChannel = m_info->numChannels - 1;
@@ -522,7 +523,8 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth)
                 int xEnd = x + chanWidth;
 
                 if (x >= viewRight) {
-                    lastVisibleChannel = i;
+                    lastVisibleChannel = i - 1;
+                    if (lastVisibleChannel < firstVisibleChannel) lastVisibleChannel = firstVisibleChannel;
                     break;
                 }
                 x = xEnd;
@@ -558,13 +560,10 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth)
                 }
 
                 BaseRow* row;
-                if (islibopenmpt || islibxmp || issunvox)
-                {
-                    row = m_info->patterns[m_currentPattern][libxmpNotes];
-                    libxmpNotes++;
-                }
-                else
-                {
+                if (islibopenmpt || islibxmp || issunvox) {
+                    const int rowIndex = j * m_info->numChannels + chan;
+                    row = m_info->patterns[m_currentPattern][rowIndex];
+                } else {
                     row = m_info->modRows[i + k];
                 }
 
@@ -1138,7 +1137,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     if (m_trackerview==nullptr)
         return;
 
-    QSize renderSize = event->rect().size();
+    QSize renderSize = painter->viewport().size();
     bool sizeChanged = (renderSize != m_lastBufferSize);
 
     unsigned int currentPattern = 0;
@@ -1243,6 +1242,27 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     }
 
     // Composite all layers to screen
+
+    if (m_backBuffer.isNull()
+        || m_backBuffer.size() != renderSize
+        || sizeChanged)               // <— already true while resizing
+    {
+        // build/refresh m_backBuffer exactly like you do in the sizeChanged branch
+        m_lastBufferSize = renderSize;
+        m_backBuffer = QPixmap(renderSize);
+        m_backBuffer.fill(Qt::black);
+
+        QPainter bufferPainter(&m_backBuffer);
+        const float scaleX = float(renderSize.width())  / float(m_trackerview->width());
+        const float scaleY = float(renderSize.height()) / float(m_trackerview->height());
+        m_scale = std::min(scaleX, scaleY);
+        m_visibleWidth = renderSize.width() / m_scale;
+
+        bufferPainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+        bufferPainter.setRenderHint(QPainter::Antialiasing, true);
+        bufferPainter.scale(m_scale, m_scale);
+        drawPattern(&bufferPainter, m_visibleWidth, true);
+    }
 
     painter->drawPixmap(0, 0, m_backBuffer);
 
