@@ -541,7 +541,7 @@ FMOD_RESULT F_CALL sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int s
             toRead = 16;
         } else {
             for (int i = 0; i < plugin->maxVoices; i++) {
-                plugin->player->mute(0, i, plugin->mutePtr[i]);
+                plugin->player->mute(i / voicesPerSidChip, i % voicesPerSidChip, plugin->mutePtr[i]);
             }
 
             plugin->player->fastForward(100);
@@ -569,7 +569,7 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
             }
         } else {
             for (int i = 0; i < plugin->maxVoices; i++) {
-                plugin->player->mute(0, i, true);
+                plugin->player->mute(i / voicesPerSidChip, i % voicesPerSidChip, true);
             }
 
             plugin->seekPosition = position;
