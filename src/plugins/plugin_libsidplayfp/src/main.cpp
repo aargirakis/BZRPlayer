@@ -33,7 +33,7 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
                                       FMOD_TIMEUNIT postype);
 FMOD_RESULT F_CALL sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
 FMOD_RESULT F_CALL sidgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
-unsigned int getLengthFromSIDDatabase(string databasefile, bool newDatabaseVersion, string sidfilename, int subsong);
+unsigned int getLengthFromSIDDatabase(const string& databasefile, bool newDatabaseVersion, const string& sidfilename, int subsong);
 string md5_new;
 string md5_old;
 
@@ -57,8 +57,6 @@ FMOD_CODEC_DESCRIPTION codecDescription =
 };
 
 constexpr uint8_t voicesPerSidChip = 4;
-constexpr uint8_t maxSidChipsSupported = 3;
-constexpr uint8_t maxVoices = voicesPerSidChip * maxSidChipsSupported;
 
 class pluginLibsidplayfp
 {
@@ -68,14 +66,14 @@ public:
     pluginLibsidplayfp(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        tune = NULL;
+        tune = nullptr;
 
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
     char* loadRom(const char* path, size_t romSize)
     {
-        char* buffer = 0;
+        char* buffer = nullptr;
         std::ifstream is(path, std::ios::binary);
         if (is.good())
         {
@@ -93,10 +91,10 @@ public:
 
     ~pluginLibsidplayfp()
     {
-        if (tune) delete tune;
-        if (kernal) delete [] kernal;
-        if (basic) delete [] basic;
-        if (chargen) delete [] chargen;
+        delete tune;
+        delete [] kernal;
+        delete [] basic;
+        delete [] chargen;
     }
 
     Info* info;
@@ -109,7 +107,8 @@ public:
     char* chargen;
     string hvscSonglengthsFile;
     unsigned int seekPosition;
-    bool mute[maxVoices];
+    unsigned int maxVoices;
+    bool* mutePtr;
     bool hvscSonglengthsDataBaseEnabled;
     bool isSeeking = false;
 
@@ -138,30 +137,14 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
 {
     FMOD_RESULT result;
 
-    auto* plugin = new pluginLibsidplayfp(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
-
-    plugin->tune = 0;
-    plugin->kernal = 0;
-    plugin->basic = 0;
-    plugin->chargen = 0;
-    for (int i = 0; i < maxVoices; i++)
-	{
-		plugin->mute[i]=false;
-	}
-
-    plugin->seekPosition = 0;
-
-
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
     if (filesize > 1024 * 96) //96kb, biggest sid in hvsc is about 63 kb
     {
         return FMOD_ERR_FORMAT;
     }
+
     unsigned int bytesread;
-
-
     unsigned char* myBuffer;
     myBuffer = new unsigned char[filesize];
 
@@ -182,9 +165,9 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
         return FMOD_ERR_FORMAT;
     }
 
-    Info* info = static_cast<Info*>(userexinfo->userdata);
-
-    plugin->player = new sidplayfp();
+    auto* plugin = new pluginLibsidplayfp(codec);
+    auto* info = static_cast<Info*>(userexinfo->userdata);
+    plugin->info = info;
 
     string kernal_filename = info->dataPath + KERNAL_BIN_DATA_PATH;
     string basic_filename = info->dataPath + BASIC_BIN_DATA_PATH;
@@ -193,12 +176,15 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     plugin->kernal = plugin->loadRom(kernal_filename.c_str(), 8192);
     plugin->basic = plugin->loadRom(basic_filename.c_str(), 8192);
     plugin->chargen = plugin->loadRom(characters_filename.c_str(), 4096);
+
+    plugin->player = new sidplayfp();
+
     plugin->player->setRoms((const uint8_t*)plugin->kernal, (const uint8_t*)plugin->basic, (const uint8_t*)plugin->chargen);
 
     plugin->rs = new ReSIDfpBuilder("Demo");
     // Get the number of SIDs supported by the engine
-    unsigned int maxsids = (plugin->player->info()).maxsids();
-    plugin->rs->create(maxsids);
+
+    plugin->rs->create(plugin->player->info().maxsids());
 
     // Check if builder is ok
     if (!plugin->rs->getStatus())
@@ -381,11 +367,9 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
         return FMOD_ERR_FORMAT;
     }
 
-
     delete[] myBuffer;
 
     plugin->rs->filter(filter);
-
 
     SidConfig cfg;
 
@@ -413,9 +397,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     info->playAddr = s->playAddr();
     info->songSpeed = s->songSpeed();
 
-
     plugin->subsongs = s->songs();
-
     plugin->tune->selectSong(1);
     plugin->player->load(plugin->tune);
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
@@ -427,8 +409,12 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     codec->numsubsounds = 0;
     codec->plugindata = plugin; //user data value
 
-
     info->numChannels = voicesPerSidChip * s->sidChips();
+
+    plugin->maxVoices = voicesPerSidChip * plugin->player->info().maxsids();
+
+    plugin->mutePtr = new bool[plugin->maxVoices];
+
     if (s->numberOfInfoStrings() == 3)
     {
         info->title = s->infoString(0);
@@ -438,7 +424,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     string comments;
     for (int i = 0; i < s->numberOfCommentStrings(); i++)
     {
-        comments = comments + '\n' + string(s->commentString(i));
+        comments += '\n' + string(s->commentString(i));
     }
     info->comments = comments;
     info->numSamples = 0;
@@ -502,18 +488,23 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
         md5_old = "";
     }
 
-
     info->startSubSong = s->startSong();
     info->numSubsongs = plugin->subsongs;
     info->fileformatSpecific = s->formatString();
     info->md5New = md5_new;
     info->md5Old = md5_old;
-
-
-    info->setSeekable(true);
     info->plugin = PLUGIN_libsidplayfp;
     info->pluginName = PLUGIN_libsidplayfp_NAME;
     info->fileformat = "C64 SID";
+    info->setSeekable(true);
+
+    plugin->seekPosition = 0;
+
+    for (int i = 0; i < plugin->maxVoices; i++)
+    {
+        plugin->mutePtr[i] = false;
+    }
+
     return FMOD_OK;
 }
 
@@ -549,8 +540,8 @@ FMOD_RESULT F_CALL sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int s
             plugin->player->play(static_cast<short int *>(buffer), 16 * plugin->waveformat.channels);
             toRead = 16;
         } else {
-            for (int i = 0; i < maxVoices; i++) {
-                plugin->player->mute(0, i, plugin->mute[i]);
+            for (int i = 0; i < plugin->maxVoices; i++) {
+                plugin->player->mute(0, i, plugin->mutePtr[i]);
             }
 
             plugin->player->fastForward(100);
@@ -577,7 +568,7 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
                 plugin->player->load(plugin->tune);
             }
         } else {
-            for (int i = 0; i < maxVoices; i++) {
+            for (int i = 0; i < plugin->maxVoices; i++) {
                 plugin->player->mute(0, i, true);
             }
 
@@ -600,15 +591,15 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
-        for (int i = 0; i < maxVoices; i++)
+        for (int i = 0; i < plugin->maxVoices; i++)
 		{
-			plugin->mute[i]=false;
+            plugin->mutePtr[i] = false;
 		}
         //position is a mask
-        for (int i = 0; i < plugin->info->numChannels; i++)
+        for (int i = 0; i < plugin->maxVoices; i++)
         {
             plugin->player->mute(i / voicesPerSidChip, i % voicesPerSidChip, position >> i & 1);
-            plugin->mute[i] = position >> i & 1;
+            plugin->mutePtr[i] = position >> i & 1;
         }
 
         return FMOD_OK;
@@ -625,14 +616,14 @@ FMOD_RESULT F_CALL sidclose(FMOD_CODEC_STATE* codec)
 
 FMOD_RESULT F_CALL sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
+    auto const* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         *length = plugin->waveformat.lengthpcm;
         return FMOD_OK;
     }
-    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS)
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS)
     {
         string databasefile = plugin->hvscSonglengthsFile;
         const SidTuneInfo* s = plugin->tune->getInfo();
@@ -645,16 +636,18 @@ FMOD_RESULT F_CALL sidgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, F
 
         return FMOD_OK;
     }
-    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
         *length = plugin->subsongs;
         return FMOD_OK;
     }
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 FMOD_RESULT F_CALL sidgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
@@ -674,7 +667,7 @@ FMOD_RESULT F_CALL sidgetposition(FMOD_CODEC_STATE* codec, unsigned int* positio
 }
 
 
-unsigned int getLengthFromSIDDatabase(string databasefile, bool newDatabaseVersion, string sidfilename, int subsong)
+unsigned int getLengthFromSIDDatabase(const string& databasefile, bool newDatabaseVersion, const string& sidfilename, int subsong)
 {
     subsong--;
     unsigned int length = 0;
