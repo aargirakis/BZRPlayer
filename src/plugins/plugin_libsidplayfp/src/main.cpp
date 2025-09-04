@@ -56,6 +56,10 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
+constexpr uint8_t voicesPerSidChip = 4;
+constexpr uint8_t maxSidChipsSupported = 3;
+constexpr uint8_t maxVoices = voicesPerSidChip * maxSidChipsSupported;
+
 class pluginLibsidplayfp
 {
     FMOD_CODEC_STATE* _codec;
@@ -105,7 +109,7 @@ public:
     char* chargen;
     string hvscSonglengthsFile;
     unsigned int seekPosition;
-    bool mute[9];
+    bool mute[maxVoices];
     bool hvscSonglengthsDataBaseEnabled;
     bool isSeeking = false;
 
@@ -141,7 +145,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     plugin->kernal = 0;
     plugin->basic = 0;
     plugin->chargen = 0;
-	for(int i=0;i<9;i++)
+    for (int i = 0; i < maxVoices; i++)
 	{
 		plugin->mute[i]=false;
 	}
@@ -423,7 +427,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     codec->plugindata = plugin; //user data value
 
 
-    info->numChannels = 3*s->sidChips();
+    info->numChannels = voicesPerSidChip * s->sidChips();
     if (s->numberOfInfoStrings() == 3)
     {
         info->title = s->infoString(0);
@@ -544,7 +548,7 @@ FMOD_RESULT F_CALL sidread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int s
             plugin->player->play(static_cast<short int *>(buffer), 16 * plugin->waveformat.channels);
             toRead = 16;
         } else {
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < maxVoices; i++) {
                 plugin->player->mute(0, i, plugin->mute[i]);
             }
 
@@ -572,7 +576,7 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
                 plugin->player->load(plugin->tune);
             }
         } else {
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < maxVoices; i++) {
                 plugin->player->mute(0, i, true);
             }
 
@@ -595,14 +599,14 @@ FMOD_RESULT F_CALL sidsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
-		for(int i=0;i<9;i++)
+        for (int i = 0; i < maxVoices; i++)
 		{
 			plugin->mute[i]=false;
 		}
         //position is a mask
         for (int i = 0; i < plugin->info->numChannels; i++)
         {
-            plugin->player->mute(i / 3, i % 3, (position >> i & 1));
+            plugin->player->mute(i / voicesPerSidChip, i % voicesPerSidChip, position >> i & 1);
             plugin->mute[i] = position >> i & 1;
         }
 
