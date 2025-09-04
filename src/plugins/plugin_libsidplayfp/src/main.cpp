@@ -407,6 +407,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
 
     const SidTuneInfo* s = plugin->tune->getInfo();
 
+    info->sidChips = s->sidChips();
     info->initAddr = s->initAddr();
     info->loadAddr = s->loadAddr();
     info->playAddr = s->playAddr();

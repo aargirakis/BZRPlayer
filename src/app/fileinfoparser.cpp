@@ -252,6 +252,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
         addInfo(tableInfo, &row, "Song Speed",
                 "$" + QString::number(SoundManager::getInstance().m_Info1->songSpeed, 16));
         addSidModel(tableInfo, &row);
+        addInfo(tableInfo, &row, "SID Chips", QString::number(SoundManager::getInstance().m_Info1->sidChips));
         addInfo(tableInfo, &row, "Load Address",
                 "$" + QString::number(SoundManager::getInstance().m_Info1->loadAddr, 16));
         addInfo(tableInfo, &row, "Init Address",

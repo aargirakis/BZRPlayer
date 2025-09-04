@@ -101,6 +101,7 @@ public:
         turboSound = false;
         clockSpeed = 0;
         sidModel = 0;
+        sidChips = 0;
         numPatterns = 0;
         numTracksteps = 0;
         numMacros = 0;
@@ -319,6 +320,7 @@ public:
 
     int clockSpeed;
     int sidModel;
+    int sidChips;
     int numPatterns;
     int numTracksteps;
     int numMacros;
