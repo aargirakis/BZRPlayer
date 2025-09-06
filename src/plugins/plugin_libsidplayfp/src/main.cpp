@@ -402,7 +402,7 @@ FMOD_RESULT F_CALL sidopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     plugin->player->load(plugin->tune);
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.frequency = cfg.frequency;
-    plugin->waveformat.pcmblocksize = 1024 * plugin->waveformat.format * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = 128 * plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1; //infinite length
 
     codec->waveformat = &(plugin->waveformat);
@@ -662,16 +662,14 @@ FMOD_RESULT F_CALL sidgetposition(FMOD_CODEC_STATE* codec, unsigned int* positio
         *position = plugin->player->timeMs();
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
+    if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
         const SidTuneInfo* s = plugin->tune->getInfo();
         *position = s->currentSong();
         return FMOD_OK;
     }
-    else
-    {
-        return FMOD_ERR_UNSUPPORTED;
-    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 
