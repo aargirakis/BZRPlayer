@@ -54,7 +54,6 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_asap "src/plugins/plugin_asap"
         plugin_audiodecoder.wsr "src/plugins/plugin_audiodecoder.wsr"
         plugin_audiofile "src/plugins/plugin_audiofile"
-        plugin_faad2 "src/plugins/plugin_faad2"
         plugin_flod "src/plugins/plugin_flod"
         plugin_furnace "src/plugins/plugin_furnace"
         plugin_game-music-emu "src/plugins/plugin_game-music-emu"

@@ -384,11 +384,6 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_audiofile_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_audiofile_NAME));
     }
-    if (PLUGIN_faad2_LIB != "")
-    {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_faad2_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_faad2_NAME));
-    }
     if (PLUGIN_flod_LIB != "")
     {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_flod_VERSION));

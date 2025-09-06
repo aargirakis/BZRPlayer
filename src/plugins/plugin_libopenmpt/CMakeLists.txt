@@ -35,7 +35,7 @@ endif ()
 set(BUILD_BYPRODUCTS "bin/libopenmpt.a")
 download_patch_and_make(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches "" "${MAKE_ARGS}" ${BUILD_BYPRODUCTS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches "" "${MAKE_ARGS}" false "${BUILD_BYPRODUCTS}"
 )
 
 file(GLOB SOURCES

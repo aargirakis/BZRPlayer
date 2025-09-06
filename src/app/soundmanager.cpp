@@ -158,11 +158,6 @@ void SoundManager::loadPluginChain() {
 
     //loadPlugin("plugin_quartet.dll",1);
 
-    if (PLUGIN_faad2_LIB != "")
-    {
-        loadPlugin(PLUGIN_faad2_LIB, 99999);
-    }
-
     if (PLUGIN_zxtune_LIB != "")
     {
         loadPlugin(PLUGIN_zxtune_LIB, 99999);
@@ -228,10 +223,6 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_adplug_LIB, 99999);
     }
-    if (PLUGIN_vgmstream_LIB != "")
-    {
-        loadPlugin(PLUGIN_vgmstream_LIB, 99999);
-    }
     if (PLUGIN_audiodecoder_wsr_LIB != "")
     {
         loadPlugin(PLUGIN_audiodecoder_wsr_LIB, 99999);
@@ -243,6 +234,10 @@ void SoundManager::loadPluginChain() {
     if (PLUGIN_jaytrax_LIB != "")
     {
         loadPlugin(PLUGIN_jaytrax_LIB, 99999);
+    }
+    if (PLUGIN_vgmstream_LIB != "")
+    {
+        loadPlugin(PLUGIN_vgmstream_LIB, 99999);
     }
 
     //loadPlugin("plugin_wavpack.dll",99999);

@@ -30,7 +30,7 @@ set(MAKE_ARGS uadecore staticlibuade)
 set(BUILD_BYPRODUCTS "src/frontends/common/libuade.a")
 download_patch_and_make(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
-        ${CONFIGURE_COMMAND} "${MAKE_ARGS}" ${BUILD_BYPRODUCTS}
+        ${CONFIGURE_COMMAND} "${MAKE_ARGS}" false "${BUILD_BYPRODUCTS}"
 )
 
 set(SONG_CONF "song.conf")

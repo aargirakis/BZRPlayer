@@ -141,7 +141,7 @@ endfunction()
 
 function(download_patch_and_make target_name target_filename target_url sha_256_hash
         unpack_to_parent_dir target_unpacked_dir patches_dir configure_command
-        make_args build_byproducts)
+        make_args allow_install build_byproducts)
     download_and_patch(
             "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
             "${target_unpacked_dir}" "${patches_dir}"
@@ -176,14 +176,26 @@ function(download_patch_and_make target_name target_filename target_url sha_256_
 
     set(make_command ${make_command} -j${N} ${make_args})
 
+    if (allow_install)
+        if (WIN32)
+            set(install_command mingw32-make install)
+        else ()
+            set(install_command make install)
+        endif ()
+    endif ()
+
+    foreach (build_byproduct ${build_byproducts})
+        list(APPEND build_byproducts_with_full_path ${EXTERNAL_SOURCE_DIR}/${build_byproduct})
+    endforeach ()
+
     ExternalProject_Add(
             ${target_name}
             SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
             CONFIGURE_COMMAND ${configure_command}
             BUILD_COMMAND ${make_command}
-            INSTALL_COMMAND ""
+            INSTALL_COMMAND "${install_command}"
             BUILD_IN_SOURCE 1
-            BUILD_BYPRODUCTS ${EXTERNAL_SOURCE_DIR}/${build_byproducts}
+            BUILD_BYPRODUCTS ${build_byproducts_with_full_path}
     )
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)

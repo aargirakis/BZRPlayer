@@ -110,13 +110,18 @@ FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREA
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
+    char description[128];
+
+    if (plugin->vgmstream->meta_type == meta_FFMPEG || plugin->vgmstream->meta_type == meta_FFMPEG_faulty) {
+        get_vgmstream_coding_description(plugin->vgmstream, description, sizeof(description));
+    } else {
+        get_vgmstream_meta_description(plugin->vgmstream, description, sizeof(description));
+    }
+
+    plugin->info->fileformat = description;
     plugin->info->plugin = PLUGIN_vgmstream;
     plugin->info->pluginName = PLUGIN_vgmstream_NAME;
     plugin->info->setSeekable(true);
-
-    char description[128];
-    get_vgmstream_meta_description(plugin->vgmstream, description, sizeof(description));
-    plugin->info->fileformat = description;
 
     return FMOD_OK;
 }

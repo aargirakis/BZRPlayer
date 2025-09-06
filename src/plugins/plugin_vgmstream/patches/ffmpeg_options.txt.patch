@@ -1,0 +1,69 @@
+--- ext_libs/extra/ffmpeg_options.txt	2025-05-14 23:59:08.000000000 +0200
++++ ext_libs/extra/ffmpeg_options.txt	2025-09-16 12:09:05.388311601 +0200
+@@ -5,15 +5,15 @@
+ # GENERAL CONFIG
+ 
+ # suffix to avoid clashing with other libs (ommit or overwrite if linking to system's FFmpeg)
+---build-suffix=-vgmstream
++#--build-suffix=-vgmstream
+ 
+ # not very useful for vgmstream so could be disabled
+-#--disable-logging
++--disable-logging
+ 
+ # code licensing (defaults LGPLv2.1)
+ # enables various video-related code, and possibly some ASM optimization, hard to tell, may not be useful
+-# --enable-gpl
+-# --disable-version3
++--enable-gpl
++--enable-version3
+ 
+ # thread would be unneeded for audio, but some FFmpeg code (libavutil/thread.h) seems to use them for mutex init
+ # pthreads may create a libpthread.dll dependency, w32threads seems ok, while no threads seem to work fine (uses static vars as flags)
+@@ -22,8 +22,8 @@
+ --disable-os2threads
+ 
+ # config (only need shared libs = .dll/.so)
+---disable-static
+---enable-shared
++--enable-static
++--disable-shared
+ 
+ # programs (ffplay, ffprobe, ffmpeg), docs (*pages)
+ --disable-programs
+@@ -69,7 +69,7 @@
+ # swresample is for regular opus, probably may be disabled when using libopus
+ # (left in case it's needed in the future)
+ --enable-swresample
+---enable-libopus
++#--enable-libopus
+ 
+ ###############################################################################
+ # FORMATS
+@@ -90,7 +90,7 @@
+ # - caf: iOS games
+ # - mpc,mpc8: Android games
+ # - tak,ape: extra for rips with compressed .wav
+---enable-demuxer=ac3,eac3,spdif,asf,xwma,mov,oma,xmv,ogg,flac,wav,aac,mp3,smacker,bink,binka,caf,mpc,mpc8,tak,ape
++--enable-demuxer=ac3,eac3,spdif,asf,xwma,mov,oma,xmv,ogg,flac,wav,aac,mp3,smacker,bink,binka,caf,mpc,mpc8,tak,ape,wv,tta
+ 
+ # parsers take data streams and splits into frames (handles raw-ish formats)
+ # - ac3: raw AC3 
+@@ -98,7 +98,7 @@
+ # - xma: X360 games
+ # - vorbis: common (for rare cases, shouldn't be used directly)
+ # - opus: Switch/PC games
+---enable-parser=ac3,mpegaudio,xma,vorbis,opus
++--enable-parser=ac3,mpegaudio,xma,vorbis,opus,aac
+ 
+ # decoders take frames and decodes (handles codecs)
+ # (swap libopus with opus if needed)
+@@ -116,7 +116,7 @@
+ # - alac,adpcm_ima_qt: iOS games
+ # - adpcm_ima_dk3,adpcm_ima_dk4: Saturn videos
+ # - tak,ape: extra for rips with compressed .wav
+---enable-decoder=ac3,eac3,wmapro,wmav1,wmav2,xma1,xma2,aac,atrac3,atrac3p,mp2float,mp3float,smackaud,binkaudio_dct,binkaudio_rdft,pcm_s16be,pcm_s16be_planar,pcm_s16le,pcm_s16le_planar,pcm_s8,pcm_s8_planar,flac,vorbis,libopus,mpc7,mpc8,alac,adpcm_ima_qt,adpcm_ima_dk3,adpcm_ima_dk4,tak,ape
++--enable-decoder=ac3,eac3,wmapro,wmav1,wmav2,xma1,xma2,aac,atrac3,atrac3p,mp2float,mp3float,smackaud,binkaudio_dct,binkaudio_rdft,pcm_s16be,pcm_s16be_planar,pcm_s16le,pcm_s16le_planar,pcm_s8,pcm_s8_planar,flac,vorbis,opus,mpc7,mpc8,alac,adpcm_ima_qt,adpcm_ima_dk3,adpcm_ima_dk4,tak,ape,wavpack,adpcm_ima_wav,adpcm_ms,wmalossless,tta
+ 
+ ###############################################################################
+ # OS/TESTS

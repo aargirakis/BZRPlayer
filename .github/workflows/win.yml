@@ -16,9 +16,9 @@ jobs:
         with:
           msystem: UCRT64
           update: true
-          install: make mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-qt6-base mingw-w64-ucrt-x86_64-qt6-svg
+          install: base-devel mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-qt6-base mingw-w64-ucrt-x86_64-qt6-svg
             mingw-w64-ucrt-x86_64-qt-advanced-docking-system mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-toolchain
-            openssl-devel patch
+            openssl-devel
 
       - name: Build
         shell: msys2 {0}

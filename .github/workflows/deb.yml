@@ -15,6 +15,10 @@ jobs:
         run: |
           echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
           sudo apt-get update
+          sudo apt-get upgrade
+          #sudo apt-get dist-upgrade
+          #sudo sed -i -e 's/Prompt=lts/Prompt=normal/g' /etc/update-manager/release-upgrades
+          #sudo do-release-upgrade -f DistUpgradeViewNonInteractive
           sudo apt-get install -y build-essential cmake dos2unix libglvnd0 libsdl2-dev libvulkan-dev ninja-build \
                                   patchutils qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-svg-dev \
                                   libqt6core6 libqt6network6 libqt6openglwidgets6 libqt6svg6 libqt6xml6

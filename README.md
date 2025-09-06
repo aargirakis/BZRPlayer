@@ -17,9 +17,9 @@ coded pretty much from scratch.
 
 **[MSYS2](https://www.msys2.org/)** with following packages is required:
 
-`make` `mingw-w64-ucrt-x86_64-cmake` `mingw-w64-ucrt-x86_64-qt6-base` `mingw-w64-ucrt-x86_64-qt6-svg`
+`base-devel` `mingw-w64-ucrt-x86_64-cmake` `mingw-w64-ucrt-x86_64-qt6-base` `mingw-w64-ucrt-x86_64-qt6-svg`
 `mingw-w64-ucrt-x86_64-qt-advanced-docking-system` `mingw-w64-ucrt-x86_64-SDL2` `mingw-w64-ucrt-x86_64-toolchain`
-`openssl-devel` `patch`
+`openssl-devel`
 
 From the MSYS2 **ucrt64.exe** command prompt go to the project sources dir (keep in mind Unix-style paths are
 required), then start the configuration process executing:\
@@ -92,14 +92,14 @@ In order to build BZR2 following packages are required:
 
 
 - On **Debian-based** distros:\
-  `build-essential` `cmake` `dos2unix` `libglvnd0` `libsdl2-dev` `libvulkan-dev`
-  `ninja-build` `patchutils` `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
+  `build-essential` `cmake` `dos2unix` `libglvnd0` `libsdl2-dev` `libvulkan-dev` `ninja-build` `patchutils`
+  `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
   [libqt-advanced-docking-system4.4.0-dev](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4.4.0_4.4.0-0_amd64.deb)
 
 
 - On **Fedora-based** distros:\
-  `development-tools` (group), `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel`
-  `sdl2-compat-devel` `vulkan-headers` `which`
+  `development-tools` (group), `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel` `sdl2-compat-devel`
+  `vulkan-headers` `which`
   [libqtadvanceddockingsystem-qt6-devel](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqtadvanceddockingsystem-qt6-devel-4.4.0-0.x86_64.rpm)
 
 ---
