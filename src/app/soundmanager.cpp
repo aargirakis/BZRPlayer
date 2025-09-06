@@ -471,12 +471,12 @@ int SoundManager::getNumTags()
     return numTags;
 }
 
-void SoundManager::loadPlugin(string filename, int prority)
+void SoundManager::loadPlugin(string filename, int priority)
 {
     string pluginsDir = QString(libPath + PLUGINS_DIR + "/").toStdString();
     const char* pluginPath = (pluginsDir += filename).c_str();
 
-    result = FMOD_System_LoadPlugin(system, pluginPath, nullptr, prority);
+    result = FMOD_System_LoadPlugin(system, pluginPath, nullptr, priority);
 
     if (result != FMOD_OK)
     {
