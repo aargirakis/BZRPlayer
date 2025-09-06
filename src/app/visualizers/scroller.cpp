@@ -7,6 +7,7 @@
 #include <math.h>
 #include <plugins.h>
 #include <QFile>
+#include <QRandomGenerator>
 #include "qpainterpath.h"
 #include "qregularexpression.h"
 #include "soundmanager.h"
@@ -39,6 +40,8 @@ Scroller::Scroller(QWidget* parent)
 
     starsDirection = "right";
     starsEnabled = true;
+    setStarsDirection(starsDirection);
+    buildStarPens();
     reflectionEnabled = true;
     reflectionColor = QColor(0, 3, 46);
 
@@ -58,6 +61,7 @@ Scroller::Scroller(QWidget* parent)
     setRasterBarsBarHeight(64);
     rasterBarSpeed = 50;
 
+    backbuf = QImage(originalWidth, originalHeight, QImage::Format_ARGB32_Premultiplied);
     hasInited = false;
     reset();
 
@@ -158,32 +162,25 @@ void Scroller::initialize3dCube()
 
 void Scroller::paint(QPainter* painter, QPaintEvent* event)
 {
-    if (keepAspectRatio)
-    {
-        float tempscaleX = float(event->rect().width()) / float(originalWidth);
-        float tempscaleY = float(event->rect().height()) / float(originalHeight);
-
-        scaleX = min(tempscaleX, tempscaleY);
-        scaleY = scaleX;
-        painter->scale(scaleX, scaleX);
-    }
-    else
-    {
-        scaleX = (qreal)event->rect().width() / originalWidth;
-        scaleY = (qreal)event->rect().height() / originalHeight;
-        painter->scale(scaleX, scaleY);
+    if (backbuf.isNull() || backbuf.size() != QSize(originalWidth, originalHeight)) {
+        backbuf = QImage(originalWidth, originalHeight, QImage::Format_ARGB32_Premultiplied);
     }
 
-    //This is probably not needed any longer, since changing
-    //size will only scale the window, not longer extend drawing area
-    if (previousHeight != originalHeight || previousWidth != originalWidth)
-    {
+    backbuf.fill(colorVisualizerBackground);
+    QPainter buf(&backbuf);
+    buf.setRenderHint(QPainter::Antialiasing, false);
+    buf.setRenderHint(QPainter::TextAntialiasing, false);
+    buf.setRenderHint(QPainter::SmoothPixmapTransform, false);
+
+    scaleX = 1.0;
+    scaleY = 1.0;
+
+    if (previousHeight != originalHeight || previousWidth != originalWidth) {
         hasInited = false;
     }
     previousHeight = originalHeight;
-    previousWidth = originalWidth;
-    previousHeight = originalHeight;
-    previousWidth = originalWidth;
+    previousWidth  = originalWidth;
+
     if (starsEnabled && !hasInited)
     {
         stars = new Star[numberOfStars];
@@ -209,57 +206,54 @@ void Scroller::paint(QPainter* painter, QPaintEvent* event)
         hasInited = true;
     }
 
-    if (starsEnabled)
-    {
-        paintStars(painter, event);
-    }
+        if (starsEnabled) paintStars(&buf);
+        if (rasterBarsEnabled) paintRasterBars(&buf, event);
 
+        int scrollerYPosition = originalHeight / 2 - fontHeight / 2;
+        if (reflectionEnabled) {
+            buf.fillRect(0,
+                         scrollerYPosition + verticalScrollPosition + bottomY + fontHeight / 2,
+                         originalWidth,
+                         originalHeight - scrollerYPosition + verticalScrollPosition + bottomY + fontHeight / 2,
+                         reflectionColor);
+        }
+        buf.setOpacity(1);
 
-    if (rasterBarsEnabled)
-    {
-        paintRasterBars(painter, event);
-    }
-    int scrollerYPosition = originalHeight / 2 - fontHeight / 2;
-    if (reflectionEnabled)
-    {
-        painter->fillRect(0, scrollerYPosition + verticalScrollPosition + bottomY + fontHeight / 2, originalWidth,
-                          originalHeight - scrollerYPosition + verticalScrollPosition + bottomY + fontHeight / 2,
-                          reflectionColor);
-    }
-    painter->setOpacity(1);
+        bool stereoEnabled = !(SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace ||
+                               SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
+                               SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp ||
+                               SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker);
 
-    bool stereoEnabled = true;
-    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace ||
-        SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
-        SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp ||
-        SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker)
-    {
-        stereoEnabled = false;
-    }
+        if (vuMeterEnabled) paintVUMeters(&buf, event, stereoEnabled);
 
+        if (printerEnabled) {
+            printText(&buf, event);
+            buf.setOpacity(1);
+            buf.fillRect(originalWidth, 0, originalWidth * 2, originalHeight, colorVisualizerBackground);
+        }
 
-    if (vuMeterEnabled)
-    {
-        paintVUMeters(painter, event, stereoEnabled);
-    }
+        if (scrollerEnabled) paintScroller(&buf, event);
 
-    //paint3dCube(painter,event);
+        buf.setOpacity(1);
+        buf.fillRect(0, originalHeight, originalWidth, originalHeight * 2, colorVisualizerBackground);
+        buf.end();
 
-    if (printerEnabled)
-    {
-        printText(painter, event);
-        painter->setTransform(QTransform().scale(scaleX, scaleY));
-        painter->setOpacity(1);
-        painter->fillRect(originalWidth, 0, originalWidth * 2, originalHeight, colorVisualizerBackground);
-    }
+        painter->save();
+        painter->resetTransform();
+        painter->setRenderHint(QPainter::SmoothPixmapTransform, false);
 
-    if (scrollerEnabled)
-    {
-        paintScroller(painter, event);
-    }
-    painter->setTransform(QTransform().scale(scaleX, scaleY));
-    painter->setOpacity(1);
-    painter->fillRect(0, originalHeight, originalWidth, originalHeight * 2, colorVisualizerBackground);
+        QRect vp = painter->viewport();
+        QRect target;
+        if (keepAspectRatio) {
+            QSize dst = QSize(originalWidth, originalHeight).scaled(vp.size(), Qt::KeepAspectRatio);
+            target = QRect(QPoint(0,0), dst);
+            target.moveCenter(vp.center());
+        } else {
+            target = vp;
+        }
+
+        painter->drawImage(target, backbuf, backbuf.rect());
+        painter->restore();
 }
 
 void Scroller::printText(QPainter* painter, QPaintEvent* event)
@@ -287,7 +281,6 @@ void Scroller::printText(QPainter* painter, QPaintEvent* event)
 
     int verticalRowSpace = 2;
     int finalX = 0;
-    //int finalY = (originalHeight / 2)-((fontHeightPrinter/2+verticalScrollPosition+bottomY+fontHeightPrinter/2)/2)-fontHeightPrinter/2;
     int finalY = (originalHeight / 2) - ((m_printerTextRows.size() + 1) * (fontHeightPrinter + verticalRowSpace));
     if (finalY < fontHeightPrinter)
     {
@@ -660,135 +653,84 @@ void Scroller::paintVUMeters(QPainter* painter, QPaintEvent* event, bool stereo)
     painter->setOpacity(1.0);
 }
 
-void Scroller::paintStars(QPainter* painter, QPaintEvent* event)
+void Scroller::paintStars(QPainter* painter)
 {
-    int HEIGHT = originalHeight;
-    int WIDTH = originalWidth;
+    const int W = originalWidth;
+    const int H = originalHeight;
+    const int halfW = W >> 1;
+    const int halfH = H >> 1;
 
+    // clear buckets
+    for (int b = 0; b < 8; ++b) starBuckets[b].clear();
 
-    for (int i = 0; i < numberOfStars; i++)
+    // update + bucket
+    for (int i = 0; i < numberOfStars; ++i)
     {
-        if (starsDirection == "right")
+        Star &s = stars[i];
+
+        switch (starsMode)
         {
-            stars[i].x += stars[i].speed;
-        }
-        else if (starsDirection == "left")
-        {
-            stars[i].x -= stars[i].speed;
-        }
-        else if (starsDirection == "up")
-        {
-            stars[i].y -= stars[i].speed;
-        }
-        else if (starsDirection == "down")
-        {
-            stars[i].y += stars[i].speed;
-        }
-        else if (starsDirection == "in" || starsDirection == "out")
-        {
-            if (starsDirection == "in")
+            case StarsMode::Right:
+                s.x += s.speed;
+                if (s.x > W) { reinitLinearStar(i, W, H); s.x = -float(QRandomGenerator::global()->bounded(W)); }
+                break;
+            case StarsMode::Left:
+                s.x -= s.speed;
+                if (s.x < 0) { reinitLinearStar(i, W, H); s.x = W + float(QRandomGenerator::global()->bounded(W)); }
+                break;
+            case StarsMode::Up:
+                s.y -= s.speed;
+                if (s.y < 0) { reinitLinearStar(i, W, H); s.y = H + float(QRandomGenerator::global()->bounded(H)); }
+                break;
+            case StarsMode::Down:
+                s.y += s.speed;
+                if (s.y > H) { reinitLinearStar(i, W, H); s.y = -float(QRandomGenerator::global()->bounded(H)); }
+                break;
+
+            case StarsMode::In:
+            case StarsMode::Out:
             {
-                stars[i].z -= starSpeed * 0.2;
-                if (stars[i].z <= 0)
-                {
-                    // re-initialize if star is too close
-                    stars[i].x = (float)(rand() % 70) - 35;
-                    stars[i].y = (float)(rand() % 70) - 35;
-                    stars[i].speed = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (starSpeed)));
-                    //between 0 and starSpeed;
-                    stars[i].z += 100;
+                // zooming: change z, then project
+                const float dz = starSpeed * 0.2f;
+                if (starsMode == StarsMode::In) {
+                    s.z -= dz;
+                    if (s.z <= 1.f) { reinitZoomStar(i, /true); }
+                } else { // Out
+                    s.z += dz;
+                    if (s.z >= 100.f) { reinitZoomStar(i, false); }
                 }
-            }
-            else if (starsDirection == "out")
-            {
-                stars[i].z += starSpeed * 0.2;
-                if (stars[i].z >= 100)
-                {
-                    // re-initialize if star is too far away
-                    stars[i].x = (float)(rand() % 70) - 35;
-                    stars[i].y = (float)(rand() % 70) - 35;
-                    stars[i].speed = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (starSpeed)));
-                    //between 0 and starSpeed;
-                    stars[i].z -= 100;
+
+                const float invZ = 1.0f / s.z; // single division, used twice
+                const int sx = int(s.x * invZ * W) + halfW;
+                const int sy = int(s.y * invZ * H) + halfH;
+
+                if ((unsigned)sx < (unsigned)W && (unsigned)sy < (unsigned)H) {
+                    // Farther => dimmer. z in [1..100]
+                    // bucket 0 brightest, 7 dimmest; invert so near is bright:
+                    int b = 7 - qBound(0, int((s.z / 100.f) * 7.999f), 7);
+                    starBuckets[b].push_back(QPoint(sx, sy));
                 }
-            }
-
-            stars[i].coord1 = (stars[i].x / stars[i].z) * WIDTH + (WIDTH >> 1);
-            stars[i].coord2 = (stars[i].y / stars[i].z) * HEIGHT + (HEIGHT >> 1);
-
-            if (stars[i].coord1 >= 0 && stars[i].coord1 <= originalWidth && stars[i].coord2 >= 0 && stars[i].coord2 <=
-                originalHeight)
-            {
-                float percentMaxspeed = (stars[i].z / 100);
-                QColor c(255, 255, 255, 255 - (255 * percentMaxspeed));
-
-                painter->setPen(c);
-                painter->setBrush(c);
-                //painter->drawEllipse(QPointF(stars[i].x,stars[i].y), 1, 1);
-
-                int x = stars[i].coord1;
-                int y = stars[i].coord2;
-                int z = stars[i].z;
-
-                painter->drawPoint(QPointF(x, y));
+                continue; // already bucketed, skip linear path below
             }
         }
 
-        if (starsDirection != "in" && starsDirection != "out" && stars[i].x >= 0 && stars[i].x <= originalWidth && stars
-            [i].y >= 0 && stars[i].y <= originalHeight)
-        {
-            float percentMaxspeed = stars[i].speed / starSpeed;
-            QColor c(255, 255, 255, percentMaxspeed * 255);
-
-            painter->setPen(c);
-            painter->setBrush(c);
-            //painter->drawEllipse(QPointF(stars[i].x,stars[i].y), 1, 1);
-            painter->drawPoint(QPointF(stars[i].x, stars[i].y));
-        }
-
-
-        if (starsDirection == "right")
-        {
-            if (stars[i].x > originalWidth)
-            {
-                stars[i].x = (rand() % WIDTH) - WIDTH;
-                stars[i].y = rand() % HEIGHT;
-                stars[i].speed = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (starSpeed)));
-                //between 0 and starSpeed;
-            }
-        }
-        else if (starsDirection == "left")
-        {
-            if (stars[i].x < 0)
-            {
-                stars[i].x = (rand() % WIDTH) + WIDTH;
-                stars[i].y = rand() % HEIGHT;
-                stars[i].speed = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (starSpeed)));
-                //between 0 and starSpeed;
-            }
-        }
-        else if (starsDirection == "up")
-        {
-            if (stars[i].y < 0)
-            {
-                stars[i].x = rand() % WIDTH;
-                stars[i].y = (rand() % HEIGHT) + HEIGHT;
-                stars[i].speed = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (starSpeed)));
-                //between 0 and starSpeed;
-            }
-        }
-        else if (starsDirection == "down")
-        {
-            if (stars[i].y > originalHeight)
-            {
-                stars[i].x = rand() % WIDTH;
-                stars[i].y = (rand() % HEIGHT) - HEIGHT;
-                stars[i].speed = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (starSpeed)));
-                //between 0 and starSpeed;
-            }
+        // Linear modes: visible test + bucket by speed (brighter when faster)
+        if ((unsigned)s.x < (unsigned)W && (unsigned)s.y < (unsigned)H) {
+            float percent = s.speed / float(starSpeed ? starSpeed : 1);
+            int b = qBound(0, int(percent * 7.999f), 7);
+            starBuckets[b].push_back(QPoint(int(s.x), int(s.y)));
         }
     }
+
+    // draw all buckets in 8 batched calls
+    painter->setRenderHint(QPainter::Antialiasing, false);
+    for (int b = 0; b < 8; ++b) {
+        if (starBuckets[b].isEmpty()) continue;
+        painter->setPen(starPens[b]);
+        painter->drawPoints(starBuckets[b].constData(), starBuckets[b].size());
+    }
 }
+
 
 void Scroller::setColorVisualizerTop(QColor newColor)
 {
@@ -1398,11 +1340,6 @@ void Scroller::setStarsEnabled(bool enabled)
     starsEnabled = enabled;
 }
 
-void Scroller::setStarsDirection(QString direction)
-{
-    starsDirection = direction;
-}
-
 QString Scroller::getStarsDirection()
 {
     return starsDirection;
@@ -1441,6 +1378,7 @@ void Scroller::setNumberOfStars(int amount)
         delete[] stars;
     }
     hasInited = false;
+    buildStarPens();
 }
 
 void Scroller::setRasterBarsVerticalSpacing(int amount)
@@ -1488,14 +1426,12 @@ void Scroller::setNumberOfRasterBars(int amount)
 void Scroller::setStarSpeed(int speed)
 {
     starSpeed = speed;
-    if (starsEnabled && hasInited)
-    {
-        for (int a = 0; a < numberOfStars; a++)
-        {
-            stars[a].speed = static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (starSpeed)));
-            //between 0 and starSpeed;
+    if (starsEnabled && hasInited) {
+        for (int a = 0; a < numberOfStars; a++) {
+            stars[a].speed = QRandomGenerator::global()->generateDouble() * starSpeed;
         }
     }
+    buildStarPens();
 }
 
 void Scroller::setScrollerEnabled(bool enabled)
@@ -1568,4 +1504,48 @@ void Scroller::transform3DPointsTo2DPoints(std::vector<Point3D> points, Point3D*
     }
     // after looping return the array of points as they
     // exist after the rotation and scaling
+}
+void Scroller::buildStarPens()
+{
+    for (int i = 0; i < 8; ++i) {
+        int alpha = (i + 1) * 255 / 8;            // 8 levels
+        QColor c(255, 255, 255, alpha);
+        starPens[i] = QPen(c);
+        starPens[i].setCosmetic(true);            // 1px regardless of transform
+    }
+    for (int b = 0; b < 8; ++b) {
+        starBuckets[b].clear();
+        starBuckets[b].reserve(numberOfStars / 4 + 8); // reduce reallocs
+    }
+}
+void Scroller::setStarsDirection(QString direction)
+{
+    starsDirection = direction;
+    if      (direction == "right") starsMode = StarsMode::Right;
+    else if (direction == "left")  starsMode = StarsMode::Left;
+    else if (direction == "up")    starsMode = StarsMode::Up;
+    else if (direction == "down")  starsMode = StarsMode::Down;
+    else if (direction == "in")    starsMode = StarsMode::In;
+    else if (direction == "out")   starsMode = StarsMode::Out;
+    else                           starsMode = StarsMode::Right;
+}
+void Scroller::reinitLinearStar(int i, int W, int H)
+{
+    Star &s = stars[i];
+    // keep one axis, randomize the other; reuse QRandomGenerator to avoid modulo
+    if (starsMode == StarsMode::Left || starsMode == StarsMode::Right) {
+        s.y = float(QRandomGenerator::global()->bounded(H));
+    } else {
+        s.x = float(QRandomGenerator::global()->bounded(W));
+    }
+    s.speed = QRandomGenerator::global()->generateDouble() * starSpeed;
+}
+
+void Scroller::reinitZoomStar(int i, bool farAway)
+{
+    Star &s = stars[i];
+    s.x = float(QRandomGenerator::global()->bounded(70)) - 35.0f;
+    s.y = float(QRandomGenerator::global()->bounded(70)) - 35.0f;
+    s.speed = QRandomGenerator::global()->generateDouble() * starSpeed;
+    s.z = farAway ? 100.0f : 1.0f;
 }

@@ -167,8 +167,18 @@ private:
     qreal scaleX;
     qreal scaleY;
 
+    enum class StarsMode : uint8_t { Right, Left, Up, Down, In, Out };
 
-    void paintStars(QPainter* painter, QPaintEvent* event);
+    StarsMode starsMode { StarsMode::Right };
+
+    QPen starPens[8];
+    QVector<QPoint> starBuckets[8];
+
+    void buildStarPens();
+    void reinitLinearStar(int i, int W, int H);
+    void reinitZoomStar(int i, bool farAway); // farAway=true => z=100, else z=1
+
+    void paintStars(QPainter* painter);
     void paintScroller(QPainter* painter, QPaintEvent* event);
     void paintVUMeters(QPainter* painter, QPaintEvent* event, bool stereo);
     void paintRasterBars(QPainter* painter, QPaintEvent* event);
@@ -181,6 +191,7 @@ private:
     void initialize3dCube();
 	void updateBottomY();
 
+    QImage backbuf;
     int previousWidth;
     int previousHeight;
 
