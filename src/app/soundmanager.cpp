@@ -95,10 +95,32 @@ void SoundManager::Init(int device, QString outputfilename)
 }
 
 void SoundManager::loadPluginChain() {
-    if (PLUGIN_klystron_LIB != "")
-    {
-        loadPlugin(PLUGIN_klystron_LIB, 99999);
-    }
+    /* https://web.archive.org/web/20250320051703/https://qa.fmod.com/t/set-priority-for-internal-file-codecs/18597:
+     * Registering a codec with a priority of 0 will give it the highest priority.
+     * If another codec already has a priority of 0 then your newly registered codec will still have a higher priority,
+     * and both codecs will have a higher priority than a codec with a priority of 1.
+     * You cannot change the priority order of FMOD internal codecs, but here is the priority of each codec as of 2.02.06:
+     *
+     * FMOD_SOUND_TYPE_FSB,         // 250
+     * FMOD_SOUND_TYPE_WAV,         // 600
+     * FMOD_SOUND_TYPE_OGGVORBIS,   // 800
+     * FMOD_SOUND_TYPE_AIFF,        // 1000
+     * FMOD_SOUND_TYPE_FLAC,        // 1100
+     * FMOD_SOUND_TYPE_MOD,         // 1200
+     * FMOD_SOUND_TYPE_S3M,         // 1300
+     * FMOD_SOUND_TYPE_XM,          // 1400
+     * FMOD_SOUND_TYPE_IT,          // 1500
+     * FMOD_SOUND_TYPE_MIDI,        // 1600
+     * FMOD_SOUND_TYPE_DLS,         // 1700
+     * FMOD_SOUND_TYPE_ASF,         // 1900
+     * FMOD_SOUND_TYPE_AUDIOQUEUE,  // 2200
+     * FMOD_SOUND_TYPE_MEDIACODEC,  // 2250
+     * FMOD_SOUND_TYPE_MPEG,        // 2400
+     * FMOD_SOUND_TYPE_PLAYLIST,    // 2450
+     * FMOD_SOUND_TYPE_RAW,         // 2500
+     * FMOD_SOUND_TYPE_USER         // 2600
+     */
+
     if (PLUGIN_libsidplayfp_LIB != "")
     {
         loadPlugin(PLUGIN_libsidplayfp_LIB, 0);
@@ -160,9 +182,13 @@ void SoundManager::loadPluginChain() {
 
     if (PLUGIN_zxtune_LIB != "")
     {
-        loadPlugin(PLUGIN_zxtune_LIB, 99999);
+        // https://web.archive.org/web/20250320051703/https://qa.fmod.com/t/set-priority-for-internal-file-codecs/18597
+        loadPlugin(PLUGIN_zxtune_LIB, 2399);
     }
-
+    if (PLUGIN_klystron_LIB != "")
+    {
+        loadPlugin(PLUGIN_klystron_LIB, 99999);
+    }
     if (PLUGIN_vgmplay_legacy_LIB != "")
     {
         loadPlugin(PLUGIN_vgmplay_legacy_LIB, 99999);
@@ -179,7 +205,6 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_asap_LIB, 99999);
     }
-
     if (PLUGIN_organya_decoder_LIB != "")
     {
         loadPlugin(PLUGIN_organya_decoder_LIB, 99999);
@@ -208,17 +233,14 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_libpac_LIB, 99999);
     }
-
     if (PLUGIN_libxmp_LIB != "")
     {
         loadPlugin(PLUGIN_libxmp_LIB, 99999);
     }
-
     if (PLUGIN_mdxmini_LIB != "")
     {
         loadPlugin(PLUGIN_mdxmini_LIB, 99999);
     }
-
     if (PLUGIN_adplug_LIB != "")
     {
         loadPlugin(PLUGIN_adplug_LIB, 99999);
@@ -647,7 +669,7 @@ bool SoundManager::LoadSound(QString filename, Info* info)
 
     loadPluginChain();
 
-    constexpr FMOD_MODE fmodMode = FMOD_ACCURATETIME | FMOD_CREATESTREAM | FMOD_MPEGSEARCH;
+    constexpr FMOD_MODE fmodMode = FMOD_ACCURATETIME | FMOD_CREATESTREAM;
 
     result = FMOD_System_CreateSound(system, filename.toStdString().c_str(), fmodMode | FMOD_LOOP_OFF, &extrainfo1,
                                      &sound);
