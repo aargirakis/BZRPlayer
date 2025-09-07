@@ -642,25 +642,23 @@
         </magic>
         <glob pattern="*.mptm"/>
     </mime-type>
-    <mime-type type="audio/x-nintendo-ds-strm">
-        <comment>Nitro Composer (Nintendo DS) audio</comment>
+    <mime-type type="audio/x-nintendo-riff-ima">
+        <comment>Square Enix RIFF IMA audio</comment>
+        <generic-icon name="audio-x-generic"/>
+        <magic>
+            <match type="string" value="RIFF" offset="0">
+                <match type="string" value="IMA " offset="8"/>
+            </match>
+        </magic>
+        <glob pattern="*.strm"/>
+    </mime-type>
+    <mime-type type="audio/x-nintendo-strm">
+        <comment>Nintendo STRM audio</comment>
         <generic-icon name="audio-x-generic"/>
         <magic>
             <match type="string" value="STRM" offset="0">
                 <match type="big32" value="0xfffe0001" offset="4"/>
                 <match type="big32" value="0xfeff0001" offset="4"/>
-            </match>
-        </magic>
-        <sub-class-of type="audio/x-nintendo-ds-sdat"/>
-        <glob pattern="*.strm"/>
-    </mime-type>
-    <mime-type type="audio/x-nintendo-ds-strm-ffta2">
-        <comment>FFTA2 RIFF (Nintendo DS) audio</comment>
-        <expanded-acronym>Final Fantasy Tactics A2 RIFF)</expanded-acronym>
-        <generic-icon name="audio-x-generic"/>
-        <magic>
-            <match type="string" value="RIFF" offset="0">
-                <match type="string" value="IMA " offset="8"/>
             </match>
         </magic>
         <glob pattern="*.strm"/>
