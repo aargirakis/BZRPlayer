@@ -100,6 +100,7 @@ private slots:
 
     void on_sliderScrollSpeed_valueChanged(int value);
 
+    void on_slider3DCubeFocalLength_valueChanged(int value);
 
     void on_buttonColorVUMeterPeak_clicked();
 
@@ -118,6 +119,10 @@ private slots:
     void on_checkBoxStarsEnabled_toggled(bool checked);
 
     void on_buttonColorReflection_clicked();
+
+    void on_buttonColor3DCube_clicked();
+
+    void on_buttonColorWireframe3DCube_clicked();
 
     void on_buttonBrowseFont_clicked();
 
@@ -203,6 +208,14 @@ private slots:
     void on_sliderRasterBarsSpeed_valueChanged(int value);
 
     void on_checkBoxRasterbarsEnabled_toggled(bool checked);
+
+    void on_checkBox3DCubeEnabled_toggled(bool checked);
+
+    void on_checkBox3DCubeOrbit_toggled(bool checked);
+
+    void on_checkBox3DCubeWireframeEnabled_toggled(bool checked);
+
+    void on_checkBox3DCubeFilled_toggled(bool checked);
 
     void on_checkBoxCustomScrolltextEnabled_toggled(bool checked);
 

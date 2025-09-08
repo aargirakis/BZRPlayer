@@ -40,6 +40,7 @@ Scroller::Scroller(QWidget* parent)
 
     starsDirection = "right";
     starsEnabled = true;
+    cubeEnabled = true;
     setStarsDirection(starsDirection);
     buildStarPens();
     reflectionEnabled = true;
@@ -79,85 +80,86 @@ Scroller::Scroller(QWidget* parent)
     scaleY = 1;
 
 
-    initialize3dCube();
+    //initialize3dCube();
+    initializeSphere(10,20,CUBE_SIZE);
+    normalize(lightDir);
 }
-
-#define CUBE_SIZE 40
-
 void Scroller::initialize3dCube()
 {
-    focalLength = 140;
-    rotationSpeed = new Point3D(0.05, 0.03, 0.04);
-    cubeAxisRotations = new Point3D(0, 0, 0);
+    init3DCommon();
 
-    pointsArray.push_back(Point3D(-CUBE_SIZE, -CUBE_SIZE,CUBE_SIZE));
-    pointsArray.push_back(Point3D(CUBE_SIZE, -CUBE_SIZE,CUBE_SIZE));
-    pointsArray.push_back(Point3D(-CUBE_SIZE,CUBE_SIZE,CUBE_SIZE));
-    pointsArray.push_back(Point3D(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE));
-    pointsArray.push_back(Point3D(-CUBE_SIZE,CUBE_SIZE, -CUBE_SIZE));
-    pointsArray.push_back(Point3D(CUBE_SIZE,CUBE_SIZE, -CUBE_SIZE));
+    pointsArray.clear();
+    pointsArray.reserve(8);
+    pointsArray.push_back(Point3D(-CUBE_SIZE, -CUBE_SIZE,  CUBE_SIZE));
+    pointsArray.push_back(Point3D( CUBE_SIZE, -CUBE_SIZE,  CUBE_SIZE));
+    pointsArray.push_back(Point3D(-CUBE_SIZE,  CUBE_SIZE,  CUBE_SIZE));
+    pointsArray.push_back(Point3D( CUBE_SIZE,  CUBE_SIZE,  CUBE_SIZE));
+    pointsArray.push_back(Point3D(-CUBE_SIZE,  CUBE_SIZE, -CUBE_SIZE));
+    pointsArray.push_back(Point3D( CUBE_SIZE,  CUBE_SIZE, -CUBE_SIZE));
     pointsArray.push_back(Point3D(-CUBE_SIZE, -CUBE_SIZE, -CUBE_SIZE));
-    pointsArray.push_back(Point3D(CUBE_SIZE, -CUBE_SIZE, -CUBE_SIZE));
+    pointsArray.push_back(Point3D( CUBE_SIZE, -CUBE_SIZE, -CUBE_SIZE));
 
-    edgesArray = new int[24];
-    edgesArray[0] = 0;
-    edgesArray[1] = 1;
-    edgesArray[2] = 1;
-    edgesArray[3] = 2;
-    edgesArray[4] = 2;
-    edgesArray[5] = 3;
-    edgesArray[6] = 3;
-    edgesArray[7] = 0;
-    edgesArray[8] = 4;
-    edgesArray[9] = 5;
-    edgesArray[10] = 5;
-    edgesArray[11] = 6;
-    edgesArray[12] = 6;
-    edgesArray[13] = 7;
-    edgesArray[14] = 7;
-    edgesArray[15] = 4;
-    edgesArray[16] = 0;
-    edgesArray[17] = 4;
-    edgesArray[18] = 1;
-    edgesArray[19] = 5;
-    edgesArray[20] = 2;
-    edgesArray[21] = 6;
-    edgesArray[22] = 3;
-    edgesArray[23] = 7;
+    facesArray.clear();
+    facesArray.reserve(6);
+    facesArray.push_back({0, 1, 3, 2}); // front
+    facesArray.push_back({2, 3, 5, 4}); // right
+    facesArray.push_back({4, 5, 7, 6}); // back
+    facesArray.push_back({6, 7, 1, 0}); // left
+    facesArray.push_back({1, 7, 5, 3}); // top
+    facesArray.push_back({6, 0, 2, 4}); // bottom
+}
 
-    for (int i = 0; i < 6; i++)
-    {
-        facesArray.push_back(new int[3]);
+
+void Scroller::initializeSphere(int rings, int segments, double radius)
+{
+    init3DCommon();
+    pointsArray.clear();
+    facesArray.clear();
+
+    // Avoid placing vertices exactly at the poles to keep all faces quads
+    // (no degenerate quads). Use a half-step offset in latitude.
+    // Total verts = (rings + 1) * segments; total faces = rings * segments.
+
+    pointsArray.reserve((rings + 1) * segments);
+
+    const double PI = 3.14159265358979323846;
+
+    auto idx = [segments](int i, int j) {
+        // ring i in [0..rings], segment j in [0..segments-1]
+        return i * segments + (j % segments);
+    };
+
+    // Build vertices on a lat-long grid
+    for (int i = 0; i <= rings; ++i) {
+        double theta = ((i + 0.5) / (rings + 1)) * PI;   // (0, PI), avoids exact poles
+        double sinT  = std::sin(theta);
+        double cosT  = std::cos(theta);
+
+        for (int j = 0; j < segments; ++j) {
+            double phi = (double(j) / segments) * (2.0 * PI); // [0, 2PI)
+            double sinP = std::sin(phi);
+            double cosP = std::cos(phi);
+
+            double x = radius * sinT * cosP;
+            double y = radius * cosT;
+            double z = radius * sinT * sinP;
+
+            pointsArray.push_back(Point3D(x, y, z));
+        }
     }
-    facesArray[0][0] = 0;
-    facesArray[0][1] = 1;
-    facesArray[0][2] = 3;
-    facesArray[0][3] = 2;
 
-    facesArray[1][0] = 2;
-    facesArray[1][1] = 3;
-    facesArray[1][2] = 5;
-    facesArray[1][3] = 4;
-
-    facesArray[2][0] = 4;
-    facesArray[2][1] = 5;
-    facesArray[2][2] = 7;
-    facesArray[2][3] = 6;
-
-    facesArray[3][0] = 6;
-    facesArray[3][1] = 7;
-    facesArray[3][2] = 1;
-    facesArray[3][3] = 0;
-
-    facesArray[4][0] = 1;
-    facesArray[4][1] = 7;
-    facesArray[4][2] = 5;
-    facesArray[4][3] = 3;
-
-    facesArray[5][0] = 6;
-    facesArray[5][1] = 0;
-    facesArray[5][2] = 2;
-    facesArray[5][3] = 4;
+    // Build quad faces between rings
+    facesArray.reserve(rings * segments);
+    for (int i = 0; i < rings; ++i) {
+        for (int j = 0; j < segments; ++j) {
+            int a = idx(i,     j);
+            int b = idx(i,     j + 1);
+            int c = idx(i + 1, j + 1);
+            int d = idx(i + 1, j);
+            // Winding: a,b,c,d (outside normal)
+            facesArray.push_back({ a, b, c, d });
+        }
+    }
 }
 
 void Scroller::paint(QPainter* painter, QPaintEvent* event)
@@ -207,6 +209,10 @@ void Scroller::paint(QPainter* painter, QPaintEvent* event)
     }
 
         if (starsEnabled) paintStars(&buf);
+        if (cubeEnabled)
+        {
+            cubeFilled ? paint3dCubeFilled(&buf) : paint3dCube(&buf);
+        }
         if (rasterBarsEnabled) paintRasterBars(&buf, event);
 
         int scrollerYPosition = originalHeight / 2 - fontHeight / 2;
@@ -403,51 +409,47 @@ void Scroller::paintScroller(QPainter* painter, QPaintEvent* event)
     sineAngle += sinusSpeed;
 }
 
-void Scroller::paint3dCube(QPainter* painter, QPaintEvent* event)
+void Scroller::paint3dCube(QPainter* painter)
 {
+    Q_ASSERT(rotationSpeed && cubeAxisRotations);
     painter->setOpacity(1.0f);
-    double amp;
-    amp = SoundManager::getInstance().getSoundData(0); //volume is between 0-100
 
-    amp = amp / 30.0;
+    double amp = SoundManager::getInstance().getSoundData(0) / 100.0;
 
-
-    QPainterPath myPath;
-
-    rotationSpeed->x = 0.05 * amp * 2;
-    rotationSpeed->y = 0.03 * amp * 2;
-    rotationSpeed->z = 0.04 * amp * 2;
+    rotationSpeed->x = 0.04 * amp;
+    rotationSpeed->y = 0.05 * amp;
+    rotationSpeed->z = 0.03 * amp;
 
     cubeAxisRotations->y -= rotationSpeed->y;
     cubeAxisRotations->x -= rotationSpeed->x;
     cubeAxisRotations->z -= rotationSpeed->z;
 
+    // ---- Orbit translation (camera space)
+    const OrbitXform xf = computeCubeOrbitTransform();
+    if (!xf.visible) return; // if policy is HideWhenTooClose
+
     std::vector<Point2D> screenPoints;
-    transform3DPointsTo2DPoints(pointsArray, cubeAxisRotations, &screenPoints);
+    screenPoints.reserve(pointsArray.size());
+    transform3DPointsTo2DPoints(pointsArray, cubeAxisRotations, &screenPoints,
+                                xf.tx, xf.ty, xf.tz);
 
-    for (int i = 0; i < 6; i++)
-    {
-        //        myPath.moveTo (originalWidth/2 + screenPoints.at(facesArray[i][0]).x,originalHeight/2 + screenPoints.at(facesArray[i][0]).y);
-        //        QPolygonF poly;
-        for (int j = 0; j < 3; j++)
-        {
-            //            myPath.lineTo (originalWidth/2 + screenPoints.at(facesArray[i][j]).x,originalHeight/2 + screenPoints.at(facesArray[i][j]).y);
-            //            painter->drawLine(originalWidth/2 + screenPoints.at(facesArray[i][j]).x,originalHeight/2 + screenPoints.at(facesArray[i][j]).y,originalWidth/2 + screenPoints.at(facesArray[i][j+1]).x,originalHeight/2 + screenPoints.at(facesArray[i][j+1]).y);
-            //            painter->drawPoint(originalWidth/2 + screenPoints.at(facesArray[i][j]).x,originalHeight/2 + screenPoints.at(facesArray[i][j]).y);
-            //painter->drawLine(originalWidth/2 + screenPoints.at(facesArray[i][j]).x,originalHeight/2 + screenPoints.at(facesArray[i][j]).y,originalWidth/2 + screenPoints.at(facesArray[i][j+1]).x,originalHeight/2 + screenPoints.at(facesArray[i][j+1]).y);
-        }
+    auto toPt = [&](int idx) -> QPoint {
+        return QPoint(originalWidth/2  + screenPoints[idx].x,
+                      originalHeight/2 + screenPoints[idx].y);
+    };
 
+    painter->save();
+    painter->setPen(QPen(cubeWireColor));
+    painter->setBrush(Qt::NoBrush); // wireframe
 
-        //        myPath.closeSubpath();
+    for (int i = 0; i < (int)facesArray.size(); ++i) {
+        const auto& f = facesArray[i]; // f[0..3]
+        QPoint poly[4] = { toPt(f[0]), toPt(f[1]), toPt(f[2]), toPt(f[3]) };
+        painter->drawPolygon(poly, 4);
     }
-
-
-    QColor c(255, 0, 255);
-
-    painter->setPen(c);
-    painter->setBrush(c);
-    painter->drawLine(0, 50, 300, 200);
+    painter->restore();
 }
+
 
 void Scroller::paintRasterBars(QPainter* painter, QPaintEvent* event)
 {
@@ -694,7 +696,7 @@ void Scroller::paintStars(QPainter* painter)
                 const float dz = starSpeed * 0.2f;
                 if (starsMode == StarsMode::In) {
                     s.z -= dz;
-                    if (s.z <= 1.f) { reinitZoomStar(i, /true); }
+                    if (s.z <= 1.f) { reinitZoomStar(i, true); }
                 } else { // Out
                     s.z += dz;
                     if (s.z >= 100.f) { reinitZoomStar(i, false); }
@@ -842,6 +844,12 @@ bool Scroller::getStarsEnabled()
     return starsEnabled;
 }
 
+bool Scroller::getCubeEnabled()
+{
+    return cubeEnabled;
+}
+
+
 int Scroller::getNumberOfStars()
 {
     return numberOfStars;
@@ -937,6 +945,15 @@ QString Scroller::getReflectionColor()
     return reflectionColor.name();
 }
 
+QString Scroller::get3DCubeColor()
+{
+    return cubeColor.name();
+}
+QString Scroller::get3DCubeColorWireframe()
+{
+    return cubeWireColor.name();
+}
+
 QString Scroller::getFont()
 {
     return m_bitmapFont;
@@ -951,12 +968,31 @@ bool Scroller::getRasterBarsEnabled()
 {
     return rasterBarsEnabled;
 }
-
+bool Scroller::get3DCubeEnabled()
+{
+    return cubeEnabled;
+}
+bool Scroller::get3DCubeFilled()
+{
+    return cubeFilled;
+}
+bool Scroller::get3DCubeOrbit()
+{
+    return cubeOrbitEnabled;
+}
 int Scroller::getNumberOfRasterBars()
 {
     return numberOfRasterBars;
 }
 
+bool Scroller::get3DCubeWireframeEnabled()
+{
+    return cubeWireframeEnabled;
+}
+bool Scroller::get3DCubeFocalLength()
+{
+    return cubeFocalLength;
+}
 int Scroller::getRasterBarsSpeed()
 {
     return rasterBarSpeed;
@@ -991,7 +1027,7 @@ void Scroller::setScrollText(QString text)
     }
     m_scrollText = replaceIllegalLetters(m_scrollText);
 
-    letters = spacesNeeded;
+    letters = std::min(spacesNeeded, 130);
     for (int n = 0; n < letters; n++)
     {
         int charPos;
@@ -1288,15 +1324,14 @@ bool Scroller::setPrinterFont(QString font)
 
         QString row;
         int pos = 0;
-        for (int rowCount = 0; rowCount < m_printerTextRows.size(); rowCount++)
+        for (int rowCount = 0; rowCount < m_printerTextRows.size(); ++rowCount)
         {
-            row = m_printerTextRows.at(rowCount);
-            for (int n = 0; n < row.length(); n++)
+            const QString& row = m_printerTextRows.at(rowCount);
+            for (int n = 0; n < row.length(); ++n)
             {
-                int charPos;
-                charPos = bitmapFontCharsetPrinter.indexOf(row.at(n));
-                charsPrinter[pos] = charPos;
-                pos++;
+                if (pos >= 130) break;
+                int charPos = bitmapFontCharsetPrinter.indexOf(row.at(n));
+                charsPrinter[pos++] = charPos;
             }
         }
         return true;
@@ -1314,6 +1349,26 @@ void Scroller::setScrollerReflectionColor(QColor newColor)
     reflectionColor = newColor;
 }
 
+void Scroller::set3DCubeFocalLength(int value)
+{
+    cubeFocalLength = value;
+}
+
+
+void Scroller::set3DCubeColor(QColor newColor)
+{
+    cubeColor = newColor;
+}
+
+void Scroller::set3DCubeColorWireframe(QColor newColor)
+{
+    cubeWireColor=newColor;
+}
+
+void Scroller::set3DCubeWireframeEnabled(bool enabled)
+{
+    cubeWireframeEnabled=enabled;
+}
 void Scroller::setSinusFontScalingEnabled(bool enabled)
 {
     sinusFontScalingEnabled = enabled;
@@ -1369,7 +1424,18 @@ void Scroller::setRasterBarsEnabled(bool enabled)
 {
     rasterBarsEnabled = enabled;
 }
-
+void Scroller::set3DCubeEnabled(bool enabled)
+{
+    cubeEnabled = enabled;
+}
+void Scroller::set3DCubeFilled(bool enabled)
+{
+    cubeFilled = enabled;
+}
+void Scroller::set3DCubeOrbit(bool enabled)
+{
+    cubeOrbitEnabled = enabled;
+}
 void Scroller::setNumberOfStars(int amount)
 {
     numberOfStars = amount;
@@ -1445,65 +1511,44 @@ void Scroller::setVerticalScrollPosition(int v)
     bottomY = 0;
 }
 
-void Scroller::transform3DPointsTo2DPoints(std::vector<Point3D> points, Point3D* axisRotations,
-                                           std::vector<Point2D>* TransformedPointsArray)
+void Scroller::transform3DPointsTo2DPoints(const std::vector<Point3D>& points,
+                                           const Point3D* axisRotations,
+                                           std::vector<Point2D>* TransformedPointsArray,
+                                           double tx, double ty, double tz)
 {
-    // the array to hold transformed 2D points - the 3D points
-    // from the point array which are here rotated and scaled
-    // to generate a point as it would appear on the screen
-    //TransformedPointsArray* = new Point2D[8];
-    // Math calcs for angles - sin and cos for each (trig)
-    // this will be the only time sin or cos is used for the
-    // entire portion of calculating all rotations
-    double sx = sin(axisRotations->x);
-    double cx = cos(axisRotations->x);
-    double sy = sin(axisRotations->y);
-    double cy = cos(axisRotations->y);
-    double sz = sin(axisRotations->z);
-    double cz = cos(axisRotations->z);
+    double sx = sin(axisRotations->x), cx = cos(axisRotations->x);
+    double sy = sin(axisRotations->y), cy = cos(axisRotations->y);
+    double sz = sin(axisRotations->z), cz = cos(axisRotations->z);
 
-    // a couple of variables to be used in the looping
-    // of all the points in the transform process
-    double x, y, z, xy, xz, yx, yz, zx, zy, scaleRatio;
+    TransformedPointsArray->clear();
+    TransformedPointsArray->reserve(points.size());
 
-    // 3... 2... 1... loop!
-    // loop through all the points in your object/scene/space
-    // whatever - those points passed - so each is transformed
-    for (int i = 7; i >= 0; i--)
+    for (int i = (int)points.size()-1; i >= 0; --i)
     {
-        // apply Math to making transformations
-        // based on rotations
+        double x = points[i].x;
+        double y = points[i].y;
+        double z = points[i].z;
 
-        // assign variables for the current x, y and z
-        x = points[i].x;
-        y = points[i].y;
-        z = points[i].z;
+        // rotate
+        double xy = cx * y - sx * z;
+        double xz = sx * y + cx * z;
+        double yz = cy * xz - sy * x;
+        double yx = sy * xz + cy * x;
+        double zx = cz * yx - sz * xy;
+        double zy = sz * yx + cz * xy;
 
-        // perform the rotations around each axis
-        // rotation around x
-        xy = cx * y - sx * z;
-        xz = sx * y + cx * z;
-        // rotation around y
-        yz = cy * xz - sy * x;
-        yx = sy * xz + cy * x;
-        // rotation around z
-        zx = cz * yx - sz * xy;
-        zy = sz * yx + cz * xy;
+        // ---- NEW: translate in camera space (after rotation, before projection)
+        zx += tx;
+        zy += ty;
+        yz += tz;
 
-        // now determine perspective scaling factor
-        // yz was the last calculated z value so its the
-        // final value for z depth
-        scaleRatio = focalLength / (focalLength + yz);
-        // assign the new x and y
+        double scaleRatio = cubeFocalLength / (cubeFocalLength + yz);
         x = zx * scaleRatio;
         y = zy * scaleRatio;
         z = yz;
-        // create transformed 2D point with the calculated values
-        // adding it to the array holding all 2D points
+
         TransformedPointsArray->push_back(Point2D((int)x, (int)y, (int)-z, scaleRatio));
     }
-    // after looping return the array of points as they
-    // exist after the rotation and scaling
 }
 void Scroller::buildStarPens()
 {
@@ -1549,3 +1594,223 @@ void Scroller::reinitZoomStar(int i, bool farAway)
     s.speed = QRandomGenerator::global()->generateDouble() * starSpeed;
     s.z = farAway ? 100.0f : 1.0f;
 }
+void Scroller::setCubeLightDir(double x,double y,double z) {
+    lightDir = Point3D(x,y,z);
+    normalize(lightDir);
+}
+
+static inline double invSqrt(double s) { return 1.0 / std::sqrt(s); }
+
+inline void Scroller::normalize(Point3D& v) {
+    double len2 = v.x*v.x + v.y*v.y + v.z*v.z;
+    if (len2 > 0.0) {
+        double inv = invSqrt(len2);
+        v.x *= inv; v.y *= inv; v.z *= inv;
+    }
+}
+
+// Rotate a 3D point/vector by the same Euler angles you already use,
+// but DO NOT apply perspective scaling or translation.
+Point3D Scroller::rotateOnly(const Point3D& p, const Point3D& rot) {
+    double sx = std::sin(rot.x), cx = std::cos(rot.x);
+    double sy = std::sin(rot.y), cy = std::cos(rot.y);
+    double sz = std::sin(rot.z), cz = std::cos(rot.z);
+
+    // X rotation
+    double xy = cx * p.y - sx * p.z;
+    double xz = sx * p.y + cx * p.z;
+    double rx = p.x, ry = xy, rz = xz;
+
+    // Y rotation
+    double yz = cy * rz - sy * rx;
+    double yx = sy * rz + cy * rx;
+    rx = yx; ry = ry; rz = yz;
+
+    // Z rotation
+    double zx = cz * rx - sz * ry;
+    double zy = sz * rx + cz * ry;
+    return Point3D(zx, zy, rz);
+}
+
+
+Scroller::OrbitXform Scroller::computeCubeOrbitTransform()
+{
+    OrbitXform xf{0,0,0,true};
+
+// If orbit is OFF: keep cube centered using idle placement (independent of orbit params)
+    if (!cubeOrbitEnabled) {
+        double tz = cubeIdleCenterZ;
+        double ty = cubeIdleY;
+
+        // Near-plane safety so the whole cube stays in front of camera
+        const double minZ = tz - cubeBoundRadius;
+        const double denomMin = cubeFocalLength + minZ;
+        if (denomMin < cubeNearMargin) {
+            tz = (cubeNearMargin - cubeFocalLength) + cubeBoundRadius;
+        }
+
+        xf.tx = 0.0;
+        xf.ty = ty;
+        xf.tz = tz;
+        return xf;
+    }
+
+    // --- Orbit is ON: advance and compute circle using orbit center ---
+    double amp = SoundManager::getInstance().getSoundData(0) / 100.0;
+    cubeOrbitAngle += cubeOrbitSpeed * amp * 2.0;
+
+    const double tx = cubeOrbitRadius * std::cos(cubeOrbitAngle);
+    const double ty = cubeOrbitY;
+    double       tz = cubeOrbitRadius * std::sin(cubeOrbitAngle) + cubeOrbitCenterZ;
+
+    const double minZ = tz - cubeBoundRadius;
+    const double denomMin = cubeFocalLength + minZ;
+    if (denomMin < cubeNearMargin) {
+        if (cubeNearPolicy == CubeNearPolicy::HideWhenTooClose) {
+            xf.visible = false;
+        } else {
+            tz = (cubeNearMargin - cubeFocalLength) + cubeBoundRadius;
+        }
+    }
+
+    xf.tx = tx; xf.ty = ty; xf.tz = tz;
+    return xf;
+}
+
+inline void Scroller::init3DCommon()
+{
+    if (!rotationSpeed)     rotationSpeed     = new Point3D(0.05, 0.03, 0.04);
+    if (!cubeAxisRotations) cubeAxisRotations = new Point3D(0, 0, 0);
+}
+void Scroller::paint3dCubeFilled(QPainter* painter)
+{
+    // 1) Rotation driven by audio (same as wireframe)
+    double amp = SoundManager::getInstance().getSoundData(0) / 100.0;
+    rotationSpeed->x = 0.04 * amp;
+    rotationSpeed->y = 0.05 * amp;
+    rotationSpeed->z = 0.03 * amp;
+
+    cubeAxisRotations->x -= rotationSpeed->x;
+    cubeAxisRotations->y -= rotationSpeed->y;
+    cubeAxisRotations->z -= rotationSpeed->z;
+
+    // 2) Orbit translation & near-plane handling
+    const OrbitXform xf = computeCubeOrbitTransform();
+    if (!xf.visible) return;
+
+    // 3) Projected points (for drawing)
+    std::vector<Point2D> screenPoints;
+    screenPoints.reserve(pointsArray.size());
+    transform3DPointsTo2DPoints(pointsArray, cubeAxisRotations, &screenPoints,
+                                xf.tx, xf.ty, xf.tz);
+
+    // 4) Rotated camera-space points (for normals & depth)
+    std::vector<Point3D> cam;  cam.reserve(pointsArray.size());
+    cam.clear();
+    for (const auto& p : pointsArray) {
+        Point3D r = rotateOnly(p, *cubeAxisRotations);
+        // add orbit translation in camera space
+        r.x += xf.tx; r.y += xf.ty; r.z += xf.tz;
+        cam.push_back(r);
+    }
+
+    const int cx = originalWidth  / 2;
+    const int cy = originalHeight / 2;
+
+    struct FaceItem { int idx; double depth; };
+    std::vector<FaceItem> items;
+    items.reserve(facesArray.size());
+    for (int i = 0; i < (int)facesArray.size(); ++i) {
+        const auto& f = facesArray[i];
+        double zAvg = (cam[f[0]].z + cam[f[1]].z + cam[f[2]].z + cam[f[3]].z) * 0.25;
+        items.push_back({ i, zAvg });
+    }
+
+    std::sort(items.begin(), items.end(),
+              [](const FaceItem& a, const FaceItem& b){ return a.depth > b.depth; });
+
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, false);
+    painter->setPen(Qt::NoPen);
+
+    const double ambient = 0.20; // 0..1
+
+    for (const FaceItem& it : items) {
+        const auto& f = facesArray[it.idx];
+
+        // --- 2D backface culling by screen-space winding ---
+        // NOTE: Qt Y axis grows downward, so visible faces are typically "clockwise".
+        QPoint p0(cx + screenPoints[f[0]].x, cy + screenPoints[f[0]].y);
+        QPoint p1(cx + screenPoints[f[1]].x, cy + screenPoints[f[1]].y);
+        QPoint p2(cx + screenPoints[f[2]].x, cy + screenPoints[f[2]].y);
+        int abx = p1.x() - p0.x(), aby = p1.y() - p0.y();
+        int acx = p2.x() - p0.x(), acy = p2.y() - p0.y();
+        int crossZ = abx*acy - aby*acx;
+        // Cull faces that are CCW in a Y-down system:
+        if (crossZ >= 0) continue;   // <-- this is the important flip
+
+        // --- Face normal in camera space (translation cancels out) ---
+        const Point3D& A = cam[f[0]];
+        const Point3D& B = cam[f[1]];
+        const Point3D& C = cam[f[2]];
+        Point3D u(B.x - A.x, B.y - A.y, B.z - A.z);
+        Point3D v(C.x - A.x, C.y - A.y, C.z - A.z);
+        Point3D n( u.y*v.z - u.z*v.y,
+                   u.z*v.x - u.x*v.z,
+                   u.x*v.y - u.y*v.x );
+        normalize(n);
+
+        QColor faceColor;
+        if (cubeWireframeEnabled) {
+            // Flat, unshaded color
+            faceColor = cubeColor;
+        } else {
+            // Lambert + ambient
+            double ndotl = n.x*lightDir.x + n.y*lightDir.y + n.z*lightDir.z;
+            double shade = std::max(0.0, ndotl);
+            double intensity = std::clamp(ambient + shade*(1.0 - ambient), 0.0, 1.0);
+
+            faceColor = cubeColor;
+            faceColor.setRed  (int(faceColor.red()   * intensity));
+            faceColor.setGreen(int(faceColor.green() * intensity));
+            faceColor.setBlue (int(faceColor.blue()  * intensity));
+        }
+        painter->setBrush(faceColor);
+
+        QPoint poly[4] = {
+                p0,
+                p1,
+                QPoint(cx + screenPoints[f[2]].x, cy + screenPoints[f[2]].y),
+                QPoint(cx + screenPoints[f[3]].x, cy + screenPoints[f[3]].y),
+        };
+        painter->drawConvexPolygon(poly, 4);
+    }
+
+    painter->restore();  // restore from the fill pass
+
+    if (cubeWireframeEnabled) {
+        painter->save();
+        painter->setBrush(Qt::NoBrush);
+        QPen pen(cubeWireColor);
+        pen.setWidth(cubeWireWidth);
+        pen.setCosmetic(true);
+        pen.setJoinStyle(Qt::MiterJoin);
+        pen.setCapStyle(Qt::SquareCap);
+        painter->setPen(pen);
+
+        for (int i = 0; i < (int)facesArray.size(); ++i) {
+            const auto& f = facesArray[i];
+            QPoint poly[4] = {
+                    QPoint(cx + screenPoints[f[0]].x, cy + screenPoints[f[0]].y),
+                    QPoint(cx + screenPoints[f[1]].x, cy + screenPoints[f[1]].y),
+                    QPoint(cx + screenPoints[f[2]].x, cy + screenPoints[f[2]].y),
+                    QPoint(cx + screenPoints[f[3]].x, cy + screenPoints[f[3]].y),
+            };
+            painter->drawPolygon(poly, 4);
+        }
+        painter->restore();
+    }
+
+}
+
+

@@ -53,6 +53,14 @@ public:
     {
     };
 
+    virtual void set3DCubeColor(QColor)
+    {
+    };
+
+    virtual void set3DCubeColorWireframe(QColor)
+    {
+    };
+
     virtual void setVUMeterPeaksEnabled(bool)
     {
     };
@@ -81,6 +89,9 @@ public:
     {
     };
 
+    virtual void set3DCubeFocalLength(int)
+    {
+    };
     virtual void setFontScaleX(int)
     {
     };
@@ -146,6 +157,23 @@ public:
     };
 
     virtual void setRasterBarsEnabled(bool)
+    {
+    };
+
+    virtual void set3DCubeEnabled(bool)
+    {
+    };
+
+    virtual void set3DCubeFilled(bool)
+    {
+    };
+
+    virtual void set3DCubeWireframeEnabled(bool)
+    {
+    };
+
+
+    virtual void set3DCubeOrbit(bool)
     {
     };
 
@@ -241,9 +269,19 @@ public:
     {
     };
 
+    virtual QString get3DCubeColor()
+    {
+    };
+
+    virtual QString get3DCubeColorWireframe()
+    {
+    };
+
     virtual bool getStarsEnabled()
     {
     };
+
+
 
     virtual int getNumberOfStars()
     {
@@ -304,6 +342,27 @@ public:
     virtual bool getRasterBarsEnabled()
     {
     };
+
+    virtual bool get3DCubeEnabled()
+    {
+    };
+
+    virtual bool get3DCubeFilled()
+    {
+    };
+
+    virtual bool get3DCubeOrbit()
+    {
+    };
+
+    virtual bool get3DCubeWireframeEnabled()
+    {
+    };
+
+    virtual bool get3DCubeFocalLength()
+    {
+    };
+
 
     virtual int getNumberOfRasterBars()
     {

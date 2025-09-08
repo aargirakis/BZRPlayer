@@ -80,6 +80,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderRasterbarsOpacity->installEventFilter(this);
     ui->sliderRasterBarsVerticalSpacing->installEventFilter(this);
     ui->sliderNumberOfRasterBars->installEventFilter(this);
+    ui->slider3DCubeFocalLength->installEventFilter(this);
 
     ui->comboBoxEmulatorAdplug->installEventFilter(this);
     ui->comboBoxEmulatorAdplug->addItem("Tatsuyuki Satoh", "0");
@@ -256,6 +257,10 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderNumberOfStars->setValue(mainWindow->getEffect()->getNumberOfStars());
     ui->sliderStarSpeed->setValue(mainWindow->getEffect()->getStarSpeed());
     ui->checkBoxStarsEnabled->setChecked(mainWindow->getEffect()->getStarsEnabled());
+    ui->checkBox3DCubeEnabled->setChecked(mainWindow->getEffect()->get3DCubeEnabled());
+    ui->checkBox3DCubeFilled->setChecked(mainWindow->getEffect()->get3DCubeFilled());
+    ui->checkBox3DCubeOrbit->setChecked(mainWindow->getEffect()->get3DCubeOrbit());
+    ui->checkBox3DCubeWireframeEnabled->setChecked(mainWindow->getEffect()->get3DCubeWireframeEnabled());
     ui->checkBoxScrollerEnabled->setChecked(mainWindow->getEffect()->getScrollerEnabled());
     ui->textEditCustomScrolltext->setText(mainWindow->getEffect()->getCustomScrolltext());
     ui->checkBoxCustomScrolltextEnabled->setChecked(mainWindow->getEffect()->getCustomScrolltextEnabled());
@@ -274,13 +279,13 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderResolutionWidth->setValue(mainWindow->getEffect()->getResolutionWidth());
     ui->sliderResolutionHeight->setValue(mainWindow->getEffect()->getResolutionHeight());
     ui->checkBoxAspectRatio->setChecked(mainWindow->getEffect()->getKeepAspectRatio());
-
     ui->checkBoxRasterbarsEnabled->setChecked(mainWindow->getEffect()->getRasterBarsEnabled());
     ui->sliderNumberOfRasterBars->setValue(mainWindow->getEffect()->getNumberOfRasterBars());
     ui->sliderRasterBarsBarHeight->setValue(mainWindow->getEffect()->getRasterBarsHeight());
     ui->sliderRasterBarsVerticalSpacing->setValue(mainWindow->getEffect()->getRasterBarsVerticalSpacing());
     ui->sliderRasterBarsSpeed->setValue(mainWindow->getEffect()->getRasterBarsSpeed());
     ui->sliderRasterbarsOpacity->setValue(mainWindow->getEffect()->getRasterbarsOpacity());
+    ui->slider3DCubeFocalLength->setValue(mainWindow->getEffect()->get3DCubeFocalLength());
     forceUpdateToSliders();
 
     if (PLUGIN_libsidplayfp_LIB != "")
@@ -707,6 +712,7 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
             obj == ui->sliderRasterbarsOpacity ||
             obj == ui->sliderRasterBarsVerticalSpacing ||
             obj == ui->sliderNumberOfRasterBars ||
+            obj == ui->slider3DCubeFocalLength ||
             obj == ui->comboBoxFilterOpenMPT ||
             obj == ui->comboBoxResamplingOpenMPT ||
             obj == ui->comboBoxDitherOpenMPT ||
@@ -2061,6 +2067,12 @@ void settingsWindow::updateColorButtons()
     qss = QString("background-color: %1").arg(mainWindow->getEffect()->getReflectionColor());
     ui->buttonColorReflection->setStyleSheet(qss);
 
+    qss = QString("background-color: %1").arg(mainWindow->getEffect()->get3DCubeColor());
+    ui->buttonColor3DCube->setStyleSheet(qss);
+
+    qss = QString("background-color: %1").arg(mainWindow->getEffect()->get3DCubeColorWireframe());
+    ui->buttonColorWireframe3DCube->setStyleSheet(qss);
+
     qss = QString("background-color: %1").arg(mainWindow->getColorVisualizerBackground());
     ui->buttonColorVisualizerBackground->setStyleSheet(qss);
 }
@@ -2090,6 +2102,12 @@ void settingsWindow::on_sliderScrollSpeed_valueChanged(int value)
 {
     mainWindow->getEffect()->setScrollSpeed(value);
     ui->labelScrollSpeed->setText(QString::number(value));
+}
+
+void settingsWindow::on_slider3DCubeFocalLength_valueChanged(int value)
+{
+    mainWindow->getEffect()->set3DCubeFocalLength(value);
+    ui->label3DCubeFocalLength->setText(QString::number(int((value/500.0)*100)));
 }
 
 
@@ -2230,6 +2248,30 @@ void settingsWindow::on_buttonColorReflection_clicked()
     }
 }
 
+void settingsWindow::on_buttonColor3DCube_clicked()
+{
+    QColor oldColor(mainWindow->getEffect()->get3DCubeColor());
+    QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
+    if (newColor.isValid())
+    {
+        mainWindow->getEffect()->set3DCubeColor(newColor.name());
+
+        QString qss = QString("background-color: %1").arg(mainWindow->getEffect()->get3DCubeColor());
+        ui->buttonColor3DCube->setStyleSheet(qss);
+    }
+}
+void settingsWindow::on_buttonColorWireframe3DCube_clicked()
+{
+    QColor oldColor(mainWindow->getEffect()->get3DCubeColorWireframe());
+    QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
+    if (newColor.isValid())
+    {
+        mainWindow->getEffect()->set3DCubeColorWireframe(newColor.name());
+
+        QString qss = QString("background-color: %1").arg(mainWindow->getEffect()->get3DCubeColorWireframe());
+        ui->buttonColorWireframe3DCube->setStyleSheet(qss);
+    }
+}
 
 void settingsWindow::on_buttonBrowseFont_clicked()
 {
@@ -2790,7 +2832,64 @@ void settingsWindow::on_sliderRasterbarsOpacity_valueChanged(int value)
     ui->labelRasterbarsOpacity->setText(QString::number(value));
 }
 
+void settingsWindow::on_checkBox3DCubeEnabled_toggled(bool checked)
+{
+    bool checked3dCube = ui->checkBox3DCubeEnabled->checkState() == Qt::Checked ? true : false;
+    mainWindow->getEffect()->set3DCubeEnabled(checked3dCube);
+    if (checked3dCube)
+    {
+        ui->checkBox3DCubeEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBox3DCubeFilled->setEnabled(true);
+    }
+    else
+    {
+        ui->checkBox3DCubeEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBox3DCubeFilled->setEnabled(false);
+    }
+}
+void settingsWindow::on_checkBox3DCubeOrbit_toggled(bool checked)
+{
+    bool checked3dCubeOrbit = ui->checkBox3DCubeOrbit->checkState() == Qt::Checked ? true : false;
+    mainWindow->getEffect()->set3DCubeOrbit(checked3dCubeOrbit);
+    if (checked3dCubeOrbit)
+    {
+        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-off"]);
+    }
+}
+void settingsWindow::on_checkBox3DCubeFilled_toggled(bool checked)
+{
+    bool checked3dCubeFilled = ui->checkBox3DCubeFilled->checkState() == Qt::Checked ? true : false;
+    mainWindow->getEffect()->set3DCubeFilled(checked3dCubeFilled);
+    if (checked3dCubeFilled)
+    {
+        ui->checkBox3DCubeFilled->setIcon(mainWindow->icons["checkbox-on"]);
 
+    }
+    else
+    {
+        ui->checkBox3DCubeFilled->setIcon(mainWindow->icons["checkbox-off"]);
+
+    }
+}
+void settingsWindow::on_checkBox3DCubeWireframeEnabled_toggled(bool checked)
+{
+    bool checked3dCubeWireframeEnabled = ui->checkBox3DCubeWireframeEnabled->checkState() == Qt::Checked ? true : false;
+    mainWindow->getEffect()->set3DCubeWireframeEnabled(checked3dCubeWireframeEnabled);
+    if (checked3dCubeWireframeEnabled)
+    {
+        ui->checkBox3DCubeWireframeEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+
+    }
+    else
+    {
+        ui->checkBox3DCubeWireframeEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+
+    }
+}
 void settingsWindow::on_checkBoxRasterbarsEnabled_toggled(bool checked)
 {
     bool checkedRasterbars = ui->checkBoxRasterbarsEnabled->checkState() == Qt::Checked ? true : false;
@@ -2909,6 +3008,30 @@ void settingsWindow::updateCheckBoxes()
     else
     {
         ui->checkBoxRasterbarsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+    }
+    if (ui->checkBox3DCubeEnabled->isChecked())
+    {
+        ui->checkBox3DCubeEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBox3DCubeEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+    }
+    if (ui->checkBox3DCubeFilled->isChecked())
+    {
+        ui->checkBox3DCubeFilled->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBox3DCubeFilled->setIcon(mainWindow->icons["checkbox-off"]);
+    }
+    if (ui->checkBox3DCubeOrbit->isChecked())
+    {
+        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-off"]);
     }
     if (ui->checkBoxPrinterEnabled->isChecked())
     {
@@ -3108,6 +3231,7 @@ void settingsWindow::forceUpdateToSliders()
     on_sliderRasterbarsOpacity_valueChanged(ui->sliderRasterbarsOpacity->value());
     on_sliderRasterBarsVerticalSpacing_valueChanged(ui->sliderRasterBarsVerticalSpacing->value());
     on_sliderNumberOfRasterBars_valueChanged(ui->sliderNumberOfRasterBars->value());
+    on_slider3DCubeFocalLength_valueChanged(ui->slider3DCubeFocalLength->value());
 }
 
 void settingsWindow::on_checkBoxContinuousPlaybackAdplug_toggled()

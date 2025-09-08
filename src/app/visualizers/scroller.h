@@ -10,7 +10,8 @@ class Scroller : public Effect
 public:
     Scroller(QWidget* parent);
     void paint(QPainter* painter, QPaintEvent* event);
-
+    struct OrbitXform { double tx, ty, tz; bool visible; };
+    OrbitXform computeCubeOrbitTransform();
     void setVumeterWidth(double);
     void setSinusSpeed(double);
     void setSinusFrequency(double);
@@ -29,11 +30,18 @@ public:
     void setStarsEnabled(bool);
     void setScrollerEnabled(bool);
     void setRasterBarsEnabled(bool);
+    void set3DCubeEnabled(bool);
+    void set3DCubeFilled(bool);
+    void set3DCubeOrbit(bool);
+    void set3DCubeColor(QColor);
+    void set3DCubeColorWireframe(QColor);
+    void set3DCubeWireframeEnabled(bool);
     void setPrinterEnabled(bool);
     void setVUMeterEnabled(bool);
     void setCustomScrolltextEnabled(bool);
     void setCustomScrolltext(QString);
     void setScrollerReflectionColor(QColor);
+    void set3DCubeFocalLength(int);
 
     void setNumberOfStars(int);
     void setNumberOfRasterBars(int);
@@ -78,6 +86,7 @@ public:
     int getNumberOfStars();
     int getStarSpeed();
     bool getStarsEnabled();
+    bool getCubeEnabled();
     bool getVUMeterEnabled();
     bool getScrollerEnabled();
     bool getCustomScrolltextEnabled();
@@ -95,12 +104,19 @@ public:
     bool getReflectionEnabled();
     double getVumeterWidth();
     bool getRasterBarsEnabled();
+    bool get3DCubeEnabled();
+    bool get3DCubeFilled();
+    bool get3DCubeOrbit();
+    bool get3DCubeFocalLength();
+    bool get3DCubeWireframeEnabled();
     int getNumberOfRasterBars();
     int getRasterBarsSpeed();
     int getRasterBarsVerticalSpacing();
     int getRasterBarsHeight();
 
     QString getReflectionColor();
+    QString get3DCubeColor();
+    QString get3DCubeColorWireframe();
     QString getFont();
     QString getPrinterFont();
     void stop();
@@ -123,15 +139,66 @@ private:
     };
 
     //3d cube
-    void transform3DPointsTo2DPoints(std::vector<Point3D> points, Point3D* axisRotations,
-                                     std::vector<Point2D>* TransformedPointsArray);
+    void transform3DPointsTo2DPoints(const std::vector<Point3D>& points,
+                                     const Point3D* axisRotations,
+                                     std::vector<Point2D>* TransformedPointsArray,
+                                     double tx, double ty, double tz);
     std::vector<Point3D> pointsArray;
-    std::vector<int*> facesArray;
+    std::vector<std::array<int,4>> facesArray;
     int* edgesArray;
-    Point3D* cubeAxisRotations;
-    Point3D* rotationSpeed;
-    int focalLength;
-    //ed 3d cube
+    Point3D* cubeAxisRotations=nullptr;
+    Point3D* rotationSpeed=nullptr;
+    int cubeFocalLength = 140;
+    inline static constexpr int CUBE_SIZE = 450;
+
+    QColor cubeBaseColor = QColor(0, 200, 0); // base hue for the cube
+    Point3D lightDir = Point3D(0.5, 0.8, 1.0); // fake light direction
+
+    void setCubeBaseColor(const QColor& c){ cubeBaseColor = c; }
+    void setCubeLightDir(double x,double y,double z);
+    inline void init3DCommon();
+
+    static inline void normalize(Point3D& v);
+    Point3D rotateOnly(const Point3D& p, const Point3D& rot); // rotate without perspective
+    void    paint3dCubeFilled(QPainter* painter);
+
+    bool   cubeOrbitEnabled  = false;  // toggle
+    double cubeOrbitAngle    = 0.0;    // radians
+    double cubeOrbitSpeed    = 0.02;   // radians per frame
+    double cubeOrbitRadius   = 260.0;   // X–Z circle radius
+    double cubeOrbitCenterZ  = 270.0;  // center of the circle along camera Z
+    double cubeIdleCenterZ = 30.0;
+    double cubeIdleY       = 0.0;
+    double cubeOrbitY        = 0.0;    // height of the orbit plane
+    bool   cubeWireframeEnabled = true;
+    QColor cubeWireColor        = Qt::red;
+    int    cubeWireWidth        = 1;     // px
+
+
+    //end 3d cube
+
+
+
+// Near-plane handling: when orbit would get too close to camera
+    enum class CubeNearPolicy { ClampInFront, HideWhenTooClose };
+    CubeNearPolicy cubeNearPolicy = CubeNearPolicy::ClampInFront;
+
+// Near margin in pixels (screen-space denom safety): focalLength + z >= nearMargin
+    double cubeNearMargin = 12.0;
+
+// Optional: approximate cube "radius" along Z to keep whole cube safe
+    double cubeBoundRadius = CUBE_SIZE * 1.8; // ~sqrt(3)*CUBE_SIZE; tweak if needed
+
+/// Setters
+    void setCubeOrbitEnabled(bool on)                 { cubeOrbitEnabled = on; }
+    void setCubeOrbitSpeed(double radPerFrame)        { cubeOrbitSpeed = radPerFrame; }
+    void setCubeOrbitParams(double radius, double centerZ, double y = 0.0) {
+        cubeOrbitRadius = radius; cubeOrbitCenterZ = centerZ; cubeOrbitY = y;
+    }
+    void setCubeNearPolicyClamp(bool clamp) {
+        cubeNearPolicy = clamp ? CubeNearPolicy::ClampInFront : CubeNearPolicy::HideWhenTooClose;
+    }
+    void setCubeNearMargin(double px) { cubeNearMargin = px; }
 
 
     Star* stars;
@@ -182,13 +249,14 @@ private:
     void paintScroller(QPainter* painter, QPaintEvent* event);
     void paintVUMeters(QPainter* painter, QPaintEvent* event, bool stereo);
     void paintRasterBars(QPainter* painter, QPaintEvent* event);
-    void paint3dCube(QPainter* painter, QPaintEvent* event);
+    void paint3dCube(QPainter* painter);
     void createRasterBar(QPainter* painter, int offset, int numBars);
     void printText(QPainter* painter, QPaintEvent* event);
     bool setBitmapFont(QString);
     bool setBitmapFontPrinter(QString);
     void reset();
     void initialize3dCube();
+    void initializeSphere(int rings = 10, int segments = 10, double radius = CUBE_SIZE);
 	void updateBottomY();
 
     QImage backbuf;
@@ -213,6 +281,8 @@ private:
     bool sinusFontScalingEnabled;
     bool reflectionEnabled;
     bool starsEnabled;
+    bool cubeEnabled;
+    bool cubeFilled;
     bool vuMeterEnabled;
     bool scrollerEnabled;
     bool customScrolltextEnabled;
@@ -227,6 +297,7 @@ private:
     QList<QList<QColor>> rasterBarsColors;
     int starSpeed;
     QColor reflectionColor;
+    QColor cubeColor;
     QString m_scrollText;
     QString m_printerText;
     QStringList m_printerTextRows;

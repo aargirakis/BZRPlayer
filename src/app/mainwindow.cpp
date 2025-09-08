@@ -259,6 +259,12 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     getEffect()->setScrollerReflectionColor(
         QColor(settings.value("scroller/reflectionColor", "#00032e").toString()));
     getEffect()->setSinusFontScalingEnabled(settings.value("scroller/setsinusfontscaling", false).toBool());
+    getEffect()->set3DCubeEnabled(settings.value("scroller/3dcube", false).toBool());
+    getEffect()->set3DCubeFilled(settings.value("scroller/3dcubefilled", false).toBool());
+    getEffect()->set3DCubeOrbit(settings.value("scroller/3dcubeorbit", false).toBool());
+    getEffect()->set3DCubeColor(settings.value("scroller/3dcubecolor", "#009379").toString());
+    getEffect()->set3DCubeColorWireframe(settings.value("scroller/3dcubecolorWireframe", "#ffffff").toString());
+    getEffect()->set3DCubeWireframeEnabled(settings.value("scroller/3dcubeWireframe", false).toBool());
     getEffect()->setRasterBarsEnabled(settings.value("scroller/rasterbars", false).toBool());
     getEffect()->setNumberOfRasterBars(settings.value("scroller/rasterbarsamount", 8).toInt());
     getEffect()->setRasterBarsSpeed(settings.value("scroller/rasterbarsspeed", 35).toInt());
@@ -3837,6 +3843,12 @@ void MainWindow::SaveSettings()
     settings.setValue("scroller/customscrolltext", getEffect()->getCustomScrolltext());
     settings.setValue("scroller/starfield", getEffect()->getStarsEnabled());
     settings.setValue("scroller/rasterbars", getEffect()->getRasterBarsEnabled());
+    settings.setValue("scroller/3dcube", getEffect()->get3DCubeEnabled());
+    settings.setValue("scroller/3dcubefilled", getEffect()->get3DCubeFilled());
+    settings.setValue("scroller/3dcubeWireframeEnabled", getEffect()->get3DCubeWireframeEnabled());
+    settings.setValue("scroller/3dcubeorbit", getEffect()->get3DCubeOrbit());
+    settings.setValue("scroller/3dcubecolor", getEffect()->get3DCubeColor());
+    settings.setValue("scroller/3dcubeColorWireframe", getEffect()->get3DCubeColorWireframe());
     settings.setValue("scroller/rasterbarsamount", getEffect()->getNumberOfRasterBars());
     settings.setValue("scroller/rasterbarsspeed", getEffect()->getRasterBarsSpeed());
     settings.setValue("scroller/rasterbarsheight", getEffect()->getRasterBarsHeight());
