@@ -219,6 +219,10 @@ FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATE
 
     handle_error(gme_track_info(plugin->emu, &plugin->info, plugin->track));
 
+    if (!plugin->info) {
+        return FMOD_ERR_INTERNAL;
+    }
+
     /* Get and print main info for track */
 
     /*printf( "System   : %s\n", info.system );
