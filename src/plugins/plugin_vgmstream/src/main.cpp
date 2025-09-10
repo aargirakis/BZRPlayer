@@ -72,6 +72,21 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    unsigned int bytesread;
+    auto *smallBuffer = new uint8_t[16];
+    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    FMOD_CODEC_FILE_READ(codec, smallBuffer, 16, &bytesread);
+
+    /* skip gm.dls:
+     * plugin_vgmstream has higher prio than FMOD_SOUND_TYPE_MIDI,
+     * thus when plugin_vgmstream will fail on midi loading
+     * FMOD will try to invoke plugin_vgmstream again for loading gm.dls too
+    */
+    if (memcmp(smallBuffer, "RIFF\x0c\x80" "4\0DLS colh", 16) == 0) {
+        delete[] smallBuffer;
+        return FMOD_ERR_FORMAT;
+    }
+
     auto *plugin = new pluginVgmstream(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 

@@ -1,0 +1,255 @@
+This is a collection of sound files and associated software, collected
+by Bill Schottstaedt (with much help from Peter Kabal) from various
+public sources.  The files included are:
+
+32bit.sf            IRCAM le float
+8svx-8.snd          8SVX 8-bit
+Fnonull.aif	    9 samples, AIFF-C file with COMM chunk declaring 92 bytes 
+                       (1 byte longer than actual file length), SSND with 9 bytes, 
+                       missing trailing fill byte. -- an invalid AIFF file.
+Pmiscck.aif	    9 samples, AIFF-C file with an odd length intermediate chunk (type XxXx)
+Pmiscck.wav	    9 samples, WAVE file with an odd length intermediate chunk (type XxXx)
+Pnossnd.aif	    0 samples, AIFF-C file with 0 samples (no SSND chunk)
+Poffset.aif	    9 samples, AIFF-C file, SSND chunk has a 5 byte offset to the data and trailing junk in the SSND chunk
+Porder.aif	    9 samples, AIFF-C file with SSND chunk ahead of the COMM chunk
+Ptjunk.aif	    9 samples, AIFF-C file with trailing junk after the FORM chunk
+Ptjunk.wav	    9 samples, WAVE file with trailing junk after the RIFF chunk
+a16.pvf             PVF ascii (16-bit)
+addf8.afsp          NeXT/Sun 16-bit linear with AFsp header extension
+addf8.d             SPPACK
+addf8.dwd           DiamondWare
+addf8.nh            raw (no header)
+addf8.nsp	    CSL 8kHz 16-bit
+addf8.sd            ESPS 16-bit
+addf8.sf_mipseb     IRCAM 16-bit
+addf8.sf_sun        IRCAM 16-bit
+addf8.sf_vax_b      IRCAM 16-bit
+addf8.wav           RIFF 16-bit
+aebass.krz	    Kurzweil
+aifc-float.snd      AIFC float
+aiff-16.snd         AIFF 16-bit
+aiff-8.snd          AIFF 8-bit (signed)
+alaw.aifc           AIFC alaw
+alaw.wav	    RIFF alaw
+anno.aif            AIFF with ANNO chunk
+bad_srate.snd       these are various messed-up headers (for error testing)
+bad_srate.riff
+bad_srate.nist
+bad_srate.aifc
+bad_length.nist
+bad_length.aifc
+badform.aiff
+bad_chans.snd
+bad_chans.riff
+bad_chans.nist
+bad_chans.aifc
+b.sd                ESPS little endian unknown format
+b16.pvf             PVF 16-bit binary
+b32.pvf             PVF 32-bit binary (all these from the pvf conversion utilities)
+b8.pvf              PVF 8-bit binary
+canyon.sd           ESPS 16KHz
+caruso.asc          Octave/WaveLab ASCII file.
+ce-c3.w02           Yamaha TX-16
+clbonef.wav         RIFF 32-bit float
+crash.au            Next/Sun mulaw
+daj.sam		    Sambox 
+d40130.aif          AIFF version
+d40130.dsf          Delusion Digital Sound File
+d40130.fsm          Farandole Composer WaveSample
+d40130.iff          SVX8 version
+d40130.pat          Gravis patch (signed 16-bit)
+d40130.sds          MIDI sample dump
+d40130.sdx          Sample dump exchange (little endian data -- wood.sdx=big endian)
+d40130.sf           IRCAM (VAX id, little endian header, big endian data -- is this correct?)
+d40130.smp          SMP le short
+d40130.sou          SB Studio II
+d40130.stm          "STM" output from SFconvert 1.6 (is this the Amiga stm format?)
+d40130.st3          Digiplayer ST3
+d40130.uwf          Ultratracker wavesample
+d40130.voc          VOC version
+d40130.w00          Yamaha TX-16
+d40130.wav          Wave (RIFF) original (Convert 1.4 used to create all the rest of this name)
+digit0v0.aiff       AIFC with weird COMM chunk
+dryer2.mat	    Matlab data file containing sound data
+dvi_adpcm.wav	    DVI ADPCM RIFF
+esps-16.snd         ESPS 16-bit 
+flute.sdif          SDIF file from Loris
+g721.au             G721 compression
+g722.aifc           AIFC g722
+gong.wve            ditto
+gsm610.wav          RIFF GSM610
+hcom-16.snd         HCOM (a Mac compression scheme)
+hybrid.snd          BICSF
+ieee-text-16.snd    IEEE SPIB text (truncated) -- 16-bit integers as ASCII text
+inrs-16.snd         INRS 16-bit
+kirk.wve	    ditto
+litmanna.sf         IRCAM 16-bit little endian
+ludbug.raw          a raw file, 32-bit big-endian floats, stereo, very small values
+M1F1-float64C-AFsp.aif 64-bit double AIFC
+MacBoing.wav        RIFF unsigned byte (has trailing LIST chunk)
+manna-mips-le-f.sf  IRCAM little-endian float
+mary-sun4.sig       Comdisco
+midi60.mid          MIDI
+mocksong.ra         Real audio
+mocksong.wav        RIFF version
+mono.mat            mono Matlab
+mono24.wav          RIFF 24-bit
+msadpcm.wav         RIFF Microsoft ADPCM
+mus10.snd	    PDP-10 Mus10/Sam 16-bit (36-bit words)
+n8.snd              NeXT/Sun signed byte
+nasahal.avi         AVI
+next-16.snd         NeXT/Sun 16-bit
+next-8.snd	    NeXT/Sun 8-bit linear
+next-dbl.snd	    NeXT/Sun 64-bit double
+next-flt.snd	    NeXT/Sun 32-bit float
+next-mulaw.snd      NeXT/Sun 8-bit mulaw
+next24.snd	    NeXT 24-bit
+nist-01.wav         NIST little endian
+nist-10.wav         NIST big endian
+nist-16.snd         NIST-SPHERE 16-bit big-endian
+nist-shortpack.wav  NIST shortpack
+none.aifc           AIFC uncompressed
+nylon2.wav	    RIFF DVI ADPCM
+o2.adf              ADF (CSRE) output from SFConvert 1.6
+o2.avr              AVR 16-bit
+o2.bicsf            IRCAM (bicsf) 16-bit big-endian
+o2.mpeg1            MPEG layer 1
+o2.nsp              NSP (CSL) output from SFConvert 1.6
+o2.sd2              no header, 16-bit (Sound Designer II data fork)
+o2.sf2              SoundFont 
+o2.smp              SMP 16-bit linear little endian
+o2.voc              VOC 16-bit linear little endian
+o2.wave             RIFF 16-bit
+o2_12bit.aiff       AIFF 12 bit data
+o2_18bit.aiff       AIFF 18 bit data
+o2_711u.wave        RIFF mulaw
+o2_722.snd          NeXT G722
+o2_726.aiff         AIFF G726 compression
+o2_726.snd          NeXT G726(?) -- there's apparently disagreement about this mode
+o2_728.aiff         AIFF G728 compression
+o2_8.iff            8SVX (IFF) 8-bit linear
+o2_8.voc            VOC 8-bit linear
+o2_dvi.wave         RIFF DVI ADPCM
+o2_float.bicsf      IRCAM (bicsf) 32-bit float big-endian
+o2_gsm.aiff         AIFF GSM compression
+o2_u8.avr           AVR 8-bit unsigned
+o2_u8.wave          RIFF 8-bit unsigned
+o28.mpc		    AKAI MPC 2000
+o28.voc		    VOC with comment chunk
+oboe-be32.caf       CAFF (Core Audio File Format from Apple -- google for CAFSpec), created by afconvert
+oboe-bf64.caf       CAFF (bdouble)
+oboe-lf32.caf       CAFF (lfloat)
+oboe-ulaw.caf	    CAFF (mulaw)
+oboe.epoc32         Another Psion format
+oboe.fas            Fast tracker
+oboe.g721           NeXT G721
+oboe.g723_24        NeXT G723 3 bit
+oboe.g723_40	    NeXT G723 5 bit
+oboe.its            Impulse tracker
+oboe.kts	    Korg
+oboe.mac3           AIFC MACE 3 encoding from oboe.snd via SoundApp
+oboe.mac6           AIFC MACE 6 encoding from oboe.snd via SoundApp
+oboe.nsp            CSL 22050 LE short mono
+oboe.nvf            Nomad II Creative NVF
+oboe.ogg            OGG Vorbis (from Sox)
+oboe.paf            Ensoniq Paris 16-bit big-endian from oboe.snd via SoundApp
+oboe.paf8           Ensoniq Paris 8-bit (format 2)
+oboe.pf1	    Ensoniq Paris 16-bit little-endian
+oboe.psion          Psion alaw from oboe.snd via SoundApp
+oboe.quick          Quicktime 
+oboe.rf64           RF64 (see rf64.pdf) -- this file was written by sndlib
+oboe.sf6	    Sourceforge riff
+oboe.smp            NIST(?) "SMP" mono
+oboe.xi		    Fast Tracker (libsndfile)
+oboe-lf32.sf	    IRCAM little-endian float (libsndfile)
+oboe-ulaw.voc       VOC mulaw (from libsndfile)
+oki.snd             raw OKI (Dialogic) ADPCM data (woodblock used above)
+oki.wav             RIFF OKI ADPCM
+riff-16.snd         RIFF (WAV) 16-bit
+riff-8-u.snd        RIFF (WAV) 8-bit unsigned
+rooster.wve	    Psion alaw (little-endian header)
+sd1-16.snd          Sound Designer I 16-bit
+sf-16.snd           IRCAM old style 16-bit
+si654.adc	    ADC 16-bit big-endian
+smp-16.snd          Turtle Beach SMP 16-bit
+sos.mod		    MOD file
+sound.sap           Goldwave
+sound.sds           Midi sample dump
+sound.sfr           SFRS
+sound.v8            Covox V8
+SOUND58.WAV	    Wave with various chunks
+sowt.aiff           AIFC with little endian short data
+speech12.sd         ESPS 12Khz (no srate given?), big-endian float
+step.omf            OMF (aiff internally)
+step.qt		    Quicktime
+stereofat.mat       Matlab stereo(?)
+stereothin.mat      Matlab stereo(?)
+sun-16-afsp.snd     NeXT/Sun 16-bit with AFsp header extension
+sun-mulaw.snd       NeXT/Sun 8-bit mulaw
+sw1038t_short.wav   NIST-SPHERE 8-bit mulaw
+swb.wav             NIST stereo mulaw 8KHz
+swirl.pat	    Gravis Ultrasound patch (16-bit unsigned)
+sy85.snd            Yamaha SY-85
+sy99.snd            Yamaha SY-99
+telephone.wav	    NIST 16-bit little endian
+tomf8.aud	    INRS
+trump.sdif          SDIF file
+trumps22.adp	    RIFF IBM ADPCM
+truspech.wav        RIFF true speech
+ulaw.aifc	    AIFC ulaw
+voc-8-u.snd         Creative Voice (VOC) 8-bit unsigned
+voxware.wav         RIFF voxware
+wd.w00              Yamaha SY-85
+wood.dsf            Delusion
+wood.dvi            RIFF adpcm (?)
+wood.dwd            Diamondware
+wood.fsm            Farandole
+wood.mad            RIFF adpcm (?) 
+wood.maud	    Maud 16-bit
+wood.pat            Gravis ultrasound
+wood.ra             Realaudio
+wood.riff	    RIFF 16-bit
+wood.rifx	    RIFX 16-bit (created by hand)
+wood.sbk	    SoundFont
+wood.sds            Midi sample dump
+wood.sf	            IRCAM/DEC 16-bit
+wood.sndr	    Sounder 8-bit unsigned
+wood.sndt	    Sound Tools 8-bit
+wood.st3            Digiplayer ST3
+wood.uwf            Ultratracker
+wood.w00            Yamaha SY-85
+wood12.aiff	    AIFF 12-bit
+wood16.dwd          DiamondWare stereo 16-bit little-endian
+wood16.flac         FLAC
+wood16.nsp          stereo 44100Hz CSL 
+wood16.ogg	    OGG
+wood16.smp          NIST(?) "SMP" stereo
+wood16.spx	    Speex
+wood24.aiff	    AIFF 24-bit
+woodflt.snd         NeXT/Sun big-endian float
+Xhs001x.nsp         CSL
+zulu_a4.w11         TX-16W with loop info
+
+
+If anyone has examples (preferably short) of other header/data formats,
+please send me a copy.  Thanks to Peter Kabal for providing a number
+of these examples.
+
+See sndlib.tar.gz for code to read most of these file types.
+
+The documentation included:
+
+aiff and aifc       AIFF specs
+riff                RIFF (wav) specs
+nist                NIST specs
+AudioFormats.*      audio formats FAQ
+forms.txt           More documentation from http://www.wotsit.demon.co.uk/music.htm
+wavecomp.htm        RIFF stuff in HTML format
+asf.txt             ASF junk
+avi.html            AVI doc
+sf2.txt             SoundFont 2 doc
+rf64.pdf	    EBU RF64 spec
+bwf.pdf             EBU BWF spec
+
+bil@ccrma.stanford.edu
+
