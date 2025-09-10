@@ -462,8 +462,122 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
     {
         addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
     }
-    else //use fmod to get the tag info
+
+    showFmodSupportedTagsIfAny(tableInfo, playlistItem, &row);
+
+    tableInfo->setRowCount(row);
+    for (int i = 0; i < tableInfo->rowCount(); i++)
     {
+        tableInfo->item(i, 0)->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        tableInfo->item(i, 1)->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    }
+    tableInfo->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+}
+
+void FileInfoParser::addInfo(QTableWidget *tableInfo, int *row, const QString &label, const QString &value) {
+    tableInfo->setItem(*row, 0, new QTableWidgetItem(label));
+    tableInfo->setItem((*row)++, 1, new QTableWidgetItem(value));
+}
+
+void FileInfoParser::addMultilineInfo(QTableWidget *tableInfo, int *row, const QString &label, const string &value) {
+    if (!value.empty()) {
+        QString text = fromUtf8OrLatin1(value);
+        auto *plainText = new QPlainTextEdit(text);
+        plainText->setReadOnly(true);
+        plainText->setEnabled(true);
+        tableInfo->setRowHeight(*row, 100);
+        tableInfo->setCellWidget(*row, 1, plainText);
+        addInfo(tableInfo, row, label, text);
+    }
+}
+
+void FileInfoParser::addLengthInfo(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {
+    unsigned int song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
+
+    if (song_length_ms == 0 || song_length_ms == -1) {
+        song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_SUBSONG_MS);
+    }
+    if (song_length_ms == 0) {
+        song_length_ms = -1;
+    }
+    if (song_length_ms == -1 && playlistItem->length > 0) {
+        song_length_ms = playlistItem->length;
+    }
+
+    addInfo(tableInfo, row, "Length", msToNiceStringExact(song_length_ms, true));
+}
+
+void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
+    int currentSubsong = SoundManager::getInstance().m_Info1->currentSubsong;
+    int numSubsongs = SoundManager::getInstance().m_Info1->numSubsongs;
+    bool isSubsong = currentSubsong != 1 || numSubsongs != 1;
+
+    addInfo(tableInfo, row, "Subsong",
+            isSubsong ? QString::number(currentSubsong) + "/" + QString::number(numSubsongs) : "-");
+}
+
+void FileInfoParser::addSidClockSpeed(QTableWidget *tableInfo, int *row) {
+    string clockSpeed;
+    switch (SoundManager::getInstance().m_Info1->clockSpeed) {
+        case 1: clockSpeed = "PAL";
+            break;
+        case 2: clockSpeed = "NTSC";
+            break;
+        case 3: clockSpeed = "Any";
+            break;
+        default: clockSpeed = "Unknown";
+    }
+
+    addInfo(tableInfo, row, "Clock Speed", clockSpeed.c_str());
+}
+
+void FileInfoParser::addSidCompatibility(QTableWidget *tableInfo, int *row) {
+    string compatibility;
+    switch (SoundManager::getInstance().m_Info1->compatibility) {
+        case 0: compatibility = "C64 compatible";
+            break;
+        case 1: compatibility = "PSID specific";
+            break;
+        case 2: compatibility = "Real C64 only";
+            break;
+        case 3: compatibility = "Requires C64 Basic";
+            break;
+        default: compatibility = "Unknown";
+    }
+
+    addInfo(tableInfo, row, "Compatibility", compatibility.c_str());
+}
+
+void FileInfoParser::addSidModel(QTableWidget *tableInfo, int *row) {
+    string sidModel;
+    switch (SoundManager::getInstance().m_Info1->sidModel) {
+        case 1: sidModel = "6581";
+            break;
+        case 2: sidModel = "8580";
+            break;
+        case 3: sidModel = "Any";
+            break;
+        default: sidModel = "Unknown";
+    }
+
+    addInfo(tableInfo, row, "SID Model", sidModel.c_str());
+}
+
+
+void FileInfoParser::addAsapClockSpeed(QTableWidget *tableInfo, int *row) {
+    string clockSpeed;
+    switch (SoundManager::getInstance().m_Info1->clockSpeed) {
+        case 0: clockSpeed = "NTSC";
+            break;
+        case 1: clockSpeed = "PAL";
+            break;
+        default: clockSpeed = "Unknown";
+    }
+
+    addInfo(tableInfo, row, "Clock Speed", clockSpeed.c_str());
+}
+
+void FileInfoParser::showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {
         FMOD_TAG tag;
         FMOD_RESULT res;
         int numTags = SoundManager::getInstance().getNumTags();
@@ -522,9 +636,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                         }
                         if (tag.name != "")
                         {
-                            tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
-                            tableInfo->setItem(row, 1, new QTableWidgetItem(data));
-                            row++;
+                            addInfo(tableInfo, row, tag.name, data);
                         }
                     }
                 }
@@ -534,9 +646,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                     {
                         if (!hasWrittenID3V1Header)
                         {
-                            tableInfo->setItem(row, 0, new QTableWidgetItem("ID3v1 Tag"));
-                            tableInfo->setItem(row, 1, new QTableWidgetItem(""));
-                            row++;
+                            addInfo(tableInfo, row, "ID3v1 Tag", "");
                             hasWrittenID3V1Header = true;
                         }
 
@@ -574,9 +684,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             }
                         }
 
-                        tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
-                        tableInfo->setItem(row, 1, new QTableWidgetItem(DataAsString));
-                        row++;
+                        addInfo(tableInfo, row, tag.name, DataAsString);
                     }
                 }
                 else if (tag.type == FMOD_TAGTYPE_ID3V2)
@@ -585,9 +693,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                     {
                         if (!hasWrittenID3V2Header)
                         {
-                            tableInfo->setItem(row, 0, new QTableWidgetItem("ID3v2 Tag"));
-                            tableInfo->setItem(row, 1, new QTableWidgetItem(""));
-                            row++;
+                            addInfo(tableInfo, row, "ID3v2 Tag", "");
                             hasWrittenID3V2Header = true;
                         }
                         QString data;
@@ -815,17 +921,13 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                             tag.name = "Year";
                         }
 
-                        tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
-                        tableInfo->setItem(row, 1, new QTableWidgetItem(DataAsString));
-                        row++;
+                        addInfo(tableInfo, row, tag.name, DataAsString);
                     }
                     if (tag.datatype == FMOD_TAGDATATYPE_STRING_UTF8)
                     {
                         if (!hasWrittenID3V2Header)
                         {
-                            tableInfo->setItem(row, 0, new QTableWidgetItem("ID3v2 Tag"));
-                            tableInfo->setItem(row, 1, new QTableWidgetItem(""));
-                            row++;
+                            addInfo(tableInfo, row, "ID3v2 Tag", "");
                             hasWrittenID3V2Header = true;
                         }
                         QString data;
@@ -1053,18 +1155,13 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                         {
                             tag.name = "Year";
                         }
-
-                        tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
-                        tableInfo->setItem(row, 1, new QTableWidgetItem(DataAsString));
-                        row++;
+                        addInfo(tableInfo, row, tag.name, DataAsString);
                     }
                     else if (tag.datatype == FMOD_TAGDATATYPE_STRING)
                     {
                         if (!hasWrittenID3V2Header)
                         {
-                            tableInfo->setItem(row, 0, new QTableWidgetItem("ID3v2 Tag"));
-                            tableInfo->setItem(row, 1, new QTableWidgetItem(""));
-                            row++;
+                            addInfo(tableInfo, row, "ID3v2 Tag", "");
                             hasWrittenID3V2Header = true;
                         }
                         QString data = QString::fromLatin1(static_cast<char*>(tag.data));
@@ -1299,7 +1396,6 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                         {
                             if (QString(tag.name) == "TXXX")
                             {
-                                tableInfo->setItem(row, 0, new QTableWidgetItem(data));
                                 char* tst = static_cast<char *>(tag.data);
                                 QString str;
                                 for (int i = data.length(); i < tag.datalen; i++)
@@ -1309,7 +1405,9 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                                         str += tst[i];
                                     }
                                 }
-                                tableInfo->setItem(row, 1, new QTableWidgetItem(str));
+
+                                addInfo(tableInfo, row, data, str);
+
                                 if (data == "replaygain_track_gain")
                                 {
                                     float val = atof(str.trimmed().toStdString().c_str());
@@ -1327,12 +1425,12 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                                 {
                                     data = "No";
                                 }
-                                tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
-                                tableInfo->setItem(row, 1, new QTableWidgetItem(data));
+
+                                addInfo(tableInfo, row, tag.name, data);
+
                             }
                             else if (QString(tag.name) == "Content type")
                             {
-                                tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
                                 //match "(n)" where n is 0-999
                                 QRegularExpression rx(QRegularExpression::anchoredPattern(QLatin1String("[(](\\d{1,3})[)]")));
                                 QRegularExpressionMatch match = rx.match(data);
@@ -1343,10 +1441,8 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                                     bool isConversionOk;
                                     unsigned int index = list[0].toUInt(&isConversionOk);
 
-                                    if (!isConversionOk || index > id3v1GenresMax) {
-                                        tableInfo->setItem(row, 1, new QTableWidgetItem(data));
-                                    } else {
-                                        tableInfo->setItem(row, 1, new QTableWidgetItem(ID3V1_GENRES[index].c_str()));
+                                    if (isConversionOk && index <= id3v1GenresMax) {
+                                        data = ID3V1_GENRES[index].c_str();
                                     }
                                 }
                                 else if (data == "(RX)")
@@ -1357,18 +1453,13 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                                 {
                                     data = "Cover";
                                 }
-                                else
-                                {
-                                    tableInfo->setItem(row, 1, new QTableWidgetItem(data));
-                                }
+
+                                addInfo(tableInfo, row, tag.name, data);
                             }
                             else
                             {
-                                tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
-                                tableInfo->setItem(row, 1, new QTableWidgetItem(data));
+                                addInfo(tableInfo, row, tag.name, data);
                             }
-
-                            row++;
                         }
                     }
                 }
@@ -1615,124 +1706,10 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                         {
                             tag.name = "Disc ID";
                         }
-                        tableInfo->setItem(row, 0, new QTableWidgetItem(tag.name));
-                        tableInfo->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(data.toStdString().c_str())));
-                        row++;
+
+                        addInfo(tableInfo, row, tag.name, QString::fromUtf8(data.toStdString().c_str()));
                     }
                 }
             }
         }
-    }
-
-
-    tableInfo->setRowCount(row);
-    for (int i = 0; i < tableInfo->rowCount(); i++)
-    {
-        tableInfo->item(i, 0)->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        tableInfo->item(i, 1)->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    }
-    tableInfo->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-}
-
-void FileInfoParser::addInfo(QTableWidget *tableInfo, int *row, const QString &label, const QString &value) {
-    tableInfo->setItem(*row, 0, new QTableWidgetItem(label));
-    tableInfo->setItem((*row)++, 1, new QTableWidgetItem(value));
-}
-
-void FileInfoParser::addMultilineInfo(QTableWidget *tableInfo, int *row, const QString &label, const string &value) {
-    if (!value.empty()) {
-        QString text = fromUtf8OrLatin1(value);
-        auto *plainText = new QPlainTextEdit(text);
-        plainText->setReadOnly(true);
-        plainText->setEnabled(true);
-        tableInfo->setRowHeight(*row, 100);
-        tableInfo->setCellWidget(*row, 1, plainText);
-        addInfo(tableInfo, row, label, text);
-    }
-}
-
-void FileInfoParser::addLengthInfo(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {
-    unsigned int song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
-
-    if (song_length_ms == 0 || song_length_ms == -1) {
-        song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_SUBSONG_MS);
-    }
-    if (song_length_ms == 0) {
-        song_length_ms = -1;
-    }
-    if (song_length_ms == -1 && playlistItem->length > 0) {
-        song_length_ms = playlistItem->length;
-    }
-
-    addInfo(tableInfo, row, "Length", msToNiceStringExact(song_length_ms, true));
-}
-
-void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
-    int currentSubsong = SoundManager::getInstance().m_Info1->currentSubsong;
-    int numSubsongs = SoundManager::getInstance().m_Info1->numSubsongs;
-    bool isSubsong = currentSubsong != 1 || numSubsongs != 1;
-
-    addInfo(tableInfo, row, "Subsong",
-            isSubsong ? QString::number(currentSubsong) + "/" + QString::number(numSubsongs) : "-");
-}
-
-void FileInfoParser::addSidClockSpeed(QTableWidget *tableInfo, int *row) {
-    string clockSpeed;
-    switch (SoundManager::getInstance().m_Info1->clockSpeed) {
-        case 1: clockSpeed = "PAL";
-            break;
-        case 2: clockSpeed = "NTSC";
-            break;
-        case 3: clockSpeed = "Any";
-            break;
-        default: clockSpeed = "Unknown";
-    }
-
-    addInfo(tableInfo, row, "Clock Speed", clockSpeed.c_str());
-}
-
-void FileInfoParser::addSidCompatibility(QTableWidget *tableInfo, int *row) {
-    string compatibility;
-    switch (SoundManager::getInstance().m_Info1->compatibility) {
-        case 0: compatibility = "C64 compatible";
-            break;
-        case 1: compatibility = "PSID specific";
-            break;
-        case 2: compatibility = "Real C64 only";
-            break;
-        case 3: compatibility = "Requires C64 Basic";
-            break;
-        default: compatibility = "Unknown";
-    }
-
-    addInfo(tableInfo, row, "Compatibility", compatibility.c_str());
-}
-
-void FileInfoParser::addSidModel(QTableWidget *tableInfo, int *row) {
-    string sidModel;
-    switch (SoundManager::getInstance().m_Info1->sidModel) {
-        case 1: sidModel = "6581";
-            break;
-        case 2: sidModel = "8580";
-            break;
-        case 3: sidModel = "Any";
-            break;
-        default: sidModel = "Unknown";
-    }
-
-    addInfo(tableInfo, row, "SID Model", sidModel.c_str());
-}
-
-
-void FileInfoParser::addAsapClockSpeed(QTableWidget *tableInfo, int *row) {
-    string clockSpeed;
-    switch (SoundManager::getInstance().m_Info1->clockSpeed) {
-        case 0: clockSpeed = "NTSC";
-            break;
-        case 1: clockSpeed = "PAL";
-            break;
-        default: clockSpeed = "Unknown";
-    }
-
-    addInfo(tableInfo, row, "Clock Speed", clockSpeed.c_str());
 }
