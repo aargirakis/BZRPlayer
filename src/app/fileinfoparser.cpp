@@ -223,244 +223,223 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
     addInfo(tableInfo, &row, "Type", SoundManager::getInstance().m_Info1->fileformat.c_str());
     addSubsongInfo(tableInfo, &row);
 
-    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_game_music_emu)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
-        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
-        addInfo(tableInfo, &row, "Dumper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper));
-        addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
-        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_protrekkr)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libsidplayfp)
-    {
-        addInfo(tableInfo, &row, "SID Format", SoundManager::getInstance().m_Info1->fileformatSpecific.c_str());
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
-        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
-        addSidClockSpeed(tableInfo, &row);
-        addSidCompatibility(tableInfo, &row);
-        addInfo(tableInfo, &row, "Song Speed",
-                "$" + QString::number(SoundManager::getInstance().m_Info1->songSpeed, 16));
-        addSidModel(tableInfo, &row);
-        addInfo(tableInfo, &row, "SID Chips", QString::number(SoundManager::getInstance().m_Info1->sidChips));
-        addInfo(tableInfo, &row, "Load Address",
-                "$" + QString::number(SoundManager::getInstance().m_Info1->loadAddr, 16));
-        addInfo(tableInfo, &row, "Init Address",
-                "$" + QString::number(SoundManager::getInstance().m_Info1->initAddr, 16));
-        addInfo(tableInfo, &row, "Play Address",
-                "$" + QString::number(SoundManager::getInstance().m_Info1->playAddr, 16));
-        addInfo(tableInfo, &row, "Start Subsong", QString::number(SoundManager::getInstance().m_Info1->startSubSong));
-        addInfo(tableInfo, &row, "Replayer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer));
-        addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
-        addInfo(tableInfo, &row, "MD5 Old", SoundManager::getInstance().m_Info1->md5Old.c_str());
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_vgmplay_legacy)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-        addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
-        addInfo(tableInfo, &row, "Release date", SoundManager::getInstance().m_Info1->date.c_str());
-        addInfo(tableInfo, &row, "Dumper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper));
-        addInfo(tableInfo, &row, "Chips used",
-                QString(SoundManager::getInstance().m_Info1->chips.c_str()).left(
-                    QString(SoundManager::getInstance().m_Info1->chips.c_str()).length() - 2));
-        addInfo(tableInfo, &row, "Version", QString::number(SoundManager::getInstance().m_Info1->version >> 8) + "." +
-                                            QString::number(SoundManager::getInstance().m_Info1->version & 0xFF));
-        addInfo(tableInfo, &row, "Gain", QString::number(SoundManager::getInstance().m_Info1->gain, 'f', 2));
-        addInfo(tableInfo, &row, "Length", SoundManager::getInstance().m_Info1->loopInfo.c_str());
-        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_uade)
-    {
-        addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-        addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
-        addInfo(tableInfo, &row, "Pattern Length",
-                QString::number(SoundManager::getInstance().m_Info1->modPatternRows));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_klystron)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-        addInfo(tableInfo, &row, "Pattern Rows", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace)
-    {
-        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-        addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libpac)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-        addInfo(tableInfo, &row, "Sheets", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
-        addInfo(tableInfo, &row, "Positions", QString::number(SoundManager::getInstance().m_Info1->numOrders));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_adplug)
-    {
-        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addMultilineInfo(tableInfo, &row, "Description", SoundManager::getInstance().m_Info1->comments);
-        addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
-        addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_asap)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
-        addInfo(tableInfo, &row, "Creation Date", SoundManager::getInstance().m_Info1->date.c_str());
+    switch (SoundManager::getInstance().m_Info1->plugin) {
+        case PLUGIN_adplug:
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addMultilineInfo(tableInfo, &row, "Description", SoundManager::getInstance().m_Info1->comments);
+            addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+            addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
+            break;
+        case PLUGIN_asap:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
+            addInfo(tableInfo, &row, "Creation Date", SoundManager::getInstance().m_Info1->date.c_str());
 
-        //TODO not handled
-        if (SoundManager::getInstance().m_Info1->numChannels == 1)
-        {
-            addInfo(tableInfo, &row, "Channels", "Mono");
-        }
-        else if (SoundManager::getInstance().m_Info1->numChannels == 2)
-        {
-            addInfo(tableInfo, &row, "Channels", "Stereo");
-        }
+            //TODO not handled
+            if (SoundManager::getInstance().m_Info1->numChannels == 1) {
+                addInfo(tableInfo, &row, "Channels", "Mono");
+            } else if (SoundManager::getInstance().m_Info1->numChannels == 2) {
+                addInfo(tableInfo, &row, "Channels", "Stereo");
+            }
 
-        addAsapClockSpeed(tableInfo, &row);
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_highly_experimental)
-    {
-        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
-        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
-        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
-        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
-        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
-        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
-    }
-	else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_lazyusf2)
-    {
-        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
-        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
-        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
-        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
-        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
-        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_highly_theoretical)
-    {
-        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
-        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
-        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
-        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
-        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
-        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_highly_quixotic)
-    {
-        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
-        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
-        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
-        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
-        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
-        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_vio2sf)
-    {
-        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
-        addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
-        addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
-        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
-        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
-        addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
-        addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
-    }
-    else if(SoundManager::getInstance().m_Info1->plugin == PLUGIN_zxtune)
-    {
-        // addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        // addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
-        // addInfo(tableInfo, &row, "Program", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->replay));
-        // addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-        // addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
-        // addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
-        // addInfo(tableInfo, &row, "Frames", QString::number(SoundManager::getInstance().m_Info1->numFrames));
-        // addInfo(tableInfo, &row, "Loop Frame", QString::number(SoundManager::getInstance().m_Info1->loopFrame));
-        // addInfo(tableInfo, &row, "Loop Position", QString::number(SoundManager::getInstance().m_Info1->loopPosition));
-        // addInfo(tableInfo, &row, "Initial Tempo", QString::number(SoundManager::getInstance().m_Info1->initialTempo));
-        // addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libstsound)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
-        addInfo(tableInfo, &row, "Song Player", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer));
-        addInfo(tableInfo, &row, "Song Type", SoundManager::getInstance().m_Info1->songType.c_str());
-    }
-
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_sc68)
-    {
-        addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
-        addInfo(tableInfo, &row, "Composer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->composer));
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter));
-        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
-        addInfo(tableInfo, &row, "Replay", SoundManager::getInstance().m_Info1->replay.c_str());
-        addInfo(tableInfo, &row, "Hardware", SoundManager::getInstance().m_Info1->hwname.c_str());
-        addInfo(tableInfo, &row, "Rate", QString::number(SoundManager::getInstance().m_Info1->rate));
-        addInfo(tableInfo, &row, "Address", "$" + QString::number(SoundManager::getInstance().m_Info1->address, 16));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_sndh_player)
-    {
-        addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
-        addInfo(tableInfo, &row, "Clock Speed",
-                QString::number(SoundManager::getInstance().m_Info1->clockSpeed) + " Hz");
-        addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
-        addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter));
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-        addInfo(tableInfo, &row, "Patters", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
-        addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
-        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp)
-    {
-        addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-        addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-        addInfo(tableInfo, &row, "Patters", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
-        addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
-        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
-    }
-    else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libkss)
-    {
-        addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            addAsapClockSpeed(tableInfo, &row);
+            break;
+        case PLUGIN_furnace:
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            break;
+        case PLUGIN_game_music_emu:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+            addInfo(tableInfo, &row, "Dumper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper));
+            addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            break;
+        case PLUGIN_highly_experimental:
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+            addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+            addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+            addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
+            break;
+        case PLUGIN_highly_quixotic:
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+            addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+            addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+            addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
+            break;
+        case PLUGIN_highly_theoretical:
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+            addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+            addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+            addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
+            break;
+        case PLUGIN_hivelytracker:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+            addInfo(tableInfo, &row, "Pattern Length",
+                    QString::number(SoundManager::getInstance().m_Info1->modPatternRows));
+            break;
+        case PLUGIN_klystron:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            addInfo(tableInfo, &row, "Pattern Rows", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+            break;
+        case PLUGIN_lazyusf2:
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+            addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+            addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+            addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
+            break;
+        case PLUGIN_libkss:
+            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            break;
+        case PLUGIN_libopenmpt:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            addInfo(tableInfo, &row, "Patters", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+            addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
+            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            break;
+        case PLUGIN_libpac:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            addInfo(tableInfo, &row, "Sheets", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+            addInfo(tableInfo, &row, "Positions", QString::number(SoundManager::getInstance().m_Info1->numOrders));
+            break;
+        case PLUGIN_libsidplayfp:
+            addInfo(tableInfo, &row, "SID Format", SoundManager::getInstance().m_Info1->fileformatSpecific.c_str());
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            addSidClockSpeed(tableInfo, &row);
+            addSidCompatibility(tableInfo, &row);
+            addInfo(tableInfo, &row, "Song Speed",
+                    "$" + QString::number(SoundManager::getInstance().m_Info1->songSpeed, 16));
+            addSidModel(tableInfo, &row);
+            addInfo(tableInfo, &row, "SID Chips", QString::number(SoundManager::getInstance().m_Info1->sidChips));
+            addInfo(tableInfo, &row, "Load Address",
+                    "$" + QString::number(SoundManager::getInstance().m_Info1->loadAddr, 16));
+            addInfo(tableInfo, &row, "Init Address",
+                    "$" + QString::number(SoundManager::getInstance().m_Info1->initAddr, 16));
+            addInfo(tableInfo, &row, "Play Address",
+                    "$" + QString::number(SoundManager::getInstance().m_Info1->playAddr, 16));
+            addInfo(tableInfo, &row, "Start Subsong",
+                    QString::number(SoundManager::getInstance().m_Info1->startSubSong));
+            addInfo(tableInfo, &row, "Replayer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer));
+            addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
+            addInfo(tableInfo, &row, "MD5 Old", SoundManager::getInstance().m_Info1->md5Old.c_str());
+            break;
+        case PLUGIN_libstsound:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            addInfo(tableInfo, &row, "Song Player", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer));
+            addInfo(tableInfo, &row, "Song Type", SoundManager::getInstance().m_Info1->songType.c_str());
+            break;
+        case PLUGIN_libxmp:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            addInfo(tableInfo, &row, "Patters", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+            addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
+            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            break;
+        case PLUGIN_protrekkr:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            break;
+        case PLUGIN_sc68:
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
+            addInfo(tableInfo, &row, "Composer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->composer));
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter));
+            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+            addInfo(tableInfo, &row, "Replay", SoundManager::getInstance().m_Info1->replay.c_str());
+            addInfo(tableInfo, &row, "Hardware", SoundManager::getInstance().m_Info1->hwname.c_str());
+            addInfo(tableInfo, &row, "Rate", QString::number(SoundManager::getInstance().m_Info1->rate));
+            addInfo(tableInfo, &row, "Address",
+                    "$" + QString::number(SoundManager::getInstance().m_Info1->address, 16));
+            break;
+        case PLUGIN_sndh_player:
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+            addInfo(tableInfo, &row, "Clock Speed",
+                    QString::number(SoundManager::getInstance().m_Info1->clockSpeed) + " Hz");
+            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+            addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter));
+            break;
+        case PLUGIN_uade:
+            addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
+            break;
+        case PLUGIN_vgmplay_legacy:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+            addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Release date", SoundManager::getInstance().m_Info1->date.c_str());
+            addInfo(tableInfo, &row, "Dumper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->dumper));
+            addInfo(tableInfo, &row, "Chips used",
+                    QString(SoundManager::getInstance().m_Info1->chips.c_str()).left(
+                        QString(SoundManager::getInstance().m_Info1->chips.c_str()).length() - 2));
+            addInfo(tableInfo, &row, "Version",
+                    QString::number(SoundManager::getInstance().m_Info1->version >> 8) + "." +
+                    QString::number(SoundManager::getInstance().m_Info1->version & 0xFF));
+            addInfo(tableInfo, &row, "Gain", QString::number(SoundManager::getInstance().m_Info1->gain, 'f', 2));
+            addInfo(tableInfo, &row, "Length", SoundManager::getInstance().m_Info1->loopInfo.c_str());
+            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            break;
+        case PLUGIN_vio2sf:
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game));
+            addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+            addInfo(tableInfo, &row, "Year", SoundManager::getInstance().m_Info1->date.c_str());
+            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
+            addInfo(tableInfo, &row, "Volume", SoundManager::getInstance().m_Info1->volumeAmplificationStr.c_str());
+            addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
+            break;
+        case PLUGIN_zxtune:
+            // addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            // addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
+            // addInfo(tableInfo, &row, "Program", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->replay));
+            // addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            // addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
+            // addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
+            // addInfo(tableInfo, &row, "Frames", QString::number(SoundManager::getInstance().m_Info1->numFrames));
+            // addInfo(tableInfo, &row, "Loop Frame", QString::number(SoundManager::getInstance().m_Info1->loopFrame));
+            // addInfo(tableInfo, &row, "Loop Position", QString::number(SoundManager::getInstance().m_Info1->loopPosition));
+            // addInfo(tableInfo, &row, "Initial Tempo", QString::number(SoundManager::getInstance().m_Info1->initialTempo));
+            // addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
+            break;
+        default: ;
     }
 
     showFmodSupportedTagsIfAny(tableInfo, playlistItem, &row);
