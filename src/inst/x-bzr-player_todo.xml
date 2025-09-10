@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- TODO add: *.ptp to ProTrekkr (https://code.google.com/archive/p/protrekkr/wikis/compressed.wiki) -->
 <!-- TODO add *.edl to audio/x-edlib -->
-<!-- TODO currently unsupported: audio/ogg audio/x-opus+ogg application/x-ogg audio/rmid -->
+<!-- TODO currently unsupported: audio/rmid -->
 <!-- TODO DOSBox Raw OPL (DRO): https://moddingwiki.shikadi.net/wiki/DRO_Format -->
 <!-- TODO NP3 -->
 <!-- TODO Sonic Arranger mime currently does not supports Lionheart tracks -->

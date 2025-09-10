@@ -1,8 +1,11 @@
 application/ogg
+audio/aac
 audio/flac
 audio/midi
 audio/mp2
+audio/mp4
 audio/mpeg
+audio/ogg
 audio/prs.sid
 audio/vnd.wave
 audio/x-adlib-ims
@@ -10,6 +13,7 @@ audio/x-adlib-raw
 audio/x-ahx
 audio/x-amf
 audio/x-aon
+audio/x-ape
 audio/x-cust
 audio/x-ddmf
 audio/x-deflemask
@@ -47,11 +51,13 @@ audio/x-mo3
 audio/x-mod
 audio/x-mpegurl
 audio/x-mptm
+audio/x-ms-wma
 audio/x-nintendo-riff-ima
 audio/x-nintendo-strm
 audio/x-np
 audio/x-ntk
 audio/x-okta
+audio/x-opus+ogg
 audio/x-prun
 audio/x-prun2
 audio/x-psf
@@ -79,9 +85,11 @@ audio/x-symmod
 audio/x-tfmx
 audio/x-tfmx-st
 audio/x-tmc
+audio/x-tta
 audio/x-umx
 audio/x-v2m
 audio/x-vgm
 audio/x-vorbis+ogg
+audio/x-wavpack
 audio/x-xad
 audio/x-xm
