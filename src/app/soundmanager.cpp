@@ -213,10 +213,6 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_sunvox_lib_LIB, 99999);
     }
-    if (PLUGIN_audiofile_LIB != "")
-    {
-        loadPlugin(PLUGIN_audiofile_LIB, 99999);
-    }
     if (PLUGIN_sc68_LIB != "")
     {
         loadPlugin(PLUGIN_sc68_LIB, 99999);
@@ -245,6 +241,10 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_adplug_LIB, 99999);
     }
+    if (PLUGIN_vgmstream_LIB != "")
+    {
+        loadPlugin(PLUGIN_vgmstream_LIB, 99999);
+    }
     if (PLUGIN_audiodecoder_wsr_LIB != "")
     {
         loadPlugin(PLUGIN_audiodecoder_wsr_LIB, 99999);
@@ -261,7 +261,10 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_vgmstream_LIB, 99999);
     }
-
+    if (PLUGIN_audiofile_LIB != "")
+    {
+        loadPlugin(PLUGIN_audiofile_LIB, 99999);
+    }
     //loadPlugin("plugin_wavpack.dll",99999);
 }
 
