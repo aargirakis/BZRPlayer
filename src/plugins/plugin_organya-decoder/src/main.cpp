@@ -6,13 +6,12 @@
 #include <iterator>
 #include "plugins.h"
 
-FMOD_RESULT F_CALL orgopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
-FMOD_RESULT F_CALL orgclose(FMOD_CODEC_STATE* codec);
-FMOD_RESULT F_CALL orgread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
-FMOD_RESULT F_CALL orggetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
-FMOD_RESULT F_CALL orgsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                      FMOD_TIMEUNIT postype);
-FMOD_RESULT F_CALL orggetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -22,13 +21,13 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     0, // Don't force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODVUMETER,
     // The time format we would like to accept into setposition/getposition.
-    &orgopen, // Open callback.
-    &orgclose, // Close callback.
-    &orgread, // Read callback.
-    &orggetlength,
+    &open, // Open callback.
+    &close, // Close callback.
+    &read, // Read callback.
+    &getLength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &orgsetposition, // Setposition callback.
-    &orggetposition,
+    &setPosition, // Setposition callback.
+    &getPosition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
     nullptr // Sound create callback (don't need it)
 };
@@ -73,7 +72,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-FMOD_RESULT F_CALL orgopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     auto* plugin = new pluginOrganya(codec);
     plugin->info = static_cast<Info*>(userexinfo->userdata);
@@ -112,7 +111,7 @@ FMOD_RESULT F_CALL orgopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CRE
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL orgclose(FMOD_CODEC_STATE* codec)
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
     auto* plugin = static_cast<pluginOrganya*>(codec->plugindata);
 
@@ -121,7 +120,7 @@ FMOD_RESULT F_CALL orgclose(FMOD_CODEC_STATE* codec)
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL orgread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginOrganya*>(codec->plugindata);
 
@@ -148,7 +147,7 @@ FMOD_RESULT F_CALL orgread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int s
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL orgsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginOrganya*>(codec->plugindata);
@@ -174,7 +173,7 @@ FMOD_RESULT F_CALL orgsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigne
     return FMOD_ERR_UNSUPPORTED;
 }
 
-FMOD_RESULT F_CALL orggetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
+static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginOrganya*>(codec->plugindata);
 
@@ -230,7 +229,7 @@ FMOD_RESULT F_CALL orggetposition(FMOD_CODEC_STATE* codec, unsigned int* positio
     }
 }
 
-FMOD_RESULT F_CALL orggetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {

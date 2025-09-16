@@ -8,13 +8,12 @@
 #include "BaseRow.h"
 #include "plugins.h"
 
-FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
-FMOD_RESULT F_CALL fcclose(FMOD_CODEC_STATE* codec);
-FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
-FMOD_RESULT F_CALL fcgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype);
-FMOD_RESULT F_CALL fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                     FMOD_TIMEUNIT postype);
-FMOD_RESULT F_CALL fcgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype);
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -26,13 +25,13 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN | FMOD_TIMEUNIT_MODPATTERN_INFO |
     FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS | FMOD_TIMEUNIT_MODVUMETER | FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_SPEED |
     FMOD_TIMEUNIT_BPM, // The time format we would like to accept into setposition/getposition.
-    &fcopen, // Open callback.
-    &fcclose, // Close callback.
-    &fcread, // Read callback.
-    &fcgetlength,
+    &open, // Open callback.
+    &close, // Close callback.
+    &read, // Read callback.
+    &getLength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &fcsetposition, // Setposition callback.
-    &fcgetposition,
+    &setPosition, // Setposition callback.
+    &getPosition,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
     nullptr // Sound create callback (don't need it)
 };
@@ -100,7 +99,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 #ifdef __cplusplus
 }
 #endif
-FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
+
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
 
@@ -361,14 +361,14 @@ FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREA
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL fcclose(FMOD_CODEC_STATE* codec)
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
     delete static_cast<pluginLibxmp*>(codec->plugindata);
 
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginLibxmp*>(codec->plugindata);
     xmp_play_buffer(plugin->xmp, buffer, size << 2, plugin->info->isContinuousPlaybackActive ? 0 : 1);
@@ -377,7 +377,7 @@ FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int si
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginLibxmp*>(codec->plugindata);
@@ -416,7 +416,7 @@ FMOD_RESULT F_CALL fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned
     return FMOD_ERR_UNSUPPORTED;
 }
 
-FMOD_RESULT F_CALL fcgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
     auto* plugin = static_cast<pluginLibxmp*>(codec->plugindata);
 
@@ -438,7 +438,7 @@ FMOD_RESULT F_CALL fcgetlength(FMOD_CODEC_STATE* codec, unsigned int* length, FM
     }
 }
 
-FMOD_RESULT F_CALL fcgetposition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
+static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginLibxmp*>(codec->plugindata);
 

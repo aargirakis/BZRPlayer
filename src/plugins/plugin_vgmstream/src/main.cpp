@@ -7,11 +7,10 @@ extern "C" {
 #include "info.h"
 #include "../app/plugins.h"
 
-FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo);
-FMOD_RESULT F_CALL fcclose(FMOD_CODEC_STATE* codec);
-FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read);
-FMOD_RESULT F_CALL fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                     FMOD_TIMEUNIT postype);
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -20,12 +19,12 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     0, // Don't force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &fcopen, // Open callback.
-    &fcclose, // Close callback.
-    &fcread, // Read callback.
+    &open, // Open callback.
+    &close, // Close callback.
+    &read, // Read callback.
     nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &fcsetposition, // Setposition callback.
+    &setPosition, // Setposition callback.
     nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
     nullptr // Sound create callback (don't need it)
@@ -72,7 +71,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 #endif
 
 
-FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     auto* plugin = new pluginVgmstream(codec);
 
@@ -126,7 +125,7 @@ FMOD_RESULT F_CALL fcopen(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREA
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL fcclose(FMOD_CODEC_STATE* codec)
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
     //pluginVgmstream* plugin = static_cast<plugin*>(codec->plugindata);
     //close_vgmstream(plugin->vgmstream);
@@ -134,7 +133,7 @@ FMOD_RESULT F_CALL fcclose(FMOD_CODEC_STATE* codec)
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginVgmstream*>(codec->plugindata);
     render_vgmstream2(static_cast<sample_t*>(buffer), size, plugin->vgmstream);
@@ -143,7 +142,7 @@ FMOD_RESULT F_CALL fcread(FMOD_CODEC_STATE* codec, void* buffer, unsigned int si
     return FMOD_OK;
 }
 
-FMOD_RESULT F_CALL fcsetposition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
     auto* plugin = static_cast<pluginVgmstream*>(codec->plugindata);
