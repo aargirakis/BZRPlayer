@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "uade")
-set(VERSION "92e97d60d5983d9eda92ad3104d8dc1d2e453411")
+set(VERSION "9c044fb7b5863167189785aa7353ce97545809ed")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
 set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(URL "https://gitlab.com/mvtiaine/${NAME}/-/archive/${VERSION}/${FILENAME}")
-set(SHA_256_HASH "dd04066f0d6d36e729a53f665950477edc89675ec3663c96fdbd75e83b777b06")
+set(SHA_256_HASH "9face9af7f3fb098bdde0799a89e498e9f8431dc68980a589454241ba6018518")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -32,14 +32,6 @@ download_patch_and_make(
         ${CONFIGURE_COMMAND} "${MAKE_ARGS}" false "${BUILD_BYPRODUCTS}"
 )
 
-set(SONG_CONF "song.conf")
-set(AUDACIOUS_UADE_VERSION "0.13.2")
-set(SONG_CONF_URL "https://raw.githubusercontent.com/mvtiaine/audacious-uade/refs/tags/${AUDACIOUS_UADE_VERSION}/conf/${SONG_CONF}")
-set(DESTINATION_PATH "${EXTERNAL_SOURCE_DIR}")
-download_to(${SONG_CONF} ${SONG_CONF_URL} "ce2ae365913d55a157114bb40818a3ba062c64b2008e02614fefda859f961505" ${DESTINATION_PATH} true "")
-
-patch_sources(${NAME_VERSIONED} ${CMAKE_CURRENT_SOURCE_DIR}/patches/post-make ${EXTERNAL_SOURCE_DIR})
-
 file(READ "${EXTERNAL_SOURCE_DIR}/version" UADE_VERSION)
 string(REPLACE "\r" "" UADE_VERSION "${UADE_VERSION}")
 string(REPLACE "\n" "" UADE_VERSION "${UADE_VERSION}")
@@ -52,6 +44,14 @@ if (NOT MATCH_RESULT OR NOT MATCH_RESULT STREQUAL UADE_VERSION)
 endif ()
 
 set(PLUGIN_${NAME}_VERSION "${UADE_VERSION} (${VERSION_SHORT})" PARENT_SCOPE)
+
+set(SONG_CONF "song.conf")
+set(AUDACIOUS_UADE_VERSION "0.13.2")
+set(SONG_CONF_URL "https://raw.githubusercontent.com/mvtiaine/audacious-uade/refs/tags/${AUDACIOUS_UADE_VERSION}/conf/${SONG_CONF}")
+set(DESTINATION_PATH "${EXTERNAL_SOURCE_DIR}")
+download_to(${SONG_CONF} ${SONG_CONF_URL} "ce2ae365913d55a157114bb40818a3ba062c64b2008e02614fefda859f961505" ${DESTINATION_PATH} true "")
+
+patch_sources(${NAME_VERSIONED} ${CMAKE_CURRENT_SOURCE_DIR}/patches/post-make ${EXTERNAL_SOURCE_DIR})
 
 file(GLOB SOURCES
         src/flod/*.cpp #TODO
