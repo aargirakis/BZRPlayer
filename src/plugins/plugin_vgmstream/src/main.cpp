@@ -77,20 +77,18 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    plugin->vgmstream = NULL;
+    plugin->vgmstream = nullptr;
     plugin->vgmstream = init_vgmstream(plugin->info->filename.c_str());
     if (!plugin->vgmstream)
     {
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->vgmstream->loop_flag = 0;
+    plugin->vgmstream->loop_flag = false;
 
     /* will we be able to play it? */
     if (plugin->vgmstream->channels <= 0)
     {
-        close_vgmstream(plugin->vgmstream);
-        plugin->vgmstream = NULL;
         return FMOD_ERR_FORMAT;
     }
 
@@ -127,9 +125,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    //pluginVgmstream* plugin = static_cast<plugin*>(codec->plugindata);
-    //close_vgmstream(plugin->vgmstream);
-    delete static_cast<pluginVgmstream*>(codec->plugindata);
+    auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
+
+    if (plugin) {
+        close_vgmstream(plugin->vgmstream);
+        plugin->vgmstream = nullptr;
+    }
+
+    delete plugin;
     return FMOD_OK;
 }
 
