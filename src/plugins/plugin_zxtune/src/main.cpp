@@ -46,9 +46,6 @@ public:
     ~pluginZxtune()
     {
         //delete some stuff
-        ZXTune_DestroyPlayer(player);
-        ZXTune_CloseModule(module);
-        ZXTune_CloseData(data);
     }
 
     ZXTuneHandle data;
@@ -108,11 +105,22 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+
+    codec->waveformat = &(plugin->waveformat);
+    codec->numsubsounds = 0;
+    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
+    codec->plugindata = plugin; /* user data value */
+
     plugin->data = ZXTune_CreateData(myBuffer, filesize);
-    plugin->module = ZXTune_OpenModule(plugin->data);
-    plugin->player = ZXTune_CreatePlayer(plugin->module);
 
     delete [] myBuffer;
+
+    plugin->module = ZXTune_OpenModule(plugin->data);
+    plugin->player = ZXTune_CreatePlayer(plugin->module);
 
     if (!plugin->player)
     {
@@ -133,16 +141,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     //    plugin->info->author = ZXTune_GetInfo(plugin->player,"Author");
     //    plugin->info->replay = ZXTune_GetInfo(plugin->player,"Program");
     //    plugin->info->comments = ZXTune_GetInfo(plugin->player,"Comment");
-
-    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-
-    codec->waveformat = &(plugin->waveformat);
-    codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
 
     const uint64_t msecDuration = zxinfo.Frames * ZXTune_GetDuration(plugin->player) / 1000;
     plugin->waveformat.lengthpcm = (msecDuration / 1000.0) * plugin->waveformat.frequency;
@@ -289,7 +287,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto* plugin = static_cast<pluginZxtune*>(codec->plugindata);
+    auto *plugin = static_cast<pluginZxtune *>(codec->plugindata);
+
+    if (plugin) {
+        ZXTune_DestroyPlayer(plugin->player);
+        ZXTune_CloseModule(plugin->module);
+        ZXTune_CloseData(plugin->data);
+    }
+
     delete plugin;
     return FMOD_OK;
 }
