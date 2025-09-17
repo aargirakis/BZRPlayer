@@ -45,7 +45,7 @@ public:
     ~pluginLibkss()
     {
         //delete some stuff
-       // delete myBuffer;
+        delete[] myBuffer;
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
