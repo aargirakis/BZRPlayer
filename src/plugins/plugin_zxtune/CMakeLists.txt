@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "zxtune")
-set(VERSION "r4960")
+set(VERSION "4960")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "ZXTune" PARENT_SCOPE)
@@ -11,12 +11,15 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
 set(NAME_VERSIONED "${NAME}-${VERSION}")
-set(FILENAME "${NAME_VERSIONED}.tar.gz")
-set(FILENAME_URL "${VERSION}.tar.gz")
+set(TAG "r${VERSION}")
+set(NAME_TAGGED "${NAME}-${TAG}")
+set(FILENAME "${NAME_TAGGED}.tar.gz")
+set(FILENAME_URL "${TAG}.tar.gz")
 set(URL "https://github.com/vitamin-caig/${NAME}/archive/refs/tags/${FILENAME_URL}")
 set(SHA_256_HASH "d7269ea2b92cedc5d0868a7132622a408620ccc105ef33dc527f6b757e859fbf")
+set(UNPACKED_DIR "${NAME_TAGGED}")
 download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 

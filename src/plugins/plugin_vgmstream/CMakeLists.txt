@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "vgmstream")
-set(VERSION "r2023")
+set(VERSION "2023")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -11,12 +11,15 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION}")
-set(FILENAME "${NAME_VERSIONED}.tar.gz")
-set(FILENAME_URL "${VERSION}.tar.gz")
+set(TAG "r${VERSION}")
+set(NAME_TAGGED "${NAME}-${TAG}")
+set(FILENAME "${NAME_TAGGED}.tar.gz")
+set(FILENAME_URL "${TAG}.tar.gz")
 set(URL "https://github.com/${NAME}/${NAME}/archive/refs/tags/${FILENAME_URL}")
 set(SHA_256_HASH "4f4288f177cb12ecee7c2280a719044061195629947e08571e5c4484901b73bc")
+set(UNPACKED_DIR "${NAME_TAGGED}")
 download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
+        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
 )
 
