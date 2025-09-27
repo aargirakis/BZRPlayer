@@ -351,8 +351,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Start Subsong",
                     QString::number(SoundManager::getInstance().m_Info1->startSubSong));
             addInfo(tableInfo, &row, "Replayer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer));
-            addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
-            addInfo(tableInfo, &row, "MD5 Old", SoundManager::getInstance().m_Info1->md5Old.c_str());
+            addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5.c_str());
             break;
         case PLUGIN_libstsound:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
@@ -395,7 +394,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter));
             break;
         case PLUGIN_uade:
-            addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5New.c_str());
+            addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5.c_str());
             break;
         case PLUGIN_vgmplay_legacy:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));

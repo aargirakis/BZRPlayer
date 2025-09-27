@@ -94,8 +94,7 @@ public:
         hwname = "";
         fileformat = "";
         fileformatSpecific = "";
-        md5New = "";
-        md5Old = "";
+        md5 = "";
         rate = 0;
         address = 0;
         turboSound = false;
@@ -310,8 +309,7 @@ public:
     string hwname;
     string fileformat;
     string fileformatSpecific;
-    string md5New;
-    string md5Old;
+    string md5;
     string volumeAmplificationStr;
     int rate;
     int address;

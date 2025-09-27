@@ -388,7 +388,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         }
     }
 
-    plugin->info->md5New = plugin->uadeSongInfo->modulemd5;
+    plugin->info->md5 = plugin->uadeSongInfo->modulemd5;
     plugin->info->setSeekable(true);
 
     return FMOD_OK;

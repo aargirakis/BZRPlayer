@@ -34,9 +34,8 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
-unsigned int getLengthFromSIDDatabase(const string& databasefile, bool newDatabaseVersion, const string& sidfilename, int subsong);
-string md5_new;
-string md5_old;
+unsigned int getLengthFromSIDDatabase(const string& databasefile, const string& sidfilename, int subsong);
+string md5;
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -480,20 +479,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     if (strcmp(s->formatString(), "C64 Sidplayer format (MUS)") != 0 && strcmp(
         s->formatString(), "C64 Stereo Sidplayer format (MUS+STR)") != 0)
     {
-        md5_new = plugin->tune->createMD5New();
-        md5_old = plugin->tune->createMD5();
+        md5 = plugin->tune->createMD5New();
     }
     else
     {
-        md5_new = "";
-        md5_old = "";
+        md5 = "";
     }
 
     info->startSubSong = s->startSong();
     info->numSubsongs = plugin->subsongs;
     info->fileformatSpecific = s->formatString();
-    info->md5New = md5_new;
-    info->md5Old = md5_old;
+    info->md5 = md5;
     info->plugin = PLUGIN_libsidplayfp;
     info->pluginName = PLUGIN_libsidplayfp_NAME;
     info->fileformat = "C64 SID";
@@ -639,7 +635,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
         unsigned int sidLength = 0;
         if (plugin->hvscSonglengthsDataBaseEnabled)
         {
-            sidLength = getLengthFromSIDDatabase(databasefile, true, plugin->info->filename, s->currentSong());
+            sidLength = getLengthFromSIDDatabase(databasefile, plugin->info->filename, s->currentSong());
         }
         *length = sidLength;
 
@@ -674,21 +670,12 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
 }
 
 
-unsigned int getLengthFromSIDDatabase(const string& databasefile, bool newDatabaseVersion, const string& sidfilename, int subsong)
+unsigned int getLengthFromSIDDatabase(const string& databasefile, const string& sidfilename, int subsong)
 {
     subsong--;
     unsigned int length = 0;
 
-    string hashStr;
-    if (newDatabaseVersion)
-    {
-        hashStr = md5_new;
-    }
-    else
-    {
-        hashStr = md5_old;
-    }
-
+    string hashStr = md5;
 
     ifstream ifs(databasefile);
 
