@@ -6,6 +6,7 @@
 #include "SidInfo.h"
 #include "residfp.h"
 #include <iostream>
+#include <format>
 #include <fstream>
 #include <istream>
 #include <sstream>
@@ -215,7 +216,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     SidConfig::playback_t playback = SidConfig::STEREO;
     plugin->waveformat.channels = 2;
 
-    SidConfig::sid_model_t sidModel = SidConfig::MOS6581;
+    SidConfig::sid_model_t defaultSidModel = SidConfig::MOS6581;
     SidConfig::c64_model_t c64Model = SidConfig::PAL;
     SidConfig::sampling_method_t samplingMethod = SidConfig::RESAMPLE_INTERPOLATE;
     bool forceSidModel = false;
@@ -308,12 +309,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
                     }
                     else if (value.compare("mos6581") == 0)
                     {
-                        sidModel = SidConfig::MOS6581;
+                        defaultSidModel = SidConfig::MOS6581;
                         forceSidModel = true;
                     }
                     else if (value.compare("mos8580") == 0)
                     {
-                        sidModel = SidConfig::MOS8580;
+                        defaultSidModel = SidConfig::MOS8580;
                         forceSidModel = true;
                     }
                 }
@@ -374,7 +375,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     cfg.playback = playback;
     cfg.forceSidModel = forceSidModel;
     cfg.forceC64Model = forcec64Model;
-    cfg.defaultSidModel = sidModel;
+    cfg.defaultSidModel = defaultSidModel;
     cfg.defaultC64Model = c64Model;
     cfg.samplingMethod = samplingMethod;
     cfg.fastSampling = false;
@@ -388,7 +389,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     const SidTuneInfo* s = plugin->tune->getInfo();
 
-    info->sidChips = s->sidChips();
     info->initAddr = s->initAddr();
     info->loadAddr = s->loadAddr();
     info->playAddr = s->playAddr();
@@ -440,21 +440,25 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         info->clockSpeed = 3;
         break;
     }
-    switch (s->sidModel(0))
-    {
-    case SidTuneInfo::SIDMODEL_UNKNOWN:
-        info->sidModel = 0;
-        break;
-    case SidTuneInfo::SIDMODEL_6581:
-        info->sidModel = 1;
-        break;
-    case SidTuneInfo::SIDMODEL_8580:
-        info->sidModel = 2;
-        break;
-    case SidTuneInfo::SIDMODEL_ANY:
-        info->sidModel = 3;
-        break;
+
+    std::string sidModel;
+
+    switch (s->sidModel(0)) {
+        case SidTuneInfo::SIDMODEL_6581:
+            sidModel = "6581";
+            break;
+        case SidTuneInfo::SIDMODEL_8580:
+            sidModel = "8580";
+            break;
+        case SidTuneInfo::SIDMODEL_ANY:
+            sidModel = "Any";
+            break;
+        case SidTuneInfo::SIDMODEL_UNKNOWN:
+        default:
+            sidModel = "Unknown";
     }
+
+    info->sidChip = std::format("{} (x{})", sidModel, s->sidChips());
 
     switch (s->compatibility())
     {

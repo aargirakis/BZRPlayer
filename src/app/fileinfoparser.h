@@ -20,7 +20,6 @@ private:
     static void addSubsongInfo(QTableWidget *tableInfo, int *row);
     static void addSidClockSpeed(QTableWidget *tableInfo, int *row);
     static void addSidCompatibility(QTableWidget *tableInfo, int *row);
-    static void addSidModel(QTableWidget *tableInfo, int *row);
     static void addAsapClockSpeed(QTableWidget *tableInfo, int *row);
     static void showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row);
 };

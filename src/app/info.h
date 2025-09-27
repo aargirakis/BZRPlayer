@@ -100,8 +100,7 @@ public:
         address = 0;
         turboSound = false;
         clockSpeed = 0;
-        sidModel = 0;
-        sidChips = 0;
+        sidChip = "";
         numPatterns = 0;
         numTracksteps = 0;
         numMacros = 0;
@@ -319,8 +318,7 @@ public:
     bool turboSound;
 
     int clockSpeed;
-    int sidModel;
-    int sidChips;
+    string sidChip;
     int numPatterns;
     int numTracksteps;
     int numMacros;

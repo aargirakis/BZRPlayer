@@ -341,8 +341,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addSidCompatibility(tableInfo, &row);
             addInfo(tableInfo, &row, "Song Speed",
                     "$" + QString::number(SoundManager::getInstance().m_Info1->songSpeed, 16));
-            addSidModel(tableInfo, &row);
-            addInfo(tableInfo, &row, "SID Chips", QString::number(SoundManager::getInstance().m_Info1->sidChips));
+            addInfo(tableInfo, &row, "SID Chip", SoundManager::getInstance().m_Info1->sidChip.c_str());
             addInfo(tableInfo, &row, "Load Address",
                     "$" + QString::number(SoundManager::getInstance().m_Info1->loadAddr, 16));
             addInfo(tableInfo, &row, "Init Address",
@@ -526,22 +525,6 @@ void FileInfoParser::addSidCompatibility(QTableWidget *tableInfo, int *row) {
 
     addInfo(tableInfo, row, "Compatibility", compatibility.c_str());
 }
-
-void FileInfoParser::addSidModel(QTableWidget *tableInfo, int *row) {
-    string sidModel;
-    switch (SoundManager::getInstance().m_Info1->sidModel) {
-        case 1: sidModel = "6581";
-            break;
-        case 2: sidModel = "8580";
-            break;
-        case 3: sidModel = "Any";
-            break;
-        default: sidModel = "Unknown";
-    }
-
-    addInfo(tableInfo, row, "SID Model", sidModel.c_str());
-}
-
 
 void FileInfoParser::addAsapClockSpeed(QTableWidget *tableInfo, int *row) {
     string clockSpeed;
