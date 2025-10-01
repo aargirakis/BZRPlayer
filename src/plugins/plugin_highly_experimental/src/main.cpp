@@ -218,7 +218,7 @@ public:
     int psfType = 0;
     Info* info;
     std::unordered_map<std::string, std::string> m_tags;
-    unsigned int m_length;
+    uint64_t m_length;
 
     struct LoaderState
     {
