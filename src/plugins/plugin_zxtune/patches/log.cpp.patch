@@ -1,0 +1,10 @@
+--- src/debug/src/log.cpp	2024-08-03 21:27:13.000000000 +0200
++++ src/debug/src/log.cpp	2025-09-29 15:43:13.966917298 +0200
+@@ -67,6 +67,6 @@
+ 
+   bool IsEnabledFor(StringView module)
+   {
+-    return DebugSwitch::Instance().EnabledFor(module);
++    return true;
+   }
+ }  // namespace Debug
