@@ -62,8 +62,11 @@ public:
     }
 
     [[nodiscard]] Ptr GetSubcontainer(std::size_t offset, std::size_t size) const override {
-        auto copy(std::make_unique<Binary::Dump>(RawData + offset, RawData + std::min(RawSize, offset + size)));
-        return Binary::CreateContainer(std::move(copy));
+        if (size != 0 && offset < RawSize) {
+            return MakePtr<LightweightBinaryContainer>(RawData + offset, std::min(size, RawSize - offset));
+        } else {
+            return {};
+        }
     }
 
 private:
@@ -139,17 +142,15 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     try {
-        auto* plugin = new pluginZxtune(codec);
-        plugin->info = static_cast<Info*>(userexinfo->userdata);
-
-        const Binary::Container::Ptr dataContainer = CreateData(codec);
+        auto dataContainer = CreateData(codec);
 
         if (!dataContainer) {
-            delete plugin;
             return FMOD_ERR_FORMAT;
         }
 
-        plugin->module = GetService().OpenModule(dataContainer, "", Parameters::Container::Create());
+        auto plugin = std::make_unique<pluginZxtune>(codec);
+        plugin->info = static_cast<Info*>(userexinfo->userdata);
+        plugin->module = GetService().OpenModule(std::move(dataContainer), "", Parameters::Container::Create());
 
         plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
         plugin->waveformat.channels = 2;
@@ -161,8 +162,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
         codec->waveformat = &(plugin->waveformat);
         codec->numsubsounds = 0;
-        /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-        codec->plugindata = plugin; /* user data value */
 
         // handle plugin preferences here
         auto params = Parameters::Container::Create();
@@ -332,6 +331,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         plugin->info->pluginName = PLUGIN_zxtune_NAME;
         plugin->info->setSeekable(true);
 
+        codec->plugindata = plugin.release(); /* user data value */
         return FMOD_OK;
     } catch (const Error &error) {
         cout << "ZXTune: " << error.ToString() << endl;
