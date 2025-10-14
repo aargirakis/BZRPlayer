@@ -1,0 +1,2 @@
+src/plugins/plugin_zxtune/dist/zxtune*.tar.gz filter=lfs diff=lfs merge=lfs -text
+src/plugins/plugin_furnace/dist/furnace*.tar.gz filter=lfs diff=lfs merge=lfs -text

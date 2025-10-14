@@ -9,8 +9,14 @@ jobs:
     container:
       image: fedora:latest
     steps:
+      - name: Install git lfs
+        run: |
+          dnf install -y git-lfs
+
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Setup environment
         run: |
