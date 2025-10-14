@@ -2753,6 +2753,28 @@ void MainWindow::updateInstruments()
                 }
             }
         }
+        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_zxtune)
+        {
+            if (SoundManager::getInstance().m_Info1->numSamples > 0)
+            {
+                QStringList columnLabelsSamples;
+                columnLabelsSamples << tr("#") << tr("Name");
+                ui->samples->setColumnCount(columnLabelsSamples.size());
+                ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
+                ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
+                ui->samples->setColumnWidth(1, sampleColumnNameWidth);
+
+                ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+                ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+
+                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
+                for (int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++) {
+                    ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+                    ui->samples->setItem(
+                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->samples[j].c_str()));
+                }
+            }
+        }
     }
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
 }

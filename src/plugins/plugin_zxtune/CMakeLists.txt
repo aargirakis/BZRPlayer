@@ -128,6 +128,9 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(${PROJECT_NAME} PRIVATE NO_DEBUG_LOGS)
 endif ()
 
+# this avoid multiple issues (eg in track samples gathering)
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-funsigned-char>)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""

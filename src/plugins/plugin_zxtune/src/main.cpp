@@ -1,5 +1,6 @@
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <attributes.h>
 #include <binary/container_factories.h>
@@ -8,6 +9,8 @@
 #include <error.h>
 #include <parameters/container.h>
 #include <module/holder.h>
+#include <module/track_information.h>
+#include <module/track_state.h>
 #include <module/players/pipeline.h>
 #include "info.h"
 #include "fmod_errors.h"
@@ -129,7 +132,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         plugin->waveformat.frequency = 44100;
         plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
 
-        const auto durationMs = openedModule->GetModuleInformation()->Duration().Get();
+        const auto moduleInfo = openedModule->GetModuleInformation();
+
+        const auto durationMs = moduleInfo->Duration().Get();
         plugin->waveformat.lengthpcm = durationMs / 1000 * plugin->waveformat.frequency;
 
         codec->waveformat = &(plugin->waveformat);
@@ -146,161 +151,64 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
         auto *info = static_cast<Info *>(userexinfo->userdata);
 
-        // info->numChannels = zxinfo.Channels;
-        // info->numOrders = zxinfo.Positions;
-        // info->loopPosition = zxinfo.LoopPosition;
-        // info->loopFrame = zxinfo.LoopFrame;
-        // info->numPatterns = zxinfo.Patterns;
-        // info->numFrames = zxinfo.Frames;
-       // info->initialTempo = zxinfo.InitialTempo;
-        Parameters::FindValue(*moduleProperties, Module::ATTR_TITLE, info->title);
+        if (const auto trackState = std::dynamic_pointer_cast<const Module::TrackState>(plugin->renderer->GetState())) {
+            // TODO gather at-the-moment-state data for visualizer and tracker view in the read callback
+            // TODO along with: ATTR_CURRENT_POSITION, ATTR_CURRENT_PATTERN, ATTR_CURRENT_LINE
+        }
+
+        if (const auto *trackInfo = dynamic_cast<const Module::TrackInformation *>(moduleInfo.get())) {
+            info->numChannels = trackInfo->ChannelsCount();
+            info->loopPosition = trackInfo->LoopPosition();
+        }
+
         Parameters::FindValue(*moduleProperties, Module::ATTR_AUTHOR, info->author);
-        Parameters::FindValue(*moduleProperties, Module::ATTR_PROGRAM, info->replay);
         Parameters::FindValue(*moduleProperties, Module::ATTR_COMMENT, info->comments);
+        Parameters::FindValue(*moduleProperties, Module::ATTR_DATE, info->date);
+        Parameters::FindValue(*moduleProperties, Module::ATTR_TITLE, info->title);
 
         std::string type;
         Parameters::FindValue(*moduleProperties, Module::ATTR_TYPE, type);
 
-        if (type == "AS0")
-        {
-            info->fileformat = "ASC Sound Master v0.xx";
-        }
-        else if (type == "AY")
-        {
-            info->fileformat = "AY ZX Spectrum/Amstrad CPC";
-        }
-        else if (type == "AYC")
-        {
-            info->fileformat = "AYC Amstrad CPC";
-        }
-        else if (type == "ASC")
-        {
-            info->fileformat = "ASC Sound Master v1.xx-2.xx";
-        }
-        else if (type == "ET1")
-        {
-            info->fileformat = "Extreme Tracker v1.x";
-        }
-        else if (type == "FTC")
-        {
-            info->fileformat = "Spectrum Fast Tracker";
-        }
-        else if (type == "GTR")
-        {
-            info->fileformat = "Global Tracker";
-        }
-        else if (type == "MTC")
-        {
+        if (type == "MTC") {
             info->fileformat = "Multitrack Container";
-        }
-        else if (type == "PSC")
-        {
-            info->fileformat = "Pro Sound Creator";
-        }
-        else if (type == "PSG")
-        {
-            info->fileformat = "Spectrum PSG";
-        }
-        else if (type == "PSM")
-        {
-            info->fileformat = "Pro Sound Maker";
-        }
-        else if (type == "PT1")
-        {
-            info->fileformat = "Spectrum Pro Tracker 1";
-        }
-        else if (type == "PT2")
-        {
-            info->fileformat = "Spectrum Pro Tracker 2";
-        }
-        else if (type == "PT3")
-        {
-            info->fileformat = "Spectrum Pro Tracker 3";
-        }
-        else if (type == "SQT")
-        {
-            info->fileformat = "SQ Tracker";
-        }
-        else if (type == "ST1")
-        {
-            info->fileformat = "Spectrum Sound Tracker 1";
-        }
-        else if (type == "ST3")
-        {
-            info->fileformat = "Spectrum Sound Tracker 3";
-        }
-        else if (type == "STC")
-        {
-            info->fileformat = "Compiled Spectrum Sound Tracker 1";
-        }
-        else if (type == "STP")
-        {
-            info->fileformat = "Spectrum Sound Tracker Pro 1";
-        }
-        else if (type == "TXT")
-        {
-            info->fileformat = "Vortextracker (Pro Tracker 3)";
-        }
-        else if (type == "TS")
-        {
-            info->fileformat = "TurboSound module for AY Emulator";
-        }
-        else if (type == "VTX")
-        {
-            info->fileformat = "Vortextracker";
-        }
-        else if (type == "YM") //played by st-sound
-        {
-            info->fileformat = "YM";
-        }
-        else if (type == "STR")
-        {
-            info->fileformat = "Sample Tracker";
-        }
-        else if (type == "CHI")
-        {
-            info->fileformat = "Spectrum Chip Tracker";
-        }
-        else if (type == "SQD")
-        {
-            info->fileformat = "SG Digital Tracker";
-        }
-        else if (type == "DMM")
-        {
-            info->fileformat = "Digital Music Maker";
-        }
-        else if (type == "PDT")
-        {
-            info->fileformat = "Prodigi Tracker";
-        }
-        else if (type == "DST")
-        {
-            info->fileformat = "Digital Studio for AY and Covox";
-        }
-        else if (type == "COP")
-        {
-            info->fileformat = "Sam Coupe E-Tracker";
-        }
-        else if (type == "TFE")
-        {
-            info->fileformat = "TFM Music Maker 1.3+";
-        }
-        else if (type == "TF0")
-        {
-            info->fileformat = "TFM Music Maker 0.1-1.2";
-        }
-        else if (type == "TFD")
-        {
+        } else if (type == "PSG") {
+            info->fileformat = "Programmable Sound Generator";
+        } else if (type == "TFD") {
             info->fileformat = "TurboFM Dumped";
+        } else {
+            Parameters::FindValue(*moduleProperties, Module::ATTR_PROGRAM, info->fileformat);
+            if (info->fileformat.empty()) {
+                info->fileformat = type;
+            }
         }
-        else if (type == "TFC")
-        {
-            info->fileformat = "TurboFM Compiled";
+
+        Parameters::FindValue(*moduleProperties, Module::ATTR_PLATFORM, info->system);
+
+        if (info->system.empty()) {
+            Parameters::FindValue(*moduleProperties, Module::ATTR_COMPUTER, info->system);
         }
-        else
-        {
-            info->fileformat = "Unknown ZXTune";
-            //info->fileformat =ZXTune_GetInfo(plugin->player,"Program")+"("+type+")";
+
+        std::string samples;
+        Parameters::FindValue(*moduleProperties, Module::ATTR_STRINGS, samples);
+
+        if (!samples.empty()) {
+
+            std::vector<std::string> samplesVector;
+            std::stringstream ss(samples);
+            std::string sampleName;
+
+            while (std::getline(ss, sampleName)) {
+                samplesVector.push_back(sampleName);
+            }
+
+            const auto samplesCount = static_cast<int>(samplesVector.size());
+
+            info->numSamples = samplesCount;
+            info->samples = new std::string[samplesCount]; // Alloca array statico
+
+            for (int i = 0; i < samplesCount; ++i) {
+                info->samples[i] = samplesVector[i];
+            }
         }
 
         info->plugin = PLUGIN_zxtune;

@@ -425,17 +425,14 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
             break;
         case PLUGIN_zxtune:
-            // addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-            // addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
-            // addInfo(tableInfo, &row, "Program", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->replay));
-            // addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
-            // addInfo(tableInfo, &row, "Patterns", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
-            // addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
-            // addInfo(tableInfo, &row, "Frames", QString::number(SoundManager::getInstance().m_Info1->numFrames));
-            // addInfo(tableInfo, &row, "Loop Frame", QString::number(SoundManager::getInstance().m_Info1->loopFrame));
-            // addInfo(tableInfo, &row, "Loop Position", QString::number(SoundManager::getInstance().m_Info1->loopPosition));
-            // addInfo(tableInfo, &row, "Initial Tempo", QString::number(SoundManager::getInstance().m_Info1->initialTempo));
-            // addInfo(tableInfo, &row, "Comments", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments));
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
+            addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Creation Date", SoundManager::getInstance().m_Info1->date.c_str());
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+            addInfo(tableInfo, &row, "Loop Position",
+                    QString::number(SoundManager::getInstance().m_Info1->loopPosition));
+            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
             break;
         default: ;
     }
