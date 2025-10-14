@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "furnace")
-set(VERSION "0.6.7")
+set(VERSION "0.6.8.3")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "Furnace" PARENT_SCOPE)
@@ -19,7 +19,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "v${VERSION}.tar.gz")
 set(URL "https://github.com/tildearrow/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "94180a50ff9009c7d29f93c2ea64363ecea0f88e8eea3709221cb1a6e5e7b808")
+set(SHA_256_HASH "c54b93dc7211a8e86828ea6b436628920df7a7dc87b130b3752f2251f5466e9c")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
@@ -27,6 +27,7 @@ download_patch_and_add(
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/extern/adpcm-xq-s/*.c
+        ${EXTERNAL_SOURCE_DIR}/extern/blip_buf/*.c
         ${EXTERNAL_SOURCE_DIR}/extern/emu2413/*.c
         ${EXTERNAL_SOURCE_DIR}/extern/ESFMu/*.c
         ${EXTERNAL_SOURCE_DIR}/extern/itcompress/compression.c
@@ -88,7 +89,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/ga20/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/gb/*.c
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/lynx/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/nes/*.c
+        ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/nes/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/nes_nsfplay/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/oki/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/pokey/*.c
@@ -97,6 +98,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/snes/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/t6w28/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/tia/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/ymf278b/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/ymfm/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/engine/playback.cpp
         ${EXTERNAL_SOURCE_DIR}/src/engine/safeReader.cpp
@@ -120,12 +122,15 @@ if (WIN32)
     list(APPEND SOURCES ${EXTERNAL_SOURCE_DIR}/src/engine/winStuff.cpp)
 endif ()
 
-list(REMOVE_ITEM SOURCES ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/m114s.c)
+list(REMOVE_ITEM SOURCES
+        ${EXTERNAL_SOURCE_DIR}/src/engine/platform/swan_before.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/m114s.c)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/extern/adpcm-xq-s
+        ${EXTERNAL_SOURCE_DIR}/extern/blip_buf
         ${EXTERNAL_SOURCE_DIR}/extern/emu2413
         ${EXTERNAL_SOURCE_DIR}/extern/ESFMu
         ${EXTERNAL_SOURCE_DIR}/extern/IconFontCppHeaders
@@ -179,6 +184,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/snes
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/t6w28
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/tia
+        ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/ymf278b
         ${EXTERNAL_SOURCE_DIR}/src/engine/platform/sound/ymfm
         ${EXTERNAL_SOURCE_DIR}/src/icon
 

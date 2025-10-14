@@ -1,0 +1,10 @@
+--- src/engine/platform/sound/ymf278b/ymf278.h	2025-10-15 14:38:36.000795076 +0200
++++ src/engine/platform/sound/ymf278b/ymf278.h	2025-10-15 14:35:55.236785000 +0200
+@@ -4,6 +4,7 @@
+ #include <vector>
+ #include <string>
+ #include <algorithm>
++#include <cstdint>
+ 
+ #define UNREACHABLE while (1) assert(false)
+ 

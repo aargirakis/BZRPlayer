@@ -1,22 +1,18 @@
---- src/engine/engine.h	2024-08-29 09:29:32.000000000 +0200
-+++ src/engine/engine.h	2024-12-18 10:27:42.560000000 +0100
-@@ -447,7 +447,9 @@
+--- src/engine/engine.h	2025-06-12 10:23:59.000000000 +0200
++++ src/engine/engine.h	2025-10-15 08:04:44.757030297 +0200
+@@ -447,6 +447,7 @@
    bool playing;
    bool freelance;
    bool shallStop, shallStopSched;
-+  public:
++public:
    bool endOfSong;
-+  private:
    bool consoleMode;
    bool disableStatusOut;
-   bool extValuePresent;
-@@ -475,7 +477,9 @@
+@@ -475,6 +476,7 @@
    int midiOutTimeRate;
    float midiVolExp;
    int softLockCount;
-+  public:
-   int subticks, ticks, curRow, curOrder, prevRow, prevOrder, remainingLoops, totalLoops, lastLoopPos, exportLoopCount, curExportChan, nextSpeed, elapsedBars, elapsedBeats, curSpeed;
-+  private:
++public:
+   int subticks, ticks, curRow, curOrder, prevRow, prevOrder, remainingLoops, totalLoops, lastLoopPos, exportLoopCount, curExportChan, nextSpeed, prevSpeed, elapsedBars, elapsedBeats, curSpeed;
    size_t curSubSongIndex;
    size_t bufferPos;
-   double divider;
