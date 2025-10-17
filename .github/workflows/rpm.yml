@@ -177,7 +177,7 @@ jobs:
             cat <<EOF2
           [Desktop Entry]
           Type=Application
-          Name=BZR Player
+          Name=BZR Player 2
           GenericName=Audio player
           Comment=Audio player supporting a wide array of multi-platform exotic file formats
           Exec=/usr/bin/bzr-player %U
