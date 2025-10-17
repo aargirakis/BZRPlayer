@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "klystron")
-set(VERSION "8655115f58cfe83a5d792c6a703f7bd46cbb2167")
+set(VERSION "989fafc4fffb1bb881ab677fe52eb34527e08129")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
@@ -17,7 +17,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
 set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/kometbomb/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "c7e14815c9acbcea80d25972dda5f05ff8fc8bc2f1a527bf0b8d4b78c872cc29")
+set(SHA_256_HASH "b90b23b1808340e35ef314c57b82489df0e57c039b04a78171f879b2b0449afc")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
