@@ -102,6 +102,16 @@ private slots:
 
     void on_slider3DCubeFocalLength_valueChanged(int value);
 
+    void on_slider3DCubeOrbitSize_valueChanged(int value);
+
+    void on_slider3DCubeOrbitSpeed_valueChanged(int value);
+
+    void on_slider3DCubeSize_valueChanged(int value);
+
+    void on_comboBox3dCubeModel_textActivated(const QString& arg1);
+
+    void on_comboBox3dCubeMaterial_textActivated(const QString& arg1);
+
     void on_buttonColorVUMeterPeak_clicked();
 
     void on_checkBoxPeaks_toggled(bool checked);
@@ -214,8 +224,6 @@ private slots:
     void on_checkBox3DCubeOrbit_toggled(bool checked);
 
     void on_checkBox3DCubeWireframeEnabled_toggled(bool checked);
-
-    void on_checkBox3DCubeFilled_toggled(bool checked);
 
     void on_checkBoxCustomScrolltextEnabled_toggled(bool checked);
 

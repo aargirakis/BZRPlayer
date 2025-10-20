@@ -236,7 +236,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     getEffect()->setVumeterWidth(settings.value("vumeterwidth", 50.0).toDouble());
     getEffect()->setVumeterOpacity(settings.value("vumeteropacity", 65).toInt());
 
-
     getEffect()->setAmplitude(settings.value("scroller/amplitude", 32).toInt());
     getEffect()->setSinusFrequency(settings.value("scroller/frequency", 0.0027).toDouble());
     getEffect()->setSinusSpeed(settings.value("scroller/sinusspeed", 0.1).toDouble());
@@ -260,11 +259,16 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QColor(settings.value("scroller/reflectionColor", "#00032e").toString()));
     getEffect()->setSinusFontScalingEnabled(settings.value("scroller/setsinusfontscaling", false).toBool());
     getEffect()->set3DCubeEnabled(settings.value("scroller/3dcube", false).toBool());
-    getEffect()->set3DCubeFilled(settings.value("scroller/3dcubefilled", false).toBool());
-    getEffect()->set3DCubeOrbit(settings.value("scroller/3dcubeorbit", false).toBool());
+    getEffect()->set3DCubeOrbit(settings.value("scroller/3dcubeorbit", true).toBool());
     getEffect()->set3DCubeColor(settings.value("scroller/3dcubecolor", "#009379").toString());
-    getEffect()->set3DCubeColorWireframe(settings.value("scroller/3dcubecolorWireframe", "#ffffff").toString());
-    getEffect()->set3DCubeWireframeEnabled(settings.value("scroller/3dcubeWireframe", false).toBool());
+    getEffect()->set3DCubeSize(settings.value("scroller/3dcubesize", 21).toInt());
+    getEffect()->set3DCubeFocalLength(settings.value("scroller/3dcubefocallength", 220).toInt());
+    getEffect()->set3DCubeOrbitSize(settings.value("scroller/3dcubeorbitsize", 245).toInt());
+    getEffect()->set3DCubeOrbitSpeed(settings.value("scroller/3dcubeorbitspeed", 2).toInt());
+    getEffect()->set3DCubeColorWireframe(settings.value("scroller/3dcubecolorwireframe", "#ffffff").toString());
+    getEffect()->set3DCubeWireframeEnabled(settings.value("scroller/3dcubewireframeenabled", false).toBool());
+    getEffect()->set3dCubeModel(settings.value("scroller/3dcubemodel", "cube").toString());
+    getEffect()->set3dCubeMaterial(settings.value("scroller/3dcubematerial", "blinn").toString());
     getEffect()->setRasterBarsEnabled(settings.value("scroller/rasterbars", false).toBool());
     getEffect()->setNumberOfRasterBars(settings.value("scroller/rasterbarsamount", 8).toInt());
     getEffect()->setRasterBarsSpeed(settings.value("scroller/rasterbarsspeed", 35).toInt());
@@ -3844,11 +3848,16 @@ void MainWindow::SaveSettings()
     settings.setValue("scroller/starfield", getEffect()->getStarsEnabled());
     settings.setValue("scroller/rasterbars", getEffect()->getRasterBarsEnabled());
     settings.setValue("scroller/3dcube", getEffect()->get3DCubeEnabled());
-    settings.setValue("scroller/3dcubefilled", getEffect()->get3DCubeFilled());
     settings.setValue("scroller/3dcubeWireframeEnabled", getEffect()->get3DCubeWireframeEnabled());
+    settings.setValue("scroller/3dcubemodel", getEffect()->get3dCubeModel());
     settings.setValue("scroller/3dcubeorbit", getEffect()->get3DCubeOrbit());
     settings.setValue("scroller/3dcubecolor", getEffect()->get3DCubeColor());
-    settings.setValue("scroller/3dcubeColorWireframe", getEffect()->get3DCubeColorWireframe());
+    settings.setValue("scroller/3dcubesize", getEffect()->get3DCubeSize());
+    settings.setValue("scroller/3dcubefocallength", getEffect()->get3DCubeFocalLength());
+    settings.setValue("scroller/3dcubeorbitsize", getEffect()->get3DCubeOrbitSize());
+    settings.setValue("scroller/3dcubeorbitspeed", getEffect()->get3DCubeOrbitSpeed());
+    settings.setValue("scroller/3dcubecolorwireframe", getEffect()->get3DCubeColorWireframe());
+    settings.setValue("scroller/3dcubematerial", getEffect()->get3dCubeMaterial());
     settings.setValue("scroller/rasterbarsamount", getEffect()->getNumberOfRasterBars());
     settings.setValue("scroller/rasterbarsspeed", getEffect()->getRasterBarsSpeed());
     settings.setValue("scroller/rasterbarsheight", getEffect()->getRasterBarsHeight());

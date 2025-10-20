@@ -9,11 +9,9 @@ public:
         this->x = x;
         this->y = y;
         this->depth = depth;
-        this->scaleRatio = scaleRatio;
     }
 
     int x, y, depth;
-    double scaleRatio;
 
 protected:
 

@@ -2902,7 +2902,7 @@ Scroll Position</string>
     <widget class="QCheckBox" name="checkBoxReflectionEnabled">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>120</x>
        <y>1870</y>
        <width>151</width>
        <height>31</height>
@@ -2921,7 +2921,7 @@ Scroll Position</string>
     <widget class="QCheckBox" name="checkBoxStarsEnabled">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>120</x>
        <y>2070</y>
        <width>151</width>
        <height>31</height>
@@ -3914,7 +3914,7 @@ aspect ratio</string>
       </size>
      </property>
     </widget>
-	<widget class="QLabel" name="label_53">
+	<widget class="QLabel" name="label_3d_cube">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -4226,7 +4226,7 @@ raster bars</string>
     <widget class="QCheckBox" name="checkBoxRasterbarsEnabled">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>120</x>
        <y>2340</y>
        <width>151</width>
        <height>31</height>
@@ -4242,11 +4242,11 @@ raster bars</string>
       </size>
      </property>
     </widget>
-<widget class="QLabel" name="label_52">
+<widget class="QLabel" name="label_show_3d_cube">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>2712</y>
+       <y>2710</y>
        <width>91</width>
        <height>31</height>
       </rect>
@@ -4259,7 +4259,7 @@ raster bars</string>
     <widget class="QCheckBox" name="checkBox3DCubeEnabled">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>120</x>
        <y>2710</y>
        <width>151</width>
        <height>31</height>
@@ -4275,11 +4275,11 @@ raster bars</string>
       </size>
      </property>
     </widget>
-	<widget class="QLabel" name="label_54">
+	<widget class="QLabel" name="label_3d_cube_orbit">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>2864</y>
+       <y>3024</y>
        <width>91</width>
        <height>31</height>
       </rect>
@@ -4291,8 +4291,8 @@ raster bars</string>
     <widget class="QCheckBox" name="checkBox3DCubeOrbit">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>2864</y>
+       <x>120</x>
+       <y>3024</y>
        <width>151</width>
        <height>31</height>
       </rect>
@@ -4307,10 +4307,10 @@ raster bars</string>
       </size>
      </property>
     </widget>
-	<widget class="QLabel" name="label_55">
+	<widget class="QLabel" name="label_3d_cube_wireframe">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>330</x>
        <y>2814</y>
        <width>91</width>
        <height>31</height>
@@ -4323,14 +4323,11 @@ raster bars</string>
     <widget class="QCheckBox" name="checkBox3DCubeWireframeEnabled">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>458</x>
        <y>2814</y>
        <width>151</width>
        <height>31</height>
       </rect>
-     </property>
-     <property name="text">
-      <string>x</string>
      </property>
      <property name="iconSize">
       <size>
@@ -4346,7 +4343,7 @@ raster bars</string>
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>2974</y>
+       <y>2978</y>
        <width>411</width>
        <height>22</height>
       </rect>
@@ -4361,14 +4358,49 @@ raster bars</string>
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QLabel" name="label3DCubeFocalLength">
+    <widget class="QSlider" name="slider3DCubeOrbitSize">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>3078</y>
+       <width>411</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>500</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+	<widget class="QLabel" name="label_3d_cube_orbit_size">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>3074</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Orbit Size</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label3DCubeOrbitSize">
      <property name="enabled">
       <bool>false</bool>
      </property>
      <property name="geometry">
       <rect>
        <x>550</x>
-       <y>2974</y>
+       <y>3078</y>
        <width>131</width>
        <height>21</height>
       </rect>
@@ -4377,7 +4409,23 @@ raster bars</string>
       <string>TextLabel</string>
      </property>
     </widget>
-	<widget class="QLabel" name="label_56">
+    <widget class="QLabel" name="label3DCubeFocalLength">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>550</x>
+       <y>2978</y>
+       <width>131</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+	<widget class="QLabel" name="label_3d_cube_focal_length">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -4390,44 +4438,165 @@ raster bars</string>
       <string>Focal Length</string>
      </property>
     </widget>
-
-	<widget class="QLabel" name="label_57">
+   <widget class="QSlider" name="slider3DCubeOrbitSpeed">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>3128</y>
+       <width>411</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>30</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+	<widget class="QLabel" name="label_3d_cube_orbit_speed">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>2762</y>
+       <y>3124</y>
        <width>91</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>Filled</string>
+      <string>Orbit Speed</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox3DCubeFilled">
+    <widget class="QLabel" name="label3DCubeOrbitSpeed">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>550</x>
+       <y>3124</y>
+       <width>131</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+<widget class="QSlider" name="slider3DCubeSize">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>2762</y>
-       <width>151</width>
+       <y>2928</y>
+       <width>411</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>1000</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label3DCubeSize">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>550</x>
+       <y>2928</y>
+       <width>131</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox3dCubeModel">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>2868</y>
+       <width>143</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+	<widget class="QLabel" name="label_3d_cube_model">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>2868</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string/>
+      <string>Model</string>
      </property>
-     <property name="iconSize">
-      <size>
-       <width>40</width>
-       <height>40</height>
-      </size>
+    </widget>
+    <widget class="QComboBox" name="comboBox3dCubeMaterial">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>2814</y>
+       <width>143</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+	<widget class="QLabel" name="label_3d_cube_material">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>2814</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Material</string>
+     </property>
+    </widget>
+	<widget class="QLabel" name="label_3d_cube_size">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>2924</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Model Size</string>
      </property>
     </widget>
     <widget class="QPushButton" name="buttonColor3DCube">
      <property name="geometry">
       <rect>
-       <x>190</x>
-       <y>2740</y>
+       <x>160</x>
+       <y>2750</y>
        <width>71</width>
        <height>51</height>
       </rect>
@@ -4439,8 +4608,8 @@ raster bars</string>
     <widget class="QPushButton" name="buttonColorWireframe3DCube">
      <property name="geometry">
       <rect>
-       <x>390</x>
-       <y>2740</y>
+       <x>470</x>
+       <y>2750</y>
        <width>71</width>
        <height>51</height>
       </rect>
@@ -4449,6 +4618,43 @@ raster bars</string>
       <string/>
      </property>
     </widget>
+	<widget class="QLabel" name="labelWireframeColorText">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>2760</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+     </property>
+     <property name="text">
+      <string>Wireframe Color</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelMaterialColorText">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>2760</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+     </property>
+     <property name="text">
+      <string>Material color</string>
+     </property>
+    </widget>
+
     <widget class="QLabel" name="labelTitleCustomScrolltext">
      <property name="enabled">
       <bool>true</bool>
