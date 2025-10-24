@@ -5,6 +5,13 @@
 #include <fstream>
 #include <cstring>
 #include <cmath>
+#include <player/vgmplayer.hpp>
+#include <player/s98player.hpp>
+#include <player/gymplayer.hpp>
+#include <player/droplayer.hpp>
+#include <player/playerbase.hpp>
+#include <player/playera.hpp>
+#include <utils/MemoryLoader.h>
 #include "fmod.h"
 #include "info.h"
 #include "plugins.h"
@@ -21,17 +28,6 @@ extern "C" {
 #endif
 
 using namespace std;
-
-
-FMOD_RESULT handle_error(const char* str)
-{
-    if (str)
-    {
-        return FMOD_ERR_INTERNAL;
-    }
-    else
-        return FMOD_OK;
-}
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
@@ -185,31 +181,27 @@ static string PrintChipStr(UINT8 ChipID, UINT8 SubType, UINT32 Clock)
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     FMOD_RESULT result;
+
+    unsigned int filesize;
+    FMOD_CODEC_FILE_SIZE(codec, &filesize);
+
+    auto *myBuffer = new unsigned char[filesize];
+
+    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, nullptr);
+
     auto* plugin = new pluginVgmplayLegacy(codec);
-
-
     Info* info = static_cast<Info*>(userexinfo->userdata);
 
+    auto loader = MemoryLoader_Init(myBuffer, filesize);
 
-    VGMPlay_Init();
-    if (!OpenVGMFile(info->filename.c_str()))
-    {
-        if (GetGZFileLength(info->filename.c_str()) == 0xFFFFFFFF)
-        {
-            return FMOD_ERR_FORMAT; // file not found
-        }
-        else
-        {
-            return FMOD_ERR_FORMAT; // file invalid
-        }
+    if(loader == nullptr) {
+        return FMOD_ERR_FORMAT;
     }
-
-
-    int freq = 44100;
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = freq;
+    plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
@@ -217,6 +209,24 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
+
+    auto* player = new PlayerA();
+    player->RegisterPlayerEngine(new VGMPlayer);
+    player->RegisterPlayerEngine(new S98Player);
+    player->RegisterPlayerEngine(new DROPlayer);
+    player->RegisterPlayerEngine(new GYMPlayer);
+
+    if (player->SetOutputSettings(plugin->waveformat.frequency, plugin->waveformat.channels, bit_depth, BUFFER_LEN)) {
+        return FMOD_ERR_FORMAT;
+    }
+
+    PlayerA::Config pCfg = player->GetConfiguration();
+    pCfg.masterVol = 0x10000; // == 1.0 == 100%
+    pCfg.loopCount = loops;
+    pCfg.fadeSmpls = sample_rate * fade_len;
+    pCfg.endSilenceSmpls = 0;
+    pCfg.pbSpeed = 1.0;
+    player->SetConfiguration(pCfg);
 
 
     VGM_HEADER header;
