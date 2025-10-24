@@ -32,7 +32,15 @@ file(GLOB SOURCES
         #${EXTERNAL_SOURCE_DIR}/audio/AudioStream.c
         ${EXTERNAL_SOURCE_DIR}/emu/*.c
         ${EXTERNAL_SOURCE_DIR}/emu/cores/*.c
+
+        ${EXTERNAL_SOURCE_DIR}/player/*.c
+        ${EXTERNAL_SOURCE_DIR}/player/*.cpp
+
         #${EXTERNAL_SOURCE_DIR}/utils/OSMutex_Win.c #TODO
+        ${EXTERNAL_SOURCE_DIR}/utils/DataLoader.c
+        ${EXTERNAL_SOURCE_DIR}/utils/MemoryLoader.c
+        ${EXTERNAL_SOURCE_DIR}/utils/StrUtils-CPConv_IConv.c
+
 
         src/main.cpp)
 

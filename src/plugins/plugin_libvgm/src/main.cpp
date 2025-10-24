@@ -172,7 +172,7 @@ static string PrintChipStr(UINT8 ChipID, UINT8 SubType, UINT32 Clock)
 
     if (Clock & 0x40000000)
         chips.append("2x");
-    chips.append(GetAccurateChipName(ChipID, SubType));
+  //  chips.append(GetAccurateChipName(ChipID, SubType));
     chips.append(", ");
 
     return chips;
@@ -199,6 +199,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+
+    // TODO
+    DataLoader_SetPreloadBytes(loader,0x100);
+    if (DataLoader_Load(loader))
+    {
+        DataLoader_Deinit(loader); //T ODO
+        return FMOD_ERR_FORMAT;
+    }
+
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 44100;
@@ -210,85 +219,93 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    auto* player = new PlayerA();
+    auto *player = new PlayerA();
     player->RegisterPlayerEngine(new VGMPlayer);
     player->RegisterPlayerEngine(new S98Player);
     player->RegisterPlayerEngine(new DROPlayer);
     player->RegisterPlayerEngine(new GYMPlayer);
 
-    if (player->SetOutputSettings(plugin->waveformat.frequency, plugin->waveformat.channels, bit_depth, BUFFER_LEN)) {
+    if (player->SetOutputSettings(plugin->waveformat.frequency, plugin->waveformat.channels,
+                                  static_cast<UINT8>(8 * plugin->waveformat.format),
+                                  plugin->waveformat.frequency / 100)) {
+        //TODO smplBufferLen 2048?
         return FMOD_ERR_FORMAT;
     }
 
     PlayerA::Config pCfg = player->GetConfiguration();
     pCfg.masterVol = 0x10000; // == 1.0 == 100%
-    pCfg.loopCount = loops;
-    pCfg.fadeSmpls = sample_rate * fade_len;
+    pCfg.loopCount = 2; // TODO
+    pCfg.fadeSmpls = 0; // TODO
     pCfg.endSilenceSmpls = 0;
     pCfg.pbSpeed = 1.0;
     player->SetConfiguration(pCfg);
 
-
-    VGM_HEADER header;
-    GD3_TAG tag;
-    GetVGMFileInfo(info->filename.c_str(), &header, &tag);
+    //TODO why is null?
+    player->GetPlayer();
 
 
-    wstring title_ws(tag.strTrackNameE);
-    string title_s(title_ws.begin(), title_ws.end());
-    info->title = title_s;
-
-    wstring artist_ws(tag.strAuthorNameE);
-    string artist_s(artist_ws.begin(), artist_ws.end());
-    info->artist = artist_s;
-
-    wstring system_ws(tag.strSystemNameE);
-    string system_s(system_ws.begin(), system_ws.end());
-    info->system = system_s;
-
-    wstring game_ws(tag.strGameNameE);
-    string game_s(game_ws.begin(), game_ws.end());
-    info->game = game_s;
-
-    wstring comments_ws(tag.strNotes);
-    string comments_s(comments_ws.begin(), comments_ws.end());
-    info->comments = comments_s;
-
-    wstring date_ws(tag.strReleaseDate);
-    string date_s(date_ws.begin(), date_ws.end());
-    info->date = date_s;
-
-
-    wstring dumper_ws(tag.strCreator);
-    string dumper_s(dumper_ws.begin(), dumper_ws.end());
-    info->dumper = dumper_s;
-
-    info->version = tag.lngVersion;
-
-
-    INT16 VolMod;
-    if (header.bytVolumeModifier <= VOLUME_MODIF_WRAP)
-        VolMod = header.bytVolumeModifier;
-    else if (header.bytVolumeModifier == (VOLUME_MODIF_WRAP + 0x01))
-        VolMod = VOLUME_MODIF_WRAP - 0x100;
-    else
-        VolMod = header.bytVolumeModifier - 0x100;
-
-
-    info->gain = pow(2.0, VolMod / (double)0x20);
-
-
-    UINT8 CurChip;
-    UINT8 ChpType;
-    UINT32 ChpClk;
-
-    for (CurChip = 0x00; CurChip < CHIP_COUNT; CurChip++)
-    {
-        ChpClk = GetChipClock(&header, CurChip, &ChpType);
-        if (ChpClk && GetChipClock(&header, 0x80 | CurChip, NULL))
-            ChpClk |= 0x40000000;
-        info->chips.append(PrintChipStr(CurChip, ChpType, ChpClk));
-    }
+    //
+    //
+    // VGM_HEADER header;
+    // GD3_TAG tag;
+    // GetVGMFileInfo(info->filename.c_str(), &header, &tag);
+    //
+    //
+    // wstring title_ws(tag.strTrackNameE);
+    // string title_s(title_ws.begin(), title_ws.end());
+    // info->title = title_s;
+    //
+    // wstring artist_ws(tag.strAuthorNameE);
+    // string artist_s(artist_ws.begin(), artist_ws.end());
+    // info->artist = artist_s;
+    //
+    // wstring system_ws(tag.strSystemNameE);
+    // string system_s(system_ws.begin(), system_ws.end());
+    // info->system = system_s;
+    //
+    // wstring game_ws(tag.strGameNameE);
+    // string game_s(game_ws.begin(), game_ws.end());
+    // info->game = game_s;
+    //
+    // wstring comments_ws(tag.strNotes);
+    // string comments_s(comments_ws.begin(), comments_ws.end());
+    // info->comments = comments_s;
+    //
+    // wstring date_ws(tag.strReleaseDate);
+    // string date_s(date_ws.begin(), date_ws.end());
+    // info->date = date_s;
+    //
+    //
+    // wstring dumper_ws(tag.strCreator);
+    // string dumper_s(dumper_ws.begin(), dumper_ws.end());
+    // info->dumper = dumper_s;
+    //
+    // info->version = tag.lngVersion;
+    //
+    //
+    // INT16 VolMod;
+    // if (header.bytVolumeModifier <= VOLUME_MODIF_WRAP)
+    //     VolMod = header.bytVolumeModifier;
+    // else if (header.bytVolumeModifier == (VOLUME_MODIF_WRAP + 0x01))
+    //     VolMod = VOLUME_MODIF_WRAP - 0x100;
+    // else
+    //     VolMod = header.bytVolumeModifier - 0x100;
+    //
+    //
+    // info->gain = pow(2.0, VolMod / (double)0x20);
+    //
+    //
+    // UINT8 CurChip;
+    // UINT8 ChpType;
+    // UINT32 ChpClk;
+    //
+    // for (CurChip = 0x00; CurChip < CHIP_COUNT; CurChip++)
+    // {
+    //     ChpClk = GetChipClock(&header, CurChip, &ChpType);
+    //     if (ChpClk && GetChipClock(&header, 0x80 | CurChip, NULL))
+    //         ChpClk |= 0x40000000;
+    //     info->chips.append(PrintChipStr(CurChip, ChpType, ChpClk));
+    // }
 
     info->plugin = PLUGIN_libvgm;
     info->pluginName = PLUGIN_libvgm_NAME;
@@ -296,55 +313,55 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     info->setSeekable(true);
 
 
-    UINT32 trackLen;
-    if (header.lngLoopSamples)
-    {
-        trackLen = header.lngTotalSamples;
-        plugin->waveformat.lengthpcm = header.lngTotalSamples + (header.lngLoopSamples);
-    }
-    else
-    {
-        trackLen = header.lngTotalSamples;
-        plugin->waveformat.lengthpcm = header.lngTotalSamples;
-    }
-
-    double trackLenMs;
-    trackLenMs = (double)trackLen / 44.1;
-    info->loopInfo.append(msToNiceStringExact(trackLenMs));
-
-    if (!header.lngLoopSamples)
-    {
-        info->loopInfo.append(" (no loop)");
-    }
-    else
-    {
-        UINT32 introLen = header.lngTotalSamples - header.lngLoopSamples;
-
-        if (introLen < 30000)
-        {
-            info->loopInfo.append(" (looped)");
-        }
-        else
-        {
-            double intro_ms = (double)introLen / 44.1;
-            double loop_ms = (double)header.lngLoopSamples / 44.1;
-            info->loopInfo.append(" (");
-            info->loopInfo.append(msToNiceStringExact(intro_ms));
-            info->loopInfo.append(" intro and ");
-            info->loopInfo.append(msToNiceStringExact(loop_ms));
-            info->loopInfo.append(" loop)");
-        }
-    }
-
-    VGMPlay_Init2();
-    PlayVGM();
+    // UINT32 trackLen;
+    // if (header.lngLoopSamples)
+    // {
+    //     trackLen = header.lngTotalSamples;
+    //     plugin->waveformat.lengthpcm = header.lngTotalSamples + (header.lngLoopSamples);
+    // }
+    // else
+    // {
+    //     trackLen = header.lngTotalSamples;
+    //     plugin->waveformat.lengthpcm = header.lngTotalSamples;
+    // }
+    //
+    // double trackLenMs;
+    // trackLenMs = (double)trackLen / 44.1;
+    // info->loopInfo.append(msToNiceStringExact(trackLenMs));
+    //
+    // if (!header.lngLoopSamples)
+    // {
+    //     info->loopInfo.append(" (no loop)");
+    // }
+    // else
+    // {
+    //     UINT32 introLen = header.lngTotalSamples - header.lngLoopSamples;
+    //
+    //     if (introLen < 30000)
+    //     {
+    //         info->loopInfo.append(" (looped)");
+    //     }
+    //     else
+    //     {
+    //         double intro_ms = (double)introLen / 44.1;
+    //         double loop_ms = (double)header.lngLoopSamples / 44.1;
+    //         info->loopInfo.append(" (");
+    //         info->loopInfo.append(msToNiceStringExact(intro_ms));
+    //         info->loopInfo.append(" intro and ");
+    //         info->loopInfo.append(msToNiceStringExact(loop_ms));
+    //         info->loopInfo.append(" loop)");
+    //     }
+    // }
+    //
+    // VGMPlay_Init2();
+    // PlayVGM();
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    StopVGM();
-    VGMPlay_Deinit();
+    // StopVGM();
+    // VGMPlay_Deinit();
     auto* plugin = static_cast<pluginVgmplayLegacy*>(codec->plugindata);
     delete static_cast<pluginVgmplayLegacy*>(codec->plugindata);
     //delete LogFile;
@@ -355,7 +372,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 {
     auto* plugin = static_cast<pluginVgmplayLegacy*>(codec->plugindata);
 
-    int RetSamples = FillBuffer(static_cast<WAVE_16BS*>(buffer), size);
+  //  int RetSamples = FillBuffer(static_cast<WAVE_16BS*>(buffer), size);
 
     *read = size;
 
@@ -373,7 +390,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
         //The one below will overflow and other shit
         //UINT32 u = (UINT32)((position * 44100 * 2) / 1000);
         //cout << "position: " << position << " ms / " << u << " samples\n";
-        SeekVGM(false, u);
+    //    SeekVGM(false, u);
     }
     else
     {
