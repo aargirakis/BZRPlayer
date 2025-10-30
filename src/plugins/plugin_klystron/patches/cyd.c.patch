@@ -1,0 +1,16 @@
+--- src/snd/cyd.c	2025-10-30 18:59:47.270921875 +0100
++++ src/snd/cyd.c	2025-10-30 19:56:16.322489062 +0100
+@@ -49,6 +49,13 @@
+ 
+ #endif
+ 
++#ifndef WIN32
++#define SDL_CloseAudio() (0)
++#define SDL_Delay(a) (0)
++#define SDL_OpenAudio(a,b) (0)
++#define SDL_PauseAudio(a) (0)
++#endif
++
+ #define envspd(cyd,slope) (slope!=0?(((Uint64)0xff0000 / ((slope) * (slope) * 256 / (ENVELOPE_SCALE * ENVELOPE_SCALE))) * CYD_BASE_FREQ / cyd->sample_rate):((Uint64)0xff0000 * CYD_BASE_FREQ / cyd->sample_rate))
+ 
+ // used lfsr-generator <http://lfsr-generator.sourceforge.net/> for this:

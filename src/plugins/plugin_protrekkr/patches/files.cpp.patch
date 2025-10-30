@@ -1,0 +1,13 @@
+--- src/files/files.cpp	2025-10-31 08:32:10.062041000 +0100
++++ src/files/files.cpp	2025-10-31 08:36:39.756087173 +0100
+@@ -35,6 +35,10 @@
+ #include "../extralibs/zlib-1.2.3/zlib.h"
+ #else
+ #include "zlib.h"
++#if defined(__LINUX__)
++#define Unpack_8Bit(a,b,c,d) (0)
++#define Unpack_ADPCM(a,b,c,d) (0)
++#endif
+ #endif
+ 
+ #include "../include/ptk.h"

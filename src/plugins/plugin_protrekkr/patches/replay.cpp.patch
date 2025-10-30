@@ -1,6 +1,6 @@
 --- release/distrib/replay/lib/replay.cpp	2025-01-30 20:14:52.000000000 +0100
-+++ release/distrib/replay/lib/replay.cpp	2025-04-08 16:39:00.317941847 +0200
-@@ -49,6 +49,14 @@
++++ release/distrib/replay/lib/replay.cpp	2025-10-31 08:41:26.353688436 +0100
+@@ -49,6 +49,19 @@
  #include "../../../../src/include/ptk.h"
  #endif
  
@@ -9,13 +9,18 @@
 +#if defined(__LINUX__)
 +#include <cstring>
 +#include <unistd.h>
++#define Unpack_8Bit(a,b,c,d) (0)
++#define Unpack_ADPCM(a,b,c,d) (0)
++#define Unpack_GSM(a,b,c,d) (0)
++#define Unpack_MP3(a,b,c,d,e) (0)
++#define Unpack_WavPack(a,b,c,d) (0)
 +#endif
 +#endif
 +
  // ------------------------------------------------------
  // Variables
  #if !defined(__STAND_ALONE__) && !defined(__WINAMP__)
-@@ -2192,7 +2200,7 @@
+@@ -2192,7 +2205,7 @@
  
      glide = 0;
  

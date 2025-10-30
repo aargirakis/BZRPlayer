@@ -47,6 +47,7 @@ include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)
 set_platform_lib_ext()
 
 add_compile_options(-w) #TODO remove
+add_link_options(-Wl,--no-undefined)
 
 set(SUBDIRECTORIES_BY_MODULES
         app "src/app"

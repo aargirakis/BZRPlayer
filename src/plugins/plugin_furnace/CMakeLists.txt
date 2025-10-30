@@ -115,10 +115,10 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/engine/zsmOps.cpp
         ${EXTERNAL_SOURCE_DIR}/src/fileutils.cpp
         ${EXTERNAL_SOURCE_DIR}/src/log.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/utfutils.cpp
         src/main.cpp)
 
 if (WIN32)
-    list(APPEND SOURCES ${EXTERNAL_SOURCE_DIR}/src/utfutils.cpp)
     list(APPEND SOURCES ${EXTERNAL_SOURCE_DIR}/src/engine/winStuff.cpp)
 endif ()
 

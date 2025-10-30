@@ -1,0 +1,16 @@
+--- release/distrib/replay/lib/include/samples_unpack.h	2025-10-31 08:52:30.753609216 +0100
++++ release/distrib/replay/lib/include/samples_unpack.h	2025-10-31 08:55:54.566656177 +0100
+@@ -81,8 +81,13 @@
+ void Unpack_MP3(Uint8 *Source, short *Dest, int Src_Size, int Dst_Size, int BitRate);
+ #endif
+ #endif
++#if defined(__LINUX__)
++//void Unpack_ADPCM(Uint8 *Source, short *Dest, int Src_Size, int Dst_Size);
++//void Unpack_8Bit(Uint8 *Source, short *Dest, int Src_Size, int Dst_Size);
++#else
+ void Unpack_ADPCM(Uint8 *Source, short *Dest, int Src_Size, int Dst_Size);
+ void Unpack_8Bit(Uint8 *Source, short *Dest, int Src_Size, int Dst_Size);
++#endif
+ void Unpack_WavPack(Uint8 *Source, short *Dest, int Src_Size, int Dst_Size);
+ 
+ #endif
