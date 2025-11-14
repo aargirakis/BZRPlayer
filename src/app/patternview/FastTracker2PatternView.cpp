@@ -60,7 +60,7 @@ FastTracker2PatternView::FastTracker2PatternView(Tracker* parent, unsigned int c
     m_SeparatorRowNumber = m_SeparatorChannel = m_SeparatorRowNumberLast = "'";
 
     m_yOffsetCurrentRowAfter = 2;
-    m_yOffsetCurrentRowBefore = -2;
+    m_yOffsetCurrentRowBefore = -3;
     m_xOffsetRow = 8;
     m_RowLength = 4 + (m_channels * 9) + 3;
 
@@ -230,7 +230,7 @@ void FastTracker2PatternView::paintAbove(QPainter* painter, int height, int curr
         //top channels
         painter->fillRect((29) + chan * 72 * m_fontWidth / 8, 31, extra + 70 * m_fontWidth / 8, 1, colorShadow);
         //channel number
-        drawText(QString::number(chan), painter, (28) + chan * 72 * m_fontWidth / 8, 43, bitmapFont());
+        drawText(QString::number(chan), painter, (28) + chan * 72 * m_fontWidth / 8, 43, m_bitmapFont3);
         //black line
         painter->fillRect((28) + chan * 72 * m_fontWidth / 8, 33, 1, 10, QColor(0, 0, 0));
     }
@@ -244,7 +244,7 @@ void FastTracker2PatternView::paintAbove(QPainter* painter, int height, int curr
     //bottom left and right
     painter->fillRect((2), (height) - 3, 25, 1, colorHilite);
     painter->fillRect(29 + (m_channels * 72 * m_fontWidth / 8), (height) - 3, 24, 1, colorHilite);
-    painter->fillRect(29 + (m_channels * 72 * m_fontWidth / 8), (height) - 2, 24, 1, colorBase);
+    painter->fillRect(28 + (m_channels * 72 * m_fontWidth / 8), (height) - 2, 26, 1, colorBase);
 
     //top left
     painter->fillRect((2), 31, 25, 1, colorShadow);
@@ -268,44 +268,44 @@ void FastTracker2PatternView::paintBelow(QPainter* painter, int height, int curr
     //left border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine(((left - 2)), 29, ((left - 2)), height);
+    painter->drawLine(((left - 3)), 29, ((left - 3)), height - 2);
     pen.setColor(colorBase);
     painter->setPen(pen);
-    painter->drawLine(((left - 1)), 29, ((left - 1)), height);
+    painter->drawLine(((left - 2)), 29, ((left - 2)), height - 3);
     pen.setColor(colorShadow);
     painter->setPen(pen);
-    painter->drawLine(((left)), 29, ((left)), height - 4);
+    painter->drawLine(((left-1)), 29, ((left-1)), height - 4);
 
     for (unsigned int chan = 0; chan <= m_channels; chan++)
     {
         //channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
-        painter->drawLine((left + 24 + chan * 72 * m_fontWidth / 8), 29, (left + 24 + chan * 72 * m_fontWidth / 8),
-                          height);
+        painter->drawLine((left + 23 + chan * 72 * m_fontWidth / 8), 29, (left + 23 + chan * 72 * m_fontWidth / 8),
+                          height-2);
         pen.setColor(colorBase);
         painter->setPen(pen);
-        painter->drawLine((left + 25 + chan * 72 * m_fontWidth / 8), 29, (left + 25 + chan * 72 * m_fontWidth / 8),
-                          height);
+        painter->drawLine((left + 24 + chan * 72 * m_fontWidth / 8), 29, (left + 24 + chan * 72 * m_fontWidth / 8),
+                          height-2);
         pen.setColor(colorShadow);
         painter->setPen(pen);
-        painter->drawLine((left + 26 + chan * 72 * m_fontWidth / 8), 29, (left + 26 + chan * 72 * m_fontWidth / 8),
-                          (height) - 2);
+        painter->drawLine((left + 25 + chan * 72 * m_fontWidth / 8), 29, (left + 25 + chan * 72 * m_fontWidth / 8),
+                          (height)-2);
     }
 
     //right border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine((54) + (m_channels * 72 * m_fontWidth / 8), 29, (54) + (m_channels * 72 * m_fontWidth / 8),
-                      height);
+    painter->drawLine((53) + (m_channels * 72 * m_fontWidth / 8), 29, (53) + (m_channels * 72 * m_fontWidth / 8),
+                      height-3);
     pen.setColor(colorBase);
     painter->setPen(pen);
-    painter->drawLine((55) + (m_channels * 72 * m_fontWidth / 8), 29, (55) + (m_channels * 72 * m_fontWidth / 8),
-                      height);
+    painter->drawLine((54) + (m_channels * 72 * m_fontWidth / 8), 29, (54) + (m_channels * 72 * m_fontWidth / 8),
+                      height-2);
     pen.setColor(colorShadow);
     painter->setPen(pen);
-    painter->drawLine((56) + (m_channels * 72 * m_fontWidth / 8), 29, (56) + (m_channels * 72 * m_fontWidth / 8),
-                      height);
+    painter->drawLine((55) + (m_channels * 72 * m_fontWidth / 8), 29, (55) + (m_channels * 72 * m_fontWidth / 8),
+                      height-1);
 
     for (unsigned int chan = 0; chan < m_channels; chan++)
     {

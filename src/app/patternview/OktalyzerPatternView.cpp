@@ -85,6 +85,7 @@ QString OktalyzerPatternView::effect(BaseRow* row)
     case 12:
     case 174:
     case 10:
+    case 20:
         effectStr = "V";
         break;
     case 69: effectStr = "W";
