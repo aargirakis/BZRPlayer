@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstring>
 #include <format>
 #include <emu/SoundDevs.h>
@@ -28,6 +29,8 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
+
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
@@ -37,11 +40,12 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_libvgm_NAME, // Name.
     0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE,
+    // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    nullptr,
+    &getLength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setPosition, // Setposition callback.
     nullptr,
@@ -64,9 +68,11 @@ public:
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
+    Info *info;
     uint8_t *myBuffer;
     DATA_LOADER *loader;
     PlayerA *mainPlr;
+    PlayerBase *player;
 };
 
 /*
@@ -91,7 +97,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
     auto *plugin = new pluginVgmplayLegacy(codec);
-    auto *info = static_cast<Info *>(userexinfo->userdata);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
+
     plugin->myBuffer = new uint8_t[filesize];
 
     auto result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
@@ -166,10 +173,18 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->mainPlr->Start();
 
-    PlayerBase *player = plugin->mainPlr->GetPlayer();
+    plugin->player = plugin->mainPlr->GetPlayer();
 
     vector<PLR_DEV_INFO> deviceInfoList;
-    player->GetSongDeviceInfo(deviceInfoList);
+    plugin->player->GetSongDeviceInfo(deviceInfoList);
+
+    unsigned int channels = 0;
+
+    for (const auto &deviceInfo: deviceInfoList) {
+        channels += deviceInfo.devDecl->channelCount(deviceInfo.devCfg);
+    }
+
+    plugin->info->numChannels = channels;
 
     vector<string> devices;
 
@@ -215,21 +230,21 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     for (int i = 0; i < instancesPerDevices.size(); i++) {
         if (i != 0) {
-            info->chips += ", ";
+            plugin->info->chips += ", ";
         }
 
         if (instancesPerDevices[i].first > 1) {
-            info->chips += format("{}x ", instancesPerDevices[i].first);
+            plugin->info->chips += format("{}x ", instancesPerDevices[i].first);
         }
 
-        info->chips += instancesPerDevices[i].second;
+        plugin->info->chips += instancesPerDevices[i].second;
     }
 
     PLR_SONG_INFO songInfo{};
-    player->GetSongInfo(songInfo);
+    plugin->player->GetSongInfo(songInfo);
 
-    if (player->GetPlayerType() == FCC_DRO) {
-        const auto *drohdr = dynamic_cast<DROPlayer *>(player)->GetFileHeader();
+    if (plugin->player->GetPlayerType() == FCC_DRO) {
+        const auto *drohdr = dynamic_cast<DROPlayer *>(plugin->player)->GetFileHeader();
 
         string hwType;
 
@@ -241,60 +256,60 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             hwType = "OPL3";
 
         if (!hwType.empty()) {
-            if (info->chips.empty()) {
-                info->chips = hwType;
+            if (plugin->info->chips.empty()) {
+                plugin->info->chips = hwType;
             } else {
-                info->chips += " [" + hwType + "]";
+                plugin->info->chips += " [" + hwType + "]";
             }
         }
 
-        info->fileformat = "DOSBox Raw OPL v";
+        plugin->info->fileformat = "DOSBox Raw OPL v";
 
         if (songInfo.fileVerMin == 0) {
-            info->fileformat += format("{}", songInfo.fileVerMaj);
+            plugin->info->fileformat += format("{}", songInfo.fileVerMaj);
         } else {
-            info->fileformat += format("{}.{}", songInfo.fileVerMaj, songInfo.fileVerMin);
+            plugin->info->fileformat += format("{}.{}", songInfo.fileVerMaj, songInfo.fileVerMin);
         }
 
-        info->allowedFields = &allowedFieldsDro;
-    } else if (player->GetPlayerType() == FCC_GYM) {
-        info->fileformat = "Genesis YM2612";
-        info->allowedFields = &allowedFieldsGym;
-    } else if (player->GetPlayerType() == FCC_S98) {
-        info->fileformat = format("S98 v{}", songInfo.fileVerMaj);
-        info->allowedFields = &allowedFieldsS98;
-    } else if (player->GetPlayerType() == FCC_VGM) {
-        info->fileformat = format("Video Game Music v{:x}.{:02x}", songInfo.fileVerMaj, songInfo.fileVerMin);
-        info->allowedFields = &allowedFieldsVgm;
+        plugin->info->allowedFields = &allowedFieldsDro;
+    } else if (plugin->player->GetPlayerType() == FCC_GYM) {
+        plugin->info->fileformat = "Genesis YM2612";
+        plugin->info->allowedFields = &allowedFieldsGym;
+    } else if (plugin->player->GetPlayerType() == FCC_S98) {
+        plugin->info->fileformat = format("S98 v{}", songInfo.fileVerMaj);
+        plugin->info->allowedFields = &allowedFieldsS98;
+    } else if (plugin->player->GetPlayerType() == FCC_VGM) {
+        plugin->info->fileformat = format("Video Game Music v{:x}.{:02x}", songInfo.fileVerMaj, songInfo.fileVerMin);
+        plugin->info->allowedFields = &allowedFieldsVgm;
     }
 
-    const char *const *tags = player->GetTags();
+    const char *const *tags = plugin->player->GetTags();
     for (const char *const *t = tags; *t; t += 2) {
         if (!strcmp(t[0], "ARTIST"))
-            info->artist = t[1];
+            plugin->info->artist = t[1];
         else if (!strcmp(t[0], "COMMENT"))
-            info->comments = t[1];
+            plugin->info->comments = t[1];
         else if (!strcmp(t[0], "COPYRIGHT") || !strcmp(t[0], "PUBLISHER"))
-            info->copyright = t[1];
+            plugin->info->copyright = t[1];
         else if (!strcmp(t[0], "DATE"))
-            info->date = t[1];
+            plugin->info->date = t[1];
         else if (!strcmp(t[0], "EMULATOR"))
-            info->emulator = t[1];
+            plugin->info->emulator = t[1];
         else if (!strcmp(t[0], "ENCODED_BY"))
-            info->ripper = t[1];
+            plugin->info->ripper = t[1];
         else if (!strcmp(t[0], "GAME"))
-            info->game = t[1];
+            plugin->info->game = t[1];
         else if (!strcmp(t[0], "GENRE"))
-            info->genre = t[1];
+            plugin->info->genre = t[1];
         else if (!strcmp(t[0], "SYSTEM"))
-            info->system = t[1];
+            plugin->info->system = t[1];
         else if (!strcmp(t[0], "TITLE"))
-            info->title = t[1];
+            plugin->info->title = t[1];
     }
 
-    info->plugin = PLUGIN_libvgm;
-    info->pluginName = PLUGIN_libvgm_NAME;
-    info->setSeekable(true);
+    plugin->info->plugin = PLUGIN_libvgm;
+    plugin->info->pluginName = PLUGIN_libvgm_NAME;
+    plugin->info->setSeekable(true);
 
     return FMOD_OK;
 }
@@ -316,12 +331,53 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     return FMOD_OK;
 }
 
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1; // ignored
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_UNSUPPORTED;
+}
+
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     const auto *plugin = static_cast<pluginVgmplayLegacy *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
         plugin->mainPlr->Seek(PLAYPOS_SAMPLE, position * plugin->waveformat.frequency / 1000);
+        return FMOD_OK;
+    }
+
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        auto overallMutedChannelsMask = plugin->info->mutedChannelsMask;
+
+        for (char &bit: overallMutedChannelsMask) {
+            bit = bit == '0' ? '1' : '0';
+        }
+
+        vector<PLR_DEV_INFO> deviceInfoList;
+        plugin->player->GetSongDeviceInfo(deviceInfoList);
+
+        for (const auto &deviceInfo: deviceInfoList) {
+            const unsigned int deviceChannelsCount = deviceInfo.devDecl->channelCount(deviceInfo.devCfg);
+
+            string deviceMutedChannelsMask = overallMutedChannelsMask.substr(0, deviceChannelsCount);
+
+            ranges::reverse(deviceMutedChannelsMask);
+
+            const auto deviceChannelsMask = static_cast<UINT32>(stoul(deviceMutedChannelsMask, nullptr, 2));
+
+            PLR_MUTE_OPTS muteOpts = {};
+            plugin->player->GetDeviceMuting(deviceInfo.id, muteOpts);
+
+            muteOpts.chnMute[deviceInfo.parentIdx == -1 ? 0 : 1] = deviceChannelsMask;
+
+            plugin->player->SetDeviceMuting(deviceInfo.id, muteOpts);
+
+            overallMutedChannelsMask.erase(0, deviceChannelsCount);
+        }
+
         return FMOD_OK;
     }
 

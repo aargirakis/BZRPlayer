@@ -84,6 +84,7 @@ void Channels::updateChannels()
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_game_music_emu ||
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_libsidplayfp ||
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
+                SoundManager::getInstance().m_Info1->plugin == PLUGIN_libvgm ||
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker ||
                 SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace ||
                 // SoundManager::getInstance().m_Info1->plugin==PLUGIN_sndh_player ||
@@ -123,8 +124,9 @@ void Channels::muteAllChannels()
         channels.at(i)->setChecked(false);
     }
 
-    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin
-        == PLUGIN_libxmp)
+    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
+        SoundManager::getInstance().m_Info1->plugin == PLUGIN_libvgm ||
+        SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp)
     {
         mask = 0;
     }
@@ -162,8 +164,9 @@ void Channels::muteChannels()
         }
     }
 
-    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin
-        == PLUGIN_libxmp)
+    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
+    SoundManager::getInstance().m_Info1->plugin == PLUGIN_libvgm ||
+    SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp)
     {
         mask = 0;
     }
