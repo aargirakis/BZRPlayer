@@ -70,9 +70,12 @@ QString OktalyzerPatternView::effect(BaseRow* row)
         break;
     case 114: effectStr = "C";
         break;
+    case 38:
     case 156: effectStr = "D";
         break;
-    case 157: effectStr = "H";
+    case 157:
+    case 37:
+        effectStr = "H";
         break;
     case 117: effectStr = "L";
         break; //117 for Z also?
