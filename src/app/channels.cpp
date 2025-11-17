@@ -4,6 +4,10 @@
 #include "plugins.h"
 #include "soundmanager.h"
 
+using uint128_t = unsigned __int128;
+
+constexpr int maxChannels = 127;
+
 Channels::Channels(MainWindow* mw, QWidget* parent)
     : QWidget(parent)
 {
@@ -13,7 +17,7 @@ Channels::Channels(MainWindow* mw, QWidget* parent)
 
     int row = 0;
     int col = 0;
-    for (int i = 0; i < 64; i++)
+    for (int i = 0; i < maxChannels; i++)
     {
         channels.append(new ButtonOscilloscope(this, i));
 
@@ -46,7 +50,7 @@ Channels::Channels(MainWindow* mw, QWidget* parent)
 
 void Channels::updateChannelColors()
 {
-    for (int i = 0; i < 64; i++)
+    for (int i = 0; i < maxChannels; i++)
     {
         channels.at(i)->setEnabledColor(QColor(m_root->colorMain.left(7)));
         channels.at(i)->setDisabledColor(QColor(m_root->colorMedium.left(7)));
@@ -60,7 +64,7 @@ void Channels::updateChannels()
     unsigned int numChannels;
     if (SoundManager::getInstance().m_Info1 == nullptr)
     {
-        for (unsigned int i = 0; i < 64; i++)
+        for (unsigned int i = 0; i < maxChannels; i++)
         {
             channels.at(i)->setVisible(false);
             channels.at(i)->update();
@@ -72,7 +76,7 @@ void Channels::updateChannels()
         numChannels = SoundManager::getInstance().m_Info1->numChannels;
     }
 
-    for (unsigned int i = 0; i < 64; i++)
+    for (unsigned int i = 0; i < maxChannels; i++)
     {
         channels.at(i)->setChecked(true);
         if (i < numChannels &&
@@ -110,7 +114,7 @@ bool Channels::getChannelEnabled(int index)
 void Channels::muteAllChannels()
 {
     unsigned int numChannels = SoundManager::getInstance().m_Info1->numChannels;
-    unsigned int mask = 0;
+    uint128_t mask = 0;
     QString maskStr = "";
     for (int i = 0; i < numChannels; i++)
     {
@@ -143,7 +147,7 @@ void Channels::unmuteAllChannels()
 void Channels::muteChannels()
 {
     unsigned int numChannels = SoundManager::getInstance().m_Info1->numChannels;
-    unsigned int mask = 0;
+    uint128_t mask = 0;
     QString maskStr = "";
     for (int i = 0; i < numChannels; i++)
     {
