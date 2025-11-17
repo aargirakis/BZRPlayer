@@ -119,6 +119,7 @@ public:
     virtual bool rowNumbersLastChannelEnabled(){return m_rowNumbersLastChannelEnabled;}
     virtual bool rowNumbersEveryChannelEnabled(){return m_RowNumbersEveryChannelEnabled;}
     virtual bool effectsThenParametersEnabled(){return m_effectsThenParametersEnabled;}
+    virtual bool patternNumberAtStart(){return m_patternNumberAtStartEnabled;}
     virtual QColor colorRowNumberCurrentRow(){return m_ColorRowNumberCurrentRow;}
     virtual bool colorRowNumberCurrentRowEnabled(){return m_ColorRowNumberCurrentRowEnabled;}
     virtual int yOffsetRowHighlight() {return m_yOffsetRowHighlight;}
@@ -230,6 +231,7 @@ protected:
     bool m_RowNumbersEveryChannelEnabled;
     bool m_rowNumbersLastChannelEnabled;
     bool m_effectsThenParametersEnabled;
+    bool m_patternNumberAtStartEnabled;
     bool m_linesBetweenRows;
 
 

@@ -24,8 +24,8 @@ OktalyzerPatternView::OktalyzerPatternView(Tracker* parent, unsigned int channel
 
     m_RowEnd = "'";
     m_SeparatorChannel = "'";
-    m_RowStart = "00'";
 
+    m_patternNumberAtStartEnabled = true;
     instrumentPad = false;
     m_emptyInstrument = "0";
     m_SeparatorNote = "'";

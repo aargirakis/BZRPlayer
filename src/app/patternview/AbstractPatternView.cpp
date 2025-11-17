@@ -37,6 +37,7 @@ AbstractPatternView::AbstractPatternView(Tracker* parent, unsigned int channels)
     parameter2Enabled = false;
     m_rowNumbersLastChannelEnabled = false;
     m_RowNumbersEveryChannelEnabled = false;
+    m_patternNumberAtStartEnabled = false;
     m_ColorRowHighlightBackground = "ff00ff";
     m_RowHighlightForegroundFrequency = 0;
     m_RowHighlightBackgroundFrequency = 0;
