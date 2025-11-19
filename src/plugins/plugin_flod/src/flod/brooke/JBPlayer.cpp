@@ -5,11 +5,12 @@
 #include "AmigaChannel.h"
 #include <iostream>
 #include "MyEndian.h"
+
 using namespace std;
 
 JBPlayer::JBPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
-    voices = std::vector<JBVoice*>(4);
+    voices = vector<JBVoice*>(4);
 
     voices[0] = new JBVoice(0);
     voices[0]->next = voices[1] = new JBVoice(1);
@@ -806,13 +807,13 @@ void JBPlayer::printData()
         BaseSample* sample = samples[i];
         if (sample)
         {
-            std::cout << "Sample [" << i << "] length: " << sample->length << " finetune: " << sample->finetune <<
+            cout << "Sample [" << i << "] length: " << sample->length << " finetune: " << sample->finetune <<
                 " relative: " << sample->relative << " loopPtr: " << sample->loopPtr << " name: " << sample->name <<
                 " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << (int)sample->volume
                 << "\n";
         }
     }
-    std::flush(std::cout);
+    flush(cout);
 }
 
 int JBPlayer::load(void* _data, unsigned long int _length)
@@ -1303,9 +1304,9 @@ int JBPlayer::oldLoader(void* data, unsigned long int _length)
     return 1;
 }
 
-std::vector<BaseSample*> JBPlayer::getSamples()
+vector<BaseSample*> JBPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];
@@ -1314,6 +1315,6 @@ std::vector<BaseSample*> JBPlayer::getSamples()
             samp[i] = new BaseSample();
         }
     }
-    //std::cout << "returning samples, size: " << samp.size() << "\n";
+    //cout << "returning samples, size: " << samp.size() << "\n";
     return samp;
 }

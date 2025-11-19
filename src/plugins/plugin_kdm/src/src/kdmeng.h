@@ -3,7 +3,6 @@
 
 //#include <foobar2000.h>
 #include <cstdint>
-#include <vector>
 
 class kdmeng
 {
@@ -65,8 +64,8 @@ public:
 	long frqtable[256];
 	long ramplookup[64];
 
-	long monohicomb( long * b, long c, long d, long si, long * di );
-	long stereohicomb( long * b, long c, long d, long si, long * di );
+	long monohicomb(const long * b, long c, long d, long si, long * di );
+	long stereohicomb(const long * b, long c, long d, long si, long * di );
 
     long loadwaves( const char * refdir);
 
@@ -86,17 +85,17 @@ public:
 
 	void seek ( long seektoms );
 
-    unsigned int getNumtracks(){ return numtracks;}
-    unsigned getNumwaves(){ return numwaves;}
-    void getInstname(unsigned int idx,char* buff);
-    char getTrackInstrument(unsigned int idx);
-    char getTrackQuantize(unsigned int idx);
-    unsigned char getTrackVolume1(unsigned int idx);
-    unsigned char getTrackVolume2(unsigned int idx);
-    unsigned getInstsize(unsigned int idx);
-    unsigned getInstrepstart(unsigned int idx);
-    unsigned getInstreplength(unsigned int idx);
-    int getInstfinetune(unsigned int idx);
+    unsigned int getNumtracks() const { return numtracks;}
+    unsigned getNumwaves() const { return numwaves;}
+    void getInstname(unsigned int idx,char* buff) const;
+    char getTrackInstrument(unsigned int idx) const;
+    char getTrackQuantize(unsigned int idx) const;
+    unsigned char getTrackVolume1(unsigned int idx) const;
+    unsigned char getTrackVolume2(unsigned int idx) const;
+    unsigned getInstsize(unsigned int idx) const;
+    unsigned getInstrepstart(unsigned int idx) const;
+    unsigned getInstreplength(unsigned int idx) const;
+    int getInstfinetune(unsigned int idx) const;
 
 };
 

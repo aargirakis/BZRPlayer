@@ -3,6 +3,8 @@
 #include "BaseSample.h"
 #include <vector>
 
+using namespace std;
+
 class FESample : public BaseSample
 {
     friend class FEPlayer;
@@ -21,7 +23,7 @@ private:
     int sustainTime;
     int releaseSpeed;
     int releaseVol;
-    std::vector<signed char> arpeggio;
+    vector<signed char> arpeggio;
     int arpeggioLimit;
     int arpeggioSpeed;
     int vibratoDelay;

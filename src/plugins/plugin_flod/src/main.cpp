@@ -1,14 +1,12 @@
-#include "AmigaPlayer.h"
-#include "AmigaFilter.h"
+#include <cstring>
+#include <fstream>
 #include "BaseSample.h"
 #include "FileLoader.h"
-#include <cstring>
-#include <iostream>
-#include <fstream>
-#include <cstdio>
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
+
+using namespace std;
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
@@ -45,21 +43,18 @@ public:
     {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
-        player = 0;
-        //decoder=NULL;
     }
 
     ~pluginFlod()
     {
         //delete some stuf
-        delete[] myBuffer;
-        myBuffer = 0;
-        if (player) delete player;
-        player = 0;
+        myBuffer = nullptr;
+        delete player;
+        player = nullptr;
     }
 
-    AmigaPlayer* player;
-    signed short* myBuffer;
+    AmigaPlayer* player = nullptr;
+    uint8_t* myBuffer;
     Info* info;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -70,7 +65,6 @@ public:
     Must be declared with F_API to make it export as stdcall.
     MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
 */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -86,50 +80,40 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    FMOD_RESULT result;
-
-    auto plugin = new pluginFlod(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
-
     unsigned int bytesread;
     unsigned int filesize;
 
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    if (filesize < 30)
-    {
-        return FMOD_ERR_FORMAT;
-    }
-    if (filesize == 4294967295) //stream
+    if (filesize < 30 || filesize == 4294967295 /*stream*/)
     {
         return FMOD_ERR_FORMAT;
     }
 
-    char* smallBuffer;
-    smallBuffer = new char[30];
+    auto* smallBuffer = new uint8_t[30];
 
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, smallBuffer, 30, &bytesread);
 
-    bool isSoundmon1 = false;
-    cout << "flod: " << smallBuffer[26] << smallBuffer[27] << smallBuffer[28] << smallBuffer[29] << "\n";
-    isSoundmon1 = (smallBuffer[26] == 'B' && smallBuffer[27] == 'P' &&
-        smallBuffer[28] == 'S' && smallBuffer[29] == 'M');
-
-    delete[] smallBuffer;
-    if (!isSoundmon1)
-    {
+    // only soundmon 1.0 is allowed here
+    if (memcmp(&smallBuffer[26], "BPSM", 4) != 0) {
+        delete[] smallBuffer;
         return FMOD_ERR_FORMAT;
     }
-    plugin->myBuffer = new signed short[filesize];
+
+    delete[] smallBuffer;
+
+    auto plugin = new pluginFlod(codec);
+
+    plugin->myBuffer = new uint8_t[filesize];
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
-    //read config from disk
+
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/flod.cfg";
     ifstream ifs(filename.c_str());
-    string line;
     int force = 0;
     int forcePlayer = 0;
     bool useDefaults = false;
@@ -146,43 +130,42 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     if (!useDefaults)
     {
+        string line;
         while (getline(ifs, line))
         {
-            int i = line.find_first_of("=");
-
-            if (i != -1)
+            if (int i = line.find_first_of("="); i != -1)
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("model") == 0)
+                if (word == "model")
                 {
-                    if (value.compare("500") == 0)
+                    if (value == "500")
                     {
                         model1200 = false;
                     }
-                    else if (value.compare("1200") == 0)
+                    else if (value == "1200")
                     {
                         model1200 = true;
                     }
                 }
-                else if (word.compare("filter") == 0)
+                else if (word == "filter")
                 {
-                    if (value.compare("on") == 0)
+                    if (value == "on")
                     {
                         filter = AmigaFilter::FORCE_ON;
                     }
-                    else if (value.compare("off") == 0)
+                    else if (value == "off")
                     {
                         filter = AmigaFilter::FORCE_OFF;
                     }
-                    else if (value.compare("auto") == 0)
+                    else if (value == "auto")
                     {
                         filter = AmigaFilter::AUTOMATIC;
                     }
                 }
-                else if (word.compare("clockspeed") == 0)
+                else if (word == "clockspeed")
                 {
-                    if (value.compare("ntsc") == 0)
+                    if (value == "ntsc")
                     {
                         clockspeedNTSC = true;
                     }
@@ -191,11 +174,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
                         clockspeedNTSC = false;
                     }
                 }
-                else if (word.compare("force") == 0)
+                else if (word == "force")
                 {
                     force = atoi(value.c_str());
                 }
-                else if (word.compare("player") == 0)
+                else if (word == "player")
                 {
                     forcePlayer = atoi(value.c_str());
                 }
@@ -208,21 +191,19 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     fileLoader->setForcePlayer(forcePlayer);
 
-    plugin->player = fileLoader->load((signed short*)plugin->myBuffer, filesize, plugin->info->filename.c_str());
-
+    plugin->player = fileLoader->load(plugin->myBuffer, filesize, plugin->info->filename.c_str());
 
     if (!plugin->player)
     {
         //delete some stuf
         delete[] plugin->myBuffer;
-        if (plugin->player) delete plugin->player;
+        delete plugin->player;
+        delete plugin;
         delete fileLoader;
         return FMOD_ERR_FORMAT;
     }
 
-
     delete fileLoader;
-
 
     plugin->info = static_cast<Info*>(userexinfo->userdata);
     //plugin->player->play();
@@ -233,10 +214,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
-    codec->waveformat = &(plugin->waveformat);
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
@@ -246,14 +227,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->info->pluginName = PLUGIN_flod_NAME;
     plugin->info->setSeekable(false);
 
-
     plugin->info->hasTitle = true;
     plugin->info->numChannels = plugin->player->getChannels();
     plugin->player->getTitle(plugin->info->title);
-    std::vector<BaseSample*> samples = plugin->player->getSamples();
-    if (samples.size() > 0)
+    if (vector<BaseSample*> samples = plugin->player->getSamples(); !samples.empty())
     {
-        plugin->info->numSamples = samples.size();
+        plugin->info->numSamples = static_cast<int>(samples.size());
         plugin->info->samples = new string[plugin->info->numSamples];
         plugin->info->samplesSize = new unsigned int[plugin->info->numSamples];
         //            plugin->info->samplesLoopStart = new unsigned int[plugin->info->numSamples];
@@ -289,7 +268,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto plugin = static_cast<pluginFlod*>(codec->plugindata);
+    const auto plugin = static_cast<pluginFlod*>(codec->plugindata);
     if (plugin->player->amiga->isCompleted())
     {
         return FMOD_ERR_FILE_COULDNOTSEEK;
@@ -303,68 +282,58 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
-    auto plugin = static_cast<pluginFlod*>(codec->plugindata);
+    const auto plugin = static_cast<pluginFlod*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS)
     {
         plugin->player->play();
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
-        plugin->player->selectSong(position);
-        plugin->player->play();
-        return FMOD_OK;
-    }
-    return FMOD_OK;
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    auto plugin = static_cast<pluginFlod*>(codec->plugindata);
+    const auto plugin = static_cast<pluginFlod*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS || lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
         *length = plugin->waveformat.lengthpcm;
         return FMOD_OK;
     }
-    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
         *length = plugin->player->getSubsongsCount();
         return FMOD_OK;
     }
 
-    else
-    {
-        return FMOD_ERR_UNSUPPORTED;
-    }
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    auto plugin = static_cast<pluginFlod*>(codec->plugindata);
+    const auto plugin = static_cast<pluginFlod*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MODROW)
     {
         *position = plugin->player->getCurrentRow();
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_MODPATTERN)
+    if (postype == FMOD_TIMEUNIT_MODPATTERN)
     {
         *position = plugin->player->getCurrentPattern();
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO)
+    if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO)
     {
         //set the mod pattern (notes etc.) in the info struct and just return 0
         plugin->player->getModRows(plugin->info->modRows);
 
-        //const std::vector<AmigaRow*>& b = plugin->player->getModRows();
+        //const vector<AmigaRow*>& b = plugin->player->getModRows();
         *position = 0;
         return FMOD_OK;
     }
-    else
-    {
-        return FMOD_ERR_UNSUPPORTED;
-    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }

@@ -5,6 +5,8 @@
  *  NOTES  : Define queue record structure and
  *           all forward declarations.
  */
+#ifndef QUEUE_H
+#define QUEUE_H
 
 #include <stdint.h>
 
@@ -30,3 +32,4 @@ typedef uintptr_t ElementType;
 
 #endif  /* _Queue_h */
 
+#endif // QUEUE_H

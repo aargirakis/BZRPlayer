@@ -5,8 +5,9 @@
 #include "S2Instrument.h"
 #include "BaseStep.h"
 #include "AmigaChannel.h"
-#include <iostream>
 #include "MyEndian.h"
+
+using namespace std;
 
 const int S2Player::PERIODS[73] =
 {
@@ -21,8 +22,8 @@ const int S2Player::PERIODS[73] =
 
 S2Player::S2Player(Amiga* amiga): AmigaPlayer(amiga)
 {
-    arpeggioFx = std::vector<unsigned char>(4);
-    voices = std::vector<S2Voice*>(4);
+    arpeggioFx = vector<unsigned char>(4);
+    voices = vector<S2Voice*>(4);
     voices[0] = new S2Voice(0);
     voices[0]->next = voices[1] = new S2Voice(1);
     voices[1]->next = voices[2] = new S2Voice(2);
@@ -481,13 +482,13 @@ int S2Player::load(void* data, unsigned long int _length)
         position++;
         speedDef = stream[position];
         position++;
-        samples = std::vector<S2Sample*>(readEndian(stream[position], stream[position + 1]) >> 6);
+        samples = vector<S2Sample*>(readEndian(stream[position], stream[position + 1]) >> 6);
         position += 2;
 
         position = 14;
         int len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        tracks = std::vector<BaseStep*>(len);
+        tracks = vector<BaseStep*>(len);
         position = 90;
 
         int higher = 0;
@@ -519,7 +520,7 @@ int S2Player::load(void* data, unsigned long int _length)
         position = 26;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >> 5;
         position += 4;
-        instruments = std::vector<S2Instrument*>(++len);
+        instruments = vector<S2Instrument*>(++len);
         position = pos;
         instruments[0] = new S2Instrument();
 
@@ -576,7 +577,7 @@ int S2Player::load(void* data, unsigned long int _length)
         position = 30;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        waves = std::vector<unsigned char>(len);
+        waves = vector<unsigned char>(len);
         position = pos;
 
         for (int i = 0; i < len; ++i)
@@ -590,7 +591,7 @@ int S2Player::load(void* data, unsigned long int _length)
         position = 34;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        arpeggios = std::vector<signed char>(len);
+        arpeggios = vector<signed char>(len);
         position = pos;
 
         for (int i = 0; i < len; ++i)
@@ -603,7 +604,7 @@ int S2Player::load(void* data, unsigned long int _length)
         position = 38;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        vibratos = std::vector<signed char>(len);
+        vibratos = vector<signed char>(len);
         position = pos;
 
         for (int i = 0; i < len; ++i)
@@ -658,7 +659,7 @@ int S2Player::load(void* data, unsigned long int _length)
 
         int sampleData = pos;
         len = ++higher;
-        std::vector<int> pointers(++higher);
+        vector<int> pointers(++higher);
         for (int i = 0; i < len; ++i)
         {
             pointers[i] = readEndian(stream[position], stream[position + 1]);
@@ -668,7 +669,7 @@ int S2Player::load(void* data, unsigned long int _length)
         position = 50;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        patterns = std::vector<BaseRow*>();
+        patterns = vector<BaseRow*>();
         position = pos;
         int j = 1;
 
@@ -770,52 +771,52 @@ void S2Player::printData()
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        SMRow* row = patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << " speed: " << row->speed << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << " speed: " << row->speed << "\n";
     //    }
     //    //    for(unsigned int i = 0; i < samples.size(); i++)
     //    //    {
     //    //        S2Sample* sample = samples[i];
-    //    //        std::cout << "Sample [" << i << "] index: " << sample->index << " length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pitchBend: " << sample->pitchBend << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " synth: " << (int)sample->synth << "\n";
+    //    //        cout << "Sample [" << i << "] index: " << sample->index << " length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pitchBend: " << sample->pitchBend << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " synth: " << (int)sample->synth << "\n";
     //    //        for(unsigned int j = 0; j < sample->table.size(); j++)
     //    //        {
-    //    //            std::cout << "Sample [" << i << "] Table [" << j << "] " << (int)sample->table[j] << "\n";
+    //    //            cout << "Sample [" << i << "] Table [" << j << "] " << (int)sample->table[j] << "\n";
     //    //        }
     //    //        for(unsigned int j = 0; j < sample->vibratos.size(); j++)
     //    //        {
-    //    //            std::cout << "Sample [" << i << "] Vibratos [" << j << "] " << (int)sample->vibratos[j] << "\n";
+    //    //            cout << "Sample [" << i << "] Vibratos [" << j << "] " << (int)sample->vibratos[j] << "\n";
     //    //        }
     //    //        for(unsigned int j = 0; j < sample->volumes.size(); j++)
     //    //        {
-    //    //            std::cout << "Sample [" << i << "] Volumes [" << j << "] " << (int)sample->volumes[j] << "\n";
+    //    //            cout << "Sample [" << i << "] Volumes [" << j << "] " << (int)sample->volumes[j] << "\n";
     //    //        }
     //    //    }
     //    for(int i = 0; i < arpeggios.size(); i++)
     //    {
-    //        std::cout << "Arpeggio [" << i << "] " << (int)arpeggios[i] <<  "\n";
+    //        cout << "Arpeggio [" << i << "] " << (int)arpeggios[i] <<  "\n";
     //    }
     //    for(int i = 0; i < vibratos.size(); i++)
     //    {
-    //        std::cout << "Vibrato [" << i << "] " << (int)vibratos[i] <<  "\n";
+    //        cout << "Vibrato [" << i << "] " << (int)vibratos[i] <<  "\n";
     //    }
     //    for(int i = 0; i < waves.size(); i++)
     //    {
-    //        std::cout << "Wave [" << i << "] " << (int)waves[i] <<  "\n";
+    //        cout << "Wave [" << i << "] " << (int)waves[i] <<  "\n";
     //    }
     //    for(unsigned int i = 0; i < tracks.size(); i++)
     //    {
     //        AmigaStep* step = tracks[i];
-    //        std::cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
+    //        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
     //    }
     //    //    for(int i = 0; i < amiga->memory.size(); i++)
     //    //    {
-    //    //        std::cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
+    //    //        cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
     //    //    }
-    //    std::flush(std::cout);
+    //    flush(cout);
 }
 
-std::vector<BaseSample*> S2Player::getSamples()
+vector<BaseSample*> S2Player::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];
@@ -824,6 +825,6 @@ std::vector<BaseSample*> S2Player::getSamples()
             samp[i] = new BaseSample();
         }
     }
-    //std::cout << "returning samples, size: " << samp.size() << "\n";
+    //cout << "returning samples, size: " << samp.size() << "\n";
     return samp;
 }

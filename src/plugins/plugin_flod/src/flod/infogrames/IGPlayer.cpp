@@ -34,7 +34,7 @@ const int IGPlayer::TICKS[12] =
 IGPlayer::IGPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
     irqtime = 0;
-    voices = std::vector<IGVoice*>(4);
+    voices = vector<IGVoice*>(4);
 
     voices[0] = new IGVoice(0);
     voices[0]->next = voices[1] = new IGVoice(1);
@@ -311,7 +311,7 @@ int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
     position += 4;
     unsigned int len = begin >> 4;
 
-    samples = std::vector<BaseSample*>(len);
+    samples = vector<BaseSample*>(len);
     position = 4;
     for (int i = 0; i < len; ++i)
     {
@@ -420,9 +420,9 @@ int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
     return 1;
 }
 
-std::vector<BaseSample*> IGPlayer::getSamples()
+vector<BaseSample*> IGPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];
@@ -439,14 +439,14 @@ void IGPlayer::printData()
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        AmigaRow* row= patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
     //    }
     for (unsigned int i = 0; i < samples.size(); i++)
     {
         BaseSample* sample = samples[i];
         if (sample)
         {
-            std::cout << "Sample [" << i << "] length: " << sample->length << " finetune: " << sample->finetune <<
+            cout << "Sample [" << i << "] length: " << sample->length << " finetune: " << sample->finetune <<
                 " relative: " << sample->relative << " loopPtr: " << sample->loopPtr << " name: " << sample->name <<
                 " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << (int)sample->volume
                 << "\n";
@@ -456,15 +456,15 @@ void IGPlayer::printData()
     //    for(unsigned int i = 0; i < tracks.size(); i++)
     //    {
     //        AmigaStep* step = tracks[i];
-    //        std::cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
+    //        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
     //    }
     //    for(int i = 0; i < amiga->memory.size(); i++)
     //    {
-    //        std::cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
+    //        cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
     //    }
     //    for(unsigned int i = 0; i < pointers.size(); i++)
     //    {
-    //        std::cout << "Pointers [" << i << "] " << pointers[i] <<  "\n";
+    //        cout << "Pointers [" << i << "] " << pointers[i] <<  "\n";
     //    }
-    std::flush(std::cout);
+    flush(cout);
 }

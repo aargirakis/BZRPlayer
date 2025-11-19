@@ -3,6 +3,8 @@
 
 #include <vector>
 
+using namespace std;
+
 class JBSong
 {
     friend class JBPlayer;
@@ -14,9 +16,9 @@ public:
 private:
     int speed;
 
-    std::vector<int> pointer;
-    std::vector<int> length;
-    std::vector<int> restart;
+    vector<int> pointer;
+    vector<int> length;
+    vector<int> restart;
 };
 
 #endif // JBSONG_H

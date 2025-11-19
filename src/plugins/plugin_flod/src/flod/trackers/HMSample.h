@@ -2,6 +2,9 @@
 #define HMSAMPLE_H
 #include "AmigaSample.h"
 #include <vector>
+
+using namespace std;
+
 class HMSample : public AmigaSample
 {
     friend class HMPlayer;
@@ -11,8 +14,8 @@ private:
       int finetune;
       int restart;
       int waveLen;
-      std::vector<int> waves;
-      std::vector<int> volumes;
+      vector<int> waves;
+      vector<int> volumes;
 };
 
 #endif // HMSAMPLE_H

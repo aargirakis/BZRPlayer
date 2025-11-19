@@ -1,8 +1,10 @@
 #include "RHSong.h"
 
+using namespace std;
+
 RHSong::RHSong()
 {
-    tracks = std::vector<int>();
+    tracks = vector<int>();
     speed = 0;
 }
 

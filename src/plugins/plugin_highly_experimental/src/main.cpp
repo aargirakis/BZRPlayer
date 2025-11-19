@@ -1,24 +1,23 @@
 #include <climits>
 #include <cmath>
-#include <cstring>
-#include <string>
-#include "fmod_errors.h"
-#include "info.h"
-#include "main.h"
-#include "plugins.h"
 #include "psf2fs.h"
 #include "psx.h"
 #include "iop.h"
 #include "bios.h"
 #include "hebios.h"
 #include "r3000.h"
+#include "main.h"
+#include "fmod_errors.h"
+#include "info.h"
+#include "plugins.h"
+
+using namespace std;
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -26,11 +25,11 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_highly_experimental_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL, // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    nullptr,
+    &getLength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setPosition, // Setposition callback.
     nullptr,
@@ -98,11 +97,10 @@ public:
                 }
                 if (isDigit)
                     return digit;
-                else
-                    return -1;
+                return -1;
             };
-            auto length = getDigit(value);
-            if (length >= 0)
+
+            if (auto length = getDigit(value); length >= 0)
             {
                 while (*value && *value != ':' && *value != '.' && *value != ',')
                     ++value;
@@ -110,8 +108,7 @@ public:
                 {
                     while (*value == ':')
                     {
-                        auto d = getDigit(++value);
-                        if (d >= 0)
+                        if (auto d = getDigit(++value); d >= 0)
                             length = length * 60 + Clamp(d, 0, 59);
                     }
                     length *= 1000;
@@ -157,7 +154,7 @@ public:
                        size_t /*reserved_size*/)
     {
         auto* plugin = static_cast<pluginHighlyExp*>(context);
-        auto psx = (psxexe_hdr_t*)exe;
+        const auto psx = (psxexe_hdr_t*)exe;
 
         if (exe_size < 0x800)
             return -1;
@@ -165,7 +162,7 @@ public:
             return -1;
 
         uint32_t addr = get_le32(&psx->exec.t_addr);
-        uint32_t size = (uint32_t)exe_size - 0x800;
+        const uint32_t size = static_cast<uint32_t>(exe_size) - 0x800;
 
         addr &= 0x1fffff;
         if ((addr < 0x10000) || (size > 0x1f0000) || (addr + size > 0x200000))
@@ -197,7 +194,7 @@ public:
 
     static void* OpenPSF(void* context, const char* uri)
     {
-        auto plugin = static_cast<pluginHighlyExp*>(context);
+        const auto plugin = static_cast<pluginHighlyExp*>(context);
         unsigned int filesize;
         FMOD_CODEC_FILE_SIZE(plugin->_codec, &filesize);
         plugin->file = fopen(uri, "rb");
@@ -206,22 +203,22 @@ public:
 
     static size_t ReadPSF(void* buffer, size_t size, size_t count, void* handle)
     {
-        return fread(buffer, size, count, (FILE*)handle);
+        return fread(buffer, size, count, static_cast<FILE *>(handle));
     }
 
     static int SeekPSF(void* handle, int64_t offset, int whence)
     {
-        return fseek((FILE*)handle, offset, whence);
+        return fseek(static_cast<FILE *>(handle), offset, whence);
     }
 
     static int ClosePSF(void* handle)
     {
-        return fclose((FILE*)handle);
+        return fclose(static_cast<FILE *>(handle));
     }
 
     static long TellPSF(void* handle)
     {
-        return ftell((FILE*)handle);
+        return ftell(static_cast<FILE *>(handle));
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -229,8 +226,8 @@ public:
     void* m_psf2fs = nullptr;
     int psfType = 0;
     Info* info;
-    std::unordered_map<std::string, std::string> m_tags;
-    uint64_t m_length;
+    unordered_map<string, string> m_tags;
+    unsigned int m_length = -1;
 
     struct LoaderState
     {
@@ -267,96 +264,72 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
     return &codecDescription;
 }
 
-
 #ifdef __cplusplus
 }
 #endif
 
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    auto* plugin = new pluginHighlyExp(codec);
-
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
-
     unsigned int bytesread;
-
-    FMOD_RESULT result;
-
-    uint8_t* buffer;
-    buffer = new uint8_t[4];
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    const auto buffer = new uint8_t[4];
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, buffer, 4, &bytesread);
 
-    if ((buffer[0] == 'M' && buffer[1] == 'T' && buffer[2] == 'h' && buffer[3] == 'd') || (buffer[0] == 'R' && buffer[1]
-        == 'I' && buffer[2] == 'F' && buffer[3] == 'F')) //it's a midi file
+    // skip midi and riff
+    if (memcmp(buffer, "MThd", 4) == 0 || memcmp(buffer, "RIFF", 4) == 0)
     {
         delete[] buffer;
         return FMOD_ERR_FORMAT;
     }
 
-    int freq = 44100;
-    int channels = 2;
+    delete[] buffer;
 
-    plugin->psfType = psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0, nullptr, nullptr, plugin->InfoMetaPSF,
-                            plugin, 1, nullptr, nullptr);
+    auto* plugin = new pluginHighlyExp(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
+
+    plugin->psfType = psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0, nullptr, nullptr,
+                               pluginHighlyExp::InfoMetaPSF, plugin, 1, nullptr, nullptr);
 
     if (plugin->psfType != 1 && plugin->psfType != 2)
     {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
-    auto extPos = plugin->info->filename.find_last_of('.');
-    if (extPos == std::string::npos || strcasecmp(plugin->info->filename.c_str() + extPos + 1,
+
+    if (const auto extPos = plugin->info->filename.find_last_of('.'); extPos == string::npos || strcasecmp(plugin->info->filename.c_str() + extPos + 1,
                                                 plugin->psfType == 0x1 ? "psflib" : "psf2lib") != 0)
     {
         bios_set_image(hebios, HEBIOS_SIZE);
         psx_init();
 
-        plugin->m_psxState = new uint8_t[psx_get_state_size(uint8_t(plugin->psfType))];
-        psx_clear_state(plugin->m_psxState, uint8_t(plugin->psfType));
+        plugin->m_psxState = new uint8_t[psx_get_state_size(static_cast<uint8_t>(plugin->psfType))];
+        psx_clear_state(plugin->m_psxState, static_cast<uint8_t>(plugin->psfType));
 
         if (plugin->psfType == 2)
         {
             plugin->m_psf2fs = psf2fs_create();
         }
 
-        if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, uint8_t(plugin->psfType),
-                     plugin->psfType == 1 ? plugin->PsfLoad : psf2fs_load_callback, plugin->psfType == 1 ? plugin : plugin->m_psf2fs,
-                     nullptr, nullptr, 0, nullptr, nullptr) >= 0)
+        if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, static_cast<uint8_t>(plugin->psfType),
+                     plugin->psfType == 1 ? pluginHighlyExp::PsfLoad : psf2fs_load_callback, plugin->psfType == 1 ? plugin : plugin->m_psf2fs,
+                     nullptr, nullptr, 0, nullptr, nullptr) < 0)
         {
-            //m_psfType = uint8_t(psfType);
-            //m_mediaType.ext = psfType == 0x1 ? m_hasLib ? eExtension::_minipsf : eExtension::_psf : m_hasLib ? eExtension::_minipsf2: eExtension::_psf2;
-            //m_subsongs.Add({ 0, uint32_t(m_length) });
-            //cout << "psfLoad success!\n";
-            //flush(cout);
-        }
-        else
-        {
+            delete plugin;
             return FMOD_ERR_FORMAT;
         }
+
     }
     else
     {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-
-    if (plugin->m_psxState == nullptr)
-    {
-        plugin->m_psxState = new uint8_t[psx_get_state_size(plugin->psfType)];
-
-        if (plugin->psfType == 2)
-        {
-            plugin->m_psf2fs = psf2fs_create();
-        }
-    }
-
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = channels;
+    plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = plugin->psfType == 1 ? 44100 : 48000;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = plugin->m_length * plugin->waveformat.frequency / 1000; //-1;
-
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -365,11 +338,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->info->plugin = PLUGIN_highly_experimental;
     plugin->info->pluginName = PLUGIN_highly_experimental_NAME;
+
     if (plugin->psfType == 1)
     {
         plugin->info->fileformat = "PlayStation (PSF1)";
     }
-    else if (plugin->psfType == 2)
+    else
     {
         plugin->info->fileformat = "PlayStation 2 (PSF2)";
     }
@@ -417,19 +391,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto* plugin = static_cast<pluginHighlyExp*>(codec->plugindata);
-    delete plugin;
+    delete static_cast<pluginHighlyExp*>(codec->plugindata);
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto* plugin = static_cast<pluginHighlyExp*>(codec->plugindata);
-    unsigned int numSamples;
-    int maybeerror = psx_execute(plugin->m_psxState, 0x7fffffff, (short*)buffer, &size, 0);
-    //    cout << "numSamples: " << numSamples << "\n";
-    //    cout << "maybeerror: " << maybeerror << "\n";
-    //    cout << "size: " << size << "\n";
+    const auto* plugin = static_cast<pluginHighlyExp*>(codec->plugindata);
+    int maybeerror = psx_execute(plugin->m_psxState, 0x7fffffff, static_cast<short *>(buffer), &size, 0);
+
     *read = size;
     return FMOD_OK;
 }
@@ -446,8 +416,8 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
         plugin->m_psf2fs = psf2fs_create();
     }
     plugin->m_loaderState.Clear();
-    psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, uint8_t(plugin->psfType),
-             plugin->psfType == 1 ? plugin->PsfLoad : psf2fs_load_callback, plugin->psfType == 1 ? plugin : plugin->m_psf2fs, nullptr,
+    psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, static_cast<uint8_t>(plugin->psfType),
+             plugin->psfType == 1 ? pluginHighlyExp::PsfLoad : psf2fs_load_callback, plugin->psfType == 1 ? plugin : plugin->m_psf2fs, nullptr,
              nullptr, 0, nullptr, nullptr);
     if (plugin->m_loaderState.refresh)
     {
@@ -472,9 +442,9 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    auto* plugin = static_cast<pluginHighlyExp*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginHighlyExp*>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_MS || lengthtype == FMOD_TIMEUNIT_MS_REAL)
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
         if (plugin->m_length > 0)
         {
@@ -485,7 +455,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
             *length = -1;
         }
 
-        *length = -1;
+        plugin->info->numSubsongs = 1;
         return FMOD_OK;
     }
 

@@ -4,7 +4,6 @@
 #include "S1Sample.h"
 #include "AmigaChannel.h"
 #include "BaseStep.h"
-#include <iostream>
 #include "MyEndian.h"
 
 using namespace std;
@@ -64,8 +63,8 @@ const int S1Player::PERIODS[540] = {
 
 S1Player::S1Player(Amiga* amiga): AmigaPlayer(amiga)
 {
-    tracksPtr = std::vector<int>(4);
-    voices = std::vector<S1Voice*>(4);
+    tracksPtr = vector<int>(4);
+    voices = vector<S1Voice*>(4);
     voices[0] = new S1Voice(0);
     voices[0]->next = voices[1] = new S1Voice(1);
     voices[1]->next = voices[2] = new S1Voice(2);
@@ -601,7 +600,7 @@ int S1Player::load(void* _data, unsigned long int _length)
     if (len < start) len = _length - pos;
 
     totPatterns = (len - start) >> 2;
-    patternsPtr = std::vector<int>(totPatterns);
+    patternsPtr = vector<int>(totPatterns);
     position = pos + start + 4;
 
     for (int i = 1; i < totPatterns; ++i)
@@ -627,7 +626,7 @@ int S1Player::load(void* _data, unsigned long int _length)
     len = (readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) - start) / 6;
     position += 4;
 
-    tracks = std::vector<BaseStep*>(len);
+    tracks = vector<BaseStep*>(len);
     position = pos + start;
 
     for (int i = 0; i < len; ++i)
@@ -662,7 +661,7 @@ int S1Player::load(void* _data, unsigned long int _length)
     position += 4;
     int j = (totWaves + 2) << 4;
 
-    waveLists = std::vector<int>(len < j ? j : len);
+    waveLists = vector<int>(len < j ? j : len);
     position = pos + start;
     int i = 0;
     do
@@ -745,7 +744,7 @@ int S1Player::load(void* _data, unsigned long int _length)
         }
         position += readEndian(stream[position], stream[position + 1]);
         position += 2;
-        samples = std::vector<S1Sample*>(len + 3);
+        samples = vector<S1Sample*>(len + 3);
 
         for (int i = 0; i < 3; ++i)
         {
@@ -762,7 +761,7 @@ int S1Player::load(void* _data, unsigned long int _length)
     }
     else
     {
-        samples = std::vector<S1Sample*>(len + 3);
+        samples = vector<S1Sample*>(len + 3);
 
         position = pos + start;
         data = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
@@ -907,7 +906,7 @@ int S1Player::load(void* _data, unsigned long int _length)
     position += 4;
     len = (readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) - start) / 5;
     position += 4;
-    patterns = std::vector<BaseRow*>(len);
+    patterns = vector<BaseRow*>(len);
     position = pos + start;
     for (int i = 0; i < len; ++i)
     {
@@ -959,44 +958,44 @@ void S1Player::printData()
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        SMRow* row = patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << " speed: " << row->speed << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << " speed: " << row->speed << "\n";
     //    }
     //    for(unsigned int i = 0; i < tracksPtr.size(); i++)
     //    {
-    //        std::cout << "TracksPtr [" << i << "]" << tracksPtr[i] << "\n";
+    //        cout << "TracksPtr [" << i << "]" << tracksPtr[i] << "\n";
     //    }
     //    for(unsigned int i = 0; i < patternsPtr.size(); i++)
     //    {
-    //        std::cout << "PatternsPtr [" << i << "]" << patternsPtr[i] << "\n";
+    //        cout << "PatternsPtr [" << i << "]" << patternsPtr[i] << "\n";
     //    }
     //    for(unsigned int i = 0; i < tracks.size(); i++)
     //    {
     //        AmigaStep* step = tracks[i];
-    //        std::cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
+    //        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
     //    }
     //    for(unsigned int i = 0; i < waveLists.size(); i++)
     //    {
-    //        std::cout << "WaveLists [" << i << "]" << waveLists[i] << "\n";
+    //        cout << "WaveLists [" << i << "]" << waveLists[i] << "\n";
     //    }
     //    for(unsigned int i = 0; i < samples.size(); i++)
     //    {
     //        S1Sample* sample = samples[i];
     //        if(sample)
     //        {
-    //            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< "\n";
-    //            std::cout << "Sample [" << i << "] attackSpeed: " << sample->attackSpeed << " attackMax: " << sample->attackMax << " decaySpeed: " << sample->decaySpeed << " decayMin: " << sample->decayMin << " sustain: " << sample->sustain << " releaseSpeed: " << sample->releaseSpeed<< "\n";
-    //            std::cout << "Sample [" << i << "] releaseMin: " << sample->releaseMin << " phaseShift: " << sample->phaseShift << " phaseSpeed: " << sample->phaseSpeed << " finetune: " << sample->finetune << " pitchFall: " << (int)sample->pitchFall << "\n";
+    //            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< "\n";
+    //            cout << "Sample [" << i << "] attackSpeed: " << sample->attackSpeed << " attackMax: " << sample->attackMax << " decaySpeed: " << sample->decaySpeed << " decayMin: " << sample->decayMin << " sustain: " << sample->sustain << " releaseSpeed: " << sample->releaseSpeed<< "\n";
+    //            cout << "Sample [" << i << "] releaseMin: " << sample->releaseMin << " phaseShift: " << sample->phaseShift << " phaseSpeed: " << sample->phaseSpeed << " finetune: " << sample->finetune << " pitchFall: " << (int)sample->pitchFall << "\n";
     //            for(unsigned int j = 0; j < sample->arpeggio.size(); j++)
     //            {
-    //                std::cout << "Sample [" << i << "] arpeggio [" << j << "] " << (int)sample->arpeggio[j] << "\n";
+    //                cout << "Sample [" << i << "] arpeggio [" << j << "] " << (int)sample->arpeggio[j] << "\n";
     //            }
     //        }
     //    }
 }
 
-std::vector<BaseSample*> S1Player::getSamples()
+vector<BaseSample*> S1Player::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];
@@ -1005,6 +1004,6 @@ std::vector<BaseSample*> S1Player::getSamples()
             samp[i] = new BaseSample();
         }
     }
-    //std::cout << "returning samples, size: " << samp.size() << "\n";
+    //cout << "returning samples, size: " << samp.size() << "\n";
     return samp;
 }

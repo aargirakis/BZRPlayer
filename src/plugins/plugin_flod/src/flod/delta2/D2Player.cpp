@@ -7,6 +7,8 @@
 #include <iostream>
 #include "MyEndian.h"
 
+using namespace std;
+
 const int D2Player::PERIODS[85] =
 {
     0, 6848, 6464, 6096, 5760, 5424, 5120, 4832, 4560, 4304, 4064, 3840, 3616, 3424, 3232,
@@ -19,8 +21,8 @@ const int D2Player::PERIODS[85] =
 
 D2Player::D2Player(Amiga* amiga): AmigaPlayer(amiga)
 {
-    arpeggios = std::vector<signed char>(1024);
-    voices = std::vector<D2Voice*>(4);
+    arpeggios = vector<signed char>(1024);
+    voices = vector<D2Voice*>(4);
 
     voices[0] = new D2Voice(0);
     voices[0]->next = voices[1] = new D2Voice(1);
@@ -340,53 +342,53 @@ void D2Player::printData()
     for (unsigned int i = 0; i < patterns.size(); i++)
     {
         BaseRow* row = patterns[i];
-        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->
+        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->
             param << " effect: " << row->effect << "\n";
     }
     for (unsigned int i = 0; i < samples.size(); i++)
     {
         D2Sample* sample = samples[i];
-        std::cout << "Sample [" << i << "] index: " << sample->index << " length: " << sample->length << " loopPtr: " <<
+        cout << "Sample [" << i << "] index: " << sample->index << " length: " << sample->length << " loopPtr: " <<
             sample->loopPtr << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pitchBend: " << sample
             ->pitchBend << " pointer: " << sample->pointer << " repeat: " << sample->repeat << " synth: " << (int)sample
             ->synth << "\n";
         for (unsigned int j = 0; j < sample->table.size(); j++)
         {
-            std::cout << "Sample [" << i << "] Table [" << j << "] " << (int)sample->table[j] << "\n";
+            cout << "Sample [" << i << "] Table [" << j << "] " << (int)sample->table[j] << "\n";
         }
         for (unsigned int j = 0; j < sample->vibratos.size(); j++)
         {
-            std::cout << "Sample [" << i << "] Vibratos [" << j << "] " << (int)sample->vibratos[j] << "\n";
+            cout << "Sample [" << i << "] Vibratos [" << j << "] " << (int)sample->vibratos[j] << "\n";
         }
         for (unsigned int j = 0; j < sample->volumes.size(); j++)
         {
-            std::cout << "Sample [" << i << "] Volumes [" << j << "] " << (int)sample->volumes[j] << "\n";
+            cout << "Sample [" << i << "] Volumes [" << j << "] " << (int)sample->volumes[j] << "\n";
         }
     }
     for (int i = 0; i < 1024; i++)
     {
-        std::cout << "Arpeggio [" << i << "] " << (int)arpeggios[i] << "\n";
+        cout << "Arpeggio [" << i << "] " << (int)arpeggios[i] << "\n";
     }
     for (unsigned int i = 0; i < tracks.size(); i++)
     {
         BaseStep* step = tracks[i];
-        std::cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<
+        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<
             "\n";
     }
     //    for(int i = 0; i < amiga->memory.size(); i++)
     //    {
-    //        std::cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
+    //        cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
     //    }
     for (unsigned int i = 0; i < data.size(); i++)
     {
-        std::cout << "Data [" << i << "] " << data[i] << "\n";
+        cout << "Data [" << i << "] " << data[i] << "\n";
     }
-    std::flush(std::cout);
+    flush(cout);
 }
 
 int D2Player::load(void* _data, unsigned long int length)
 {
-    //std::string n[] = { "C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-"};
+    //string n[] = { "C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-"};
     if (length < 3017)
     {
         return -1;
@@ -406,7 +408,7 @@ int D2Player::load(void* _data, unsigned long int length)
     }
     position = 4042;
 
-    data = std::vector<int>(12);
+    data = vector<int>(12);
 
 
     int len = 0;
@@ -425,7 +427,7 @@ int D2Player::load(void* _data, unsigned long int length)
     {
         data[i] = (value -= data[int(i + 8)]);
     }
-    tracks = std::vector<BaseStep*>(len);
+    tracks = vector<BaseStep*>(len);
     for (int i = 0; i < len; ++i)
     {
         BaseStep* step = new BaseStep();
@@ -439,7 +441,7 @@ int D2Player::load(void* _data, unsigned long int length)
 
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >> 2;
     position += 4;
-    patterns = std::vector<BaseRow*>(len);
+    patterns = vector<BaseRow*>(len);
 
     for (int i = 0; i < len; ++i)
     {
@@ -453,7 +455,7 @@ int D2Player::load(void* _data, unsigned long int length)
         row->param = stream[position];
         position++;
         patterns[i] = row;
-        //std::cout << "note: " << n[(row->note-1)%12] << (row->note/12)+1 << " sample: " << row->sample << " data1: " << row->data1 << " data2: " << row->data2 << "\n";
+        //cout << "note: " << n[(row->note-1)%12] << (row->note/12)+1 << " sample: " << row->sample << " data1: " << row->data1 << " data2: " << row->data2 << "\n";
     }
 
     position += 254;
@@ -462,14 +464,14 @@ int D2Player::load(void* _data, unsigned long int length)
     int positionMark = position;
     position -= 256;
     len = 1;
-    std::vector<int> offsets = std::vector<int>(128);
+    vector<int> offsets = vector<int>(128);
     for (int i = 0; i < 128; ++i)
     {
         int j = readEndian(stream[position], stream[position + 1]);
         position += 2;
         if (j != value) offsets[len++] = j;
     }
-    samples = std::vector<D2Sample*>(len);
+    samples = vector<D2Sample*>(len);
 
 
     for (int i = 0; i < len; ++i)
@@ -561,9 +563,9 @@ int D2Player::load(void* _data, unsigned long int length)
     return 1;
 }
 
-std::vector<BaseSample*> D2Player::getSamples()
+vector<BaseSample*> D2Player::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];
@@ -572,6 +574,6 @@ std::vector<BaseSample*> D2Player::getSamples()
             samp[i] = new BaseSample();
         }
     }
-    //std::cout << "returning samples, size: " << samp.size() << "\n";
+    //cout << "returning samples, size: " << samp.size() << "\n";
     return samp;
 }

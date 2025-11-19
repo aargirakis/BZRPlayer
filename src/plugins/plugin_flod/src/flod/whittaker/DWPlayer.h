@@ -66,7 +66,7 @@ private:
     void initialize();
     unsigned char getSubsongsCount();
     void selectSong(unsigned char);
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
     void printData();
 
     static const int PERIODS[72];

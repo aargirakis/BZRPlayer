@@ -7,6 +7,8 @@ set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "ZXTune" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
+find_package(ZLIB REQUIRED)
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
@@ -44,16 +46,6 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/macbinary.c
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/null_decoder.c
         ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib/pm2_decoder.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/adler32.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/compress.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/crc32.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/deflate.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/inffast.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/inflate.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/inftrees.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/trees.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/uncompr.c
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/zlib/zutil.c
         ${EXTERNAL_SOURCE_DIR}/src/analysis/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/binary/compression/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/binary/format/*.cpp
@@ -130,6 +122,8 @@ endif ()
 
 # this avoid multiple issues (eg in track samples gathering)
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-funsigned-char>)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

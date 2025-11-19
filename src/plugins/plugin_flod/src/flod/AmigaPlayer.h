@@ -3,6 +3,8 @@
 #include <string>
 #include "Amiga.h"
 
+using namespace std;
+
 class BaseSample;
 class BaseRow;
 
@@ -14,8 +16,8 @@ public:
     void setFrequency(int freq);
     int getFrequency();
     Amiga* amiga;
-    std::string m_title;
-    std::string format;
+    string m_title;
+    string format;
     int loopSong;
 
     virtual void setNTSC(bool value);
@@ -36,11 +38,10 @@ public:
     virtual int load(void* data, unsigned int length, const char* filename);
     virtual unsigned int getCurrentRow();
     virtual unsigned int getCurrentPattern();
-    virtual void getModRows(std::vector<BaseRow*>&);
-    virtual std::vector<BaseSample*> getSamples();
-    virtual bool getTitle(std::string& title);
+    virtual void getModRows(vector<BaseRow*>&);
+    virtual vector<BaseSample*> getSamples();
+    virtual bool getTitle(string& title);
     virtual unsigned char getSubsongsCount();
-    virtual void selectSong(unsigned char);
     virtual void setVersion(int version);
 
 protected:
@@ -52,7 +53,7 @@ protected:
     int tick;
     int sampleRate;
     unsigned short tempo;
-    std::vector<BaseSample*> samples;
+    vector<BaseSample*> samples;
     double m_volume;
     bool m_ntsc;
     int m_channels;

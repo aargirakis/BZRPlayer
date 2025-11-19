@@ -1,8 +1,10 @@
 #include "FESample.h"
 
+using namespace std;
+
 FESample::FESample()
 {
-    arpeggio = std::vector<signed char>(16);
+    arpeggio = vector<signed char>(16);
     type = 0;
     synchro = 0;
     envelopeVol = 0;

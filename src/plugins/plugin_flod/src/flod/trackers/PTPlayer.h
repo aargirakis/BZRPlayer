@@ -5,6 +5,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class BaseRow;
 class BaseSample;
 class PTVoice;
@@ -34,11 +36,11 @@ public:
     void setVersion(int);
 
 private:
-    std::list<int> trackPosBuffer;
-    std::list<int> patternPosBuffer;
-    std::vector<int> track;
+    list<int> trackPosBuffer;
+    list<int> patternPosBuffer;
+    vector<int> track;
     int trackPos;
-    std::vector<BaseRow*> patterns;
+    vector<BaseRow*> patterns;
     int patternPos;
     int patternBreak;
     int patternDelay;
@@ -46,11 +48,11 @@ private:
     int breakPos;
     int jumpFlag;
     int restart;
-    std::vector<PTVoice*> voices;
+    vector<PTVoice*> voices;
     int patternLen;
     int restartCopy;
     int vibratoDepth;
-    std::vector<BaseSample*> samples;
+    vector<BaseSample*> samples;
 
 
     static const int FUNKREP[16];
@@ -69,11 +71,11 @@ private:
     void updateFunk(PTVoice* voice);
     void extendedFx(PTVoice* voice);
 
-    std::vector<BaseSample*> getSamples();
-    bool getTitle(std::string& title);
+    vector<BaseSample*> getSamples();
+    bool getTitle(string& title);
     unsigned int getCurrentRow();
     unsigned int getCurrentPattern();
-    void getModRows(std::vector<BaseRow*>&);
+    void getModRows(vector<BaseRow*>&);
 };
 
 #endif // PTPLAYER_H

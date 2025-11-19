@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 class BaseStep;
 
 class MGSong
@@ -13,12 +15,12 @@ public:
     MGSong();
 
 private:
-    std::string title;
+    string title;
     int speed;
     int length;
     int loop;
     int loopStep;
-    std::vector<BaseStep*> tracks;
+    vector<BaseStep*> tracks;
 };
 
 #endif // MGSONG_H

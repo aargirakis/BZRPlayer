@@ -26,7 +26,6 @@ download_patch_and_add(
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/Core/*.c
-        ${EXTERNAL_SOURCE_DIR_psflib}/psf2fs.c #TODO needed?
         ${EXTERNAL_SOURCE_DIR_psflib}/psflib.c
         src/main.cpp)
 

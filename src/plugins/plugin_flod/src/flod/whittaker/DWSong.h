@@ -2,6 +2,8 @@
 #define DWSong_H
 #include <vector>
 
+using namespace std;
+
 class DWSong
 {
     friend class DWPlayer;
@@ -12,7 +14,7 @@ public:
 private:
     int speed;
     int delay;
-    std::vector<int> tracks;
+    vector<int> tracks;
 };
 
 #endif // DWSong_H

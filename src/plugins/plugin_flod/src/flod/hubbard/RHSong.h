@@ -2,6 +2,8 @@
 #define RHSONG_H
 #include <vector>
 
+using namespace std;
+
 class RHSong
 {
     friend class RHPlayer;
@@ -12,7 +14,7 @@ public:
 
 private:
     int speed;
-    std::vector<int> tracks;
+    vector<int> tracks;
 };
 
 #endif // RHSONG_H

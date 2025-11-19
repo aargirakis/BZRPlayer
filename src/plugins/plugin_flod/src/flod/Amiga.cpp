@@ -4,17 +4,18 @@
 #include "AmigaChannel.h"
 #include "Sample.h"
 #include <iostream>
-#include <math.h>
+
+using namespace std;
 
 Amiga::Amiga()
 {
     loopLen = 4;
     master = 0.00390625;
 
-    channels = std::vector<AmigaChannel*>();
+    channels = vector<AmigaChannel*>();
     filter = new AmigaFilter();
     filter->setModel(MODEL_A1200);
-    m_buffer = std::vector<Sample*>(8192);
+    m_buffer = vector<Sample*>(8192);
     m_buffer[8192 - 1] = new Sample();
     m_complete = samplesLeft = remains = 0;
 
@@ -70,7 +71,7 @@ void Amiga::setup()
     memory.resize(memory.size() + loopLen);
     if (len != channels.size())
     {
-        channels = std::vector<AmigaChannel*>(len);
+        channels = vector<AmigaChannel*>(len);
         channels[0] = new AmigaChannel(0);
         for (int i = 1; i < len; ++i)
         {
@@ -139,10 +140,10 @@ void Amiga::reset()
 {
     loopPtr = 0;
     loopLen = 4;
-    //memory = std::vector<signed char>();
+    //memory = vector<signed char>();
 
-    std::cout << "reset mem\n";
-    std::flush(std::cout);
+    cout << "reset mem\n";
+    flush(cout);
 }
 
 void Amiga::mixer(void* _stream, unsigned long int length)
@@ -264,9 +265,9 @@ void Amiga::mixer(void* _stream, unsigned long int length)
         sample = m_buffer[i];
 
         filter->process(sample);
-        //std::cout << "model " << model << " active " << filter->active << " forced " << filter->forced << "\n";
-        //std::cout << sample->l << "\n";
-        //std::cout << sample->r << "\n";
+        //cout << "model " << model << " active " << filter->active << " forced " << filter->forced << "\n";
+        //cout << sample->l << "\n";
+        //cout << sample->r << "\n";
 
 
         short l = (short)(sample->l * 32767.0f);
@@ -280,8 +281,8 @@ void Amiga::mixer(void* _stream, unsigned long int length)
         sample->l = sample->r = 0.0;
         sample = sample->next;
     }
-    //std::cout << "Amiga::mixer() done" << "\n";
-    //std::flush(std::cout);
+    //cout << "Amiga::mixer() done" << "\n";
+    //flush(cout);
 }
 
 void Amiga::setModel(int model)

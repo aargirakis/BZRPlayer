@@ -4,6 +4,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class BaseStep;
 class BaseRow;
 class S2Sample;
@@ -18,20 +20,20 @@ public:
     int load(void* data, unsigned long int _length);
 
 private:
-    std::vector<BaseStep*> tracks;
-    std::vector<BaseRow*> patterns;
-    std::vector<S2Instrument*> instruments;
-    std::vector<S2Sample*> samples;
-    std::vector<signed char> arpeggios;
-    std::vector<signed char> vibratos;
-    std::vector<unsigned char> waves;
+    vector<BaseStep*> tracks;
+    vector<BaseRow*> patterns;
+    vector<S2Instrument*> instruments;
+    vector<S2Sample*> samples;
+    vector<signed char> arpeggios;
+    vector<signed char> vibratos;
+    vector<unsigned char> waves;
     int length;
     int speedDef;
-    std::vector<S2Voice*> voices;
+    vector<S2Voice*> voices;
     int trackPos;
     int patternPos;
     int patternLen;
-    std::vector<unsigned char> arpeggioFx;
+    vector<unsigned char> arpeggioFx;
     int arpeggioPos;
 
 
@@ -40,7 +42,7 @@ private:
     void process();
     void initialize();
     void printData();
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
 };
 
 #endif // S2PLAYER_H

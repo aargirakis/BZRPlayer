@@ -8,10 +8,10 @@
 #include <player/vgmplayer.hpp>
 #include <player/playera.hpp>
 #include <utils/MemoryLoader.h>
-#include "fmod.h"
+#include "yrw801.h"
+#include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
-#include "yrw801.h"
 
 using namespace std;
 
@@ -58,11 +58,12 @@ public:
 
     ~pluginVgmplayLegacy()
     {
-        delete myBuffer;
+        DataLoader_Deinit(loader);
+        delete [] myBuffer;
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
-    unsigned char *myBuffer;
+    uint8_t *myBuffer;
     DATA_LOADER *loader;
     PlayerA *mainPlr;
 };
@@ -87,13 +88,12 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    auto *plugin = new pluginVgmplayLegacy(codec);
-    auto *info = static_cast<Info *>(userexinfo->userdata);
-
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    plugin->myBuffer = new unsigned char[filesize];
+    auto *plugin = new pluginVgmplayLegacy(codec);
+    auto *info = static_cast<Info *>(userexinfo->userdata);
+    plugin->myBuffer = new uint8_t[filesize];
 
     auto result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, nullptr);
@@ -101,10 +101,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->loader = MemoryLoader_Init(plugin->myBuffer, filesize);
 
     if (plugin->loader == nullptr) {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     if (DataLoader_Load(plugin->loader)) {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
@@ -113,7 +115,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
 
-    codec->waveformat = &(plugin->waveformat);
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
@@ -157,7 +159,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    if (auto length = plugin->mainPlr->GetTotalTime(PLAYTIME_LOOP_INCL | PLAYTIME_TIME_FILE); length != 0) {
+    if (const auto length = plugin->mainPlr->GetTotalTime(PLAYTIME_LOOP_INCL | PLAYTIME_TIME_FILE); length != 0) {
         plugin->waveformat.lengthpcm = static_cast<unsigned int>(length * plugin->waveformat.frequency);
     } else {
         plugin->waveformat.lengthpcm = -1;
@@ -300,27 +302,25 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto *plugin = static_cast<pluginVgmplayLegacy *>(codec->plugindata);
-    DataLoader_Deinit(plugin->loader);
-    delete plugin;
+    delete static_cast<pluginVgmplayLegacy *>(codec->plugindata);
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
-    auto *plugin = static_cast<pluginVgmplayLegacy *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginVgmplayLegacy *>(codec->plugindata);
 
     if (plugin->waveformat.lengthpcm == -1 && plugin->mainPlr->GetState() & PLAYSTATE_END) {
         return FMOD_ERR_FILE_EOF;
     }
 
-    UINT32 renderedBytes = plugin->mainPlr->Render(size, buffer);
+    const UINT32 renderedBytes = plugin->mainPlr->Render(size, buffer);
     *read = renderedBytes / plugin->waveformat.pcmblocksize;
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    auto *plugin = static_cast<pluginVgmplayLegacy *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginVgmplayLegacy *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
         plugin->mainPlr->Seek(PLAYPOS_SAMPLE, position * plugin->waveformat.frequency / 1000);

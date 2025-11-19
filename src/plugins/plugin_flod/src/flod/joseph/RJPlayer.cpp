@@ -8,6 +8,7 @@
 #include "MyEndian.h"
 
 using namespace std;
+
 const int RJPlayer::PERIODS[36] =
 {
     453, 480, 508, 538, 570, 604, 640, 678, 720, 762,
@@ -18,7 +19,7 @@ const int RJPlayer::PERIODS[36] =
 
 RJPlayer::RJPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
-    voices = std::vector<RJVoice*>(4);
+    voices = vector<RJVoice*>(4);
 
     voices[0] = new RJVoice(0);
     voices[0]->next = voices[1] = new RJVoice(1);
@@ -406,7 +407,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     unsigned int len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >>
         5;
     position += 4;
-    samples = std::vector<RJSample*>(len);
+    samples = vector<RJSample*>(len);
 
     for (int i = 0; i < len; ++i)
     {
@@ -446,7 +447,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
 
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
-    envelope = std::vector<int>(len);
+    envelope = vector<int>(len);
     for (int i = 0; i < len; ++i)
     {
         envelope[i] = stream[position];
@@ -473,7 +474,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
 
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
-    songs = std::vector<int>(len);
+    songs = vector<int>(len);
     m_totalSongs = (len >> 2);
 
     int flag = 0;
@@ -498,7 +499,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
 
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) + 1;
     position += 4;
-    tracks = std::vector<int>(len);
+    tracks = vector<int>(len);
     flag = 0;
 
     for (int i = 1; i < len; ++i)
@@ -526,7 +527,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
 
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) + 1;
     position += 4;
-    patterns = std::vector<int>(len);
+    patterns = vector<int>(len);
     for (int i = 1; i < len; ++i)
     {
         patterns[i] = stream[position];
@@ -550,9 +551,9 @@ void RJPlayer::selectSong(unsigned char subsong)
     m_songNumber = subsong;
 }
 
-std::vector<BaseSample*> RJPlayer::getSamples()
+vector<BaseSample*> RJPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];
@@ -569,14 +570,14 @@ void RJPlayer::printData()
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        AmigaRow* row= patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
     //    }
     for (unsigned int i = 0; i < samples.size(); i++)
     {
         BaseSample* sample = samples[i];
         if (sample)
         {
-            std::cout << "Sample [" << i << "] length: " << sample->length << " finetune: " << sample->finetune <<
+            cout << "Sample [" << i << "] length: " << sample->length << " finetune: " << sample->finetune <<
                 " relative: " << sample->relative << " loopPtr: " << sample->loopPtr << " name: " << sample->name <<
                 " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << (int)sample->volume
                 << "\n";
@@ -586,15 +587,15 @@ void RJPlayer::printData()
     //    for(unsigned int i = 0; i < tracks.size(); i++)
     //    {
     //        AmigaStep* step = tracks[i];
-    //        std::cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
+    //        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
     //    }
     //    for(int i = 0; i < amiga->memory.size(); i++)
     //    {
-    //        std::cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
+    //        cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
     //    }
     //    for(unsigned int i = 0; i < pointers.size(); i++)
     //    {
-    //        std::cout << "Pointers [" << i << "] " << pointers[i] <<  "\n";
+    //        cout << "Pointers [" << i << "] " << pointers[i] <<  "\n";
     //    }
-    std::flush(std::cout);
+    flush(cout);
 }

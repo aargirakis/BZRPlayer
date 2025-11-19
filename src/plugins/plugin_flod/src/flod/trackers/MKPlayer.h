@@ -5,6 +5,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class BaseRow;
 class AmigaSample;
 class MKVoice;
@@ -25,14 +27,14 @@ public:
     void setForce(int);
 private:
 
-    std::list<int> trackPosBuffer;
-    std::list<int> patternPosBuffer;
-    std::vector<int> track;
-    std::vector<AmigaRow*> patterns;
-    std::vector<AmigaSample*> samples;
+    list<int> trackPosBuffer;
+    list<int> patternPosBuffer;
+    vector<int> track;
+    vector<AmigaRow*> patterns;
+    vector<AmigaSample*> samples;
     int length;
     int restart;
-    std::vector<MKVoice*> voices;
+    vector<MKVoice*> voices;
     int trackPos;
     int patternPos;
     int jumpFlag;
@@ -46,11 +48,11 @@ private:
     void process();
     void initialize();
     void printData();
-    bool getTitle(std::string& title);
-    std::vector<AmigaSample*> getSamples();
+    bool getTitle(string& title);
+    vector<AmigaSample*> getSamples();
     unsigned int getCurrentRow();
     unsigned int getCurrentPattern();
-    void getModRows(std::vector<BaseRow*>&);
+    void getModRows(vector<BaseRow*>&);
 };
 
 #endif // MKPLAYER_H

@@ -45,7 +45,6 @@ file(GLOB SOURCES                                                        #TODO r
         ${EXTERNAL_SOURCE_DIR}/si/*.c
         ${EXTERNAL_SOURCE_DIR}/usf/*.c
         ${EXTERNAL_SOURCE_DIR}/vi/*.c
-        ${EXTERNAL_SOURCE_DIR_psflib}/psf2fs.c #TODO needed?
         ${EXTERNAL_SOURCE_DIR_psflib}/psflib.c
         src/main.cpp)
 

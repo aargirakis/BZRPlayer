@@ -1,47 +1,48 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include <string>
 #include <unordered_map>
-#include "Array.h"
 
+using namespace std;
 
-bool keyExists(std::unordered_map<std::string, std::string> m, std::string key)
+inline bool keyExists(const unordered_map<string, string> &m, const string &key)
 {
     // Key is not present
-    if (m.find(key) == m.end())
+    if (!m.contains(key))
         return false;
 
     return true;
 }
 
 template <typename T1, typename T2>
-inline constexpr auto Min(T1&& a, T2&& b)
+constexpr auto Min(T1&& a, T2&& b)
 {
-    return std::forward<T1>(a) < std::forward<T2>(b) ? std::forward<T1>(a) : std::forward<T2>(b);
+    return forward<T1>(a) < forward<T2>(b) ? forward<T1>(a) : forward<T2>(b);
 }
 
 template <typename T1, typename T2, typename... Ts>
-inline constexpr auto Min(T1&& a, T2&& b, Ts&&... others)
+constexpr auto Min(T1&& a, T2&& b, Ts&&... others)
 {
-    return Min(Min(std::forward<T1>(a), std::forward<T2>(b)), std::forward<Ts>(others)...);
+    return Min(Min(forward<T1>(a), forward<T2>(b)), forward<Ts>(others)...);
 }
 
 template <typename T1, typename T2>
-inline constexpr auto Max(T1&& a, T2&& b)
+constexpr auto Max(T1&& a, T2&& b)
 {
-    return std::forward<T1>(a) > std::forward<T2>(b) ? std::forward<T1>(a) : std::forward<T2>(b);
+    return forward<T1>(a) > forward<T2>(b) ? forward<T1>(a) : forward<T2>(b);
 }
 
 template <typename T1, typename T2, typename... Ts>
-inline constexpr auto Max(T1&& a, T2&& b, Ts&&... others)
+constexpr auto Max(T1&& a, T2&& b, Ts&&... others)
 {
-    return Max(Max(std::forward<T1>(a), std::forward<T2>(b)), std::forward<Ts>(others)...);
+    return Max(Max(forward<T1>(a), forward<T2>(b)), forward<Ts>(others)...);
 }
 
 template <typename T1, typename T2, typename T3>
-inline constexpr auto Clamp(T1&& a, T2&& min, T3&& max)
+constexpr auto Clamp(T1&& a, T2&& min, T3&& max)
 {
-    return Max(std::forward<T2>(min), Min(std::forward<T3>(max), std::forward<T1>(a)));
+    return Max(forward<T2>(min), Min(forward<T3>(max), forward<T1>(a)));
 }
 
 struct valid_range

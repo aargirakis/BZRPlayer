@@ -30,13 +30,11 @@ int IsFull(Queue Q) {
 }
 
 Queue CreateQueue(int MaxElements) {
-  Queue Q;
-
   if (MaxElements < MinQueueSize) {
     Error("CreateQueue Error: Queue size is too small.");
   }
 
-  Q = malloc (sizeof(struct QueueRecord));
+  Queue Q = malloc(sizeof(struct QueueRecord));
   if (Q == NULL) {
     FatalError("CreateQueue Error: Unable to allocate more memory.");
   }

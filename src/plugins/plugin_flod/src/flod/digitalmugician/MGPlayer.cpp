@@ -121,9 +121,9 @@ MGPlayer::MGPlayer(Amiga* amiga): AmigaPlayer(amiga)
     chans = 0;
     mixPeriod = 0;
 
-    songs = std::vector<MGSong*>(8);
-    arpeggios = std::vector<int>(256);
-    voices = std::vector<MGVoice*>(7);
+    songs = vector<MGSong*>(8);
+    arpeggios = vector<int>(256);
+    voices = vector<MGVoice*>(7);
 
     voices[0] = new MGVoice(0);
     voices[0]->next = voices[1] = new MGVoice(1);
@@ -168,8 +168,8 @@ MGPlayer::~MGPlayer()
 
 void MGPlayer::tables()
 {
-    averages = std::vector<int>(1024);
-    volumes = std::vector<int>(16384);
+    averages = vector<int>(1024);
+    volumes = vector<int>(16384);
     mixPeriod = 203;
     int vol = 128;
     int step = 0;
@@ -313,7 +313,7 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     int len = 0;
     unsigned int position;
     position = 28;
-    std::vector<int> index(8);
+    vector<int> index(8);
 
 
     for (int i = 0; i < 8; ++i)
@@ -350,7 +350,7 @@ int MGPlayer::load(void* _data, unsigned long int _length)
 
     position = 204;
     m_totalSongs = songs.size();
-    subSongsList = std::vector<unsigned char>();
+    subSongsList = vector<unsigned char>();
 
 
     for (int i = 0; i < 8; ++i)
@@ -382,7 +382,7 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     position = 60;
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
-    samples = std::vector<MGSample*>(++len);
+    samples = vector<MGSample*>(++len);
     position = pos;
 
     for (int i = 1; i < len; ++i)
@@ -1089,9 +1089,9 @@ void MGPlayer::process()
     while (voice = voice->next);
 }
 
-std::vector<BaseSample*> MGPlayer::getSamples()
+vector<BaseSample*> MGPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size() - 1);
+    vector<BaseSample*> samp(samples.size() - 1);
     for (int i = 1; i < samples.size(); i++)
     {
         samp[i - 1] = samples[i];
@@ -1100,7 +1100,7 @@ std::vector<BaseSample*> MGPlayer::getSamples()
             samp[i - 1] = new BaseSample();
         }
     }
-    //std::cout << "returning samples, size: " << samp.size() << "\n";
+    //cout << "returning samples, size: " << samp.size() << "\n";
     return samp;
 }
 
@@ -1109,35 +1109,35 @@ void MGPlayer::printData()
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        AmigaRow* row= patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
     //    }
     //    for(unsigned int i = 0; i < samples.size(); i++)
     //    {
     //        DMSample* sample = samples[i];
     //        if(sample)
     //        {
-    //            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
-    //            std::cout << "Sample [" << i << "] wave: " << sample->wave << " waveLen: " << sample->waveLen << " finetune: " << sample->finetune << " arpeggio: " << sample->arpeggio << " pitch: " << sample->pitch << " pitchDelay: " << sample->pitchDelay<< " pitchLoop: " << sample->pitchLoop << "\n";
-    //            std::cout << "Sample [" << i << "] pitchSpeed: " << sample->pitchSpeed << " effect: " << sample->effect << " effectDone: " << sample->effectDone << " effectStep: " << sample->effectStep << " effectSpeed: " << sample->effectSpeed << " source1: " << sample->source1<< " source2: " << sample->source2 << " volumeLoop: " << sample->volumeLoop << " volumeSpeed: " << sample->volumeSpeed << "\n";
+    //            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
+    //            cout << "Sample [" << i << "] wave: " << sample->wave << " waveLen: " << sample->waveLen << " finetune: " << sample->finetune << " arpeggio: " << sample->arpeggio << " pitch: " << sample->pitch << " pitchDelay: " << sample->pitchDelay<< " pitchLoop: " << sample->pitchLoop << "\n";
+    //            cout << "Sample [" << i << "] pitchSpeed: " << sample->pitchSpeed << " effect: " << sample->effect << " effectDone: " << sample->effectDone << " effectStep: " << sample->effectStep << " effectSpeed: " << sample->effectSpeed << " source1: " << sample->source1<< " source2: " << sample->source2 << " volumeLoop: " << sample->volumeLoop << " volumeSpeed: " << sample->volumeSpeed << "\n";
     //        }
     //    }
     //    for(unsigned int i = 0; i < songs.size(); i++)
     //    {
     //        DMSong* song = songs[i];
-    //        std::cout << "Song [" << i << "] speed " << song->speed << " length " << song->length  << " loop " << song->loop << " loopStep " << song->loopStep << "\n";
+    //        cout << "Song [" << i << "] speed " << song->speed << " length " << song->length  << " loop " << song->loop << " loopStep " << song->loopStep << "\n";
     //        for(unsigned int j = 0; j < songs[i]->tracks.size(); j++)
     //        {
     //            AmigaStep* step = songs[i]->tracks[j];
-    //            std::cout << "Track [" << j << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose << "\n";
+    //            cout << "Track [" << j << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose << "\n";
     //        }
     //    }
     //    //    for(int i = 0; i < amiga->memory.size(); i++)
     //    //    {
-    //    //        std::cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
+    //    //        cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
     //    //    }
 }
 
-bool MGPlayer::getTitle(std::string& title)
+bool MGPlayer::getTitle(string& title)
 {
     title = songs[0]->title;
     return true;

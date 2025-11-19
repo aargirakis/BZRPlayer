@@ -2,11 +2,13 @@
 #define BASESAMPLE_H
 #include <string>
 
+using namespace std;
+
 class BaseSample
 {
 public:
     BaseSample();
-    std::string name;
+    string name;
     int pointer;
     int length;
     int loopPtr;

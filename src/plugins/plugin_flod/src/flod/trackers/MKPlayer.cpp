@@ -6,7 +6,8 @@
 #include "AmigaChannel.h"
 #include <iostream>
 #include "MyEndian.h"
-#include <math.h>
+
+using namespace std;
 
 const int MKPlayer::PERIODS[37] =
 {
@@ -31,11 +32,11 @@ const char* MKPlayer::NOTES[38] =
 };
 MKPlayer::MKPlayer(Amiga* amiga):AmigaPlayer(amiga)
 {
-    trackPosBuffer = std::list<int>();
-    patternPosBuffer = std::list<int>();
-    track = std::vector<int>(128);
-    samples    = std::vector<AmigaSample*>(32);
-    voices    = std::vector<MKVoice*>(4);
+    trackPosBuffer = list<int>();
+    patternPosBuffer = list<int>();
+    track = vector<int>(128);
+    samples    = vector<AmigaSample*>(32);
+    voices    = vector<MKVoice*>(4);
 
     voices[0] = new MKVoice(0);
     voices[0]->next = voices[1] = new MKVoice(1);
@@ -192,7 +193,7 @@ int MKPlayer::load(void* data, unsigned long int _length)
 
     position = 1084;
     higher += 256;
-    patterns    = std::vector<AmigaRow*>(higher);
+    patterns    = vector<AmigaRow*>(higher);
 
     for (int i = 0; i < higher; ++i) {
         row = new AmigaRow();
@@ -229,7 +230,7 @@ int MKPlayer::load(void* data, unsigned long int _length)
     for (int i = 1; i < 32; ++i) {
         sample = samples[i];
         if (!sample) continue;
-        if (sample->name.find("2.0") !=std::string::npos)
+        if (sample->name.find("2.0") !=string::npos)
             version = NOISETRACKER_20;
 
         if (sample->loop) {
@@ -319,7 +320,7 @@ void MKPlayer::process()
             }
 
             if (row->note) {
-                //std::cout << "note " << row->noteText << "\n";
+                //cout << "note " << row->noteText << "\n";
                 if (voice->effect == 3 || voice->effect == 5) {
                     if (row->note < voice->period) {
                         voice->portaDir = 1;
@@ -505,25 +506,25 @@ void MKPlayer::printData()
     for(unsigned int i = 0; i < patterns.size(); i++)
     {
         AmigaRow* row= patterns[i];
-        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
+        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
     }
     for(unsigned int i = 0; i < samples.size(); i++)
     {
         AmigaSample* sample = samples[i];
         if(sample)
         {
-            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
+            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
         }
     }
 
     for(unsigned int i = 0; i < track.size(); i++)
     {
-        std::cout << "Track [" << i << "]"<< track[i] << "\n";
+        cout << "Track [" << i << "]"<< track[i] << "\n";
     }
 }
-std::vector<AmigaSample*> MKPlayer::getSamples()
+vector<AmigaSample*> MKPlayer::getSamples()
 {
-    std::vector<AmigaSample*>samp (samples.size()-1);
+    vector<AmigaSample*>samp (samples.size()-1);
     for(int i =1; i< samples.size() ; i++)
     {
         samp[i-1] = samples[i];
@@ -534,7 +535,7 @@ std::vector<AmigaSample*> MKPlayer::getSamples()
     }
     return samp;
 }
-bool MKPlayer::getTitle(std::string& title)
+bool MKPlayer::getTitle(string& title)
 {
     title = this->title;
     return true;
@@ -547,7 +548,7 @@ unsigned int MKPlayer::getCurrentPattern()
 {
     return patternPosBuffer.front();
 }
-void MKPlayer::getModRows(std::vector<BaseRow*>& vect)
+void MKPlayer::getModRows(vector<BaseRow*>& vect)
 {
     vect = patterns;
 }

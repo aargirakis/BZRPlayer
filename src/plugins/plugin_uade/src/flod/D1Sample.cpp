@@ -1,5 +1,7 @@
 #include "D1Sample.h"
 
+using namespace std;
+
 D1Sample::D1Sample()
 {
     loop = 0;
@@ -19,6 +21,6 @@ D1Sample::D1Sample()
     vibratoWait = 0;
     vibratoStep = 0;
     vibratoLen;
-    arpeggio = std::vector<unsigned char>(8);
-    table = std::vector<signed char>(48);
+    arpeggio = vector<unsigned char>(8);
+    table = vector<signed char>(48);
 }

@@ -1,6 +1,4 @@
 #include <cstring>
-#include <format>
-#include "kss.h"
 #include "kssplay.h"
 #include "fmod_errors.h"
 #include "info.h"
@@ -11,7 +9,6 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -91,7 +88,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.pcmblocksize = 2048 * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
-    codec->waveformat = &(plugin->waveformat);
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
@@ -135,7 +132,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     // TODO setting to 0 for continuous playback, however it results silent playback for some tracks (eg REQUIEM2.MGS)
     plugin->loopNum = 1;
 
-    uint32_t quality = 1;
+    constexpr uint32_t quality = 1;
 
     KSSPLAY_set_device_quality(plugin->kssplay, KSS_DEVICE_PSG, quality);
     KSSPLAY_set_device_quality(plugin->kssplay, KSS_DEVICE_SCC, quality);
@@ -177,7 +174,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto* plugin = static_cast<pluginLibkss*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginLibkss*>(codec->plugindata);
 
     if (plugin != nullptr) {
         KSSPLAY_delete(plugin->kssplay);

@@ -1,11 +1,7 @@
-#include <cstdio>
-#include <cstring>
-#include <string>
 #include <algorithm>
+#include <cstring>
 #include "fmod_errors.h"
-#include "types.h"
 #include "info.h"
-#include <iostream>
 #include "plugins.h"
 
 extern "C" {
@@ -76,20 +72,18 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    auto info = static_cast<Info *>(userexinfo->userdata);
-
-
-    int freq = 44100;
-    int channels = 2;
+    constexpr int freq = 44100;
     SampleRate = freq;
 
     auto *plugin = new pluginWsr(codec);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
+
     string filename_lowercase = info->filename;
-    std::transform(filename_lowercase.begin(), filename_lowercase.end(), filename_lowercase.begin(), ::tolower);
-    if (filename_lowercase.substr(filename_lowercase.find_last_of(".") + 1) != "wsr")
+    ranges::transform(filename_lowercase, filename_lowercase.begin(), ::tolower);
+
+    if (!filename_lowercase.ends_with(".wsr"))
     {
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -100,24 +94,16 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
     ROMSize = filesize;
     ROMBank = (ROMSize + 0xFFFF) >> 16;
-    ROM = static_cast<BYTE *>(malloc(ROMBank * 0x10000));
-    if (!ROM)
-    {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-    FMOD_RESULT result;
+    ROM = new uint8_t[ROMBank * 0x10000];
 
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, ROM, filesize, &bytesread);
 
-
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = channels;
+    plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = freq;
     plugin->waveformat.pcmblocksize = 128 * 2 * 2;
     plugin->waveformat.lengthpcm = -1;
-
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -129,8 +115,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     info->fileformat = "Wonderswan";
     info->setSeekable(false);
     info->numSubsongs = 255;
-    Init_WSR();
 
+    Init_WSR();
     Reset_WSR(Get_FirstSong());
 
     return FMOD_OK;
@@ -139,21 +125,19 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
     Close_WSR();
-    auto* plugin = static_cast<pluginWsr*>(codec->plugindata);
-    delete plugin;
-
+    delete static_cast<pluginWsr*>(codec->plugindata);
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto plugin = static_cast<pluginWsr*>(codec->plugindata);
-
-    if (size == plugin->waveformat.pcmblocksize)
+    if (const auto plugin = static_cast<pluginWsr*>(codec->plugindata); size == plugin->waveformat.pcmblocksize)
     {
         Update_WSR(40157, 0);
     }
-    ws_audio_update(static_cast<short int *>(buffer), size);
+
+    ws_audio_update(static_cast<short int *>(buffer), static_cast<int>(size));
+
     *read = size;
     return FMOD_OK;
 }
@@ -167,7 +151,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     }
     if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        Reset_WSR(position);
+        Reset_WSR(static_cast<int>(position));
         return FMOD_OK;
     }
 

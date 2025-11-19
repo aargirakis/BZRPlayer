@@ -5,6 +5,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class BaseRow;
 class AmigaSample;
 class STVoice;
@@ -24,13 +26,13 @@ public:
     void setForce(int);
     void setNTSC(int value);
 private:
-    std::list<int> trackPosBuffer;
-    std::list<int> patternPosBuffer;
-    std::vector<int> track;
-    std::vector<AmigaRow*> patterns;
-    std::vector<AmigaSample*> samples;
+    list<int> trackPosBuffer;
+    list<int> patternPosBuffer;
+    vector<int> track;
+    vector<AmigaRow*> patterns;
+    vector<AmigaSample*> samples;
     int length;
-    std::vector<STVoice*> voices;
+    vector<STVoice*> voices;
     int trackPos;
     int patternPos;
     int jumpFlag;
@@ -38,16 +40,16 @@ private:
     static const int PERIODS[39];
     static const char* NOTES[38];
 
-    int isLegal(std::string text);
+    int isLegal(string text);
     void arpeggio(STVoice* voice);
     void process();
     void initialize();
     void printData();
-    std::vector<AmigaSample*> getSamples();
-    bool getTitle(std::string& title);
+    vector<AmigaSample*> getSamples();
+    bool getTitle(string& title);
     unsigned int getCurrentRow();
     unsigned int getCurrentPattern();
-    void getModRows(std::vector<BaseRow*>&);
+    void getModRows(vector<BaseRow*>&);
 };
 
 #endif // STPLAYER_H

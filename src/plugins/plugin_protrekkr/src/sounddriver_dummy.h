@@ -14,10 +14,8 @@ typedef int8_t int8;
 
 static constexpr int AUDIO_Latency = 0;
 
-inline void AUDIO_ResetTimer(void)
-{
-}
+inline void AUDIO_ResetTimer(){}
 
-inline int AUDIO_GetSamples(void) { return 0; }
+inline int AUDIO_GetSamples() { return 0; }
 
 #endif

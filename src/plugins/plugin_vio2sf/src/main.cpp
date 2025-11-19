@@ -1,22 +1,20 @@
 #include <cmath>
-#include <cstdio>
 #include <cstring>
-#include <string>
-#include <zconf.h>
 #include <zlib.h>
-#include "fmod_errors.h"
-#include "info.h"
-#include "main.h"
 #include "psflib.h"
 #include "state.h"
+#include "main.h"
+#include "fmod_errors.h"
+#include "info.h"
 #include "plugins.h"
+
+using namespace std;
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -87,11 +85,10 @@ public:
                 }
                 if (isDigit)
                     return digit;
-                else
-                    return -1;
+                return -1;
             };
-            auto length = getDigit(value);
-            if (length >= 0)
+
+            if (auto length = getDigit(value); length >= 0)
             {
                 while (*value && *value != ':' && *value != '.' && *value != ',')
                     ++value;
@@ -99,8 +96,7 @@ public:
                 {
                     while (*value == ':')
                     {
-                        auto d = getDigit(++value);
-                        if (d >= 0)
+                        if (auto d = getDigit(++value); d >= 0)
                             length = length * 60 + Clamp(d, 0, 59);
                     }
                     length *= 1000;
@@ -144,7 +140,7 @@ public:
 
     static void* OpenPSF(void* context, const char* uri)
     {
-        auto plugin = static_cast<pluginVio2sf*>(context);
+        const auto plugin = static_cast<pluginVio2sf*>(context);
         unsigned int filesize;
         FMOD_CODEC_FILE_SIZE(plugin->_codec, &filesize);
         plugin->file = fopen(uri, "rb");
@@ -175,10 +171,9 @@ public:
                          size_t reserved_size)
     {
         auto* plugin = static_cast<pluginVio2sf*>(context);
-        if (exe_size >= 8)
+        if (exe_size >= 8 && TwosfLoadMap(plugin, 0, exe, static_cast<unsigned>(exe_size)))
         {
-            if (plugin->TwosfLoadMap(plugin, 0, exe, (unsigned)exe_size))
-                return -1;
+            return -1;
         }
 
         if (reserved_size)
@@ -188,13 +183,14 @@ public:
                 return -1;
             while (resv_pos + 12 < reserved_size)
             {
-                unsigned save_size = get_le32(reserved + resv_pos + 4);
-                unsigned save_crc = get_le32(reserved + resv_pos + 8);
+                const unsigned save_size = get_le32(reserved + resv_pos + 4);
+                const unsigned save_crc = get_le32(reserved + resv_pos + 8);
+
                 if (get_le32(reserved + resv_pos + 0) == 0x45564153)
                 {
                     if (resv_pos + 12 + save_size > reserved_size)
                         return -1;
-                    if (plugin->TwosfLoadMapz(plugin, 1, reserved + resv_pos + 12, save_size, save_crc))
+                    if (TwosfLoadMapz(plugin, 1, reserved + resv_pos + 12, save_size, save_crc))
                         return -1;
                 }
                 resv_pos += 12 + save_size;
@@ -204,28 +200,27 @@ public:
         return 0;
     }
 
-    int static TwosfLoadMap(void* context, int issave, const unsigned char* udata, unsigned usize)
+    int static TwosfLoadMap(void* context, int issave, const unsigned char* udata, const unsigned usize)
     {
         auto* plugin = static_cast<pluginVio2sf*>(context);
         if (usize < 8) return -1;
 
         unsigned char* iptr;
         size_t isize;
-        unsigned char* xptr;
-        unsigned xsize = get_le32(udata + 4);
-        unsigned xofs = get_le32(udata + 0);
+        const unsigned xsize = get_le32(udata + 4);
+        const unsigned xofs = get_le32(udata + 0);
         if (issave)
         {
             iptr = plugin->m_loaderState.state;
             isize = plugin->m_loaderState.state_size;
-            plugin->m_loaderState.state = 0;
+            plugin->m_loaderState.state = nullptr;
             plugin->m_loaderState.state_size = 0;
         }
         else
         {
             iptr = plugin->m_loaderState.rom;
             isize = plugin->m_loaderState.rom_size;
-            plugin->m_loaderState.rom = 0;
+            plugin->m_loaderState.rom = nullptr;
             plugin->m_loaderState.rom_size = 0;
         }
         if (!iptr)
@@ -260,7 +255,7 @@ public:
                 rsize |= rsize >> 16;
                 rsize += 1;
             }
-            xptr = static_cast<unsigned char*>(realloc(iptr, xofs + rsize + 10));
+            auto *xptr = static_cast<unsigned char *>(realloc(iptr, xofs + rsize + 10));
             if (!xptr)
             {
                 free(iptr);
@@ -283,17 +278,15 @@ public:
         return 0;
     }
 
-    int static TwosfLoadMapz(void* context, int issave, const unsigned char* zdata, unsigned zsize, unsigned zcrc)
+    int static TwosfLoadMapz(void* context, const int issave, const unsigned char* zdata, const unsigned zsize, unsigned zcrc)
     {
         auto* plugin = static_cast<pluginVio2sf*>(context);
-        int ret;
         int zerr;
         uLongf usize = 8;
         uLongf rsize = usize;
-        unsigned char* udata;
         unsigned char* rdata;
 
-        udata = static_cast<unsigned char*>(malloc(usize));
+        auto *udata = static_cast<unsigned char *>(malloc(usize));
         if (!udata)
             return -1;
 
@@ -336,24 +329,23 @@ public:
             return -1;
         }
 
-        if (0)
+        if constexpr (false)
         {
             uLong ccrc = crc32(crc32(0L, Z_NULL, 0), rdata, static_cast<uInt>(usize));
             if (ccrc != zcrc)
                 return -1;
         }
 
-        ret = TwosfLoadMap(plugin, issave, rdata, static_cast<unsigned>(usize));
+        const int ret = TwosfLoadMap(plugin, issave, rdata, static_cast<unsigned>(usize));
         free(rdata);
         return ret;
     }
 
-
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info* info;
-    std::unordered_map<std::string, std::string> m_tags;
+    unordered_map<string, string> m_tags;
     int32_t ms_interpolation = 0;
-    unsigned int m_length;
+    unsigned int m_length = -1;
     NDS_state m_ndsState = {};
 
     struct LoaderState
@@ -389,7 +381,6 @@ public:
         TellPSF
     };
 
-private:
 };
 
 /*
@@ -406,68 +397,54 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
     return &codecDescription;
 }
 
-
 #ifdef __cplusplus
 }
 #endif
 
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    auto* plugin = new pluginVio2sf(codec);
-
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
-
     unsigned int bytesread;
-    FMOD_RESULT result;
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    uint8_t* buffer;
-    buffer = new uint8_t[4];
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    const auto buffer = new uint8_t[4];
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, buffer, 4, &bytesread);
 
-    if ((buffer[0] == 'M' && buffer[1] == 'T' && buffer[2] == 'h' && buffer[3] == 'd') || (buffer[0] == 'R' && buffer[1]
-        == 'I' && buffer[2] == 'F' && buffer[3] == 'F')) //it's a midi file
+    // skip midi and riff
+    if (memcmp(buffer, "MThd", 4) == 0 || memcmp(buffer, "RIFF", 4) == 0)
     {
         delete[] buffer;
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->m_length = -1;
-    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, nullptr, nullptr, plugin->InfoMetaPSF, plugin, 0,
-                 nullptr, nullptr))
-    {
-        auto extPos = plugin->info->filename.find_last_of('.');
-        if (extPos == std::string::npos || strcasecmp(plugin->info->filename.c_str() + extPos + 1, "2sflib") != 0)
-        {
-            if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, plugin->TwosfLoad, plugin, nullptr,
-                         nullptr, 0, nullptr, nullptr) >= 0)
-            {
-            }
-            else
-            {
-                return FMOD_ERR_FORMAT;
-            }
-        }
-        else
-        {
-            return FMOD_ERR_FORMAT;
-        }
-    }
-    else
-    {
+    delete[] buffer;
+
+    auto* plugin = new pluginVio2sf(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
+
+    if (!psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, nullptr, nullptr,
+                  pluginVio2sf::InfoMetaPSF, plugin, 0,
+                  nullptr, nullptr)) {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    int freq = 44100;
-    int channels = 2;
+    if (const auto extPos = plugin->info->filename.find_last_of('.'); extPos != string::npos && strcasecmp(plugin->info->filename.c_str() + extPos + 1, "2sflib") == 0) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
+
+    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, pluginVio2sf::TwosfLoad, plugin, nullptr,
+                     nullptr, 0, nullptr, nullptr) < 0)
+    {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = channels;
-    plugin->waveformat.frequency = freq;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
-
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -514,19 +491,19 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     {
         plugin->info->comments = plugin->m_tags["comment"];
     }
+
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto* plugin = static_cast<pluginVio2sf*>(codec->plugindata);
-    delete plugin;
+    delete static_cast<pluginVio2sf*>(codec->plugindata);
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto plugin = static_cast<pluginVio2sf*>(codec->plugindata);
+    const auto plugin = static_cast<pluginVio2sf*>(codec->plugindata);
     state_render(&plugin->m_ndsState, static_cast<s16*>(buffer), size);
     *read = size;
     return FMOD_OK;
@@ -536,10 +513,11 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
 {
     auto* plugin = static_cast<pluginVio2sf*>(codec->plugindata);
 
-    psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, plugin->TwosfLoad, plugin, plugin->InfoMetaPSF, plugin, 0,
+    psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, pluginVio2sf::TwosfLoad, plugin, pluginVio2sf::InfoMetaPSF, plugin, 0,
              nullptr, nullptr);
     state_deinit(&plugin->m_ndsState);
     state_init(&plugin->m_ndsState);
+
     plugin->m_ndsState.dwInterpolation = 0;
     plugin->m_ndsState.dwChannelMute = 0;
     plugin->m_ndsState.initial_frames = plugin->m_loaderState.initial_frames;
@@ -548,16 +526,16 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     plugin->m_ndsState.arm9_clockdown_level = plugin->m_loaderState.arm9_clockdown_level;
 
     if (plugin->m_loaderState.rom)
-        state_setrom(&plugin->m_ndsState, plugin->m_loaderState.rom, (u32)plugin->m_loaderState.rom_size, 1);
+        state_setrom(&plugin->m_ndsState, plugin->m_loaderState.rom, static_cast<u32>(plugin->m_loaderState.rom_size), 1);
 
-    state_loadstate(&plugin->m_ndsState, plugin->m_loaderState.state, (u32)plugin->m_loaderState.state_size);
+    state_loadstate(&plugin->m_ndsState, plugin->m_loaderState.state, static_cast<u32>(plugin->m_loaderState.state_size));
 
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    auto* plugin = static_cast<pluginVio2sf*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginVio2sf*>(codec->plugindata);
 
      if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
      {

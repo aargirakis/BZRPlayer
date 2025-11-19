@@ -27,7 +27,6 @@ download_patch_and_add(
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/vio2sf/desmume/*.c
         ${EXTERNAL_SOURCE_DIR}/src/vio2sf/desmume/*.cpp
-        ${EXTERNAL_SOURCE_DIR_psflib}/psf2fs.c  #TODO needed?
         ${EXTERNAL_SOURCE_DIR_psflib}/psflib.c
         src/main.cpp)
 

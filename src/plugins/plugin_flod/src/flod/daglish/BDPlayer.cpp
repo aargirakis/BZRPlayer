@@ -8,10 +8,9 @@
 
 using namespace std;
 
-
 BDPlayer::BDPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
-    voices = std::vector<BDVoice*>(4);
+    voices = vector<BDVoice*>(4);
 
     voices[0] = new BDVoice(0);
     voices[0]->next = voices[1] = new BDVoice(1);
@@ -468,7 +467,7 @@ int BDPlayer::load(void* _data, unsigned long int _length)
     int tempVal = 0;
     int tracks = 0;
     length = _length;
-    banks = std::vector<int>();
+    banks = vector<int>();
     position = 0;
     stream = static_cast<unsigned char*>(_data);
     do
@@ -517,7 +516,7 @@ int BDPlayer::load(void* _data, unsigned long int _length)
 
                 if (banks.size() != value)
                 {
-                    banks = std::vector<int>(value);
+                    banks = vector<int>(value);
                 }
             }
             break;
@@ -608,7 +607,7 @@ int BDPlayer::load(void* _data, unsigned long int _length)
 
     position = pos;
 
-    std::vector<int> offsets = std::vector<int>();
+    vector<int> offsets = vector<int>();
 
     do
     {
@@ -627,7 +626,7 @@ int BDPlayer::load(void* _data, unsigned long int _length)
 
     len = offsets.size();
     lower = 0xffff;
-    samples = std::vector<BDSample*>(len);
+    samples = vector<BDSample*>(len);
 
     for (int i = 0; i < len; ++i)
     {
@@ -889,9 +888,9 @@ void BDPlayer::selectSong(unsigned char subsong)
     m_songNumber = subsong;
 }
 
-std::vector<BaseSample*> BDPlayer::getSamples()
+vector<BaseSample*> BDPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];
@@ -908,14 +907,14 @@ void BDPlayer::printData()
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        AmigaRow* row= patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
     //    }
     for (unsigned int i = 0; i < samples.size(); i++)
     {
         BaseSample* sample = samples[i];
         if (sample)
         {
-            std::cout << "Sample [" << i << "] length: " << sample->length << " finetune: " << sample->finetune <<
+            cout << "Sample [" << i << "] length: " << sample->length << " finetune: " << sample->finetune <<
                 " relative: " << sample->relative << " loopPtr: " << sample->loopPtr << " name: " << sample->name <<
                 " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << (int)sample->volume
                 << "\n";
@@ -925,15 +924,15 @@ void BDPlayer::printData()
     //    for(unsigned int i = 0; i < tracks.size(); i++)
     //    {
     //        AmigaStep* step = tracks[i];
-    //        std::cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
+    //        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
     //    }
     //    for(int i = 0; i < amiga->memory.size(); i++)
     //    {
-    //        std::cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
+    //        cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
     //    }
     //    for(unsigned int i = 0; i < pointers.size(); i++)
     //    {
-    //        std::cout << "Pointers [" << i << "] " << pointers[i] <<  "\n";
+    //        cout << "Pointers [" << i << "] " << pointers[i] <<  "\n";
     //    }
-    std::flush(std::cout);
+    flush(cout);
 }

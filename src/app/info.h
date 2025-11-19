@@ -84,7 +84,6 @@ public:
         genre = "";
         emulator = "";
         songPlayer = "";
-        songType = "";
         author = "";
         composer = "";
         converter = "";
@@ -298,7 +297,6 @@ public:
     string genre;
     string emulator;
     string songPlayer;
-    string songType;
     string author;
     string composer;
     string replay;
@@ -326,7 +324,7 @@ public:
     int numSubsongs;
     int currentSubsong;
 
-    int loopPosition;
+    unsigned int loopPosition;
     int loopFrame;
     int numFrames;
     int initialTempo;

@@ -6,7 +6,6 @@
 #ifndef MYENDIAN_H
 #define MYENDIAN_H
 
-#include "Config.h"
 #include "MyTypes.h"
 
 // This should never be true.
@@ -68,15 +67,15 @@ union cpuLBword
 // Used to read 16-bit words in little-endian order.
 inline uword readEndian(ubyte hi, ubyte lo)
 {
-  return(( (uword)hi << 8 ) + (uword)lo );
+  return(( static_cast<uword>(hi) << 8 ) + static_cast<uword>(lo) );
 }
 
 // Convert high bytes and low bytes of MSW and LSW to 32-bit word.
 // Used to read 32-bit words in little-endian order.
 inline udword readEndian(ubyte hihi, ubyte hilo, ubyte hi, ubyte lo)
 {
-  return(( (udword)hihi << 24 ) + ( (udword)hilo << 16 ) + 
-		 ( (udword)hi << 8 ) + (udword)lo );
+  return(( static_cast<udword>(hihi) << 24 ) + ( static_cast<udword>(hilo) << 16 ) +
+		 ( static_cast<udword>(hi) << 8 ) + static_cast<udword>(lo) );
 }
 
 // Read a little-endian 16-bit word from two bytes in memory.
@@ -108,7 +107,7 @@ inline uword readBEword(const ubyte ptr[2])
 #if defined(WORDS_BIGENDIAN) && defined(OPTIMIZE_ENDIAN_ACCESS)
 	return *((uword*)ptr);
 #else
-	return ( (((uword)ptr[0])<<8) + ((uword)ptr[1]) );
+	return ( (static_cast<uword>(ptr[0])<<8) + static_cast<uword>(ptr[1]) );
 #endif
 }
 
@@ -118,8 +117,8 @@ inline udword readBEdword(const ubyte ptr[4])
 #if defined(WORDS_BIGENDIAN) && defined(OPTIMIZE_ENDIAN_ACCESS)
 	return *((udword*)ptr);
 #else
-	return ( (((udword)ptr[0])<<24) + (((udword)ptr[1])<<16)
-			+ (((udword)ptr[2])<<8) + ((udword)ptr[3]) );
+	return ( (static_cast<udword>(ptr[0])<<24) + (static_cast<udword>(ptr[1])<<16)
+			+ (static_cast<udword>(ptr[2])<<8) + static_cast<udword>(ptr[3]) );
 #endif
 }
 

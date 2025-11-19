@@ -2,11 +2,11 @@
 #include "STVoice.h"
 #include "AmigaRow.h"
 #include "AmigaSample.h"
-
 #include "AmigaChannel.h"
 #include <iostream>
 #include "MyEndian.h"
-#include <math.h>
+
+using namespace std;
 
 const int STPlayer::PERIODS[39] =
 {
@@ -24,11 +24,11 @@ const char* STPlayer::NOTES[38] =
 };
 STPlayer::STPlayer(Amiga* amiga):AmigaPlayer(amiga)
 {
-    trackPosBuffer = std::list<int>();
-    patternPosBuffer = std::list<int>();
-    track = std::vector<int>(128);
-    samples    = std::vector<AmigaSample*>(16);
-    voices    = std::vector<STVoice*>(4);
+    trackPosBuffer = list<int>();
+    patternPosBuffer = list<int>();
+    track = vector<int>(128);
+    samples    = vector<AmigaSample*>(16);
+    voices    = vector<STVoice*>(4);
 
     voices[0] = new STVoice(0);
     voices[0]->next = voices[1] = new STVoice(1);
@@ -93,15 +93,15 @@ void STPlayer::setForce(int value)
     {
         version = value;
     }
-    std::cout << "setforce: version = " << version << "\n";
+    cout << "setforce: version = " << version << "\n";
 }
 int STPlayer::load(void* data, unsigned long int _length)
 {
     int score = 0;
     int value=0;
     unsigned char *stream = static_cast<unsigned char*>(data);
-    std::cout << "loading st...\n";
-    std::flush(std::cout);
+    cout << "loading st...\n";
+    flush(cout);
     if(_length<1626) return -1;
     unsigned int position = 0;
     unsigned int higher = 0;
@@ -180,13 +180,13 @@ int STPlayer::load(void* data, unsigned long int _length)
 
     position = 600;
     higher += 256;
-    patterns    = std::vector<AmigaRow*>(higher);
+    patterns    = vector<AmigaRow*>(higher);
 
     int v = (_length - size - 600) >> 2;
     //if (higher > v) higher = v;
     //TODO what does this do?
-    std::cout << "pattern  size " << patterns.size() << "\n";
-    std::cout << "higher " << higher << "\n";
+    cout << "pattern  size " << patterns.size() << "\n";
+    cout << "higher " << higher << "\n";
     for (int i = 0; i < higher; ++i) {
         AmigaRow* row = new AmigaRow();
 
@@ -244,7 +244,7 @@ int STPlayer::load(void* data, unsigned long int _length)
     sample->length  = sample->repeat  = 2;
     samples[0] = sample;
 
-    std::cout << "final score:" << score  << "\n";
+    cout << "final score:" << score  << "\n";
     if (score < 1) version = 0;
 
     switch(version)
@@ -283,8 +283,8 @@ void STPlayer::process()
     patternPosBuffer.push_back(track[trackPos]/256);
     if (!tick) {
         value = track[trackPos] + patternPos;
-        std::cout << "value "  << value << "\n";
-        std::flush(std::cout);
+        cout << "value "  << value << "\n";
+        flush(cout);
         while (voice) {
             chan = voice->channel;
             voice->enabled = 0;
@@ -293,8 +293,8 @@ void STPlayer::process()
             voice->period = row->note;
             voice->effect = row->effect;
             voice->param  = row->param;
-            std::cout << "time to play2"  << "\n";
-            std::flush(std::cout);
+            cout << "time to play2"  << "\n";
+            flush(cout);
             if (row->sample) {
                 sample = voice->sample = samples[row->sample];
 
@@ -303,8 +303,8 @@ void STPlayer::process()
             } else {
                 sample = voice->sample;
             }
-            std::cout << "time to play3"  << "\n";
-            std::flush(std::cout);
+            cout << "time to play3"  << "\n";
+            flush(cout);
             if (voice->period) {
                 voice->enabled = 1;
 
@@ -423,25 +423,25 @@ void STPlayer::printData()
     for(unsigned int i = 0; i < patterns.size(); i++)
     {
         AmigaRow* row= patterns[i];
-        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
+        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
     }
     for(unsigned int i = 0; i < samples.size(); i++)
     {
         AmigaSample* sample = samples[i];
         if(sample)
         {
-            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
+            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
         }
     }
 
     for(unsigned int i = 0; i < track.size(); i++)
     {
-        std::cout << "Track [" << i << "]"<< track[i] << "\n";
+        cout << "Track [" << i << "]"<< track[i] << "\n";
     }
 }
-std::vector<AmigaSample*> STPlayer::getSamples()
+vector<AmigaSample*> STPlayer::getSamples()
 {
-    std::vector<AmigaSample*>samp (samples.size()-1);
+    vector<AmigaSample*>samp (samples.size()-1);
     for(int i =1; i< samples.size() ; i++)
     {
         samp[i-1] = samples[i];
@@ -452,12 +452,12 @@ std::vector<AmigaSample*> STPlayer::getSamples()
     }
     return samp;
 }
-bool STPlayer::getTitle(std::string& title)
+bool STPlayer::getTitle(string& title)
 {
     title = this->title;
     return true;
 }
-int STPlayer::isLegal(std::string text)
+int STPlayer::isLegal(string text)
 {
     int ascii=0;
     int i = 0;
@@ -496,7 +496,7 @@ unsigned int STPlayer::getCurrentPattern()
 {
     return patternPosBuffer.front();
 }
-void STPlayer::getModRows(std::vector<BaseRow*>& vect)
+void STPlayer::getModRows(vector<BaseRow*>& vect)
 {
     vect = patterns;
 }

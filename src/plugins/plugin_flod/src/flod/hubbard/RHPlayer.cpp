@@ -3,12 +3,13 @@
 #include "RHSample.h"
 #include "RHSong.h"
 #include "AmigaChannel.h"
-#include <iostream>
 #include "MyEndian.h"
+
+using namespace std;
 
 RHPlayer::RHPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
-    voices = std::vector<RHVoice*>(4);
+    voices = vector<RHVoice*>(4);
     voices[3] = new RHVoice(3);
     voices[3]->next = voices[2] = new RHVoice(2);
     voices[2]->next = voices[1] = new RHVoice(1);
@@ -414,7 +415,7 @@ int RHPlayer::load(void* _data, unsigned long int _length)
 
     position = samplesData;
 
-    samples = std::vector<RHSample*>();
+    samples = vector<RHSample*>();
     samplesLen++;
 
     for (int i = 0; i < samplesLen; ++i)
@@ -503,7 +504,7 @@ int RHPlayer::load(void* _data, unsigned long int _length)
             sample->pointer = amiga->memory.size();
             amiga->memory.resize(amiga->memory.size() + sample->length);
 
-            sample->wave = std::vector<signed char>(sample->length);
+            sample->wave = vector<signed char>(sample->length);
 
             for (int j = 0; j < sample->length; ++j)
             {
@@ -519,14 +520,14 @@ int RHPlayer::load(void* _data, unsigned long int _length)
 
 
     position = songsHeader;
-    songs = std::vector<RHSong*>();
+    songs = vector<RHSong*>();
     value = 0x10000;
 
     while (true)
     {
         RHSong* song = new RHSong();
         position++;
-        song->tracks = std::vector<int>(4);
+        song->tracks = vector<int>(4);
         song->speed = stream[position];
         position++;
 
@@ -587,11 +588,11 @@ void RHPlayer::printData()
     //        RHSample* sample = samples[i];
     //        if(sample)
     //        {
-    //            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << sample->volume << "\n";
-    //            std::cout << "Sample [" << i << "] relative: " << sample->relative << " divider: " << sample->divider << " vibrato: " << sample->vibrato << " hiPos: " << sample->hiPos << " loPos: " << sample->loPos << "\n";
+    //            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << sample->volume << "\n";
+    //            cout << "Sample [" << i << "] relative: " << sample->relative << " divider: " << sample->divider << " vibrato: " << sample->vibrato << " hiPos: " << sample->hiPos << " loPos: " << sample->loPos << "\n";
     //            for(unsigned int j = 0; j < sample->wave.size(); j++)
     //            {
-    //                std::cout << "Sample [" << i << "] wave [" << j << "] " << (int)sample->wave[j] << "\n";
+    //                cout << "Sample [" << i << "] wave [" << j << "] " << (int)sample->wave[j] << "\n";
     //            }
     //        }
     //    }
@@ -601,18 +602,18 @@ void RHPlayer::printData()
     //        RHSong* song = songs[i];
     //        if(song)
     //        {
-    //            std::cout << "Song [" << i << "] speed: " << song->speed << "\n";
+    //            cout << "Song [" << i << "] speed: " << song->speed << "\n";
 
     //            for(unsigned int j = 0; j < song->tracks.size(); j++)
     //            {
-    //                std::cout << "Song [" << i << "] track [" << j << "] " << (int)song->tracks[j] << "\n";
+    //                cout << "Song [" << i << "] track [" << j << "] " << (int)song->tracks[j] << "\n";
     //            }
     //        }
     //    }
 
-    //    std::cout << "Periods: " << periods << "\n";
-    //    std::cout << "Vibrato: " << vibrato << "\n";
-    //    std::cout << "Variant: " << variant << "\n";
+    //    cout << "Periods: " << periods << "\n";
+    //    cout << "Vibrato: " << vibrato << "\n";
+    //    cout << "Variant: " << variant << "\n";
 }
 
 unsigned char RHPlayer::getSubsongsCount()
@@ -625,9 +626,9 @@ void RHPlayer::selectSong(unsigned char subsong)
     m_songNumber = subsong;
 }
 
-std::vector<BaseSample*> RHPlayer::getSamples()
+vector<BaseSample*> RHPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];

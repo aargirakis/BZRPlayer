@@ -1,5 +1,5 @@
-#include "mdxmini.h"
 #include <cstring>
+#include "mdxmini.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
@@ -40,7 +40,6 @@ public:
 
     ~pluginMdxmini()
     {
-        mdx_close(&data);
         //delete some stuff
     }
 
@@ -55,7 +54,6 @@ public:
     Must be declared with F_API to make it export as stdcall.
     MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
 */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -71,11 +69,6 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    FMOD_RESULT result;
-
-    auto* plugin = new pluginMdxmini(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
-
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
@@ -83,6 +76,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     {
         return FMOD_ERR_FORMAT;
     }
+
     //I don't know if there are some kind of magic bytes to be sure it is an mdx file
     //And since it sometimes tries to play m4a-files, I return false if the size seems too big
     //Biggest mdx file on modland is 85kb
@@ -91,24 +85,23 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    int found = plugin->info->filename.find_last_of("/\\");
+    auto* plugin = new pluginMdxmini(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    int success = mdx_open(&plugin->data, const_cast<char*>(plugin->info->filename.c_str()),
-                           const_cast<char*>(plugin->info->filename.substr(0, found).c_str()));
+    const size_t found = plugin->info->filename.find_last_of("/\\");
 
-    if (success < 0)
-    {
+    if (const int success = mdx_open(&plugin->data, &plugin->info->filename[0],
+                                     &plugin->info->filename.substr(0, found)[0]); success < 0) {
         return FMOD_ERR_FORMAT;
     }
-
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = mdx_get_length(&plugin->data) * plugin->waveformat.frequency;
 
-    codec->waveformat = &(plugin->waveformat);
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
@@ -122,8 +115,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->info->fileformat = "MDX";
     plugin->info->plugin = PLUGIN_mdxmini;
     plugin->info->pluginName = PLUGIN_mdxmini_NAME;
-
-
     plugin->info->setSeekable(false);
 
     return FMOD_OK;
@@ -131,16 +122,24 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    delete static_cast<pluginMdxmini*>(codec->plugindata);
+    const auto plugin = static_cast<pluginMdxmini *>(codec->plugindata);
+
+    if (plugin != nullptr) {
+        mdx_close(&plugin->data);
+    }
+
+    delete plugin;
+
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto plugin = static_cast<pluginMdxmini*>(codec->plugindata);
-    mdx_calc_sample(&plugin->data, static_cast<short*>(buffer), size);
-    *read = size;
+    const auto plugin = static_cast<pluginMdxmini*>(codec->plugindata);
 
+    mdx_calc_sample(&plugin->data, static_cast<short*>(buffer), static_cast<int>(size));
+
+    *read = size;
     return FMOD_OK;
 }
 
@@ -149,6 +148,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
 {
     auto* plugin = static_cast<pluginMdxmini*>(codec->plugindata);
 
-    int success = mdx_open(&plugin->data, const_cast<char*>(plugin->info->filename.c_str()), 0);
+    int success = mdx_open(&plugin->data, &plugin->info->filename[0], nullptr);
     return FMOD_OK;
 }

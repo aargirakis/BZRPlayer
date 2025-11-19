@@ -4,6 +4,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class BaseStep;
 class BaseRow;
 class D2Sample;
@@ -17,18 +19,18 @@ public:
     int load(void* data, unsigned long int length);
 
 private:
-    std::vector<BaseStep*> tracks;
-    std::vector<BaseRow*> patterns;
-    std::vector<D2Sample*> samples;
-    std::vector<int> data;
-    std::vector<signed char> arpeggios;
-    std::vector<D2Voice*> voices;
+    vector<BaseStep*> tracks;
+    vector<BaseRow*> patterns;
+    vector<D2Sample*> samples;
+    vector<int> data;
+    vector<signed char> arpeggios;
+    vector<D2Voice*> voices;
     unsigned int noise;
     static const int PERIODS[85];
     void process();
     void initialize();
     void printData();
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
 };
 
 #endif // D2PLAYER_H

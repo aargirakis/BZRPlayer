@@ -6,7 +6,6 @@
 #include "AmigaChannel.h"
 #include <iostream>
 #include "MyEndian.h"
-#include <math.h>
 
 using namespace std;
 
@@ -27,9 +26,9 @@ const int BPPlayer::VIBRATO[8] =
 
 BPPlayer::BPPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
-    buffer = std::vector<int>(128);
-    samples = std::vector<BPSample*>(16);
-    voices = std::vector<BPVoice*>(4);
+    buffer = vector<int>(128);
+    samples = vector<BPSample*>(16);
+    voices = vector<BPVoice*>(4);
 
     voices[0] = new BPVoice(0);
     voices[0]->next = voices[1] = new BPVoice(1);
@@ -270,7 +269,7 @@ int BPPlayer::load(void* data, unsigned long int _length)
     }
 
     int len = length << 2;
-    tracks = std::vector<BaseStep*>(len);
+    tracks = vector<BaseStep*>(len);
 
     int higher = 0;
     for (int i = 0; i < len; ++i)
@@ -287,7 +286,7 @@ int BPPlayer::load(void* data, unsigned long int _length)
     }
 
     len = higher << 4;
-    patterns = std::vector<BaseRow*>(len);
+    patterns = vector<BaseRow*>(len);
     for (int i = 0; i < len; ++i)
     {
         BaseRow* row = new BaseRow();
@@ -803,30 +802,30 @@ void BPPlayer::printData()
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        AmigaRow* row= patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
     //    }
     //    for(unsigned int i = 0; i < samples.size(); i++)
     //    {
     //        BPSample* sample = samples[i];
     //        if(sample)
     //        {
-    //            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
-    //            std::cout << "Sample [" << i << "] synth: " << sample->synth << " table: " << sample->table << " adsrControl: " << sample->adsrControl << " adsrTable: " << sample->adsrTable << " adsrLen: " << sample->adsrLen << " adsrSpeed: " << sample->adsrSpeed << " lfoControl: " << (int)sample->lfoControl << " lfoTable: " << (int)sample->lfoTable << "\n";
-    //            std::cout << "Sample [" << i << "] lfoDepth: " << sample->lfoDepth << " lfoLen: " << sample->lfoLen << " lfoDelay: " << sample->lfoDelay << " lfoSpeed: " << sample->lfoSpeed << " egControl: " << sample->egControl << " egTable: " << sample->egTable << " egLen: " << (int)sample->egLen << " egDelay: " << (int)sample->egDelay << "\n";
-    //            std::cout << "Sample [" << i << "] egSpeed: " << sample->egSpeed << " fxControl: " << sample->fxControl << " fxDelay: " << sample->fxDelay << " fxSpeed: " << sample->fxSpeed << " modControl: " << sample->modControl << " modTable: " << sample->modTable << " modLen: " << (int)sample->modLen << " modDelay: " << (int)sample->modDelay << " modSpeed: " << (int)sample->modSpeed << "\n";
+    //            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
+    //            cout << "Sample [" << i << "] synth: " << sample->synth << " table: " << sample->table << " adsrControl: " << sample->adsrControl << " adsrTable: " << sample->adsrTable << " adsrLen: " << sample->adsrLen << " adsrSpeed: " << sample->adsrSpeed << " lfoControl: " << (int)sample->lfoControl << " lfoTable: " << (int)sample->lfoTable << "\n";
+    //            cout << "Sample [" << i << "] lfoDepth: " << sample->lfoDepth << " lfoLen: " << sample->lfoLen << " lfoDelay: " << sample->lfoDelay << " lfoSpeed: " << sample->lfoSpeed << " egControl: " << sample->egControl << " egTable: " << sample->egTable << " egLen: " << (int)sample->egLen << " egDelay: " << (int)sample->egDelay << "\n";
+    //            cout << "Sample [" << i << "] egSpeed: " << sample->egSpeed << " fxControl: " << sample->fxControl << " fxDelay: " << sample->fxDelay << " fxSpeed: " << sample->fxSpeed << " modControl: " << sample->modControl << " modTable: " << sample->modTable << " modLen: " << (int)sample->modLen << " modDelay: " << (int)sample->modDelay << " modSpeed: " << (int)sample->modSpeed << "\n";
     //        }
     //    }
 
     //    for(unsigned int i = 0; i < tracks.size(); i++)
     //    {
     //        BPStep* step = tracks[i];
-    //        std::cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose << " soundTranspose: " << (int)step->soundTranspose << "\n";
+    //        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose << " soundTranspose: " << (int)step->soundTranspose << "\n";
     //    }
 }
 
-std::vector<BaseSample*> BPPlayer::getSamples()
+vector<BaseSample*> BPPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size() - 1);
+    vector<BaseSample*> samp(samples.size() - 1);
     for (int i = 1; i < samples.size(); i++)
     {
         samp[i - 1] = samples[i];
@@ -838,7 +837,7 @@ std::vector<BaseSample*> BPPlayer::getSamples()
     return samp;
 }
 
-bool BPPlayer::getTitle(std::string& title)
+bool BPPlayer::getTitle(string& title)
 {
     title = this->m_title;
     return true;
@@ -854,7 +853,7 @@ unsigned int BPPlayer::getCurrentPattern()
     return patternPosBuffer.front();
 }
 
-std::vector<BaseRow*>& BPPlayer::getModRows()
+vector<BaseRow*>& BPPlayer::getModRows()
 {
     return patterns;
 }

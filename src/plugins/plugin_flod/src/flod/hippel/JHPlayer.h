@@ -4,9 +4,10 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class JHSong;
 class JHVoice;
-using namespace std;
 
 class JHPlayer : public AmigaPlayer
 {
@@ -18,8 +19,8 @@ public:
 private:
     unsigned char* stream;
     unsigned int position;
-    std::vector<JHSong*> songs;
-    std::vector<BaseSample*> samples;
+    vector<JHSong*> songs;
+    vector<BaseSample*> samples;
     int base;
     int patterns;
     int patternLen;
@@ -28,7 +29,7 @@ private:
     int vols;
     int sampleData;
     JHSong* song;
-    std::vector<JHVoice*> voices;
+    vector<JHVoice*> voices;
     int coso;
 
     static const int PERIODS[84];
@@ -36,7 +37,7 @@ private:
     void initialize();
     unsigned char getSubsongsCount();
     void selectSong(unsigned char);
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
     void printData();
 };
 

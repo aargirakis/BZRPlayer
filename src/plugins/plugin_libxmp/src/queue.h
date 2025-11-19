@@ -5,6 +5,7 @@
  *  NOTES  : Define queue record structure and
  *           all forward declarations.
  */
+#pragma once
 
 #include <stdint.h>
 

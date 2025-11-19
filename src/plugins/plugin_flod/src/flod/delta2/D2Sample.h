@@ -3,6 +3,8 @@
 #include "BaseSample.h"
 #include <vector>
 
+using namespace std;
+
 class D2Sample : public BaseSample
 {
     friend class D2Player;
@@ -15,9 +17,9 @@ private:
     int index;
     int pitchBend;
 
-    std::vector<unsigned char> table;
-    std::vector<unsigned char> vibratos;
-    std::vector<unsigned char> volumes;
+    vector<unsigned char> table;
+    vector<unsigned char> vibratos;
+    vector<unsigned char> volumes;
 };
 
 #endif // D2SAMPLE_H

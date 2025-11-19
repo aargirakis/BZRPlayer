@@ -3,6 +3,9 @@
 #include <vector>
 #include "AmigaPlayer.h"
 #include "Amiga.h"
+
+using namespace std;
+
 class JBSong;
 class BaseSample;
 class JBVoice;
@@ -18,9 +21,9 @@ public:
     void selectSong(unsigned char subsong);
 
 private:
-    std::vector<JBSong*> songs;
-    std::vector<BaseSample*> samples;
-    std::vector<JBVoice*> voices;
+    vector<JBSong*> songs;
+    vector<BaseSample*> samples;
+    vector<JBVoice*> voices;
     int command;
     int periods;
     int ptrack;
@@ -41,7 +44,7 @@ private:
     void process();
     void initialize();
     void printData();
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
 };
 
 #endif // JBPLAYER_H

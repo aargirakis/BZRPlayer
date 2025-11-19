@@ -4,6 +4,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class BaseSample;
 class BDVoice;
 class BDSample;
@@ -18,11 +20,11 @@ public:
 private:
     void setSample(BDVoice* voice, int counter);
     void fx(BDVoice* voice);
-    std::vector<int> songs;
-    std::vector<int> banks;
+    vector<int> songs;
+    vector<int> banks;
     int patterns;
-    std::vector<BDVoice*> voices;
-    std::vector<BDSample*> samples;
+    vector<BDVoice*> voices;
+    vector<BDSample*> samples;
 
     int commands;
     int periods;
@@ -39,7 +41,7 @@ private:
     void printData();
     unsigned char getSubsongsCount();
     void selectSong(unsigned char);
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
 };
 
 #endif // BDPLAYER_H

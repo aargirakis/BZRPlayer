@@ -5,6 +5,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class BaseStep;
 class BaseRow;
 class BPSample;
@@ -25,14 +27,14 @@ public:
     int load(void* data, unsigned long int _length);
 
 private:
-    std::list<int> trackPosBuffer;
-    std::list<int> patternPosBuffer;
-    std::vector<BaseStep*> tracks;
-    std::vector<BaseRow*> patterns;
-    std::vector<BPSample*> samples;
+    list<int> trackPosBuffer;
+    list<int> patternPosBuffer;
+    vector<BaseStep*> tracks;
+    vector<BaseRow*> patterns;
+    vector<BPSample*> samples;
     int length;
-    std::vector<int> buffer;
-    std::vector<BPVoice*> voices;
+    vector<int> buffer;
+    vector<BPVoice*> voices;
     int trackPos;
     int patternPos;
     int nextPos;
@@ -45,11 +47,11 @@ private:
     void process();
     void initialize();
     void printData();
-    std::vector<BaseSample*> getSamples();
-    bool getTitle(std::string& title);
+    vector<BaseSample*> getSamples();
+    bool getTitle(string& title);
     unsigned int getCurrentRow();
     unsigned int getCurrentPattern();
-    std::vector<BaseRow*>& getModRows();
+    vector<BaseRow*>& getModRows();
 };
 
 #endif // BPPLAYER_H

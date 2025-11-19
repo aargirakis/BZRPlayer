@@ -4,7 +4,6 @@
 #include "BaseSample.h"
 #include "BaseRow.h"
 #include "MyEndian.h"
-#include <iostream>
 
 using namespace std;
 
@@ -29,11 +28,11 @@ const char* FXPlayer::NOTES[67] =
 
 FXPlayer::FXPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
-    trackPosBuffer = std::list<int>();
-    patternPosBuffer = std::list<int>();
-    track = std::vector<int>(128);
+    trackPosBuffer = list<int>();
+    patternPosBuffer = list<int>();
+    track = vector<int>(128);
 
-    voices = std::vector<FXVoice*>(4);
+    voices = vector<FXVoice*>(4);
 
     voices[0] = new FXVoice(0);
     voices[0]->next = voices[1] = new FXVoice(1);
@@ -117,7 +116,7 @@ int FXPlayer::load(void* data, unsigned long int length)
         m_version = SOUNDFX_10;
         format = "SoundFX 1.0";
     }
-    samples = std::vector<BaseSample*>(len);
+    samples = vector<BaseSample*>(len);
     tempo = readEndian(stream[position], stream[position + 1]);
 
     position = 0;
@@ -183,7 +182,7 @@ int FXPlayer::load(void* data, unsigned long int length)
     if (base) base += 4;
     position = base + 660;
     higher += 256;
-    patterns = std::vector<BaseRow*>(higher);
+    patterns = vector<BaseRow*>(higher);
 
     len = samples.size();
 
@@ -562,37 +561,37 @@ void FXPlayer::printData()
     //        AmigaSample* sample = samples[i];
     //        if(sample)
     //        {
-    //            std::cout << sample->name << "\n";
+    //            cout << sample->name << "\n";
     //        }
     //    }
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        AmigaRow* row= patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
     //    }
     //    for(unsigned int i = 0; i < samples.size(); i++)
     //    {
     //        AmigaSample* sample = samples[i];
     //        if(sample)
     //        {
-    //            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
+    //            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
     //        }
     //    }
     //    for(unsigned int i = 0; i < track.size(); i++)
     //    {
-    //        std::cout << "Tracks [" << i << "] " << track[i] <<  "\n";
+    //        cout << "Tracks [" << i << "] " << track[i] <<  "\n";
     //    }
     //    ////    for(int i = 0; i < amiga->memory.size(); i++)
     //    ////    {
-    //    ////        std::cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
+    //    ////        cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
     //    ////    }
 
-    //    std::flush(std::cout);
+    //    flush(cout);
 }
 
-std::vector<BaseSample*> FXPlayer::getSamples()
+vector<BaseSample*> FXPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size() - 1);
+    vector<BaseSample*> samp(samples.size() - 1);
     for (int i = 1; i < samples.size(); i++)
     {
         samp[i - 1] = samples[i];
@@ -614,7 +613,7 @@ unsigned int FXPlayer::getCurrentPattern()
     return patternPosBuffer.front();
 }
 
-void FXPlayer::getModRows(std::vector<BaseRow*>& vect)
+void FXPlayer::getModRows(vector<BaseRow*>& vect)
 {
     vect = patterns;
 }

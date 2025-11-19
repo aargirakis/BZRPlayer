@@ -4,7 +4,6 @@
 #include "BaseRow.h"
 #include "AmigaChannel.h"
 #include "BaseStep.h"
-#include <iostream>
 #include "MyEndian.h"
 
 using namespace std;
@@ -22,9 +21,9 @@ const int D1Player::PERIODS[84] =
 
 D1Player::D1Player(Amiga* amiga): AmigaPlayer(amiga)
 {
-    samples = std::vector<D1Sample*>(21);
-    voices = std::vector<D1Voice*>(4);
-    pointers = std::vector<int>(4);
+    samples = vector<D1Sample*>(21);
+    voices = vector<D1Voice*>(4);
+    pointers = vector<int>(4);
 
     voices[0] = new D1Voice(0);
     voices[0]->next = voices[1] = new D1Voice(1);
@@ -447,20 +446,20 @@ int D1Player::load(void* _data, unsigned long int length)
     unsigned int position = 4;
     const int position2 = 104;
 
-    std::vector<unsigned int> data(25);
+    vector<unsigned int> data(25);
     for (int i = 0; i < 25; ++i)
     {
         data[i] = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
     }
 
-    pointers = std::vector<int>(4);
+    pointers = vector<int>(4);
     int j = 0;
     for (int i = 1; i < 4; ++i)
         pointers[i] = pointers[j] + (data[j++] >> 1) - 1;
 
     unsigned int len = pointers[3] + (data[3] >> 1) - 1;
-    tracks = std::vector<BaseStep*>(len);
+    tracks = vector<BaseStep*>(len);
     int index = position2 + data[1] - 2;
     position = position2;
     j = 1;
@@ -490,7 +489,7 @@ int D1Player::load(void* _data, unsigned long int length)
     }
 
     len = data[4] >> 2;
-    patterns = std::vector<BaseRow*>(len);
+    patterns = vector<BaseRow*>(len);
     for (int i = 0; i < len; ++i)
     {
         BaseRow* row = new BaseRow();
@@ -599,22 +598,22 @@ void D1Player::printData()
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        AmigaRow* row= patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
     //    }
     //    for(unsigned int i = 0; i < samples.size(); i++)
     //    {
     //        D1Sample* sample = samples[i];
     //        if(sample)
     //        {
-    //            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
-    //            std::cout << "Sample [" << i << "] synth: " << sample->synth << " attackStep: " << sample->attackStep << " attackDelay: " << sample->attackDelay << " decayStep: " << sample->decayStep << " decayDelay: " << sample->decayDelay << " releaseStep: " << sample->releaseStep << " releaseDelay: " << (int)sample->releaseDelay << " sustain: " << (int)sample->sustain << "\n";
+    //            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << "\n";
+    //            cout << "Sample [" << i << "] synth: " << sample->synth << " attackStep: " << sample->attackStep << " attackDelay: " << sample->attackDelay << " decayStep: " << sample->decayStep << " decayDelay: " << sample->decayDelay << " releaseStep: " << sample->releaseStep << " releaseDelay: " << (int)sample->releaseDelay << " sustain: " << (int)sample->sustain << "\n";
     //            for(unsigned int j = 0; j < sample->table.size(); j++)
     //            {
-    //                std::cout << "Sample [" << i << "] Table [" << j << "] " << (int)sample->table[j] << "\n";
+    //                cout << "Sample [" << i << "] Table [" << j << "] " << (int)sample->table[j] << "\n";
     //            }
     //            for(unsigned int j = 0; j < sample->arpeggio.size(); j++)
     //            {
-    //                std::cout << "Sample [" << i << "] Arpeggio [" << j << "] " << (int)sample->arpeggio[j] << "\n";
+    //                cout << "Sample [" << i << "] Arpeggio [" << j << "] " << (int)sample->arpeggio[j] << "\n";
     //            }
     //        }
     //    }
@@ -622,22 +621,22 @@ void D1Player::printData()
     //    for(unsigned int i = 0; i < tracks.size(); i++)
     //    {
     //        AmigaStep* step = tracks[i];
-    //        std::cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
+    //        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<  "\n";
     //    }
     //    for(int i = 0; i < amiga->memory.size(); i++)
     //    {
-    //        std::cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
+    //        cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
     //    }
     //    for(unsigned int i = 0; i < pointers.size(); i++)
     //    {
-    //        std::cout << "Pointers [" << i << "] " << pointers[i] <<  "\n";
+    //        cout << "Pointers [" << i << "] " << pointers[i] <<  "\n";
     //    }
-    //    std::flush(std::cout);
+    //    flush(cout);
 }
 
-std::vector<BaseSample*> D1Player::getSamples()
+vector<BaseSample*> D1Player::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];
@@ -646,6 +645,6 @@ std::vector<BaseSample*> D1Player::getSamples()
             samp[i] = new BaseSample();
         }
     }
-    //std::cout << "returning samples, size: " << samp.size() << "\n";
+    //cout << "returning samples, size: " << samp.size() << "\n";
     return samp;
 }

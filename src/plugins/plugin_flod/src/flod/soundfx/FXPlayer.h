@@ -5,6 +5,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class FXVoice;
 class BaseRow;
 class BaseSample;
@@ -28,12 +30,12 @@ public:
 
 private:
     int magicTempoNumber;
-    std::list<int> trackPosBuffer;
-    std::list<int> patternPosBuffer;
-    std::vector<int> track;
-    std::vector<BaseRow*> patterns;
-    std::vector<BaseSample*> samples;
-    std::vector<FXVoice*> voices;
+    list<int> trackPosBuffer;
+    list<int> patternPosBuffer;
+    vector<int> track;
+    vector<BaseRow*> patterns;
+    vector<BaseSample*> samples;
+    vector<FXVoice*> voices;
     unsigned int length;
     unsigned int trackPos;
     unsigned int patternPos;
@@ -45,10 +47,10 @@ private:
     void process();
     void initialize();
     void printData();
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
     unsigned int getCurrentRow();
     unsigned int getCurrentPattern();
-    void getModRows(std::vector<BaseRow*>&);
+    void getModRows(vector<BaseRow*>&);
 };
 
 #endif // FXPLAYER_H

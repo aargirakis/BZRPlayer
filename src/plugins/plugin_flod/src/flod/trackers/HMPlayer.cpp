@@ -7,6 +7,8 @@
 #include <iostream>
 #include "MyEndian.h"
 
+using namespace std;
+
 const int HMPlayer::MEGARPEGGIO[256] =
 {
     0, 3, 7,12,15,12, 7, 3, 0, 3, 7,12,15,12, 7, 3,
@@ -49,11 +51,11 @@ const char* HMPlayer::NOTES[38] =
 };
 HMPlayer::HMPlayer(Amiga* amiga):AmigaPlayer(amiga)
 {
-    trackPosBuffer = std::list<int>();
-    patternPosBuffer = std::list<int>();
-    track = std::vector<int>(128);
-    samples    = std::vector<HMSample*>(32);
-    voices    = std::vector<HMVoice*>(4);
+    trackPosBuffer = list<int>();
+    patternPosBuffer = list<int>();
+    track = vector<int>(128);
+    samples    = vector<HMSample*>(32);
+    voices    = vector<HMVoice*>(4);
 
     voices[0] = new HMVoice(0);
     voices[0]->next = voices[1] = new HMVoice(1);
@@ -148,7 +150,7 @@ int HMPlayer::load(void* data, unsigned long int _length)
 
     for (int i = 1; i < 32; ++i) {
         samples[i] = 0;
-        std::string id="";
+        string id="";
         const int STRING_LENGTH_SAMPLE_SHORT = 4;
         for(int j = 0;j<STRING_LENGTH_SAMPLE_SHORT;j++)
         {
@@ -181,8 +183,8 @@ int HMPlayer::load(void* data, unsigned long int _length)
             position = value;
 
             sample->pointer = amiga->memory.size();
-            sample->waves = std::vector<int>(64);
-            sample->volumes = std::vector<int>(64);
+            sample->waves = vector<int>(64);
+            sample->volumes = vector<int>(64);
             amiga->store(stream, 896,position,_length);
 
             for (int j = 0; j < 64; ++j)
@@ -263,7 +265,7 @@ int HMPlayer::load(void* data, unsigned long int _length)
 
     position = 1084;
     higher += 256;
-    patterns = std::vector<AmigaRow*>(higher);
+    patterns = vector<AmigaRow*>(higher);
 
 
     for (int i = 0; i < higher; ++i) {
@@ -575,34 +577,34 @@ void HMPlayer::printData()
 //    for(unsigned int i = 0; i < patterns.size(); i++)
 //    {
 //        AmigaRow* row= patterns[i];
-//        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
+//        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << "\n";
 //    }
     for(unsigned int i = 0; i < samples.size(); i++)
     {
         HMSample* sample = samples[i];
         if(sample)
         {
-            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << (int)sample->volume << " finetune: " << sample->finetune << " restart: " << sample->restart << " waveLen: " << sample->waveLen << "\n";
+            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << (int)sample->volume << " finetune: " << sample->finetune << " restart: " << sample->restart << " waveLen: " << sample->waveLen << "\n";
             for(int j = 0; j < sample->waves.size();j++)
             {
-                std::cout << "wave " << (int)sample->waves[j] << "\n";
+                cout << "wave " << (int)sample->waves[j] << "\n";
             }
             for(int j = 0; j < sample->volumes.size();j++)
             {
-                std::cout << "volume " << (int)sample->volumes[j] << "\n";
+                cout << "volume " << (int)sample->volumes[j] << "\n";
             }
         }
     }
 
     for(unsigned int i = 0; i < track.size(); i++)
     {
-        std::cout << "Track [" << i << "]"<< track[i] << "\n";
+        cout << "Track [" << i << "]"<< track[i] << "\n";
     }
-    std::flush(std::cout);
+    flush(cout);
 }
-std::vector<AmigaSample*> HMPlayer::getSamples()
+vector<AmigaSample*> HMPlayer::getSamples()
 {
-    std::vector<AmigaSample*>samp (samples.size()-1);
+    vector<AmigaSample*>samp (samples.size()-1);
     for(int i =1; i< samples.size() ; i++)
     {
         samp[i-1] = samples[i];
@@ -613,7 +615,7 @@ std::vector<AmigaSample*> HMPlayer::getSamples()
     }
     return samp;
 }
-bool HMPlayer::getTitle(std::string& title)
+bool HMPlayer::getTitle(string& title)
 {
     title = this->title;
     return true;
@@ -626,7 +628,7 @@ unsigned int HMPlayer::getCurrentPattern()
 {
     return patternPosBuffer.front();
 }
-void HMPlayer::getModRows(std::vector<BaseRow*>& vect)
+void HMPlayer::getModRows(vector<BaseRow*>& vect)
 {
     vect = patterns;
 }

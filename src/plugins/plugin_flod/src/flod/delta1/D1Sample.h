@@ -3,6 +3,8 @@
 #include "BaseSample.h"
 #include <vector>
 
+using namespace std;
+
 class D1Sample : public BaseSample
 {
     friend class D1Player;
@@ -20,10 +22,10 @@ private:
     int releaseStep;
     int releaseDelay;
     int sustain;
-    std::vector<unsigned char> arpeggio;
+    vector<unsigned char> arpeggio;
     signed char pitchBend;
     int portamento;
-    std::vector<signed char> table;
+    vector<signed char> table;
     int tableDelay;
     int vibratoWait;
     int vibratoStep;

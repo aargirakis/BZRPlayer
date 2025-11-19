@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+using namespace std;
+
 AmigaPlayer::AmigaPlayer(Amiga* amiga)
 {
     this->amiga = amiga;
@@ -159,17 +161,17 @@ void AmigaPlayer::stop()
     reset();
 }
 
-std::vector<BaseSample*> AmigaPlayer::getSamples()
+vector<BaseSample*> AmigaPlayer::getSamples()
 {
-    return std::vector<BaseSample*>(0);
+    return vector<BaseSample*>(0);
 }
 
-void AmigaPlayer::getModRows(std::vector<BaseRow*>& vect)
+void AmigaPlayer::getModRows(vector<BaseRow*>& vect)
 {
-    //return std::vector<AmigaRow*>(0);
+    //return vector<AmigaRow*>(0);
 }
 
-bool AmigaPlayer::getTitle(std::string& title)
+bool AmigaPlayer::getTitle(string& title)
 {
     title = "";
     return false;
@@ -188,10 +190,6 @@ unsigned int AmigaPlayer::getCurrentPattern()
 unsigned char AmigaPlayer::getSubsongsCount()
 {
     return 0;
-}
-
-void AmigaPlayer::selectSong(unsigned char subsong)
-{
 }
 
 void AmigaPlayer::initialize()

@@ -4,6 +4,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class RHSong;
 class RHVoice;
 class RHSample;
@@ -17,12 +19,12 @@ public:
 
 private:
     unsigned char* stream;
-    std::vector<RHSong*> songs;
-    std::vector<RHSample*> samples;
+    vector<RHSong*> songs;
+    vector<RHSample*> samples;
     RHSong* song;
     int periods;
     int vibrato;
-    std::vector<RHVoice*> voices;
+    vector<RHVoice*> voices;
     void* data;
     int complete;
     int variant;
@@ -32,7 +34,7 @@ private:
     void initialize();
     unsigned char getSubsongsCount();
     void selectSong(unsigned char);
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
     void printData();
 };
 

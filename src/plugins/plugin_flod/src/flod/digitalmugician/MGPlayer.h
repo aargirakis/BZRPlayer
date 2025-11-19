@@ -4,6 +4,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class AmigaRow;
 class MGSample;
 class MGVoice;
@@ -20,11 +22,11 @@ private:
     void tables();
 
 
-    std::vector<MGSong*> songs;
-    std::vector<BaseRow*> patterns;
-    std::vector<MGSample*> samples;
-    std::vector<MGVoice*> voices;
-    std::vector<unsigned char> subSongsList;
+    vector<MGSong*> songs;
+    vector<BaseRow*> patterns;
+    vector<MGSample*> samples;
+    vector<MGVoice*> voices;
+    vector<unsigned char> subSongsList;
     int buffer1;
     int buffer2;
     MGSong* song1;
@@ -35,9 +37,9 @@ private:
     int patternEnd;
     int stepEnd;
     int chans;
-    std::vector<int> arpeggios;
-    std::vector<int> averages;
-    std::vector<int> volumes;
+    vector<int> arpeggios;
+    vector<int> averages;
+    vector<int> volumes;
     AmigaChannel* mixChannel;
     int mixPeriod;
 
@@ -51,8 +53,8 @@ private:
 
     void process();
     void initialize();
-    std::vector<BaseSample*> getSamples();
-    bool getTitle(std::string& title);
+    vector<BaseSample*> getSamples();
+    bool getTitle(string& title);
     unsigned char getSubsongsCount();
     void selectSong(unsigned char);
     void printData();

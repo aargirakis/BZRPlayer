@@ -1,22 +1,13 @@
+#include <cstring>
+#include <fstream>
+#include <iostream>
 #include <gme.h>
 #include "Music_Emu.h"
-#include <iostream>
-#include <fstream>
-#include <cstring>
-#include "fmod.h"
+#include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
 
 using namespace std;
-
-void ERRCHECK(FMOD_RESULT result)
-{
-    if (result != FMOD_OK)
-    {
-        //LogFile->Print("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-        exit(-1);
-    }
-}
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
@@ -31,7 +22,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_game_music_emu_NAME, // Name.
     0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_TEMPO | FMOD_TIMEUNIT_MUTE_VOICE,
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_MUTE_VOICE,
     // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
@@ -52,7 +43,6 @@ public:
     pluginGme(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        //LogFile = new CLogFile("gameemu.log");
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
@@ -62,7 +52,7 @@ public:
         gme_delete(emu);
     }
 
-    Music_Emu* emu;
+    Music_Emu* emu = nullptr;
     FMOD_CODEC_WAVEFORMAT waveformat;
     gme_info_t* gmeInfo;
     int track;
@@ -87,25 +77,20 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    FMOD_RESULT result;
-    auto plugin = new pluginGme(codec);
-
-
-    //read config from disk
-
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
-    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/gameemu.cfg";
-    ifstream ifs(filename.c_str());
-    string line;
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
     if (filesize == 4294967295) //stream
     {
         return FMOD_ERR_FORMAT;
     }
+
+    auto plugin = new pluginGme(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
+
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/gme.cfg";
+    ifstream ifs(filename.c_str());
     bool useDefaults = false;
     if (ifs.fail())
     {
@@ -123,43 +108,42 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     if (!useDefaults)
     {
+        string line;
         while (getline(ifs, line))
         {
-            int i = line.find_first_of("=");
-
-            if (i != -1)
+            if (int i = line.find_first_of("="); i != -1)
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("frequency") == 0)
+                if (word == "frequency")
                 {
                     freq = atoi(value.c_str());
                 }
-                else if (word.compare("ignore_silence") == 0)
+                else if (word == "ignore_silence")
                 {
-                    if (value.compare("yes") == 0)
+                    if (value == "yes")
                     {
                         ignore_silence = true;
                     }
-                    else if (value.compare("no") == 0)
+                    else if (value == "no")
                     {
                         ignore_silence = false;
                     }
                 }
 
-                else if (word.compare("tempo") == 0)
+                else if (word == "tempo")
                 {
                     tempo = atof(value.c_str()) / 100.0;
                 }
-                else if (word.compare("treble") == 0)
+                else if (word == "treble")
                 {
                     treble = atoi(value.c_str());
                 }
-                else if (word.compare("bass") == 0)
+                else if (word == "bass")
                 {
                     bass = atoi(value.c_str());
                 }
-                else if (word.compare("stereo_depth") == 0)
+                else if (word == "stereo_depth")
                 {
                     stereoDepth = atof(value.c_str()) / 100.0;
                 }
@@ -168,22 +152,20 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-
     //check what music format the file is
     unsigned int bytesread;
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    ERRCHECK(result);
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
 
-    char header[4] = "";
+    uint8_t header[4] = "";
 
     result = FMOD_CODEC_FILE_READ(codec, header, 4, &bytesread);
-    ERRCHECK(result);
 
     gme_type_t file_type = gme_identify_extension(gme_identify_header(header));
 
     // sap format is played by plugin_asap
-    if (!file_type || file_type->extension_ == std::string(gme_sap_type->extension_))
+    if (!file_type || file_type->extension_ == string(gme_sap_type->extension_))
     {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
@@ -191,17 +173,16 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->emu = gme_new_emu(file_type, freq);
 
     /* Allocate space for buffer. */
-    auto myBuffer = new signed short[filesize];
+    auto myBuffer = new uint8_t[filesize];
 
     //rewind file pointer
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    ERRCHECK(result);
 
     //read whole file to memory
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
-    ERRCHECK(result);
 
     if (gme_load_data(plugin->emu, myBuffer, filesize)) {
+        delete plugin;
         return FMOD_ERR_INTERNAL;
     }
 
@@ -220,10 +201,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = freq;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
-    codec->waveformat = &(plugin->waveformat);
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
@@ -260,23 +241,21 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
     delete static_cast<pluginGme*>(codec->plugindata);
-    //delete LogFile;
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto plugin = static_cast<pluginGme*>(codec->plugindata);
+    const auto plugin = static_cast<pluginGme*>(codec->plugindata);
     plugin->emu->play(size << 1, static_cast<signed short *>(buffer));
 
     *read = size;
-
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    auto plugin = static_cast<pluginGme*>(codec->plugindata);
+    const auto plugin = static_cast<pluginGme*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
         if (gme_seek(plugin->emu, static_cast<int>(position))) {
@@ -291,22 +270,12 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
         }
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_TEMPO)
-    {
-        //if (gme_start_track(plugin->emu, position)) {
-        //    return FMOD_ERR_INTERNAL;
-        //}
-        double rate = static_cast<double>(position) / 250.0;
-        //printf("\n\nrate: %f\n",rate);
-        gme_set_tempo(plugin->emu, rate);
-        return FMOD_OK;
-    }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         gme_mute_voices(plugin->emu, 0); //unmutes all voices
         //gme_mute_voices( plugin->emu, -1 ); //mutes all voices
         //position is a mask
-        gme_mute_voices(plugin->emu, position);
+        gme_mute_voices(plugin->emu, static_cast<int>(position));
         return FMOD_ERR_UNSUPPORTED;
     }
 
@@ -315,7 +284,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    auto plugin = static_cast<pluginGme*>(codec->plugindata);
+    const auto plugin = static_cast<pluginGme*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
@@ -353,7 +322,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
 
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    auto plugin = static_cast<pluginGme*>(codec->plugindata);
+    const auto plugin = static_cast<pluginGme*>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
         *position = plugin->emu->current_track();

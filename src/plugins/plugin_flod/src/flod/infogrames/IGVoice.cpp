@@ -1,11 +1,13 @@
 #include "IGVoice.h"
 #include "IGBlock.h"
 
+using namespace std;
+
 IGVoice::IGVoice(int index)
 {
     this->index = index;
     next = 0;
-    track = std::vector<int>();
+    track = vector<int>();
 }
 
 void IGVoice::initialize()

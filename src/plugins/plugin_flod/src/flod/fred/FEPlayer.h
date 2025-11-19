@@ -4,6 +4,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class FESong;
 class FEVoice;
 class FESample;
@@ -17,11 +19,11 @@ public:
 
 private:
     unsigned int position;
-    std::vector<FESong*> songs;
-    std::vector<FESample*> samples;
+    vector<FESong*> songs;
+    vector<FESample*> samples;
     signed char* patterns;
     FESong* song;
-    std::vector<FEVoice*> voices;
+    vector<FEVoice*> voices;
     int complete;
     int sampleFlag;
 
@@ -29,7 +31,7 @@ private:
     void initialize();
     unsigned char getSubsongsCount();
     void selectSong(unsigned char);
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
     void printData();
 
     static const int PERIODS[72];

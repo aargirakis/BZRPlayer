@@ -3,8 +3,8 @@
 #pragma warning(disable : 26812)
 
 #include <cstring>
-#include <type_traits>
-#include <utility>
+
+using namespace std;
 
 namespace core
 {
@@ -69,38 +69,38 @@ namespace core
     template <typename T1, typename T2>
     constexpr auto Min(T1&& a, T2&& b)
     {
-        return std::forward<T1>(a) < std::forward<T2>(b) ? std::forward<T1>(a) : std::forward<T2>(b);
+        return forward<T1>(a) < forward<T2>(b) ? forward<T1>(a) : forward<T2>(b);
     }
 
     template<typename T1, typename T2, typename... Ts>
     constexpr auto Min(T1&& a, T2&& b, Ts&&... others)
     {
-        return Min(Min(std::forward<T1>(a), std::forward<T2>(b)), std::forward<Ts>(others)...);
+        return Min(Min(forward<T1>(a), forward<T2>(b)), forward<Ts>(others)...);
     }
 
     template <typename T1, typename T2>
     constexpr auto Max(T1&& a, T2&& b)
     {
-        return std::forward<T1>(a) > std::forward<T2>(b) ? std::forward<T1>(a) : std::forward<T2>(b);
+        return forward<T1>(a) > forward<T2>(b) ? forward<T1>(a) : forward<T2>(b);
     }
 
     template<typename T1, typename T2, typename... Ts>
     constexpr auto Max(T1&& a, T2&& b, Ts&&... others)
     {
-        return Max(Max(std::forward<T1>(a), std::forward<T2>(b)), std::forward<Ts>(others)...);
+        return Max(Max(forward<T1>(a), forward<T2>(b)), forward<Ts>(others)...);
     }
 
     template <typename T1, typename T2, typename T3>
     constexpr auto Clamp(T1&& a, T2&& min, T3&& max)
     {
         assert(min <= max);
-        return Max(std::forward<T2>(min), Min(std::forward<T3>(max), std::forward<T1>(a)));
+        return Max(forward<T2>(min), Min(forward<T3>(max), forward<T1>(a)));
     }
 
     template <typename T1>
     constexpr auto Saturate(T1&& a)
     {
-        return Max(static_cast<std::remove_reference_t<T1>>(0), Min(static_cast<std::remove_reference_t<T1>>(1), std::forward<T1>(a)));
+        return Max(static_cast<remove_reference_t<T1>>(0), Min(static_cast<remove_reference_t<T1>>(1), forward<T1>(a)));
     }
 }
 // namespace core

@@ -1,11 +1,8 @@
-#include <cstdio>
 #include <cstring>
-#include <string>
-#include "fmod_errors.h"
-#include "hvl_replay.h"
-#include "info.h"
-#include "BaseRow.h"
 #include <fstream>
+#include "hvl_replay.h"
+#include "fmod_errors.h"
+#include "info.h"
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
@@ -14,15 +11,6 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
-
-void ERRCHECK(FMOD_RESULT result)
-{
-    if (result != FMOD_OK)
-    {
-        printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-        //exit(-1);
-    }
-}
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -44,7 +32,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-const char* NOTES[67] =
+const char *NOTES[67] =
 {
     "---", "C#1", "D-1", "D#1", "E-1", "F-1", "F#1", "G-1", "G#1", "A-1", "A#1", "B-1",
     "C-2", "C#2", "D-2", "D#2", "E-2", "F-2", "F#2", "G-2", "G#2", "A-2", "A#2", "B-2",
@@ -62,7 +50,6 @@ public:
     pluginHivelyTracker(FMOD_CODEC_STATE* codec)
     {
         _codec = codec;
-        //LogFile = new CLogFile("libmod.log");
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
@@ -72,7 +59,7 @@ public:
         delete subsongslengths;
     }
 
-    struct hvl_tune* m_tune;
+    hvl_tune* m_tune;
     FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned int* subsongslengths;
     Info* info;
@@ -96,24 +83,19 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
+    uint8_t id[4] = "";
+    unsigned int bytesread;
+
     auto* plugin = new pluginHivelyTracker(codec);
     plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    char id[4] = "";
-    unsigned int bytesread;
-
-    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, id, 4, &bytesread);
-
-    // HivelyTracker file
-    if ((id[0] == 'H') && (id[1] == 'V') && (id[2] == 'L') && (id[3] < 2))
+    if (memcmp(id, "HVL", 3) == 0)
     {
         plugin->info->fileformat = "HivelyTracker";
     }
-    else if ((id[0] == 'T') && (id[1] == 'H') && (id[2] == 'X') && (id[3] < 3))
+    else if (memcmp(id, "THX", 3) == 0)
     {
         plugin->info->fileformat = "AHX";
     }
@@ -122,10 +104,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    //read config from disk
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
     ifstream ifs(filename.c_str());
-    string line;
     bool useDefaults = false;
     if (ifs.fail())
     {
@@ -139,22 +119,20 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     if (!useDefaults)
     {
+        string line;
         while (getline(ifs, line))
         {
-            int i = line.find_first_of("=");
-
-            if (i != -1)
+            if (int i = line.find_first_of("="); i != -1)
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("stereo_separation") == 0)
+                if (word == "stereo_separation")
                 {
                     defstereo = atoi(value.c_str());
                 }
-                else if (word.compare("continuous_playback") == 0)
+                else if (word == "continuous_playback")
                 {
-                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value.compare(
-                        "true") == 0;
+                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
             }
         }
@@ -163,50 +141,44 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     hvl_InitReplayer();
 
-
-    //plugin->m_tune = hvl_LoadTune(const_cast<char*>(plugin->info->filename.c_str()), 44100, 1);
-
-    FMOD_RESULT result;
-
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    unsigned char* myBuffer;
-    myBuffer = new unsigned char[filesize];
+    auto *myBuffer = new uint8_t[filesize];
 
     //rewind file pointer
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    ERRCHECK(result);
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
 
     //read whole file to memory
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
-    ERRCHECK(result);
 
     plugin->m_tune = hvl_ParseTune(myBuffer, filesize, 44100, defstereo);
 
     if (!plugin->m_tune)
     {
-        delete myBuffer;
+        delete [] myBuffer;
         return FMOD_ERR_FORMAT;
     }
+
+    delete [] myBuffer;
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = 882; //(16 >> 3) * plugin->waveformat.channels;
 
-
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
-
 
     int subsongs = plugin->m_tune->ht_SubsongNr;
     if (subsongs == 0)
     {
         subsongs = 1;
     }
+
     plugin->subsongslengths = new unsigned int[subsongs];
+
     for (int i = 0; i < subsongs; i++)
     {
         hvl_InitSubsong(plugin->m_tune, i);
@@ -235,7 +207,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         plugin->info->instrumentsVolume = new unsigned char[numInstruments];
         plugin->info->instrumentsWavelen = new unsigned char[numInstruments];
 
-
         //        plugin->info->instrumentsFilterLowerLimit = new unsigned char[numInstruments];
         //        plugin->info->instrumentsFilterUpperLimit = new unsigned char[numInstruments];
         //        plugin->info->instrumentsFilterSpeed = new unsigned char[numInstruments];
@@ -252,29 +223,30 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         }
     }
 
-    delete myBuffer;
     plugin->info->plugin = PLUGIN_hivelytracker;
     plugin->info->pluginName = PLUGIN_hivelytracker_NAME;
     plugin->info->setSeekable(true);
-
 
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
     if (plugin)
     {
         hvl_FreeTune(plugin->m_tune);
     }
+
+    delete plugin;
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
-    hvl_DecodeFrame(plugin->m_tune, (int8*)buffer, (int8*)buffer + 2, 4);
+    const auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
+    hvl_DecodeFrame(plugin->m_tune, static_cast<int8 *>(buffer), static_cast<int8 *>(buffer) + 2, 4);
+
     if (size < plugin->waveformat.pcmblocksize)
     {
         *read = size;
@@ -283,58 +255,54 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     {
         *read = plugin->waveformat.pcmblocksize;
     }
+
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         //hvl_GetLen can't be called during playing, so loop through all subsongs at load and getlength for
         //all songs and store them and return the current one here
         *length = plugin->subsongslengths[plugin->m_tune->ht_SongNum];
-
         return FMOD_OK;
     }
-
-    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
         *length = plugin->m_tune->ht_SubsongNr;
         return FMOD_OK;
     }
-    else
-    {
-        return FMOD_ERR_UNSUPPORTED;
-    }
-    return FMOD_OK;
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    auto plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
+    const auto plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS)
     {
         hvl_Seek(plugin->m_tune, position);
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
+    if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        if (position < 0) position = 0;
         hvl_InitSubsong(plugin->m_tune, position);
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
         //position is a mask
         for (int i = 0; i < plugin->info->numChannels; i++)
         {
-            int m = position >> i & 1;
-            int mute = m == 0 ? 1 : 0;
+            const unsigned int m = position >> i & 1;
+            const unsigned char mute = m == 0 ? 1 : 0;
             plugin->m_tune->ht_Voices[i].vc_TrackOn = mute;
         }
+
         return FMOD_OK;
     }
 
@@ -343,19 +311,19 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
 
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
 {
-    auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginHivelyTracker*>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MODROW)
     {
         *position = Front(plugin->m_tune->trackPosBuffer);
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_MODORDER)
+    if (postype == FMOD_TIMEUNIT_MODORDER)
     {
         *position = Front(plugin->m_tune->patternPosBuffer);
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_MODPATTERN)
+    if (postype == FMOD_TIMEUNIT_MODPATTERN)
     {
         //set the current track positions in the info struct and just return 0
         plugin->info->modTrackPositions.clear();
@@ -364,15 +332,16 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
             plugin->info->modTrackPositions.push_back(
                 plugin->m_tune->ht_Positions[Front(plugin->m_tune->patternPosBuffer)].pos_Track[i]);
         }
+
         *position = 0;
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO)
+    if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO)
     {
         //set the mod pattern (notes etc.) in the info struct and just return 0
-        for (vector<BaseRow*>::iterator itr = plugin->info->modRows.begin(); itr != plugin->info->modRows.end(); ++itr)
+        for (const auto & modRow : plugin->info->modRows)
         {
-            delete (*itr);
+            delete modRow;
         }
         plugin->info->modRows.clear();
         for (int i = 0; i <= plugin->m_tune->ht_TrackNr; i++)
@@ -380,7 +349,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
             for (int j = 0; j < plugin->m_tune->ht_TrackLength; j++)
             {
                 auto* row = new BaseRow();
-                uint8 note = plugin->m_tune->ht_Tracks[i][j].stp_Note;
+                const uint8 note = plugin->m_tune->ht_Tracks[i][j].stp_Note;
                 row->note = note;
                 row->noteText = note == 0 ? "---" : NOTES[plugin->m_tune->ht_Tracks[i][j].stp_Note - 1];
                 row->sample = plugin->m_tune->ht_Tracks[i][j].stp_Instrument;
@@ -395,16 +364,15 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
         *position = 0;
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_MODVUMETER)
+    if (postype == FMOD_TIMEUNIT_MODVUMETER)
     {
-        unsigned char* vumeters = new unsigned char[plugin->info->numChannels];
+        const auto vumeters = new unsigned char[plugin->info->numChannels];
         hvl_GetChannelVolumes(plugin->m_tune, vumeters);
 
         plugin->info->modVUMeters = vumeters;
         return FMOD_OK;
     }
-    else
-    {
-        return FMOD_ERR_UNSUPPORTED;
-    }
+
+    return FMOD_ERR_UNSUPPORTED;
+
 }

@@ -2,6 +2,8 @@
 #define IGVOICE_H
 #include <vector>
 
+using namespace std;
+
 class BaseSample;
 class AmigaChannel;
 class IGBlock;
@@ -20,7 +22,7 @@ private:
     AmigaChannel* channel;
     BaseSample* sample;
     int state;
-    std::vector<int> track;
+    vector<int> track;
     int trackPos;
     int speed;
     int tick;

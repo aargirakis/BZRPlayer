@@ -3,6 +3,8 @@
 #include "BaseSample.h"
 #include <vector>
 
+using namespace std;
+
 class S1Sample : public BaseSample
 {
     friend class S1Player;
@@ -12,7 +14,7 @@ public:
 
 private:
     int waveform;
-    std::vector<int> arpeggio;
+    vector<int> arpeggio;
     int attackSpeed;
     int attackMax;
     int decaySpeed;

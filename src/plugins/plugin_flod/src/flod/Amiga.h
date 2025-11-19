@@ -3,6 +3,8 @@
 #include <vector>
 #include "AmigaFilter.h"
 
+using namespace std;
+
 class AmigaPlayer;
 class AmigaFilter;
 class AmigaChannel;
@@ -25,8 +27,8 @@ public:
     AmigaPlayer* player;
     AmigaFilter* filter;
 
-    std::vector<signed char> memory;
-    std::vector<AmigaChannel*> channels;
+    vector<signed char> memory;
+    vector<AmigaChannel*> channels;
     int samplesTick;
     int loopPtr;
     int loopLen;
@@ -41,7 +43,7 @@ public:
 private:
     double clock;
     double master;
-    std::vector<Sample*> m_buffer;
+    vector<Sample*> m_buffer;
     int m_complete;
     int samplesLeft;
     int remains;

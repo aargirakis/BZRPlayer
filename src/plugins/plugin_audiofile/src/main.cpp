@@ -1,8 +1,5 @@
-#include <audiofile.h>
-#include <iostream>
-#include <cstdio>
 #include <cstring>
-#include <unistd.h>
+#include <audiofile.h>
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
@@ -29,9 +26,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
     nullptr // Sound create callback (don't need it)
 };
-static int seek_to_time = -1;
 
-//CLogFile *LogFile;
 class pluginAudiofile
 {
     FMOD_CODEC_STATE* _codec;
@@ -39,7 +34,6 @@ class pluginAudiofile
 public:
     pluginAudiofile(FMOD_CODEC_STATE* codec)
     {
-        //LogFile = new CLogFile("audiofile.log");
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
@@ -48,11 +42,10 @@ public:
     {
         //delete some stuff
         afCloseFile(file);
-        unlink(tempFilename.c_str());
     }
 
     AFfilehandle file;
-    string tempFilename;
+    int seek_to_time = -1;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -75,46 +68,16 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static bool invalidFile = false;
-
-bool fmemopen(void* buf, size_t size, const char* mode, const char *filename)
-{
-    FILE* f = fopen(filename, "wb");
-    if (f == nullptr)
-        return NULL;
-
-    fwrite(buf, size, 1, f);
-    fclose(f);
-    return true;
-}
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    auto plugin = new pluginAudiofile(codec);
-    double rate;
-    int channels;
-    unsigned char* myBuffer;
-    unsigned int bytesread;
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    myBuffer = new unsigned char[filesize];
-    FMOD_RESULT result;
+    const auto plugin = new pluginAudiofile(codec);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
-    auto info = static_cast<Info *>(userexinfo->userdata);
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
-
-    plugin->tempFilename = info->tempPath + "/bzr_tempfile.tmp";
-    bool ok = fmemopen(myBuffer, filesize, "r", plugin->tempFilename.c_str());
-    delete[] myBuffer;
-    plugin->file = afOpenFile(plugin->tempFilename.c_str(), "r", nullptr);
-    cout << "trying to open file: " << plugin->tempFilename.c_str() << "\n";
+    plugin->file = afOpenFile(info->filename.c_str(), "r", nullptr);
 
     if (!plugin->file)
     {
-        cout << "failed open file: " << plugin->tempFilename.c_str() << "\n";
-        unlink(plugin->tempFilename.c_str());
-        invalidFile = true;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
@@ -152,30 +115,29 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         break;
     case AF_FILE_VOC:
         info->fileformat = "Creative Voice File";
+        delete plugin;
         return FMOD_ERR_FORMAT;
     case AF_FILE_SAMPLEVISION:
         info->fileformat = "SampleVision";
         break;
     default:
         //should not happen
-        info->fileformat = "Unknown Audio File Library";
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    channels = afGetChannels(plugin->file, AF_DEFAULT_TRACK);
-    rate = afGetRate(plugin->file, AF_DEFAULT_TRACK);
-    afSetVirtualSampleFormat(plugin->file, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
-
-    int frames = afGetFrameCount(plugin->file, AF_DEFAULT_TRACK);
+    const int channels = afGetChannels(plugin->file, AF_DEFAULT_TRACK);
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+
+    afSetVirtualSampleFormat(plugin->file, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, plugin->waveformat.format * 8);
+
     plugin->waveformat.channels = channels;
-    plugin->waveformat.frequency = rate;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * channels;
-    plugin->waveformat.lengthpcm = frames;
+    plugin->waveformat.frequency = static_cast<int>(afGetRate(plugin->file, AF_DEFAULT_TRACK));
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * channels;
+    plugin->waveformat.lengthpcm = static_cast<unsigned int>(afGetFrameCount(plugin->file, AF_DEFAULT_TRACK));
 
-
-    codec->waveformat = &(plugin->waveformat);
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
@@ -183,17 +145,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     info->pluginName = PLUGIN_audiofile_NAME;
     info->setSeekable(true);
 
-
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto plugin = static_cast<pluginAudiofile *>(codec->plugindata);
-    //	if(!invalidFile)
-    //	{
-    //		afCloseFile(plugin->file); //why does this crash...?
-    //	}
     delete static_cast<pluginAudiofile*>(codec->plugindata);
     return FMOD_OK;
 }
@@ -202,23 +158,20 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 {
     auto *plugin = static_cast<pluginAudiofile *>(codec->plugindata);
 
-    if (seek_to_time >= 0)
+    if (plugin->seek_to_time >= 0)
     {
-        afSeekFrame(plugin->file, AF_DEFAULT_TRACK, seek_to_time / 1000 * plugin->waveformat.frequency);
-        seek_to_time = -1;
+        afSeekFrame(plugin->file, AF_DEFAULT_TRACK, plugin->seek_to_time / 1000 * plugin->waveformat.frequency);
+        plugin->seek_to_time = -1;
     }
 
-    int frames = afReadFrames(plugin->file, AF_DEFAULT_TRACK, (signed short*)buffer, codec->waveformat->pcmblocksize);
-
-    *read = frames;
-    //*read=size;
-
+    *read = afReadFrames(plugin->file, AF_DEFAULT_TRACK, buffer, static_cast<int>(codec->waveformat->pcmblocksize));
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
                                      FMOD_TIMEUNIT postype)
 {
-    seek_to_time = position;
+    auto *plugin = static_cast<pluginAudiofile *>(codec->plugindata);
+    plugin->seek_to_time = static_cast<int>(position);
     return FMOD_OK;
 }

@@ -1,24 +1,17 @@
+#include <cstring>
+#include <format>
+#include <fstream>
+#include <iterator>
+#include <sstream>
+#include "uade/eagleplayer.h"
+#include "uade/uade.h"
 #include "BaseSample.h"
 #include "FileLoader.h"
-#include <cstring>
-#include <cstdio>
-#include <format>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iterator>
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <uade/eagleplayer.h>
-#include <uade/uade.h>
-#ifdef __cplusplus
-}
-#endif
+using namespace std;
 
 const string TYPE_PREFIX = "type: ";
 unsigned int getLengthFromDatabase(const char*, int, const char*, const char*);
@@ -28,7 +21,6 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -62,7 +54,7 @@ public:
     ~pluginUade()
     {
         //delete some stuff
-        delete myBuffer;
+        uade_cleanup_state(uadeState);
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -78,6 +70,7 @@ public:
     bool setPositionWithTimeunitSubSongHasBeenInvoked = false;
     unsigned int totalSkippedBytes = 0;
     bool isUadeSeekInvocationAllowed = false;
+    unsigned int length = -1;
 };
 
 #ifdef __cplusplus
@@ -96,32 +89,32 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     auto *plugin = new pluginUade(codec);
-    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     FMOD_CODEC_FILE_SIZE(codec, &plugin->filesize);
+
     if (plugin->filesize == 4294967295) //stream
     {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     auto* smallBuffer = new uint8_t[4];
     FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     FMOD_CODEC_FILE_READ(codec, smallBuffer, 4, nullptr);
-    if (((smallBuffer[0] == 'M' && smallBuffer[1] == 'T' && smallBuffer[2] == 'h' && smallBuffer[3] == 'd') ||
-            smallBuffer[0] == 'R' && smallBuffer[1] == 'I' && smallBuffer[2] == 'F' && smallBuffer[3] == 'F')
-        //it's a midi file
-        || (smallBuffer[0] == 'P' && smallBuffer[1] == 'S' && smallBuffer[2] == 'F') //it's a psf file
-    )
+
+    // skip midi, riff and psf
+    if (memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF", 4) == 0 ||
+        memcmp(smallBuffer, "PSF", 3) == 0)
     {
         delete[] smallBuffer;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     delete[] smallBuffer;
 
-    auto *info = static_cast<Info *>(userexinfo->userdata);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    //read config from disk
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/uade.cfg";
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
@@ -143,16 +136,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     string silence_timeout = "5";
     bool silence_timeout_enabled = true;
     plugin->uade_songlengths_enabled = true;
-    info->isContinuousPlaybackActive = false;
+    plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults)
     {
         string line;
         while (getline(ifs, line))
         {
-            int i = line.find_first_of("=");
-
-            if (i != -1)
+            if (int i = line.find_first_of("="); i != -1)
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
@@ -199,7 +190,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
                 else if (word == "panning")
                 {
                     int x = stoi(value);
-                    panning = std::format("{}.{}", x / 10, x % 10);
+                    panning = format("{}.{}", x / 10, x % 10);
                 }
                 else if (word == "silence_timeout")
                 {
@@ -218,7 +209,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
                 }
                 else if (word == "continuous_playback")
                 {
-                    info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
+                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
                 else if (word == "uade_songlengths_path")
                 {
@@ -246,7 +237,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.pcmblocksize = 2048 * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
-    codec->waveformat = &(plugin->waveformat);
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
@@ -269,7 +260,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     uade_config_set_option(uadeConfig, UC_NO_CONTENT_DB, nullptr);
     uade_config_set_option(uadeConfig, UC_ONE_SUBSONG, nullptr);
 
-    if (info->isContinuousPlaybackActive) {
+    if (plugin->info->isContinuousPlaybackActive) {
         uade_config_set_option(uadeConfig, UC_NO_EP_END, nullptr);
         uade_config_set_option(uadeConfig, UC_DISABLE_TIMEOUTS, nullptr);
         uade_config_set_option(uadeConfig, UC_TIMEOUT_VALUE, "-1");
@@ -316,6 +307,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     if (uade_play_from_buffer(plugin->info->filename.c_str(), plugin->myBuffer, plugin->filesize, plugin->currentSubsong,
                                   plugin->uadeState) <= 0) {
         cout << "Can not play " << plugin->info->filename << endl;
+
+        delete[] plugin->myBuffer;
         return FMOD_ERR_FORMAT;
     }
 
@@ -345,24 +338,23 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         "MugicianII"
         || plugin->info->fileformat == "RobHubbard" || plugin->info->fileformat == "RichardJoseph" || plugin->info->fileformat ==
         "SIDMon1.0" || plugin->info->fileformat == "SIDMon2.0"
-        || plugin->info->fileformat == "PaulShields"
-    )
+        || plugin->info->fileformat == "PaulShields")
     {
         //read samples
-        auto d = new char[plugin->filesize];
+        auto d = new uint8_t[plugin->filesize];
         FMOD_CODEC_FILE_SEEK(codec, 0, 0);
         FMOD_CODEC_FILE_READ(codec, d, plugin->filesize, nullptr);
 
         auto* fileLoader = new FileLoader();
 
-        AmigaPlayer* player = fileLoader->load((signed short*)d, plugin->filesize, plugin->info->filename.c_str());
+        AmigaPlayer* player = fileLoader->load(d, plugin->filesize, plugin->info->filename.c_str());
 
         delete fileLoader;
         delete[] d;
 
         if (player)
         {
-            std::vector<BaseSample*> samples;
+            vector<BaseSample*> samples;
             samples = player->getSamples();
             if (!samples.empty())
             {
@@ -396,13 +388,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto* plugin = static_cast<pluginUade*>(codec->plugindata);
-
-    if (plugin != nullptr) {
-        uade_cleanup_state(plugin->uadeState);
-    }
-
-    delete plugin;
+    delete static_cast<pluginUade*>(codec->plugindata);
     return FMOD_OK;
 }
 
@@ -428,7 +414,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 
     plugin->isUadeSeekInvocationAllowed = true;
 
-    ssize_t renderedBytes = uade_read(
+    const ssize_t renderedBytes = uade_read(
         buffer, plugin->waveformat.pcmblocksize * UADE_BYTES_PER_FRAME, plugin->uadeState);
 
     /* read variable must be set before checking notifications,
@@ -439,7 +425,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
      * otherwise, after a song end notification the audio bytes still left to play will include
      * (part of) looped track data, producing a final audio pop.
      */
-    *read = static_cast<unsigned int>(renderedBytes) / UADE_BYTES_PER_FRAME;
+    *read = static_cast<unsigned int>(renderedBytes / UADE_BYTES_PER_FRAME);
 
     uade_notification un = {};
     while (uade_read_notification(&un, plugin->uadeState)) {
@@ -457,6 +443,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
                 cout << "Unknown libuade notification" << endl;
                 break;
         }
+
         uade_cleanup_notification(&un);
     }
 
@@ -479,34 +466,35 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
     auto* plugin = static_cast<pluginUade*>(codec->plugindata);
+
     if (plugin->currentSubsong == -1)
     {
         plugin->currentSubsong = plugin->uadeSongInfo->subsongs.min;
     }
+
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {
         *length = 1 + (plugin->uadeSongInfo->subsongs.max - plugin->uadeSongInfo->subsongs.min);
         return FMOD_OK;
     }
 
-    int sub = plugin->currentSubsong;
-    if (plugin->uadeSongInfo->subsongs.min == 1)
-    {
-        sub = plugin->currentSubsong - 1;
+    if (!plugin->uade_songlengths_enabled) {
+        *length = -1;
+    } else {
+        if (plugin->length == -1) {
+            int sub = plugin->currentSubsong;
+
+            if (plugin->uadeSongInfo->subsongs.min == 1) {
+                sub = plugin->currentSubsong - 1;
+            }
+
+            plugin->length = getLengthFromDatabase(plugin->info->filename.c_str(), sub, plugin->uadeSongInfo->modulemd5,
+                                                   plugin->uade_songlengthspath.c_str());
+        }
+
+        *length = plugin->length;
     }
 
-    unsigned int songLength;
-    if (plugin->uade_songlengths_enabled)
-    {
-        songLength = getLengthFromDatabase(plugin->info->filename.c_str(), sub, plugin->uadeSongInfo->modulemd5,
-                                           plugin->uade_songlengthspath.c_str());
-    }
-    else
-    {
-        songLength = 0;
-    }
-
-    *length = songLength;
     return FMOD_OK;
 }
 
@@ -539,7 +527,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
          * and does not strictly depend on non-plugin audio code details
          */
         if (plugin->isUadeSeekInvocationAllowed) {
-            uade_seek(UADE_SEEK_SUBSONG_RELATIVE, static_cast<double>(position) / 1000, plugin->currentSubsong,
+            uade_seek(UADE_SEEK_SUBSONG_RELATIVE, position / 1000.0, plugin->currentSubsong,
                       plugin->uadeState);
         }
 
@@ -563,7 +551,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
             position = plugin->uadeSongInfo->subsongs.min + position;
         }
 
-        plugin->currentSubsong = position;
+        plugin->currentSubsong = static_cast<int>(position);
 
         uade_stop(plugin->uadeState);
         uade_play_from_buffer(plugin->info->filename.c_str(), plugin->myBuffer, plugin->filesize,
@@ -572,14 +560,13 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
 
         return FMOD_OK;
     }
-    return FMOD_OK;
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 unsigned int getLengthFromDatabase(const char* filename, int subsong, const char* md5, const char* database)
 {
     unsigned int length = 0;
-
-    //CLogFile::getInstance()->Print(LOGINFO,"MD5 for file: %s",hashStr.toStdString().c_str());
 
     string filenameFromDb = database;
 
@@ -588,42 +575,41 @@ unsigned int getLengthFromDatabase(const char* filename, int subsong, const char
     if (ifs.fail())
     {
         //The file could not be opened
-        cout << "Couldn't open UADE songlengths file: " << filenameFromDb << "\n";
+        cout << "Couldn't open UADE songlengths file: " << filenameFromDb << endl;
         return 0;
     }
 
     string line;
     while (getline(ifs, line))
     {
-        if (!line.substr(0, 32).compare(md5))
+        if (line.substr(0, 32) == md5)
         {
             //we found it
             int j = line.find_first_of("=");
             if (j == -1)
             {
-                cout << "Formatting error in uade songlengths file!\n";
+                cout << "Formatting error in uade songlengths file: " << filenameFromDb << endl;
                 return 0;
             }
+
             line = line.substr(j + 1);
             stringstream ss(line);
-            istream_iterator<std::string> begin(ss);
-            istream_iterator<std::string> end;
+            istream_iterator<string> begin(ss);
+            istream_iterator<string> end;
             vector vstrings(begin, end);
 
             if (subsong >= vstrings.size())
             {
-                cout << "Subsong length not found\n";
-                flush(cout);
+                cout << "Subsong length not found" << endl;
                 return 0;
             }
 
             line = vstrings.at(subsong);
-            //cout << "length (" << subsong << "): " << line << "\n";
-            //flush(cout);
+
             int i = line.find_first_of(":");
             if (i == -1)
             {
-                cout << "Formatting error in uade songlengths file!\n";
+                cout << "Formatting error in uade songlengths file: " << filenameFromDb << endl;
                 return 0;
             }
 
@@ -633,8 +619,7 @@ unsigned int getLengthFromDatabase(const char* filename, int subsong, const char
             if (msk != -1) //There are milliseconds
             {
                 ms = atoi(line.substr(msk + 1).c_str());
-                string str_ms = line.substr(msk + 1);
-                if (str_ms.size() == 2)
+                if (string str_ms = line.substr(msk + 1); str_ms.size() == 2)
                 {
                     ms *= 10;
                 }
@@ -654,7 +639,8 @@ unsigned int getLengthFromDatabase(const char* filename, int subsong, const char
 
     if (length == 0)
     {
-        cout << "Couldn't find song length for: " << filename << ". Hash <" << md5 << ">\n";
+        cout << "Couldn't find song length for: " << filename << " [Hash: " << md5 << "]" << endl;
     }
+
     return length;
 }

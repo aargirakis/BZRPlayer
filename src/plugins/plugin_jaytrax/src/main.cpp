@@ -1,12 +1,6 @@
 #include <cstring>
-#include <string>
-#include "fmod_errors.h"
-
-extern "C" {
 #include "jxs.h"
-#include "jaytrax.h"
-}
-
+#include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
 
@@ -74,25 +68,24 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    FMOD_RESULT result;
-    Info* info = static_cast<Info*>(userexinfo->userdata);
-
-    auto* plugin = new pluginJaytrax(codec);
-
     unsigned int bytesread;
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
+    auto* plugin = new pluginJaytrax(codec);
+    auto *info = static_cast<Info *>(userexinfo->userdata);
+
     plugin->myBuffer = new uint8_t[filesize];
 
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
 
-    bool isErr = jxsfile_readSongMem(plugin->myBuffer, filesize, &plugin->song) != 0;
+    const bool isErr = jxsfile_readSongMem(plugin->myBuffer, filesize, &plugin->song) != 0;
+
     delete[] plugin->myBuffer;
+
     if (isErr)
     {
         return FMOD_ERR_FORMAT;
@@ -106,7 +99,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
@@ -124,18 +117,20 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto* plugin = static_cast<pluginJaytrax*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginJaytrax*>(codec->plugindata);
+
 	if(plugin!=nullptr)
 	{
 		jaytrax_free(plugin->jay);
 	}
+
     delete plugin;
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto* plugin = static_cast<pluginJaytrax*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginJaytrax*>(codec->plugindata);
 
     jaytrax_renderChunk(plugin->jay, static_cast<int16_t *>(buffer), static_cast<int32_t>(size), plugin->waveformat.frequency);
 
@@ -156,9 +151,10 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     }
     if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        plugin->jay->subsongNr = position;
-        plugin->length = jaytrax_getLength(plugin->jay, position, 1, plugin->waveformat.frequency)
-                         / plugin->waveformat.frequency * 1000;
+        plugin->jay->subsongNr = static_cast<int32_t>(position);
+        plugin->length = static_cast<unsigned int>(
+            jaytrax_getLength(plugin->jay, position, 1, plugin->waveformat.frequency) /
+            static_cast<double>(plugin->waveformat.frequency) * 1000.0);
 
         jaytrax_changeSubsong(plugin->jay, position);
 
@@ -168,7 +164,8 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    auto* plugin = static_cast<pluginJaytrax*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginJaytrax*>(codec->plugindata);
+
     if (lengthtype == FMOD_TIMEUNIT_MS)
     {
         *length = -1;
@@ -181,5 +178,6 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     {
         *length = plugin->length;
     }
+
     return FMOD_OK;
 }

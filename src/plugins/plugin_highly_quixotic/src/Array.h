@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core.h>
+using namespace std;
 
 namespace core
 {
@@ -61,7 +61,7 @@ namespace core
         template <typename ReturnType = ItemType*>
         ReturnType Add(const ItemType& otherItem, size_t numOtherItems);
 
-        std::pair<ItemType*, bool> AddOnce(const ItemType& otherItem);
+        pair<ItemType*, bool> AddOnce(const ItemType& otherItem);
 
         ItemType* Insert(size_t index, const ItemType& otherItem);
         ItemType* Insert(size_t index, ItemType&& otherItem);
@@ -105,5 +105,3 @@ namespace core
     };
 }
 // namespace core
-
-#include "Array.inl.h"

@@ -1,19 +1,13 @@
-#include <cstring>
-#include <iostream>
 #include <sstream>
-#include <string>
-#include <attributes.h>
-#include <binary/container_factories.h>
-#include <core/data_location.h>
-#include <core/service.h>
-#include <error.h>
-#include <parameters/container.h>
-#include <module/holder.h>
-#include <module/track_information.h>
-#include <module/track_state.h>
-#include <module/players/pipeline.h>
-#include "info.h"
+#include "attributes.h"
+#include "binary/container_factories.h"
+#include "core/service.h"
+#include "error.h"
+#include "module/track_information.h"
+#include "module/track_state.h"
+#include "module/players/pipeline.h"
 #include "fmod_errors.h"
+#include "info.h"
 #include "plugins.h"
 
 using namespace std;
@@ -22,6 +16,7 @@ Binary::Container::Ptr CreateData(FMOD_CODEC_STATE *codec) {
     unsigned int filesize;
     unsigned int bytesread;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
+
     if (filesize == 4294967295) //stream
     {
         return nullptr;
@@ -35,15 +30,17 @@ Binary::Container::Ptr CreateData(FMOD_CODEC_STATE *codec) {
     }
 
     /* Allocate space for buffer. */
-    auto myBuffer = std::make_unique<Binary::Dump>(filesize);
+    auto myBuffer = make_unique<Binary::Dump>(filesize);
 
     //read whole file to memory
     result = FMOD_CODEC_FILE_READ(codec, myBuffer->data(), filesize, &bytesread);
+
     if (result != FMOD_OK) {
         return nullptr;
     }
+
     myBuffer->resize(bytesread);
-    return Binary::CreateContainer(std::move(myBuffer));
+    return Binary::CreateContainer(move(myBuffer));
 }
 
 const ZXTune::Service &GetService() {
@@ -62,7 +59,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_zxtune_NAME, // Name.
     0x00009000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL, // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
@@ -135,9 +132,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         const auto moduleInfo = openedModule->GetModuleInformation();
 
         const auto durationMs = moduleInfo->Duration().Get();
-        plugin->waveformat.lengthpcm = durationMs / 1000 * plugin->waveformat.frequency;
+        plugin->waveformat.lengthpcm = static_cast<unsigned int>(durationMs / 1000.0 * plugin->waveformat.frequency);
 
-        codec->waveformat = &(plugin->waveformat);
+        codec->waveformat = &plugin->waveformat;
         codec->numsubsounds = 0;
         /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
         codec->plugindata = plugin; /* user data value */
@@ -151,7 +148,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
         auto *info = static_cast<Info *>(userexinfo->userdata);
 
-        if (const auto trackState = std::dynamic_pointer_cast<const Module::TrackState>(plugin->renderer->GetState())) {
+        if (const auto trackState = dynamic_pointer_cast<const Module::TrackState>(plugin->renderer->GetState())) {
             // TODO gather at-the-moment-state data for visualizer and tracker view in the read callback
             // TODO along with: ATTR_CURRENT_POSITION, ATTR_CURRENT_PATTERN, ATTR_CURRENT_LINE
         }
@@ -166,7 +163,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         Parameters::FindValue(*moduleProperties, Module::ATTR_DATE, info->date);
         Parameters::FindValue(*moduleProperties, Module::ATTR_TITLE, info->title);
 
-        std::string type;
+        string type;
         Parameters::FindValue(*moduleProperties, Module::ATTR_TYPE, type);
 
         if (type == "MTC") {
@@ -188,23 +185,23 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
             Parameters::FindValue(*moduleProperties, Module::ATTR_COMPUTER, info->system);
         }
 
-        std::string samples;
+        string samples;
         Parameters::FindValue(*moduleProperties, Module::ATTR_STRINGS, samples);
 
         if (!samples.empty()) {
 
-            std::vector<std::string> samplesVector;
-            std::stringstream ss(samples);
-            std::string sampleName;
+            vector<string> samplesVector;
+            stringstream ss(samples);
+            string sampleName;
 
-            while (std::getline(ss, sampleName)) {
+            while (getline(ss, sampleName)) {
                 samplesVector.push_back(sampleName);
             }
 
             const auto samplesCount = static_cast<int>(samplesVector.size());
 
             info->numSamples = samplesCount;
-            info->samples = new std::string[samplesCount]; // Alloca array statico
+            info->samples = new string[samplesCount]; // Alloca array statico
 
             for (int i = 0; i < samplesCount; ++i) {
                 info->samples[i] = samplesVector[i];
@@ -242,10 +239,10 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
         }
     }
 
-    const auto chunkSamplesLeft = static_cast<unsigned int>(plugin->chunk.size()) - plugin->chunkSamplesBuffered;
-    const auto chunkSamplesToBuffer = std::min(chunkSamplesLeft, size);
+    const auto chunkSamplesLeft = static_cast<unsigned int>(plugin->chunk.size() - plugin->chunkSamplesBuffered);
+    const auto chunkSamplesToBuffer = min(chunkSamplesLeft, size);
 
-    std::memcpy(buffer, plugin->chunk.data() + plugin->chunkSamplesBuffered,
+    memcpy(buffer, plugin->chunk.data() + plugin->chunkSamplesBuffered,
                 chunkSamplesToBuffer * sizeof(Sound::Sample));
 
     plugin->chunkSamplesBuffered += chunkSamplesToBuffer;

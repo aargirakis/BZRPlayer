@@ -1,29 +1,16 @@
-#include "fmod_errors.h"
+#include <fstream>
+#include <cstring>
 #include <adplug.h>
 #include <emuopl.h>
 #include <kemuopl.h>
 #include <nemuopl.h>
 #include <wemuopl.h>
 #include <surroundopl.h>
-#include <fstream>
-#include <cstring>
+#include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
 
 using namespace std;
-
-//CLogFile *LogFile;
-
-FMOD_RESULT handle_error(const char* str)
-{
-    if (str)
-    {
-        //CLogFile::getInstance()->Print( "Error: %s\n", str );
-        return FMOD_ERR_INTERNAL;
-    }
-    else
-        return FMOD_OK;
-}
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
@@ -96,16 +83,13 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
     auto* plugin = new pluginAdplug(codec);
     plugin->info = static_cast<Info*>(userexinfo->userdata);
 
-    //read config from disk
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/adplug.cfg";
     ifstream ifs(filename.c_str());
-    string line;
 
     bool useDefaults = false;
     if (ifs.fail())
@@ -123,6 +107,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     if (!useDefaults)
     {
+        string line;
         while (getline(ifs, line))
         {
             int i = line.find_first_of('=');
@@ -131,15 +116,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("emulator") == 0)
+                if (word == "emulator")
                 {
                     emulator = atoi(value.c_str());
                 }
-                else if (word.compare("frequency") == 0)
+                else if (word == "frequency")
                 {
                     freq = atoi(value.c_str());
                 }
-                else if (word.compare("playback") == 0)
+                else if (word == "playback")
                 {
                     int playback = atoi(value.c_str());
                     if (playback == 0) // mono
@@ -158,10 +143,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
                         harmonic = true;
                     }
                 }
-                else if (word.compare("continuous_playback") == 0)
+                else if (word == "continuous_playback")
                 {
-                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value.compare(
-                        "true") == 0;
+                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
             }
         }
@@ -231,26 +215,19 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         break;
     }
 
-    if (!plugin->opl)
-    {
-        delete plugin->opl;
-        return FMOD_ERR_FORMAT;
-    }
-
     plugin->player = CAdPlug::factory(plugin->info->filename, plugin->opl);
     if (!plugin->player)
     {
-        delete plugin->player;
-        delete plugin->opl;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     plugin->waveformat.format = bits == 16? FMOD_SOUND_FORMAT_PCM16 : FMOD_SOUND_FORMAT_PCM8;
     plugin->waveformat.frequency = freq;
-    plugin->waveformat.pcmblocksize = (bits >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
-    codec->waveformat = &(plugin->waveformat);
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds.
     codec->plugindata = plugin; // user data value
@@ -259,9 +236,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->info->artist = plugin->player->getauthor();
     plugin->info->title = plugin->player->gettitle();
     plugin->info->comments = plugin->player->getdesc();
-    plugin->info->numInstruments = plugin->player->getinstruments();
-    plugin->info->numPatterns = plugin->player->getpatterns();
-    plugin->info->numOrders = plugin->player->getorders();
+    plugin->info->numInstruments = static_cast<int>(plugin->player->getinstruments());
+    plugin->info->numPatterns = static_cast<int>(plugin->player->getpatterns());
+    plugin->info->numOrders = static_cast<int>(plugin->player->getorders());
 
     plugin->info->instruments = new string[plugin->info->numInstruments];
     for (int j = 0; j < plugin->info->numInstruments; j++)
@@ -312,7 +289,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginAdplug*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
     {

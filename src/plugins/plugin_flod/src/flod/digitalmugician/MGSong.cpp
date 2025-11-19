@@ -1,9 +1,11 @@
 #include "MGSong.h"
 #include "BaseStep.h"
 
+using namespace std;
+
 MGSong::MGSong()
 {
-    tracks = std::vector<BaseStep*>();
+    tracks = vector<BaseStep*>();
     title = "";
     speed = 0;
     length = 0;

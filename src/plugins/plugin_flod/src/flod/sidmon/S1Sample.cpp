@@ -1,5 +1,7 @@
 #include "S1Sample.h"
 
+using namespace std;
+
 S1Sample::S1Sample()
 {
     waveform = 0;
@@ -13,5 +15,5 @@ S1Sample::S1Sample()
     phaseShift = 0;
     phaseSpeed = 0;
     pitchFall = 0;
-    arpeggio = std::vector<int>(16);
+    arpeggio = vector<int>(16);
 }

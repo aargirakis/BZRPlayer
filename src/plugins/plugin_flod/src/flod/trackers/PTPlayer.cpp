@@ -6,7 +6,7 @@
 #include <iostream>
 #include "MyEndian.h"
 #include <sstream>
-#include <string.h>
+#include <cstring>
 
 using namespace std;
 
@@ -83,10 +83,10 @@ const char* PTPlayer::NOTES[38] =
 
 PTPlayer::PTPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
-    trackPosBuffer = std::list<int>();
-    patternPosBuffer = std::list<int>();
-    track = std::vector<int>(128);
-    samples = std::vector<BaseSample*>(32);
+    trackPosBuffer = list<int>();
+    patternPosBuffer = list<int>();
+    track = vector<int>(128);
+    samples = vector<BaseSample*>(32);
 }
 
 PTPlayer::~PTPlayer()
@@ -197,9 +197,9 @@ int PTPlayer::load(void* data, unsigned long int _length)
         char id[5] = {stream[1080], stream[1081], stream[1082], stream[1083]};
         string str_id = id;
         unsigned found = str_id.find("CH");
-        if (found != std::string::npos)
+        if (found != string::npos)
         {
-            //std::string id = std::string(stream[1082]) + std::string(stream[1083]);
+            //string id = string(stream[1082]) + string(stream[1083]);
             int value = strtol(id,NULL, 10);
             if (value < 2 || value > 32) return -1;
             m_channels = value;
@@ -299,7 +299,7 @@ int PTPlayer::load(void* data, unsigned long int _length)
 
     position = 1084;
     higher += patternLen;
-    patterns = std::vector<BaseRow*>(higher);
+    patterns = vector<BaseRow*>(higher);
 
     for (int i = 0; i < higher; ++i)
     {
@@ -357,7 +357,7 @@ int PTPlayer::load(void* data, unsigned long int _length)
     sample->length = sample->repeat = 4;
     samples[0] = sample;
 
-    voices = std::vector<PTVoice*>(m_channels);
+    voices = vector<PTVoice*>(m_channels);
     voices[0] = new PTVoice(0);
 
     for (int i = 1; i < m_channels; ++i)
@@ -773,7 +773,7 @@ void PTPlayer::fx()
             voice->tremoloPos = (voice->tremoloPos + value) & 255;
             break;
         case 8: //set panning
-            std::cout << "Fx Set Panning\n";
+            cout << "Fx Set Panning\n";
             break;
         case 10: //volume slide
             chan->setPeriod(voice->period);
@@ -1016,26 +1016,26 @@ void PTPlayer::printData()
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        PTRow* row= patterns[i];
-    //        std::cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << " step: " << row->step << "\n";
+    //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << (int)row->param << " effect: " << row->effect << " step: " << row->step << "\n";
     //    }
     //    for(unsigned int i = 0; i < samples.size(); i++)
     //    {
     //        PTSample* sample = samples[i];
     //        if(sample)
     //        {
-    //            std::cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << " finetune: " << sample->finetune << " realLen: " << sample->realLen << "\n";
+    //            cout << "Sample [" << i << "] length: " << sample->length << " loop: " << sample->loop << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pointer: " << sample->pointer << " repeat: " << sample->repeat<< " volume: " << (int)sample->volume << " finetune: " << sample->finetune << " realLen: " << sample->realLen << "\n";
     //        }
     //    }
 
     //    for(unsigned int i = 0; i < track.size(); i++)
     //    {
-    //        std::cout << "Track [" << i << "]"<< track[i] << "\n";
+    //        cout << "Track [" << i << "]"<< track[i] << "\n";
     //    }
 }
 
-std::vector<BaseSample*> PTPlayer::getSamples()
+vector<BaseSample*> PTPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size() - 1);
+    vector<BaseSample*> samp(samples.size() - 1);
     for (int i = 1; i < samples.size(); i++)
     {
         samp[i - 1] = samples[i];
@@ -1047,7 +1047,7 @@ std::vector<BaseSample*> PTPlayer::getSamples()
     return samp;
 }
 
-bool PTPlayer::getTitle(std::string& title)
+bool PTPlayer::getTitle(string& title)
 {
     title = m_title;
     return true;
@@ -1063,9 +1063,9 @@ unsigned int PTPlayer::getCurrentPattern()
     return patternPosBuffer.front();
 }
 
-void PTPlayer::getModRows(std::vector<BaseRow*>& vect)
+void PTPlayer::getModRows(vector<BaseRow*>& vect)
 {
-    std::vector<BaseRow*> patts(patterns.size());
+    vector<BaseRow*> patts(patterns.size());
     for (int i = 0; i < patterns.size(); i++)
     {
         patts[i] = dynamic_cast<BaseRow*>(patterns[i]);

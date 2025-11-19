@@ -4,6 +4,8 @@
 #include "AmigaPlayer.h"
 #include "Amiga.h"
 
+using namespace std;
+
 class BaseRow;
 class S1Sample;
 class S1Voice;
@@ -17,12 +19,12 @@ public:
     int load(void* data, unsigned long int _length);
 
 private:
-    std::vector<int> tracksPtr;
-    std::vector<BaseStep*> tracks;
-    std::vector<int> patternsPtr;
-    std::vector<BaseRow*> patterns;
-    std::vector<S1Sample*> samples;
-    std::vector<int> waveLists;
+    vector<int> tracksPtr;
+    vector<BaseStep*> tracks;
+    vector<int> patternsPtr;
+    vector<BaseRow*> patterns;
+    vector<S1Sample*> samples;
+    vector<int> waveLists;
     int speedDef;
     int trackLen;
     int patternDef;
@@ -36,7 +38,7 @@ private:
     int mix2Source2;
     int doFilter;
     int doReset;
-    std::vector<S1Voice*> voices;
+    vector<S1Voice*> voices;
     int trackPos;
     int trackEnd;
     int patternPos;
@@ -67,7 +69,7 @@ private:
 
     void process();
     void initialize();
-    std::vector<BaseSample*> getSamples();
+    vector<BaseSample*> getSamples();
     void printData();
 };
 

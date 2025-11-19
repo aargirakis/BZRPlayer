@@ -8,8 +8,6 @@
 #ifdef WIN32
 #include <windows.h>
 #else
-#include <cstdint>
-#include <iostream>
 #include <dirent.h>
 
 typedef int64_t __int64;
@@ -32,7 +30,7 @@ int MulDiv(int number, int numerator, int denominator) {
 	long long ret = number;
 	ret *= numerator;
 	ret /= denominator;
-	return (int) ret;
+	return static_cast<int>(ret);
 }
 
 bool caseInsensitiveCompare(const std::string &a, const std::string &b) {
@@ -67,8 +65,8 @@ std::string findFileCaseInsensitive(const std::string &filename, const std::stri
 // Convert high bytes and low bytes of MSW and LSW to 32-bit word.
 // Used to read 32-bit words in little-endian order.
 inline uint32_t readEndian(uint8_t hihi, uint8_t hilo, uint8_t hi, uint8_t lo) {
-	return (((uint32_t) hihi << 24) + ((uint32_t) hilo << 16) +
-	        ((uint32_t) hi << 8) + (uint32_t) lo);
+	return (static_cast<uint32_t>(hihi) << 24) + (static_cast<uint32_t>(hilo) << 16) +
+	       (static_cast<uint32_t>(hi) << 8) + static_cast<uint32_t>(lo);
 }
 
 using namespace std;
@@ -78,15 +76,15 @@ using namespace std;
 
 #define scale(a, b, c) MulDiv( a, b, c )
 
-static _inline void fsin ( long * a )
+static void fsin ( long * a )
 {
-	const float oneshr10 = 1.f / ( float ) ( 1 << 10 );
-	const float oneshl14 = 1.f * ( float ) ( 1 << 14 );
+	constexpr float oneshr10 = 1.f / static_cast<float>(1 << 10);
+	constexpr float oneshl14 = 1.f * static_cast<float>(1 << 14);
 
-	*a = ( long ) ( sin( ( float ) *a * M_PI * oneshr10 ) * oneshl14 );
+	*a = static_cast<long>(sin(static_cast<float>(*a) * M_PI * oneshr10) * oneshl14);
 }
 
-static _inline void calcvolookupmono ( long * t, long a, long b )
+static void calcvolookupmono ( long * t, long a, const long b )
 {
 	for ( unsigned i = 0; i < 256; i++ )
 	{
@@ -106,31 +104,31 @@ static _inline void calcvolookupstereo ( long * t, long a, long b, long c, long 
 	}
 }
 
-static _inline long mulscale16 ( long a, long d )
+static long mulscale16 ( long a, long d )
 {
-	return ( long ) ( ( ( __int64 ) a * ( __int64 ) d ) >> 16 );
+	return static_cast<long long>(a) * static_cast<long long>(d) >> 16;
 }
 
-static _inline long mulscale24 ( long a, long d )
+static long mulscale24 ( long a, long d )
 {
-	return ( long ) ( ( ( __int64 ) a * ( __int64 ) d ) >> 24 );
+	return static_cast<long long>(a) * static_cast<long long>(d) >> 24;
 }
 
-static _inline long mulscale30 ( long a, long d )
+static long mulscale30 ( long a, long d )
 {
-	return ( long ) ( ( ( __int64 ) a * ( __int64 ) d ) >> 30 );
+	return static_cast<long long>(a) * static_cast<long long>(d) >> 30;
 }
 
-static _inline void clearbuf (void *d, long c, long a)
+static void clearbuf (void *d, long c, long a)
 {
-	unsigned long * dl = ( unsigned long * ) d;
+	auto * dl = static_cast<unsigned long *>(d);
 	for ( unsigned i = 0; i < c; i++ ) *dl++ = a;
 }
 
-static _inline void copybuf (void *s, void *d, long c)
+static void copybuf (void *s, void *d, long c)
 {
-	unsigned long * sl = ( unsigned long * ) s;
-	unsigned long * dl = ( unsigned long * ) d;
+	auto const * sl = static_cast<unsigned long *>(s);
+	auto * dl = static_cast<unsigned long *>(d);
 	for ( unsigned i = 0; i < c; i++ ) *dl++ = *sl++;
 }
 
@@ -148,7 +146,7 @@ static void bound2char( unsigned count, long * in, unsigned char * out )
 
 static void bound2short( unsigned count, long * in, unsigned char * out )
 {
-	signed short * outs = ( signed short * ) out;
+	auto * outs = reinterpret_cast<signed short *>(out);
 	for ( unsigned i = 0, j = count * 2; i < j; i++ )
 	{
 		long sample = *in;
@@ -159,19 +157,19 @@ static void bound2short( unsigned count, long * in, unsigned char * out )
 	}
 }
 
-long kdmeng::monohicomb( long * b, long c, long d, long si, long * di )
+long kdmeng::monohicomb(const long * b, long c, long d, const long si, long * di )
 {
 	LARGE_INTEGER dasinc, sample_offset, interp;
 
 	if ( si >= 0 ) return 0;
 
-	dasinc.QuadPart = ( ( __int64 ) d ) << ( 32 - 12 );
+	dasinc.QuadPart = static_cast<long long>(d) << 32 - 12;
 
-	sample_offset.QuadPart = ( ( __int64 ) si ) << ( 32 - 12 );
+	sample_offset.QuadPart = static_cast<long long>(si) << 32 - 12;
 
 	while ( c )
 	{
-		unsigned short sample = * ( unsigned short * ) ( kdmasm4 + sample_offset.HighPart );
+		const unsigned short sample = * reinterpret_cast<unsigned short *>(kdmasm4 + sample_offset.HighPart);
 		interp.QuadPart = sample_offset.LowPart;
 		interp.QuadPart *= ( sample >> 8 ) - ( sample & 0xFF );
 		d = interp.HighPart + sample & 0xFF;
@@ -181,7 +179,7 @@ long kdmeng::monohicomb( long * b, long c, long d, long si, long * di )
 		{
 			if ( !kdmasm1 ) break;
 			kdmasm4 = kdmasm2;
-			sample_offset.QuadPart -= ( ( __int64 ) kdmasm3 ) << ( 32 - 12 );
+			sample_offset.QuadPart -= static_cast<long long>(kdmasm3) << 32 - 12;
 		}
 		c--;
 	}
@@ -189,19 +187,19 @@ long kdmeng::monohicomb( long * b, long c, long d, long si, long * di )
 	return sample_offset.QuadPart >> ( 32 - 12 );
 }
 
-long kdmeng::stereohicomb( long * b, long c, long d, long si, long * di )
+long kdmeng::stereohicomb(const long * b, long c, long d, const long si, long * di )
 {
 	LARGE_INTEGER dasinc, sample_offset, interp;
 
 	if ( si >= 0 ) return 0;
 
-	dasinc.QuadPart = ( ( __int64 ) d ) << ( 32 - 12 );
+	dasinc.QuadPart = static_cast<long long>(d) << 32 - 12;
 
-	sample_offset.QuadPart = ( ( __int64 ) si ) << ( 32 - 12 );
+	sample_offset.QuadPart = static_cast<long long>(si) << 32 - 12;
 
 	while ( c )
 	{
-		unsigned short sample = * ( unsigned short * ) ( kdmasm4 + sample_offset.HighPart );
+		const unsigned short sample = * reinterpret_cast<unsigned short *>(kdmasm4 + sample_offset.HighPart);
 		interp.QuadPart = sample_offset.LowPart;
 		interp.QuadPart *= ( sample >> 8 ) - ( sample & 0xFF );
 		d = interp.HighPart + ( sample & 0xFF );
@@ -212,7 +210,7 @@ long kdmeng::stereohicomb( long * b, long c, long d, long si, long * di )
 		{
 			if ( !kdmasm1 ) break;
 			kdmasm4 = kdmasm2;
-			sample_offset.QuadPart -= ( ( __int64 ) kdmasm3 ) << ( 32 - 12 );
+			sample_offset.QuadPart -= static_cast<long long>(kdmasm3) << 32 - 12;
 		}
 		c--;
 	}
@@ -231,7 +229,7 @@ void kdmeng::musicon()
 void kdmeng::musicoff()
 {
 	musicstatus = 0;
-	for(unsigned i = 0; i < NUMCHANNELS; i++ ) splc [i] = 0;
+	for(long & i : splc) i = 0;
 	musicrepeat = 0;
 	timecount = 0;
 	notecnt = 0;
@@ -239,9 +237,7 @@ void kdmeng::musicoff()
 
 long kdmeng::loadwaves ( const char * refdir)
 {
-    unsigned i, j, dawaversionum;
-    unsigned int p = 0;
-    if (snd) return(1);
+	if (snd) return 1;
 
     string filename(refdir);
 
@@ -256,11 +252,14 @@ long kdmeng::loadwaves ( const char * refdir)
 #endif
 
     ifstream file (filename.c_str(), ios::in | ios::binary | ios::ate);
-    ifstream::pos_type fileSize;
     char* d;
     if(file.is_open())
     {
-        fileSize = file.tellg();
+	    unsigned int p = 0;
+	    unsigned i;
+	    unsigned dawaversionum;
+	    ifstream::pos_type fileSize;
+	    fileSize = file.tellg();
         d = new char[fileSize];
         file.seekg(0, ios::beg);
         if(!file.read(d, fileSize))
@@ -285,24 +284,24 @@ long kdmeng::loadwaves ( const char * refdir)
             repstart[i]=readEndian(d[p+3],d[p+2],d[p+1],d[p]);p+=4;
             repleng[i]=readEndian(d[p+3],d[p+2],d[p+1],d[p]);p+=4;
             finetune[i]=readEndian(d[p+3],d[p+2],d[p+1],d[p]);p+=4;
-            wavoffs[i] = ( unsigned char * ) totsndbytes;
+            wavoffs[i] = reinterpret_cast<unsigned char *>(totsndbytes);
             totsndbytes += wavleng[i];
         }
 
         for( i = numwaves; i < MAXWAVES; i++ )
         {
             memset( instname[i], 0, sizeof( instname[i] ) );
-            wavoffs[i] = ( unsigned char * ) totsndbytes;
+            wavoffs[i] = reinterpret_cast<unsigned char *>(totsndbytes);
             wavleng[i] = 0L;
             repstart[i] = 0L;
             repleng[i] = 0L;
             finetune[i] = 0L;
         }
 
-        if (!(snd = (char *)malloc(totsndbytes+2))) return(0);
-        for(int i=0;i<MAXWAVES;i++)
+        if (!(snd = static_cast<char *>(malloc(totsndbytes + 2)))) return 0;
+        for(auto & wavoff : wavoffs)
         {
-            wavoffs[i] += ((int64_t)snd);
+            wavoff += reinterpret_cast<int64_t>(snd);
         }
         for(int i=0;i<totsndbytes;i++)
         {
@@ -321,10 +320,10 @@ long kdmeng::loadwaves ( const char * refdir)
 kdmeng::kdmeng( unsigned samplerate, unsigned numspeakers, unsigned bytespersample )
 	: kdmsamplerate( samplerate ), kdmnumspeakers( numspeakers ), kdmbytespersample( bytespersample )
 {
-    snd = 0;
-	long i, j, k;
+    snd = nullptr;
+	long i, j;
 
-	j = ( ( ( 11025L * 2093 ) / kdmsamplerate ) << 13 );
+	j = ( 11025L * 2093 / kdmsamplerate ) << 13;
 	for( i = 1; i < 76; i++ )
 	{
 		frqtable[i] = j;
@@ -339,7 +338,7 @@ kdmeng::kdmeng( unsigned samplerate, unsigned numspeakers, unsigned bytespersamp
 	{
 		j = 1536 - ( i << 10 ) / ( kdmsamplerate >> 11 );
 		fsin( &j );
-		ramplookup[ i ] = ( ( 16384 - j ) << 1 );
+		ramplookup[ i ] = ( 16384 - j ) << 1;
 	}
 
 	for( i = 0; i < 256; i++ )
@@ -373,12 +372,10 @@ kdmeng::~kdmeng()
 }
 void kdmeng::startwave( long wavnum, long dafreq, long davolume1, long davolume2, long dafrqeff, long davoleff, long dapaneff )
 {
-	long i, j, chanum;
-
 	if ( ( davolume1 | davolume2 ) == 0 ) return;
 
-	chanum = 0;
-	for( i = NUMCHANNELS - 1; i > 0; i-- )
+	long chanum = 0;
+	for( long i = NUMCHANNELS - 1; i > 0; i-- )
 		if ( splc[ i ] > splc[ chanum ] )
 			chanum = i;
 
@@ -406,7 +403,7 @@ long kdmeng::load(void* data, unsigned long int length, const char* filepath)
     if ( !snd ) return 0;
 
     unsigned int p = 0;
-    unsigned char *d = static_cast<unsigned char*>(data);
+    auto const *d = static_cast<unsigned char*>(data);
 
     musicoff();
 
@@ -483,24 +480,22 @@ long kdmeng::load(void* data, unsigned long int length, const char* filepath)
     }
     loopcnt = 0;
 
-    return ( scale( nttime[ numnotes - 1 ] - nttime[ 0 ], 1000, 120 ) );
+    return scale(nttime[ numnotes - 1 ] - nttime[ 0 ], 1000, 120);
 }
 
 long kdmeng::rendersound( void * dasnd, long numbytes)
 {
-	long i, j, k, voloffs1, voloffs2, *voloffs3, *stempptr;
-	long daswave, dasinc, dacnt, bytespertic, numsamplestoprocess;
-	unsigned char *sndptr;
+	long i, j, k;
 
-	sndptr = ( unsigned char * ) dasnd;
+	auto *sndptr = static_cast<unsigned char *>(dasnd);
 
-	numsamplestoprocess = ( numbytes >> ( kdmnumspeakers + kdmbytespersample - 2 ) );
-	bytespertic = ( kdmsamplerate / 120 );
-	for( dacnt = 0; dacnt < numsamplestoprocess; dacnt += bytespertic )
+	long numsamplestoprocess = (numbytes >> (kdmnumspeakers + kdmbytespersample - 2));
+	long bytespertic = kdmsamplerate / 120;
+	for( long dacnt = 0; dacnt < numsamplestoprocess; dacnt += bytespertic )
 	{
 		if ( musicstatus > 0 )    //Gets here 120 times/second
 		{
-			while ( ( notecnt < numnotes ) && ( timecount >= nttime[ notecnt ] ) )
+			while ( ( notecnt < numnotes ) && timecount >= nttime[ notecnt ] )
 			{
 				j = trinst[ nttrack[ notecnt ] ];
 				k = mulscale24( frqtable[ ntfreq[ notecnt ] ], finetune[ j ] + 748 );
@@ -509,9 +504,8 @@ long kdmeng::rendersound( void * dasnd, long numbytes)
 				{
 					for( i = NUMCHANNELS - 1 ; i >= 0; i-- )
 						if ( splc[ i ] < 0 )
-							if ( swavenum[ i ] == j )
-								if ( sinc[ i ] == k )
-									splc[ i ] = 0;
+							if ( swavenum[ i ] == j && sinc[ i ] == k )
+								splc[ i ] = 0;
 				}
 				else                        //Note on
 					startwave( j, k, ntvol1[ notecnt ], ntvol2[ notecnt ], ntfrqeff[ notecnt ], ntvoleff[ notecnt ], ntpaneff[ notecnt ] );
@@ -531,17 +525,17 @@ long kdmeng::rendersound( void * dasnd, long numbytes)
 		{
 			if ( splc[ i ] >= 0 ) continue;
 
-			dasinc = sinc[ i ];
+			long dasinc = sinc[i];
 
 			if ( frqeff[ i ] != 0 )
 			{
 				dasinc = mulscale16( dasinc, eff[ frqeff[ i ] - 1 ][ frqoff[ i ] ] );
 				frqoff[ i ]++; if ( frqoff[ i ] >= 256 ) frqeff[ i ] = 0;
 			}
-			if ( ( voleff[ i ] ) || ( paneff[ i ] ) )
+			if ( voleff[ i ] || ( paneff[ i ] ) )
 			{
-				voloffs1 = svol1[ i ];
-				voloffs2 = svol2[ i ];
+				long voloffs1 = svol1[i];
+				long voloffs2 = svol2[i];
 				if ( voleff[ i ] )
 				{
 					voloffs1 = mulscale16( voloffs1, eff[ voleff[ i ] - 1 ][ voloff[ i ] ] );
@@ -563,12 +557,12 @@ long kdmeng::rendersound( void * dasnd, long numbytes)
 				}
 			}
 
-			daswave = swavenum[ i ];
-			voloffs3 = &volookup[ i << 9 ];
+			const long daswave = swavenum[i];
+			const long *voloffs3 = &volookup[i << 9];
 
 			kdmasm1 = repleng[ daswave ];
 			kdmasm2 = wavoffs[ daswave ] + repstart[ daswave ] + repleng[ daswave ];
-			kdmasm3 = ( repleng[ daswave ] << 12 ); //repsplcoff
+			kdmasm3 = repleng[ daswave ] << 12; //repsplcoff
 			kdmasm4 = soff[ i ];
 
 			/* TODO:
@@ -627,7 +621,7 @@ long kdmeng::rendersound( void * dasnd, long numbytes)
 			else bound2short( bytespertic, stemp, sndptr + ( dacnt << 2 ) );
 		}
 	}
-	return(loopcnt);
+	return loopcnt;
 }
 
 void kdmeng::seek( long seektoms )
@@ -644,43 +638,34 @@ void kdmeng::seek( long seektoms )
 
 	timecount = nttime[ notecnt ]; loopcnt = 0;
 }
-void kdmeng::getInstname(unsigned int idx,char* buff)
-{
+void kdmeng::getInstname(unsigned int idx,char* buff) const {
     char sztmp[17] = "";
     memcpy(sztmp, instname[idx],16);
     sztmp[16]=0;
     if (buff) strcpy(buff, sztmp);
 }
-unsigned kdmeng::getInstsize(unsigned int idx)
-{
+unsigned kdmeng::getInstsize(unsigned int idx) const {
     return wavleng[idx];
 }
-unsigned kdmeng::getInstrepstart(unsigned int idx)
-{
+unsigned kdmeng::getInstrepstart(unsigned int idx) const {
     return repstart[idx];
 }
 
-unsigned kdmeng::getInstreplength(unsigned int idx)
-{
+unsigned kdmeng::getInstreplength(unsigned int idx) const {
     return repleng[idx];
 }
-int kdmeng::getInstfinetune(unsigned int idx)
-{
+int kdmeng::getInstfinetune(unsigned int idx) const {
     return finetune[idx];
 }
-char kdmeng::getTrackInstrument(unsigned int idx)
-{
+char kdmeng::getTrackInstrument(unsigned int idx) const {
     return trinst[idx];
 }
-char kdmeng::getTrackQuantize(unsigned int idx)
-{
+char kdmeng::getTrackQuantize(unsigned int idx) const {
     return trquant[idx];
 }
-unsigned char kdmeng::getTrackVolume1(unsigned int idx)
-{
+unsigned char kdmeng::getTrackVolume1(unsigned int idx) const {
     return trvol1[idx];
 }
-unsigned char kdmeng::getTrackVolume2(unsigned int idx)
-{
+unsigned char kdmeng::getTrackVolume2(unsigned int idx) const {
     return trvol2[idx];
 }

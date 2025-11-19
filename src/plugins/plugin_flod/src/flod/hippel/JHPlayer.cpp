@@ -3,8 +3,9 @@
 #include "JHSong.h"
 #include "AmigaChannel.h"
 #include "BaseSample.h"
-#include <iostream>
 #include "MyEndian.h"
+
+using namespace std;
 
 const int JHPlayer::PERIODS[84] = {
     1712, 1616, 1524, 1440, 1356, 1280, 1208, 1140, 1076, 1016,
@@ -21,7 +22,7 @@ const int JHPlayer::PERIODS[84] = {
 
 JHPlayer::JHPlayer(Amiga* amiga): AmigaPlayer(amiga)
 {
-    voices = std::vector<JHVoice*>(4);
+    voices = vector<JHVoice*>(4);
     voices[0] = new JHVoice(0);
     voices[0]->next = voices[1] = new JHVoice(1);
     voices[1]->next = voices[2] = new JHVoice(2);
@@ -1224,9 +1225,9 @@ void JHPlayer::selectSong(unsigned char subsong)
     m_songNumber = subsong;
 }
 
-std::vector<BaseSample*> JHPlayer::getSamples()
+vector<BaseSample*> JHPlayer::getSamples()
 {
-    std::vector<BaseSample*> samp(samples.size());
+    vector<BaseSample*> samp(samples.size());
     for (int i = 0; i < samples.size(); i++)
     {
         samp[i] = samples[i];

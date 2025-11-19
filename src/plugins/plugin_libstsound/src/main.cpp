@@ -1,6 +1,5 @@
-#include "StSoundLibrary.h"
 #include <cstring>
-#include <iostream>
+#include "StSoundLibrary.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
@@ -9,7 +8,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -50,7 +48,7 @@ public:
 
     YMMUSIC* pMusic;
     FMOD_CODEC_WAVEFORMAT waveformat;
-    signed char* myBuffer;
+    uint8_t* myBuffer;
 };
 
 #ifdef __cplusplus
@@ -66,75 +64,61 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    FMOD_RESULT result;
-    auto* plugin = new pluginLibstsound(codec);
-    Info* info = static_cast<Info*>(userexinfo->userdata);
-    plugin->pMusic = ymMusicCreate();
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    unsigned int bytesread;
     if (filesize == 4294967295) //stream
     {
         return FMOD_ERR_FORMAT;
     }
-    plugin->myBuffer = new signed char[filesize];
 
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    auto* plugin = new pluginLibstsound(codec);
+
+    plugin->myBuffer = new uint8_t[filesize];
+
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    unsigned int bytesread;
     result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
 
-    if (!ymMusicLoadMemory(plugin->pMusic, static_cast<signed char*>(plugin->myBuffer), filesize))
+    plugin->pMusic = ymMusicCreate();
+
+    if (!ymMusicLoadMemory(plugin->pMusic, plugin->myBuffer, filesize))
     {
-        ymMusicDestroy(plugin->pMusic);
-        delete plugin->myBuffer;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
-    cout << "we got ym!\n";
-    flush(cout);
+
+    ymMusicSetLoopMode(plugin->pMusic, YMTRUE);
 
     ymMusicInfo_t yminfo;
     ymMusicGetInfo(plugin->pMusic, &yminfo);
 
-
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = 2;
+    plugin->waveformat.channels = string(yminfo.pSongType) == "MIX1" ? 1 : 2;
     plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = -1;
-    if (yminfo.musicTimeInMs > 0)
-    {
-        plugin->waveformat.lengthpcm = yminfo.musicTimeInMs / 1000 * plugin->waveformat.frequency;
-    }
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = yminfo.musicTimeInMs > 0
+                                       ? static_cast<unsigned int>(
+                                           yminfo.musicTimeInMs / 1000.0 * plugin->waveformat.frequency)
+                                       : -1;
 
-
-    codec->waveformat = &(plugin->waveformat);
+    codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    ymMusicSetLoopMode(plugin->pMusic,YMTRUE);
-
+    const auto info = static_cast<Info*>(userexinfo->userdata);
 
     info->artist = yminfo.pSongAuthor;
     info->title = yminfo.pSongName;
     info->comments = yminfo.pSongComment;
     info->songPlayer = yminfo.pSongPlayer;
-    info->songType = yminfo.pSongType;
     info->comments = yminfo.pSongComment;
     info->numSamples = 0;
     info->plugin = PLUGIN_libstsound;
     info->pluginName = PLUGIN_libstsound_NAME;
-
-
-    plugin->waveformat.channels = 2;
-    if (info->songType == "MIX1")
-    {
-        plugin->waveformat.channels = 1;
-    }
-
     info->fileformat = yminfo.pSongType;
     info->setSeekable(false);
     return FMOD_OK;
@@ -142,17 +126,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto plugin = static_cast<pluginLibstsound*>(codec->plugindata);
-    delete plugin;
+    delete static_cast<pluginLibstsound*>(codec->plugindata);
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
-    auto* plugin = static_cast<pluginLibstsound*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginLibstsound*>(codec->plugindata);
 
-    int nbSample = size;
-    ymMusicCompute(plugin->pMusic, static_cast<ymsample*>(buffer), nbSample);
+    ymMusicCompute(plugin->pMusic, static_cast<ymsample*>(buffer), size);
     *read = size;
 
     return FMOD_OK;
@@ -160,15 +142,14 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
 {
-    auto* plugin = static_cast<pluginLibstsound*>(codec->plugindata);
+    const auto* plugin = static_cast<pluginLibstsound*>(codec->plugindata);
+
     if (postype == FMOD_TIMEUNIT_MS)
     {
         ymMusicStop(plugin->pMusic);
         ymMusicPlay(plugin->pMusic);
+        return FMOD_OK;
     }
-    else
-    {
-        return FMOD_ERR_UNSUPPORTED;
-    }
-    return FMOD_OK;
+
+    return FMOD_ERR_UNSUPPORTED;
 }

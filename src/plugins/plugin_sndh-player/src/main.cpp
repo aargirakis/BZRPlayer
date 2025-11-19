@@ -1,11 +1,10 @@
-#include <cstdio>
 #include <cstring>
 #include <fstream>
-#include <string>
 #include <queue>
+#include "SndhFile.h"
+#include "timedb.h"
 #include "fmod_errors.h"
 #include "info.h"
-#include "SndhFile.h"
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
@@ -13,7 +12,6 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -21,15 +19,14 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_sndh_player_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_WAVEFORM,
-    // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
     &getLength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setPosition, // Setposition callback.
-    &getPosition,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
     nullptr // Sound create callback (don't need it)
 };
@@ -51,70 +48,38 @@ public:
         //delete some stuff
     }
 
-
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info* info;
     SndhFile* sndh;
     queue<uint32_t*> oscBuffer;
-    unsigned int m_subsongIndex = 0;
+    int m_subsongIndex = 0;
     uint32_t m_hash = 0;
 
-    int32_t GetTickCountFromSc68() const
-    {
-#define HBIT 32                         /* # of bit for hash     */
-#define TBIT 6                          /* # of bit for track    */
-#define WBIT 6                          /* # of bit for hardware */
-#define FBIT (64-HBIT-TBIT-WBIT)        /* # of bit for frames   */
-#define HFIX (32-HBIT)
-
-#define TIMEDB_ENTRY(HASH,TRACK,FRAMES,FLAGS) \
-                { 0x##HASH>>HFIX, TRACK-1, FLAGS, FRAMES }
-#define E_EMPTY { 0,0,0,0 }
-
-        typedef struct
-        {
-            unsigned int hash : HBIT; /* hash code              */
-            unsigned int track : TBIT; /* track number (0-based) */
-            unsigned int flags : WBIT; /* see enum               */
-            unsigned int frames : FBIT; /* length in frames       */
-        } dbentry_t;
-
-#define STE 0
-#define YM  0
-#define TA  0
-#define TB  0
-#define TC  0
-#define TD  0
-#define NA  0
-
-        static dbentry_t s_db[] = {
-#           include "timedb.inc.h"
-        };
+    int32_t GetTickCountFromSc68() const {
 
         dbentry_t e;
         e.hash = m_hash >> HFIX;
         e.track = m_subsongIndex;
-        if (auto* s = reinterpret_cast<dbentry_t*>(bsearch(&e, s_db, sizeof(s_db) / sizeof(dbentry_t),
-                                                           sizeof(dbentry_t), [](const void* ea, const void* eb)
-                                                           {
-                                                               auto* a = reinterpret_cast<const dbentry_t*>(ea);
-                                                               auto* b = reinterpret_cast<const dbentry_t*>(eb);
+        if (auto const *s = static_cast<dbentry_t *>(bsearch(&e, s_db.data(), s_db.size(),
+                                                       sizeof(dbentry_t), [](const void *ea, const void *eb) {
+                                                           auto *a = static_cast<const dbentry_t *>(ea);
+                                                           auto *b = static_cast<const dbentry_t *>(eb);
 
-                                                               int v = a->hash - b->hash;
-                                                               if (!v)
-                                                                   v = a->track - b->track;
-                                                               return v;
-                                                           })))
+                                                           int v = a->hash - b->hash;
+                                                           if (!v)
+                                                               v = a->track - b->track;
+                                                           return v;
+                                                       })))
             return s->frames;
         return 0;
     }
 
-    void BuildHash(SndhFile* sndh)
+    void BuildHash(SndhFile const* _sndh)
     {
         // Hash taken from sc68
         uint32_t h = 0;
         int n = 32;
-        const uint8_t* k = reinterpret_cast<const uint8_t*>(sndh->GetRawData());
+        const auto* k = static_cast<const uint8_t*>(_sndh->GetRawData());
         do
         {
             h += *k++;
@@ -123,8 +88,8 @@ public:
         }
         while (--n);
 
-        n = sndh->GetRawDataSize();
-        k = reinterpret_cast<const uint8_t*>(sndh->GetRawData());
+        n = _sndh->GetRawDataSize();
+        k = static_cast<const uint8_t*>(_sndh->GetRawData());
         do
         {
             h += *k++;
@@ -150,45 +115,47 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
     return &codecDescription;
 }
 
-
 #ifdef __cplusplus
 }
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
 {
-    FMOD_RESULT result;
     unsigned int filesize;
-    unsigned int bytesread;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
+
     if (filesize < 8 || filesize > 1024 * 2048) //(2 mb)biggest sndh on modland is 1150960 bytes, don't know real max
     {
         return FMOD_ERR_FORMAT;
     }
 
-    auto* plugin = new pluginSndhPlayer(codec);
+    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
 
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
-    int freq = 44100;
+    auto *buffer = new uint8_t[filesize];
 
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    uint8_t* buffer;
-    buffer = new uint8_t[filesize];
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    unsigned int bytesread;
+
     result = FMOD_CODEC_FILE_READ(codec, buffer, filesize, &bytesread);
+
+    auto* plugin = new pluginSndhPlayer(codec);
+    plugin->info = static_cast<Info*>(userexinfo->userdata);
+
     plugin->sndh = new SndhFile();
-    bool ok = plugin->sndh->Load(buffer, filesize, freq);
-    if (!ok || !plugin->sndh->IsLoaded())
+
+    constexpr int freq = 44100;
+
+    if (bool ok = plugin->sndh->Load(buffer, filesize, freq); !ok || !plugin->sndh->IsLoaded())
     {
         delete[] buffer;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     delete[] buffer;
+
     plugin->BuildHash(plugin->sndh);
     plugin->sndh->InitSubSong(1);
 
-    //read config from disk
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/sndh-player.cfg";
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
@@ -207,9 +174,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         string line;
         while (getline(ifs, line))
         {
-            int i = line.find_first_of("=");
-
-            if (i != -1)
+            if (int i = line.find_first_of("="); i != -1)
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
@@ -222,18 +187,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-
-
-
-
-    int channels = 1;
-
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = channels;
+    plugin->waveformat.channels = 1;
     plugin->waveformat.frequency = freq;
-    plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
-
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -251,26 +209,28 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 {
-    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
-
-    delete plugin;
+    delete static_cast<pluginSndhPlayer*>(codec->plugindata);
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
 {
     auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
+
     auto* osc = new uint32_t[18000];
     memset(osc, 0, 18000 * sizeof(*osc));
-    plugin->sndh->AudioRender(static_cast<int16_t*>(buffer), size, osc);
+
+    plugin->sndh->AudioRender(static_cast<int16_t*>(buffer), static_cast<int>(size), osc);
     plugin->oscBuffer.push(osc);
     plugin->info->waveformDisplay = plugin->oscBuffer.front();
+
     if (plugin->oscBuffer.size() >= 60)
     {
-        uint32_t* o = plugin->oscBuffer.front();
+        const uint32_t* o = plugin->oscBuffer.front();
         delete[] o;
         plugin->oscBuffer.pop();
     }
+
     *read = size;
     return FMOD_OK;
 }
@@ -282,13 +242,14 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     {
         return FMOD_OK;
     }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
+    if (postype == FMOD_TIMEUNIT_SUBSONG)
     {
-        plugin->m_subsongIndex = position;
+        plugin->m_subsongIndex = static_cast<int>(position);
         plugin->sndh->InitSubSong(plugin->m_subsongIndex + 1);
         return FMOD_OK;
     }
-    return FMOD_OK;
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
@@ -297,7 +258,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
     {
-        SndhFile::SubSongInfo subsongInfo;
+        SndhFile::SubSongInfo subsongInfo{};
         plugin->sndh->GetSubsongInfo(plugin->m_subsongIndex + 1, subsongInfo);
 
         if (subsongInfo.musicAuthor != nullptr)
@@ -324,27 +285,20 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
         plugin->info->clockSpeed = subsongInfo.playerTickRate;
 
         unsigned int ticks = subsongInfo.playerTickCount;
+
         if (ticks == 0) {
             ticks = plugin->GetTickCountFromSc68();
         }
-        unsigned int milliseconds = (ticks * subsongInfo.samplePerTick) / (plugin->waveformat.frequency / 1000);
+
+        const unsigned int milliseconds = ticks * subsongInfo.samplePerTick / (plugin->waveformat.frequency / 1000);
         *length = milliseconds;
-    }
-
-    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
-    {
-        *length = plugin->sndh->GetSubsongCount();
-    }
-
-    return FMOD_OK;
-}
-
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
-
-    if (postype == FMOD_TIMEUNIT_WAVEFORM)
-    {
         return FMOD_OK;
     }
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
+    {
+        *length = plugin->sndh->GetSubsongCount();
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }
