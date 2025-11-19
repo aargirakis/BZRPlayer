@@ -475,8 +475,9 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 painter->setPen(colorRowNumber);
                 m_trackerview->drawText(QString::asprintf("%02X", m_currentPattern) + "'", painter, m_trackerview->xOffsetRow() + numPixels,
                                         yOffset + yPixelPosition,m_trackerview->bitmapFont());
+                numPixels += (3 * fontWidth);
             }
-            numPixels += (3 * fontWidth);
+
             painter->setPen(colorRowNumber);
             if (j == currentRow && m_trackerview->bitmapFont().m_bitmapFontPath == m_trackerview->bitmapFontRownumber().
                     m_bitmapFontPath)
