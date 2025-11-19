@@ -9,11 +9,11 @@
 #include <format>
 #include <fstream>
 #include <istream>
-#include <sstream>
 #include "info.h"
 #include "sidid.h"
 #include "sidemu.h"
 #include "MUS.h"
+#include "SidDatabase.h"
 
 using namespace std;
 
@@ -34,8 +34,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
-unsigned int getLengthFromSIDDatabase(const string& databasefile, const string& sidfilename, int subsong);
-string md5;
+unsigned int getLength(const string& databasePath, const string& md5, int subsong);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -82,8 +81,7 @@ public:
         }
         else
         {
-            //cout << "failed rom loading\n";
-            //flush(cout);
+            //cout << "failed rom loading" << endl;
         }
         is.close();
         return buffer;
@@ -111,6 +109,7 @@ public:
     bool* mutePtr;
     bool hvscSonglengthsDataBaseEnabled;
     bool isSeeking = false;
+    unsigned int length = 0;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -479,17 +478,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     if (strcmp(s->formatString(), "C64 Sidplayer format (MUS)") != 0 && strcmp(
         s->formatString(), "C64 Stereo Sidplayer format (MUS+STR)") != 0)
     {
-        md5 = plugin->tune->createMD5New();
-    }
-    else
-    {
-        md5 = "";
+        info->md5 = plugin->tune->createMD5New();
     }
 
     info->startSubSong = s->startSong();
     info->numSubsongs = plugin->subsongs;
     info->fileformatSpecific = s->formatString();
-    info->md5 = md5;
     info->plugin = PLUGIN_libsidplayfp;
     info->pluginName = PLUGIN_libsidplayfp_NAME;
     info->fileformat = "C64 SID";
@@ -621,7 +615,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
 {
-    auto const* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
+    auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
     {
@@ -630,14 +624,15 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     }
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS)
     {
-        string databasefile = plugin->hvscSonglengthsFile;
-        const SidTuneInfo* s = plugin->tune->getInfo();
-        unsigned int sidLength = 0;
-        if (plugin->hvscSonglengthsDataBaseEnabled)
-        {
-            sidLength = getLengthFromSIDDatabase(databasefile, plugin->info->filename, s->currentSong());
+        if (!plugin->hvscSonglengthsDataBaseEnabled) {
+            *length = -1;
+        } else {
+            if (plugin->length == 0) {
+                plugin->length = getLength(plugin->hvscSonglengthsFile, plugin->info->md5,
+                                           plugin->tune->getInfo()->currentSong());
+            }
+            *length = plugin->length;
         }
-        *length = sidLength;
 
         return FMOD_OK;
     }
@@ -669,103 +664,19 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
     return FMOD_ERR_UNSUPPORTED;
 }
 
-
-unsigned int getLengthFromSIDDatabase(const string& databasefile, const string& sidfilename, int subsong)
+unsigned int getLength(const string& databasePath, const string& md5, int subsong)
 {
-    subsong--;
-    unsigned int length = 0;
+    auto sidDb = new SidDatabase(); //TODO sidDatabase->close() && Delete
 
-    string hashStr = md5;
-
-    ifstream ifs(databasefile);
-
-    if (ifs.fail())
-    {
-        //The file could not be opened
-        cout << "Couldn't open sid lenghts file:" << databasefile.c_str() << "\n";
-        flush(cout);
-        return 0;
+    if (!sidDb->open(databasePath.c_str())) {
+        cout << sidDb->error() << " [" << databasePath.c_str() << "]" << endl;
+        return -1;
     }
 
-    cout << "hash:" << hashStr.c_str() << "\n";
-    cout << "filename:" << sidfilename.c_str() << "\n";
-    flush(cout);
+    unsigned int length = sidDb->lengthMs(md5.c_str(), subsong);
 
-    string line;
-    while (getline(ifs, line))
-    {
-        if (!line.substr(0, 32).compare(hashStr))
-        {
-            //we found it
-            int j = line.find_first_of("=");
-            if (j == -1)
-            {
-                cout << "Error in HVSC Songlengths file!\n";
-                flush(cout);
-                return 0;
-            }
-            line = line.substr(j + 1);
-
-
-            istringstream iss(line);
-            string token;
-
-            int i = 0;
-            bool found = false;
-
-            while (getline(iss, token, ' ') && !found)
-            {
-                if (i == subsong)
-                {
-                    found = true;
-                    break;
-                }
-
-                i++;
-            }
-
-            line = token;
-
-            int k = line.find_first_of(":");
-
-            if (k == -1)
-            {
-                std::cout << "Error in HVSC Songlengths file!\n";
-                flush(cout);
-                return 0;
-            }
-
-            int msk = line.find_first_of(".");
-
-            int ms = 0;
-            if (msk != -1) //There are milliseconds
-            {
-                ms = atoi(line.substr(msk + 1).c_str());
-                string str_ms = line.substr(msk + 1);
-                if (str_ms.size() == 2)
-                {
-                    ms *= 10;
-                }
-                else if (str_ms.size() == 1)
-                {
-                    ms *= 100;
-                }
-            }
-
-
-            int sec = atoi(line.substr(k + 1, k + 3).c_str()) * 1000;
-
-            int min = atoi(line.substr(0, k).c_str()) * 1000 * 60;
-
-            length = min + sec + ms;
-
-            break;
-        }
-    }
-
-    if (length == 0)
-    {
-        //DebugWindow::instance()->addText("Couldn't find song length for SID: " + sidfilename.toStdString().c_str() + ". Hash <" + hashStr.toStdString().c_str() + ">");
+    if (length == 0) {
+        return -1;
     }
 
     return length;
