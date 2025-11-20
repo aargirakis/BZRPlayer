@@ -54,7 +54,7 @@ public:
     const ASAPInfo* asap_info;
     unsigned char* module;
     int current_song;
-    unsigned int mask;
+    unsigned int mask = 0;
 };
 
 #ifdef __cplusplus
@@ -232,7 +232,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     {
         int duration = ASAPInfo_GetDuration(plugin->asap_info, position);
         ASAP_PlaySong(plugin->asap, position, duration);
-        ASAP_MutePokeyChannels(plugin->asap, plugin->mask);
         plugin->current_song = position;
         return FMOD_OK;
     }
