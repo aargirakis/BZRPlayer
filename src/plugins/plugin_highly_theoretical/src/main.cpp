@@ -352,10 +352,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     {
         plugin->info->copyright = plugin->m_tags["copyright"];
     }
-    if (keyExists(plugin->m_tags, "psfby"))
+
+    const string ripperTagKey = psfType == 0x11? "ssfby":"dsfby";
+    if (keyExists(plugin->m_tags, ripperTagKey))
     {
-        plugin->info->ripper = plugin->m_tags["psfby"];
+        plugin->info->ripper = plugin->m_tags[ripperTagKey];
     }
+
     if (keyExists(plugin->m_tags, "year"))
     {
         plugin->info->date = plugin->m_tags["year"];

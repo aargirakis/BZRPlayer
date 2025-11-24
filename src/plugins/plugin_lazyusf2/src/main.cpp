@@ -308,9 +308,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     {
         plugin->info->copyright = plugin->m_tags["copyright"];
     }
-    if (keyExists(plugin->m_tags, "psfby"))
+    if (keyExists(plugin->m_tags, "usfby"))
     {
-        plugin->info->ripper = plugin->m_tags["psfby"];
+        plugin->info->ripper = plugin->m_tags["usfby"];
     }
     if (keyExists(plugin->m_tags, "year"))
     {
