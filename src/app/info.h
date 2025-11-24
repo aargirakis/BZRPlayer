@@ -82,7 +82,6 @@ public:
         system = "";
         game = "";
         genre = "";
-        dumper = "";
         emulator = "";
         songPlayer = "";
         songType = "";
@@ -297,7 +296,6 @@ public:
     string system;
     string game;
     string genre;
-    string dumper;
     string emulator;
     string songPlayer;
     string songType;

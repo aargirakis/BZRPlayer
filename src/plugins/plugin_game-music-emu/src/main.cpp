@@ -247,7 +247,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->info->comments = plugin->gmeInfo->comment;
     plugin->info->system = plugin->gmeInfo->system;
     plugin->info->game = plugin->gmeInfo->game;
-    plugin->info->dumper = plugin->gmeInfo->dumper;
+    plugin->info->ripper = plugin->gmeInfo->dumper;
     plugin->info->plugin = PLUGIN_game_music_emu;
     plugin->info->pluginName = PLUGIN_game_music_emu_NAME;
     plugin->info->setSeekable(true);

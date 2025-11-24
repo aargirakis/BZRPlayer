@@ -280,7 +280,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         else if (!strcmp(t[0], "EMULATOR"))
             info->emulator = t[1];
         else if (!strcmp(t[0], "ENCODED_BY"))
-            info->dumper = t[1];
+            info->ripper = t[1];
         else if (!strcmp(t[0], "GAME"))
             info->game = t[1];
         else if (!strcmp(t[0], "GENRE"))
