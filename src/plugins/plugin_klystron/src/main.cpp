@@ -99,8 +99,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     auto* plugin = new pluginKlystron(codec);
 
-    plugin->myBuffer = new signed short[filesize];
-
     plugin->player = KSND_CreatePlayerUnregistered(44100);
     if (!plugin->player)
     {
@@ -110,8 +108,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    //plugin->song = KSND_LoadSongFromMemory(plugin->player, plugin->myBuffer, filesize);
-    plugin->song = KSND_LoadSong(plugin->player, info->filename.c_str());
+    plugin->myBuffer = new signed short[filesize];
+
+    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
+
+    plugin->song = KSND_LoadSongFromMemory(plugin->player, plugin->myBuffer, filesize);
 
     if (!plugin->song)
     {
