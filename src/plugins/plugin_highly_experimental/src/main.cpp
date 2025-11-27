@@ -1,4 +1,5 @@
 #include <climits>
+#include <cmath>
 #include <cstring>
 #include <string>
 #include "fmod_errors.h"
@@ -70,6 +71,17 @@ public:
         else if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1))
         {
         }
+
+        /* "length" & "fade" tags (https://web.archive.org/web/20110902100659/http://wiki.neillcorlett.com/PSFTagFormat):
+         * Length of the song, and the length of the ending fadeout. These may be in one of three formats:
+         *
+         * seconds.decimal
+         * minutes:seconds.decimal
+         * hours:minutes:seconds.decimal
+         *
+         * The decimal portion may be omitted. Commas are also recognized as decimal separators.
+         */
+
         else if (!strcasecmp(name, "length"))
         {
             auto getDigit = [](const char*& value)
@@ -92,33 +104,33 @@ public:
             auto length = getDigit(value);
             if (length >= 0)
             {
-                while (*value && *value != ':' && *value != '.')
+                while (*value && *value != ':' && *value != '.' && *value != ',')
                     ++value;
                 if (*value)
                 {
-                    if (*value == ':')
+                    while (*value == ':')
                     {
                         auto d = getDigit(++value);
                         if (d >= 0)
                             length = length * 60 + Clamp(d, 0, 59);
                     }
                     length *= 1000;
-                    while (*value && *value != '.')
+                    while (*value && *value != '.' && *value != ',')
                         ++value;
-                    if (*value == '.')
+                    if (*value == '.' || *value == ',')
                     {
-                        auto d = getDigit(++value);
-                        if (d >= 0)
-                            length += Clamp(d, 0, 999);
+                        // up to 3 decimal digits are supported
+                        // 0.0nn & 0.00n values are not handled
+                        const auto d = getDigit(++value);
+                        const int digits = d == 0 ? 1 : static_cast<int>(log10(d)) + 1;
+                        length += d * static_cast<int>(pow(10, 3 - digits));
                     }
                 }
                 else
                     length *= 1000;
 
                 if (length > 0)
-                {
                     plugin->m_length = length;
-                }
             }
         }
         else if (!strcasecmp(name, "fade"))
