@@ -353,7 +353,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = channels;
-    plugin->waveformat.frequency = 48000;
+    plugin->waveformat.frequency = plugin->psfType == 1 ? 44100 : 48000;
     plugin->waveformat.pcmblocksize = (16 >> 3) * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = plugin->m_length * plugin->waveformat.frequency / 1000; //-1;
 
@@ -367,7 +367,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->info->pluginName = PLUGIN_highly_experimental_NAME;
     if (plugin->psfType == 1)
     {
-        plugin->waveformat.frequency = 44100;
         plugin->info->fileformat = "PlayStation (PSF1)";
     }
     else if (plugin->psfType == 2)
