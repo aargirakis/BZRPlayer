@@ -306,7 +306,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
 
 
-    int freq = 48000;
+    int freq = 44100;
     int channels = 2;
 
     sega_init();
