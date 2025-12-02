@@ -1,4 +1,5 @@
 #include <cstring>
+#include <filesystem>
 #include <format>
 #include <emu/SoundDevs.h>
 #include <emu/SoundEmu.h>
@@ -259,6 +260,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
         info->allowedFields = &allowedFieldsDro;
     } else if (player->GetPlayerType() == FCC_GYM) {
+        if (strcasecmp(filesystem::path(info->filename).extension().string().c_str(), ".GYM") != 0) {
+            return FMOD_ERR_FORMAT;
+        }
+
         info->fileformat = "Genesis YM2612";
         info->allowedFields = &allowedFieldsGym;
     } else if (player->GetPlayerType() == FCC_S98) {
