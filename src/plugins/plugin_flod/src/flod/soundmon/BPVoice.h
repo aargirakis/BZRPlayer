@@ -3,18 +3,18 @@
 
 class AmigaChannel;
 
-class BPVoice
-{
+class BPVoice {
     friend class BPPlayer;
 
 public:
     BPVoice(int index);
+
     void initialize();
 
 private:
     int index;
-    BPVoice* next;
-    AmigaChannel* channel;
+    BPVoice *next;
+    AmigaChannel *channel;
     int enabled;
     int restart;
     int note;

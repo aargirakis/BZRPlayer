@@ -17,8 +17,7 @@ const int S2Player::PERIODS[73] =
     180, 170, 160, 151, 143, 135, 127, 120, 113, 107, 101, 95
 };
 
-S2Player::S2Player(Amiga* amiga): AmigaPlayer(amiga)
-{
+S2Player::S2Player(Amiga *amiga) : AmigaPlayer(amiga) {
     arpeggioFx = std::vector<unsigned char>(4);
 
     arpeggioPos = 0;
@@ -29,51 +28,43 @@ S2Player::S2Player(Amiga* amiga): AmigaPlayer(amiga)
     patternLen = 0;
 }
 
-S2Player::~S2Player()
-{
+S2Player::~S2Player() {
     arpeggioFx.clear();
     arpeggios.clear();
     vibratos.clear();
     waves.clear();
 
-    for (unsigned int i = 0; i < tracks.size(); i++)
-    {
+    for (unsigned int i = 0; i < tracks.size(); i++) {
         if (tracks[i]) delete tracks[i];
     }
-    for (unsigned int i = 0; i < instruments.size(); i++)
-    {
+    for (unsigned int i = 0; i < instruments.size(); i++) {
         if (instruments[i]) delete instruments[i];
     }
     instruments.clear();
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for (unsigned int i = 0; i < patterns.size(); i++)
-    {
+    for (unsigned int i = 0; i < patterns.size(); i++) {
         if (patterns[i]) delete patterns[i];
     }
     patterns.clear();
 }
 
 
-int S2Player::load(void* data, unsigned long int _length)
-{
-    unsigned char* stream = static_cast<unsigned char*>(data);
+int S2Player::load(void *data, unsigned long int _length) {
+    unsigned char *stream = static_cast<unsigned char *>(data);
     if (stream[58] == 'S' && stream[59] == 'I' && stream[60] == 'D' && stream[61] == 'M' && stream[62] == 'O' && stream[
             63] == 'N' && stream[64] == ' ' &&
         stream[65] == 'I' && stream[66] == 'I' && stream[67] == ' ' && stream[68] == '-' && stream[69] == ' ' && stream[
             70] == 'T' && stream[71] == 'H' && stream[72] == 'E' &&
         stream[73] == ' ' && stream[74] == 'M' && stream[75] == 'I' && stream[76] == 'D' && stream[77] == 'I' && stream[
             78] == ' ' && stream[79] == 'V' && stream[80] == 'E' &&
-        stream[81] == 'R' && stream[82] == 'S' && stream[83] == 'I' && stream[84] == 'O' && stream[85] == 'N')
-    {
+        stream[81] == 'R' && stream[82] == 'S' && stream[83] == 'I' && stream[84] == 'O' && stream[85] == 'N') {
         int value = 0;
         int base = 0;
         unsigned int position = 2;
@@ -81,19 +72,18 @@ int S2Player::load(void* data, unsigned long int _length)
         position++;
         speedDef = stream[position];
         position++;
-        samples = std::vector<S2Sample*>(readEndian(stream[position], stream[position + 1]) >> 6);
+        samples = std::vector<S2Sample *>(readEndian(stream[position], stream[position + 1]) >> 6);
         position += 2;
 
         position = 14;
         int len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        tracks = std::vector<BaseStep*>(len);
+        tracks = std::vector<BaseStep *>(len);
         position = 90;
 
         int higher = 0;
-        for (int i = 0; i < len; ++i)
-        {
-            BaseStep* step = new BaseStep();
+        for (int i = 0; i < len; ++i) {
+            BaseStep *step = new BaseStep();
             value = stream[position];
             position++;
             if (value > higher) higher = value;
@@ -101,17 +91,15 @@ int S2Player::load(void* data, unsigned long int _length)
             tracks[i] = step;
         }
 
-        for (int i = 0; i < len; ++i)
-        {
-            BaseStep* step = tracks[i];
-            step->transpose = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            BaseStep *step = tracks[i];
+            step->transpose = (signed char) stream[position];
             position++;
         }
 
-        for (int i = 0; i < len; ++i)
-        {
-            BaseStep* step = tracks[i];
-            step->soundTrans = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            BaseStep *step = tracks[i];
+            step->soundTrans = (signed char) stream[position];
             position++;
         }
 
@@ -119,13 +107,12 @@ int S2Player::load(void* data, unsigned long int _length)
         position = 26;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >> 5;
         position += 4;
-        instruments = std::vector<S2Instrument*>(++len);
+        instruments = std::vector<S2Instrument *>(++len);
         position = pos;
         instruments[0] = new S2Instrument();
 
-        for (int i = 1; i < len; ++i)
-        {
-            S2Instrument* instr = new S2Instrument();
+        for (int i = 1; i < len; ++i) {
+            S2Instrument *instr = new S2Instrument();
             instr->wave = stream[position] << 4;
             position++;
             instr->waveLen = stream[position];
@@ -150,7 +137,7 @@ int S2Player::load(void* data, unsigned long int _length)
             position++;
             instr->vibratoDelay = stream[position];
             position++;
-            instr->pitchBend = (signed char)stream[position];
+            instr->pitchBend = (signed char) stream[position];
             position++;
             instr->pitchBendDelay = stream[position];
             position++;
@@ -179,8 +166,7 @@ int S2Player::load(void* data, unsigned long int _length)
         waves = std::vector<unsigned char>(len);
         position = pos;
 
-        for (int i = 0; i < len; ++i)
-        {
+        for (int i = 0; i < len; ++i) {
             waves[i] = stream[position];
             position++;
         }
@@ -193,9 +179,8 @@ int S2Player::load(void* data, unsigned long int _length)
         arpeggios = std::vector<signed char>(len);
         position = pos;
 
-        for (int i = 0; i < len; ++i)
-        {
-            arpeggios[i] = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            arpeggios[i] = (signed char) stream[position];
             position++;
         }
 
@@ -206,18 +191,16 @@ int S2Player::load(void* data, unsigned long int _length)
         vibratos = std::vector<signed char>(len);
         position = pos;
 
-        for (int i = 0; i < len; ++i)
-        {
-            vibratos[i] = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            vibratos[i] = (signed char) stream[position];
             position++;
         }
 
         len = samples.size();
         pos = 0;
 
-        for (int i = 0; i < len; ++i)
-        {
-            S2Sample* sample = new S2Sample();
+        for (int i = 0; i < len; ++i) {
+            S2Sample *sample = new S2Sample();
             position += 4;
             sample->pointer = pos;
             sample->length = readEndian(stream[position], stream[position + 1]) << 1;
@@ -243,10 +226,8 @@ int S2Player::load(void* data, unsigned long int _length)
             position += 2;
             position += 6;
             const int STRING_LENGTH = 32;
-            for (int j = 0; j < STRING_LENGTH; j++)
-            {
-                if (!stream[position + j])
-                {
+            for (int j = 0; j < STRING_LENGTH; j++) {
+                if (!stream[position + j]) {
                     break;
                 }
                 sample->name += stream[position + j];
@@ -259,8 +240,7 @@ int S2Player::load(void* data, unsigned long int _length)
         int sampleData = pos;
         len = ++higher;
         std::vector<int> pointers(++higher);
-        for (int i = 0; i < len; ++i)
-        {
+        for (int i = 0; i < len; ++i) {
             pointers[i] = readEndian(stream[position], stream[position + 1]);
             position += 2;
         }
@@ -268,68 +248,52 @@ int S2Player::load(void* data, unsigned long int _length)
         position = 50;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        patterns = std::vector<BaseRow*>();
+        patterns = std::vector<BaseRow *>();
         position = pos;
         int j = 1;
 
-        for (int i = 0; i < len; ++i)
-        {
-            BaseRow* row = new BaseRow();
-            char value = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            BaseRow *row = new BaseRow();
+            char value = (signed char) stream[position];
             position++;
 
-            if (!value)
-            {
-                row->effect = (signed char)stream[position];
+            if (!value) {
+                row->effect = (signed char) stream[position];
                 position++;
                 row->param = stream[position];
                 position++;
                 i += 2;
-            }
-            else if (value < 0)
-            {
+            } else if (value < 0) {
                 row->speed = ~value;
-            }
-            else if (value < 112)
-            {
+            } else if (value < 112) {
                 row->note = value;
-                value = (signed char)stream[position];
+                value = (signed char) stream[position];
                 position++;
                 i++;
 
-                if (value < 0)
-                {
+                if (value < 0) {
                     row->speed = ~value;
-                }
-                else if (value < 112)
-                {
+                } else if (value < 112) {
                     row->sample = value;
-                    value = (signed char)stream[position];
+                    value = (signed char) stream[position];
                     position++;
                     i++;
 
-                    if (value < 0)
-                    {
+                    if (value < 0) {
                         row->speed = ~value;
-                    }
-                    else
-                    {
+                    } else {
                         row->effect = value;
                         row->param = stream[position];
                         position++;
                         i++;
                     }
-                }
-                else
-                {
+                } else {
                     row->effect = value;
                     row->param = stream[position];
                     position++;
                     i++;
                 }
-            }
-            else
-            {
+            } else {
                 row->effect = value;
                 row->param = stream[position];
                 position++;
@@ -348,31 +312,25 @@ int S2Player::load(void* data, unsigned long int _length)
         //amiga->store(stream, sampleData,position,_length);
         len = tracks.size();
 
-        for (int i = 0; i < len; ++i)
-        {
-            BaseStep* step = tracks[i];
+        for (int i = 0; i < len; ++i) {
+            BaseStep *step = tracks[i];
             step->pattern = pointers[step->pattern];
         }
         length++;
         m_version = 2;
         format = "Sidmon 2";
         //printData();
-    }
-    else
-    {
+    } else {
         return -1;
     }
     return 1;
 }
 
-std::vector<BaseSample*> S2Player::getSamples()
-{
-    std::vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+std::vector<BaseSample *> S2Player::getSamples() {
+    std::vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }

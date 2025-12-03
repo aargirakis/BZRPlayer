@@ -3,18 +3,18 @@
 
 class AmigaChannel;
 
-class JHVoice
-{
+class JHVoice {
     friend class JHPlayer;
 
 public:
     JHVoice(int index);
+
     void initialize();
 
 private:
     int index;
-    JHVoice* next;
-    AmigaChannel* channel;
+    JHVoice *next;
+    AmigaChannel *channel;
     int enabled;
     int cosoCtr;
     int cosoSpeed;

@@ -3,11 +3,12 @@
 
 #include "AmigaPlayer.h"
 
-class FileLoader
-{
+class FileLoader {
 public:
     FileLoader();
-    AmigaPlayer* load(void* data, unsigned long int length, const char* filename);
+
+    AmigaPlayer *load(void *data, unsigned long int length, const char *filename);
+
     void setForcePlayer(int);
 
 private:

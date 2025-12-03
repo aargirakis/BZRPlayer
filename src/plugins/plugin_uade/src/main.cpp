@@ -14,13 +14,19 @@
 using namespace std;
 
 const string TYPE_PREFIX = "type: ";
-unsigned int getLengthFromDatabase(const char*, int, const char*, const char*);
+
+unsigned int getLengthFromDatabase(const char *, int, const char *, const char *);
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -40,33 +46,30 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginUade
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginUade {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginUade(FMOD_CODEC_STATE* codec)
-    {
+    pluginUade(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginUade()
-    {
+    ~pluginUade() {
         //delete some stuff
         uade_cleanup_state(uadeState);
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 
-    Info* info;
+    Info *info;
     bool uade_songlengths_enabled;
     int currentSubsong;
     string uade_songlengthspath;
     uade_state *uadeState = nullptr;
     const struct uade_song_info *uadeSongInfo;
     unsigned int filesize;
-    uint8_t* myBuffer;
+    uint8_t *myBuffer;
     bool setPositionWithTimeunitSubSongHasBeenInvoked = false;
     unsigned int totalSkippedBytes = 0;
     bool isUadeSeekInvocationAllowed = false;
@@ -77,8 +80,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -86,8 +88,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     auto *plugin = new pluginUade(codec);
 
     FMOD_CODEC_FILE_SIZE(codec, &plugin->filesize);
@@ -98,14 +99,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    auto* smallBuffer = new uint8_t[4];
+    auto *smallBuffer = new uint8_t[4];
     FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     FMOD_CODEC_FILE_READ(codec, smallBuffer, 4, nullptr);
 
     // skip midi, riff and psf
     if (memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF", 4) == 0 ||
-        memcmp(smallBuffer, "PSF", 3) == 0)
-    {
+        memcmp(smallBuffer, "PSF", 3) == 0) {
         delete[] smallBuffer;
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -119,8 +119,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         //The file could not be opened
         useDefaults = true;
     }
@@ -138,91 +137,54 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->uade_songlengths_enabled = true;
     plugin->info->isContinuousPlaybackActive = false;
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word == "frequency")
-                {
+                if (word == "frequency") {
                     frequency = value;
-                }
-                else if (word == "resampler")
-                {
+                } else if (word == "resampler") {
                     resampler = value;
-                }
-                else if (word == "filter_emu")
-                {
-                    if (value == "true")
-                    {
+                } else if (word == "filter_emu") {
+                    if (value == "true") {
                         filter_emu = 1;
-                    }
-                    else
-                    {
+                    } else {
                         filter_emu = 0;
                     }
-                }
-                else if (word == "filter_mode")
-                {
+                } else if (word == "filter_mode") {
                     filter_mode = value;
-                }
-                else if (word == "led_forced")
-                {
-                    if (value == "auto")
-                    {
+                } else if (word == "led_forced") {
+                    if (value == "auto") {
                         led_forced = 0;
-                    }
-                    else if (value == "on")
-                    {
+                    } else if (value == "on") {
                         led_forced = 1;
                         led_state = 1;
-                    }
-                    else
-                    {
+                    } else {
                         led_forced = 1;
                         led_state = 0;
                     }
-                }
-                else if (word == "panning")
-                {
+                } else if (word == "panning") {
                     int x = stoi(value);
                     panning = format("{}.{}", x / 10, x % 10);
-                }
-                else if (word == "silence_timeout")
-                {
+                } else if (word == "silence_timeout") {
                     silence_timeout = value;
-                }
-                else if (word == "silence_timeout_enabled")
-                {
-                    if (value == "true")
-                    {
+                } else if (word == "silence_timeout_enabled") {
+                    if (value == "true") {
                         silence_timeout_enabled = true;
-                    }
-                    else
-                    {
+                    } else {
                         silence_timeout_enabled = false;
                     }
-                }
-                else if (word == "continuous_playback")
-                {
-                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
-                }
-                else if (word == "uade_songlengths_path")
-                {
+                } else if (word == "continuous_playback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                } else if (word == "uade_songlengths_path") {
                     plugin->uade_songlengthspath = value;
-                }
-                else if (word == "uade_songlengths_enabled")
-                {
-                    if (value == "true")
-                    {
+                } else if (word == "uade_songlengths_enabled") {
+                    if (value == "true") {
                         plugin->uade_songlengths_enabled = true;
-                    }
-                    else
-                    {
+                    } else {
                         plugin->uade_songlengths_enabled = false;
                     }
                 }
@@ -242,8 +204,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    if (plugin->uade_songlengthspath.empty() || plugin->uade_songlengthspath == "/uade.md5")
-    {
+    if (plugin->uade_songlengthspath.empty() || plugin->uade_songlengthspath == "/uade.md5") {
         plugin->uade_songlengthspath = plugin->info->dataPath + UADE_DATA_DIR + "/uade.md5";
     }
 
@@ -304,8 +265,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->currentSubsong = -1;
 
-    if (uade_play_from_buffer(plugin->info->filename.c_str(), plugin->myBuffer, plugin->filesize, plugin->currentSubsong,
-                                  plugin->uadeState) <= 0) {
+    if (uade_play_from_buffer(plugin->info->filename.c_str(), plugin->myBuffer, plugin->filesize,
+                              plugin->currentSubsong,
+                              plugin->uadeState) <= 0) {
         cout << "Can not play " << plugin->info->filename << endl;
 
         delete[] plugin->myBuffer;
@@ -316,8 +278,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     if (plugin->uadeSongInfo->formatname[0]) {
         string str(plugin->uadeSongInfo->formatname);
-        plugin->info->fileformat = str.starts_with(TYPE_PREFIX)?
-                                       str.substr(TYPE_PREFIX.length()) : plugin->uadeSongInfo->formatname;
+        plugin->info->fileformat = str.starts_with(TYPE_PREFIX)
+                                       ? str.substr(TYPE_PREFIX.length())
+                                       : plugin->uadeSongInfo->formatname;
     } else {
         plugin->info->fileformat = plugin->uadeSongInfo->detectioninfo.ep->playername;
     }
@@ -330,34 +293,34 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->info->plugin = PLUGIN_uade;
     plugin->info->pluginName = PLUGIN_uade_NAME;
 
-    if (plugin->info->fileformat == "BenDaglish" || plugin->info->fileformat == "DeltaMusic1.3" || plugin->info->fileformat ==
+    if (plugin->info->fileformat == "BenDaglish" || plugin->info->fileformat == "DeltaMusic1.3" || plugin->info->
+        fileformat ==
         "DeltaMusic2.0" || plugin->info->fileformat == "DavidWhittaker"
         || plugin->info->fileformat == "Fred" || plugin->info->fileformat == "Infogrames" || plugin->info->fileformat ==
         "JasonBrooke" || plugin->info->fileformat == "JochenHippel"
-        || plugin->info->fileformat == "JochenHippel-CoSo" || plugin->info->fileformat == "Mugician" || plugin->info->fileformat ==
+        || plugin->info->fileformat == "JochenHippel-CoSo" || plugin->info->fileformat == "Mugician" || plugin->info->
+        fileformat ==
         "MugicianII"
-        || plugin->info->fileformat == "RobHubbard" || plugin->info->fileformat == "RichardJoseph" || plugin->info->fileformat ==
+        || plugin->info->fileformat == "RobHubbard" || plugin->info->fileformat == "RichardJoseph" || plugin->info->
+        fileformat ==
         "SIDMon1.0" || plugin->info->fileformat == "SIDMon2.0"
-        || plugin->info->fileformat == "PaulShields")
-    {
+        || plugin->info->fileformat == "PaulShields") {
         //read samples
         auto d = new uint8_t[plugin->filesize];
         FMOD_CODEC_FILE_SEEK(codec, 0, 0);
         FMOD_CODEC_FILE_READ(codec, d, plugin->filesize, nullptr);
 
-        auto* fileLoader = new FileLoader();
+        auto *fileLoader = new FileLoader();
 
-        AmigaPlayer* player = fileLoader->load(d, plugin->filesize, plugin->info->filename.c_str());
+        AmigaPlayer *player = fileLoader->load(d, plugin->filesize, plugin->info->filename.c_str());
 
         delete fileLoader;
         delete[] d;
 
-        if (player)
-        {
-            vector<BaseSample*> samples;
+        if (player) {
+            vector<BaseSample *> samples;
             samples = player->getSamples();
-            if (!samples.empty())
-            {
+            if (!samples.empty()) {
                 plugin->info->numSamples = samples.size();
                 plugin->info->samples = new string[plugin->info->numSamples];
                 plugin->info->samplesSize = new unsigned int[plugin->info->numSamples];
@@ -365,10 +328,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
                 plugin->info->samplesLoopLength = new unsigned int[plugin->info->numSamples];
                 plugin->info->samplesVolume = new unsigned short[plugin->info->numSamples];
 
-                for (int j = 0; j < plugin->info->numSamples; j++)
-                {
-                    if (samples[j])
-                    {
+                for (int j = 0; j < plugin->info->numSamples; j++) {
+                    if (samples[j]) {
                         plugin->info->samples[j] = samples[j]->name;
                         plugin->info->samplesSize[j] = samples[j]->length;
                         plugin->info->samplesVolume[j] = samples[j]->volume;
@@ -386,14 +347,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginUade*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginUade *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     auto *plugin = static_cast<pluginUade *>(codec->plugindata);
 
     /*
@@ -463,17 +422,14 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
-    auto* plugin = static_cast<pluginUade*>(codec->plugindata);
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    auto *plugin = static_cast<pluginUade *>(codec->plugindata);
 
-    if (plugin->currentSubsong == -1)
-    {
+    if (plugin->currentSubsong == -1) {
         plugin->currentSubsong = plugin->uadeSongInfo->subsongs.min;
     }
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
         *length = 1 + (plugin->uadeSongInfo->subsongs.max - plugin->uadeSongInfo->subsongs.min);
         return FMOD_OK;
     }
@@ -498,9 +454,9 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginUade*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginUade *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
         /*
@@ -534,20 +490,15 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
         return FMOD_OK;
     }
 
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         plugin->setPositionWithTimeunitSubSongHasBeenInvoked = true;
 
-        if (plugin->uadeSongInfo->subsongs.max - plugin->uadeSongInfo->subsongs.min == 0)
-        {
+        if (plugin->uadeSongInfo->subsongs.max - plugin->uadeSongInfo->subsongs.min == 0) {
             return FMOD_OK;
         }
-        if (position > plugin->uadeSongInfo->subsongs.max - plugin->uadeSongInfo->subsongs.min)
-        {
+        if (position > plugin->uadeSongInfo->subsongs.max - plugin->uadeSongInfo->subsongs.min) {
             position = plugin->uadeSongInfo->subsongs.min;
-        }
-        else
-        {
+        } else {
             position = plugin->uadeSongInfo->subsongs.min + position;
         }
 
@@ -564,30 +515,25 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;
 }
 
-unsigned int getLengthFromDatabase(const char* filename, int subsong, const char* md5, const char* database)
-{
+unsigned int getLengthFromDatabase(const char *filename, int subsong, const char *md5, const char *database) {
     unsigned int length = 0;
 
     string filenameFromDb = database;
 
     ifstream ifs(filenameFromDb);
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         //The file could not be opened
         cout << "Couldn't open UADE songlengths file: " << filenameFromDb << endl;
         return 0;
     }
 
     string line;
-    while (getline(ifs, line))
-    {
-        if (line.substr(0, 32) == md5)
-        {
+    while (getline(ifs, line)) {
+        if (line.substr(0, 32) == md5) {
             //we found it
             int j = line.find_first_of("=");
-            if (j == -1)
-            {
+            if (j == -1) {
                 cout << "Formatting error in uade songlengths file: " << filenameFromDb << endl;
                 return 0;
             }
@@ -598,8 +544,7 @@ unsigned int getLengthFromDatabase(const char* filename, int subsong, const char
             istream_iterator<string> end;
             vector vstrings(begin, end);
 
-            if (subsong >= vstrings.size())
-            {
+            if (subsong >= vstrings.size()) {
                 cout << "Subsong length not found" << endl;
                 return 0;
             }
@@ -607,8 +552,7 @@ unsigned int getLengthFromDatabase(const char* filename, int subsong, const char
             line = vstrings.at(subsong);
 
             int i = line.find_first_of(":");
-            if (i == -1)
-            {
+            if (i == -1) {
                 cout << "Formatting error in uade songlengths file: " << filenameFromDb << endl;
                 return 0;
             }
@@ -619,12 +563,9 @@ unsigned int getLengthFromDatabase(const char* filename, int subsong, const char
             if (msk != -1) //There are milliseconds
             {
                 ms = atoi(line.substr(msk + 1).c_str());
-                if (string str_ms = line.substr(msk + 1); str_ms.size() == 2)
-                {
+                if (string str_ms = line.substr(msk + 1); str_ms.size() == 2) {
                     ms *= 10;
-                }
-                else if (str_ms.size() == 1)
-                {
+                } else if (str_ms.size() == 1) {
                     ms *= 100;
                 }
             }
@@ -637,8 +578,7 @@ unsigned int getLengthFromDatabase(const char* filename, int subsong, const char
         }
     }
 
-    if (length == 0)
-    {
+    if (length == 0) {
         cout << "Couldn't find song length for: " << filename << " [Hash: " << md5 << "]" << endl;
     }
 

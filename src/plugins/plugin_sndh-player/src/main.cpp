@@ -8,10 +8,15 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -31,72 +36,63 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginSndhPlayer
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginSndhPlayer {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginSndhPlayer(FMOD_CODEC_STATE* codec)
-    {
+    pluginSndhPlayer(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginSndhPlayer()
-    {
+    ~pluginSndhPlayer() {
         delete sndh;
         //delete some stuff
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
-    Info* info;
-    SndhFile* sndh;
-    queue<uint32_t*> oscBuffer;
+    Info *info;
+    SndhFile *sndh;
+    queue<uint32_t *> oscBuffer;
     int m_subsongIndex = 0;
     uint32_t m_hash = 0;
 
     int32_t GetTickCountFromSc68() const {
-
         dbentry_t e;
         e.hash = m_hash >> HFIX;
         e.track = m_subsongIndex;
         if (auto const *s = static_cast<dbentry_t *>(bsearch(&e, s_db.data(), s_db.size(),
-                                                       sizeof(dbentry_t), [](const void *ea, const void *eb) {
-                                                           auto *a = static_cast<const dbentry_t *>(ea);
-                                                           auto *b = static_cast<const dbentry_t *>(eb);
+                                                             sizeof(dbentry_t), [](const void *ea, const void *eb) {
+                                                                 auto *a = static_cast<const dbentry_t *>(ea);
+                                                                 auto *b = static_cast<const dbentry_t *>(eb);
 
-                                                           int v = a->hash - b->hash;
-                                                           if (!v)
-                                                               v = a->track - b->track;
-                                                           return v;
-                                                       })))
+                                                                 int v = a->hash - b->hash;
+                                                                 if (!v)
+                                                                     v = a->track - b->track;
+                                                                 return v;
+                                                             })))
             return s->frames;
         return 0;
     }
 
-    void BuildHash(SndhFile const* _sndh)
-    {
+    void BuildHash(SndhFile const *_sndh) {
         // Hash taken from sc68
         uint32_t h = 0;
         int n = 32;
-        const auto* k = static_cast<const uint8_t*>(_sndh->GetRawData());
-        do
-        {
+        const auto *k = static_cast<const uint8_t *>(_sndh->GetRawData());
+        do {
             h += *k++;
             h += h << 10;
             h ^= h >> 6;
-        }
-        while (--n);
+        } while (--n);
 
         n = _sndh->GetRawDataSize();
-        k = static_cast<const uint8_t*>(_sndh->GetRawData());
-        do
-        {
+        k = static_cast<const uint8_t *>(_sndh->GetRawData());
+        do {
             h += *k++;
             h += h << 10;
             h ^= h >> 6;
-        }
-        while (--n);
+        } while (--n);
         m_hash = h;
     }
 };
@@ -110,8 +106,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -119,8 +114,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
@@ -137,15 +131,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     result = FMOD_CODEC_FILE_READ(codec, buffer, filesize, &bytesread);
 
-    auto* plugin = new pluginSndhPlayer(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    auto *plugin = new pluginSndhPlayer(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->sndh = new SndhFile();
 
     constexpr int freq = 44100;
 
-    if (bool ok = plugin->sndh->Load(buffer, filesize, freq); !ok || !plugin->sndh->IsLoaded())
-    {
+    if (bool ok = plugin->sndh->Load(buffer, filesize, freq); !ok || !plugin->sndh->IsLoaded()) {
         delete[] buffer;
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -160,8 +153,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         //The file could not be opened
         useDefaults = true;
     }
@@ -169,18 +161,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     //defaults
     plugin->info->isContinuousPlaybackActive = false;
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word == "continuous_playback")
-                {
-                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                if (word == "continuous_playback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
             }
         }
@@ -207,26 +196,23 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginSndhPlayer*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginSndhPlayer *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    auto *plugin = static_cast<pluginSndhPlayer *>(codec->plugindata);
 
-    auto* osc = new uint32_t[18000];
+    auto *osc = new uint32_t[18000];
     memset(osc, 0, 18000 * sizeof(*osc));
 
-    plugin->sndh->AudioRender(static_cast<int16_t*>(buffer), static_cast<int>(size), osc);
+    plugin->sndh->AudioRender(static_cast<int16_t *>(buffer), static_cast<int>(size), osc);
     plugin->oscBuffer.push(osc);
     plugin->info->waveformDisplay = plugin->oscBuffer.front();
 
-    if (plugin->oscBuffer.size() >= 60)
-    {
-        const uint32_t* o = plugin->oscBuffer.front();
+    if (plugin->oscBuffer.size() >= 60) {
+        const uint32_t *o = plugin->oscBuffer.front();
         delete[] o;
         plugin->oscBuffer.pop();
     }
@@ -235,15 +221,13 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginSndhPlayer *>(codec->plugindata);
+    if (postype == FMOD_TIMEUNIT_MS) {
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         plugin->m_subsongIndex = static_cast<int>(position);
         plugin->sndh->InitSubSong(plugin->m_subsongIndex + 1);
         return FMOD_OK;
@@ -252,33 +236,26 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
-    auto* plugin = static_cast<pluginSndhPlayer*>(codec->plugindata);
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    auto *plugin = static_cast<pluginSndhPlayer *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
         SndhFile::SubSongInfo subsongInfo{};
         plugin->sndh->GetSubsongInfo(plugin->m_subsongIndex + 1, subsongInfo);
 
-        if (subsongInfo.musicAuthor != nullptr)
-        {
+        if (subsongInfo.musicAuthor != nullptr) {
             plugin->info->artist = subsongInfo.musicAuthor;
         }
-        if (subsongInfo.musicName != nullptr)
-        {
+        if (subsongInfo.musicName != nullptr) {
             plugin->info->title = subsongInfo.musicName;
         }
-        if (subsongInfo.ripper != nullptr)
-        {
+        if (subsongInfo.ripper != nullptr) {
             plugin->info->ripper = subsongInfo.ripper;
         }
-        if (subsongInfo.converter != nullptr)
-        {
+        if (subsongInfo.converter != nullptr) {
             plugin->info->converter = subsongInfo.converter;
         }
-        if (subsongInfo.year != nullptr)
-        {
+        if (subsongInfo.year != nullptr) {
             plugin->info->date = subsongInfo.year;
         }
 
@@ -294,8 +271,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
         *length = milliseconds;
         return FMOD_OK;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
         *length = plugin->sndh->GetSubsongCount();
         return FMOD_OK;
     }

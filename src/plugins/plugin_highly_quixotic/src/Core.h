@@ -6,13 +6,11 @@
 
 using namespace std;
 
-namespace core
-{
+namespace core {
     /**
     * Memory
     */
-    inline void* Alloc(size_t size, size_t alignment = 0)
-    {
+    inline void *Alloc(size_t size, size_t alignment = 0) {
 #ifdef WIN32
         return _aligned_malloc(size, alignment > 0 ? alignment : 16);
 #else
@@ -20,14 +18,12 @@ namespace core
 #endif
     }
 
-    template <typename T>
-    T* Alloc(size_t size, size_t alignment = alignof(T))
-    {
-        return static_cast<T*>(Alloc(size, alignment));
+    template<typename T>
+    T *Alloc(size_t size, size_t alignment = alignof(T)) {
+        return static_cast<T *>(Alloc(size, alignment));
     }
 
-    inline void* Calloc(size_t count, size_t size)
-    {
+    inline void *Calloc(size_t count, size_t size) {
         auto p = Alloc(size * count, 16);
         memset(p, 0, size * count);
         return p;
@@ -41,24 +37,21 @@ namespace core
 #endif
     }
 
-    template <typename T>
-    T* ReAlloc(void* ptr, size_t size)
-    {
-        return static_cast<T*>(ReAlloc(ptr, size, alignof(T)));
+    template<typename T>
+    T *ReAlloc(void *ptr, size_t size) {
+        return static_cast<T *>(ReAlloc(ptr, size, alignof(T)));
     }
 
-    inline void Free(const void* ptr)
-    {
+    inline void Free(const void *ptr) {
 #ifdef WIN32
-        _aligned_free(const_cast<void*>(ptr));
+        _aligned_free(const_cast<void *>(ptr));
 #else
-        free(const_cast<void*>(ptr));
+        free(const_cast<void *>(ptr));
 #endif
     }
 
-    template <typename T1, typename T2>
-    constexpr T1 AlignUp(T1 size, T2 alignment)
-    {
+    template<typename T1, typename T2>
+    constexpr T1 AlignUp(T1 size, T2 alignment) {
         return T1((size + alignment - 1) & ~(alignment - 1));
     }
 
@@ -66,41 +59,36 @@ namespace core
     * Maths
     */
 
-    template <typename T1, typename T2>
-    constexpr auto Min(T1&& a, T2&& b)
-    {
+    template<typename T1, typename T2>
+    constexpr auto Min(T1 &&a, T2 &&b) {
         return forward<T1>(a) < forward<T2>(b) ? forward<T1>(a) : forward<T2>(b);
     }
 
     template<typename T1, typename T2, typename... Ts>
-    constexpr auto Min(T1&& a, T2&& b, Ts&&... others)
-    {
+    constexpr auto Min(T1 &&a, T2 &&b, Ts &&... others) {
         return Min(Min(forward<T1>(a), forward<T2>(b)), forward<Ts>(others)...);
     }
 
-    template <typename T1, typename T2>
-    constexpr auto Max(T1&& a, T2&& b)
-    {
+    template<typename T1, typename T2>
+    constexpr auto Max(T1 &&a, T2 &&b) {
         return forward<T1>(a) > forward<T2>(b) ? forward<T1>(a) : forward<T2>(b);
     }
 
     template<typename T1, typename T2, typename... Ts>
-    constexpr auto Max(T1&& a, T2&& b, Ts&&... others)
-    {
+    constexpr auto Max(T1 &&a, T2 &&b, Ts &&... others) {
         return Max(Max(forward<T1>(a), forward<T2>(b)), forward<Ts>(others)...);
     }
 
-    template <typename T1, typename T2, typename T3>
-    constexpr auto Clamp(T1&& a, T2&& min, T3&& max)
-    {
+    template<typename T1, typename T2, typename T3>
+    constexpr auto Clamp(T1 &&a, T2 &&min, T3 &&max) {
         assert(min <= max);
         return Max(forward<T2>(min), Min(forward<T3>(max), forward<T1>(a)));
     }
 
-    template <typename T1>
-    constexpr auto Saturate(T1&& a)
-    {
+    template<typename T1>
+    constexpr auto Saturate(T1 &&a) {
         return Max(static_cast<remove_reference_t<T1>>(0), Min(static_cast<remove_reference_t<T1>>(1), forward<T1>(a)));
     }
 }
+
 // namespace core

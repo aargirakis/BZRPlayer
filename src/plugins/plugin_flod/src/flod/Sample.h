@@ -1,12 +1,12 @@
 #ifndef SAMPLE_H
 #define SAMPLE_H
 
-class Sample
-{
+class Sample {
 public:
     Sample();
+
     double l;
     double r;
-    Sample* next;
+    Sample *next;
 };
 #endif // SAMPLE_H

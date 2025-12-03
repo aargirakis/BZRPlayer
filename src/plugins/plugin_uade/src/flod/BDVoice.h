@@ -3,20 +3,20 @@
 class BDSample;
 class AmigaChannel;
 
-class BDVoice
-{
+class BDVoice {
     friend class BDPlayer;
 
 public:
     BDVoice(int index);
+
     void initialize();
 
 private:
     int index;
-    BDVoice* next;
-    AmigaChannel* channel;
-    BDSample* sample;
-    BDSample* sample2;
+    BDVoice *next;
+    AmigaChannel *channel;
+    BDSample *sample;
+    BDSample *sample2;
     int bank;
     int trackPos;
     int patternPtr;

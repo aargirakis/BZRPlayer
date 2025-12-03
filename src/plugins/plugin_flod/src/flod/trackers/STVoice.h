@@ -4,22 +4,25 @@
 class AmigaRow;
 class AmigaSample;
 class AmigaChannel;
-class STVoice
-{
-friend class STPlayer;
+
+class STVoice {
+    friend class STPlayer;
+
 public:
     STVoice(int index);
+
     void initialize();
+
 private:
-    int index  ;
-    STVoice* next;
-    AmigaChannel* channel;
-    AmigaSample* sample;
-	int enabled;
-	int period;
-	int last;
-	int effect;
-	int param;
+    int index;
+    STVoice *next;
+    AmigaChannel *channel;
+    AmigaSample *sample;
+    int enabled;
+    int period;
+    int last;
+    int effect;
+    int param;
 };
 
 #endif // STVOICE_H

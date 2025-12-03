@@ -1,7 +1,6 @@
 #include "MGSample.h"
 
-MGSample::MGSample()
-{
+MGSample::MGSample() {
     loop = 0;
     wave = 0;
     waveLen = 0;

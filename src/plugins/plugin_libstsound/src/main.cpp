@@ -5,9 +5,13 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -28,35 +32,31 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr
 };
 
-class pluginLibstsound
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginLibstsound {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginLibstsound(FMOD_CODEC_STATE* codec)
-    {
+    pluginLibstsound(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginLibstsound()
-    {
+    ~pluginLibstsound() {
         //delete some stuff
         ymMusicDestroy(pMusic);
         delete[] myBuffer;
     }
 
-    YMMUSIC* pMusic;
+    YMMUSIC *pMusic;
     FMOD_CODEC_WAVEFORMAT waveformat;
-    uint8_t* myBuffer;
+    uint8_t *myBuffer;
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -64,8 +64,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
@@ -74,7 +73,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    auto* plugin = new pluginLibstsound(codec);
+    auto *plugin = new pluginLibstsound(codec);
 
     plugin->myBuffer = new uint8_t[filesize];
 
@@ -84,8 +83,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->pMusic = ymMusicCreate();
 
-    if (!ymMusicLoadMemory(plugin->pMusic, plugin->myBuffer, filesize))
-    {
+    if (!ymMusicLoadMemory(plugin->pMusic, plugin->myBuffer, filesize)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -109,7 +107,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    const auto info = static_cast<Info*>(userexinfo->userdata);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
     info->artist = yminfo.pSongAuthor;
     info->title = yminfo.pSongName;
@@ -124,28 +122,25 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginLibstsound*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginLibstsound *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    const auto* plugin = static_cast<pluginLibstsound*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    const auto *plugin = static_cast<pluginLibstsound *>(codec->plugindata);
 
-    ymMusicCompute(plugin->pMusic, static_cast<ymsample*>(buffer), size);
+    ymMusicCompute(plugin->pMusic, static_cast<ymsample *>(buffer), size);
     *read = size;
 
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
-    const auto* plugin = static_cast<pluginLibstsound*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginLibstsound *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
+    if (postype == FMOD_TIMEUNIT_MS) {
         ymMusicStop(plugin->pMusic);
         ymMusicPlay(plugin->pMusic);
         return FMOD_OK;

@@ -1,12 +1,10 @@
 #include "RHSong.h"
 
-RHSong::RHSong()
-{
+RHSong::RHSong() {
     tracks = std::vector<int>();
     speed = 0;
 }
 
-RHSong::~RHSong()
-{
+RHSong::~RHSong() {
     tracks.clear();
 }

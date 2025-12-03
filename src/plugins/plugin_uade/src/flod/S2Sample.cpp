@@ -1,7 +1,6 @@
 #include "S2Sample.h"
 
-S2Sample::S2Sample()
-{
+S2Sample::S2Sample() {
     negStart = 0;
     negLen = 0;
     negSpeed = 0;

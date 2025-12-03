@@ -7,8 +7,7 @@ using namespace std;
 
 class BaseStep;
 
-class MGSong
-{
+class MGSong {
     friend class MGPlayer;
 
 public:
@@ -20,7 +19,7 @@ private:
     int length;
     int loop;
     int loopStep;
-    vector<BaseStep*> tracks;
+    vector<BaseStep *> tracks;
 };
 
 #endif // MGSONG_H

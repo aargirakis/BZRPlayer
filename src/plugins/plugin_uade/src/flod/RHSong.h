@@ -2,12 +2,12 @@
 #define RHSONG_H
 #include <vector>
 
-class RHSong
-{
+class RHSong {
     friend class RHPlayer;
 
 public:
     RHSong();
+
     ~RHSong();
 
 private:

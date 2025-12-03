@@ -11,26 +11,27 @@ class MGSample;
 class MGVoice;
 class MGSong;
 
-class MGPlayer : public AmigaPlayer
-{
+class MGPlayer : public AmigaPlayer {
 public:
-    MGPlayer(Amiga* amiga);
+    MGPlayer(Amiga *amiga);
+
     ~MGPlayer();
-    int load(void* data, unsigned long int _length);
+
+    int load(void *data, unsigned long int _length);
 
 private:
     void tables();
 
 
-    vector<MGSong*> songs;
-    vector<BaseRow*> patterns;
-    vector<MGSample*> samples;
-    vector<MGVoice*> voices;
+    vector<MGSong *> songs;
+    vector<BaseRow *> patterns;
+    vector<MGSample *> samples;
+    vector<MGVoice *> voices;
     vector<unsigned char> subSongsList;
     int buffer1;
     int buffer2;
-    MGSong* song1;
-    MGSong* song2;
+    MGSong *song1;
+    MGSong *song2;
     int trackPos;
     int patternPos;
     int patternLen;
@@ -40,11 +41,10 @@ private:
     vector<int> arpeggios;
     vector<int> averages;
     vector<int> volumes;
-    AmigaChannel* mixChannel;
+    AmigaChannel *mixChannel;
     int mixPeriod;
 
-    enum
-    {
+    enum {
         MUGICIAN_V1 = 1,
         MUGICIAN_V2 = 2
     };
@@ -52,11 +52,17 @@ private:
     static const int PERIODS[1017];
 
     void process();
+
     void initialize();
-    vector<BaseSample*> getSamples();
-    bool getTitle(string& title);
+
+    vector<BaseSample *> getSamples();
+
+    bool getTitle(string &title);
+
     unsigned char getSubsongsCount();
+
     void selectSong(unsigned char);
+
     void printData();
 };
 

@@ -5,9 +5,13 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -27,28 +31,25 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginKdm
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginKdm {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginKdm(FMOD_CODEC_STATE* codec)
-    {
+    pluginKdm(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginKdm()
-    {
+    ~pluginKdm() {
         //delete some stuff
         delete[] myBuffer;
         delete m_player;
         myBuffer = nullptr;
     }
 
-    uint8_t* myBuffer;
-    Info* info;
-    kdmeng* m_player;
+    uint8_t *myBuffer;
+    Info *info;
+    kdmeng *m_player;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -63,8 +64,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -72,15 +72,13 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
-
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int bytesread;
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
     const auto plugin = new pluginKdm(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->myBuffer = new uint8_t[filesize];
 
@@ -94,15 +92,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     const unsigned found = plugin->info->filename.find_last_of("/\\");
 
     const long length = plugin->m_player->load(plugin->myBuffer, filesize,
-                                     plugin->info->filename.substr(0, found + 1).c_str());
+                                               plugin->info->filename.substr(0, found + 1).c_str());
 
-    if (!length)
-    {
+    if (!length) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
@@ -125,16 +122,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->info->numSamples = numSamples;
     plugin->info->numPatterns = numTracks;
 
-    if (numSamples > 0)
-    {
+    if (numSamples > 0) {
         plugin->info->samplesSize = new unsigned int[numSamples];
         plugin->info->samplesLoopStart = new unsigned int[numSamples];
         plugin->info->samplesLoopLength = new unsigned int[numSamples];
         plugin->info->samplesFineTune = new signed int[numSamples];
         plugin->info->samples = new string[numSamples];
         auto c = new char[17];
-        for (int j = 0; j < numSamples; j++)
-        {
+        for (int j = 0; j < numSamples; j++) {
             plugin->info->samplesSize[j] = plugin->m_player->getInstsize(j);
             plugin->info->samplesLoopStart[j] = plugin->m_player->getInstrepstart(j);
             plugin->info->samplesLoopLength[j] = plugin->m_player->getInstreplength(j);
@@ -146,8 +141,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         delete c;
     }
 
-    if (numTracks > 0)
-    {
+    if (numTracks > 0) {
         plugin->info->instruments = new string[numTracks];
         plugin->info->instrumentsNumber = new char[numTracks];
         plugin->info->instrumentsQuantize = new char[numTracks];
@@ -156,8 +150,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
 
         auto c = new char[17];
-        for (int j = 0; j < numTracks; j++)
-        {
+        for (int j = 0; j < numTracks; j++) {
             const int instrIdx = plugin->m_player->getTrackInstrument(j);
             plugin->info->instrumentsNumber[j] = instrIdx + 1;
             plugin->info->instruments[j] = plugin->info->samples[instrIdx];
@@ -174,25 +167,22 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginKdm*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginKdm *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    const auto plugin = static_cast<pluginKdm*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    const auto plugin = static_cast<pluginKdm *>(codec->plugindata);
     plugin->m_player->rendersound(buffer, size << 2);
     *read = size;
 
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                     FMOD_TIMEUNIT postype)
-{
-    const auto* plugin = static_cast<pluginKdm*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginKdm *>(codec->plugindata);
     plugin->m_player->seek(position);
     return FMOD_OK;
 }

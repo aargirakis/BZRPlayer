@@ -2,14 +2,12 @@
 #include "BaseRow.h"
 #include "D2Sample.h"
 
-D2Voice::D2Voice(int index)
-{
+D2Voice::D2Voice(int index) {
     this->index = index;
     next = 0;
 }
 
-void D2Voice::initialize()
-{
+void D2Voice::initialize() {
     channel = 0;
     sample = 0;
     trackPtr = 0;

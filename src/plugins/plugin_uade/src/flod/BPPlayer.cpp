@@ -6,31 +6,25 @@
 
 using namespace std;
 
-BPPlayer::BPPlayer(Amiga* amiga): AmigaPlayer(amiga)
-{
-    samples = std::vector<BPSample*>(16);
+BPPlayer::BPPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
+    samples = std::vector<BPSample *>(16);
 }
 
-BPPlayer::~BPPlayer()
-{
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+BPPlayer::~BPPlayer() {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
 }
 
-int BPPlayer::load(void* data, unsigned long int _length)
-{
-    unsigned char* stream = static_cast<unsigned char*>(data);
+int BPPlayer::load(void *data, unsigned long int _length) {
+    unsigned char *stream = static_cast<unsigned char *>(data);
 
     unsigned int position = 0;
     unsigned int tables = 0;
     const int STRING_LENGTH = 26;
-    for (int j = 0; j < STRING_LENGTH; j++)
-    {
-        if (!stream[position + j])
-        {
+    for (int j = 0; j < STRING_LENGTH; j++) {
+        if (!stream[position + j]) {
             break;
         }
         m_title += stream[position + j];
@@ -38,26 +32,18 @@ int BPPlayer::load(void* data, unsigned long int _length)
     position += STRING_LENGTH;
 
 
-    if (stream[26] == 'B' && stream[27] == 'P' && stream[28] == 'S' && stream[29] == 'M')
-    {
+    if (stream[26] == 'B' && stream[27] == 'P' && stream[28] == 'S' && stream[29] == 'M') {
         m_version = BPSOUNDMON_V1;
         format = "Soundmon 1";
         position = 30;
-    }
-    else
-    {
-        if (stream[26] == 'V' && stream[27] == '.' && stream[28] == '2')
-        {
+    } else {
+        if (stream[26] == 'V' && stream[27] == '.' && stream[28] == '2') {
             m_version = BPSOUNDMON_V2;
             format = "Soundmon 2";
-        }
-        else if (stream[26] == 'V' && stream[27] == '.' && stream[28] == '3')
-        {
+        } else if (stream[26] == 'V' && stream[27] == '.' && stream[28] == '3') {
             m_version = BPSOUNDMON_V3;
             format = "Soundmon 3";
-        }
-        else
-        {
+        } else {
             return -1;
         }
         position = 29;
@@ -68,12 +54,10 @@ int BPPlayer::load(void* data, unsigned long int _length)
 
     position += 2;
 
-    for (int i = 0; ++i < 16;)
-    {
-        BPSample* sample = new BPSample();
+    for (int i = 0; ++i < 16;) {
+        BPSample *sample = new BPSample();
 
-        if (stream[position] == 0xff)
-        {
+        if (stream[position] == 0xff) {
             position++;
             sample->synth = 1;
             sample->table = stream[position];
@@ -99,8 +83,7 @@ int BPPlayer::load(void* data, unsigned long int _length)
             sample->lfoLen = readEndian(stream[position], stream[position + 1]);
             position += 2;
 
-            if (m_version < BPSOUNDMON_V3)
-            {
+            if (m_version < BPSOUNDMON_V3) {
                 position++;
                 sample->lfoDelay = stream[position];
                 position++;
@@ -123,9 +106,7 @@ int BPPlayer::load(void* data, unsigned long int _length)
                 sample->volume = stream[position];
                 position++;
                 position += 6;
-            }
-            else
-            {
+            } else {
                 sample->lfoDelay = stream[position];
                 position++;
                 sample->lfoSpeed = stream[position];
@@ -159,15 +140,11 @@ int BPPlayer::load(void* data, unsigned long int _length)
                 sample->modLen = readEndian(stream[position], stream[position + 1]);
                 position += 2;
             }
-        }
-        else
-        {
+        } else {
             sample->synth = 0;
             const int STRING_LENGTH = 24;
-            for (int j = 0; j < STRING_LENGTH; j++)
-            {
-                if (!stream[position + j])
-                {
+            for (int j = 0; j < STRING_LENGTH; j++) {
+                if (!stream[position + j]) {
                     break;
                 }
                 sample->name += stream[position + j];
@@ -176,8 +153,7 @@ int BPPlayer::load(void* data, unsigned long int _length)
             sample->length = readEndian(stream[position], stream[position + 1]) << 1;
             position += 2;
 
-            if (sample->length)
-            {
+            if (sample->length) {
                 sample->loopPtr = readEndian(stream[position], stream[position + 1]);
                 position += 2;
                 sample->repeat = readEndian(stream[position], stream[position + 1]) << 1;
@@ -187,9 +163,7 @@ int BPPlayer::load(void* data, unsigned long int _length)
 
                 if ((sample->loopPtr + sample->repeat) >= sample->length)
                     sample->repeat = sample->length - sample->loopPtr;
-            }
-            else
-            {
+            } else {
                 sample->pointer--;
                 sample->repeat = 2;
                 position += 6;
@@ -210,22 +184,18 @@ int BPPlayer::load(void* data, unsigned long int _length)
     return 1;
 }
 
-std::vector<BaseSample*> BPPlayer::getSamples()
-{
-    std::vector<BaseSample*> samp(samples.size() - 1);
-    for (int i = 1; i < samples.size(); i++)
-    {
+std::vector<BaseSample *> BPPlayer::getSamples() {
+    std::vector<BaseSample *> samp(samples.size() - 1);
+    for (int i = 1; i < samples.size(); i++) {
         samp[i - 1] = samples[i];
-        if (!samp[i - 1])
-        {
+        if (!samp[i - 1]) {
             samp[i - 1] = new BaseSample();
         }
     }
     return samp;
 }
 
-bool BPPlayer::getTitle(std::string& title)
-{
+bool BPPlayer::getTitle(std::string &title) {
     title = this->m_title;
     return true;
 }

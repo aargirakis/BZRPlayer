@@ -2,14 +2,12 @@
 #include "BaseRow.h"
 #include "BaseStep.h"
 
-S2Voice::S2Voice(int index)
-{
+S2Voice::S2Voice(int index) {
     this->index = index;
     next = 0;
 }
 
-void S2Voice::initialize()
-{
+void S2Voice::initialize() {
     channel = 0;
     step = 0;
     row = 0;

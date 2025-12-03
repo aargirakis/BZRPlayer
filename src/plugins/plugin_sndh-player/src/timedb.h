@@ -32,6 +32,7 @@ using dbentry_t = struct {
 };
 
 static vector<dbentry_t> s_db = {
+
 #include "timedb.inc.h"
 };
 

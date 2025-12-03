@@ -1,8 +1,7 @@
 #include "BPVoice.h"
 #include "AmigaChannel.h"
 
-BPVoice::BPVoice(int index)
-{
+BPVoice::BPVoice(int index) {
     this->index = index;
     channel = 0;
     enabled = 0;
@@ -38,8 +37,7 @@ BPVoice::BPVoice(int index)
     next = 0;
 }
 
-void BPVoice::initialize()
-{
+void BPVoice::initialize() {
     channel = 0;
     enabled = 0;
     restart = 0;

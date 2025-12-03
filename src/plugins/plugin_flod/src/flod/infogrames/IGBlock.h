@@ -1,8 +1,7 @@
 #ifndef IGBLOCK_H
 #define IGBLOCK_H
 
-class IGBlock
-{
+class IGBlock {
     friend class IGPlayer;
 
 public:
@@ -17,6 +16,7 @@ private:
     int positive;
     int delay1;
     int delay2;
+
     void reset();
 };
 

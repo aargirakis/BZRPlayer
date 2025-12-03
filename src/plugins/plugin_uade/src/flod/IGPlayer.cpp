@@ -29,10 +29,9 @@ const int IGPlayer::TICKS[12] =
     2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96
 };
 
-IGPlayer::IGPlayer(Amiga* amiga): AmigaPlayer(amiga)
-{
+IGPlayer::IGPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
     irqtime = 0;
-    voices = std::vector<IGVoice*>(4);
+    voices = std::vector<IGVoice *>(4);
 
     voices[0] = new IGVoice(0);
     voices[0]->next = voices[1] = new IGVoice(1);
@@ -40,15 +39,12 @@ IGPlayer::IGPlayer(Amiga* amiga): AmigaPlayer(amiga)
     voices[2]->next = voices[3] = new IGVoice(3);
 }
 
-IGPlayer::~IGPlayer()
-{
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+IGPlayer::~IGPlayer() {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
@@ -59,45 +55,38 @@ IGPlayer::~IGPlayer()
 }
 
 
-int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
-{
+int IGPlayer::load(void *_data, unsigned long int length, const char *filename) {
     //AmigaPlayer::load(_data, length, filename);
-    unsigned char* stream = static_cast<unsigned char*>(_data);
+    unsigned char *stream = static_cast<unsigned char *>(_data);
     string str_orgfilename = filename;
     string str_newfilename = filename;
 
     ifstream file;
 
     int cut = 4;
-    do
-    {
+    do {
         str_newfilename = str_orgfilename.substr(0, str_orgfilename.length() - cut) + ".ins";
         file.open(str_newfilename.c_str(), ios::in | ios::binary | ios::ate);
         cut++;
-    }
-    while (!file.is_open() && cut < str_orgfilename.length() && str_orgfilename.substr(
-        str_orgfilename.length() - cut - 1, 1) != "/");
+    } while (!file.is_open() && cut < str_orgfilename.length() && str_orgfilename.substr(
+                 str_orgfilename.length() - cut - 1, 1) != "/");
 
 
     ifstream::pos_type fileSize;
-    char* extra = 0;
-    if (file.is_open())
-    {
+    char *extra = 0;
+    if (file.is_open()) {
         fileSize = file.tellg();
         extra = new char[fileSize];
 
         file.seekg(0, ios::beg);
 
-        if (!file.read(extra, fileSize))
-        {
+        if (!file.read(extra, fileSize)) {
             //failed reading
             file.close();
             return -1;
         }
         file.close();
-    }
-    else
-    {
+    } else {
         return -1;
     }
     if (!extra) return -1;
@@ -105,17 +94,16 @@ int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
     if (fileSize != (readEndian(extra[position], extra[position + 1], extra[position + 2], extra[position + 3]) + 4))
         return -1;
     position += 4;
-    switch (fileSize)
-    {
-    case 54832: //Gobliins 2 (all)
-    case 27312: //Goblins 3 (all)
-    case 82990: //Ween The Prophecy (musx)
-    case 87800: //Ween The Prophecy (ween)
-        irqtime = 589; //irq = $24ff
-    case 37732: //Horror Zombies from the Crypt
-        irqtime = 436; //irq = $1b66
-    default: //remaining modules
-        irqtime = 414; //irq = $19ff
+    switch (fileSize) {
+        case 54832: //Gobliins 2 (all)
+        case 27312: //Goblins 3 (all)
+        case 82990: //Ween The Prophecy (musx)
+        case 87800: //Ween The Prophecy (ween)
+            irqtime = 589; //irq = $24ff
+        case 37732: //Horror Zombies from the Crypt
+            irqtime = 436; //irq = $1b66
+        default: //remaining modules
+            irqtime = 414; //irq = $19ff
     }
 
 
@@ -123,16 +111,15 @@ int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
     position += 4;
     unsigned int len = begin >> 4;
 
-    samples = std::vector<BaseSample*>(len);
+    samples = std::vector<BaseSample *>(len);
     position = 4;
-    for (int i = 0; i < len; ++i)
-    {
-        BaseSample* sample = new BaseSample();
+    for (int i = 0; i < len; ++i) {
+        BaseSample *sample = new BaseSample();
         sample->pointer = readEndian(extra[position], extra[position + 1], extra[position + 2], extra[position + 3]) -
-            begin;
+                          begin;
         position += 4;
         sample->loopPtr = readEndian(extra[position], extra[position + 1], extra[position + 2], extra[position + 3]) -
-            begin;
+                          begin;
         position += 4;
 
         position += 4;
@@ -151,8 +138,7 @@ int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
     speed = readEndian(stream[position], stream[position + 1]);
     position += 2;
     vector<int> pointers(8);
-    for (int i = 0; i < 8; ++i)
-    {
+    for (int i = 0; i < 8; ++i) {
         pointers[i] = readEndian(stream[position], stream[position + 1]);
         position += 2;
     }
@@ -167,9 +153,8 @@ int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
 
 
     volData = vector<int>(len);
-    for (int i = 0; i < len; ++i)
-    {
-        volData[i] = (signed char)stream[position];
+    for (int i = 0; i < len; ++i) {
+        volData[i] = (signed char) stream[position];
         position++;
     }
 
@@ -177,9 +162,8 @@ int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
     len = length - position;
 
     perData = vector<int>(len);
-    for (int i = 0; i < len; ++i)
-    {
-        perData[i] = (signed char)stream[position];
+    for (int i = 0; i < len; ++i) {
+        perData[i] = (signed char) stream[position];
         position++;
     }
 
@@ -187,38 +171,31 @@ int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
     len = pointers[0] - pointers[6];
 
     comData = vector<int>(len);
-    for (int i = 0; i < len; ++i)
-    {
-        comData[i] = (signed char)stream[position];
+    for (int i = 0; i < len; ++i) {
+        comData[i] = (signed char) stream[position];
         position++;
     }
     position = pointers[7];
     len = ((begin + pointers[2]) - pointers[7]) >> 1;
 
     vector<int> offsets(len);
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         offsets[i] = readEndian(stream[position], stream[position + 1]);
         position += 2;
     }
 
-    for (int i = 2; i < 6; ++i)
-    {
+    for (int i = 2; i < 6; ++i) {
         position = begin + pointers[i];
         len = pointers[i + 1] - pointers[i];
         vector<int> track(len);
 
         int value;
-        for (int j = 0; j < len; ++j)
-        {
+        for (int j = 0; j < len; ++j) {
             value = stream[position];
             position++;
-            if (value != 0xff)
-            {
+            if (value != 0xff) {
                 track[j] = offsets[value] - pointers[6];
-            }
-            else
-            {
+            } else {
                 track[j] = value;
             }
 
@@ -232,14 +209,11 @@ int IGPlayer::load(void* _data, unsigned long int length, const char* filename)
     return 1;
 }
 
-std::vector<BaseSample*> IGPlayer::getSamples()
-{
-    std::vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+std::vector<BaseSample *> IGPlayer::getSamples() {
+    std::vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }

@@ -1,8 +1,7 @@
 #include "PTVoice.h"
 #include "BaseSample.h"
 
-PTVoice::PTVoice(int index)
-{
+PTVoice::PTVoice(int index) {
     this->index = index;
     enabled = 0;
     loopCtr = 0;
@@ -34,8 +33,7 @@ PTVoice::PTVoice(int index)
     next = 0;
 }
 
-void PTVoice::initialize()
-{
+void PTVoice::initialize() {
     channel = 0;
     sample = 0;
     enabled = 0;

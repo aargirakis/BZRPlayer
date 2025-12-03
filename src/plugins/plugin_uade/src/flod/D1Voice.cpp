@@ -1,14 +1,12 @@
 #include "D1Voice.h"
 #include "BaseRow.h"
 
-D1Voice::D1Voice(int index)
-{
+D1Voice::D1Voice(int index) {
     this->index = index;
     next = 0;
 }
 
-void D1Voice::initialize()
-{
+void D1Voice::initialize() {
     channel = 0;
     sample = 0;
     trackPos = 0;

@@ -10,31 +10,37 @@ class RHSong;
 class RHVoice;
 class RHSample;
 
-class RHPlayer : public AmigaPlayer
-{
+class RHPlayer : public AmigaPlayer {
 public:
-    RHPlayer(Amiga* amiga);
+    RHPlayer(Amiga *amiga);
+
     ~RHPlayer();
-    int load(void* data, unsigned long int _length);
+
+    int load(void *data, unsigned long int _length);
 
 private:
-    unsigned char* stream;
-    vector<RHSong*> songs;
-    vector<RHSample*> samples;
-    RHSong* song;
+    unsigned char *stream;
+    vector<RHSong *> songs;
+    vector<RHSample *> samples;
+    RHSong *song;
     int periods;
     int vibrato;
-    vector<RHVoice*> voices;
-    void* data;
+    vector<RHVoice *> voices;
+    void *data;
     int complete;
     int variant;
     unsigned int position;
 
     void process();
+
     void initialize();
+
     unsigned char getSubsongsCount();
+
     void selectSong(unsigned char);
-    vector<BaseSample*> getSamples();
+
+    vector<BaseSample *> getSamples();
+
     void printData();
 };
 

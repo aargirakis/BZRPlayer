@@ -7,21 +7,23 @@ class FESong;
 class FEVoice;
 class FESample;
 
-class FEPlayer : public AmigaPlayer
-{
+class FEPlayer : public AmigaPlayer {
 public:
-    FEPlayer(Amiga* amiga);
+    FEPlayer(Amiga *amiga);
+
     ~FEPlayer();
-    int load(void* data, unsigned long int _length);
-    std::vector<BaseSample*> getSamples();
+
+    int load(void *data, unsigned long int _length);
+
+    std::vector<BaseSample *> getSamples();
 
 private:
     unsigned int position;
-    std::vector<FESong*> songs;
-    std::vector<FESample*> samples;
+    std::vector<FESong *> songs;
+    std::vector<FESample *> samples;
     //signed char* patterns;
-    FESong* song;
-    std::vector<FEVoice*> voices;
+    FESong *song;
+    std::vector<FEVoice *> voices;
     int complete;
     int sampleFlag;
 

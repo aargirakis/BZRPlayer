@@ -6,26 +6,26 @@ class BaseRow;
 class D2Sample;
 class AmigaChannel;
 
-class D2Voice
-{
+class D2Voice {
     friend class D2Player;
 
 public:
     D2Voice(int index);
+
     void initialize();
 
 private:
     int index;
-    D2Voice* next;
-    AmigaChannel* channel;
-    D2Sample* sample;
+    D2Voice *next;
+    AmigaChannel *channel;
+    D2Sample *sample;
     int trackPtr;
     int trackPos;
     int trackLen;
     int patternPos;
     int restart;
-    BaseStep* step;
-    BaseRow* row;
+    BaseStep *step;
+    BaseRow *row;
     int note;
     int period;
     int finalPeriod;

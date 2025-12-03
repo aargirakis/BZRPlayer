@@ -5,10 +5,15 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -28,31 +33,28 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginLibkss
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginLibkss {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginLibkss(FMOD_CODEC_STATE* codec)
-    {
+    pluginLibkss(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginLibkss()
-    {
+    ~pluginLibkss() {
         //delete some stuff
         delete[] myBuffer;
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 
-    Info* info;
+    Info *info;
     KSS *kss = nullptr;
     KSSPLAY *kssplay = nullptr;
     int currentSubsong;
     uint32_t filesize;
-    uint8_t* myBuffer;
+    uint8_t *myBuffer;
     int loopNum;
     bool setPositionWithTimeunitSubSongHasBeenInvoked = false;
     unsigned int totalSkippedBytes = 0;
@@ -62,8 +64,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -71,8 +72,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     auto *plugin = new pluginLibkss(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
@@ -172,9 +172,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    const auto* plugin = static_cast<pluginLibkss*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    const auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
 
     if (plugin != nullptr) {
         KSSPLAY_delete(plugin->kssplay);
@@ -185,8 +184,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
 
     // TODO workaround: skipping fmod pre-buffering in order to avoid initial playback glitch
@@ -207,9 +205,9 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 
 
     // TODO
-     if (KSSPLAY_get_loop_count(plugin->kssplay) >= plugin->loopNum) {
-         return FMOD_ERR_FILE_EOF;
-     }
+    if (KSSPLAY_get_loop_count(plugin->kssplay) >= plugin->loopNum) {
+        return FMOD_ERR_FILE_EOF;
+    }
 
     KSSPLAY_calc(plugin->kssplay, static_cast<int16_t *>(buffer), plugin->waveformat.pcmblocksize);
 
@@ -219,8 +217,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
         *length = 1;
         return FMOD_OK;
@@ -230,12 +227,11 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginLibkss*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         plugin->setPositionWithTimeunitSubSongHasBeenInvoked = true;
     }
 

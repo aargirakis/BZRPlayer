@@ -5,10 +5,16 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
+
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codec =
@@ -30,28 +36,25 @@ FMOD_CODEC_DESCRIPTION codec =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginAsap
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginAsap {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginAsap(FMOD_CODEC_STATE* codec)
-    {
+    pluginAsap(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginAsap()
-    {
+    ~pluginAsap() {
         //delete some stuff
         delete[] myBuffer;
         ASAP_Delete(asap);
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
-    ASAP* asap;
-    const ASAPInfo* asap_info;
-    uint8_t* myBuffer;
+    ASAP *asap;
+    const ASAPInfo *asap_info;
+    uint8_t *myBuffer;
     int current_song;
     unsigned int mask = 0;
 };
@@ -60,8 +63,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codec;
 }
 
@@ -69,8 +71,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int filesize;
     unsigned int bytesread;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
@@ -86,8 +87,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->asap = ASAP_New();
 
-    if (!ASAP_Load(plugin->asap, info->filename.c_str(), plugin->myBuffer, static_cast<int>(filesize)))
-    {
+    if (!ASAP_Load(plugin->asap, info->filename.c_str(), plugin->myBuffer, static_cast<int>(filesize))) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -97,8 +97,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     int song = ASAPInfo_GetDefaultSong(plugin->asap_info);
     plugin->current_song = song;
 
-    if (const int duration = ASAPInfo_GetDuration(plugin->asap_info, song); !ASAP_PlaySong(plugin->asap, song, duration))
-    {
+    if (const int duration = ASAPInfo_GetDuration(plugin->asap_info, song); !
+        ASAP_PlaySong(plugin->asap, song, duration)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -124,12 +124,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     info->pluginName = PLUGIN_asap_NAME;
     info->setSeekable(true);
 
-    if (ASAPInfo_GetOriginalModuleExt(plugin->asap_info, plugin->myBuffer, static_cast<int>(filesize)) == nullptr)
-    {
+    if (ASAPInfo_GetOriginalModuleExt(plugin->asap_info, plugin->myBuffer, static_cast<int>(filesize)) == nullptr) {
         info->fileformat = "Slight Atari Player";
-    }
-    else
-    {
+    } else {
         info->fileformat = ASAPInfo_GetExtDescription(
             ASAPInfo_GetOriginalModuleExt(plugin->asap_info, plugin->myBuffer, static_cast<int>(filesize)));
     }
@@ -166,14 +163,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginAsap*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginAsap *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginAsap *>(codec->plugindata);
 
     int bufferedBytes = ASAP_Generate(plugin->asap, static_cast<unsigned char *>(buffer),
@@ -187,16 +182,13 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
-    auto const *plugin = static_cast<pluginAsap*>(codec->plugindata);
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    auto const *plugin = static_cast<pluginAsap *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
         *length = ASAPInfo_GetDuration(plugin->asap_info, plugin->current_song);
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
         *length = ASAPInfo_GetSongs(plugin->asap_info);
     }
 
@@ -204,26 +196,20 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
 }
 
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginAsap*>(codec->plugindata);
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
-            if (ASAP_Seek(plugin->asap, static_cast<int>(position)))
-            {
-                ASAP_MutePokeyChannels(plugin->asap, static_cast<int>(plugin->mask));
-                return FMOD_OK;
-            }
-    }
-    else if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginAsap *>(codec->plugindata);
+    if (postype == FMOD_TIMEUNIT_MS) {
+        if (ASAP_Seek(plugin->asap, static_cast<int>(position))) {
+            ASAP_MutePokeyChannels(plugin->asap, static_cast<int>(plugin->mask));
+            return FMOD_OK;
+        }
+    } else if (postype == FMOD_TIMEUNIT_SUBSONG) {
         int duration = ASAPInfo_GetDuration(plugin->asap_info, static_cast<int>(position));
         ASAP_PlaySong(plugin->asap, static_cast<int>(position), duration);
         plugin->current_song = static_cast<int>(position);
         return FMOD_OK;
-    }
-    else if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
-    {
+    } else if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
         //mutes voices
         //position is a mask
         ASAP_MutePokeyChannels(plugin->asap, static_cast<int>(position));
@@ -233,15 +219,12 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
-{
-    auto const *plugin = static_cast<pluginAsap*>(codec->plugindata);
+static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype) {
+    auto const *plugin = static_cast<pluginAsap *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         *position = plugin->current_song;
     }
 
     return FMOD_OK;
-
 }

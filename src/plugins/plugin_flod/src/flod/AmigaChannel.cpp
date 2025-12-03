@@ -1,17 +1,14 @@
 #include "AmigaChannel.h"
 
-AmigaChannel::AmigaChannel(int index)
-{
+AmigaChannel::AmigaChannel(int index) {
     panning = 1.0;
     if ((++index & 2) == 0) panning = -panning;
     level = panning;
     next = 0;
 }
 
-void AmigaChannel::setEnabled(int value)
-{
-    if (value != audena)
-    {
+void AmigaChannel::setEnabled(int value) {
+    if (value != audena) {
         audena = value;
         audloc = pointer;
         audctr = pointer + length;
@@ -20,33 +17,28 @@ void AmigaChannel::setEnabled(int value)
     }
 }
 
-void AmigaChannel::setPeriod(int value)
-{
+void AmigaChannel::setPeriod(int value) {
     if (value < 60) value = 60;
     else if (value > 65535) value = 65535;
     audper = value;
 }
 
-void AmigaChannel::setVolume(int value)
-{
+void AmigaChannel::setVolume(int value) {
     if (value < 0) value = 0;
     else if (value > 64) value = 64;
     audvol = value;
 }
 
-void AmigaChannel::reset()
-{
+void AmigaChannel::reset() {
     ldata = 0.0;
     rdata = 0.0;
 }
 
-int AmigaChannel::enabled()
-{
+int AmigaChannel::enabled() {
     return audena;
 }
 
-void AmigaChannel::initialize()
-{
+void AmigaChannel::initialize() {
     audena = 0;
     audctr = 0;
     audloc = 0;

@@ -2,8 +2,7 @@
 #define BPSAMPLE_H
 #include "BaseSample.h"
 
-class BPSample : public BaseSample
-{
+class BPSample : public BaseSample {
     friend class BPPlayer;
 
 public:

@@ -108,8 +108,7 @@ const int MGPlayer::PERIODS[1017] = {
     159, 150, 142, 134
 };
 
-MGPlayer::MGPlayer(Amiga* amiga): AmigaPlayer(amiga)
-{
+MGPlayer::MGPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
     mixChannel = 0;
     buffer1 = 0;
     buffer2 = 0;
@@ -121,9 +120,9 @@ MGPlayer::MGPlayer(Amiga* amiga): AmigaPlayer(amiga)
     chans = 0;
     mixPeriod = 0;
 
-    songs = vector<MGSong*>(8);
+    songs = vector<MGSong *>(8);
     arpeggios = vector<int>(256);
-    voices = vector<MGVoice*>(7);
+    voices = vector<MGVoice *>(7);
 
     voices[0] = new MGVoice(0);
     voices[0]->next = voices[1] = new MGVoice(1);
@@ -136,29 +135,24 @@ MGPlayer::MGPlayer(Amiga* amiga): AmigaPlayer(amiga)
     tables();
 }
 
-MGPlayer::~MGPlayer()
-{
+MGPlayer::~MGPlayer() {
     arpeggios.clear();
     averages.clear();
     volumes.clear();
     if (mixChannel) delete mixChannel;
-    for (unsigned int i = 0; i < songs.size(); i++)
-    {
+    for (unsigned int i = 0; i < songs.size(); i++) {
         if (songs[i]) delete songs[i];
     }
     songs.clear();
-    for (unsigned int i = 1; i < samples.size(); i++)
-    {
+    for (unsigned int i = 1; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < patterns.size(); i++)
-    {
+    for (unsigned int i = 0; i < patterns.size(); i++) {
         if (patterns[i]) delete patterns[i];
     }
     patterns.clear();
@@ -166,8 +160,7 @@ MGPlayer::~MGPlayer()
     subSongsList.clear();
 }
 
-void MGPlayer::tables()
-{
+void MGPlayer::tables() {
     averages = vector<int>(1024);
     volumes = vector<int>(16384);
     mixPeriod = 203;
@@ -178,20 +171,17 @@ void MGPlayer::tables()
     int v1 = 0;
     int v2 = 0;
 
-    for (int i = 0; i < 1024; ++i)
-    {
+    for (int i = 0; i < 1024; ++i) {
         if (vol > 127) vol -= 256;
         averages[i] = vol;
         if (i > 383 && i < 639) vol = ++vol & 255;
     }
 
-    for (int i = 0; i < 64; ++i)
-    {
+    for (int i = 0; i < 64; ++i) {
         v1 = -128;
         v2 = 128;
 
-        for (int j = 0; j < 256; ++j)
-        {
+        for (int j = 0; j < 256; ++j) {
             vol = ((v1 * step) / 63) + 128;
             idx = pos + v2;
             volumes[idx] = vol & 255;
@@ -206,22 +196,18 @@ void MGPlayer::tables()
 }
 
 
-unsigned char MGPlayer::getSubsongsCount()
-{
+unsigned char MGPlayer::getSubsongsCount() {
     return subSongsList.size();
 }
 
-void MGPlayer::selectSong(unsigned char subsong)
-{
-    if (subsong >= subSongsList.size())
-    {
+void MGPlayer::selectSong(unsigned char subsong) {
+    if (subsong >= subSongsList.size()) {
         subsong = subSongsList.size() - 1;
     }
     m_songNumber = subSongsList[subsong];
 }
 
-void MGPlayer::initialize()
-{
+void MGPlayer::initialize() {
     AmigaPlayer::initialize();
 
 
@@ -238,15 +224,13 @@ void MGPlayer::initialize()
     patternEnd = 1;
     stepEnd = 1;
 
-    MGVoice* voice = voices[0];
-    do
-    {
+    MGVoice *voice = voices[0];
+    do {
         voice->initialize();
         voice->sample = samples[0];
 
-        if (voice->index < 4)
-        {
-            AmigaChannel* chan = voice->channel = amiga->channels[voice->index];
+        if (voice->index < 4) {
+            AmigaChannel *chan = voice->channel = amiga->channels[voice->index];
             chan->setEnabled(0);
             chan->pointer = amiga->loopPtr;
             chan->length = 2;
@@ -255,17 +239,15 @@ void MGPlayer::initialize()
 
             voice->channel = chan;
         }
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 
-    if (m_version == MUGICIAN_V2)
-    {
+    if (m_version == MUGICIAN_V2) {
         if (m_songNumber & 1) m_songNumber--;
         song2 = songs[int(m_songNumber + 1)];
 
         mixChannel = new AmigaChannel(7);
 
-        AmigaChannel* chan = amiga->channels[3];
+        AmigaChannel *chan = amiga->channels[3];
         chan->mute = 0;
         chan->pointer = buffer1;
         chan->length = 350;
@@ -277,36 +259,27 @@ void MGPlayer::initialize()
     }
 }
 
-int MGPlayer::load(void* _data, unsigned long int _length)
-{
-    unsigned char* stream = static_cast<unsigned char*>(_data);
+int MGPlayer::load(void *_data, unsigned long int _length) {
+    unsigned char *stream = static_cast<unsigned char *>(_data);
     if (stream[0] == ' ' && stream[1] == 'M' && stream[2] == 'U' && stream[3] == 'G' && stream[4] == 'I' && stream[5] ==
         'C' && stream[6] == 'I' && stream[7] == 'A' && stream[8] == 'N' && stream[9] == '/' && stream[10] == 'S' &&
         stream[11] == 'O' && stream[12] == 'F' && stream[13] == 'T' && stream[14] == 'E' && stream[15] == 'Y' && stream[
             16] == 'E' && stream[17] == 'S' && stream[18] == ' ' && stream[19] == '1' && stream[20] == '9' && stream[21]
-        == '9' && stream[22] == '0' && stream[23] == ' ')
-    {
+        == '9' && stream[22] == '0' && stream[23] == ' ') {
         m_version = MUGICIAN_V1;
         format = "Digital Mugician 1";
         chans = 4;
         voices[3]->next = 0;
-    }
-    else if (stream[0] == ' ' && stream[1] == 'M' && stream[2] == 'U' && stream[3] == 'G' && stream[4] == 'I' && stream[
-            5] == 'C' && stream[6] == 'I' && stream[7] == 'A' && stream[8] == 'N' && stream[9] == '2' && stream[10] ==
-        '/'
-        && stream[11] == 'S' && stream[12] == 'O' && stream[13] == 'F' && stream[14] == 'T' && stream[15] == 'E' &&
-        stream[
-            16] == 'Y' && stream[17] == 'E' && stream[18] == 'S' && stream[19] == ' ' && stream[20] == '1' && stream[21]
-        ==
-        '9' && stream[22] == '9' && stream[23] == '0')
-    {
+    } else if (stream[0] == ' ' && stream[1] == 'M' && stream[2] == 'U' && stream[3] == 'G' && stream[4] == 'I' &&
+               stream[5] == 'C' && stream[6] == 'I' && stream[7] == 'A' && stream[8] == 'N' && stream[9] == '2' &&
+               stream[10] == '/' && stream[11] == 'S' && stream[12] == 'O' && stream[13] == 'F' && stream[14] == 'T' &&
+               stream[15] == 'E' && stream[16] == 'Y' && stream[17] == 'E' && stream[18] == 'S' && stream[19] == ' ' &&
+               stream[20] == '1' && stream[21] == '9' && stream[22] == '9' && stream[23] == '0') {
         m_version = MUGICIAN_V2;
         format = "Digital Mugician 2";
         chans = 7;
         voices[3]->next = voices[4];
-    }
-    else
-    {
+    } else {
         return -1;
     }
 
@@ -316,17 +289,15 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     vector<int> index(8);
 
 
-    for (int i = 0; i < 8; ++i)
-    {
+    for (int i = 0; i < 8; ++i) {
         index[i] = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
     }
 
     position = 76;
 
-    for (int i = 0; i < 8; ++i)
-    {
-        MGSong* song = new MGSong();
+    for (int i = 0; i < 8; ++i) {
+        MGSong *song = new MGSong();
         song->loop = stream[position];
         position++;
         song->loopStep = stream[position] << 2;
@@ -336,10 +307,8 @@ int MGPlayer::load(void* _data, unsigned long int _length)
         song->length = stream[position] << 2;
         position++;
         const int STRING_LENGTH = 12;
-        for (int j = 0; j < STRING_LENGTH; j++)
-        {
-            if (!stream[position + j])
-            {
+        for (int j = 0; j < STRING_LENGTH; j++) {
+            if (!stream[position + j]) {
                 break;
             }
             song->title += stream[position + j];
@@ -353,26 +322,22 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     subSongsList = vector<unsigned char>();
 
 
-    for (int i = 0; i < 8; ++i)
-    {
-        MGSong* song = songs[i];
+    for (int i = 0; i < 8; ++i) {
+        MGSong *song = songs[i];
         len = index[i] << 2;
 
         unsigned int patternSize = 0;
-        for (int j = 0; j < len; ++j)
-        {
-            BaseStep* step = new BaseStep();
+        for (int j = 0; j < len; ++j) {
+            BaseStep *step = new BaseStep();
             step->pattern = stream[position] << 6;
             position++;
-            step->transpose = (signed char)stream[position];
+            step->transpose = (signed char) stream[position];
             position++;
             song->tracks.push_back(step);
             patternSize += step->pattern;
         }
-        if (patternSize > 0)
-        {
-            if ((m_version == MUGICIAN_V1) || (m_version == MUGICIAN_V2 && (i + 1) % 2 == 1))
-            {
+        if (patternSize > 0) {
+            if ((m_version == MUGICIAN_V1) || (m_version == MUGICIAN_V2 && (i + 1) % 2 == 1)) {
                 subSongsList.push_back(i);
             }
         }
@@ -382,12 +347,11 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     position = 60;
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
-    samples = vector<MGSample*>(++len);
+    samples = vector<MGSample *>(++len);
     position = pos;
 
-    for (int i = 1; i < len; ++i)
-    {
-        MGSample* sample = new MGSample();
+    for (int i = 1; i < len; ++i) {
+        MGSample *sample = new MGSample();
         sample->wave = stream[position];
         position++;
         sample->waveLen = stream[position] << 1;
@@ -447,16 +411,15 @@ int MGPlayer::load(void* _data, unsigned long int _length)
 
     if (instr) instr = pos;
 
-    for (int i = 0; i < len; ++i)
-    {
-        BaseRow* row = new BaseRow();
+    for (int i = 0; i < len; ++i) {
+        BaseRow *row = new BaseRow();
         row->note = stream[position];
         position++;
         row->sample = stream[position] & 63;
         position++;
         row->effect = stream[position];
         position++;
-        row->param = (signed char)stream[position];
+        row->param = (signed char) stream[position];
         position++;
         patterns[i] = row;
     }
@@ -464,8 +427,7 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     pos = position;
     position = 72;
 
-    if (instr)
-    {
+    if (instr) {
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
         position = pos;
@@ -481,9 +443,8 @@ int MGPlayer::load(void* _data, unsigned long int _length)
 
         len = samples.size();
 
-        for (int i = 1; i < len; ++i)
-        {
-            MGSample* sample = samples[i];
+        for (int i = 1; i < len; ++i) {
+            MGSample *sample = samples[i];
             if (sample->wave < 32) continue;
             position = instr + ((sample->wave - 32) << 5);
 
@@ -498,24 +459,19 @@ int MGPlayer::load(void* _data, unsigned long int _length)
                                       stream[position + 3]);
             position += 4;
             const int STRING_LENGTH = 12;
-            for (int j = 0; j < STRING_LENGTH; j++)
-            {
-                if (!stream[position + j])
-                {
+            for (int j = 0; j < STRING_LENGTH; j++) {
+                if (!stream[position + j]) {
                     break;
                 }
                 sample->name += stream[position + j];
             }
             position += STRING_LENGTH;
 
-            if (sample->loop)
-            {
+            if (sample->loop) {
                 sample->loop -= sample->pointer;
                 sample->repeat = sample->length - sample->loop;
                 if (sample->repeat & 1) sample->repeat--;
-            }
-            else
-            {
+            } else {
                 sample->loopPtr = amiga->memory.size();
                 sample->repeat = 8;
             }
@@ -526,22 +482,18 @@ int MGPlayer::load(void* _data, unsigned long int _length)
             sample->pointer += data;
             if (!sample->loopPtr) sample->loopPtr = sample->pointer + sample->loop;
         }
-    }
-    else
-    {
+    } else {
         pos += readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
     }
 
     position = 24;
-    if (readEndian(stream[position], stream[position + 1]) == 1)
-    {
+    if (readEndian(stream[position], stream[position + 1]) == 1) {
         position += 2;
         position = pos;
         len = _length - pos;
         if (len > 256) len = 256;
-        for (int i = 0; i < len; ++i)
-        {
+        for (int i = 0; i < len; ++i) {
             arpeggios[i] = stream[position];
             position++;
         }
@@ -551,11 +503,10 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     return 1;
 }
 
-void MGPlayer::process()
-{
-    MGSample* sample;
-    AmigaChannel* chan;
-    BaseRow* row;
+void MGPlayer::process() {
+    MGSample *sample;
+    AmigaChannel *chan;
+    BaseRow *row;
     int index = 0;
     int dst = 0;
     int src1 = 0;
@@ -564,36 +515,28 @@ void MGPlayer::process()
     int value = 0;
     int r = 0;
 
-    MGVoice* voice = voices[0];
+    MGVoice *voice = voices[0];
 
-    do
-    {
+    do {
         sample = voice->sample;
 
-        if (voice->index < 3 || chans == 4)
-        {
+        if (voice->index < 3 || chans == 4) {
             chan = voice->channel;
             if (stepEnd) voice->step = song1->tracks[int(trackPos + voice->index)];
 
-            if (sample->wave > 31)
-            {
+            if (sample->wave > 31) {
                 chan->pointer = sample->loopPtr;
                 chan->length = sample->repeat;
             }
-        }
-        else
-        {
+        } else {
             chan = mixChannel;
             if (stepEnd) voice->step = song2->tracks[int(trackPos + (voice->index - 3))];
         }
 
-        if (patternEnd)
-        {
+        if (patternEnd) {
             row = patterns[int(voice->step->pattern + patternPos)];
-            if (row->note)
-            {
-                if (row->effect != 74)
-                {
+            if (row->note) {
+                if (row->effect != 74) {
                     voice->note = row->note;
                     if (row->sample) voice->sample = sample = samples[row->sample];
                 }
@@ -601,14 +544,12 @@ void MGPlayer::process()
                 voice->val2 = row->param;
                 index = voice->step->transpose + sample->finetune;
 
-                if (voice->val1 != 12)
-                {
+                if (voice->val1 != 12) {
                     voice->pitch = row->effect;
 
                     if (voice->val1 == 1) index += voice->pitch;
 
-                    if (sample->wave > 31)
-                    {
+                    if (sample->wave > 31) {
                         chan->pointer = sample->pointer;
                         chan->length = sample->length;
                         chan->setEnabled(0);
@@ -616,18 +557,14 @@ void MGPlayer::process()
                         voice->mixPtr = sample->pointer;
                         voice->mixEnd = sample->pointer + sample->length;
                         voice->mixMute = 0;
-                    }
-                    else
-                    {
+                    } else {
                         dst = sample->wave << 7;
                         chan->pointer = dst;
                         chan->length = sample->waveLen;
                         if (voice->val1 != 10) chan->setEnabled(0);
 
-                        if (chans == 4)
-                        {
-                            if ((sample->fx) && (voice->val1 != 2) && (voice->val1 != 4))
-                            {
+                        if (chans == 4) {
+                            if ((sample->fx) && (voice->val1 != 2) && (voice->val1 != 4)) {
                                 len = dst + 128;
                                 src1 = sample->source1 << 7;
                                 for (int i = dst; i < len; ++i) amiga->memory[i] = amiga->memory[src1++];
@@ -639,13 +576,10 @@ void MGPlayer::process()
                     }
                 }
 
-                if ((voice->val1 != 3) && (voice->val1 != 4))
-                {
+                if ((voice->val1 != 3) && (voice->val1 != 4)) {
                     voice->volCtr = 1;
                     voice->volStep = 0;
-                }
-                else
-                {
+                } else {
                     voice->pitch = row->note;
                     index += voice->pitch;
                 }
@@ -661,276 +595,242 @@ void MGPlayer::process()
             }
         }
 
-        switch (voice->val1)
-        {
-        case 0:
-            break;
-        case 5: //pattern length
-            value = voice->val2;
-            if ((value > 0) && (value < 65)) patternLen = value;
-            break;
-        case 6: //song speed
-            if ((!voice->val2) || (voice->val2 > 15)) break;
-            value = voice->val2 & 15;
-            speed = value | (value << 4);
-            break;
-        case 7: //filter on
-            amiga->filter->active = 1;
-            break;
-        case 8: //filter off
-            amiga->filter->active = 0;
-            break;
-        case 13: //shuffle
-            voice->val1 = 0;
-            value = voice->val2 & 0x0f;
-            if (!value) break;
-            value = voice->val2 & 0xf0;
-            if (!value) break;
-            speed = voice->val2;
-            break;
+        switch (voice->val1) {
+            case 0:
+                break;
+            case 5: //pattern length
+                value = voice->val2;
+                if ((value > 0) && (value < 65)) patternLen = value;
+                break;
+            case 6: //song speed
+                if ((!voice->val2) || (voice->val2 > 15)) break;
+                value = voice->val2 & 15;
+                speed = value | (value << 4);
+                break;
+            case 7: //filter on
+                amiga->filter->active = 1;
+                break;
+            case 8: //filter off
+                amiga->filter->active = 0;
+                break;
+            case 13: //shuffle
+                voice->val1 = 0;
+                value = voice->val2 & 0x0f;
+                if (!value) break;
+                value = voice->val2 & 0xf0;
+                if (!value) break;
+                speed = voice->val2;
+                break;
         }
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 
     voice = voices[0];
 
-    do
-    {
+    do {
         sample = voice->sample;
 
-        if (chans == 4)
-        {
+        if (chans == 4) {
             chan = voice->channel;
 
-            if ((sample->wave < 32) && (sample->fx) && (!sample->fxDone))
-            {
+            if ((sample->wave < 32) && (sample->fx) && (!sample->fxDone)) {
                 sample->fxDone = 1;
 
-                if (voice->fxCtr)
-                {
+                if (voice->fxCtr) {
                     voice->fxCtr--;
-                }
-                else
-                {
+                } else {
                     voice->fxCtr = sample->fxSpeed;
                     dst = sample->wave << 7;
 
-                    switch (sample->fx)
-                    {
-                    case 1: //filter
-                        for (int i = 0; i < 127; ++i)
-                        {
-                            value = amiga->memory[dst] + amiga->memory[int(dst + 1)];
-                            amiga->memory[dst++] = value >> 1;
-                        }
-                        break;
-                    case 2: //mixing
-                        src1 = sample->source1 << 7;
-                        src2 = sample->source2 << 7;
-                        len = sample->waveLen;
-                        index = sample->fxStep;
-                        sample->fxStep = ++sample->fxStep & 127;
+                    switch (sample->fx) {
+                        case 1: //filter
+                            for (int i = 0; i < 127; ++i) {
+                                value = amiga->memory[dst] + amiga->memory[int(dst + 1)];
+                                amiga->memory[dst++] = value >> 1;
+                            }
+                            break;
+                        case 2: //mixing
+                            src1 = sample->source1 << 7;
+                            src2 = sample->source2 << 7;
+                            len = sample->waveLen;
+                            index = sample->fxStep;
+                            sample->fxStep = ++sample->fxStep & 127;
 
-                        for (int i = 0; i < len; ++i)
-                        {
-                            value = amiga->memory[src1++] + amiga->memory[int(src2 + index)];
-                            amiga->memory[dst++] = value >> 1;
-                            index = ++index & 127;
-                        }
-                        break;
-                    case 3: //scr left
-                        value = amiga->memory[dst];
-                        for (int j = 0; j < 127; ++j)
-                        {
-                            amiga->memory[dst] = amiga->memory[++dst];
-                        }
-                        amiga->memory[dst] = value;
-                        break;
-                    case 4: //scr right
-                        dst += 127;
-                        value = amiga->memory[dst];
-                        for (int i = 0; i < 127; ++i)
-                        {
-                            amiga->memory[dst] = amiga->memory[--dst];
-                        }
-                        amiga->memory[dst] = value;
-                        break;
-                    case 5: //upsample
-                        index = value = dst;
-                        for (int i = 0; i < 64; ++i)
-                        {
-                            amiga->memory[index++] = amiga->memory[dst++];
-                            dst++;
-                        }
-                        index = dst = value;
-                        index += 64;
-                        for (int i = 0; i < 64; ++i)
-                        {
-                            amiga->memory[index++] = amiga->memory[dst++];
-                        }
-                        break;
-                    case 6: //downsample
-                        src1 = dst + 64;
-                        dst += 128;
-                        for (int i = 0; i < 64; ++i)
-                        {
-                            amiga->memory[--dst] = amiga->memory[--src1];
-                            amiga->memory[--dst] = amiga->memory[src1];
-                        }
-                        break;
-                    case 7: //negate
-                        dst += sample->fxStep;
-                        amiga->memory[dst] = ~amiga->memory[dst] + 1;
-                        if (++sample->fxStep >= sample->waveLen) sample->fxStep = 0;
-                        break;
-                    case 8: //madmix 1
-                        sample->fxStep = ++sample->fxStep & 127;
-                        src2 = (sample->source2 << 7) + sample->fxStep;
-                        index = amiga->memory[src2];
-                        len = sample->waveLen;
-                        value = 3;
-
-                        for (int i = 0; i < len; ++i)
-                        {
-                            src1 = amiga->memory[dst] + value;
-                            if (src1 < -128) src1 += 256;
-                            else if (src1 > 127) src1 -= 256;
-
-                            amiga->memory[dst++] = src1;
-                            value += index;
-
-                            if (value < -128) value += 256;
-                            else if (value > 127) value -= 256;
-                        }
-                        break;
-                    case 9: //addition
-                        src2 = sample->source2 << 7;
-                        len = sample->waveLen;
-
-                        for (int i = 0; i < len; ++i)
-                        {
-                            value = amiga->memory[src2++] + amiga->memory[dst];
-                            if (value > 127) value -= 256;
-                            amiga->memory[dst++] = value;
-                        }
-                        break;
-                    case 10: //filter 2
-                        for (int i = 0; i < 126; ++i)
-                        {
-                            value = (amiga->memory[dst++] * 3) + amiga->memory[int(dst + 1)];
-                            amiga->memory[dst] = value >> 2;
-                        }
-                        break;
-                    case 11: //morphing
-                        src1 = sample->source1 << 7;
-                        src2 = sample->source2 << 7;
-                        len = sample->waveLen;
-
-                        sample->fxStep = ++sample->fxStep & 127;
-                        value = sample->fxStep;
-                        if (value >= 64) value = 127 - value;
-                        index = (value ^ 255) & 63;
-
-                        for (int i = 0; i < len; ++i)
-                        {
-                            r = (amiga->memory[src1++] * value) + (amiga->memory[src2++] * index);
-                            amiga->memory[dst++] = r >> 6;
-                        }
-                        break;
-                    case 12: //morph f
-                        src1 = sample->source1 << 7;
-                        src2 = sample->source2 << 7;
-                        len = sample->waveLen;
-
-                        sample->fxStep = ++sample->fxStep & 31;
-                        value = sample->fxStep;
-                        if (value >= 16) value = 31 - value;
-                        index = (value ^ 255) & 15;
-
-                        for (int i = 0; i < len; ++i)
-                        {
-                            r = (amiga->memory[src1++] * value) + (amiga->memory[src2++] * index);
-                            amiga->memory[dst++] = r >> 4;
-                        }
-                        break;
-                    case 13: //filter 3
-                        for (int i = 0; i < 126; ++i)
-                        {
-                            value = amiga->memory[dst++] + amiga->memory[int(dst + 1)];
-                            amiga->memory[dst] = value >> 1;
-                        }
-                        break;
-                    case 14: //polygate
-                        index = dst + sample->fxStep;
-                        amiga->memory[index] = -amiga->memory[index];
-                        index = dst + ((sample->fxStep + sample->source2) & (sample->waveLen - 1));
-                        amiga->memory[index] = -amiga->memory[index];
-                        if (++sample->fxStep >= sample->waveLen) sample->fxStep = 0;
-                        break;
-                    case 15: //colgate
-                        index = dst;
-                        for (int i = 0; i < 127; ++i)
-                        {
-                            value = amiga->memory[dst] + amiga->memory[int(dst + 1)];
-                            amiga->memory[dst++] = value >> 1;
-                        }
-                        dst = index;
-                        sample->fxStep++;
-
-                        if (sample->fxStep == sample->source2)
-                        {
-                            sample->fxStep = 0;
+                            for (int i = 0; i < len; ++i) {
+                                value = amiga->memory[src1++] + amiga->memory[int(src2 + index)];
+                                amiga->memory[dst++] = value >> 1;
+                                index = ++index & 127;
+                            }
+                            break;
+                        case 3: //scr left
+                            value = amiga->memory[dst];
+                            for (int j = 0; j < 127; ++j) {
+                                amiga->memory[dst] = amiga->memory[++dst];
+                            }
+                            amiga->memory[dst] = value;
+                            break;
+                        case 4: //scr right
+                            dst += 127;
+                            value = amiga->memory[dst];
+                            for (int i = 0; i < 127; ++i) {
+                                amiga->memory[dst] = amiga->memory[--dst];
+                            }
+                            amiga->memory[dst] = value;
+                            break;
+                        case 5: //upsample
                             index = value = dst;
-
-                            for (int i = 0; i < 64; ++i)
-                            {
+                            for (int i = 0; i < 64; ++i) {
                                 amiga->memory[index++] = amiga->memory[dst++];
                                 dst++;
                             }
                             index = dst = value;
                             index += 64;
-                            for (int j = 0; j < 64; ++j)
-                            {
+                            for (int i = 0; i < 64; ++i) {
                                 amiga->memory[index++] = amiga->memory[dst++];
                             }
-                        }
-                        break;
+                            break;
+                        case 6: //downsample
+                            src1 = dst + 64;
+                            dst += 128;
+                            for (int i = 0; i < 64; ++i) {
+                                amiga->memory[--dst] = amiga->memory[--src1];
+                                amiga->memory[--dst] = amiga->memory[src1];
+                            }
+                            break;
+                        case 7: //negate
+                            dst += sample->fxStep;
+                            amiga->memory[dst] = ~amiga->memory[dst] + 1;
+                            if (++sample->fxStep >= sample->waveLen) sample->fxStep = 0;
+                            break;
+                        case 8: //madmix 1
+                            sample->fxStep = ++sample->fxStep & 127;
+                            src2 = (sample->source2 << 7) + sample->fxStep;
+                            index = amiga->memory[src2];
+                            len = sample->waveLen;
+                            value = 3;
+
+                            for (int i = 0; i < len; ++i) {
+                                src1 = amiga->memory[dst] + value;
+                                if (src1 < -128) src1 += 256;
+                                else if (src1 > 127) src1 -= 256;
+
+                                amiga->memory[dst++] = src1;
+                                value += index;
+
+                                if (value < -128) value += 256;
+                                else if (value > 127) value -= 256;
+                            }
+                            break;
+                        case 9: //addition
+                            src2 = sample->source2 << 7;
+                            len = sample->waveLen;
+
+                            for (int i = 0; i < len; ++i) {
+                                value = amiga->memory[src2++] + amiga->memory[dst];
+                                if (value > 127) value -= 256;
+                                amiga->memory[dst++] = value;
+                            }
+                            break;
+                        case 10: //filter 2
+                            for (int i = 0; i < 126; ++i) {
+                                value = (amiga->memory[dst++] * 3) + amiga->memory[int(dst + 1)];
+                                amiga->memory[dst] = value >> 2;
+                            }
+                            break;
+                        case 11: //morphing
+                            src1 = sample->source1 << 7;
+                            src2 = sample->source2 << 7;
+                            len = sample->waveLen;
+
+                            sample->fxStep = ++sample->fxStep & 127;
+                            value = sample->fxStep;
+                            if (value >= 64) value = 127 - value;
+                            index = (value ^ 255) & 63;
+
+                            for (int i = 0; i < len; ++i) {
+                                r = (amiga->memory[src1++] * value) + (amiga->memory[src2++] * index);
+                                amiga->memory[dst++] = r >> 6;
+                            }
+                            break;
+                        case 12: //morph f
+                            src1 = sample->source1 << 7;
+                            src2 = sample->source2 << 7;
+                            len = sample->waveLen;
+
+                            sample->fxStep = ++sample->fxStep & 31;
+                            value = sample->fxStep;
+                            if (value >= 16) value = 31 - value;
+                            index = (value ^ 255) & 15;
+
+                            for (int i = 0; i < len; ++i) {
+                                r = (amiga->memory[src1++] * value) + (amiga->memory[src2++] * index);
+                                amiga->memory[dst++] = r >> 4;
+                            }
+                            break;
+                        case 13: //filter 3
+                            for (int i = 0; i < 126; ++i) {
+                                value = amiga->memory[dst++] + amiga->memory[int(dst + 1)];
+                                amiga->memory[dst] = value >> 1;
+                            }
+                            break;
+                        case 14: //polygate
+                            index = dst + sample->fxStep;
+                            amiga->memory[index] = -amiga->memory[index];
+                            index = dst + ((sample->fxStep + sample->source2) & (sample->waveLen - 1));
+                            amiga->memory[index] = -amiga->memory[index];
+                            if (++sample->fxStep >= sample->waveLen) sample->fxStep = 0;
+                            break;
+                        case 15: //colgate
+                            index = dst;
+                            for (int i = 0; i < 127; ++i) {
+                                value = amiga->memory[dst] + amiga->memory[int(dst + 1)];
+                                amiga->memory[dst++] = value >> 1;
+                            }
+                            dst = index;
+                            sample->fxStep++;
+
+                            if (sample->fxStep == sample->source2) {
+                                sample->fxStep = 0;
+                                index = value = dst;
+
+                                for (int i = 0; i < 64; ++i) {
+                                    amiga->memory[index++] = amiga->memory[dst++];
+                                    dst++;
+                                }
+                                index = dst = value;
+                                index += 64;
+                                for (int j = 0; j < 64; ++j) {
+                                    amiga->memory[index++] = amiga->memory[dst++];
+                                }
+                            }
+                            break;
                     }
                 }
             }
-        }
-        else
-        {
+        } else {
             chan = (voice->index < 3) ? voice->channel : mixChannel;
         }
 
-        if (voice->volCtr)
-        {
+        if (voice->volCtr) {
             voice->volCtr--;
 
-            if (voice->volCtr == 0)
-            {
+            if (voice->volCtr == 0) {
                 voice->volCtr = sample->volSpeed;
                 voice->volStep = ++voice->volStep & 127;
 
-                if (voice->volStep || sample->volLoop)
-                {
+                if (voice->volStep || sample->volLoop) {
                     index = voice->volStep + (sample->volume << 7);
                     value = -(amiga->memory[index] + 129);
 
                     voice->volume = (value & 255) >> 2;
                     chan->setVolume(voice->volume);
-                }
-                else
-                {
+                } else {
                     voice->volCtr = 0;
                 }
             }
         }
         value = voice->note;
 
-        if (sample->arpeggio)
-        {
+        if (sample->arpeggio) {
             index = voice->arpStep + (sample->arpeggio << 5);
             value += arpeggios[index];
             voice->arpStep = ++voice->arpStep & 31;
@@ -940,30 +840,23 @@ void MGPlayer::process()
         voice->fperiod = PERIODS[index];
         dst = voice->fperiod;
 
-        if ((voice->val1 == 1) || (voice->val1 == 12))
-        {
+        if ((voice->val1 == 1) || (voice->val1 == 12)) {
             value = -voice->val2;
             voice->portamento += value;
             voice->fperiod += voice->portamento;
 
-            if (voice->val2)
-            {
-                if ((value < 0 && voice->fperiod <= voice->period) || (value >= 0 && voice->fperiod >= voice->period))
-                {
+            if (voice->val2) {
+                if ((value < 0 && voice->fperiod <= voice->period) || (value >= 0 && voice->fperiod >= voice->period)) {
                     voice->portamento = voice->period - dst;
                     voice->val2 = 0;
                 }
             }
         }
 
-        if (sample->pitch)
-        {
-            if (voice->pitchCtr)
-            {
+        if (sample->pitch) {
+            if (voice->pitchCtr) {
                 voice->pitchCtr--;
-            }
-            else
-            {
+            } else {
                 index = voice->pitchStep;
                 voice->pitchStep = (++voice->pitchStep & 127);
                 if (!voice->pitchStep) voice->pitchStep = sample->pitchLoop;
@@ -974,11 +867,9 @@ void MGPlayer::process()
             }
         }
         chan->setPeriod(voice->fperiod);
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 
-    if (chans > 4)
-    {
+    if (chans > 4) {
         src1 = buffer1;
         buffer1 = buffer2;
         buffer2 = src1;
@@ -987,46 +878,35 @@ void MGPlayer::process()
         chan->pointer = src1;
         voice = voices[3];
 
-        do
-        {
+        do {
             voice->mixStep = 0;
 
-            if (voice->fperiod < 125)
-            {
+            if (voice->fperiod < 125) {
                 voice->mixMute = 1;
                 voice->mixSpeed = 0;
-            }
-            else
-            {
+            } else {
                 int i = ((voice->fperiod << 8) / mixPeriod) & 0xffff;
                 src2 = ((256 / i) & 255) << 8;
                 dst = ((256 % i) << 8) & 0xffffff;
                 voice->mixSpeed = (src2 | ((dst / i) & 255)) << 8;
             }
 
-            if (voice->mixMute)
-            {
+            if (voice->mixMute) {
                 voice->mixVolume = 0;
-            }
-            else
-            {
+            } else {
                 voice->mixVolume = voice->volume << 8;
             }
-        }
-        while (voice = voice->next);
+        } while (voice = voice->next);
 
-        for (int i = 0; i < 350; ++i)
-        {
+        for (int i = 0; i < 350; ++i) {
             voice = voices[3];
             dst = 0;
 
-            do
-            {
+            do {
                 src2 = (amiga->memory[int(voice->mixPtr + (voice->mixStep >> 16))] & 255) + voice->mixVolume;
                 dst += volumes[src2];
                 voice->mixStep += voice->mixSpeed;
-            }
-            while (voice = voice->next);
+            } while (voice = voice->next);
 
             amiga->memory[src1++] = averages[dst];
         }
@@ -1035,68 +915,54 @@ void MGPlayer::process()
         chan->setVolume(64);
     }
 
-    if (--tick == 0)
-    {
+    if (--tick == 0) {
         tick = speed & 15;
         speed = (speed & 240) >> 4;
         speed |= (tick << 4);
         patternEnd = 1;
         patternPos++;
 
-        if (patternPos == 64 || patternPos == patternLen)
-        {
+        if (patternPos == 64 || patternPos == patternLen) {
             patternPos = 0;
             stepEnd = 1;
             trackPos += 4;
 
-            if (trackPos == song1->length)
-            {
+            if (trackPos == song1->length) {
                 trackPos = song1->loopStep;
                 amiga->setComplete(1);
             }
         }
-    }
-    else
-    {
+    } else {
         patternEnd = 0;
         stepEnd = 0;
     }
 
     voice = voices[0];
 
-    do
-    {
+    do {
         voice->mixPtr += voice->mixStep >> 16;
 
         sample = voice->sample;
         sample->fxDone = 0;
 
-        if (voice->mixPtr >= voice->mixEnd)
-        {
-            if (sample->loop)
-            {
+        if (voice->mixPtr >= voice->mixEnd) {
+            if (sample->loop) {
                 voice->mixPtr -= sample->repeat;
-            }
-            else
-            {
+            } else {
                 voice->mixPtr = 0;
                 voice->mixMute = 1;
             }
         }
 
         if (voice->index < 4) voice->channel->setEnabled(1);
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 }
 
-vector<BaseSample*> MGPlayer::getSamples()
-{
-    vector<BaseSample*> samp(samples.size() - 1);
-    for (int i = 1; i < samples.size(); i++)
-    {
+vector<BaseSample *> MGPlayer::getSamples() {
+    vector<BaseSample *> samp(samples.size() - 1);
+    for (int i = 1; i < samples.size(); i++) {
         samp[i - 1] = samples[i];
-        if (!samp[i - 1])
-        {
+        if (!samp[i - 1]) {
             samp[i - 1] = new BaseSample();
         }
     }
@@ -1104,8 +970,7 @@ vector<BaseSample*> MGPlayer::getSamples()
     return samp;
 }
 
-void MGPlayer::printData()
-{
+void MGPlayer::printData() {
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        AmigaRow* row= patterns[i];
@@ -1137,8 +1002,7 @@ void MGPlayer::printData()
     //    //    }
 }
 
-bool MGPlayer::getTitle(string& title)
-{
+bool MGPlayer::getTitle(string &title) {
     title = songs[0]->title;
     return true;
 }

@@ -2,8 +2,7 @@
 
 using namespace std;
 
-D2Sample::D2Sample()
-{
+D2Sample::D2Sample() {
     index = 0;
     pitchBend = 0;
     synth = 0;

@@ -1,13 +1,11 @@
 #include "FXVoice.h"
 
-FXVoice::FXVoice(int index)
-{
+FXVoice::FXVoice(int index) {
     this->index = index;
     next = 0;
 }
 
-void FXVoice::initialize()
-{
+void FXVoice::initialize() {
     channel = 0;
     sample = 0;
     period = 0;

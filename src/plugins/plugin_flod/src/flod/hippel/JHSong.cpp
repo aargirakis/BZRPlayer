@@ -1,7 +1,6 @@
 #include "JHSong.h"
 
-JHSong::JHSong()
-{
+JHSong::JHSong() {
     pointer = 0;
     speed = 0;
     length = 0;

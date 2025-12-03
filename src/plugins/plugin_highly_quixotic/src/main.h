@@ -6,8 +6,7 @@
 
 using namespace std;
 
-inline bool keyExists(const unordered_map<string, string> &m, const string &key)
-{
+inline bool keyExists(const unordered_map<string, string> &m, const string &key) {
     // Key is not present
     if (!m.contains(key))
         return false;
@@ -15,38 +14,32 @@ inline bool keyExists(const unordered_map<string, string> &m, const string &key)
     return true;
 }
 
-template <typename T1, typename T2>
-constexpr auto Min(T1&& a, T2&& b)
-{
+template<typename T1, typename T2>
+constexpr auto Min(T1 &&a, T2 &&b) {
     return forward<T1>(a) < forward<T2>(b) ? forward<T1>(a) : forward<T2>(b);
 }
 
-template <typename T1, typename T2, typename... Ts>
-constexpr auto Min(T1&& a, T2&& b, Ts&&... others)
-{
+template<typename T1, typename T2, typename... Ts>
+constexpr auto Min(T1 &&a, T2 &&b, Ts &&... others) {
     return Min(Min(forward<T1>(a), forward<T2>(b)), forward<Ts>(others)...);
 }
 
-template <typename T1, typename T2>
-constexpr auto Max(T1&& a, T2&& b)
-{
+template<typename T1, typename T2>
+constexpr auto Max(T1 &&a, T2 &&b) {
     return forward<T1>(a) > forward<T2>(b) ? forward<T1>(a) : forward<T2>(b);
 }
 
-template <typename T1, typename T2, typename... Ts>
-constexpr auto Max(T1&& a, T2&& b, Ts&&... others)
-{
+template<typename T1, typename T2, typename... Ts>
+constexpr auto Max(T1 &&a, T2 &&b, Ts &&... others) {
     return Max(Max(forward<T1>(a), forward<T2>(b)), forward<Ts>(others)...);
 }
 
-template <typename T1, typename T2, typename T3>
-constexpr auto Clamp(T1&& a, T2&& min, T3&& max)
-{
+template<typename T1, typename T2, typename T3>
+constexpr auto Clamp(T1 &&a, T2 &&min, T3 &&max) {
     return Max(forward<T2>(min), Min(forward<T3>(max), forward<T1>(a)));
 }
 
-struct valid_range
-{
+struct valid_range {
     uint32_t start;
     uint32_t size;
 };

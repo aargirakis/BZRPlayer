@@ -3,19 +3,19 @@
 
 class AmigaChannel;
 
-class JBVoice
-{
+class JBVoice {
     friend class JBPlayer;
 
 public:
     JBVoice(int index);
+
     void initialize();
 
 private:
     int index;
-    JBVoice* next;
-    JBVoice* prev;
-    AmigaChannel* channel;
+    JBVoice *next;
+    JBVoice *prev;
+    AmigaChannel *channel;
 
     int track;
     int trackLen;

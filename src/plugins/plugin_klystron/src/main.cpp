@@ -5,9 +5,13 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -27,29 +31,26 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginKlystron
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginKlystron {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginKlystron(FMOD_CODEC_STATE* codec)
-    {
+    pluginKlystron(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginKlystron()
-    {
+    ~pluginKlystron() {
         if (song) KSND_FreeSong(song);
         if (player) KSND_FreePlayer(player);
         delete songinfo;
         delete[] myBuffer;
     }
 
-    uint8_t* myBuffer = nullptr;
-    KPlayer* player;
-    KSongInfo* songinfo = nullptr;
-    KSong* song = nullptr;
+    uint8_t *myBuffer = nullptr;
+    KPlayer *player;
+    KSongInfo *songinfo = nullptr;
+    KSong *song = nullptr;
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
@@ -57,8 +58,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -66,27 +66,24 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     uint8_t smallBuffer[sizeof(MUS_SONG_SIG) - 1];
     unsigned int bytesread;
 
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, smallBuffer, sizeof(MUS_SONG_SIG)-1, &bytesread);
 
-    if (memcmp(smallBuffer, MUS_SONG_SIG, sizeof(MUS_SONG_SIG) - 1) != 0)
-    {
+    if (memcmp(smallBuffer, MUS_SONG_SIG, sizeof(MUS_SONG_SIG) - 1) != 0) {
         return FMOD_ERR_FORMAT;
     }
 
-    auto* plugin = new pluginKlystron(codec);
-    const auto info = static_cast<Info*>(userexinfo->userdata);
+    auto *plugin = new pluginKlystron(codec);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
     constexpr int sampleRate = 44100;
 
     plugin->player = KSND_CreatePlayerUnregistered(sampleRate);
-    if (!plugin->player)
-    {
+    if (!plugin->player) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -101,8 +98,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->song = KSND_LoadSongFromMemory(plugin->player, plugin->myBuffer, filesize);
 
-    if (!plugin->song)
-    {
+    if (!plugin->song) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -129,11 +125,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     info->numChannels = plugin->songinfo->n_channels;
     info->numPatterns = numPatternRows;
 
-    if (info->numInstruments > 0)
-    {
+    if (info->numInstruments > 0) {
         info->instruments = new string[info->numInstruments];
-        for (int j = 0; j < info->numInstruments; j++)
-        {
+        for (int j = 0; j < info->numInstruments; j++) {
             info->instruments[j] = plugin->songinfo->instrument_name[j];
         }
     }
@@ -148,25 +142,22 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginKlystron*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginKlystron *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    const auto* plugin = static_cast<pluginKlystron*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    const auto *plugin = static_cast<pluginKlystron *>(codec->plugindata);
     KSND_FillBuffer(plugin->player, static_cast<short int *>(buffer), static_cast<int>(size) << 2);
     *read = size;
 
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                           FMOD_TIMEUNIT postype)
-{
-    const auto* plugin = static_cast<pluginKlystron*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginKlystron *>(codec->plugindata);
     //mus_set_song(&plugin->mus, &plugin->song, 0);
     KSND_PlaySong(plugin->player, plugin->song, 0);
     return FMOD_OK;

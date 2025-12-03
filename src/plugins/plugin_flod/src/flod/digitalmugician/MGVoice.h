@@ -5,20 +5,20 @@ class AmigaChannel;
 class MGSample;
 class BaseStep;
 
-class MGVoice
-{
+class MGVoice {
     friend class MGPlayer;
 
 public:
     MGVoice(int index);
+
     void initialize();
 
 private:
     int index;
-    MGVoice* next;
-    AmigaChannel* channel;
-    MGSample* sample;
-    BaseStep* step;
+    MGVoice *next;
+    AmigaChannel *channel;
+    MGSample *sample;
+    BaseStep *step;
     int note;
     int period;
     int val1;

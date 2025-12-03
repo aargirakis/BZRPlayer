@@ -1,7 +1,6 @@
 #include "FESample.h"
 
-FESample::FESample()
-{
+FESample::FESample() {
     arpeggio = std::vector<signed char>(16);
     type = 0;
     synchro = 0;

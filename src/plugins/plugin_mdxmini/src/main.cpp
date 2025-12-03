@@ -5,9 +5,13 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -27,24 +31,21 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginMdxmini
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginMdxmini {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginMdxmini(FMOD_CODEC_STATE* codec)
-    {
+    pluginMdxmini(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginMdxmini()
-    {
+    ~pluginMdxmini() {
         //delete some stuff
     }
 
     t_mdxmini data;
-    Info* info;
+    Info *info;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -58,8 +59,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -67,8 +67,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
@@ -85,8 +84,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    auto* plugin = new pluginMdxmini(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    auto *plugin = new pluginMdxmini(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     const size_t found = plugin->info->filename.find_last_of("/\\");
 
@@ -120,8 +119,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
     const auto plugin = static_cast<pluginMdxmini *>(codec->plugindata);
 
     if (plugin != nullptr) {
@@ -133,20 +131,18 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    const auto plugin = static_cast<pluginMdxmini*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    const auto plugin = static_cast<pluginMdxmini *>(codec->plugindata);
 
-    mdx_calc_sample(&plugin->data, static_cast<short*>(buffer), static_cast<int>(size));
+    mdx_calc_sample(&plugin->data, static_cast<short *>(buffer), static_cast<int>(size));
 
     *read = size;
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                     FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginMdxmini*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginMdxmini *>(codec->plugindata);
 
     int success = mdx_open(&plugin->data, &plugin->info->filename[0], nullptr);
     return FMOD_OK;

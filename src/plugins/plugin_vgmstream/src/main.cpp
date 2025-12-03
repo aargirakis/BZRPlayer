@@ -7,9 +7,13 @@ extern "C" {
 #include "../app/plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -29,26 +33,23 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginVgmstream
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginVgmstream {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginVgmstream(FMOD_CODEC_STATE* codec)
-    {
+    pluginVgmstream(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginVgmstream()
-    {
+    ~pluginVgmstream() {
         //delete some stuff
         close_vgmstream(vgmstream);
         vgmstream = nullptr;
     }
 
-    VGMSTREAM* vgmstream = nullptr;
-    Info* info;
+    VGMSTREAM *vgmstream = nullptr;
+    Info *info;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -62,8 +63,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -71,15 +71,13 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
-    auto* plugin = new pluginVgmstream(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    auto *plugin = new pluginVgmstream(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->vgmstream = init_vgmstream(plugin->info->filename.c_str());
 
-    if (!plugin->vgmstream)
-    {
+    if (!plugin->vgmstream) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -87,8 +85,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->vgmstream->loop_flag = false;
 
     /* will we be able to play it? */
-    if (plugin->vgmstream->channels <= 0)
-    {
+    if (plugin->vgmstream->channels <= 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -102,7 +99,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.frequency = plugin->vgmstream->sample_rate;
     plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm =
-        get_vgmstream_play_samples(loop_count, fade_seconds, fade_delay_seconds, plugin->vgmstream);
+            get_vgmstream_play_samples(loop_count, fade_seconds, fade_delay_seconds, plugin->vgmstream);
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -125,25 +122,22 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
     delete static_cast<pluginVgmstream *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    const auto* plugin = static_cast<pluginVgmstream*>(codec->plugindata);
-    render_vgmstream2(static_cast<sample_t*>(buffer), static_cast<int32_t>(size), plugin->vgmstream);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    const auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
+    render_vgmstream2(static_cast<sample_t *>(buffer), static_cast<int32_t>(size), plugin->vgmstream);
     *read = size;
 
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                     FMOD_TIMEUNIT postype)
-{
-    const auto* plugin = static_cast<pluginVgmstream*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
 
     const auto seek_sample = static_cast<int32_t>(position * 0.001 * plugin->vgmstream->sample_rate);
     seek_vgmstream(plugin->vgmstream, seek_sample);

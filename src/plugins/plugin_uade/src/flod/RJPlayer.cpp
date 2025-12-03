@@ -16,9 +16,8 @@ const int RJPlayer::PERIODS[36] =
     160, 170, 180, 190, 202, 214
 };
 
-RJPlayer::RJPlayer(Amiga* amiga): AmigaPlayer(amiga)
-{
-    voices = std::vector<RJVoice*>(4);
+RJPlayer::RJPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
+    voices = std::vector<RJVoice *>(4);
 
     voices[0] = new RJVoice(0);
     voices[0]->next = voices[1] = new RJVoice(1);
@@ -26,15 +25,12 @@ RJPlayer::RJPlayer(Amiga* amiga): AmigaPlayer(amiga)
     voices[2]->next = voices[3] = new RJVoice(3);
 }
 
-RJPlayer::~RJPlayer()
-{
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+RJPlayer::~RJPlayer() {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
@@ -47,10 +43,9 @@ RJPlayer::~RJPlayer()
 }
 
 
-int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
-{
+int RJPlayer::load(void *_data, unsigned long int length, const char *filename) {
     //AmigaPlayer::load(_data, length, filename);
-    unsigned char* stream = static_cast<unsigned char*>(_data);
+    unsigned char *stream = static_cast<unsigned char *>(_data);
 
 
     ifstream file;
@@ -64,58 +59,48 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     string suffix = filenameOnly.substr(0, 4);
     transform(suffix.begin(), suffix.end(), suffix.begin(), ::tolower);
 
-    if (suffix == "rjp.")
-    {
+    if (suffix == "rjp.") {
         string samplefilename = pathOnly + "smp." + filenameOnly.substr(4);
         file.open(samplefilename.c_str(), ios::in | ios::binary | ios::ate);
-        if (file.is_open())
-        {
+        if (file.is_open()) {
             usesPrefix = true;
         }
     }
 
 
-    if (!usesPrefix)
-    {
+    if (!usesPrefix) {
         string str_newfilename = filename;
         int cut = 4;
-        do
-        {
+        do {
             str_newfilename = str_orgfilename.substr(0, str_orgfilename.length() - cut) + ".ins";
             file.open(str_newfilename.c_str(), ios::in | ios::binary | ios::ate);
             cut++;
-        }
-        while (!file.is_open() && cut < str_orgfilename.length() && str_orgfilename.substr(
-            str_orgfilename.length() - cut - 1, 1) != "/");
+        } while (!file.is_open() && cut < str_orgfilename.length() && str_orgfilename.substr(
+                     str_orgfilename.length() - cut - 1, 1) != "/");
     }
 
 
     ifstream::pos_type fileSize;
-    char* extra = 0;
-    if (file.is_open())
-    {
+    char *extra = 0;
+    if (file.is_open()) {
         fileSize = file.tellg();
         extra = new char[fileSize];
 
         file.seekg(0, ios::beg);
 
-        if (!file.read(extra, fileSize))
-        {
+        if (!file.read(extra, fileSize)) {
             //failed reading
             file.close();
             return -1;
         }
         file.close();
-    }
-    else
-    {
+    } else {
         return -1;
     }
 
     if (!extra) return -1;
 
-    if (!(extra[0] == 'R' && extra[1] == 'J' && extra[2] == 'P'))
-    {
+    if (!(extra[0] == 'R' && extra[1] == 'J' && extra[2] == 'P')) {
         return -1;
     }
 
@@ -128,13 +113,12 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
 
     position = 8;
     unsigned int len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >>
-        5;
+                       5;
     position += 4;
-    samples = std::vector<RJSample*>(len);
+    samples = std::vector<RJSample *>(len);
 
-    for (int i = 0; i < len; ++i)
-    {
-        RJSample* sample;
+    for (int i = 0; i < len; ++i) {
+        RJSample *sample;
         sample = new RJSample();
         sample->pointer = readEndian(stream[position], stream[position + 1], stream[position + 2],
                                      stream[position + 3]);
@@ -147,7 +131,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
         position += 4;
         sample->envelopePos = readEndian(stream[position], stream[position + 1]);
         position += 2;
-        sample->volumeScale = (signed short)readEndian(stream[position], stream[position + 1]);
+        sample->volumeScale = (signed short) readEndian(stream[position], stream[position + 1]);
         position += 2;
         sample->offset = readEndian(stream[position], stream[position + 1]) << 1;
         position += 2;
@@ -171,22 +155,20 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
     envelope = std::vector<int>(len);
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         envelope[i] = stream[position];
         position++;
     }
 
     int pos = position;
     position = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) +
-        position;
+               position;
     position += 4;
 
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >> 2;
     position += 4;
     vector<int> offsets(len);
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         offsets[i] = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) + 1;
         position += 4;
     }
@@ -201,8 +183,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     m_totalSongs = (len >> 2);
 
     int flag = 0;
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         flag = stream[position];
         position++;
         if (!flag || flag >= offsets.size()) continue;
@@ -214,8 +195,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >> 2;
     position += 4;
     offsets.resize(len);
-    for (i = 0; i < len; ++i)
-    {
+    for (i = 0; i < len; ++i) {
         offsets[i] = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) + 1;
         position += 4;
     }
@@ -225,23 +205,16 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     tracks = std::vector<int>(len);
     flag = 0;
 
-    for (int i = 1; i < len; ++i)
-    {
+    for (int i = 1; i < len; ++i) {
         pos = stream[position];
         position++;
 
-        if (pos == 0)
-        {
+        if (pos == 0) {
             flag ^= 1;
-        }
-        else if (pos > 0)
-        {
-            if (!flag)
-            {
+        } else if (pos > 0) {
+            if (!flag) {
                 pos = offsets[pos];
-            }
-            else
-            {
+            } else {
                 flag = 0;
             }
         }
@@ -251,8 +224,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) + 1;
     position += 4;
     patterns = std::vector<int>(len);
-    for (int i = 1; i < len; ++i)
-    {
+    for (int i = 1; i < len; ++i) {
         patterns[i] = stream[position];
         position++;
     }
@@ -264,20 +236,16 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     return 1;
 }
 
-unsigned char RJPlayer::getSubsongsCount()
-{
+unsigned char RJPlayer::getSubsongsCount() {
     return m_totalSongs;
 }
 
 
-std::vector<BaseSample*> RJPlayer::getSamples()
-{
-    std::vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+std::vector<BaseSample *> RJPlayer::getSamples() {
+    std::vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }

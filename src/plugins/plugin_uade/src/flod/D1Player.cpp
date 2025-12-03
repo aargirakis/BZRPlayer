@@ -19,10 +19,9 @@ const int D1Player::PERIODS[84] =
     113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113
 };
 
-D1Player::D1Player(Amiga* amiga): AmigaPlayer(amiga)
-{
-    samples = std::vector<D1Sample*>(21);
-    voices = std::vector<D1Voice*>(4);
+D1Player::D1Player(Amiga *amiga) : AmigaPlayer(amiga) {
+    samples = std::vector<D1Sample *>(21);
+    voices = std::vector<D1Voice *>(4);
     pointers = std::vector<int>(4);
 
     voices[0] = new D1Voice(0);
@@ -31,38 +30,31 @@ D1Player::D1Player(Amiga* amiga): AmigaPlayer(amiga)
     voices[2]->next = voices[3] = new D1Voice(3);
 }
 
-D1Player::~D1Player()
-{
+D1Player::~D1Player() {
     pointers.clear();
 
 
-    for (unsigned int i = 0; i < tracks.size(); i++)
-    {
+    for (unsigned int i = 0; i < tracks.size(); i++) {
         if (tracks[i]) delete tracks[i];
     }
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for (unsigned int i = 0; i < patterns.size(); i++)
-    {
+    for (unsigned int i = 0; i < patterns.size(); i++) {
         if (patterns[i]) delete patterns[i];
     }
     patterns.clear();
 }
 
-int D1Player::load(void* _data, unsigned long int length)
-{
-    unsigned char* stream = static_cast<unsigned char*>(_data);
+int D1Player::load(void *_data, unsigned long int length) {
+    unsigned char *stream = static_cast<unsigned char *>(_data);
 
-    if (!(stream[0] == 'A' && stream[1] == 'L' && stream[2] == 'L' && stream[3] == ' '))
-    {
+    if (!(stream[0] == 'A' && stream[1] == 'L' && stream[2] == 'L' && stream[3] == ' ')) {
         return -1;
     }
 
@@ -70,8 +62,7 @@ int D1Player::load(void* _data, unsigned long int length)
     const int position2 = 104;
 
     std::vector<unsigned int> data(25);
-    for (int i = 0; i < 25; ++i)
-    {
+    for (int i = 0; i < 25; ++i) {
         data[i] = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
     }
@@ -82,40 +73,35 @@ int D1Player::load(void* _data, unsigned long int length)
         pointers[i] = pointers[j] + (data[j++] >> 1) - 1;
 
     unsigned int len = pointers[3] + (data[3] >> 1) - 1;
-    tracks = std::vector<BaseStep*>(len);
+    tracks = std::vector<BaseStep *>(len);
     int index = position2 + data[1] - 2;
     position = position2;
     j = 1;
 
 
-    for (int i = 0; i < len; ++i)
-    {
-        BaseStep* step = new BaseStep();
+    for (int i = 0; i < len; ++i) {
+        BaseStep *step = new BaseStep();
         unsigned short value = readEndian(stream[position], stream[position + 1]);
         position += 2;
 
-        if (value == 0xffff || position == index)
-        {
+        if (value == 0xffff || position == index) {
             step->pattern = -1;
             step->transpose = readEndian(stream[position], stream[position + 1]);
             position += 2;
             index += data[j++];
-        }
-        else
-        {
+        } else {
             position--;
             step->pattern = ((value >> 2) & 0x3fc0) >> 2;
-            step->transpose = (signed char)stream[position];
+            step->transpose = (signed char) stream[position];
             position++;
         }
         tracks[i] = step;
     }
 
     len = data[4] >> 2;
-    patterns = std::vector<BaseRow*>(len);
-    for (int i = 0; i < len; ++i)
-    {
-        BaseRow* row = new BaseRow();
+    patterns = std::vector<BaseRow *>(len);
+    for (int i = 0; i < len; ++i) {
+        BaseRow *row = new BaseRow();
         row->sample = stream[position];
         position++;
         row->note = stream[position];
@@ -128,11 +114,9 @@ int D1Player::load(void* _data, unsigned long int length)
     }
     index = 5;
 
-    for (int i = 0; i < 20; ++i)
-    {
-        if (data[index])
-        {
-            D1Sample* sample = new D1Sample();
+    for (int i = 0; i < 20; ++i) {
+        if (data[index]) {
+            D1Sample *sample = new D1Sample();
             sample->attackStep = stream[position];
             position++;
             sample->attackDelay = stream[position];
@@ -155,7 +139,7 @@ int D1Player::load(void* _data, unsigned long int length)
             position++;
             sample->vibratoLen = stream[position];
             position++;
-            sample->pitchBend = (signed char)stream[position];
+            sample->pitchBend = (signed char) stream[position];
             position++;
             sample->portamento = stream[position];
             position++;
@@ -164,9 +148,8 @@ int D1Player::load(void* _data, unsigned long int length)
             sample->tableDelay = stream[position];
             position++;
 
-            for (j = 0; j < 8; ++j)
-            {
-                sample->arpeggio[j] = (signed char)stream[position];
+            for (j = 0; j < 8; ++j) {
+                sample->arpeggio[j] = (signed char) stream[position];
                 position++;
             }
 
@@ -178,18 +161,14 @@ int D1Player::load(void* _data, unsigned long int length)
             position += 2;
             sample->synth = sample->synth ? 0 : 1;
 
-            if (sample->synth)
-            {
-                for (j = 0; j < 48; ++j)
-                {
-                    sample->table[j] = (signed char)stream[position];
+            if (sample->synth) {
+                for (j = 0; j < 48; ++j) {
+                    sample->table[j] = (signed char) stream[position];
                     position++;
                 }
 
                 len = data[index] - 78;
-            }
-            else
-            {
+            } else {
                 len = sample->length;
             }
 
@@ -197,15 +176,13 @@ int D1Player::load(void* _data, unsigned long int length)
             //sample->pointer = amiga->store(stream,len,position,length);
             sample->loopPtr = sample->pointer + sample->loop;
             samples[i] = sample;
-        }
-        else
-        {
+        } else {
             samples[i] = 0;
         }
         index++;
     }
 
-    D1Sample* sample = new D1Sample();
+    D1Sample *sample = new D1Sample();
     //sample->pointer = sample->loopPtr = amiga->memory.size();
     sample->length = sample->repeat = 4;
     samples[20] = sample;
@@ -216,14 +193,11 @@ int D1Player::load(void* _data, unsigned long int length)
     return 1;
 }
 
-std::vector<BaseSample*> D1Player::getSamples()
-{
-    std::vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+std::vector<BaseSample *> D1Player::getSamples() {
+    std::vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }

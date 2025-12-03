@@ -7,22 +7,22 @@ class S2Sample;
 class S2Instrument;
 class AmigaChannel;
 
-class S2Voice
-{
+class S2Voice {
     friend class S2Player;
 
 public:
     S2Voice(int index);
+
     void initialize();
 
 private:
     int index;
-    S2Voice* next;
-    AmigaChannel* channel;
-    BaseStep* step;
-    BaseRow* row;
-    S2Instrument* instr;
-    S2Sample* sample;
+    S2Voice *next;
+    AmigaChannel *channel;
+    BaseStep *step;
+    BaseRow *row;
+    S2Instrument *instr;
+    S2Sample *sample;
     int enabled;
     int pattern;
     int instrument;

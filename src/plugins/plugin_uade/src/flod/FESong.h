@@ -4,8 +4,7 @@
 
 using namespace std;
 
-class FESong
-{
+class FESong {
     friend class FEPlayer;
 
 public:
@@ -14,7 +13,7 @@ public:
 private:
     int speed;
     int length;
-    vector<vector<int>> tracks;
+    vector<vector<int> > tracks;
 };
 
 #endif // FESong_H

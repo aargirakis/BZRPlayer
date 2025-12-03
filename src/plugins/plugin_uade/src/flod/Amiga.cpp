@@ -3,8 +3,7 @@
 #include <iostream>
 #include <math.h>
 
-Amiga::Amiga()
-{
+Amiga::Amiga() {
     //    master = 0.00390625;
 
     //    channels = std::vector<AmigaChannel*>();
@@ -24,8 +23,7 @@ Amiga::Amiga()
     setup();
 }
 
-Amiga::~Amiga()
-{
+Amiga::~Amiga() {
     //    for(unsigned int i = 0; i < m_buffer.size(); i++)
     //    {
     //        if(m_buffer[i]) delete m_buffer[i];
@@ -39,31 +37,24 @@ Amiga::~Amiga()
     //    delete filter;
 }
 
-void Amiga::setFilter(int filterVal)
-{
+void Amiga::setFilter(int filterVal) {
     //filter->setFilter(filterVal);
 }
 
-void Amiga::setComplete(int value)
-{
+void Amiga::setComplete(int value) {
     //m_complete = value ^ player->loopSong;
 }
 
-void Amiga::setVolume(int value)
-{
-    if (value > 0)
-    {
+void Amiga::setVolume(int value) {
+    if (value > 0) {
         if (value > 64) value = 64;
         master = (value / 64) * (0.015625 / channels.size());
-    }
-    else
-    {
+    } else {
         master = 0.0;
     }
 }
 
-void Amiga::setup()
-{
+void Amiga::setup() {
     //int len = player->getChannels();
     loopPtr = memory.size();
     memory.resize(memory.size() + loopLen);
@@ -79,21 +70,19 @@ void Amiga::setup()
     //    }
 }
 
-int Amiga::store(void* data, unsigned long int size, unsigned int& position, unsigned long int datalength, int ptr)
-{
+int Amiga::store(void *data, unsigned long int size, unsigned int &position, unsigned long int datalength, int ptr) {
     int add = 0;
     unsigned long int total;
     int pos = position;
 
     unsigned long int start = memory.size();
 
-    unsigned char* stream = static_cast<unsigned char*>(data);
+    unsigned char *stream = static_cast<unsigned char *>(data);
 
     if (ptr > -1) position = ptr;
     total = position + size;
 
-    if (total >= datalength)
-    {
+    if (total >= datalength) {
         add = total - datalength;
         size = datalength - position;
     }
@@ -101,14 +90,12 @@ int Amiga::store(void* data, unsigned long int size, unsigned int& position, uns
     size += start;
     memory.reserve(size); //TODO If this is'nt here, infogrames songs crashed here... I HAVE NO FUCKING IDEA WHY
 
-    for (unsigned int i = start; i < size; ++i)
-    {
+    for (unsigned int i = start; i < size; ++i) {
         memory.push_back(stream[position]);
         position++;
     }
 
-    for (unsigned int i = 0; i < add; ++i)
-    {
+    for (unsigned int i = 0; i < add; ++i) {
         memory.push_back(0);
     }
     if (ptr > -1) position = pos;
@@ -116,8 +103,7 @@ int Amiga::store(void* data, unsigned long int size, unsigned int& position, uns
     return start;
 }
 
-void Amiga::initialize()
-{
+void Amiga::initialize() {
     //wave.clear();
     //    filter->initialize();
     //    master = (player->getVolume() / channels.size()) * 0.015625;
@@ -136,19 +122,16 @@ void Amiga::initialize()
     //    }
 }
 
-void Amiga::reset()
-{
+void Amiga::reset() {
     loopPtr = 0;
     loopLen = 4;
     //memory = std::vector<signed char>();
 }
 
-void Amiga::setModel(int model)
-{
+void Amiga::setModel(int model) {
     //this->filter->setModel(model);
 }
 
-int Amiga::isCompleted()
-{
+int Amiga::isCompleted() {
     return m_complete;
 }

@@ -2,8 +2,7 @@
 #define DWSong_H
 #include <vector>
 
-class DWSong
-{
+class DWSong {
     friend class DWPlayer;
 
 public:

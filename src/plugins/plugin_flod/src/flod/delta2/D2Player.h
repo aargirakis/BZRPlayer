@@ -11,26 +11,31 @@ class BaseRow;
 class D2Sample;
 class D2Voice;
 
-class D2Player : public AmigaPlayer
-{
+class D2Player : public AmigaPlayer {
 public:
-    D2Player(Amiga* amiga);
+    D2Player(Amiga *amiga);
+
     ~D2Player();
-    int load(void* data, unsigned long int length);
+
+    int load(void *data, unsigned long int length);
 
 private:
-    vector<BaseStep*> tracks;
-    vector<BaseRow*> patterns;
-    vector<D2Sample*> samples;
+    vector<BaseStep *> tracks;
+    vector<BaseRow *> patterns;
+    vector<D2Sample *> samples;
     vector<int> data;
     vector<signed char> arpeggios;
-    vector<D2Voice*> voices;
+    vector<D2Voice *> voices;
     unsigned int noise;
     static const int PERIODS[85];
+
     void process();
+
     void initialize();
+
     void printData();
-    vector<BaseSample*> getSamples();
+
+    vector<BaseSample *> getSamples();
 };
 
 #endif // D2PLAYER_H

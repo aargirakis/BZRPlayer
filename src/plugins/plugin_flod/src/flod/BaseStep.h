@@ -1,10 +1,10 @@
 #ifndef BASESTEP_H
 #define BASESTEP_H
 
-class BaseStep
-{
+class BaseStep {
 public:
     BaseStep();
+
     int pattern;
     int transpose;
     int soundTrans;

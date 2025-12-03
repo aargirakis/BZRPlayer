@@ -9,18 +9,19 @@ using namespace std;
 class JHSong;
 class JHVoice;
 
-class JHPlayer : public AmigaPlayer
-{
+class JHPlayer : public AmigaPlayer {
 public:
-    JHPlayer(Amiga* amiga);
+    JHPlayer(Amiga *amiga);
+
     ~JHPlayer();
-    int load(void* data, unsigned long int _length);
+
+    int load(void *data, unsigned long int _length);
 
 private:
-    unsigned char* stream;
+    unsigned char *stream;
     unsigned int position;
-    vector<JHSong*> songs;
-    vector<BaseSample*> samples;
+    vector<JHSong *> songs;
+    vector<BaseSample *> samples;
     int base;
     int patterns;
     int patternLen;
@@ -28,16 +29,22 @@ private:
     int freqs;
     int vols;
     int sampleData;
-    JHSong* song;
-    vector<JHVoice*> voices;
+    JHSong *song;
+    vector<JHVoice *> voices;
     int coso;
 
     static const int PERIODS[84];
+
     void process();
+
     void initialize();
+
     unsigned char getSubsongsCount();
+
     void selectSong(unsigned char);
-    vector<BaseSample*> getSamples();
+
+    vector<BaseSample *> getSamples();
+
     void printData();
 };
 

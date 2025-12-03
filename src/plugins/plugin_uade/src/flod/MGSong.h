@@ -5,8 +5,7 @@
 
 class BaseStep;
 
-class MGSong
-{
+class MGSong {
     friend class MGPlayer;
 
 public:
@@ -18,7 +17,7 @@ private:
     int length;
     int loop;
     int loopStep;
-    std::vector<BaseStep*> tracks;
+    std::vector<BaseStep *> tracks;
 };
 
 #endif // MGSONG_H

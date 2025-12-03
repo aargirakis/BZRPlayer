@@ -9,28 +9,31 @@ class MGSample;
 class MGVoice;
 class MGSong;
 
-class MGPlayer : public AmigaPlayer
-{
+class MGPlayer : public AmigaPlayer {
 public:
-    MGPlayer(Amiga* amiga);
+    MGPlayer(Amiga *amiga);
+
     ~MGPlayer();
-    int load(void* data, unsigned long int _length);
-    std::vector<BaseSample*> getSamples();
-    bool getTitle(std::string& title);
+
+    int load(void *data, unsigned long int _length);
+
+    std::vector<BaseSample *> getSamples();
+
+    bool getTitle(std::string &title);
 
 private:
     void tables();
 
 
-    std::vector<MGSong*> songs;
-    std::vector<BaseRow*> patterns;
-    std::vector<MGSample*> samples;
-    std::vector<MGVoice*> voices;
+    std::vector<MGSong *> songs;
+    std::vector<BaseRow *> patterns;
+    std::vector<MGSample *> samples;
+    std::vector<MGVoice *> voices;
     std::vector<unsigned char> subSongsList;
     int buffer1;
     int buffer2;
-    MGSong* song1;
-    MGSong* song2;
+    MGSong *song1;
+    MGSong *song2;
     int trackPos;
     int patternPos;
     int patternLen;
@@ -43,8 +46,7 @@ private:
 
     int mixPeriod;
 
-    enum
-    {
+    enum {
         MUGICIAN_V1 = 1,
         MUGICIAN_V2 = 2
     };

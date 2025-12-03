@@ -20,9 +20,8 @@ const int JHPlayer::PERIODS[84] = {
 };
 
 
-JHPlayer::JHPlayer(Amiga* amiga): AmigaPlayer(amiga)
-{
-    voices = vector<JHVoice*>(4);
+JHPlayer::JHPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
+    voices = vector<JHVoice *>(4);
     voices[0] = new JHVoice(0);
     voices[0]->next = voices[1] = new JHVoice(1);
     voices[1]->next = voices[2] = new JHVoice(2);
@@ -38,46 +37,37 @@ JHPlayer::JHPlayer(Amiga* amiga): AmigaPlayer(amiga)
     m_variant = 0;
 }
 
-JHPlayer::~JHPlayer()
-{
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+JHPlayer::~JHPlayer() {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for (unsigned int i = 0; i < songs.size(); i++)
-    {
+    for (unsigned int i = 0; i < songs.size(); i++) {
         if (songs[i]) delete songs[i];
     }
     songs.clear();
 }
 
-void JHPlayer::initialize()
-{
+void JHPlayer::initialize() {
     AmigaPlayer::initialize();
-    JHVoice* voice = voices[0];
+    JHVoice *voice = voices[0];
     song = songs[m_songNumber];
     speed = song->speed;
     tick = (coso || m_variant > 1) ? 1 : speed;
 
-    do
-    {
+    do {
         voice->initialize();
         voice->channel = amiga->channels[voice->index];
         voice->trackPtr = song->pointer + (voice->index * 3);
 
-        if (coso)
-        {
+        if (coso) {
             voice->trackPos = 0;
             voice->patternPos = 8;
-        }
-        else
-        {
+        } else {
             position = voice->trackPtr;
             voice->patternPtr = patterns + (stream[position] * patternLen);
             position++;
@@ -89,49 +79,39 @@ void JHPlayer::initialize()
             voice->freqsPtr = base;
             voice->volsPtr = base;
         }
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 }
 
-void JHPlayer::process()
-{
-    AmigaChannel* chan;
+void JHPlayer::process() {
+    AmigaChannel *chan;
     int loop = 0;
     int period = 0;
     int pos1 = 0;
     int pos2 = 0;
-    BaseSample* sample;
+    BaseSample *sample;
     int value = 0;
-    JHVoice* voice = voices[0];
+    JHVoice *voice = voices[0];
 
-    if (--tick == 0)
-    {
+    if (--tick == 0) {
         tick = speed;
 
-        do
-        {
+        do {
             chan = voice->channel;
 
-            if (coso)
-            {
-                if (--voice->cosoCtr < 0)
-                {
+            if (coso) {
+                if (--voice->cosoCtr < 0) {
                     voice->cosoCtr = voice->cosoSpeed;
 
-                    do
-                    {
+                    do {
                         position = voice->patternPos;
 
-                        do
-                        {
+                        do {
                             loop = 0;
-                            value = (signed char)stream[position];
+                            value = (signed char) stream[position];
                             position++;
 
-                            if (value == -1)
-                            {
-                                if (voice->trackPos == song->length)
-                                {
+                            if (value == -1) {
+                                if (voice->trackPos == song->length) {
                                     voice->trackPos = 0;
                                     amiga->setComplete(1);
                                 }
@@ -139,22 +119,19 @@ void JHPlayer::process()
                                 position = voice->trackPtr + voice->trackPos;
                                 value = stream[position];
                                 position++;
-                                voice->trackTrans = (signed char)stream[position];
+                                voice->trackTrans = (signed char) stream[position];
                                 position++;
 
                                 pos1 = stream[position];
 
-                                if ((m_variant > 3) && (pos1 > 127))
-                                {
+                                if ((m_variant > 3) && (pos1 > 127)) {
                                     pos2 = (pos1 >> 4) & 15;
                                     pos1 &= 15;
 
-                                    if (pos2 == 15)
-                                    {
+                                    if (pos2 == 15) {
                                         pos2 = 100;
 
-                                        if (pos1)
-                                        {
+                                        if (pos1) {
                                             pos2 = (15 - pos1) + 1;
                                             pos2 <<= 1;
                                             pos1 = pos2;
@@ -163,19 +140,13 @@ void JHPlayer::process()
                                         }
 
                                         voice->volFade = pos2;
-                                    }
-                                    else if (pos2 == 8)
-                                    {
+                                    } else if (pos2 == 8) {
                                         amiga->setComplete(1);
-                                    }
-                                    else if (pos2 == 14)
-                                    {
+                                    } else if (pos2 == 14) {
                                         speed = pos1;
                                     }
-                                }
-                                else
-                                {
-                                    voice->volTrans = (signed char)stream[position];
+                                } else {
+                                    voice->volTrans = (signed char) stream[position];
                                     position++;
                                 }
 
@@ -184,35 +155,27 @@ void JHPlayer::process()
                                 position += 2;
                                 voice->trackPos += 12;
                                 loop = 1;
-                            }
-                            else if (value == -2)
-                            {
+                            } else if (value == -2) {
                                 voice->cosoCtr = voice->cosoSpeed = stream[position];
                                 position++;
                                 loop = 3;
-                            }
-                            else if (value == -3)
-                            {
+                            } else if (value == -3) {
                                 voice->cosoCtr = voice->cosoSpeed = stream[position];
                                 position++;
                                 voice->patternPos = position;
-                            }
-                            else
-                            {
+                            } else {
                                 voice->note = value;
-                                voice->info = (signed char)stream[position];
+                                voice->info = (signed char) stream[position];
                                 position++;
 
-                                if (voice->info & 224)
-                                {
-                                    voice->infoPrev = (signed char)stream[position];
+                                if (voice->info & 224) {
+                                    voice->infoPrev = (signed char) stream[position];
                                     position++;
                                 }
 
                                 voice->patternPos = position;
                                 voice->portaDelta = 0;
-                                if (value >= 0)
-                                {
+                                if (value >= 0) {
                                     if (m_variant == 1) chan->setEnabled(0);
 
                                     value = (voice->info & 31) + voice->volTrans;
@@ -222,13 +185,13 @@ void JHPlayer::process()
                                     voice->volCtr = voice->volSpeed = stream[position];
                                     position++;
                                     voice->volSustain = 0;
-                                    value = (signed char)stream[position];
+                                    value = (signed char) stream[position];
                                     position++;
 
-                                    voice->vibSpeed = (signed char)stream[position];
+                                    voice->vibSpeed = (signed char) stream[position];
                                     position++;
                                     voice->vibrato = 64;
-                                    voice->vibDepth = voice->vibDelta = (signed char)stream[position];
+                                    voice->vibDepth = voice->vibDelta = (signed char) stream[position];
                                     position++;
                                     voice->vibDelay = stream[position];
                                     position++;
@@ -236,8 +199,7 @@ void JHPlayer::process()
                                     voice->volsPtr = position;
                                     voice->volsPos = 0;
 
-                                    if (value != -128)
-                                    {
+                                    if (value != -128) {
                                         if (m_variant > 1 && (voice->info & 64)) value = voice->infoPrev;
                                         position = freqs + (value << 1);
                                         voice->freqsPtr = readEndian(stream[position], stream[position + 1]);
@@ -248,22 +210,16 @@ void JHPlayer::process()
                                     }
                                 }
                             }
-                        }
-                        while (loop > 2);
-                    }
-                    while (loop > 0);
+                        } while (loop > 2);
+                    } while (loop > 0);
                 }
-            }
-            else
-            {
+            } else {
                 position = voice->patternPtr + voice->patternPos;
-                value = (signed char)stream[position];
+                value = (signed char) stream[position];
                 position++;
 
-                if ((voice->patternPos == patternLen) || ((value & 127) == 1))
-                {
-                    if (voice->trackPos == song->length)
-                    {
+                if ((voice->patternPos == patternLen) || ((value & 127) == 1)) {
+                    if (voice->trackPos == song->length) {
                         voice->trackPos = 0;
                         amiga->setComplete(1);
                     }
@@ -271,9 +227,9 @@ void JHPlayer::process()
                     position = voice->trackPtr + voice->trackPos;
                     value = stream[position];
                     position++;
-                    voice->trackTrans = (signed char)stream[position];
+                    voice->trackTrans = (signed char) stream[position];
                     position++;
-                    voice->volTrans = (signed char)stream[position];
+                    voice->volTrans = (signed char) stream[position];
                     position++;
 
                     if (voice->volTrans == -128) amiga->setComplete(1);
@@ -283,12 +239,11 @@ void JHPlayer::process()
                     voice->trackPos += 12;
 
                     position = voice->patternPtr;
-                    value = (signed char)stream[position];
+                    value = (signed char) stream[position];
                     position++;
                 }
 
-                if (value & 127)
-                {
+                if (value & 127) {
                     voice->note = value & 127;
                     voice->portaDelta = 0;
 
@@ -296,14 +251,13 @@ void JHPlayer::process()
                     if (!voice->patternPos) position += patternLen;
                     position -= 2;
 
-                    voice->infoPrev = (signed char)stream[position];
+                    voice->infoPrev = (signed char) stream[position];
                     position++;
                     position = pos1;
-                    voice->info = (signed char)stream[position];
+                    voice->info = (signed char) stream[position];
                     position++;
 
-                    if (value >= 0)
-                    {
+                    if (value >= 0) {
                         if (m_variant == 1) chan->setEnabled(0);
                         value = (voice->info & 31) + voice->volTrans;
                         position = vols + (value << 6);
@@ -311,13 +265,13 @@ void JHPlayer::process()
                         voice->volCtr = voice->volSpeed = stream[position];
                         position++;
                         voice->volSustain = 0;
-                        value = (signed char)stream[position];
+                        value = (signed char) stream[position];
                         position++;
 
-                        voice->vibSpeed = (signed char)stream[position];
+                        voice->vibSpeed = (signed char) stream[position];
                         position++;
                         voice->vibrato = 64;
-                        voice->vibDepth = voice->vibDelta = (signed char)stream[position];
+                        voice->vibDepth = voice->vibDelta = (signed char) stream[position];
                         position++;
                         voice->vibDelay = stream[position];
                         position++;
@@ -335,282 +289,249 @@ void JHPlayer::process()
                 }
                 voice->patternPos += 2;
             }
-        }
-        while (voice = voice->next);
+        } while (voice = voice->next);
         voice = voices[0];
     }
 
 
-    do
-    {
+    do {
         chan = voice->channel;
         voice->enabled = 0;
 
-        do
-        {
+        do {
             loop = 0;
-            if (voice->tick)
-            {
+            if (voice->tick) {
                 voice->tick--;
-            }
-            else
-            {
+            } else {
                 position = voice->freqsPtr + voice->freqsPos;
 
-                do
-                {
-                    value = (signed char)stream[position];
+                do {
+                    value = (signed char) stream[position];
                     position++;
                     if (value == -31) break;
                     loop = 3;
 
-                    if (m_variant == 3 && coso)
-                    {
-                        if (value == -27)
-                        {
+                    if (m_variant == 3 && coso) {
+                        if (value == -27) {
                             value = -30;
-                        }
-                        else if (value == -26)
-                        {
+                        } else if (value == -26) {
                             value = -28;
                         }
                     }
 
                     unsigned char c1;
                     unsigned char c2;
-                    switch (value)
-                    {
-                    case -32:
-                        voice->freqsPos = (stream[position] & 63);
-                        position++;
-                        position = voice->freqsPtr + voice->freqsPos;
-                        break;
-                    case -30:
-                        sample = samples[stream[position]];
-                        position++;
-                        voice->sample = -1;
-
-                        voice->loopPtr = sample->loopPtr;
-                        voice->repeat = sample->repeat;
-                        voice->enabled = 1;
-
-                        chan->setEnabled(0);
-                        chan->pointer = sample->pointer;
-                        chan->length = sample->length;
-
-                        voice->volsPos = 0;
-                        voice->volCtr = 1;
-                        voice->slide = 0;
-                        voice->freqsPos += 2;
-                        break;
-                    case -29:
-                        voice->vibSpeed = (signed char)stream[position];
-                        position++;
-                        voice->vibDepth = (signed char)stream[position];
-                        position++;
-                        voice->freqsPos += 3;
-                        break;
-                    case -28:
-                        sample = samples[stream[position]];
-                        position++;
-                        voice->loopPtr = sample->loopPtr;
-                        voice->repeat = sample->repeat;
-
-                        chan->pointer = sample->pointer;
-                        chan->length = sample->length;
-
-                        voice->slide = 0;
-                        voice->freqsPos += 2;
-                        break;
-                    case -27:
-                        if (m_variant < 2) break;
-                        sample = samples[stream[position]];
-                        position++;
-                        chan->setEnabled(0);
-                        voice->enabled = 1;
-
-                        if (m_variant == 2)
-                        {
-                            pos1 = stream[position] * sample->length;
+                    switch (value) {
+                        case -32:
+                            voice->freqsPos = (stream[position] & 63);
                             position++;
+                            position = voice->freqsPtr + voice->freqsPos;
+                            break;
+                        case -30:
+                            sample = samples[stream[position]];
+                            position++;
+                            voice->sample = -1;
 
-                            voice->loopPtr = sample->loopPtr + pos1;
+                            voice->loopPtr = sample->loopPtr;
                             voice->repeat = sample->repeat;
+                            voice->enabled = 1;
 
-                            chan->pointer = sample->pointer + pos1;
+                            chan->setEnabled(0);
+                            chan->pointer = sample->pointer;
                             chan->length = sample->length;
-
-                            voice->freqsPos += 3;
-                        }
-                        else
-                        {
-                            voice->sldPointer = sample->pointer;
-                            voice->sldEnd = sample->pointer + sample->length;
-                            value = readEndian(stream[position], stream[position + 1]);
-                            position += 2;
-
-                            if (value == 0xffff)
-                            {
-                                voice->sldLoopPtr = sample->length;
-                            }
-                            else
-                            {
-                                voice->sldLoopPtr = value << 1;
-                            }
-
-                            voice->sldLen = readEndian(stream[position], stream[position + 1]) << 1;
-                            position += 2;
-                            voice->sldDelta = (signed short)readEndian(stream[position], stream[position + 1]) << 1;
-                            position += 2;
-                            voice->sldActive = 0;
-                            voice->sldCtr = 0;
-                            voice->sldSpeed = stream[position];
-                            position++;
-                            voice->slide = 1;
-                            voice->sldDone = 0;
-
-                            voice->freqsPos += 9;
-                        }
-                        voice->volsPos = 0;
-                        voice->volCtr = 1;
-                        break;
-                    case -26:
-                        if (m_variant < 3) break;
-
-                        voice->sldLen = readEndian(stream[position], stream[position + 1]) << 1;
-                        position += 2;
-                        voice->sldDelta = (signed short)readEndian(stream[position], stream[position + 1]) << 1;
-                        position += 2;
-                        voice->sldActive = 0;
-                        voice->sldCtr = 0;
-                        voice->sldSpeed = stream[position];
-                        position++;
-                        voice->sldDone = 0;
-
-                        voice->freqsPos += 6;
-                        break;
-                    case -25:
-                        if (m_variant == 1)
-                        {
-                            voice->freqsPtr = freqs + (stream[position] << 6);
-                            position++;
-                            voice->freqsPos = 0;
-
-                            position = voice->freqsPtr;
-                            loop = 3;
-                        }
-                        else
-                        {
-                            value = stream[position];
-                            position++;
-
-                            if (value != voice->sample)
-                            {
-                                sample = samples[value];
-                                voice->sample = value;
-
-                                voice->loopPtr = sample->loopPtr;
-                                voice->repeat = sample->repeat;
-                                voice->enabled = 1;
-
-                                chan->setEnabled(0);
-                                chan->pointer = sample->pointer;
-                                chan->length = sample->length;
-                            }
 
                             voice->volsPos = 0;
                             voice->volCtr = 1;
                             voice->slide = 0;
                             voice->freqsPos += 2;
-                        }
-                        break;
-                    case -24:
-                        voice->tick = stream[position];
-                        position++;
-                        voice->freqsPos += 2;
-                        loop = 1;
-                        break;
-                    case -23:
-                        if (m_variant < 2) break;
-                        sample = samples[stream[position]];
-                        position++;
-                        voice->sample = -1;
-                        voice->enabled = 1;
+                            break;
+                        case -29:
+                            voice->vibSpeed = (signed char) stream[position];
+                            position++;
+                            voice->vibDepth = (signed char) stream[position];
+                            position++;
+                            voice->freqsPos += 3;
+                            break;
+                        case -28:
+                            sample = samples[stream[position]];
+                            position++;
+                            voice->loopPtr = sample->loopPtr;
+                            voice->repeat = sample->repeat;
 
-                        pos2 = stream[position];
-                        position++;
-                        pos1 = position;
-                        chan->setEnabled(0);
+                            chan->pointer = sample->pointer;
+                            chan->length = sample->length;
 
-                        position = sampleData + (sample->pointer + 4);
-                        c1 = stream[position];
-                        position++;
-                        c2 = stream[position];
-                        position++;
-                        value = (c1 * 24) + (c2 << 2);
-                        position += (pos2 * 24);
+                            voice->slide = 0;
+                            voice->freqsPos += 2;
+                            break;
+                        case -27:
+                            if (m_variant < 2) break;
+                            sample = samples[stream[position]];
+                            position++;
+                            chan->setEnabled(0);
+                            voice->enabled = 1;
 
-                        voice->loopPtr = readEndian(stream[position], stream[position + 1], stream[position + 2],
-                                                    stream[position + 3]) & 0xfffffffe;
-                        position += 4;
-                        chan->length = (readEndian(stream[position], stream[position + 1], stream[position + 2],
-                                                   stream[position + 3]) & 0xfffffffe) - voice->loopPtr;
-                        position += 4;
-                        voice->loopPtr += (sample->pointer + (value + 8));
-                        chan->pointer = voice->loopPtr;
-                        voice->repeat = 2;
+                            if (m_variant == 2) {
+                                pos1 = stream[position] * sample->length;
+                                position++;
 
-                        position = pos1;
-                        pos1 = voice->loopPtr + 1;
-                        amiga->memory[pos1] = amiga->memory[voice->loopPtr];
+                                voice->loopPtr = sample->loopPtr + pos1;
+                                voice->repeat = sample->repeat;
 
-                        voice->volsPos = 0;
-                        voice->volCtr = 1;
-                        voice->slide = 0;
-                        voice->freqsPos += 3;
-                        break;
-                    default:
-                        voice->transpose = value;
-                        voice->freqsPos++;
-                        loop = 0;
+                                chan->pointer = sample->pointer + pos1;
+                                chan->length = sample->length;
+
+                                voice->freqsPos += 3;
+                            } else {
+                                voice->sldPointer = sample->pointer;
+                                voice->sldEnd = sample->pointer + sample->length;
+                                value = readEndian(stream[position], stream[position + 1]);
+                                position += 2;
+
+                                if (value == 0xffff) {
+                                    voice->sldLoopPtr = sample->length;
+                                } else {
+                                    voice->sldLoopPtr = value << 1;
+                                }
+
+                                voice->sldLen = readEndian(stream[position], stream[position + 1]) << 1;
+                                position += 2;
+                                voice->sldDelta =
+                                        (signed short) readEndian(stream[position], stream[position + 1]) << 1;
+                                position += 2;
+                                voice->sldActive = 0;
+                                voice->sldCtr = 0;
+                                voice->sldSpeed = stream[position];
+                                position++;
+                                voice->slide = 1;
+                                voice->sldDone = 0;
+
+                                voice->freqsPos += 9;
+                            }
+                            voice->volsPos = 0;
+                            voice->volCtr = 1;
+                            break;
+                        case -26:
+                            if (m_variant < 3) break;
+
+                            voice->sldLen = readEndian(stream[position], stream[position + 1]) << 1;
+                            position += 2;
+                            voice->sldDelta = (signed short) readEndian(stream[position], stream[position + 1]) << 1;
+                            position += 2;
+                            voice->sldActive = 0;
+                            voice->sldCtr = 0;
+                            voice->sldSpeed = stream[position];
+                            position++;
+                            voice->sldDone = 0;
+
+                            voice->freqsPos += 6;
+                            break;
+                        case -25:
+                            if (m_variant == 1) {
+                                voice->freqsPtr = freqs + (stream[position] << 6);
+                                position++;
+                                voice->freqsPos = 0;
+
+                                position = voice->freqsPtr;
+                                loop = 3;
+                            } else {
+                                value = stream[position];
+                                position++;
+
+                                if (value != voice->sample) {
+                                    sample = samples[value];
+                                    voice->sample = value;
+
+                                    voice->loopPtr = sample->loopPtr;
+                                    voice->repeat = sample->repeat;
+                                    voice->enabled = 1;
+
+                                    chan->setEnabled(0);
+                                    chan->pointer = sample->pointer;
+                                    chan->length = sample->length;
+                                }
+
+                                voice->volsPos = 0;
+                                voice->volCtr = 1;
+                                voice->slide = 0;
+                                voice->freqsPos += 2;
+                            }
+                            break;
+                        case -24:
+                            voice->tick = stream[position];
+                            position++;
+                            voice->freqsPos += 2;
+                            loop = 1;
+                            break;
+                        case -23:
+                            if (m_variant < 2) break;
+                            sample = samples[stream[position]];
+                            position++;
+                            voice->sample = -1;
+                            voice->enabled = 1;
+
+                            pos2 = stream[position];
+                            position++;
+                            pos1 = position;
+                            chan->setEnabled(0);
+
+                            position = sampleData + (sample->pointer + 4);
+                            c1 = stream[position];
+                            position++;
+                            c2 = stream[position];
+                            position++;
+                            value = (c1 * 24) + (c2 << 2);
+                            position += (pos2 * 24);
+
+                            voice->loopPtr = readEndian(stream[position], stream[position + 1], stream[position + 2],
+                                                        stream[position + 3]) & 0xfffffffe;
+                            position += 4;
+                            chan->length = (readEndian(stream[position], stream[position + 1], stream[position + 2],
+                                                       stream[position + 3]) & 0xfffffffe) - voice->loopPtr;
+                            position += 4;
+                            voice->loopPtr += (sample->pointer + (value + 8));
+                            chan->pointer = voice->loopPtr;
+                            voice->repeat = 2;
+
+                            position = pos1;
+                            pos1 = voice->loopPtr + 1;
+                            amiga->memory[pos1] = amiga->memory[voice->loopPtr];
+
+                            voice->volsPos = 0;
+                            voice->volCtr = 1;
+                            voice->slide = 0;
+                            voice->freqsPos += 3;
+                            break;
+                        default:
+                            voice->transpose = value;
+                            voice->freqsPos++;
+                            loop = 0;
                     }
-                }
-                while (loop > 2);
+                } while (loop > 2);
             }
-        }
-        while (loop > 0);
+        } while (loop > 0);
 
-        if (voice->slide)
-        {
-            if (!voice->sldDone)
-            {
-                if (--voice->sldCtr < 0)
-                {
+        if (voice->slide) {
+            if (!voice->sldDone) {
+                if (--voice->sldCtr < 0) {
                     voice->sldCtr = voice->sldSpeed;
 
-                    if (voice->sldActive)
-                    {
+                    if (voice->sldActive) {
                         value = voice->sldLoopPtr + voice->sldDelta;
 
-                        if (value < 0)
-                        {
+                        if (value < 0) {
                             voice->sldDone = 1;
                             value = voice->sldLoopPtr - voice->sldDelta;
-                        }
-                        else
-                        {
+                        } else {
                             pos1 = voice->sldPointer + (voice->sldLen + value);
 
-                            if (pos1 > voice->sldEnd)
-                            {
+                            if (pos1 > voice->sldEnd) {
                                 voice->sldDone = 1;
                                 value = voice->sldLoopPtr - voice->sldDelta;
                             }
                         }
                         voice->sldLoopPtr = value;
-                    }
-                    else
-                    {
+                    } else {
                         voice->sldActive = 1;
                     }
 
@@ -622,93 +543,73 @@ void JHPlayer::process()
             }
         }
 
-        do
-        {
+        do {
             loop = 0;
 
-            if (voice->volSustain)
-            {
+            if (voice->volSustain) {
                 voice->volSustain--;
-            }
-            else
-            {
+            } else {
                 if (--voice->volCtr) break;
                 voice->volCtr = voice->volSpeed;
 
-                do
-                {
+                do {
                     position = voice->volsPtr + voice->volsPos;
-                    value = (signed char)stream[position];
+                    value = (signed char) stream[position];
                     position++;
                     if ((value <= -25) && (value >= -31)) break;
 
-                    switch (value)
-                    {
-                    case -24:
-                        voice->volSustain = stream[position];
-                        position++;
-                        voice->volsPos += 2;
-                        loop = 1;
+                    switch (value) {
+                        case -24:
+                            voice->volSustain = stream[position];
+                            position++;
+                            voice->volsPos += 2;
+                            loop = 1;
 
-                        break;
-                    case -32:
-                        voice->volsPos = (stream[position] & 63) - 5;
-                        position++;
-                        loop = 3;
-                        break;
-                    default:
-                        voice->volume = value;
-                        voice->volsPos++;
-                        loop = 0;
+                            break;
+                        case -32:
+                            voice->volsPos = (stream[position] & 63) - 5;
+                            position++;
+                            loop = 3;
+                            break;
+                        default:
+                            voice->volume = value;
+                            voice->volsPos++;
+                            loop = 0;
                     }
-                }
-                while (loop > 2);
+                } while (loop > 2);
             }
-        }
-        while (loop > 0);
+        } while (loop > 0);
 
         value = voice->transpose;
         if (value >= 0) value += (voice->note + voice->trackTrans);
         value &= 127;
 
-        if (coso)
-        {
+        if (coso) {
             if (value > 83) value = 0;
             period = PERIODS[value];
             value <<= 1;
-        }
-        else
-        {
+        } else {
             value <<= 1;
             position = periods + value;
             period = readEndian(stream[position], stream[position + 1]);
             position += 2;
         }
 
-        if (voice->vibDelay)
-        {
+        if (voice->vibDelay) {
             voice->vibDelay--;
-        }
-        else
-        {
-            if (m_variant > 3)
-            {
-                if (voice->vibrato & 32)
-                {
+        } else {
+            if (m_variant > 3) {
+                if (voice->vibrato & 32) {
                     value = voice->vibDelta + voice->vibSpeed;
 
-                    if (value > voice->vibDepth)
-                    {
+                    if (value > voice->vibDepth) {
                         voice->vibrato &= ~32;
                         value = voice->vibDepth;
                     }
-                }
-                else
-                {
+                } else {
                     value = voice->vibDelta - voice->vibSpeed;
 
-                    if (value < 0)
-                    {
+                    if (value < 0) {
                         voice->vibrato |= 32;
                         value = 0;
                     }
@@ -717,36 +618,27 @@ void JHPlayer::process()
                 voice->vibDelta = value;
                 value = (value - (voice->vibDepth >> 1)) * period;
                 period += (value >> 10);
-            }
-            else if (m_variant > 2)
-            {
+            } else if (m_variant > 2) {
                 value = voice->vibSpeed;
 
-                if (value < 0)
-                {
+                if (value < 0) {
                     value &= 127;
                     voice->vibrato ^= 1;
                 }
 
-                if (!(voice->vibrato & 1))
-                {
-                    if (voice->vibrato & 32)
-                    {
+                if (!(voice->vibrato & 1)) {
+                    if (voice->vibrato & 32) {
                         voice->vibDelta += value;
                         pos1 = voice->vibDepth << 1;
 
-                        if (voice->vibDelta > pos1)
-                        {
+                        if (voice->vibDelta > pos1) {
                             voice->vibrato &= ~32;
                             voice->vibDelta = pos1;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         voice->vibDelta -= value;
 
-                        if (voice->vibDelta < 0)
-                        {
+                        if (voice->vibDelta < 0) {
                             voice->vibrato |= 32;
                             voice->vibDelta = 0;
                         }
@@ -754,28 +646,20 @@ void JHPlayer::process()
                 }
 
                 period += (value - voice->vibDepth);
-            }
-            else
-            {
-                if (voice->vibrato >= 0 || !(voice->vibrato & 1))
-                {
-                    if (voice->vibrato & 32)
-                    {
+            } else {
+                if (voice->vibrato >= 0 || !(voice->vibrato & 1)) {
+                    if (voice->vibrato & 32) {
                         voice->vibDelta += voice->vibSpeed;
                         pos1 = voice->vibDepth << 1;
 
-                        if (voice->vibDelta >= pos1)
-                        {
+                        if (voice->vibDelta >= pos1) {
                             voice->vibrato &= ~32;
                             voice->vibDelta = pos1;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         voice->vibDelta -= voice->vibSpeed;
 
-                        if (voice->vibDelta < 0)
-                        {
+                        if (voice->vibDelta < 0) {
                             voice->vibrato |= 32;
                             voice->vibDelta = 0;
                         }
@@ -784,12 +668,10 @@ void JHPlayer::process()
 
                 pos1 = voice->vibDelta - voice->vibDepth;
 
-                if (pos1)
-                {
+                if (pos1) {
                     value += 160;
 
-                    while (value < 256)
-                    {
+                    while (value < 256) {
                         pos1 += pos1;
                         value += 24;
                     }
@@ -801,65 +683,49 @@ void JHPlayer::process()
 
         if (m_variant < 3) voice->vibrato ^= 1;
 
-        if (voice->info & 32)
-        {
+        if (voice->info & 32) {
             value = voice->infoPrev;
 
-            if (m_variant > 3)
-            {
-                if (value < 0)
-                {
+            if (m_variant > 3) {
+                if (value < 0) {
                     voice->portaDelta -= value;
                     value = voice->portaDelta * period;
                     period += (value >> 10);
-                }
-                else
-                {
+                } else {
                     voice->portaDelta += value;
                     value = voice->portaDelta * period;
                     period -= (value >> 10);
                 }
-            }
-            else
-            {
-                if (value < 0)
-                {
+            } else {
+                if (value < 0) {
                     voice->portaDelta += (-value << 11);
                     period += (voice->portaDelta >> 16);
-                }
-                else
-                {
+                } else {
                     voice->portaDelta += (value << 11);
                     period -= (voice->portaDelta >> 16);
                 }
             }
         }
 
-        if (m_variant > 3)
-        {
+        if (m_variant > 3) {
             value = (voice->volFade * voice->volume) / 100;
-        }
-        else
-        {
+        } else {
             value = voice->volume;
         }
 
         chan->setPeriod(period);
         chan->setVolume(value);
 
-        if (voice->enabled)
-        {
+        if (voice->enabled) {
             chan->setEnabled(1);
             chan->pointer = voice->loopPtr;
             chan->length = voice->repeat;
         }
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 }
 
-int JHPlayer::load(void* _data, unsigned long int _length)
-{
-    stream = static_cast<unsigned char*>(_data);
+int JHPlayer::load(void *_data, unsigned long int _length) {
+    stream = static_cast<unsigned char *>(_data);
     m_version = 0;
     position = 4;
     base = periods = 0;
@@ -873,10 +739,8 @@ int JHPlayer::load(void* _data, unsigned long int _length)
 
     coso = (stream[0] == 'C' && stream[1] == 'O' && stream[2] == 'S' && stream[3] == 'O');
 
-    if (coso)
-    {
-        for (int i = 0; i < 7; ++i)
-        {
+    if (coso) {
+        for (int i = 0; i < 7; ++i) {
             value += readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
             position += 4;
         }
@@ -886,35 +750,34 @@ int JHPlayer::load(void* _data, unsigned long int _length)
         value += stream[position];
         position++;
 
-        switch (value)
-        {
-        case 22670: //Astaroth
-        case 18845:
-        case 30015: //Chambers of Shaolin
-        case 22469:
-        case 3549: //Over the Net
-            m_variant = 1;
-            break;
-        case 16948: //Dragonflight
-        case 18337:
-        case 13704:
-            m_variant = 2;
-            break;
-        case 18548: //Wings of Death
-        case 13928:
-        case 8764:
-        case 17244:
-        case 11397:
-        case 14496:
-        case 14394:
-        case 13578: //Dragonflight
+        switch (value) {
+            case 22670: //Astaroth
+            case 18845:
+            case 30015: //Chambers of Shaolin
+            case 22469:
+            case 3549: //Over the Net
+                m_variant = 1;
+                break;
+            case 16948: //Dragonflight
+            case 18337:
+            case 13704:
+                m_variant = 2;
+                break;
+            case 18548: //Wings of Death
+            case 13928:
+            case 8764:
+            case 17244:
+            case 11397:
+            case 14496:
+            case 14394:
+            case 13578: //Dragonflight
 
-        case 6524:
-            m_variant = 3;
-            break;
-        default:
-            m_variant = 4;
-            break;
+            case 6524:
+                m_variant = 3;
+                break;
+            default:
+                m_variant = 4;
+                break;
         }
 
 
@@ -945,8 +808,7 @@ int JHPlayer::load(void* _data, unsigned long int _length)
         myVal[1] = (0x1000000 >> 16) & 0xFF;
         myVal[2] = (0x1000000 >> 8) & 0xFF;
         myVal[3] = 0x1000000 & 0xFF;
-        for (int p = 0; p < 4; p++)
-        {
+        for (int p = 0; p < 4; p++) {
             stream[p] = myVal[p];
         }
 
@@ -955,15 +817,13 @@ int JHPlayer::load(void* _data, unsigned long int _length)
         myVal[1] = (0xe1 >> 16) & 0xFF;
         myVal[2] = (0xe1 >> 8) & 0xFF;
         myVal[3] = 0xe1 & 0xFF;
-        for (int p = 0; p < 4; p++)
-        {
+        for (int p = 0; p < 4; p++) {
             stream[p + 4] = myVal[p];
         }
         position += 4;
         myVal[0] = (0xffff >> 8) & 0xFF;
         myVal[1] = 0xffff & 0xFF;
-        for (int p = 0; p < 2; p++)
-        {
+        for (int p = 0; p < 2; p++) {
             stream[p + 8] = 255;
         }
         position += 2;
@@ -976,71 +836,60 @@ int JHPlayer::load(void* _data, unsigned long int _length)
 
         len = ((sampleData - headers) / 10) - 1;
 
-        if (len < 1 || len > 255)
-        {
+        if (len < 1 || len > 255) {
             m_version = 0;
             return 0;
         }
 
         m_totalSongs = (headers - songData) / 6;
-    }
-    else
-    {
-        do
-        {
+    } else {
+        do {
             value = readEndian(stream[position], stream[position + 1]);
             position += 2;
 
-            switch (value)
-            {
-            case 0x0240: //andi.w #x,d0
-                value = readEndian(stream[position], stream[position + 1]);
-                position += 2;
+            switch (value) {
+                case 0x0240: //andi.w #x,d0
+                    value = readEndian(stream[position], stream[position + 1]);
+                    position += 2;
 
-                if (value == 0x007f)
-                {
-                    //andi.w #$7f,d0
+                    if (value == 0x007f) {
+                        //andi.w #$7f,d0
+                        position += 2;
+                        periods = position + readEndian(stream[position], stream[position + 1]);
+                        position += 2;
+                    }
+                    break;
+                case 0x7002: //moveq #2,d0
+                case 0x7003: //moveq #3,d0
+                    m_channels = (value & 0xff) + 1;
+                    value = readEndian(stream[position], stream[position + 1]);
                     position += 2;
-                    periods = position + readEndian(stream[position], stream[position + 1]);
-                    position += 2;
-                }
-                break;
-            case 0x7002: //moveq #2,d0
-            case 0x7003: //moveq #3,d0
-                m_channels = (value & 0xff) + 1;
-                value = readEndian(stream[position], stream[position + 1]);
-                position += 2;
-                if (value == 0x7600)
-                {
-                    value = readEndian(stream[position], stream[position + 1]); //moveq #0,d3
-                    position += 2;
-                }
+                    if (value == 0x7600) {
+                        value = readEndian(stream[position], stream[position + 1]); //moveq #0,d3
+                        position += 2;
+                    }
 
-                if (value == 0x41fa)
-                {
-                    //lea x,a0
-                    position += 4;
-                    base = position + readEndian(stream[position], stream[position + 1]);
+                    if (value == 0x41fa) {
+                        //lea x,a0
+                        position += 4;
+                        base = position + readEndian(stream[position], stream[position + 1]);
+                        position += 2;
+                    }
+                    break;
+                case 0x5446: //"TF"
+                    value = readEndian(stream[position], stream[position + 1]);
                     position += 2;
-                }
-                break;
-            case 0x5446: //"TF"
-                value = readEndian(stream[position], stream[position + 1]);
-                position += 2;
 
-                if (value == 0x4d58)
-                {
-                    //"MX"
-                    id = position - 4;
-                    position = _length;
-                }
-                break;
+                    if (value == 0x4d58) {
+                        //"MX"
+                        id = position - 4;
+                        position = _length;
+                    }
+                    break;
             }
-        }
-        while (_length - position > 12);
+        } while (_length - position > 12);
 
-        if (!id || !base || !periods)
-        {
+        if (!id || !base || !periods) {
             m_version = 0;
             return 0;
         }
@@ -1080,20 +929,16 @@ int JHPlayer::load(void* _data, unsigned long int _length)
 
     position = headers;
 
-    samples = vector<BaseSample*>(len);
+    samples = vector<BaseSample *>(len);
     value = 0;
 
 
-    for (int i = 0; i < len; ++i)
-    {
-        BaseSample* sample = new BaseSample();
-        if (!coso)
-        {
+    for (int i = 0; i < len; ++i) {
+        BaseSample *sample = new BaseSample();
+        if (!coso) {
             const int STRING_LENGTH = 18;
-            for (int j = 0; j < STRING_LENGTH; j++)
-            {
-                if (!stream[position + j])
-                {
+            for (int j = 0; j < STRING_LENGTH; j++) {
+                if (!stream[position + j]) {
                     break;
                 }
                 sample->name += stream[position + j];
@@ -1106,8 +951,7 @@ int JHPlayer::load(void* _data, unsigned long int _length)
         position += 4;
         sample->length = readEndian(stream[position], stream[position + 1]) << 1;
         position += 2;
-        if (!coso)
-        {
+        if (!coso) {
             sample->volume = readEndian(stream[position], stream[position + 1]);
             position += 2;
         }
@@ -1125,12 +969,11 @@ int JHPlayer::load(void* _data, unsigned long int _length)
     amiga->store(stream, value, position, _length);
 
     position = songData;
-    songs = vector<JHSong*>();
+    songs = vector<JHSong *>();
     value = 0;
 
-    for (int i = 0; i < m_totalSongs; ++i)
-    {
-        JHSong* song = new JHSong();
+    for (int i = 0; i < m_totalSongs; ++i) {
+        JHSong *song = new JHSong();
         song->pointer = readEndian(stream[position], stream[position + 1]);
         position += 2;
         song->length = readEndian(stream[position], stream[position + 1]) - (song->pointer + 1);
@@ -1145,55 +988,44 @@ int JHPlayer::load(void* _data, unsigned long int _length)
 
     m_totalSongs = songs.size();
 
-    if (!coso)
-    {
+    if (!coso) {
         position = 0;
         m_variant = 1;
 
-        do
-        {
+        do {
             value = readEndian(stream[position], stream[position + 1]);
             position += 2;
 
-            if (value == 0xb03c || value == 0x0c00)
-            {
+            if (value == 0xb03c || value == 0x0c00) {
                 //cmp.b #x,d0 | cmpi.b #x,d0
                 value = readEndian(stream[position], stream[position + 1]);
                 position += 2;
 
-                if (value == 0x00e5 || value == 0x00e6 || value == 0x00e9)
-                {
+                if (value == 0x00e5 || value == 0x00e6 || value == 0x00e9) {
                     //effects
                     m_variant = 2;
                     break;
                 }
-            }
-            else if (value == 0x4efb)
-            {
+            } else if (value == 0x4efb) {
                 //jmp $(pc,d0.w)
                 m_variant = 3;
                 break;
             }
-        }
-        while (position < id);
+        } while (position < id);
     }
 
 
     m_version = 1;
-    if (!coso)
-    {
+    if (!coso) {
         format = "Hippel";
-    }
-    else
-    {
+    } else {
         format = "Hippel COSO";
     }
     //printData();
     return 1;
 }
 
-void JHPlayer::printData()
-{
+void JHPlayer::printData() {
     //    cout << "base: " << base << " patterns: " << patterns << " patternLen: " << patternLen << " periods: " << periods << " frqseqs: " << frqseqs << " volseqs: " << volseqs << " samplesData: " << samplesData << " coso: " << (bool)coso << " variant: " << variant << "\n";
 
     //    for(unsigned int i = 0; i < songs.size(); i++)
@@ -1215,24 +1047,19 @@ void JHPlayer::printData()
     //    }
 }
 
-unsigned char JHPlayer::getSubsongsCount()
-{
+unsigned char JHPlayer::getSubsongsCount() {
     return songs.size();
 }
 
-void JHPlayer::selectSong(unsigned char subsong)
-{
+void JHPlayer::selectSong(unsigned char subsong) {
     m_songNumber = subsong;
 }
 
-vector<BaseSample*> JHPlayer::getSamples()
-{
-    vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+vector<BaseSample *> JHPlayer::getSamples() {
+    vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }

@@ -5,8 +5,7 @@
 
 class BaseSample;
 
-class FXVoice
-{
+class FXVoice {
     friend class FXPlayer;
 
 public:
@@ -16,9 +15,9 @@ private:
     void initialize();
 
     int index;
-    FXVoice* next;
-    AmigaChannel* channel;
-    BaseSample* sample;
+    FXVoice *next;
+    AmigaChannel *channel;
+    BaseSample *sample;
     int period;
     int effect;
     int param;

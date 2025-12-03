@@ -1,19 +1,23 @@
 #ifndef AMIGACHANNEL_H
 #define AMIGACHANNEL_H
 
-class AmigaChannel
-{
+class AmigaChannel {
     friend class Amiga;
 
 public:
     AmigaChannel(int index);
+
     void setEnabled(int value);
+
     void setPeriod(int value);
+
     void setVolume(int value);
+
     void reset();
+
     int enabled();
 
-    AmigaChannel* next;
+    AmigaChannel *next;
 
     double panning;
     int mute;
@@ -24,6 +28,7 @@ public:
 
     //private:
     void initialize();
+
     int audena;
     int audctr;
     int audloc;

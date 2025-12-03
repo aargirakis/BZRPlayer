@@ -11,9 +11,13 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -36,19 +40,16 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginSunvoxLib
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginSunvoxLib {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginSunvoxLib(FMOD_CODEC_STATE* codec)
-    {
+    pluginSunvoxLib(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginSunvoxLib()
-    {
+    ~pluginSunvoxLib() {
         if (isDllLoaded) {
             sv_stop(0);
             sv_close_slot(0);
@@ -56,7 +57,7 @@ public:
         }
     }
 
-    uint8_t* myBuffer;
+    uint8_t *myBuffer;
     bool isDllLoaded = false;
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -65,8 +66,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -74,8 +74,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
@@ -90,13 +89,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     FMOD_CODEC_FILE_READ(codec, id, 4, &bytesread);
 
-    if (memcmp(id, "SVOX", 4) != 0)
-    {
+    if (memcmp(id, "SVOX", 4) != 0) {
         return FMOD_ERR_FORMAT;
     }
 
     auto *plugin = new pluginSunvoxLib(codec);
-    const auto info = static_cast<Info*>(userexinfo->userdata);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
     int res = sv_load_dll2((info->libPath + PLUGINS_DIR + "/" + SUNVOX_LIB).c_str());
     plugin->isDllLoaded = true;
@@ -149,24 +147,20 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
     delete static_cast<pluginSunvoxLib *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     sv_audio_callback(buffer, static_cast<int>(size), 0, sv_get_ticks());
     *read = size;
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                         FMOD_TIMEUNIT postype)
-{
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    if (postype == FMOD_TIMEUNIT_MS) {
         sv_stop(0);
         sv_play_from_beginning(0);
         return FMOD_OK;

@@ -15,13 +15,19 @@
 using namespace std;
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
+
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
-unsigned int getLengthFromDb(const string& databasePath, const string& md5, unsigned int subsong);
+unsigned int getLengthFromDb(const string &databasePath, const string &md5, unsigned int subsong);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -44,54 +50,47 @@ FMOD_CODEC_DESCRIPTION codecDescription =
 
 constexpr uint8_t voicesPerSidChip = 4;
 
-class pluginLibsidplayfp
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginLibsidplayfp {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginLibsidplayfp(FMOD_CODEC_STATE* codec)
-    {
+    pluginLibsidplayfp(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    static char* loadRom(const char* path, size_t romSize)
-    {
-        char* buffer = nullptr;
+    static char *loadRom(const char *path, size_t romSize) {
+        char *buffer = nullptr;
         ifstream is(path, ios::binary);
-        if (is.good())
-        {
+        if (is.good()) {
             buffer = new char[romSize];
             is.read(buffer, romSize);
-        }
-        else
-        {
+        } else {
             cout << "failed loading rom: " << path << endl;
         }
         is.close();
         return buffer;
     }
 
-    ~pluginLibsidplayfp()
-    {
+    ~pluginLibsidplayfp() {
         delete tune;
         delete [] kernal;
         delete [] basic;
         delete [] chargen;
     }
 
-    Info* info;
-    SidTune* tune = nullptr;
+    Info *info;
+    SidTune *tune = nullptr;
     unsigned int subsongs;
-    ReSIDfpBuilder* rs;
-    sidplayfp* player;
-    char* kernal;
-    char* basic;
-    char* chargen;
+    ReSIDfpBuilder *rs;
+    sidplayfp *player;
+    char *kernal;
+    char *basic;
+    char *chargen;
     string hvscSonglengthsFile;
     unsigned int seekPosition;
     unsigned int maxVoices;
-    bool* mutePtr;
+    bool *mutePtr;
     bool hvscSonglengthsDataBaseEnabled;
     bool isSeeking = false;
     unsigned int length = 0;
@@ -108,8 +107,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -117,8 +115,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
     if (filesize > 1024 * 96) //96kb, biggest sid in hvsc is about 63 kb
@@ -127,7 +124,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
 
     unsigned int bytesread;
-    auto* myBuffer = new uint8_t[filesize];
+    auto *myBuffer = new uint8_t[filesize];
 
     //rewind file pointer
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
@@ -135,14 +132,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     //read whole file to memory
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
-    if (memcmp(myBuffer, "PSID", 4) != 0 && memcmp(myBuffer, "RSID", 4) != 0)
-    {
+    if (memcmp(myBuffer, "PSID", 4) != 0 && memcmp(myBuffer, "RSID", 4) != 0) {
         delete[] myBuffer;
         return FMOD_ERR_FORMAT;
     }
 
-    auto* plugin = new pluginLibsidplayfp(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    auto *plugin = new pluginLibsidplayfp(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     string kernal_filename = plugin->info->dataPath + KERNAL_BIN_DATA_PATH;
     string basic_filename = plugin->info->dataPath + BASIC_BIN_DATA_PATH;
@@ -154,7 +150,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->player = new sidplayfp();
 
-    plugin->player->setRoms((const uint8_t*)plugin->kernal, (const uint8_t*)plugin->basic, (const uint8_t*)plugin->chargen);
+    plugin->player->setRoms((const uint8_t *) plugin->kernal, (const uint8_t *) plugin->basic,
+                            (const uint8_t *) plugin->chargen);
 
     plugin->rs = new ReSIDfpBuilder("Demo");
     // Get the number of SIDs supported by the engine
@@ -162,8 +159,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->rs->create(plugin->player->info().maxsids());
 
     // Check if builder is ok
-    if (!plugin->rs->getStatus())
-    {
+    if (!plugin->rs->getStatus()) {
         delete[] myBuffer;
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -177,8 +173,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     ifstream ifs(filename.c_str());
 
     bool useDefaults = false;
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         //The file could not be opened
         useDefaults = true;
     }
@@ -197,127 +192,79 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     plugin->hvscSonglengthsDataBaseEnabled = true;
     plugin->info->isContinuousPlaybackActive = false;
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word == "frequency")
-                {
+                if (word == "frequency") {
                     freq = atoi(value.c_str());
-                }
-                else if (word == "playback")
-                {
+                } else if (word == "playback") {
                     if (value == "left") //old, just for compability
                     {
                         playback = SidConfig::MONO;
                         plugin->waveformat.channels = 1;
-                    }
-                    else if (value == "mono")
-                    {
+                    } else if (value == "mono") {
                         playback = SidConfig::MONO;
                         plugin->waveformat.channels = 1;
-                    }
-                    else if (value == "stereo")
-                    {
+                    } else if (value == "stereo") {
                         playback = SidConfig::STEREO;
                         plugin->waveformat.channels = 2;
-                    }
-                    else if (value == "right") //old, just for compability
+                    } else if (value == "right") //old, just for compability
                     {
                         playback = SidConfig::MONO;
                         plugin->waveformat.channels = 1;
                     }
-                }
-                else if (word == "sampling_method")
-                {
-                    if (value == "interpolate")
-                    {
+                } else if (word == "sampling_method") {
+                    if (value == "interpolate") {
                         samplingMethod = SidConfig::INTERPOLATE;
-                    }
-                    else if (value == "resample/interpolate")
-                    {
+                    } else if (value == "resample/interpolate") {
                         samplingMethod = SidConfig::RESAMPLE_INTERPOLATE;
                     }
-                }
-
-                else if (word == "clock_speed")
-                {
-                    if (value == "correct")
-                    {
+                } else if (word == "clock_speed") {
+                    if (value == "correct") {
                         forcec64Model = false;
-                    }
-                    else if (value == "pal")
-                    {
+                    } else if (value == "pal") {
                         c64Model = SidConfig::PAL;
                         forcec64Model = true;
-                    }
-                    else if (value == "ntsc")
-                    {
+                    } else if (value == "ntsc") {
                         c64Model = SidConfig::NTSC;
                         forcec64Model = true;
-                    }
-                    else if (value == "old_ntsc")
-                    {
+                    } else if (value == "old_ntsc") {
                         c64Model = SidConfig::OLD_NTSC;
                         forcec64Model = true;
-                    }
-                    else if (value == "drean")
-                    {
+                    } else if (value == "drean") {
                         c64Model = SidConfig::DREAN;
                         forcec64Model = true;
                     }
-                }
-                else if (word == "sid_model")
-                {
-                    if (value == "correct")
-                    {
+                } else if (word == "sid_model") {
+                    if (value == "correct") {
                         forceSidModel = false;
-                    }
-                    else if (value == "mos6581")
-                    {
+                    } else if (value == "mos6581") {
                         defaultSidModel = SidConfig::MOS6581;
                         forceSidModel = true;
-                    }
-                    else if (value == "mos8580")
-                    {
+                    } else if (value == "mos8580") {
                         defaultSidModel = SidConfig::MOS8580;
                         forceSidModel = true;
                     }
-                }
-                else if (word == "sid_filter")
-                {
-                    if (value == "true")
-                    {
+                } else if (word == "sid_filter") {
+                    if (value == "true") {
                         filter = true;
-                    }
-                    else
-                    {
+                    } else {
                         filter = false;
                     }
-                }
-                else if (word == "hvsc_songlengths_path")
-                {
+                } else if (word == "hvsc_songlengths_path") {
                     plugin->hvscSonglengthsFile = value;
-                }
-                else if (word == "hvsc_songlengths_enabled")
-                {
-                    if (value == "true")
-                    {
+                } else if (word == "hvsc_songlengths_enabled") {
+                    if (value == "true") {
                         plugin->hvscSonglengthsDataBaseEnabled = true;
-                    }
-                    else
-                    {
+                    } else {
                         plugin->hvscSonglengthsDataBaseEnabled = false;
                     }
-                }
-                else if (word == "continuous_playback")
-                {
-                    plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                } else if (word == "continuous_playback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
             }
         }
@@ -330,8 +277,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->tune = new SidTune(myBuffer, filesize);
     // Check if the tune is valid
-    if (!plugin->tune->getStatus())
-    {
+    if (!plugin->tune->getStatus()) {
         delete[] myBuffer;
         return FMOD_ERR_FORMAT;
     }
@@ -352,13 +298,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     cfg.fastSampling = false;
     cfg.sidEmulation = plugin->rs;
 
-    if (!plugin->player->config(cfg))
-    {
+    if (!plugin->player->config(cfg)) {
         delete[] myBuffer;
         return FMOD_ERR_FORMAT;
     }
 
-    const SidTuneInfo* s = plugin->tune->getInfo();
+    const SidTuneInfo *s = plugin->tune->getInfo();
 
     plugin->info->initAddr = s->initAddr();
     plugin->info->loadAddr = s->loadAddr();
@@ -383,36 +328,33 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->mutePtr = new bool[plugin->maxVoices];
 
-    if (s->numberOfInfoStrings() == 3)
-    {
+    if (s->numberOfInfoStrings() == 3) {
         plugin->info->title = s->infoString(0);
         plugin->info->artist = s->infoString(1);
         plugin->info->copyright = s->infoString(2);
     }
 
     string comments;
-    for (int i = 0; i < s->numberOfCommentStrings(); i++)
-    {
+    for (int i = 0; i < s->numberOfCommentStrings(); i++) {
         comments += '\n' + string(s->commentString(i));
     }
 
     plugin->info->comments = comments;
     plugin->info->numSamples = 0;
 
-    switch (s->clockSpeed())
-    {
-    case SidTuneInfo::CLOCK_UNKNOWN:
-        plugin->info->clockSpeed = 0;
-        break;
-    case SidTuneInfo::CLOCK_PAL:
-        plugin->info->clockSpeed = 1;
-        break;
-    case SidTuneInfo::CLOCK_NTSC:
-        plugin->info->clockSpeed = 2;
-        break;
-    case SidTuneInfo::CLOCK_ANY:
-        plugin->info->clockSpeed = 3;
-        break;
+    switch (s->clockSpeed()) {
+        case SidTuneInfo::CLOCK_UNKNOWN:
+            plugin->info->clockSpeed = 0;
+            break;
+        case SidTuneInfo::CLOCK_PAL:
+            plugin->info->clockSpeed = 1;
+            break;
+        case SidTuneInfo::CLOCK_NTSC:
+            plugin->info->clockSpeed = 2;
+            break;
+        case SidTuneInfo::CLOCK_ANY:
+            plugin->info->clockSpeed = 3;
+            break;
     }
 
     string sidModel;
@@ -434,25 +376,23 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->info->chips = format("{} (x{})", sidModel, s->sidChips());
 
-    switch (s->compatibility())
-    {
-    case SidTuneInfo::COMPATIBILITY_C64:
-        plugin->info->compatibility = 0;
-        break;
-    case SidTuneInfo::COMPATIBILITY_PSID:
-        plugin->info->compatibility = 1;
-        break;
-    case SidTuneInfo::COMPATIBILITY_R64:
-        plugin->info->compatibility = 2;
-        break;
-    case SidTuneInfo::COMPATIBILITY_BASIC:
-        plugin->info->compatibility = 3;
-        break;
+    switch (s->compatibility()) {
+        case SidTuneInfo::COMPATIBILITY_C64:
+            plugin->info->compatibility = 0;
+            break;
+        case SidTuneInfo::COMPATIBILITY_PSID:
+            plugin->info->compatibility = 1;
+            break;
+        case SidTuneInfo::COMPATIBILITY_R64:
+            plugin->info->compatibility = 2;
+            break;
+        case SidTuneInfo::COMPATIBILITY_BASIC:
+            plugin->info->compatibility = 3;
+            break;
     }
 
     if (strcmp(s->formatString(), "C64 Sidplayer format (MUS)") != 0 && strcmp(
-        s->formatString(), "C64 Stereo Sidplayer format (MUS+STR)") != 0)
-    {
+            s->formatString(), "C64 Stereo Sidplayer format (MUS+STR)") != 0) {
         plugin->info->md5 = plugin->tune->createMD5New();
     }
 
@@ -466,17 +406,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->seekPosition = 0;
 
-    for (int i = 0; i < plugin->maxVoices; i++)
-    {
+    for (int i = 0; i < plugin->maxVoices; i++) {
         plugin->mutePtr[i] = false;
     }
 
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
     //    bool skipClick=true;
     //    if(skipClick)
     //    {
@@ -527,12 +465,10 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                      FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
+    if (postype == FMOD_TIMEUNIT_MS) {
         if (position == 0) {
             if (plugin->player->timeMs() != 0) {
                 plugin->player->load(plugin->tune);
@@ -558,20 +494,16 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
 
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         plugin->tune->selectSong(position + 1);
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
-    {
-        for (int i = 0; i < plugin->maxVoices; i++)
-		{
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        for (int i = 0; i < plugin->maxVoices; i++) {
             plugin->mutePtr[i] = false;
-		}
+        }
         //position is a mask
-        for (int i = 0; i < plugin->maxVoices; i++)
-        {
+        for (int i = 0; i < plugin->maxVoices; i++) {
             plugin->player->mute(i / voicesPerSidChip, i % voicesPerSidChip, position >> i & 1);
             plugin->mutePtr[i] = position >> i & 1;
         }
@@ -582,37 +514,32 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginLibsidplayfp*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginLibsidplayfp *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
-    auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
         *length = plugin->waveformat.lengthpcm;
         return FMOD_OK;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS) {
         if (!plugin->hvscSonglengthsDataBaseEnabled) {
             *length = -1;
         } else {
             if (plugin->length == 0) {
                 plugin->length = getLengthFromDb(plugin->hvscSonglengthsFile, plugin->info->md5,
-                                           plugin->tune->getInfo()->currentSong());
+                                                 plugin->tune->getInfo()->currentSong());
             }
             *length = plugin->length;
         }
 
         return FMOD_OK;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
         *length = plugin->subsongs;
         return FMOD_OK;
     }
@@ -620,18 +547,15 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
-{
-    const auto* plugin = static_cast<pluginLibsidplayfp*>(codec->plugindata);
+static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_SUBSONG_MS)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG_MS) {
         *position = plugin->player->timeMs();
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
-        const SidTuneInfo* s = plugin->tune->getInfo();
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
+        const SidTuneInfo *s = plugin->tune->getInfo();
         *position = s->currentSong();
         return FMOD_OK;
     }
@@ -639,8 +563,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
     return FMOD_ERR_UNSUPPORTED;
 }
 
-unsigned int getLengthFromDb(const string& databasePath, const string& md5, unsigned int subsong)
-{
+unsigned int getLengthFromDb(const string &databasePath, const string &md5, unsigned int subsong) {
     const auto sidDb = new SidDatabase(); //TODO sidDatabase->close() && Delete
 
     if (!sidDb->open(databasePath.c_str())) {

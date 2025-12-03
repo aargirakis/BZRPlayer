@@ -4,10 +4,10 @@
 
 using namespace std;
 
-class BaseSample
-{
+class BaseSample {
 public:
     BaseSample();
+
     string name;
     int pointer;
     int length;

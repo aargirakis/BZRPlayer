@@ -7,9 +7,13 @@
 using namespace std;
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -29,28 +33,24 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginLibpac
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginLibpac {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginLibpac(FMOD_CODEC_STATE* codec)
-    {
+    pluginLibpac(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginLibpac()
-    {
-        if (pac_module != nullptr)
-        {
+    ~pluginLibpac() {
+        if (pac_module != nullptr) {
             pac_exit();
             pac_module = nullptr;
         }
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
-    pac_module* pac_module = nullptr;
+    pac_module *pac_module = nullptr;
 };
 
 /*
@@ -62,8 +62,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -71,14 +70,12 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     const int freq = 44100;
     const int channels = 2;
 
     pac_exit();
-    if (pac_init(freq, 16, channels) != 0)
-    {
+    if (pac_init(freq, 16, channels) != 0) {
         return FMOD_ERR_FORMAT;
     }
 
@@ -86,14 +83,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     pac_enable(PAC_MODE_DEFAULT);
 
     pac_enable(PAC_MODE_DEFAULT);
-    auto* smallBuffer = new uint8_t[12];
+    auto *smallBuffer = new uint8_t[12];
     unsigned int bytesread;
 
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, smallBuffer, 12, &bytesread);
 
-    if (memcmp(&smallBuffer[0], "PACG", 4) != 0 || memcmp(&smallBuffer[8], "PAIN", 4) != 0)
-    {
+    if (memcmp(&smallBuffer[0], "PACG", 4) != 0 || memcmp(&smallBuffer[8], "PAIN", 4) != 0) {
         delete[] smallBuffer;
         return FMOD_ERR_FORMAT;
     }
@@ -101,12 +97,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     delete[] smallBuffer;
 
     const auto plugin = new pluginLibpac(codec);
-    const auto info = static_cast<Info*>(userexinfo->userdata);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->pac_module = pac_open(info->filename.c_str());
 
-    if (!plugin->pac_module)
-    {
+    if (!plugin->pac_module) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -134,8 +129,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     const int numSamples = pac_num_samples(plugin->pac_module);
     info->numSamples = numSamples;
 
-    if (numSamples > 0)
-    {
+    if (numSamples > 0) {
         info->samples = new string[numSamples];
         info->samples16Bit = new bool[numSamples];
         info->samplesSize = new unsigned int[numSamples];
@@ -144,9 +138,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         info->samplesVolume = new unsigned short[numSamples];
         info->samplesFineTune = new int[numSamples];
 
-        for (int j = 1; j <= numSamples; j++)
-        {
-            pac_sound const* sample = pac_sample(plugin->pac_module, j);
+        for (int j = 1; j <= numSamples; j++) {
+            pac_sound const *sample = pac_sample(plugin->pac_module, j);
             info->samples[j - 1] = sample->name;
             info->samples16Bit[j - 1] = sample->bits == 16 ? true : false;
             info->samplesSize[j - 1] = sample->length;
@@ -160,23 +153,21 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginLibpac*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginLibpac *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    const auto* plugin = static_cast<pluginLibpac*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    const auto *plugin = static_cast<pluginLibpac *>(codec->plugindata);
     pac_read(plugin->pac_module, buffer, size);
     *read = size >> 2;
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
-    const auto* plugin = static_cast<pluginLibpac*>(codec->plugindata);
-    pac_seek(plugin->pac_module, position / 1000 * plugin->waveformat.frequency,SEEK_SET);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginLibpac *>(codec->plugindata);
+    pac_seek(plugin->pac_module, position / 1000 * plugin->waveformat.frequency, SEEK_SET);
     return FMOD_OK;
 }

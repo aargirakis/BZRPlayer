@@ -18,9 +18,8 @@ const int JHPlayer::PERIODS[84] = {
 };
 
 
-JHPlayer::JHPlayer(Amiga* amiga): AmigaPlayer(amiga)
-{
-    voices = std::vector<JHVoice*>(4);
+JHPlayer::JHPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
+    voices = std::vector<JHVoice *>(4);
     voices[0] = new JHVoice(0);
     voices[0]->next = voices[1] = new JHVoice(1);
     voices[1]->next = voices[2] = new JHVoice(2);
@@ -36,29 +35,24 @@ JHPlayer::JHPlayer(Amiga* amiga): AmigaPlayer(amiga)
     m_variant = 0;
 }
 
-JHPlayer::~JHPlayer()
-{
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+JHPlayer::~JHPlayer() {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for (unsigned int i = 0; i < songs.size(); i++)
-    {
+    for (unsigned int i = 0; i < songs.size(); i++) {
         if (songs[i]) delete songs[i];
     }
     songs.clear();
 }
 
 
-int JHPlayer::load(void* _data, unsigned long int _length)
-{
-    stream = static_cast<unsigned char*>(_data);
+int JHPlayer::load(void *_data, unsigned long int _length) {
+    stream = static_cast<unsigned char *>(_data);
     m_version = 0;
     position = 4;
     base = periods = 0;
@@ -72,10 +66,8 @@ int JHPlayer::load(void* _data, unsigned long int _length)
 
     coso = (stream[0] == 'C' && stream[1] == 'O' && stream[2] == 'S' && stream[3] == 'O');
 
-    if (coso)
-    {
-        for (int i = 0; i < 7; ++i)
-        {
+    if (coso) {
+        for (int i = 0; i < 7; ++i) {
             value += readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
             position += 4;
         }
@@ -85,35 +77,34 @@ int JHPlayer::load(void* _data, unsigned long int _length)
         value += stream[position];
         position++;
 
-        switch (value)
-        {
-        case 22670: //Astaroth
-        case 18845:
-        case 30015: //Chambers of Shaolin
-        case 22469:
-        case 3549: //Over the Net
-            m_variant = 1;
-            break;
-        case 16948: //Dragonflight
-        case 18337:
-        case 13704:
-            m_variant = 2;
-            break;
-        case 18548: //Wings of Death
-        case 13928:
-        case 8764:
-        case 17244:
-        case 11397:
-        case 14496:
-        case 14394:
-        case 13578: //Dragonflight
+        switch (value) {
+            case 22670: //Astaroth
+            case 18845:
+            case 30015: //Chambers of Shaolin
+            case 22469:
+            case 3549: //Over the Net
+                m_variant = 1;
+                break;
+            case 16948: //Dragonflight
+            case 18337:
+            case 13704:
+                m_variant = 2;
+                break;
+            case 18548: //Wings of Death
+            case 13928:
+            case 8764:
+            case 17244:
+            case 11397:
+            case 14496:
+            case 14394:
+            case 13578: //Dragonflight
 
-        case 6524:
-            m_variant = 3;
-            break;
-        default:
-            m_variant = 4;
-            break;
+            case 6524:
+                m_variant = 3;
+                break;
+            default:
+                m_variant = 4;
+                break;
         }
 
 
@@ -144,8 +135,7 @@ int JHPlayer::load(void* _data, unsigned long int _length)
         myVal[1] = (0x1000000 >> 16) & 0xFF;
         myVal[2] = (0x1000000 >> 8) & 0xFF;
         myVal[3] = 0x1000000 & 0xFF;
-        for (int p = 0; p < 4; p++)
-        {
+        for (int p = 0; p < 4; p++) {
             stream[p] = myVal[p];
         }
 
@@ -154,15 +144,13 @@ int JHPlayer::load(void* _data, unsigned long int _length)
         myVal[1] = (0xe1 >> 16) & 0xFF;
         myVal[2] = (0xe1 >> 8) & 0xFF;
         myVal[3] = 0xe1 & 0xFF;
-        for (int p = 0; p < 4; p++)
-        {
+        for (int p = 0; p < 4; p++) {
             stream[p + 4] = myVal[p];
         }
         position += 4;
         myVal[0] = (0xffff >> 8) & 0xFF;
         myVal[1] = 0xffff & 0xFF;
-        for (int p = 0; p < 2; p++)
-        {
+        for (int p = 0; p < 2; p++) {
             stream[p + 8] = 255;
         }
         position += 2;
@@ -175,71 +163,60 @@ int JHPlayer::load(void* _data, unsigned long int _length)
 
         len = ((sampleData - headers) / 10) - 1;
 
-        if (len < 1 || len > 255)
-        {
+        if (len < 1 || len > 255) {
             m_version = 0;
             return 0;
         }
 
         //m_totalSongs = (headers - songData) / 6;
-    }
-    else
-    {
-        do
-        {
+    } else {
+        do {
             value = readEndian(stream[position], stream[position + 1]);
             position += 2;
 
-            switch (value)
-            {
-            case 0x0240: //andi.w #x,d0
-                value = readEndian(stream[position], stream[position + 1]);
-                position += 2;
+            switch (value) {
+                case 0x0240: //andi.w #x,d0
+                    value = readEndian(stream[position], stream[position + 1]);
+                    position += 2;
 
-                if (value == 0x007f)
-                {
-                    //andi.w #$7f,d0
+                    if (value == 0x007f) {
+                        //andi.w #$7f,d0
+                        position += 2;
+                        periods = position + readEndian(stream[position], stream[position + 1]);
+                        position += 2;
+                    }
+                    break;
+                case 0x7002: //moveq #2,d0
+                case 0x7003: //moveq #3,d0
+                    //m_channels = (value & 0xff) + 1;
+                    value = readEndian(stream[position], stream[position + 1]);
                     position += 2;
-                    periods = position + readEndian(stream[position], stream[position + 1]);
-                    position += 2;
-                }
-                break;
-            case 0x7002: //moveq #2,d0
-            case 0x7003: //moveq #3,d0
-                //m_channels = (value & 0xff) + 1;
-                value = readEndian(stream[position], stream[position + 1]);
-                position += 2;
-                if (value == 0x7600)
-                {
-                    value = readEndian(stream[position], stream[position + 1]); //moveq #0,d3
-                    position += 2;
-                }
+                    if (value == 0x7600) {
+                        value = readEndian(stream[position], stream[position + 1]); //moveq #0,d3
+                        position += 2;
+                    }
 
-                if (value == 0x41fa)
-                {
-                    //lea x,a0
-                    position += 4;
-                    base = position + readEndian(stream[position], stream[position + 1]);
+                    if (value == 0x41fa) {
+                        //lea x,a0
+                        position += 4;
+                        base = position + readEndian(stream[position], stream[position + 1]);
+                        position += 2;
+                    }
+                    break;
+                case 0x5446: //"TF"
+                    value = readEndian(stream[position], stream[position + 1]);
                     position += 2;
-                }
-                break;
-            case 0x5446: //"TF"
-                value = readEndian(stream[position], stream[position + 1]);
-                position += 2;
 
-                if (value == 0x4d58)
-                {
-                    //"MX"
-                    id = position - 4;
-                    position = _length;
-                }
-                break;
+                    if (value == 0x4d58) {
+                        //"MX"
+                        id = position - 4;
+                        position = _length;
+                    }
+                    break;
             }
-        }
-        while (_length - position > 12);
+        } while (_length - position > 12);
 
-        if (!id || !base || !periods)
-        {
+        if (!id || !base || !periods) {
             m_version = 0;
             return 0;
         }
@@ -279,20 +256,16 @@ int JHPlayer::load(void* _data, unsigned long int _length)
 
     position = headers;
 
-    samples = vector<BaseSample*>(len);
+    samples = vector<BaseSample *>(len);
     value = 0;
 
 
-    for (int i = 0; i < len; ++i)
-    {
-        BaseSample* sample = new BaseSample();
-        if (!coso)
-        {
+    for (int i = 0; i < len; ++i) {
+        BaseSample *sample = new BaseSample();
+        if (!coso) {
             const int STRING_LENGTH = 18;
-            for (int j = 0; j < STRING_LENGTH; j++)
-            {
-                if (!stream[position + j])
-                {
+            for (int j = 0; j < STRING_LENGTH; j++) {
+                if (!stream[position + j]) {
                     break;
                 }
                 sample->name += stream[position + j];
@@ -305,8 +278,7 @@ int JHPlayer::load(void* _data, unsigned long int _length)
         position += 4;
         sample->length = readEndian(stream[position], stream[position + 1]) << 1;
         position += 2;
-        if (!coso)
-        {
+        if (!coso) {
             sample->volume = readEndian(stream[position], stream[position + 1]);
             position += 2;
         }
@@ -324,12 +296,11 @@ int JHPlayer::load(void* _data, unsigned long int _length)
     //amiga->store(stream, value,position,_length);
 
     position = songData;
-    songs = vector<JHSong*>();
+    songs = vector<JHSong *>();
     value = 0;
 
-    for (int i = 0; i < m_totalSongs; ++i)
-    {
-        JHSong* song = new JHSong();
+    for (int i = 0; i < m_totalSongs; ++i) {
+        JHSong *song = new JHSong();
         song->pointer = readEndian(stream[position], stream[position + 1]);
         position += 2;
         song->length = readEndian(stream[position], stream[position + 1]) - (song->pointer + 1);
@@ -344,47 +315,37 @@ int JHPlayer::load(void* _data, unsigned long int _length)
 
     m_totalSongs = songs.size();
 
-    if (!coso)
-    {
+    if (!coso) {
         position = 0;
         m_variant = 1;
 
-        do
-        {
+        do {
             value = readEndian(stream[position], stream[position + 1]);
             position += 2;
 
-            if (value == 0xb03c || value == 0x0c00)
-            {
+            if (value == 0xb03c || value == 0x0c00) {
                 //cmp.b #x,d0 | cmpi.b #x,d0
                 value = readEndian(stream[position], stream[position + 1]);
                 position += 2;
 
-                if (value == 0x00e5 || value == 0x00e6 || value == 0x00e9)
-                {
+                if (value == 0x00e5 || value == 0x00e6 || value == 0x00e9) {
                     //effects
                     m_variant = 2;
                     break;
                 }
-            }
-            else if (value == 0x4efb)
-            {
+            } else if (value == 0x4efb) {
                 //jmp $(pc,d0.w)
                 m_variant = 3;
                 break;
             }
-        }
-        while (position < id);
+        } while (position < id);
     }
 
 
     m_version = 1;
-    if (!coso)
-    {
+    if (!coso) {
         format = "Hippel";
-    }
-    else
-    {
+    } else {
         format = "Hippel COSO";
     }
     //printData();
@@ -392,14 +353,11 @@ int JHPlayer::load(void* _data, unsigned long int _length)
 }
 
 
-std::vector<BaseSample*> JHPlayer::getSamples()
-{
-    std::vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+std::vector<BaseSample *> JHPlayer::getSamples() {
+    std::vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }

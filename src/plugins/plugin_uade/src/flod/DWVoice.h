@@ -4,18 +4,18 @@
 class AmigaChannel;
 class BaseSample;
 
-class DWVoice
-{
+class DWVoice {
     friend class DWPlayer;
 
 public:
     DWVoice(int index, int bitflag);
+
     void initialize();
 
 private:
-    DWVoice* next;
-    AmigaChannel* channel;
-    BaseSample* sample;
+    DWVoice *next;
+    AmigaChannel *channel;
+    BaseSample *sample;
     int index;
     int bitFlag;
     int trackPtr;

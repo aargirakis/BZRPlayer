@@ -9,10 +9,16 @@
 using namespace std;
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
+
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
@@ -36,25 +42,20 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginLibopenmpt
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginLibopenmpt {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginLibopenmpt(FMOD_CODEC_STATE* codec)
-    {
+    pluginLibopenmpt(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginLibopenmpt()
-    {
+    ~pluginLibopenmpt() {
         info->modRows.clear();
 
-        for (auto & pattern : info->patterns)
-        {
-            for (const auto & itr2 : pattern)
-            {
+        for (auto &pattern: info->patterns) {
+            for (const auto &itr2: pattern) {
                 delete itr2;
             }
             pattern.clear();
@@ -66,14 +67,14 @@ public:
         delete[] myBuffer;
     }
 
-    uint8_t* myBuffer;
-    queue<unsigned char*> vumeterBuffer;
+    uint8_t *myBuffer;
+    queue<unsigned char *> vumeterBuffer;
     queue<int> rowBuffer;
     queue<int> patternBuffer;
     queue<int> orderBuffer;
     double maxVUMeter;
-    Info* info;
-    openmpt::module_ext* mod;
+    Info *info;
+    openmpt::module_ext *mod;
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
@@ -81,8 +82,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -90,8 +90,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int bytesread;
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
@@ -122,31 +121,28 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
         // skip Farandole Composer module (as of today libxmp play this one really better)
         memcmp(&smallBuffer[farMagicOffset], farMagic, farMagicLength) == 0 &&
-        memcmp(&smallBuffer[farCrLfEofOffset], farCrLfEof, farCrLfEofLength) == 0)
-    {
+        memcmp(&smallBuffer[farCrLfEofOffset], farCrLfEof, farCrLfEofLength) == 0) {
         delete[] smallBuffer;
         return FMOD_ERR_FORMAT;
     }
 
     delete[] smallBuffer;
 
-    auto* plugin = new pluginLibopenmpt(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    auto *plugin = new pluginLibopenmpt(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->myBuffer = new uint8_t[filesize];
 
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
 
-    try
-    {
-        auto info = static_cast<Info*>(userexinfo->userdata);
+    try {
+        auto info = static_cast<Info *>(userexinfo->userdata);
 
         string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
         ifstream ifs(filename.c_str());
         bool useDefaults = false;
-        if (ifs.fail())
-        {
+        if (ifs.fail()) {
             //The file could not be opened
             useDefaults = true;
         }
@@ -159,73 +155,42 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         string dither = "1";
         info->isContinuousPlaybackActive = false;
 
-        if (!useDefaults)
-        {
+        if (!useDefaults) {
             string line;
-            while (getline(ifs, line))
-            {
-                if (int i = line.find_first_of("="); i != -1)
-                {
+            while (getline(ifs, line)) {
+                if (int i = line.find_first_of("="); i != -1) {
                     string word = line.substr(0, i);
                     string value = line.substr(i + 1);
-                    if (word == "stereo_separation")
-                    {
+                    if (word == "stereo_separation") {
                         stereo_separation = atoi(value.c_str());
-                    }
-                    else if (word == "continuous_playback")
-                    {
+                    } else if (word == "continuous_playback") {
                         info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
-                    }
-                    else if (word == "interpolation_filter")
-                    {
+                    } else if (word == "interpolation_filter") {
                         interpolation_filter = atoi(value.c_str());
-                    }
-                    else if (word == "emulate_amiga_filter")
-                    {
-                        if (value == "true")
-                        {
+                    } else if (word == "emulate_amiga_filter") {
+                        if (value == "true") {
                             emulate_amiga_filter = "1";
-                        }
-                        else
-                        {
+                        } else {
                             emulate_amiga_filter = "0";
                         }
-                    }
-                    else if (word == "amiga_filter")
-                    {
-                        if (value == "a500")
-                        {
+                    } else if (word == "amiga_filter") {
+                        if (value == "a500") {
                             amiga_filter = "a500";
-                        }
-                        else if (value == "a1200")
-                        {
+                        } else if (value == "a1200") {
                             amiga_filter = "a1200";
-                        }
-                        else if (value == "unfiltered")
-                        {
+                        } else if (value == "unfiltered") {
                             amiga_filter = "unfiltered";
-                        }
-                        else if (value == "auto")
-                        {
+                        } else if (value == "auto") {
                             amiga_filter = "auto";
                         }
-                    }
-                    else if (word == "dither")
-                    {
-                        if (value == "0")
-                        {
+                    } else if (word == "dither") {
+                        if (value == "0") {
                             dither = "0";
-                        }
-                        else if (value == "1")
-                        {
+                        } else if (value == "1") {
                             dither = "1";
-                        }
-                        else if (value == "2")
-                        {
+                        } else if (value == "2") {
                             dither = "2";
-                        }
-                        else if (value == "3")
-                        {
+                        } else if (value == "3") {
                             dither = "3";
                         }
                     }
@@ -272,8 +237,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         info->numOrders = plugin->mod->get_num_orders();
         //        info->restart = fc->mi.mod->rst;
 
-        if (info->numSamples > 0)
-        {
+        if (info->numSamples > 0) {
             vector<string> samplenames = plugin->mod->get_sample_names();
 
             info->samples = new string[info->numSamples];
@@ -282,24 +246,20 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
             info->samplesLoopEnd = new unsigned int[info->numSamples];
             info->samplesVolume = new unsigned short[info->numSamples];
             info->samplesFineTune = new signed int[info->numSamples];
-            info->samplesData = new unsigned char*[info->numSamples];
+            info->samplesData = new unsigned char *[info->numSamples];
             //        info->samples16Bit = new bool[numSamples];
             //        info->samplesStereo = new bool[numSamples];
-            for (int j = 0; j < info->numSamples; j++)
-            {
+            for (int j = 0; j < info->numSamples; j++) {
                 info->samples[j] = samplenames.at(j);
                 info->samplesSize[j] = plugin->mod->get_mod_sample_size(j + 1);
                 info->samplesLoopStart[j] = plugin->mod->get_mod_sample_loopstart(j + 1);
                 info->samplesLoopEnd[j] = plugin->mod->get_mod_sample_loopend(j + 1);
                 info->samplesVolume[j] = static_cast<unsigned short>(plugin->mod->get_mod_sample_volume(j + 1) / 4.0);
                 int finetune = plugin->mod->get_mod_sample_finetune(j + 1);
-                if (finetune > 127)
-                {
+                if (finetune > 127) {
                     finetune -= 256;
                     finetune /= 16;
-                }
-                else
-                {
+                } else {
                     finetune /= 16;
                 }
                 info->samplesFineTune[j] = finetune;
@@ -308,14 +268,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
             }
         }
 
-        if (info->numInstruments > 0)
-        {
+        if (info->numInstruments > 0) {
             vector<string> instrumentnames = plugin->mod->get_instrument_names();
 
             info->instruments = new string[info->numInstruments];
 
-            for (int j = 0; j < info->numInstruments; j++)
-            {
+            for (int j = 0; j < info->numInstruments; j++) {
                 info->instruments[j] = instrumentnames.at(j);
             }
         }
@@ -323,12 +281,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         info->fileformat = plugin->mod->get_metadata("type_long");
 
         //get_current_channel_vu_mono seems to return 1.40317 for max volume for most formats, but max for protracker it is 1.11105
-        if (info->fileformat.substr(0, 10) == "ProTracker" || info->fileformat.substr(0, 12) == "Soundtracker")
-        {
+        if (info->fileformat.substr(0, 10) == "ProTracker" || info->fileformat.substr(0, 12) == "Soundtracker") {
             plugin->maxVUMeter = 1.11105;
-        }
-        else
-        {
+        } else {
             plugin->maxVUMeter = 1.40317;
         }
 
@@ -337,9 +292,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         info->setSeekable(true);
         //plugin->vumeterBuffer = CreateQueue(22);
         return FMOD_OK;
-    }
-    catch (...)
-    {
+    } catch (...) {
         delete plugin->mod;
         plugin->mod = nullptr;
         delete plugin;
@@ -347,26 +300,22 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginLibopenmpt*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginLibopenmpt *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    auto *plugin = static_cast<pluginLibopenmpt *>(codec->plugindata);
     plugin->mod->read_interleaved_stereo(plugin->waveformat.frequency, size, static_cast<short *>(buffer));
     const auto vumeters = new unsigned char[plugin->info->numChannels];
 
 
-    for (int i = 0; i < plugin->info->numChannels; i++)
-    {
+    for (int i = 0; i < plugin->info->numChannels; i++) {
         vumeters[i] = (plugin->mod->get_current_channel_vu_mono(i) / plugin->maxVUMeter) * 100;
     }
 
-    if (plugin->vumeterBuffer.size() >= 70)
-    {
+    if (plugin->vumeterBuffer.size() >= 70) {
         plugin->vumeterBuffer.pop();
         plugin->rowBuffer.pop();
         plugin->patternBuffer.pop();
@@ -381,18 +330,15 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
-    const auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    const auto *plugin = static_cast<pluginLibopenmpt *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS || lengthtype ==
-        FMOD_TIMEUNIT_MUTE_VOICE)
-    {
+        FMOD_TIMEUNIT_MUTE_VOICE) {
         *length = static_cast<unsigned int>(plugin->mod->get_duration_seconds() * 1000.0);
         return FMOD_OK;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
         *length = plugin->mod->get_num_subsongs();
         return FMOD_OK;
     }
@@ -400,12 +346,10 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                             FMOD_TIMEUNIT postype)
-{
-    const auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
-    if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
-    {
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginLibopenmpt *>(codec->plugindata);
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
         //         //position is a mask
         //         for(int i = 0 ; i<plugin->info->numChannels ; i++)
         //         {
@@ -420,35 +364,28 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
         //               }
         //         }
 
-        for (int i = 0; i < plugin->info->numChannels; i++)
-        {
-            auto* interactive = static_cast<openmpt::ext::interactive*>(plugin->mod->
+        for (int i = 0; i < plugin->info->numChannels; i++) {
+            auto *interactive = static_cast<openmpt::ext::interactive *>(plugin->mod->
                 get_interface(openmpt::ext::interactive_id));
 
-            if (interactive)
-            {
+            if (interactive) {
                 bool mute = false;
-                if (plugin->info->mutedChannelsMask.at(i) == '0')
-                {
+                if (plugin->info->mutedChannelsMask.at(i) == '0') {
                     mute = true;
                 }
                 interactive->set_channel_mute_status(i, mute);
-            }
-            else
-            {
+            } else {
                 // interface not available
             }
         }
 
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
+    if (postype == FMOD_TIMEUNIT_MS) {
         plugin->mod->set_position_seconds(position / 1000.0);
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         plugin->mod->select_subsong(position);
         return FMOD_OK;
     }
@@ -456,50 +393,40 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;;
 }
 
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
-{
-    const auto* plugin = static_cast<pluginLibopenmpt*>(codec->plugindata);
+static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginLibopenmpt *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_MODVUMETER)
-    {
+    if (postype == FMOD_TIMEUNIT_MODVUMETER) {
         plugin->info->modVUMeters = plugin->vumeterBuffer.front();
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MODROW)
-    {
+    if (postype == FMOD_TIMEUNIT_MODROW) {
         *position = plugin->rowBuffer.front();
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MODPATTERN)
-    {
+    if (postype == FMOD_TIMEUNIT_MODPATTERN) {
         *position = plugin->patternBuffer.front();
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MODORDER)
-    {
+    if (postype == FMOD_TIMEUNIT_MODORDER) {
         *position = plugin->orderBuffer.front();
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SPEED)
-    {
+    if (postype == FMOD_TIMEUNIT_SPEED) {
         *position = plugin->mod->get_current_speed();
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_BPM)
-    {
+    if (postype == FMOD_TIMEUNIT_BPM) {
         *position = plugin->mod->get_current_estimated_bpm();
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO)
-    {
+    if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO) {
         //set the mod pattern (notes etc.) in the info struct and just return 0
 
         plugin->info->modRows.clear();
 
-        for (auto & pattern : plugin->info->patterns)
-        {
-            for (const auto & itr2 : pattern)
-            {
+        for (auto &pattern: plugin->info->patterns) {
+            for (const auto &itr2: pattern) {
                 delete itr2;
             }
             pattern.clear();
@@ -507,15 +434,12 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
 
         plugin->info->patterns.clear();
 
-        for (int i = 0; i < plugin->mod->get_num_patterns(); i++)
-        {
+        for (int i = 0; i < plugin->mod->get_num_patterns(); i++) {
             const int numberRows = plugin->mod->get_pattern_num_rows(i);
-            vector<BaseRow*> modRows(numberRows * plugin->info->numChannels);
+            vector<BaseRow *> modRows(numberRows * plugin->info->numChannels);
             int counter = 0;
-            for (int j = 0; j < numberRows; j++)
-            {
-                for (int k = 0; k < plugin->info->numChannels; k++)
-                {
+            for (int j = 0; j < numberRows; j++) {
+                for (int k = 0; k < plugin->info->numChannels; k++) {
                     const auto row = new BaseRow();
                     //int trackidx = fc->mi.mod->xxp[i]->index[k];
                     row->note = plugin->mod->
@@ -524,16 +448,12 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
                         i, j, k, openmpt::module_ext::command_instrument);
                     int effect = plugin->mod->get_pattern_row_channel_command(
                         i, j, k, openmpt::module_ext::command_effect);
-                    if (effect > 0)
-                    {
+                    if (effect > 0) {
                         effect--;
                     }
-                    if (effect == 0x12)
-                    {
+                    if (effect == 0x12) {
                         effect = 0x0e;
-                    }
-                    else if (effect == 0x10)
-                    {
+                    } else if (effect == 0x10) {
                         effect = 0x0f;
                     }
 

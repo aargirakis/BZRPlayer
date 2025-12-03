@@ -2,8 +2,7 @@
 #define MGSAMPLE_H
 #include "BaseSample.h"
 
-class MGSample : public BaseSample
-{
+class MGSample : public BaseSample {
     friend class MGPlayer;
 
 public:

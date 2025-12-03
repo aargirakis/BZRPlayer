@@ -1,7 +1,6 @@
 #include "IGBlock.h"
 
-IGBlock::IGBlock()
-{
+IGBlock::IGBlock() {
     flags = 0;
     pointer = 0;
     position = 0;
@@ -12,8 +11,7 @@ IGBlock::IGBlock()
     delay2 = 0;
 }
 
-void IGBlock::reset()
-{
+void IGBlock::reset() {
     flags = (flags | 1) & ~4;
     position = 0;
     negative = 0;

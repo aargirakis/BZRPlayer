@@ -2,8 +2,7 @@
 #define BDSAMPLE_H
 #include "BaseSample.h"
 
-class BDSample : public BaseSample
-{
+class BDSample : public BaseSample {
     friend class BDPlayer;
 
 public:

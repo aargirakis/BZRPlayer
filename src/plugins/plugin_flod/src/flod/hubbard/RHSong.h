@@ -4,12 +4,12 @@
 
 using namespace std;
 
-class RHSong
-{
+class RHSong {
     friend class RHPlayer;
 
 public:
     RHSong();
+
     ~RHSong();
 
 private:

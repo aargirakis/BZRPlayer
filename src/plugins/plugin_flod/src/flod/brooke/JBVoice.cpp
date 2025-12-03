@@ -1,14 +1,12 @@
 #include "JBVoice.h"
 
-JBVoice::JBVoice(int index)
-{
+JBVoice::JBVoice(int index) {
     this->index = index;
     next = 0;
     prev = 0;
 }
 
-void JBVoice::initialize()
-{
+void JBVoice::initialize() {
     channel = 0;
     track = 0;
     trackLen = 0;

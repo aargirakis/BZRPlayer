@@ -2,8 +2,7 @@
 
 using namespace std;
 
-D1Sample::D1Sample()
-{
+D1Sample::D1Sample() {
     loop = 0;
     synth = 0;
     attackStep = 0;

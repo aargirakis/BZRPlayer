@@ -5,9 +5,13 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -27,19 +31,16 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginAudiofile
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginAudiofile {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginAudiofile(FMOD_CODEC_STATE* codec)
-    {
+    pluginAudiofile(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginAudiofile()
-    {
+    ~pluginAudiofile() {
         //delete some stuff
         afCloseFile(file);
     }
@@ -59,8 +60,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -68,62 +68,59 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     const auto plugin = new pluginAudiofile(codec);
     const auto info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->file = afOpenFile(info->filename.c_str(), "r", nullptr);
 
-    if (!plugin->file)
-    {
+    if (!plugin->file) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    switch (afGetFileFormat(plugin->file, nullptr))
-    {
-    case AF_FILE_UNKNOWN:
-        info->fileformat = "Unknown Audio File Library";
-        break;
-    case AF_FILE_RAWDATA:
-        info->fileformat = "Audio File Library Raw Data";
-        break;
-    case AF_FILE_AIFFC:
-        info->fileformat = "AIFFC";
-        break;
-    case AF_FILE_AIFF:
-        info->fileformat = "AIFF";
-        break;
-    case AF_FILE_NEXTSND:
-        info->fileformat = "Next snd";
-        break;
-    case AF_FILE_WAVE:
-        info->fileformat = "Wave";
-        break;
-    case AF_FILE_BICSF:
-        info->fileformat = "Berkeley";
-        break;
-    case AF_FILE_AVR:
-        info->fileformat = "Audio Visual Research";
-        break;
-    case AF_FILE_IFF_8SVX:
-        info->fileformat = "Amiga IFF/8SVX";
-        break;
-    case AF_FILE_NIST_SPHERE:
-        info->fileformat = "NIST SPHERE";
-        break;
-    case AF_FILE_VOC:
-        info->fileformat = "Creative Voice File";
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    case AF_FILE_SAMPLEVISION:
-        info->fileformat = "SampleVision";
-        break;
-    default:
-        //should not happen
-        delete plugin;
-        return FMOD_ERR_FORMAT;
+    switch (afGetFileFormat(plugin->file, nullptr)) {
+        case AF_FILE_UNKNOWN:
+            info->fileformat = "Unknown Audio File Library";
+            break;
+        case AF_FILE_RAWDATA:
+            info->fileformat = "Audio File Library Raw Data";
+            break;
+        case AF_FILE_AIFFC:
+            info->fileformat = "AIFFC";
+            break;
+        case AF_FILE_AIFF:
+            info->fileformat = "AIFF";
+            break;
+        case AF_FILE_NEXTSND:
+            info->fileformat = "Next snd";
+            break;
+        case AF_FILE_WAVE:
+            info->fileformat = "Wave";
+            break;
+        case AF_FILE_BICSF:
+            info->fileformat = "Berkeley";
+            break;
+        case AF_FILE_AVR:
+            info->fileformat = "Audio Visual Research";
+            break;
+        case AF_FILE_IFF_8SVX:
+            info->fileformat = "Amiga IFF/8SVX";
+            break;
+        case AF_FILE_NIST_SPHERE:
+            info->fileformat = "NIST SPHERE";
+            break;
+        case AF_FILE_VOC:
+            info->fileformat = "Creative Voice File";
+            delete plugin;
+            return FMOD_ERR_FORMAT;
+        case AF_FILE_SAMPLEVISION:
+            info->fileformat = "SampleVision";
+            break;
+        default:
+            //should not happen
+            delete plugin;
+            return FMOD_ERR_FORMAT;
     }
 
     const int channels = afGetChannels(plugin->file, AF_DEFAULT_TRACK);
@@ -148,18 +145,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginAudiofile*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginAudiofile *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     auto *plugin = static_cast<pluginAudiofile *>(codec->plugindata);
 
-    if (plugin->seek_to_time >= 0)
-    {
+    if (plugin->seek_to_time >= 0) {
         afSeekFrame(plugin->file, AF_DEFAULT_TRACK, plugin->seek_to_time / 1000 * plugin->waveformat.frequency);
         plugin->seek_to_time = -1;
     }
@@ -168,9 +162,8 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                     FMOD_TIMEUNIT postype)
-{
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
     auto *plugin = static_cast<pluginAudiofile *>(codec->plugindata);
     plugin->seek_to_time = static_cast<int>(position);
     return FMOD_OK;

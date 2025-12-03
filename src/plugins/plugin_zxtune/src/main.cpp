@@ -49,9 +49,13 @@ const ZXTune::Service &GetService() {
 }
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -71,19 +75,16 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginZxtune
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginZxtune {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginZxtune(FMOD_CODEC_STATE* codec)
-    {
+    pluginZxtune(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginZxtune()
-    {
+    ~pluginZxtune() {
         //delete some stuff
     }
 
@@ -102,8 +103,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -111,8 +111,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     try {
         const auto dataContainer = CreateData(codec);
 
@@ -189,7 +188,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         Parameters::FindValue(*moduleProperties, Module::ATTR_STRINGS, samples);
 
         if (!samples.empty()) {
-
             vector<string> samplesVector;
             stringstream ss(samples);
             string sampleName;
@@ -219,15 +217,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     }
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
     delete static_cast<pluginZxtune *>(codec->plugindata);
 
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read)
-{
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     auto *plugin = static_cast<pluginZxtune *>(codec->plugindata);
 
     if (plugin->chunkSamplesBuffered == plugin->chunk.size()) {
@@ -243,15 +239,15 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     const auto chunkSamplesToBuffer = min(chunkSamplesLeft, size);
 
     memcpy(buffer, plugin->chunk.data() + plugin->chunkSamplesBuffered,
-                chunkSamplesToBuffer * sizeof(Sound::Sample));
+           chunkSamplesToBuffer * sizeof(Sound::Sample));
 
     plugin->chunkSamplesBuffered += chunkSamplesToBuffer;
     *read = chunkSamplesToBuffer;
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
     const auto plugin = static_cast<pluginZxtune *>(codec->plugindata);
     plugin->renderer->SetPosition(Time::Instant<Time::Millisecond>(position));
 

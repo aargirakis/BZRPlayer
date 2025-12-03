@@ -1,7 +1,6 @@
 #include "BDSample.h"
 
-BDSample::BDSample()
-{
+BDSample::BDSample() {
     int word14 = 0;
     int word16 = 0;
     int word18 = 0;

@@ -8,20 +8,22 @@ class DWVoice;
 class BaseSample;
 using namespace std;
 
-class DWPlayer : public AmigaPlayer
-{
+class DWPlayer : public AmigaPlayer {
 public:
-    DWPlayer(Amiga* amiga);
+    DWPlayer(Amiga *amiga);
+
     ~DWPlayer();
-    int load(void* data, unsigned long int _length);
-    std::vector<BaseSample*> getSamples();
+
+    int load(void *data, unsigned long int _length);
+
+    std::vector<BaseSample *> getSamples();
 
 private:
     int m_channels;
-    unsigned char* stream;
-    vector<DWSong*> songs;
-    vector<BaseSample*> samples;
-    DWSong* song;
+    unsigned char *stream;
+    vector<DWSong *> songs;
+    vector<BaseSample *> samples;
+    DWSong *song;
     int variant;
     unsigned int position;
 
@@ -37,7 +39,7 @@ private:
     int delayCtr;
     int fadeSpeed;
     int fadeCtr;
-    BaseSample* wave;
+    BaseSample *wave;
     int waveCenter;
     int waveLo;
     int waveHi;
@@ -46,7 +48,7 @@ private:
     int wavePos;
     int waveRateNeg;
     int waveRatePos;
-    vector<DWVoice*> voices;
+    vector<DWVoice *> voices;
     int active;
     int complete;
     int base;
@@ -56,8 +58,7 @@ private:
     unsigned char readMix;
     int readLen;
 
-    enum
-    {
+    enum {
         USHORT = 0,
         UINT = 1
     };

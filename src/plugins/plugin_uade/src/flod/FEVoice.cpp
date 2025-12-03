@@ -1,13 +1,11 @@
 #include "FEVoice.h"
 
-FEVoice::FEVoice(int index)
-{
+FEVoice::FEVoice(int index) {
     this->index = index;
     next = 0;
 }
 
-void FEVoice::initialize()
-{
+void FEVoice::initialize() {
     channel = 0;
     sample = 0;
     trackPos = 0;

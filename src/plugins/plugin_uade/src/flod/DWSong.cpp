@@ -1,7 +1,6 @@
 #include "DWSong.h"
 
-DWSong::DWSong()
-{
+DWSong::DWSong() {
     speed = 0;
     delay = 0;
 }

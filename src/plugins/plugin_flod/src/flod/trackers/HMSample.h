@@ -5,17 +5,18 @@
 
 using namespace std;
 
-class HMSample : public AmigaSample
-{
+class HMSample : public AmigaSample {
     friend class HMPlayer;
+
 public:
     HMSample();
+
 private:
-      int finetune;
-      int restart;
-      int waveLen;
-      vector<int> waves;
-      vector<int> volumes;
+    int finetune;
+    int restart;
+    int waveLen;
+    vector<int> waves;
+    vector<int> volumes;
 };
 
 #endif // HMSAMPLE_H

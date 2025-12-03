@@ -1,13 +1,11 @@
 #include "JHVoice.h"
 
-JHVoice::JHVoice(int index)
-{
+JHVoice::JHVoice(int index) {
     this->index = index;
     next = 0;
 }
 
-void JHVoice::initialize()
-{
+void JHVoice::initialize() {
     channel = 0;
     enabled = 0;
     cosoCtr = 0;

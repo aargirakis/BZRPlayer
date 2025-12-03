@@ -9,9 +9,13 @@
 using namespace std;
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -31,19 +35,16 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginV2mPlayer
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginV2mPlayer {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginV2mPlayer(FMOD_CODEC_STATE* codec)
-    {
+    pluginV2mPlayer(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginV2mPlayer()
-    {
+    ~pluginV2mPlayer() {
         //delete some stuff
 
         player->Close();
@@ -51,8 +52,8 @@ public:
         delete[] convertedSong;
     }
 
-    V2MPlayer* player;
-    uint8_t* convertedSong;
+    V2MPlayer *player;
+    uint8_t *convertedSong;
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
 
@@ -65,8 +66,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -74,16 +74,14 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     auto *info = static_cast<Info *>(userexinfo->userdata);
 
     string filename_lowercase = info->filename;
 
     transform(filename_lowercase.begin(), filename_lowercase.end(), filename_lowercase.begin(), ::tolower);
     if (const string ext = filename_lowercase.substr(filename_lowercase.find_last_of('.') + 1);
-        ext != "v2m" && ext != "v2")
-    {
+        ext != "v2m" && ext != "v2") {
         return FMOD_ERR_FORMAT;
     }
 
@@ -100,13 +98,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
     sdInit();
-    if (ssbase base{}; CheckV2MVersion(myBuffer, filesize, base) < 0)
-    {
+    if (ssbase base{}; CheckV2MVersion(myBuffer, filesize, base) < 0) {
         delete [] myBuffer;
         return FMOD_ERR_FORMAT;
     }
 
-    auto* plugin = new pluginV2mPlayer(codec);
+    auto *plugin = new pluginV2mPlayer(codec);
 
     int converted_length;
     ConvertV2M(myBuffer, filesize, &plugin->convertedSong, &converted_length);
@@ -115,8 +112,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->player = new V2MPlayer();
     plugin->player->Init();
-    if (!plugin->player->Open(plugin->convertedSong))
-    {
+    if (!plugin->player->Open(plugin->convertedSong)) {
         return FMOD_ERR_FORMAT;
     }
 
@@ -136,16 +132,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     info->plugin = PLUGIN_v2m_player;
     info->pluginName = PLUGIN_v2m_player_NAME;
 
-    sS32* p;
+    sS32 *p;
     const uint32_t pos = plugin->player->CalcPositions(&p);
 
     unsigned int length;
-    if (pos % 2 == 0)
-    {
+    if (pos % 2 == 0) {
         length = p[pos];
-    }
-    else
-    {
+    } else {
         length = p[pos - 1];
     }
 
@@ -158,12 +151,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    const auto* plugin = static_cast<pluginV2mPlayer*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    const auto *plugin = static_cast<pluginV2mPlayer *>(codec->plugindata);
 
-    if (plugin)
-    {
+    if (plugin) {
         plugin->player->Stop();
         plugin->player->Close();
     }
@@ -173,27 +164,23 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    const auto* plugin = static_cast<pluginV2mPlayer*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    const auto *plugin = static_cast<pluginV2mPlayer *>(codec->plugindata);
 
-    plugin->player->Render(static_cast<float*>(buffer), plugin->waveformat.pcmblocksize);
+    plugin->player->Render(static_cast<float *>(buffer), plugin->waveformat.pcmblocksize);
 
-    if (size < plugin->waveformat.pcmblocksize)
-    {
+    if (size < plugin->waveformat.pcmblocksize) {
         *read = size;
-    }
-    else
-    {
+    } else {
         *read = plugin->waveformat.pcmblocksize;
     }
 
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
-    const auto* plugin = static_cast<pluginV2mPlayer*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginV2mPlayer *>(codec->plugindata);
     plugin->player->Play(position);
     return FMOD_OK;
 }

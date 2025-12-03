@@ -6,8 +6,7 @@
 
 using namespace std;
 
-AmigaPlayer::AmigaPlayer(Amiga* amiga)
-{
+AmigaPlayer::AmigaPlayer(Amiga *amiga) {
     this->amiga = amiga;
     this->amiga->player = this;
     //todo do not hardcode sample rate
@@ -28,89 +27,70 @@ AmigaPlayer::AmigaPlayer(Amiga* amiga)
     speed = 0;
 }
 
-AmigaPlayer::~AmigaPlayer()
-{
+AmigaPlayer::~AmigaPlayer() {
     delete amiga;
 }
 
-void AmigaPlayer::setFrequency(int freq)
-{
+void AmigaPlayer::setFrequency(int freq) {
     sampleRate = freq;
 }
 
-int AmigaPlayer::getFrequency()
-{
+int AmigaPlayer::getFrequency() {
     return sampleRate;
 }
 
-double AmigaPlayer::getVolume()
-{
+double AmigaPlayer::getVolume() {
     return m_volume;
 }
 
-void AmigaPlayer::setNTSC(bool value)
-{
+void AmigaPlayer::setNTSC(bool value) {
     m_ntsc = value;
-    if (value)
-    {
-        amiga->clock = (double)3579545 / sampleRate;
+    if (value) {
+        amiga->clock = (double) 3579545 / sampleRate;
         amiga->samplesTick = 735;
-    }
-    else
-    {
-        amiga->clock = (double)3546895 / sampleRate;
+    } else {
+        amiga->clock = (double) 3546895 / sampleRate;
         amiga->samplesTick = 882;
     }
 
     ntsc = value;
 }
 
-void AmigaPlayer::stereoSeparation(double value)
-{
-    AmigaChannel* chan = amiga->channels[0];
+void AmigaPlayer::stereoSeparation(double value) {
+    AmigaChannel *chan = amiga->channels[0];
     if (value < 0.0) value = 0.0;
     else if (value > 1.0) value = 1.0;
 
-    do
-    {
+    do {
         chan->level = value * chan->panning;
-    }
-    while (chan = chan->next);
+    } while (chan = chan->next);
 }
 
-void AmigaPlayer::setVolume(double value)
-{
+void AmigaPlayer::setVolume(double value) {
     if (value < 0.0) value = 0.0;
     else if (value > 1.0) value = 1.0;
 
     amiga->master = (value / m_channels) * 0.015625;
 }
 
-void AmigaPlayer::mute(int index)
-{
-    if (index >= 0 && index < m_channels)
-    {
+void AmigaPlayer::mute(int index) {
+    if (index >= 0 && index < m_channels) {
         amiga->channels[index]->mute ^= 1;
         m_flags ^= (1 << index);
-    }
-    else
-    {
+    } else {
         m_mute ^= 1;
 
-        for (int i = 0; i < m_channels; ++i)
-        {
+        for (int i = 0; i < m_channels; ++i) {
             amiga->channels[i]->mute = m_mute | (m_flags & (1 << i));
         }
     }
 }
 
-int AmigaPlayer::getChannels()
-{
+int AmigaPlayer::getChannels() {
     return m_channels;
 }
 
-int AmigaPlayer::load(void* data, unsigned int length, const char* filename)
-{
+int AmigaPlayer::load(void *data, unsigned int length, const char *filename) {
     amiga->reset();
     m_version = 0;
     m_variant = 0;
@@ -120,8 +100,7 @@ int AmigaPlayer::load(void* data, unsigned int length, const char* filename)
     return 0;
 }
 
-int AmigaPlayer::load(void* data, unsigned int length)
-{
+int AmigaPlayer::load(void *data, unsigned int length) {
     amiga->reset();
     m_version = 0;
     m_variant = 0;
@@ -130,28 +109,24 @@ int AmigaPlayer::load(void* data, unsigned int length)
     return 0;
 }
 
-int AmigaPlayer::getVersion()
-{
+int AmigaPlayer::getVersion() {
     return m_version;
 }
 
-int AmigaPlayer::play()
-{
+int AmigaPlayer::play() {
     //if (version == 0) return 0;
     if (soundPos == 0.0) initialize();
     return 1;
 }
 
-void AmigaPlayer::pause()
-{
+void AmigaPlayer::pause() {
     //  if (version == 0 || !soundChan) return;
     //  soundPos = soundChan->position;
     //  soundChan->stop();
     //  sound->removeEventListener(SampleDataEvent.SAMPLE_DATA, amiga->mixer);
 }
 
-void AmigaPlayer::stop()
-{
+void AmigaPlayer::stop() {
     //    if (version == 0) return;
     //    if (soundChan) {
     //      soundChan.stop();
@@ -161,57 +136,46 @@ void AmigaPlayer::stop()
     reset();
 }
 
-vector<BaseSample*> AmigaPlayer::getSamples()
-{
-    return vector<BaseSample*>(0);
+vector<BaseSample *> AmigaPlayer::getSamples() {
+    return vector<BaseSample *>(0);
 }
 
-void AmigaPlayer::getModRows(vector<BaseRow*>& vect)
-{
+void AmigaPlayer::getModRows(vector<BaseRow *> &vect) {
     //return vector<AmigaRow*>(0);
 }
 
-bool AmigaPlayer::getTitle(string& title)
-{
+bool AmigaPlayer::getTitle(string &title) {
     title = "";
     return false;
 }
 
-unsigned int AmigaPlayer::getCurrentRow()
-{
+unsigned int AmigaPlayer::getCurrentRow() {
     return 0;
 }
 
-unsigned int AmigaPlayer::getCurrentPattern()
-{
+unsigned int AmigaPlayer::getCurrentPattern() {
     return 0;
 }
 
-unsigned char AmigaPlayer::getSubsongsCount()
-{
+unsigned char AmigaPlayer::getSubsongsCount() {
     return 0;
 }
 
-void AmigaPlayer::initialize()
-{
+void AmigaPlayer::initialize() {
     amiga->setup();
     amiga->initialize();
     tick = 0;
 }
 
-void AmigaPlayer::process()
-{
+void AmigaPlayer::process() {
 }
 
-void AmigaPlayer::reset()
-{
+void AmigaPlayer::reset() {
 }
 
-void AmigaPlayer::mixer(void* _stream, unsigned long int length)
-{
+void AmigaPlayer::mixer(void *_stream, unsigned long int length) {
     amiga->mixer(_stream, length);
 }
 
-void AmigaPlayer::setVersion(int version)
-{
+void AmigaPlayer::setVersion(int version) {
 }

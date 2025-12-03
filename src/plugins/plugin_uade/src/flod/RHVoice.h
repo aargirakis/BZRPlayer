@@ -5,20 +5,20 @@ class AmigaChannel;
 class RHSample;
 class AmigaStep;
 
-class RHVoice
-{
+class RHVoice {
     friend class RHPlayer;
 
 public:
     RHVoice(int index);
+
     void initialize();
 
 private:
     int index;
     int bitFlag;
-    RHVoice* next;
-    AmigaChannel* channel;
-    RHSample* sample;
+    RHVoice *next;
+    AmigaChannel *channel;
+    RHSample *sample;
     int trackPtr;
     int trackPos;
     int patternPos;

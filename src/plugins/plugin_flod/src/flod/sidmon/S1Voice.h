@@ -3,18 +3,18 @@
 
 class AmigaChannel;
 
-class S1Voice
-{
+class S1Voice {
     friend class S1Player;
 
 public:
     S1Voice(int index);
+
     void initialize();
 
 private:
     int index;
-    S1Voice* next;
-    AmigaChannel* channel;
+    S1Voice *next;
+    AmigaChannel *channel;
     int step;
     int row;
     int sample;

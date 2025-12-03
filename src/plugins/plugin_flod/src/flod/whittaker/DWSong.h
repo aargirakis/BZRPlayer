@@ -4,8 +4,7 @@
 
 using namespace std;
 
-class DWSong
-{
+class DWSong {
     friend class DWPlayer;
 
 public:

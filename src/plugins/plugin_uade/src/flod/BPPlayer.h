@@ -9,24 +9,26 @@ class BaseStep;
 class BaseRow;
 class BPSample;
 
-class BPPlayer : public AmigaPlayer
-{
+class BPPlayer : public AmigaPlayer {
 public:
-    enum
-    {
+    enum {
         BPSOUNDMON_V1 = 1,
         BPSOUNDMON_V2 = 2,
         BPSOUNDMON_V3 = 3
     };
 
-    BPPlayer(Amiga* amiga);
+    BPPlayer(Amiga *amiga);
+
     ~BPPlayer();
-    int load(void* data, unsigned long int _length);
-    std::vector<BaseSample*> getSamples();
-    bool getTitle(std::string& title);
+
+    int load(void *data, unsigned long int _length);
+
+    std::vector<BaseSample *> getSamples();
+
+    bool getTitle(std::string &title);
 
 private:
-    std::vector<BPSample*> samples;
+    std::vector<BPSample *> samples;
 };
 
 #endif // BPPLAYER_H

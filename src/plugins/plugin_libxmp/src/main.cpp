@@ -6,10 +6,16 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
+
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
@@ -46,19 +52,16 @@ const char *NOTES[109] =
     "C-9", "C#9", "D-9", "D#9", "E-9", "F-9", "F#9", "G-9", "G#9", "A-9", "A#9", "B-9"
 };
 
-class pluginLibxmp
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginLibxmp {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginLibxmp(FMOD_CODEC_STATE* codec)
-    {
+    pluginLibxmp(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginLibxmp()
-    {
+    ~pluginLibxmp() {
         //delete some stuff
 
         //xmp_end_player(xmp);
@@ -68,8 +71,8 @@ public:
         myBuffer = nullptr;
     }
 
-    uint8_t* myBuffer;
-    Info* info;
+    uint8_t *myBuffer;
+    Info *info;
     xmp_context xmp;
     xmp_module_info mi;
     xmp_frame_info fi;
@@ -87,8 +90,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -96,8 +98,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int bytesread;
     unsigned int filesize;
 
@@ -107,22 +108,21 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    auto* smallBuffer = new uint8_t[4];
+    auto *smallBuffer = new uint8_t[4];
 
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, smallBuffer, 4, &bytesread);
 
     // skip midi and riff
-    if (memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF", 4) == 0)
-    {
+    if (memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF", 4) == 0) {
         delete[] smallBuffer;
         return FMOD_ERR_FORMAT;
     }
 
     delete[] smallBuffer;
 
-    auto* plugin = new pluginLibxmp(codec);
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    auto *plugin = new pluginLibxmp(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->myBuffer = new uint8_t[filesize];
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
@@ -138,13 +138,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->info = static_cast<Info*>(userexinfo->userdata);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/libxmp.cfg";
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         //The file could not be opened
         useDefaults = true;
     }
@@ -156,51 +155,31 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     int stereoSeparation = 70;
     plugin->info->isContinuousPlaybackActive = false;
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word == "frequency")
-                {
+                if (word == "frequency") {
                     freq = atoi(value.c_str());
-                }
-                else if (word == "playback")
-                {
-                    if (value == "stereo")
-                    {
+                } else if (word == "playback") {
+                    if (value == "stereo") {
                         channels = 2;
-                    }
-                    else
-                    {
+                    } else {
                         channels = 1;
                     }
-                }
-                else if (word == "resampling")
-                {
-                    if (value == "nearest")
-                    {
+                } else if (word == "resampling") {
+                    if (value == "nearest") {
                         interpolation = XMP_INTERP_NEAREST;
-                    }
-                    else if (value == "linear")
-                    {
+                    } else if (value == "linear") {
                         interpolation = XMP_INTERP_LINEAR;
-                    }
-                    else if (value == "cubic")
-                    {
+                    } else if (value == "cubic") {
                         interpolation = XMP_INTERP_SPLINE;
                     }
-                }
-                else if (word == "stereo_separation")
-                {
+                } else if (word == "stereo_separation") {
                     stereoSeparation = atoi(value.c_str());
-                }
-                else if (word == "continuous_playback")
-                {
+                } else if (word == "continuous_playback") {
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
@@ -221,12 +200,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    if (channels == 1)
-    {
+    if (channels == 1) {
         xmp_start_player(plugin->xmp, freq, XMP_FORMAT_MONO);
-    }
-    else
-    {
+    } else {
         xmp_start_player(plugin->xmp, freq, 0);
     }
 
@@ -239,8 +215,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     plugin->info->title = plugin->mi.mod->name;
 
-    if (plugin->mi.comment)
-    {
+    if (plugin->mi.comment) {
         plugin->info->comments = plugin->mi.comment;
     }
 
@@ -253,39 +228,33 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     int numSamples = plugin->mi.mod->ins;
 
-    if (plugin->mi.mod->ins != plugin->mi.mod->smp)
-    {
+    if (plugin->mi.mod->ins != plugin->mi.mod->smp) {
         numSamples = 0;
     }
 
     plugin->info->numSamples = numSamples;
 
-    if (numSamples > 0)
-    {
+    if (numSamples > 0) {
         plugin->info->samples = new string[numSamples];
         plugin->info->samplesSize = new unsigned int[numSamples];
         plugin->info->samplesLoopStart = new unsigned int[numSamples];
         plugin->info->samplesLoopEnd = new unsigned int[numSamples];
         plugin->info->samplesVolume = new unsigned short[numSamples];
         plugin->info->samplesFineTune = new signed int[numSamples];
-        plugin->info->samplesData = new unsigned char*[numSamples];
+        plugin->info->samplesData = new unsigned char *[numSamples];
         //        plugin->info->samples16Bit = new bool[numSamples];
         //        plugin->info->samplesStereo = new bool[numSamples];
-        for (int j = 0; j < numSamples; j++)
-        {
+        for (int j = 0; j < numSamples; j++) {
             plugin->info->samples[j] = plugin->mi.mod->xxi[j].name;
             plugin->info->samplesSize[j] = plugin->mi.mod->xxs[j].len;
             plugin->info->samplesLoopStart[j] = plugin->mi.mod->xxs[j].lps;
             plugin->info->samplesLoopEnd[j] = plugin->mi.mod->xxs[j].lpe;
             plugin->info->samplesData[j] = plugin->mi.mod->xxs[j].data;
 
-            if (plugin->mi.mod->xxi[j].name && plugin->mi.mod->xxi[j].sub)
-            {
+            if (plugin->mi.mod->xxi[j].name && plugin->mi.mod->xxi[j].sub) {
                 plugin->info->samplesVolume[j] = static_cast<unsigned short>(plugin->mi.mod->xxi[j].sub->vol * 4);
                 plugin->info->samplesFineTune[j] = plugin->mi.mod->xxi[j].sub->fin;
-            }
-            else
-            {
+            } else {
                 plugin->info->samplesVolume[j] = 0;
                 plugin->info->samplesFineTune[j] = 0; //plugin->mi.mod->xxi[j].sub->fin;
             }
@@ -332,47 +301,39 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginLibxmp*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginLibxmp *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    const auto* plugin = static_cast<pluginLibxmp*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    const auto *plugin = static_cast<pluginLibxmp *>(codec->plugindata);
     xmp_play_buffer(plugin->xmp, buffer, static_cast<int>(size << 2), plugin->info->isContinuousPlaybackActive ? 0 : 1);
 
     *read = size;
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position,
-                                     FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginLibxmp*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginLibxmp *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
+    if (postype == FMOD_TIMEUNIT_MS) {
         xmp_seek_time(plugin->xmp, static_cast<int>(position));
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         plugin->subsong = position;
         const int startPattern = plugin->mi.seq_data[position].entry_point;
         //xmp_restart_module(plugin->xmp);
         xmp_set_position(plugin->xmp, startPattern);
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MUTE_VOICE)
-    {
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
         //position is a mask
-        for (int i = 0; i < plugin->info->numChannels; i++)
-        {
+        for (int i = 0; i < plugin->info->numChannels; i++) {
             bool mute = false;
-            if (plugin->info->mutedChannelsMask.at(i) == '0')
-            {
+            if (plugin->info->mutedChannelsMask.at(i) == '0') {
                 mute = true;
             }
             xmp_channel_mute(plugin->xmp, i, mute);
@@ -384,18 +345,15 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
-    auto* plugin = static_cast<pluginLibxmp*>(codec->plugindata);
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    auto *plugin = static_cast<pluginLibxmp *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
         *length = plugin->fi.total_time;
         return FMOD_OK;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
         *length = plugin->mi.num_sequences;
         return FMOD_OK;
     }
@@ -403,69 +361,57 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* lengt
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* position, FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginLibxmp*>(codec->plugindata);
+static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginLibxmp *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         *position = plugin->subsong;
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MODROW)
-    {
+    if (postype == FMOD_TIMEUNIT_MODROW) {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
         *position = plugin->fi.row;
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MODPATTERN)
-    {
+    if (postype == FMOD_TIMEUNIT_MODPATTERN) {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
         *position = plugin->fi.pattern;
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MODORDER)
-    {
+    if (postype == FMOD_TIMEUNIT_MODORDER) {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
         *position = plugin->fi.pos;
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SPEED)
-    {
+    if (postype == FMOD_TIMEUNIT_SPEED) {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
         *position = plugin->fi.speed;
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_BPM)
-    {
+    if (postype == FMOD_TIMEUNIT_BPM) {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
         *position = plugin->fi.bpm;
         return FMOD_OK;
     }
     //this will return value too early because of no queue
-    if (postype == FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS)
-    {
+    if (postype == FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS) {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
         *position = plugin->fi.num_rows;
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MODVUMETER)
-    {
-        auto* vumeters = new unsigned char[plugin->info->numChannels];
+    if (postype == FMOD_TIMEUNIT_MODVUMETER) {
+        auto *vumeters = new unsigned char[plugin->info->numChannels];
         xmp_get_channel_volumes(plugin->xmp, vumeters);
         plugin->info->modVUMeters = vumeters;
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO)
-    {
+    if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO) {
         //set the mod pattern (notes etc.) in the info struct and just return 0
 
         plugin->info->modRows.clear();
 
-        for (auto & pattern : plugin->info->patterns)
-        {
-            for (const auto & itr2 : pattern)
-            {
+        for (auto &pattern: plugin->info->patterns) {
+            for (const auto &itr2: pattern) {
                 delete itr2;
             }
             pattern.clear();
@@ -473,16 +419,13 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
 
         plugin->info->patterns.clear();
 
-        for (int i = 0; i < plugin->mi.mod->pat; i++)
-        {
+        for (int i = 0; i < plugin->mi.mod->pat; i++) {
             const int numberRows = plugin->mi.mod->xxp[i]->rows;
-            vector<BaseRow*> modRows(numberRows * plugin->info->numChannels);
+            vector<BaseRow *> modRows(numberRows * plugin->info->numChannels);
             int counter = 0;
 
-            for (int j = 0; j < numberRows; j++)
-            {
-                for (int k = 0; k < plugin->info->numChannels; k++)
-                {
+            for (int j = 0; j < numberRows; j++) {
+                for (int k = 0; k < plugin->info->numChannels; k++) {
                     const auto row = new BaseRow();
                     const int trackidx = plugin->mi.mod->xxp[i]->index[k];
 
@@ -495,8 +438,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE* codec, unsigned int* pos
                     row->param2 = plugin->mi.mod->xxt[trackidx]->event[j].f2p;
                     row->vol = plugin->mi.mod->xxt[trackidx]->event[j].vol - 1;
 
-                    if (plugin->info->fileformat == "Composer 669")
-                    {
+                    if (plugin->info->fileformat == "Composer 669") {
                         row->vol /= 4;
                     }
                     modRows[counter] = row;

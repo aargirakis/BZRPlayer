@@ -1,7 +1,6 @@
 #include "S2Instrument.h"
 
-S2Instrument::S2Instrument()
-{
+S2Instrument::S2Instrument() {
     wave = 0;
     waveLen = 0;
     waveDelay = 0;

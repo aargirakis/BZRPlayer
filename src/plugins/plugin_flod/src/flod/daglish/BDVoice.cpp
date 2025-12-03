@@ -1,13 +1,11 @@
 #include "BDVoice.h"
 
-BDVoice::BDVoice(int index)
-{
+BDVoice::BDVoice(int index) {
     this->index = index;
     next = 0;
 }
 
-void BDVoice::initialize()
-{
+void BDVoice::initialize() {
     channel = 0;
     sample = 0;
     sample2 = 0;

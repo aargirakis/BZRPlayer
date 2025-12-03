@@ -1,7 +1,6 @@
 #include "D2Sample.h"
 
-D2Sample::D2Sample()
-{
+D2Sample::D2Sample() {
     index = 0;
     pitchBend = 0;
     synth = 0;

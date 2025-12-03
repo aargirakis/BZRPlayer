@@ -19,10 +19,9 @@ const int D2Player::PERIODS[85] =
     113, 113, 113, 113, 113, 113, 113, 113, 113, 113
 };
 
-D2Player::D2Player(Amiga* amiga): AmigaPlayer(amiga)
-{
+D2Player::D2Player(Amiga *amiga) : AmigaPlayer(amiga) {
     arpeggios = vector<signed char>(1024);
-    voices = vector<D2Voice*>(4);
+    voices = vector<D2Voice *>(4);
 
     voices[0] = new D2Voice(0);
     voices[0]->next = voices[1] = new D2Voice(1);
@@ -30,43 +29,36 @@ D2Player::D2Player(Amiga* amiga): AmigaPlayer(amiga)
     voices[2]->next = voices[3] = new D2Voice(3);
 }
 
-D2Player::~D2Player()
-{
+D2Player::~D2Player() {
     arpeggios.clear();
     data.clear();
 
-    for (unsigned int i = 0; i < tracks.size(); i++)
-    {
+    for (unsigned int i = 0; i < tracks.size(); i++) {
         if (tracks[i]) delete tracks[i];
     }
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for (unsigned int i = 0; i < patterns.size(); i++)
-    {
+    for (unsigned int i = 0; i < patterns.size(); i++) {
         if (patterns[i]) delete patterns[i];
     }
     patterns.clear();
 }
 
-void D2Player::initialize()
-{
+void D2Player::initialize() {
     AmigaPlayer::initialize();
     speed = 5;
     tick = 1;
     noise = 0;
 
-    D2Voice* voice = voices[0];
+    D2Voice *voice = voices[0];
     int i = 0;
-    do
-    {
+    do {
         voice->initialize();
         voice->channel = amiga->channels[voice->index];
         voice->sample = samples[int(samples.size() - 1)];
@@ -76,21 +68,18 @@ void D2Player::initialize()
         voice->trackLen = data[int(voice->index + 8)];
 
         i++;
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 }
 
-void D2Player::process()
-{
+void D2Player::process() {
     int value = 0;
-    D2Sample* sample;
-    BaseRow* row;
-    AmigaChannel* chan;
+    D2Sample *sample;
+    BaseRow *row;
+    AmigaChannel *chan;
     int level = 0;
-    D2Voice* voice = voices[0];
+    D2Voice *voice = voices[0];
 
-    for (int i = 0; i < 64; ++i)
-    {
+    for (int i = 0; i < 64; ++i) {
         noise = (noise << 7) | (noise >> 25);
         noise += 0x6eca756d;
         noise ^= 0x9e59a92b;
@@ -114,44 +103,37 @@ void D2Player::process()
 
     if (--tick < 0) tick = speed;
 
-    do
-    {
+    do {
         if (voice->trackLen < 1) continue;
 
         chan = voice->channel;
 
         sample = voice->sample;
 
-        if (sample->synth)
-        {
+        if (sample->synth) {
             chan->pointer = sample->loopPtr;
             chan->length = sample->repeat;
         }
 
-        if (!tick)
-        {
-            if (!voice->patternPos)
-            {
+        if (!tick) {
+            if (!voice->patternPos) {
                 voice->step = tracks[int(voice->trackPtr + voice->trackPos)];
 
-                if (++voice->trackPos == voice->trackLen)
-                {
+                if (++voice->trackPos == voice->trackLen) {
                     voice->trackPos = voice->restart;
                 }
             }
 
             row = voice->row = patterns[int(voice->step->pattern + voice->patternPos)];
 
-            if (row->note)
-            {
+            if (row->note) {
                 chan->setEnabled(0);
                 voice->note = row->note;
                 voice->period = PERIODS[int(row->note + voice->step->transpose)];
 
                 sample = voice->sample = samples[row->sample];
 
-                if (sample->synth < 0)
-                {
+                if (sample->synth < 0) {
                     chan->pointer = sample->pointer;
                     chan->length = sample->length;
                 }
@@ -170,66 +152,58 @@ void D2Player::process()
             }
 
 
-            switch (row->effect)
-            {
-            case -1:
-                break;
-            case 0:
-                speed = row->param & 15;
+            switch (row->effect) {
+                case -1:
+                    break;
+                case 0:
+                    speed = row->param & 15;
 
-                break;
-            case 1:
-                amiga->filter->active = row->param;
+                    break;
+                case 1:
+                    amiga->filter->active = row->param;
 
-                break;
-            case 2:
-                voice->pitchBend = ~(row->param & 255) + 1;
-                break;
-            case 3:
-                voice->pitchBend = row->param & 255;
-                break;
-            case 4:
-                voice->portamento = row->param;
-                break;
-            case 5:
-                voice->volumeMax = row->param & 63;
-                break;
-            case 6:
-                amiga->setVolume(row->param);
-                break;
-            case 7:
-                voice->arpeggioPtr = (row->param & 63) << 4;
+                    break;
+                case 2:
+                    voice->pitchBend = ~(row->param & 255) + 1;
+                    break;
+                case 3:
+                    voice->pitchBend = row->param & 255;
+                    break;
+                case 4:
+                    voice->portamento = row->param;
+                    break;
+                case 5:
+                    voice->volumeMax = row->param & 63;
+                    break;
+                case 6:
+                    amiga->setVolume(row->param);
+                    break;
+                case 7:
+                    voice->arpeggioPtr = (row->param & 63) << 4;
 
-                break;
+                    break;
             }
 
             voice->patternPos = (++voice->patternPos & 15);
         }
         sample = voice->sample;
 
-        if (sample->synth >= 0)
-        {
-            if (voice->tableCtr)
-            {
+        if (sample->synth >= 0) {
+            if (voice->tableCtr) {
                 voice->tableCtr--;
-            }
-            else
-            {
+            } else {
                 voice->tableCtr = sample->index;
                 value = sample->table[voice->tablePos];
 
-                if (value == 0xff)
-                {
+                if (value == 0xff) {
                     value = sample->table[++voice->tablePos];
-                    if (value != 0xff)
-                    {
+                    if (value != 0xff) {
                         voice->tablePos = value;
                         value = sample->table[voice->tablePos];
                     }
                 }
 
-                if (value != 0xff)
-                {
+                if (value != 0xff) {
                     chan->pointer = value << 8;
                     chan->length = sample->length;
                     if (++voice->tablePos > 47) voice->tablePos = 0;
@@ -241,47 +215,35 @@ void D2Player::process()
         if (voice->vibratoDir) voice->vibratoPeriod -= value;
         else voice->vibratoPeriod += value;
 
-        if (--voice->vibratoCtr == 0)
-        {
+        if (--voice->vibratoCtr == 0) {
             voice->vibratoCtr = sample->vibratos[int(voice->vibratoPos + 1)];
             voice->vibratoDir = ~voice->vibratoDir;
         }
 
-        if (voice->vibratoSustain)
-        {
+        if (voice->vibratoSustain) {
             voice->vibratoSustain--;
-        }
-        else
-        {
+        } else {
             voice->vibratoPos += 3;
             if (voice->vibratoPos == 15) voice->vibratoPos = 12;
             voice->vibratoSustain = sample->vibratos[int(voice->vibratoPos + 2)];
         }
 
-        if (voice->volumeSustain)
-        {
+        if (voice->volumeSustain) {
             voice->volumeSustain--;
-        }
-        else
-        {
+        } else {
             value = sample->volumes[voice->volumePos];
             level = sample->volumes[int(voice->volumePos + 1)];
 
-            if (level < voice->volume)
-            {
+            if (level < voice->volume) {
                 voice->volume -= value;
-                if (voice->volume < level)
-                {
+                if (voice->volume < level) {
                     voice->volume = level;
                     voice->volumePos += 3;
                     voice->volumeSustain = sample->volumes[int(voice->volumePos - 1)];
                 }
-            }
-            else
-            {
+            } else {
                 voice->volume += value;
-                if (voice->volume > level)
-                {
+                if (voice->volume > level) {
                     voice->volume = level;
                     voice->volumePos += 3;
                     if (voice->volumePos == 15) voice->volumePos = 12;
@@ -290,15 +252,11 @@ void D2Player::process()
             }
         }
 
-        if (voice->portamento)
-        {
-            if (voice->period < voice->finalPeriod)
-            {
+        if (voice->portamento) {
+            if (voice->period < voice->finalPeriod) {
                 voice->finalPeriod -= voice->portamento;
                 if (voice->finalPeriod < voice->period) voice->finalPeriod = voice->period;
-            }
-            else
-            {
+            } else {
                 voice->finalPeriod += voice->portamento;
                 if (voice->finalPeriod > voice->period) voice->finalPeriod = voice->period;
             }
@@ -306,8 +264,7 @@ void D2Player::process()
         value = arpeggios[int(voice->arpeggioPtr + voice->arpeggioPos)];
 
 
-        if (value == -128)
-        {
+        if (value == -128) {
             voice->arpeggioPos = 0;
             value = arpeggios[voice->arpeggioPtr]; //was missing ending colon in as
         }
@@ -317,8 +274,7 @@ void D2Player::process()
         voice->arpeggioPos = voice->arpeggioPos & 15;
 
 
-        if (voice->portamento == 0)
-        {
+        if (voice->portamento == 0) {
             value = voice->note + voice->step->transpose + value;
             if (value < 0) value = 0;
             voice->finalPeriod = PERIODS[value];
@@ -333,77 +289,65 @@ void D2Player::process()
 
 
         chan->setEnabled(1);
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 }
 
-void D2Player::printData()
-{
-    for (unsigned int i = 0; i < patterns.size(); i++)
-    {
-        BaseRow* row = patterns[i];
+void D2Player::printData() {
+    for (unsigned int i = 0; i < patterns.size(); i++) {
+        BaseRow *row = patterns[i];
         cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->
-            param << " effect: " << row->effect << "\n";
+                param << " effect: " << row->effect << "\n";
     }
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
-        D2Sample* sample = samples[i];
+    for (unsigned int i = 0; i < samples.size(); i++) {
+        D2Sample *sample = samples[i];
         cout << "Sample [" << i << "] index: " << sample->index << " length: " << sample->length << " loopPtr: " <<
-            sample->loopPtr << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pitchBend: " << sample
-            ->pitchBend << " pointer: " << sample->pointer << " repeat: " << sample->repeat << " synth: " << (int)sample
-            ->synth << "\n";
-        for (unsigned int j = 0; j < sample->table.size(); j++)
-        {
-            cout << "Sample [" << i << "] Table [" << j << "] " << (int)sample->table[j] << "\n";
+                sample->loopPtr << " loopPtr: " << sample->loopPtr << " name: " << sample->name << " pitchBend: " <<
+                sample
+                ->pitchBend << " pointer: " << sample->pointer << " repeat: " << sample->repeat << " synth: " << (int)
+                sample
+                ->synth << "\n";
+        for (unsigned int j = 0; j < sample->table.size(); j++) {
+            cout << "Sample [" << i << "] Table [" << j << "] " << (int) sample->table[j] << "\n";
         }
-        for (unsigned int j = 0; j < sample->vibratos.size(); j++)
-        {
-            cout << "Sample [" << i << "] Vibratos [" << j << "] " << (int)sample->vibratos[j] << "\n";
+        for (unsigned int j = 0; j < sample->vibratos.size(); j++) {
+            cout << "Sample [" << i << "] Vibratos [" << j << "] " << (int) sample->vibratos[j] << "\n";
         }
-        for (unsigned int j = 0; j < sample->volumes.size(); j++)
-        {
-            cout << "Sample [" << i << "] Volumes [" << j << "] " << (int)sample->volumes[j] << "\n";
+        for (unsigned int j = 0; j < sample->volumes.size(); j++) {
+            cout << "Sample [" << i << "] Volumes [" << j << "] " << (int) sample->volumes[j] << "\n";
         }
     }
-    for (int i = 0; i < 1024; i++)
-    {
-        cout << "Arpeggio [" << i << "] " << (int)arpeggios[i] << "\n";
+    for (int i = 0; i < 1024; i++) {
+        cout << "Arpeggio [" << i << "] " << (int) arpeggios[i] << "\n";
     }
-    for (unsigned int i = 0; i < tracks.size(); i++)
-    {
-        BaseStep* step = tracks[i];
-        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int)step->transpose <<
-            "\n";
+    for (unsigned int i = 0; i < tracks.size(); i++) {
+        BaseStep *step = tracks[i];
+        cout << "Tracks [" << i << "] pattern: " << step->pattern << " transpose: " << (int) step->transpose <<
+                "\n";
     }
     //    for(int i = 0; i < amiga->memory.size(); i++)
     //    {
     //        cout << "Memory [" << i << "]" << (int)amiga->memory[i] <<  "\n";
     //    }
-    for (unsigned int i = 0; i < data.size(); i++)
-    {
+    for (unsigned int i = 0; i < data.size(); i++) {
         cout << "Data [" << i << "] " << data[i] << "\n";
     }
     flush(cout);
 }
 
-int D2Player::load(void* _data, unsigned long int length)
-{
+int D2Player::load(void *_data, unsigned long int length) {
     //string n[] = { "C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-"};
-    if (length < 3017)
-    {
+    if (length < 3017) {
         return -1;
     }
     unsigned int position = 3014;
-    unsigned char* stream = static_cast<unsigned char*>(_data);
+    unsigned char *stream = static_cast<unsigned char *>(_data);
     bool isOk = -1;
 
 
-    if (stream[3014] == '.' && stream[3015] == 'F' && stream[3016] == 'N' && stream[3017] == 'L')
-    {
+    if (stream[3014] == '.' && stream[3015] == 'F' && stream[3016] == 'N' && stream[3017] == 'L') {
         isOk = 1;
     }
-    if (!isOk)
-    {
+    if (!isOk) {
         return -1;
     }
     position = 4042;
@@ -413,8 +357,7 @@ int D2Player::load(void* _data, unsigned long int length)
 
     int len = 0;
     int value = 0;
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
         data[i + 4] = readEndian(stream[position], stream[position + 1]) >> 1;
         position += 2;
         value = readEndian(stream[position], stream[position + 1]) >> 1;
@@ -423,17 +366,15 @@ int D2Player::load(void* _data, unsigned long int length)
         len += value;
     }
     value = len;
-    for (int i = 3; i > 0; --i)
-    {
+    for (int i = 3; i > 0; --i) {
         data[i] = (value -= data[int(i + 8)]);
     }
-    tracks = vector<BaseStep*>(len);
-    for (int i = 0; i < len; ++i)
-    {
-        BaseStep* step = new BaseStep();
+    tracks = vector<BaseStep *>(len);
+    for (int i = 0; i < len; ++i) {
+        BaseStep *step = new BaseStep();
         step->pattern = stream[position] << 4;
         position++;
-        step->transpose = (signed char)stream[position];
+        step->transpose = (signed char) stream[position];
         position++;
         tracks[i] = step;
     }
@@ -441,11 +382,10 @@ int D2Player::load(void* _data, unsigned long int length)
 
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >> 2;
     position += 4;
-    patterns = vector<BaseRow*>(len);
+    patterns = vector<BaseRow *>(len);
 
-    for (int i = 0; i < len; ++i)
-    {
-        BaseRow* row = new BaseRow();
+    for (int i = 0; i < len; ++i) {
+        BaseRow *row = new BaseRow();
         row->note = stream[position];
         position++;
         row->sample = stream[position];
@@ -465,19 +405,17 @@ int D2Player::load(void* _data, unsigned long int length)
     position -= 256;
     len = 1;
     vector<int> offsets = vector<int>(128);
-    for (int i = 0; i < 128; ++i)
-    {
+    for (int i = 0; i < 128; ++i) {
         int j = readEndian(stream[position], stream[position + 1]);
         position += 2;
         if (j != value) offsets[len++] = j;
     }
-    samples = vector<D2Sample*>(len);
+    samples = vector<D2Sample *>(len);
 
 
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         position = positionMark + offsets[i];
-        D2Sample* sample = new D2Sample();
+        D2Sample *sample = new D2Sample();
         sample->length = readEndian(stream[position], stream[position + 1]) << 1;
         position += 2;
         sample->loopPtr = readEndian(stream[position], stream[position + 1]);
@@ -485,26 +423,23 @@ int D2Player::load(void* _data, unsigned long int length)
         sample->repeat = readEndian(stream[position], stream[position + 1]) << 1;
         position += 2;
 
-        for (int j = 0; j < 15; ++j)
-        {
+        for (int j = 0; j < 15; ++j) {
             sample->volumes[j] = stream[position];
             position++;
         }
-        for (int j = 0; j < 15; ++j)
-        {
+        for (int j = 0; j < 15; ++j) {
             sample->vibratos[j] = stream[position];
             position++;
         }
 
         sample->pitchBend = readEndian(stream[position], stream[position + 1]);
         position += 2;
-        sample->synth = (signed char)stream[position];
+        sample->synth = (signed char) stream[position];
         position++;
         sample->index = stream[position];
         position++;
 
-        for (int j = 0; j < 48; ++j)
-        {
+        for (int j = 0; j < 48; ++j) {
             sample->table[j] = stream[position];
             position++;
         }
@@ -517,8 +452,7 @@ int D2Player::load(void* _data, unsigned long int length)
     amiga->store(stream, len, position, length);
 
     position += 64;
-    for (int i = 0; i < 8; ++i)
-    {
+    for (int i = 0; i < 8; ++i) {
         offsets[i] = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
     }
@@ -526,22 +460,20 @@ int D2Player::load(void* _data, unsigned long int length)
     len = samples.size();
     positionMark = position;
 
-    for (int i = 0; i < len; ++i)
-    {
-        D2Sample* sample = samples[i];
+    for (int i = 0; i < len; ++i) {
+        D2Sample *sample = samples[i];
         if (sample->synth >= 0) continue;
         position = positionMark + offsets[sample->index];
         sample->pointer = amiga->store(stream, sample->length, position, length);
         sample->loopPtr += sample->pointer;
     }
     position = 3018;
-    for (int i = 0; i < 1024; ++i)
-    {
-        arpeggios[i] = (signed char)stream[position];
+    for (int i = 0; i < 1024; ++i) {
+        arpeggios[i] = (signed char) stream[position];
         position++;
     }
 
-    D2Sample* sample = new D2Sample();
+    D2Sample *sample = new D2Sample();
     sample->pointer = sample->loopPtr = amiga->memory.size();
     sample->length = sample->repeat = 4;
     samples.push_back(sample);
@@ -550,9 +482,8 @@ int D2Player::load(void* _data, unsigned long int length)
     len = patterns.size();
     int j = samples.size() - 1;
 
-    for (int i = 0; i < len; ++i)
-    {
-        BaseRow* row = patterns[i];
+    for (int i = 0; i < len; ++i) {
+        BaseRow *row = patterns[i];
         if (row->sample > j) row->sample = 0;
     }
 
@@ -563,14 +494,11 @@ int D2Player::load(void* _data, unsigned long int length)
     return 1;
 }
 
-vector<BaseSample*> D2Player::getSamples()
-{
-    vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+vector<BaseSample *> D2Player::getSamples() {
+    vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }

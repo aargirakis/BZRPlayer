@@ -3,9 +3,8 @@
 
 using namespace std;
 
-MGSong::MGSong()
-{
-    tracks = vector<BaseStep*>();
+MGSong::MGSong() {
+    tracks = vector<BaseStep *>();
     title = "";
     speed = 0;
     length = 0;

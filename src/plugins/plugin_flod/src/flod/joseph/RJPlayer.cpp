@@ -17,9 +17,8 @@ const int RJPlayer::PERIODS[36] =
     160, 170, 180, 190, 202, 214
 };
 
-RJPlayer::RJPlayer(Amiga* amiga): AmigaPlayer(amiga)
-{
-    voices = vector<RJVoice*>(4);
+RJPlayer::RJPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
+    voices = vector<RJVoice *>(4);
 
     voices[0] = new RJVoice(0);
     voices[0]->next = voices[1] = new RJVoice(1);
@@ -27,15 +26,12 @@ RJPlayer::RJPlayer(Amiga* amiga): AmigaPlayer(amiga)
     voices[2]->next = voices[3] = new RJVoice(3);
 }
 
-RJPlayer::~RJPlayer()
-{
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+RJPlayer::~RJPlayer() {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
@@ -47,15 +43,13 @@ RJPlayer::~RJPlayer()
     envelope.clear();
 }
 
-void RJPlayer::initialize()
-{
+void RJPlayer::initialize() {
     AmigaPlayer::initialize();
     complete = 0;
 
-    RJVoice* voice = voices[0];
+    RJVoice *voice = voices[0];
     int index = 0;
-    do
-    {
+    do {
         voice->initialize();
         voice->channel = amiga->channels[voice->index];
         voice->sample = samples[0];
@@ -65,144 +59,118 @@ void RJPlayer::initialize()
         index = tracks[index];
         voice->patternPos = index;
 
-        if (index)
-        {
+        if (index) {
             voice->active = 1;
             complete += (1 << voice->index);
         }
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 }
 
-void RJPlayer::process()
-{
-    AmigaChannel* chan;
-    RJVoice* voice = voices[0];
-    RJSample* sample;
+void RJPlayer::process() {
+    AmigaChannel *chan;
+    RJVoice *voice = voices[0];
+    RJSample *sample;
     int value = 0;
     int loop = 0;
 
-    do
-    {
+    do {
         if (!voice->active) continue;
 
         loop = 1;
         chan = voice->channel;
         sample = voice->sample;
 
-        if (voice->enabled)
-        {
+        if (voice->enabled) {
             chan->pointer = sample->loopPtr;
             chan->length = sample->repeat;
             voice->enabled = 0;
         }
 
-        if (voice->note)
-        {
+        if (voice->note) {
             chan->setEnabled(1);
             voice->note = 0;
             voice->enabled = 1;
         }
 
-        if (voice->patternPos)
-        {
-            if (--voice->tick1 == 0)
-            {
-                if (--voice->tick2 == 0)
-                {
-                    do
-                    {
+        if (voice->patternPos) {
+            if (--voice->tick1 == 0) {
+                if (--voice->tick2 == 0) {
+                    do {
                         value = patterns[voice->patternPos++];
 
-                        if (value > 127)
-                        {
-                            switch (value)
-                            {
-                            case 128:
-                                voice->speed2 = 1;
-                                value = tracks[voice->trackPos++];
+                        if (value > 127) {
+                            switch (value) {
+                                case 128:
+                                    voice->speed2 = 1;
+                                    value = tracks[voice->trackPos++];
 
-                                if (!value)
-                                {
-                                    value = tracks[voice->trackPos];
+                                    if (!value) {
+                                        value = tracks[voice->trackPos];
 
-                                    if (!value)
-                                    {
-                                        voice->active = 0;
-                                    }
-                                    else if (value > 127)
-                                    {
-                                        voice->trackPos = (tracks[++voice->trackPos] >> 1) & 255;
-                                        voice->patternPos = tracks[voice->trackPos++];
-                                    }
-                                    else
-                                    {
-                                        voice->trackPos -= value;
-                                        value = tracks[voice->trackPos++];
-
-                                        if ((voice->patternPos - value) < 6)
-                                        {
+                                        if (!value) {
                                             voice->active = 0;
-                                            loop = 0;
+                                        } else if (value > 127) {
+                                            voice->trackPos = (tracks[++voice->trackPos] >> 1) & 255;
+                                            voice->patternPos = tracks[voice->trackPos++];
+                                        } else {
+                                            voice->trackPos -= value;
+                                            value = tracks[voice->trackPos++];
+
+                                            if ((voice->patternPos - value) < 6) {
+                                                voice->active = 0;
+                                                loop = 0;
+                                            } else {
+                                                voice->patternPos = value;
+                                            }
                                         }
-                                        else
-                                        {
-                                            voice->patternPos = value;
-                                        }
+
+                                        complete &= ~(1 << voice->index);
+                                        if (!complete) amiga->setComplete(1);
+                                    } else {
+                                        voice->patternPos = value;
                                     }
+                                    break;
+                                case 129:
+                                    voice->envelStart = 0;
+                                    voice->envelEnd1 = envelope[int(voice->envelPos + 5)];
+                                    voice->envelEnd2 = voice->envelEnd1;
+                                    voice->envelScale = -voice->envelVolume;
+                                    voice->envelStep = -1;
+                                    loop = 0;
+                                    break;
+                                case 130:
+                                    voice->speed1 = patterns[voice->patternPos++];
+                                    break;
+                                case 131:
+                                    voice->speed2 = patterns[voice->patternPos++];
+                                    break;
+                                case 132:
+                                    value = patterns[voice->patternPos++];
 
-                                    complete &= ~(1 << voice->index);
-                                    if (!complete) amiga->setComplete(1);
-                                }
-                                else
-                                {
-                                    voice->patternPos = value;
-                                }
-                                break;
-                            case 129:
-                                voice->envelStart = 0;
-                                voice->envelEnd1 = envelope[int(voice->envelPos + 5)];
-                                voice->envelEnd2 = voice->envelEnd1;
-                                voice->envelScale = -voice->envelVolume;
-                                voice->envelStep = -1;
-                                loop = 0;
-                                break;
-                            case 130:
-                                voice->speed1 = patterns[voice->patternPos++];
-                                break;
-                            case 131:
-                                voice->speed2 = patterns[voice->patternPos++];
-                                break;
-                            case 132:
-                                value = patterns[voice->patternPos++];
+                                    if (value < samples.size()) {
+                                        sample = voice->sample = samples[value];
+                                        voice->volumeScale = sample->volumeScale;
+                                        voice->periodPos = 0;
+                                        voice->volumePos = 0;
+                                    }
+                                    break;
+                                case 133:
+                                    voice->volumeScale = patterns[voice->patternPos++];
+                                    break;
+                                case 134:
+                                    voice->portaCounter = patterns[voice->patternPos++];
+                                    voice->portaPeriod = 0;
 
-                                if (value < samples.size())
-                                {
-                                    sample = voice->sample = samples[value];
-                                    voice->volumeScale = sample->volumeScale;
-                                    voice->periodPos = 0;
-                                    voice->volumePos = 0;
-                                }
-                                break;
-                            case 133:
-                                voice->volumeScale = patterns[voice->patternPos++];
-                                break;
-                            case 134:
-                                voice->portaCounter = patterns[voice->patternPos++];
-                                voice->portaPeriod = 0;
-
-                                voice->portaStep = patterns[voice->patternPos++] << 24;
-                                voice->portaStep |= patterns[voice->patternPos++] << 16;
-                                voice->portaStep |= patterns[voice->patternPos++] << 8;
-                                voice->portaStep |= patterns[voice->patternPos++];
-                                break;
-                            case 135:
-                                loop = 0;
-                                break;
+                                    voice->portaStep = patterns[voice->patternPos++] << 24;
+                                    voice->portaStep |= patterns[voice->patternPos++] << 16;
+                                    voice->portaStep |= patterns[voice->patternPos++] << 8;
+                                    voice->portaStep |= patterns[voice->patternPos++];
+                                    break;
+                                case 135:
+                                    loop = 0;
+                                    break;
                             }
-                        }
-                        else
-                        {
+                        } else {
                             voice->period = PERIODS[int(value >> 1)];
                             voice->periodMod = voice->period;
                             voice->portaPeriod = 0;
@@ -227,35 +195,26 @@ void RJPlayer::process()
                             voice->note = 1;
                             break;
                         }
-                    }
-                    while (loop);
+                    } while (loop);
                     voice->tick2 = voice->speed2;
                 }
                 voice->tick1 = voice->speed1;
             }
         }
 
-        if (voice->envelStep)
-        {
+        if (voice->envelStep) {
             value = voice->envelScale;
 
-            if (voice->envelScale)
-            {
-                if (voice->envelEnd1)
-                {
+            if (voice->envelScale) {
+                if (voice->envelEnd1) {
                     value *= voice->envelEnd1;
 
-                    if (voice->envelEnd2)
-                    {
+                    if (voice->envelEnd2) {
                         value /= voice->envelEnd2;
-                    }
-                    else
-                    {
+                    } else {
                         value = 0;
                     }
-                }
-                else
-                {
+                } else {
                     value = 0;
                 }
             }
@@ -263,10 +222,8 @@ void RJPlayer::process()
             voice->envelVolume = voice->envelStart - value;
             voice->envelEnd1--;
 
-            if (voice->envelEnd1 == -1)
-            {
-                if (voice->envelStep == 4)
-                {
+            if (voice->envelEnd1 == -1) {
+                if (voice->envelStep == 4) {
                     value = voice->envelPos;
 
                     voice->envelStart = envelope[int(value + 3)];
@@ -275,9 +232,7 @@ void RJPlayer::process()
                     voice->envelEnd2 = voice->envelEnd1;
 
                     voice->envelStep = 2;
-                }
-                else
-                {
+                } else {
                     voice->envelStep = 0;
                 }
             }
@@ -285,49 +240,42 @@ void RJPlayer::process()
 
         voice->volume = voice->envelVolume;
 
-        if (sample->volumePtr)
-        {
+        if (sample->volumePtr) {
             value = amiga->memory[(sample->volumePtr + voice->volumePos)];
             value = (value * voice->volume) >> 7;
             voice->volume += value;
 
-            if (++voice->volumePos == sample->volumeLen)
-            {
+            if (++voice->volumePos == sample->volumeLen) {
                 voice->volumePos = sample->volumeStart;
             }
         }
 
         chan->setVolume((voice->volume * voice->volumeScale) >> 6);
 
-        if (sample->periodPtr)
-        {
+        if (sample->periodPtr) {
             value = amiga->memory[(sample->periodPtr + voice->periodPos)];
             value = -((value * voice->period) >> 7);
             if (value < 0) value >>= 1;
             voice->periodMod = voice->period + value;
 
-            if (++voice->periodPos == sample->periodLen)
-            {
+            if (++voice->periodPos == sample->periodLen) {
                 voice->periodPos = sample->periodStart;
             }
         }
 
-        if (voice->portaCounter)
-        {
+        if (voice->portaCounter) {
             voice->portaPeriod += voice->portaStep;
             voice->portaCounter--;
         }
 
         chan->setPeriod(voice->periodMod + (voice->portaPeriod >> 16));
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 }
 
 
-int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
-{
+int RJPlayer::load(void *_data, unsigned long int length, const char *filename) {
     //AmigaPlayer::load(_data, length, filename);
-    unsigned char* stream = static_cast<unsigned char*>(_data);
+    unsigned char *stream = static_cast<unsigned char *>(_data);
 
 
     ifstream file;
@@ -341,58 +289,48 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     string suffix = filenameOnly.substr(0, 4);
     transform(suffix.begin(), suffix.end(), suffix.begin(), ::tolower);
 
-    if (suffix == "rjp.")
-    {
+    if (suffix == "rjp.") {
         string samplefilename = pathOnly + "smp." + filenameOnly.substr(4);
         file.open(samplefilename.c_str(), ios::in | ios::binary | ios::ate);
-        if (file.is_open())
-        {
+        if (file.is_open()) {
             usesPrefix = true;
         }
     }
 
 
-    if (!usesPrefix)
-    {
+    if (!usesPrefix) {
         string str_newfilename = filename;
         int cut = 4;
-        do
-        {
+        do {
             str_newfilename = str_orgfilename.substr(0, str_orgfilename.length() - cut) + ".ins";
             file.open(str_newfilename.c_str(), ios::in | ios::binary | ios::ate);
             cut++;
-        }
-        while (!file.is_open() && cut < str_orgfilename.length() && str_orgfilename.substr(
-            str_orgfilename.length() - cut - 1, 1) != "/");
+        } while (!file.is_open() && cut < str_orgfilename.length() && str_orgfilename.substr(
+                     str_orgfilename.length() - cut - 1, 1) != "/");
     }
 
 
     ifstream::pos_type fileSize;
-    char* extra = 0;
-    if (file.is_open())
-    {
+    char *extra = 0;
+    if (file.is_open()) {
         fileSize = file.tellg();
         extra = new char[fileSize];
 
         file.seekg(0, ios::beg);
 
-        if (!file.read(extra, fileSize))
-        {
+        if (!file.read(extra, fileSize)) {
             //failed reading
             file.close();
             return -1;
         }
         file.close();
-    }
-    else
-    {
+    } else {
         return -1;
     }
 
     if (!extra) return -1;
 
-    if (!(extra[0] == 'R' && extra[1] == 'J' && extra[2] == 'P'))
-    {
+    if (!(extra[0] == 'R' && extra[1] == 'J' && extra[2] == 'P')) {
         return -1;
     }
 
@@ -405,13 +343,12 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
 
     position = 8;
     unsigned int len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >>
-        5;
+                       5;
     position += 4;
-    samples = vector<RJSample*>(len);
+    samples = vector<RJSample *>(len);
 
-    for (int i = 0; i < len; ++i)
-    {
-        RJSample* sample;
+    for (int i = 0; i < len; ++i) {
+        RJSample *sample;
         sample = new RJSample();
         sample->pointer = readEndian(stream[position], stream[position + 1], stream[position + 2],
                                      stream[position + 3]);
@@ -424,7 +361,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
         position += 4;
         sample->envelopePos = readEndian(stream[position], stream[position + 1]);
         position += 2;
-        sample->volumeScale = (signed short)readEndian(stream[position], stream[position + 1]);
+        sample->volumeScale = (signed short) readEndian(stream[position], stream[position + 1]);
         position += 2;
         sample->offset = readEndian(stream[position], stream[position + 1]) << 1;
         position += 2;
@@ -448,22 +385,20 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
     envelope = vector<int>(len);
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         envelope[i] = stream[position];
         position++;
     }
 
     int pos = position;
     position = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) +
-        position;
+               position;
     position += 4;
 
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >> 2;
     position += 4;
     vector<int> offsets(len);
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         offsets[i] = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) + 1;
         position += 4;
     }
@@ -478,8 +413,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     m_totalSongs = (len >> 2);
 
     int flag = 0;
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         flag = stream[position];
         position++;
         if (!flag || flag >= offsets.size()) continue;
@@ -491,8 +425,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >> 2;
     position += 4;
     offsets.resize(len);
-    for (i = 0; i < len; ++i)
-    {
+    for (i = 0; i < len; ++i) {
         offsets[i] = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) + 1;
         position += 4;
     }
@@ -502,23 +435,16 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     tracks = vector<int>(len);
     flag = 0;
 
-    for (int i = 1; i < len; ++i)
-    {
+    for (int i = 1; i < len; ++i) {
         pos = stream[position];
         position++;
 
-        if (pos == 0)
-        {
+        if (pos == 0) {
             flag ^= 1;
-        }
-        else if (pos > 0)
-        {
-            if (!flag)
-            {
+        } else if (pos > 0) {
+            if (!flag) {
                 pos = offsets[pos];
-            }
-            else
-            {
+            } else {
                 flag = 0;
             }
         }
@@ -528,8 +454,7 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) + 1;
     position += 4;
     patterns = vector<int>(len);
-    for (int i = 1; i < len; ++i)
-    {
+    for (int i = 1; i < len; ++i) {
         patterns[i] = stream[position];
         position++;
     }
@@ -541,46 +466,39 @@ int RJPlayer::load(void* _data, unsigned long int length, const char* filename)
     return 1;
 }
 
-unsigned char RJPlayer::getSubsongsCount()
-{
+unsigned char RJPlayer::getSubsongsCount() {
     return m_totalSongs;
 }
 
-void RJPlayer::selectSong(unsigned char subsong)
-{
+void RJPlayer::selectSong(unsigned char subsong) {
     m_songNumber = subsong;
 }
 
-vector<BaseSample*> RJPlayer::getSamples()
-{
-    vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+vector<BaseSample *> RJPlayer::getSamples() {
+    vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }
     return samp;
 }
 
-void RJPlayer::printData()
-{
+void RJPlayer::printData() {
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        AmigaRow* row= patterns[i];
     //        cout << "Pattern [" << i << "] note: " << row->note << " sample: " << row->sample << " param: " << row->param << " effect: " << row->effect << "\n";
     //    }
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
-        BaseSample* sample = samples[i];
-        if (sample)
-        {
+    for (unsigned int i = 0; i < samples.size(); i++) {
+        BaseSample *sample = samples[i];
+        if (sample) {
             cout << "Sample [" << i << "] length: " << sample->length << " finetune: " << sample->finetune <<
-                " relative: " << sample->relative << " loopPtr: " << sample->loopPtr << " name: " << sample->name <<
-                " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << (int)sample->volume
-                << "\n";
+                    " relative: " << sample->relative << " loopPtr: " << sample->loopPtr << " name: " << sample->name <<
+                    " pointer: " << sample->pointer << " repeat: " << sample->repeat << " volume: " << (int) sample->
+                    volume
+                    << "\n";
         }
     }
 

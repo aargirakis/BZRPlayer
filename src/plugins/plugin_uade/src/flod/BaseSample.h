@@ -2,10 +2,10 @@
 #define BASESAMPLE_H
 #include <string>
 
-class BaseSample
-{
+class BaseSample {
 public:
     BaseSample();
+
     std::string name;
     int pointer;
     int length;

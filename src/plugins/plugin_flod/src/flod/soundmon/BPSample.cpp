@@ -1,7 +1,6 @@
 #include "BPSample.h"
 
-BPSample::BPSample()
-{
+BPSample::BPSample() {
     synth = 0;
     table = 0;
     adsrControl = 0;

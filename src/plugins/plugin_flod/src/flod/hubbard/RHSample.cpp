@@ -2,8 +2,7 @@
 
 using namespace std;
 
-RHSample::RHSample()
-{
+RHSample::RHSample() {
     divider = 0;
     vibrato = 0;
     hiPos = 0;

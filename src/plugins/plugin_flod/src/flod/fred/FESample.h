@@ -5,8 +5,7 @@
 
 using namespace std;
 
-class FESample : public BaseSample
-{
+class FESample : public BaseSample {
     friend class FEPlayer;
 
 public:

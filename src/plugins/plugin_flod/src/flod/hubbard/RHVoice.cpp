@@ -1,13 +1,11 @@
 #include "RHVoice.h"
 
-RHVoice::RHVoice(int index)
-{
+RHVoice::RHVoice(int index) {
     this->index = index;
     next = 0;
 }
 
-void RHVoice::initialize()
-{
+void RHVoice::initialize() {
     channel = 0;
     sample = 0;
     trackPtr = 0;

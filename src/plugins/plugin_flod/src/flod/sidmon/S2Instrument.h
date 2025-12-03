@@ -1,8 +1,7 @@
 #ifndef S2INSTRUMENT_H
 #define S2INSTRUMENT_H
 
-class S2Instrument
-{
+class S2Instrument {
     friend class S2Player;
 
 public:

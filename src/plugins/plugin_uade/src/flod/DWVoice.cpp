@@ -1,7 +1,6 @@
 #include "DWVoice.h"
 
-DWVoice::DWVoice(int index, int bitflag)
-{
+DWVoice::DWVoice(int index, int bitflag) {
     this->index = index;
     this->bitFlag = bitflag;
     next = 0;
@@ -33,8 +32,7 @@ DWVoice::DWVoice(int index, int bitflag)
     vibDepth = 0;
 }
 
-void DWVoice::initialize()
-{
+void DWVoice::initialize() {
     channel = 0;
     sample = 0;
     trackPtr = 0;

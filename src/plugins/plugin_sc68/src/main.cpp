@@ -6,10 +6,15 @@
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -29,19 +34,16 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginSc68
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginSc68 {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginSc68(FMOD_CODEC_STATE* codec)
-    {
+    pluginSc68(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginSc68()
-    {
+    ~pluginSc68() {
         //delete some stuff
 
         if (sc68) {
@@ -52,7 +54,7 @@ public:
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
-    sc68_t* sc68 = nullptr;
+    sc68_t *sc68 = nullptr;
     sc68_init_t init68 = {};
     sc68_create_t create68 = {};
     sc68_music_info_t info;
@@ -68,8 +70,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -77,8 +78,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int bytesread;
     auto *s = new uint8_t[16];
 
@@ -89,21 +89,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     bool isSC68 = false;
     bool isValidFile = false;
-    if (memcmp(s, "SC68", 4) == 0)
-    {
+    if (memcmp(s, "SC68", 4) == 0) {
         isSC68 = true;
         isValidFile = true;
-    }
-    else if (memcmp(s, "ICE!", 4) == 0 || memcmp(s, "SNDH", 4) == 0)
-    {
+    } else if (memcmp(s, "ICE!", 4) == 0 || memcmp(s, "SNDH", 4) == 0) {
         isSC68 = false;
         isValidFile = true;
     }
 
     delete[] s;
 
-    if (!isValidFile)
-    {
+    if (!isValidFile) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -122,15 +118,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     sc68_init(&plugin->init68);
 
-    const auto info = static_cast<Info*>(userexinfo->userdata);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
     const string path = info->dataPath + SC68_DATA_DIR;
     rsc68_set_share(path.c_str());
 
     plugin->sc68 = sc68_create(&plugin->create68);
 
-    if (sc68_load_mem(plugin->sc68, myBuffer, filesize) < 0)
-    {
+    if (sc68_load_mem(plugin->sc68, myBuffer, filesize) < 0) {
         delete[] myBuffer;
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -138,8 +133,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
 
     delete[] myBuffer;
 
-    if (sc68_music_info(plugin->sc68, &plugin->info, 0, nullptr))
-    {
+    if (sc68_music_info(plugin->sc68, &plugin->info, 0, nullptr)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -182,18 +176,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginSc68*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginSc68 *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    const auto* plugin = static_cast<pluginSc68*>(codec->plugindata);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    const auto *plugin = static_cast<pluginSc68 *>(codec->plugindata);
 
-    if (sc68_process(plugin->sc68, buffer, static_cast<int>(plugin->waveformat.pcmblocksize)) == SC68_MIX_ERROR)
-    {
+    if (sc68_process(plugin->sc68, buffer, static_cast<int>(plugin->waveformat.pcmblocksize)) == SC68_MIX_ERROR) {
         //cout << "FMOD_ERR_FORMAT play" << endl;
         //return FMOD_ERR_FORMAT;
     }
@@ -202,12 +193,11 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
-    auto* plugin = static_cast<pluginSc68*>(codec->plugindata);
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginSc68 *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
+    if (postype == FMOD_TIMEUNIT_MS) {
         //setting loop = 1 in api68_seek function will make it work
         //but seeking is so slow (like slowly winding it up, audible so it's pretty useless
         //int* seek = 0;
@@ -215,8 +205,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
         sc68_play(plugin->sc68, plugin->currentSubsong, 0);
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         sc68_play(plugin->sc68, static_cast<int>(position) + 1, 0);
         sc68_music_info(plugin->sc68, &plugin->info, static_cast<int>(position) + 1, nullptr);
         plugin->currentSubsong = static_cast<int>(position) + 1;
@@ -226,26 +215,21 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
-    const auto* plugin = static_cast<pluginSc68*>(codec->plugindata);
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    const auto *plugin = static_cast<pluginSc68 *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
         if (plugin->info.time_ms > 0xfffff || plugin->info.time_ms == 0)
         //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
         {
             *length = -1;
-        }
-        else
-        {
+        } else {
             *length = plugin->info.time_ms;
         }
 
         return FMOD_OK;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
         *length = plugin->info.tracks;
         return FMOD_OK;
     }

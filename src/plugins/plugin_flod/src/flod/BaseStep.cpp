@@ -1,7 +1,6 @@
 #include "BaseStep.h"
 
-BaseStep::BaseStep()
-{
+BaseStep::BaseStep() {
     pattern = 0;
     transpose = 0;
     soundTrans = 0;

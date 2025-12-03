@@ -1,13 +1,11 @@
 #include "MGVoice.h"
 
-MGVoice::MGVoice(int index)
-{
+MGVoice::MGVoice(int index) {
     this->index = index;
     next = 0;
 }
 
-void MGVoice::initialize()
-{
+void MGVoice::initialize() {
     sample = 0;
     step = 0;
     note = 0;

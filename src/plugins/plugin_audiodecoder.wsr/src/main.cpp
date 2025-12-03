@@ -9,13 +9,18 @@ extern "C" {
 #include "ws_audio.h"
 }
 
-short* sample_buffer = nullptr;
+short *sample_buffer = nullptr;
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -35,19 +40,16 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginWsr
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginWsr {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginWsr(FMOD_CODEC_STATE* codec)
-    {
+    pluginWsr(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginWsr()
-    {
+    ~pluginWsr() {
         //delete some stuff
     }
 
@@ -63,8 +65,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -72,8 +73,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     constexpr int freq = 44100;
     SampleRate = freq;
 
@@ -83,8 +83,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     string filename_lowercase = info->filename;
     ranges::transform(filename_lowercase, filename_lowercase.begin(), ::tolower);
 
-    if (!filename_lowercase.ends_with(".wsr"))
-    {
+    if (!filename_lowercase.ends_with(".wsr")) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -122,17 +121,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
     Close_WSR();
-    delete static_cast<pluginWsr*>(codec->plugindata);
+    delete static_cast<pluginWsr *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    if (const auto plugin = static_cast<pluginWsr*>(codec->plugindata); size == plugin->waveformat.pcmblocksize)
-    {
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    if (const auto plugin = static_cast<pluginWsr *>(codec->plugindata); size == plugin->waveformat.pcmblocksize) {
         Update_WSR(40157, 0);
     }
 
@@ -143,14 +139,12 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned i
 }
 
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
-    if (postype == FMOD_TIMEUNIT_MS)
-    {
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    if (postype == FMOD_TIMEUNIT_MS) {
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
         Reset_WSR(static_cast<int>(position));
         return FMOD_OK;
     }
@@ -158,14 +152,10 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE* codec, unsigned int* length, FMOD_TIMEUNIT lengthtype)
-{
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS)
-    {
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
         *length = -1;
-    }
-    else if (lengthtype == FMOD_TIMEUNIT_SUBSONG)
-    {
+    } else if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
         *length = 255;
     }
     return FMOD_OK;

@@ -2,8 +2,7 @@
 
 using namespace std;
 
-FESample::FESample()
-{
+FESample::FESample() {
     arpeggio = vector<signed char>(16);
     type = 0;
     synchro = 0;

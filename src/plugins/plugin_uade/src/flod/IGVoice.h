@@ -6,19 +6,19 @@ class BaseSample;
 class AmigaChannel;
 class IGBlock;
 
-class IGVoice
-{
+class IGVoice {
     friend class IGPlayer;
 
 public:
     IGVoice(int index);
+
     void initialize();
 
 private:
     int index;
-    IGVoice* next;
-    AmigaChannel* channel;
-    BaseSample* sample;
+    IGVoice *next;
+    AmigaChannel *channel;
+    BaseSample *sample;
     int state;
     std::vector<int> track;
     int trackPos;
@@ -27,8 +27,8 @@ private:
     int position;
     int period;
     int transpose;
-    IGBlock* perBlock;
-    IGBlock* volBlock;
+    IGBlock *perBlock;
+    IGBlock *volBlock;
 };
 
 #endif // IGVOICE_H

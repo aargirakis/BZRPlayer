@@ -11,11 +11,9 @@ class BaseRow;
 class BaseSample;
 class PTVoice;
 
-class PTPlayer : public AmigaPlayer
-{
+class PTPlayer : public AmigaPlayer {
 public:
-    enum
-    {
+    enum {
         ULTIMATE_SOUNDTRACKER = 1,
         DOC_SOUNDTRACKER_9 = 2,
         MASTER_SOUNDTRACKER = 3,
@@ -30,9 +28,12 @@ public:
         FASTTRACKER_10 = 12
     };
 
-    PTPlayer(Amiga* amiga);
+    PTPlayer(Amiga *amiga);
+
     ~PTPlayer();
-    int load(void* data, unsigned long int _length);
+
+    int load(void *data, unsigned long int _length);
+
     void setVersion(int);
 
 private:
@@ -40,7 +41,7 @@ private:
     list<int> patternPosBuffer;
     vector<int> track;
     int trackPos;
-    vector<BaseRow*> patterns;
+    vector<BaseRow *> patterns;
     int patternPos;
     int patternBreak;
     int patternDelay;
@@ -48,34 +49,44 @@ private:
     int breakPos;
     int jumpFlag;
     int restart;
-    vector<PTVoice*> voices;
+    vector<PTVoice *> voices;
     int patternLen;
     int restartCopy;
     int vibratoDepth;
-    vector<BaseSample*> samples;
+    vector<BaseSample *> samples;
 
 
     static const int FUNKREP[16];
     static const int PERIODS[592];
     static const int VIBRATO[32];
-    static const char* NOTES[38];
+    static const char *NOTES[38];
 
 
     void setNTSC(bool value);
 
     void process();
-    void initialize();
-    void printData();
-    void fx();
-    void moreFx(PTVoice* voice);
-    void updateFunk(PTVoice* voice);
-    void extendedFx(PTVoice* voice);
 
-    vector<BaseSample*> getSamples();
-    bool getTitle(string& title);
+    void initialize();
+
+    void printData();
+
+    void fx();
+
+    void moreFx(PTVoice *voice);
+
+    void updateFunk(PTVoice *voice);
+
+    void extendedFx(PTVoice *voice);
+
+    vector<BaseSample *> getSamples();
+
+    bool getTitle(string &title);
+
     unsigned int getCurrentRow();
+
     unsigned int getCurrentPattern();
-    void getModRows(vector<BaseRow*>&);
+
+    void getModRows(vector<BaseRow *> &);
 };
 
 #endif // PTPLAYER_H

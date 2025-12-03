@@ -16,29 +16,24 @@ const int FEPlayer::PERIODS[72] = {
     215, 203, 191, 181, 170, 161, 152, 143, 135
 };
 
-FEPlayer::FEPlayer(Amiga* amiga): AmigaPlayer(amiga)
-{
-    voices = vector<FEVoice*>(4);
+FEPlayer::FEPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
+    voices = vector<FEVoice *>(4);
     voices[3] = new FEVoice(3);
     voices[3]->next = voices[2] = new FEVoice(2);
     voices[2]->next = voices[1] = new FEVoice(1);
     voices[1]->next = voices[0] = new FEVoice(0);
 }
 
-FEPlayer::~FEPlayer()
-{
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+FEPlayer::~FEPlayer() {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for (unsigned int i = 0; i < songs.size(); i++)
-    {
+    for (unsigned int i = 0; i < songs.size(); i++) {
         if (songs[i]) delete songs[i];
     }
     songs.clear();
@@ -48,55 +43,47 @@ FEPlayer::~FEPlayer()
     }*/
 }
 
-int FEPlayer::load(void* _data, unsigned long int _length)
-{
+int FEPlayer::load(void *_data, unsigned long int _length) {
     m_version = 0;
-    unsigned char* stream = static_cast<unsigned char*>(_data);
+    unsigned char *stream = static_cast<unsigned char *>(_data);
     int value = 0;
     position = 0;
     int data = 0;
     int base = 0;
     unsigned int pos = 0x7fffffff;
 
-    while (position < 16)
-    {
+    while (position < 16) {
         value = readEndian(stream[position], stream[position + 1]);
         position += 2;
         position += 2;
         if (value != 0x4efa) return 0; //jmp
     }
 
-    while (position < 1024)
-    {
+    while (position < 1024) {
         value = readEndian(stream[position], stream[position + 1]);
         position += 2;
 
-        if (value == 0x123a)
-        {
+        if (value == 0x123a) {
             //move.b $x,d1
             position += 2;
             value = readEndian(stream[position], stream[position + 1]);
             position += 2;
 
-            if (value == 0xb001)
-            {
+            if (value == 0xb001) {
                 //cmp.b d1,d0
                 position -= 4;
                 data = (position + readEndian(stream[position], stream[position + 1])) - 0x895;
                 position += 2;
             }
-        }
-        else if (value == 0x214a)
-        {
+        } else if (value == 0x214a) {
             //move.l a2,(a0)
             position += 2;
             value = readEndian(stream[position], stream[position + 1]);
             position += 2;
 
-            if (value == 0x47fa)
-            {
+            if (value == 0x47fa) {
                 //lea $x,a3
-                base = position + (signed short)readEndian(stream[position], stream[position + 1]);
+                base = position + (signed short) readEndian(stream[position], stream[position + 1]);
                 position += 2;
                 m_version = 1;
                 break;
@@ -109,17 +96,14 @@ int FEPlayer::load(void* _data, unsigned long int _length)
 
     position = base + readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
 
-    samples = vector<FESample*>();
+    samples = vector<FESample *>();
 
-    while (pos > position)
-    {
+    while (pos > position) {
         value = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
 
-        if (value)
-        {
-            if ((value < position) || (value >= _length))
-            {
+        if (value) {
+            if ((value < position) || (value >= _length)) {
                 position -= 4;
                 break;
             }
@@ -127,9 +111,9 @@ int FEPlayer::load(void* _data, unsigned long int _length)
             if (value < pos) pos = base + value;
         }
 
-        FESample* sample = new FESample();
+        FESample *sample = new FESample();
         sample->pointer = value;
-        sample->loopPtr = (signed short)readEndian(stream[position], stream[position + 1]);
+        sample->loopPtr = (signed short) readEndian(stream[position], stream[position + 1]);
         position += 2;
         sample->length = readEndian(stream[position], stream[position + 1]) << 1;
         position += 2;
@@ -161,8 +145,7 @@ int FEPlayer::load(void* _data, unsigned long int _length)
         position++;
 
         sample->arpeggio = vector<signed char>(16);
-        for (int i = 0; i < 16; ++i)
-        {
+        for (int i = 0; i < 16; ++i) {
             sample->arpeggio[i] = stream[position];
             position++;
         }
@@ -200,17 +183,14 @@ int FEPlayer::load(void* _data, unsigned long int _length)
         samples.push_back(sample);
         if (position > _length) break;
     }
-    if (pos != 0x7fffffff)
-    {
+    if (pos != 0x7fffffff) {
         //amiga->store(stream, _length - pos,position,_length);
         int len = samples.size();
 
 
-        for (int i = 0; i < len; ++i)
-        {
-            FESample* sample = samples[i];
-            if (sample->pointer)
-            {
+        for (int i = 0; i < len; ++i) {
+            FESample *sample = samples[i];
+            if (sample->pointer) {
                 sample->pointer -= (base + pos);
             }
         }
@@ -300,14 +280,11 @@ int FEPlayer::load(void* _data, unsigned long int _length)
 }
 
 
-vector<BaseSample*> FEPlayer::getSamples()
-{
-    vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+vector<BaseSample *> FEPlayer::getSamples() {
+    vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }

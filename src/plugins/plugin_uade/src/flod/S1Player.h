@@ -8,20 +8,22 @@ class S1Sample;
 class S1Voice;
 class BaseStep;
 
-class S1Player : public AmigaPlayer
-{
+class S1Player : public AmigaPlayer {
 public:
-    S1Player(Amiga* amiga);
+    S1Player(Amiga *amiga);
+
     ~S1Player();
-    int load(void* data, unsigned long int _length);
-    std::vector<BaseSample*> getSamples();
+
+    int load(void *data, unsigned long int _length);
+
+    std::vector<BaseSample *> getSamples();
 
 private:
     std::vector<int> tracksPtr;
-    std::vector<BaseStep*> tracks;
+    std::vector<BaseStep *> tracks;
     std::vector<int> patternsPtr;
-    std::vector<BaseRow*> patterns;
-    std::vector<S1Sample*> samples;
+    std::vector<BaseRow *> patterns;
+    std::vector<S1Sample *> samples;
     std::vector<int> waveLists;
     int speedDef;
     int trackLen;
@@ -36,7 +38,7 @@ private:
     int mix2Source2;
     int doFilter;
     int doReset;
-    std::vector<S1Voice*> voices;
+    std::vector<S1Voice *> voices;
     int trackPos;
     int trackEnd;
     int patternPos;
@@ -51,8 +53,7 @@ private:
     int audioPer;
     int audioVol;
 
-    enum
-    {
+    enum {
         SIDMON_0FFA = 0x0ffa,
         SIDMON_1170 = 0x1170,
         SIDMON_11C6 = 0x11c6,

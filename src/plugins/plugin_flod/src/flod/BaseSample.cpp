@@ -1,7 +1,6 @@
 #include "BaseSample.h"
 
-BaseSample::BaseSample()
-{
+BaseSample::BaseSample() {
     name = "";
     pointer = 0;
     length = 0;

@@ -3,13 +3,11 @@
 
 class Sample;
 
-class AmigaFilter
-{
+class AmigaFilter {
 public:
     AmigaFilter();
 
-    enum
-    {
+    enum {
         AUTOMATIC = 0,
         FORCE_ON = 1,
         FORCE_OFF = -1
@@ -17,9 +15,13 @@ public:
 
     int active;
     int filter;
+
     void initialize();
-    void process(Sample* sample);
+
+    void process(Sample *sample);
+
     void setModel(int model);
+
     void setFilter(int filterVal);
 
 private:

@@ -1,13 +1,11 @@
 #include "RJVoice.h"
 
-RJVoice::RJVoice(int index)
-{
+RJVoice::RJVoice(int index) {
     this->index = index;
     next = 0;
 }
 
-void RJVoice::initialize()
-{
+void RJVoice::initialize() {
     channel = 0;
     sample = 0;
     active = 0;

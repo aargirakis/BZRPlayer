@@ -5,12 +5,12 @@
 
 using namespace std;
 
-class JBSong
-{
+class JBSong {
     friend class JBPlayer;
 
 public:
     JBSong();
+
     ~JBSong();
 
 private:

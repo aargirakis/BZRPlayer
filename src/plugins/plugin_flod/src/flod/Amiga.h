@@ -10,46 +10,56 @@ class AmigaFilter;
 class AmigaChannel;
 class Sample;
 
-class Amiga
-{
+class Amiga {
     friend class AmigaPlayer;
 
 public:
     Amiga();
 
-    enum
-    {
+    enum {
         MODEL_A500 = 0,
         MODEL_A1200 = 1
     };
 
     ~Amiga();
-    AmigaPlayer* player;
-    AmigaFilter* filter;
+
+    AmigaPlayer *player;
+    AmigaFilter *filter;
 
     vector<signed char> memory;
-    vector<AmigaChannel*> channels;
+    vector<AmigaChannel *> channels;
     int samplesTick;
     int loopPtr;
     int loopLen;
+
     void setComplete(int value);
+
     void setVolume(int value);
-    int store(void* data, unsigned long int len, unsigned int& position, unsigned long int datalength, int ptr = -1);
-    void mixer(void* _stream, unsigned long int length);
+
+    int store(void *data, unsigned long int len, unsigned int &position, unsigned long int datalength, int ptr = -1);
+
+    void mixer(void *_stream, unsigned long int length);
+
     int isCompleted();
+
     void setModel(int);
+
     void setFilter(int filterType);
 
 private:
     double clock;
     double master;
-    vector<Sample*> m_buffer;
+    vector<Sample *> m_buffer;
     int m_complete;
     int samplesLeft;
     int remains;
+
     void initialize();
+
     void reset();
+
     bool memoryFixed;
+
     void setup();
 };
 

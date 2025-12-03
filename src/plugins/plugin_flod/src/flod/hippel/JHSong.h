@@ -1,8 +1,7 @@
 #ifndef JHSONG_H
 #define JHSONG_H
 
-class JHSong
-{
+class JHSong {
     friend class JHPlayer;
 
 public:

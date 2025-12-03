@@ -1,13 +1,11 @@
 #include "S1Voice.h"
 
-S1Voice::S1Voice(int index)
-{
+S1Voice::S1Voice(int index) {
     this->index = index;
     next = 0;
 }
 
-void S1Voice::initialize()
-{
+void S1Voice::initialize() {
     channel = 0;
     step = 0;
     row = 0;

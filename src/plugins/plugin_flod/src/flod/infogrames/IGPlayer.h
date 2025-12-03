@@ -12,31 +12,36 @@ class BaseSample;
 class IGVoice;
 class IGBlock;
 
-class IGPlayer : public AmigaPlayer
-{
+class IGPlayer : public AmigaPlayer {
 public:
-    IGPlayer(Amiga* amiga);
+    IGPlayer(Amiga *amiga);
+
     ~IGPlayer();
-    int load(void* data, unsigned long int length, const char* filename);
+
+    int load(void *data, unsigned long int length, const char *filename);
 
 private:
     vector<int> comData;
     vector<int> perData;
     vector<int> volData;
-    vector<IGVoice*> voices;
-    vector<BaseSample*> samples;
+    vector<IGVoice *> voices;
+    vector<BaseSample *> samples;
     int irqtime;
     int complete;
 
-    int tune(IGBlock* block, vector<int> data, int value);
+    int tune(IGBlock *block, vector<int> data, int value);
 
 
     static const int PERIODS[102];
     static const int TICKS[12];
+
     void process();
+
     void initialize();
+
     void printData();
-    vector<BaseSample*> getSamples();
+
+    vector<BaseSample *> getSamples();
 };
 
 #endif // IGPLAYER_H

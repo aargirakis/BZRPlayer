@@ -3,8 +3,7 @@
 #include "BaseSample.h"
 #include <vector>
 
-class D2Sample : public BaseSample
-{
+class D2Sample : public BaseSample {
     friend class D2Player;
 
 public:

@@ -1,7 +1,6 @@
 #include "S1Sample.h"
 
-S1Sample::S1Sample()
-{
+S1Sample::S1Sample() {
     waveform = 0;
     attackSpeed = 0;
     attackMax = 0;

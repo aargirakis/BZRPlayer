@@ -10,21 +10,24 @@ class BaseSample;
 class BDVoice;
 class BDSample;
 
-class BDPlayer : public AmigaPlayer
-{
+class BDPlayer : public AmigaPlayer {
 public:
-    BDPlayer(Amiga* amiga);
+    BDPlayer(Amiga *amiga);
+
     ~BDPlayer();
-    int load(void* data, unsigned long int _length);
+
+    int load(void *data, unsigned long int _length);
 
 private:
-    void setSample(BDVoice* voice, int counter);
-    void fx(BDVoice* voice);
+    void setSample(BDVoice *voice, int counter);
+
+    void fx(BDVoice *voice);
+
     vector<int> songs;
     vector<int> banks;
     int patterns;
-    vector<BDVoice*> voices;
-    vector<BDSample*> samples;
+    vector<BDVoice *> voices;
+    vector<BDSample *> samples;
 
     int commands;
     int periods;
@@ -32,16 +35,21 @@ private:
     int complete;
 
     unsigned int position;
-    unsigned char* stream;
+    unsigned char *stream;
     unsigned long int length;
 
 
     void process();
+
     void initialize();
+
     void printData();
+
     unsigned char getSubsongsCount();
+
     void selectSong(unsigned char);
-    vector<BaseSample*> getSamples();
+
+    vector<BaseSample *> getSamples();
 };
 
 #endif // BDPLAYER_H

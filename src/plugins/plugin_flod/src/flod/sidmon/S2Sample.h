@@ -2,8 +2,7 @@
 #define S2SAMPLE_H
 #include "BaseSample.h"
 
-class S2Sample : public BaseSample
-{
+class S2Sample : public BaseSample {
     friend class S2Player;
 
 public:

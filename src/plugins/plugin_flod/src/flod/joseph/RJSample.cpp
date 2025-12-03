@@ -1,7 +1,6 @@
 #include "RJSample.h"
 
-RJSample::RJSample()
-{
+RJSample::RJSample() {
     offset = 0;
     envelopePos = 0;
     periodPtr = 0;

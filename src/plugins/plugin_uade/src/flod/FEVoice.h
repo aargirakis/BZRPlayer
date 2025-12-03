@@ -4,19 +4,19 @@
 class AmigaChannel;
 class FESample;
 
-class FEVoice
-{
+class FEVoice {
     friend class FEPlayer;
 
 public:
     FEVoice(int index);
+
     void initialize();
 
 private:
     int index;
-    FEVoice* next;
-    AmigaChannel* channel;
-    FESample* sample;
+    FEVoice *next;
+    AmigaChannel *channel;
+    FESample *sample;
     int trackPos;
     int patternPos;
     int tick;

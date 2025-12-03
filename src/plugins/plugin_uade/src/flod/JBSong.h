@@ -3,12 +3,12 @@
 
 #include <vector>
 
-class JBSong
-{
+class JBSong {
     friend class JBPlayer;
 
 public:
     JBSong();
+
     ~JBSong();
 
 private:

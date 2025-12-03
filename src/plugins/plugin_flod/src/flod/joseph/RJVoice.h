@@ -3,18 +3,18 @@
 class RJSample;
 class AmigaChannel;
 
-class RJVoice
-{
+class RJVoice {
     friend class RJPlayer;
 
 public:
     RJVoice(int index);
+
     void initialize();
 
 private:
-    RJSample* sample;
-    AmigaChannel* channel;
-    RJVoice* next;
+    RJSample *sample;
+    AmigaChannel *channel;
+    RJVoice *next;
 
     int index;
     int active;

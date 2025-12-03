@@ -4,19 +4,19 @@
 class BaseSample;
 class AmigaChannel;
 
-class PTVoice
-{
+class PTVoice {
     friend class PTPlayer;
 
 public:
     PTVoice(int index);
+
     void initialize();
 
 private:
     int index;
-    PTVoice* next;
-    AmigaChannel* channel;
-    BaseSample* sample;
+    PTVoice *next;
+    AmigaChannel *channel;
+    BaseSample *sample;
     int enabled;
     int loopCtr;
     int loopPos;

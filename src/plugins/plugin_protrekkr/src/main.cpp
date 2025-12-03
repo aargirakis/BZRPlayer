@@ -10,17 +10,15 @@ char SampleName[128][16][64];
 int Midiprg[MAX_INSTRS];
 char nameins[MAX_INSTRS][20];
 extern char customPtkName[20];
-extern Uint8* Mod_Memory;
+extern Uint8 *Mod_Memory;
 int Chan_Midi_Prg[MAX_TRACKS];
 char Chan_History_State[256][16];
 int done = 0;
 
-Uint32 STDCALL Mixer(Uint8* Buffer, Uint32 Len);
+Uint32 STDCALL Mixer(Uint8 *Buffer, Uint32 Len);
 
-void Set_Default_Channels_Polyphony()
-{
-    for (char & i : Channels_Polyphony)
-    {
+void Set_Default_Channels_Polyphony() {
+    for (char &i: Channels_Polyphony) {
         i = DEFAULT_POLYPHONY;
     }
 }
@@ -28,9 +26,13 @@ void Set_Default_Channels_Polyphony()
 int Alloc_Patterns_Pool();
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
+
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
+
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype);
+
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype);
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -50,23 +52,19 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginProtrekkr
-{
-    FMOD_CODEC_STATE* _codec;
+class pluginProtrekkr {
+    FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginProtrekkr(FMOD_CODEC_STATE* codec)
-    {
+    pluginProtrekkr(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginProtrekkr()
-    {
+    ~pluginProtrekkr() {
         delete[] buffer;
 
-        if (loaded)
-        {
+        if (loaded) {
             Ptk_Stop();
             Free_Samples();
             if (Mod_Memory) free(Mod_Memory);
@@ -75,7 +73,7 @@ public:
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
-    uint8_t* buffer;
+    uint8_t *buffer;
     uint32_t filesize;
     bool loaded = false;
 };
@@ -89,8 +87,7 @@ public:
 extern "C" {
 #endif
 
-F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
-{
+F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
     return &codecDescription;
 }
 
@@ -98,23 +95,21 @@ F_EXPORT FMOD_CODEC_DESCRIPTION* F_CALL FMODGetCodecDescription()
 }
 #endif
 
-static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO* userexinfo)
-{
+static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int bytesread;
     auto *testBuffer = new uint8_t[7];
 
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, testBuffer, 7, &bytesread);
 
-    if (memcmp(testBuffer, "PROTREK", 7) != 0 && memcmp(testBuffer, "TWNNSNG", 7) != 0)
-    {
+    if (memcmp(testBuffer, "PROTREK", 7) != 0 && memcmp(testBuffer, "TWNNSNG", 7) != 0) {
         delete[] testBuffer;
         return FMOD_ERR_FORMAT;
     }
 
     delete[] testBuffer;
 
-    auto* plugin = new pluginProtrekkr(codec);
+    auto *plugin = new pluginProtrekkr(codec);
 
     FMOD_CODEC_FILE_SIZE(codec, &plugin->filesize);
 
@@ -128,21 +123,19 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, plugin->buffer, plugin->filesize, &bytesread);
 
-    if (!Load_Ptk({plugin->buffer, plugin->filesize}))
-    {
+    if (!Load_Ptk({plugin->buffer, plugin->filesize})) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     plugin->loaded = true;
 
-    const auto info = static_cast<Info*>(userexinfo->userdata);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
     info->samples = new string[128];
     info->instruments = new string[128];
 
-    for (int j = 0; j < 128; j++)
-    {
+    for (int j = 0; j < 128; j++) {
         info->samples[j] = SampleName[j][0];
         info->instruments[j] = nameins[j];
     }
@@ -171,28 +164,25 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE* codec, FMOD_MODE usermode, FMOD
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE* codec)
-{
-    delete static_cast<pluginProtrekkr*>(codec->plugindata);
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginProtrekkr *>(codec->plugindata);
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE* codec, void* buffer, unsigned int size, unsigned int* read)
-{
-    *read = Mixer(static_cast<Uint8*>(buffer), size >> 1);
+static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
+    *read = Mixer(static_cast<Uint8 *>(buffer), size >> 1);
     return FMOD_OK;
 }
 
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE* codec, int subsound, unsigned int position, FMOD_TIMEUNIT postype)
-{
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
     Ptk_Stop();
     Free_Samples();
 
-    auto const* plugin = static_cast<pluginProtrekkr*>(codec->plugindata);
+    auto const *plugin = static_cast<pluginProtrekkr *>(codec->plugindata);
 
-    if (!Load_Ptk({plugin->buffer, plugin->filesize}))
-    {
+    if (!Load_Ptk({plugin->buffer, plugin->filesize})) {
         return FMOD_ERR_FORMAT;
     }
 

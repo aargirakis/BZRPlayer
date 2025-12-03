@@ -2,8 +2,7 @@
 #define RJSAMPLE_H
 #include "BaseSample.h"
 
-class RJSample : public BaseSample
-{
+class RJSample : public BaseSample {
     friend class RJPlayer;
 
 public:

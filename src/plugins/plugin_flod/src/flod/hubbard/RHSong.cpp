@@ -2,13 +2,11 @@
 
 using namespace std;
 
-RHSong::RHSong()
-{
+RHSong::RHSong() {
     tracks = vector<int>();
     speed = 0;
 }
 
-RHSong::~RHSong()
-{
+RHSong::~RHSong() {
     tracks.clear();
 }

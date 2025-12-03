@@ -20,10 +20,9 @@ const int S2Player::PERIODS[73] =
     180, 170, 160, 151, 143, 135, 127, 120, 113, 107, 101, 95
 };
 
-S2Player::S2Player(Amiga* amiga): AmigaPlayer(amiga)
-{
+S2Player::S2Player(Amiga *amiga) : AmigaPlayer(amiga) {
     arpeggioFx = vector<unsigned char>(4);
-    voices = vector<S2Voice*>(4);
+    voices = vector<S2Voice *>(4);
     voices[0] = new S2Voice(0);
     voices[0]->next = voices[1] = new S2Voice(1);
     voices[1]->next = voices[2] = new S2Voice(2);
@@ -37,41 +36,34 @@ S2Player::S2Player(Amiga* amiga): AmigaPlayer(amiga)
     patternLen = 0;
 }
 
-S2Player::~S2Player()
-{
+S2Player::~S2Player() {
     arpeggioFx.clear();
     arpeggios.clear();
     vibratos.clear();
     waves.clear();
 
-    for (unsigned int i = 0; i < tracks.size(); i++)
-    {
+    for (unsigned int i = 0; i < tracks.size(); i++) {
         if (tracks[i]) delete tracks[i];
     }
-    for (unsigned int i = 0; i < instruments.size(); i++)
-    {
+    for (unsigned int i = 0; i < instruments.size(); i++) {
         if (instruments[i]) delete instruments[i];
     }
     instruments.clear();
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < samples.size(); i++)
-    {
+    for (unsigned int i = 0; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for (unsigned int i = 0; i < patterns.size(); i++)
-    {
+    for (unsigned int i = 0; i < patterns.size(); i++) {
         if (patterns[i]) delete patterns[i];
     }
     patterns.clear();
 }
 
-void S2Player::initialize()
-{
+void S2Player::initialize() {
     AmigaPlayer::initialize();
     speed = speedDef;
     tick = speedDef;
@@ -79,9 +71,8 @@ void S2Player::initialize()
     patternPos = 0;
     patternLen = 64;
 
-    S2Voice* voice = voices[0];
-    while (voice)
-    {
+    S2Voice *voice = voices[0];
+    while (voice) {
         voice->initialize();
         voice->channel = amiga->channels[voice->index];
         voice->instr = instruments[0];
@@ -91,40 +82,34 @@ void S2Player::initialize()
     }
 }
 
-void S2Player::process()
-{
-    AmigaChannel* chan;
-    BaseRow* row;
-    S2Voice* voice = voices[0];
-    S2Sample* sample;
-    S2Instrument* instr;
+void S2Player::process() {
+    AmigaChannel *chan;
+    BaseRow *row;
+    S2Voice *voice = voices[0];
+    S2Sample *sample;
+    S2Instrument *instr;
     int value = 0;
     arpeggioPos = (++arpeggioPos & 3);
 
-    if (++tick >= speed)
-    {
+    if (++tick >= speed) {
         tick = 0;
 
-        do
-        {
+        do {
             chan = voice->channel;
             voice->note = 0;
             voice->enabled = 0;
 
-            if (!patternPos)
-            {
+            if (!patternPos) {
                 voice->step = tracks[int(trackPos + (voice->index * length))];
                 voice->pattern = voice->step->pattern;
                 voice->speed = 0;
             }
 
-            if (--voice->speed < 0)
-            {
+            if (--voice->speed < 0) {
                 voice->row = row = patterns[voice->pattern++];
                 voice->speed = row->speed;
 
-                if (row->note)
-                {
+                if (row->note) {
                     voice->enabled = 1;
                     voice->note = row->note + voice->step->transpose;
                     chan->setEnabled(0);
@@ -133,8 +118,7 @@ void S2Player::process()
 
             voice->pitchBend = 0;
 
-            if (voice->note)
-            {
+            if (voice->note) {
                 voice->waveCtr = voice->sustainCtr = 0;
                 voice->arpeggioCtr = voice->arpeggioPos = 0;
                 voice->vibratoCtr = voice->vibratoPos = 0;
@@ -142,8 +126,7 @@ void S2Player::process()
                 voice->adsrPos = 4;
                 voice->volume = 0;
 
-                if (row->sample)
-                {
+                if (row->sample) {
                     voice->instrument = row->sample;
                     voice->instr = instruments[voice->instrument + voice->step->soundTrans];
                     voice->sample = samples[waves[voice->instr->wave]];
@@ -158,15 +141,12 @@ void S2Player::process()
                 chan->pointer = sample->loopPtr;
                 chan->length = sample->repeat;
             }
-        }
-        while (voice = voice->next);
+        } while (voice = voice->next);
 
-        if (++patternPos == patternLen)
-        {
+        if (++patternPos == patternLen) {
             patternPos = 0;
 
-            if (++trackPos == length)
-            {
+            if (++trackPos == length) {
                 trackPos = 0;
                 amiga->setComplete(1);
             }
@@ -174,8 +154,7 @@ void S2Player::process()
     }
     voice = voices[0];
 
-    do
-    {
+    do {
         if (!voice->sample) continue;
         chan = voice->channel;
 
@@ -185,12 +164,9 @@ void S2Player::process()
 
         sample->negToggle = 1;
 
-        if (sample->negCtr)
-        {
+        if (sample->negCtr) {
             sample->negCtr = (--sample->negCtr & 31);
-        }
-        else
-        {
+        } else {
             sample->negCtr = sample->negSpeed;
             if (!sample->negDir) continue;
 
@@ -199,243 +175,190 @@ void S2Player::process()
             sample->negPos += sample->negOffset;
             value = sample->negLen - 1;
 
-            if (sample->negPos < 0)
-            {
-                if (sample->negDir == 2)
-                {
+            if (sample->negPos < 0) {
+                if (sample->negDir == 2) {
                     sample->negPos = value;
-                }
-                else
-                {
+                } else {
                     sample->negOffset = -sample->negOffset;
                     sample->negPos += sample->negOffset;
                 }
-            }
-            else if (value < sample->negPos)
-            {
-                if (sample->negDir == 1)
-                {
+            } else if (value < sample->negPos) {
+                if (sample->negDir == 1) {
                     sample->negPos = 0;
-                }
-                else
-                {
+                } else {
                     sample->negOffset = -sample->negOffset;
                     sample->negPos += sample->negOffset;
                 }
             }
         }
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 
     voice = voices[0];
 
-    do
-    {
+    do {
         if (!voice->sample) continue;
 
         voice->sample->negToggle = 0;
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 
     voice = voices[0];
 
-    do
-    {
+    do {
         chan = voice->channel;
         instr = voice->instr;
 
-        switch (voice->adsrPos)
-        {
-        case 0:
-            break;
-        case 4: //attack
-            voice->volume += instr->attackSpeed;
-            if (instr->attackMax <= voice->volume)
-            {
-                voice->volume = instr->attackMax;
-                voice->adsrPos--;
-            }
-            break;
-        case 3: //decay
-            if (!instr->decaySpeed)
-            {
-                voice->adsrPos--;
-            }
-            else
-            {
-                voice->volume -= instr->decaySpeed;
-                if (instr->decayMin >= voice->volume)
-                {
-                    voice->volume = instr->decayMin;
+        switch (voice->adsrPos) {
+            case 0:
+                break;
+            case 4: //attack
+                voice->volume += instr->attackSpeed;
+                if (instr->attackMax <= voice->volume) {
+                    voice->volume = instr->attackMax;
                     voice->adsrPos--;
                 }
-            }
-            break;
-        case 2: //sustain
-            if (voice->sustainCtr == instr->sustain)
-            {
-                voice->adsrPos--;
-            }
-            else
-            {
-                voice->sustainCtr++;
-            }
-            break;
-        case 1: //release
-            voice->volume -= instr->releaseSpeed;
-            if (instr->releaseMin >= voice->volume)
-            {
-                voice->volume = instr->releaseMin;
-                voice->adsrPos--;
-            }
-            break;
+                break;
+            case 3: //decay
+                if (!instr->decaySpeed) {
+                    voice->adsrPos--;
+                } else {
+                    voice->volume -= instr->decaySpeed;
+                    if (instr->decayMin >= voice->volume) {
+                        voice->volume = instr->decayMin;
+                        voice->adsrPos--;
+                    }
+                }
+                break;
+            case 2: //sustain
+                if (voice->sustainCtr == instr->sustain) {
+                    voice->adsrPos--;
+                } else {
+                    voice->sustainCtr++;
+                }
+                break;
+            case 1: //release
+                voice->volume -= instr->releaseSpeed;
+                if (instr->releaseMin >= voice->volume) {
+                    voice->volume = instr->releaseMin;
+                    voice->adsrPos--;
+                }
+                break;
         }
         chan->setVolume(voice->volume >> 2);
 
-        if (instr->waveLen)
-        {
-            if (voice->waveCtr == instr->waveDelay)
-            {
+        if (instr->waveLen) {
+            if (voice->waveCtr == instr->waveDelay) {
                 voice->waveCtr = instr->waveDelay - instr->waveSpeed;
-                if (voice->wavePos == instr->waveLen)
-                {
+                if (voice->wavePos == instr->waveLen) {
                     voice->wavePos = 0;
-                }
-                else
-                {
+                } else {
                     voice->wavePos++;
                 }
 
                 voice->sample = sample = samples[waves[int(instr->wave + voice->wavePos)]];
                 chan->pointer = sample->pointer;
                 chan->length = sample->length;
-            }
-            else
-            {
+            } else {
                 voice->waveCtr++;
             }
         }
 
-        if (instr->arpeggioLen)
-        {
-            if (voice->arpeggioCtr == instr->arpeggioDelay)
-            {
+        if (instr->arpeggioLen) {
+            if (voice->arpeggioCtr == instr->arpeggioDelay) {
                 voice->arpeggioCtr = instr->arpeggioDelay - instr->arpeggioSpeed;
 
-                if (voice->arpeggioPos == instr->arpeggioLen)
-                {
+                if (voice->arpeggioPos == instr->arpeggioLen) {
                     voice->arpeggioPos = 0;
-                }
-                else
-                {
+                } else {
                     voice->arpeggioPos++;
                 }
 
                 value = voice->original + arpeggios[int(instr->arpeggio + voice->arpeggioPos)];
                 voice->period = PERIODS[value];
-            }
-            else
-            {
+            } else {
                 voice->arpeggioCtr++;
             }
         }
 
         row = voice->row;
 
-        if (tick)
-        {
-            switch (row->effect)
-            {
-            case 0:
-                break;
-            case 0x70: //arpeggio
-                arpeggioFx[0] = row->param >> 4;
-                arpeggioFx[2] = row->param & 15;
-                value = voice->original + arpeggioFx[arpeggioPos];
-                voice->period = PERIODS[value];
-                break;
-            case 0x71: //pitch up
-                voice->pitchBend = ~row->param + 1;
-                break;
-            case 0x72: //pitch down
-                voice->pitchBend = row->param;
-                break;
-            case 0x73: //volume up
-                if (voice->adsrPos) break;
-                if (voice->instrument) voice->volume = instr->attackMax;
-                voice->volume += (row->param << 2);
-                if (voice->volume >= 256) voice->volume = -1;
-                break;
-            case 0x74: //volume down
-                if (voice->adsrPos) break;
-                if (voice->instrument) voice->volume = instr->attackMax;
-                voice->volume -= (row->param << 2);
-                if (voice->volume < 0) voice->volume = 0;
-                break;
+        if (tick) {
+            switch (row->effect) {
+                case 0:
+                    break;
+                case 0x70: //arpeggio
+                    arpeggioFx[0] = row->param >> 4;
+                    arpeggioFx[2] = row->param & 15;
+                    value = voice->original + arpeggioFx[arpeggioPos];
+                    voice->period = PERIODS[value];
+                    break;
+                case 0x71: //pitch up
+                    voice->pitchBend = ~row->param + 1;
+                    break;
+                case 0x72: //pitch down
+                    voice->pitchBend = row->param;
+                    break;
+                case 0x73: //volume up
+                    if (voice->adsrPos) break;
+                    if (voice->instrument) voice->volume = instr->attackMax;
+                    voice->volume += (row->param << 2);
+                    if (voice->volume >= 256) voice->volume = -1;
+                    break;
+                case 0x74: //volume down
+                    if (voice->adsrPos) break;
+                    if (voice->instrument) voice->volume = instr->attackMax;
+                    voice->volume -= (row->param << 2);
+                    if (voice->volume < 0) voice->volume = 0;
+                    break;
             }
         }
 
-        switch (row->effect)
-        {
-        case 0:
-            break;
-        case 0x75: //set adsr attack
-            instr->attackMax = row->param;
-            instr->attackSpeed = row->param;
-            break;
-        case 0x76: //set pattern length
-            patternLen = row->param;
-            break;
-        case 0x7c: //set volume
-            chan->setVolume(row->param);
-            voice->volume = row->param << 2;
-            if (voice->volume >= 255) voice->volume = 255;
-            break;
-        case 0x7f: //set speed
-            value = row->param & 15;
-            if (value) speed = value;
-            break;
+        switch (row->effect) {
+            case 0:
+                break;
+            case 0x75: //set adsr attack
+                instr->attackMax = row->param;
+                instr->attackSpeed = row->param;
+                break;
+            case 0x76: //set pattern length
+                patternLen = row->param;
+                break;
+            case 0x7c: //set volume
+                chan->setVolume(row->param);
+                voice->volume = row->param << 2;
+                if (voice->volume >= 255) voice->volume = 255;
+                break;
+            case 0x7f: //set speed
+                value = row->param & 15;
+                if (value) speed = value;
+                break;
         }
 
-        if (instr->vibratoLen)
-        {
-            if (voice->vibratoCtr == instr->vibratoDelay)
-            {
+        if (instr->vibratoLen) {
+            if (voice->vibratoCtr == instr->vibratoDelay) {
                 voice->vibratoCtr = instr->vibratoDelay - instr->vibratoSpeed;
 
-                if (voice->vibratoPos == instr->vibratoLen)
-                {
+                if (voice->vibratoPos == instr->vibratoLen) {
                     voice->vibratoPos = 0;
-                }
-                else
-                {
+                } else {
                     voice->vibratoPos++;
                 }
 
                 voice->period += vibratos[int(instr->vibrato + voice->vibratoPos)];
-            }
-            else
-            {
+            } else {
                 voice->vibratoCtr++;
             }
         }
 
-        if (instr->pitchBend)
-        {
-            if (voice->pitchBendCtr == instr->pitchBendDelay)
-            {
+        if (instr->pitchBend) {
+            if (voice->pitchBendCtr == instr->pitchBendDelay) {
                 voice->pitchBend += instr->pitchBend;
-            }
-            else
-            {
+            } else {
                 voice->pitchBendCtr++;
             }
         }
 
-        if (row->param)
-        {
-            if (row->effect && row->effect < 0x70)
-            {
+        if (row->param) {
+            if (row->effect && row->effect < 0x70) {
                 voice->noteSlideTo = PERIODS[int(row->effect + voice->step->transpose)];
                 value = row->param;
                 if ((voice->noteSlideTo - voice->period) < 0) value = -value;
@@ -443,13 +366,11 @@ void S2Player::process()
             }
         }
 
-        if (voice->noteSlideTo && voice->noteSlideSpeed)
-        {
+        if (voice->noteSlideTo && voice->noteSlideSpeed) {
             voice->period += voice->noteSlideSpeed;
 
             if ((voice->noteSlideSpeed < 0 && voice->period < voice->noteSlideTo) ||
-                (voice->noteSlideSpeed > 0 && voice->period > voice->noteSlideTo))
-            {
+                (voice->noteSlideSpeed > 0 && voice->period > voice->noteSlideTo)) {
                 voice->noteSlideSpeed = 0;
                 voice->period = voice->noteSlideTo;
             }
@@ -460,21 +381,18 @@ void S2Player::process()
         else if (voice->period > 5760) voice->period = 5760;
 
         chan->setPeriod(voice->period);
-    }
-    while (voice = voice->next);
+    } while (voice = voice->next);
 }
 
-int S2Player::load(void* data, unsigned long int _length)
-{
-    unsigned char* stream = static_cast<unsigned char*>(data);
+int S2Player::load(void *data, unsigned long int _length) {
+    unsigned char *stream = static_cast<unsigned char *>(data);
     if (stream[58] == 'S' && stream[59] == 'I' && stream[60] == 'D' && stream[61] == 'M' && stream[62] == 'O' && stream[
             63] == 'N' && stream[64] == ' ' &&
         stream[65] == 'I' && stream[66] == 'I' && stream[67] == ' ' && stream[68] == '-' && stream[69] == ' ' && stream[
             70] == 'T' && stream[71] == 'H' && stream[72] == 'E' &&
         stream[73] == ' ' && stream[74] == 'M' && stream[75] == 'I' && stream[76] == 'D' && stream[77] == 'I' && stream[
             78] == ' ' && stream[79] == 'V' && stream[80] == 'E' &&
-        stream[81] == 'R' && stream[82] == 'S' && stream[83] == 'I' && stream[84] == 'O' && stream[85] == 'N')
-    {
+        stream[81] == 'R' && stream[82] == 'S' && stream[83] == 'I' && stream[84] == 'O' && stream[85] == 'N') {
         int value = 0;
         int base = 0;
         unsigned int position = 2;
@@ -482,19 +400,18 @@ int S2Player::load(void* data, unsigned long int _length)
         position++;
         speedDef = stream[position];
         position++;
-        samples = vector<S2Sample*>(readEndian(stream[position], stream[position + 1]) >> 6);
+        samples = vector<S2Sample *>(readEndian(stream[position], stream[position + 1]) >> 6);
         position += 2;
 
         position = 14;
         int len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        tracks = vector<BaseStep*>(len);
+        tracks = vector<BaseStep *>(len);
         position = 90;
 
         int higher = 0;
-        for (int i = 0; i < len; ++i)
-        {
-            BaseStep* step = new BaseStep();
+        for (int i = 0; i < len; ++i) {
+            BaseStep *step = new BaseStep();
             value = stream[position];
             position++;
             if (value > higher) higher = value;
@@ -502,17 +419,15 @@ int S2Player::load(void* data, unsigned long int _length)
             tracks[i] = step;
         }
 
-        for (int i = 0; i < len; ++i)
-        {
-            BaseStep* step = tracks[i];
-            step->transpose = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            BaseStep *step = tracks[i];
+            step->transpose = (signed char) stream[position];
             position++;
         }
 
-        for (int i = 0; i < len; ++i)
-        {
-            BaseStep* step = tracks[i];
-            step->soundTrans = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            BaseStep *step = tracks[i];
+            step->soundTrans = (signed char) stream[position];
             position++;
         }
 
@@ -520,13 +435,12 @@ int S2Player::load(void* data, unsigned long int _length)
         position = 26;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) >> 5;
         position += 4;
-        instruments = vector<S2Instrument*>(++len);
+        instruments = vector<S2Instrument *>(++len);
         position = pos;
         instruments[0] = new S2Instrument();
 
-        for (int i = 1; i < len; ++i)
-        {
-            S2Instrument* instr = new S2Instrument();
+        for (int i = 1; i < len; ++i) {
+            S2Instrument *instr = new S2Instrument();
             instr->wave = stream[position] << 4;
             position++;
             instr->waveLen = stream[position];
@@ -551,7 +465,7 @@ int S2Player::load(void* data, unsigned long int _length)
             position++;
             instr->vibratoDelay = stream[position];
             position++;
-            instr->pitchBend = (signed char)stream[position];
+            instr->pitchBend = (signed char) stream[position];
             position++;
             instr->pitchBendDelay = stream[position];
             position++;
@@ -580,8 +494,7 @@ int S2Player::load(void* data, unsigned long int _length)
         waves = vector<unsigned char>(len);
         position = pos;
 
-        for (int i = 0; i < len; ++i)
-        {
+        for (int i = 0; i < len; ++i) {
             waves[i] = stream[position];
             position++;
         }
@@ -594,9 +507,8 @@ int S2Player::load(void* data, unsigned long int _length)
         arpeggios = vector<signed char>(len);
         position = pos;
 
-        for (int i = 0; i < len; ++i)
-        {
-            arpeggios[i] = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            arpeggios[i] = (signed char) stream[position];
             position++;
         }
 
@@ -607,18 +519,16 @@ int S2Player::load(void* data, unsigned long int _length)
         vibratos = vector<signed char>(len);
         position = pos;
 
-        for (int i = 0; i < len; ++i)
-        {
-            vibratos[i] = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            vibratos[i] = (signed char) stream[position];
             position++;
         }
 
         len = samples.size();
         pos = 0;
 
-        for (int i = 0; i < len; ++i)
-        {
-            S2Sample* sample = new S2Sample();
+        for (int i = 0; i < len; ++i) {
+            S2Sample *sample = new S2Sample();
             position += 4;
             sample->pointer = pos;
             sample->length = readEndian(stream[position], stream[position + 1]) << 1;
@@ -644,10 +554,8 @@ int S2Player::load(void* data, unsigned long int _length)
             position += 2;
             position += 6;
             const int STRING_LENGTH = 32;
-            for (int j = 0; j < STRING_LENGTH; j++)
-            {
-                if (!stream[position + j])
-                {
+            for (int j = 0; j < STRING_LENGTH; j++) {
+                if (!stream[position + j]) {
                     break;
                 }
                 sample->name += stream[position + j];
@@ -660,8 +568,7 @@ int S2Player::load(void* data, unsigned long int _length)
         int sampleData = pos;
         len = ++higher;
         vector<int> pointers(++higher);
-        for (int i = 0; i < len; ++i)
-        {
+        for (int i = 0; i < len; ++i) {
             pointers[i] = readEndian(stream[position], stream[position + 1]);
             position += 2;
         }
@@ -669,68 +576,52 @@ int S2Player::load(void* data, unsigned long int _length)
         position = 50;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        patterns = vector<BaseRow*>();
+        patterns = vector<BaseRow *>();
         position = pos;
         int j = 1;
 
-        for (int i = 0; i < len; ++i)
-        {
-            BaseRow* row = new BaseRow();
-            char value = (signed char)stream[position];
+        for (int i = 0; i < len; ++i) {
+            BaseRow *row = new BaseRow();
+            char value = (signed char) stream[position];
             position++;
 
-            if (!value)
-            {
-                row->effect = (signed char)stream[position];
+            if (!value) {
+                row->effect = (signed char) stream[position];
                 position++;
                 row->param = stream[position];
                 position++;
                 i += 2;
-            }
-            else if (value < 0)
-            {
+            } else if (value < 0) {
                 row->speed = ~value;
-            }
-            else if (value < 112)
-            {
+            } else if (value < 112) {
                 row->note = value;
-                value = (signed char)stream[position];
+                value = (signed char) stream[position];
                 position++;
                 i++;
 
-                if (value < 0)
-                {
+                if (value < 0) {
                     row->speed = ~value;
-                }
-                else if (value < 112)
-                {
+                } else if (value < 112) {
                     row->sample = value;
-                    value = (signed char)stream[position];
+                    value = (signed char) stream[position];
                     position++;
                     i++;
 
-                    if (value < 0)
-                    {
+                    if (value < 0) {
                         row->speed = ~value;
-                    }
-                    else
-                    {
+                    } else {
                         row->effect = value;
                         row->param = stream[position];
                         position++;
                         i++;
                     }
-                }
-                else
-                {
+                } else {
                     row->effect = value;
                     row->param = stream[position];
                     position++;
                     i++;
                 }
-            }
-            else
-            {
+            } else {
                 row->effect = value;
                 row->param = stream[position];
                 position++;
@@ -749,25 +640,21 @@ int S2Player::load(void* data, unsigned long int _length)
         amiga->store(stream, sampleData, position, _length);
         len = tracks.size();
 
-        for (int i = 0; i < len; ++i)
-        {
-            BaseStep* step = tracks[i];
+        for (int i = 0; i < len; ++i) {
+            BaseStep *step = tracks[i];
             step->pattern = pointers[step->pattern];
         }
         length++;
         m_version = 2;
         format = "Sidmon 2";
         //printData();
-    }
-    else
-    {
+    } else {
         return -1;
     }
     return 1;
 }
 
-void S2Player::printData()
-{
+void S2Player::printData() {
     //    for(unsigned int i = 0; i < patterns.size(); i++)
     //    {
     //        SMRow* row = patterns[i];
@@ -814,14 +701,11 @@ void S2Player::printData()
     //    flush(cout);
 }
 
-vector<BaseSample*> S2Player::getSamples()
-{
-    vector<BaseSample*> samp(samples.size());
-    for (int i = 0; i < samples.size(); i++)
-    {
+vector<BaseSample *> S2Player::getSamples() {
+    vector<BaseSample *> samp(samples.size());
+    for (int i = 0; i < samples.size(); i++) {
         samp[i] = samples[i];
-        if (!samp[i])
-        {
+        if (!samp[i]) {
             samp[i] = new BaseSample();
         }
     }

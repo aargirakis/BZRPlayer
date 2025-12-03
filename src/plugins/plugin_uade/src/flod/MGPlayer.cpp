@@ -107,8 +107,7 @@ const int MGPlayer::PERIODS[1017] = {
     159, 150, 142, 134
 };
 
-MGPlayer::MGPlayer(Amiga* amiga): AmigaPlayer(amiga)
-{
+MGPlayer::MGPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
     buffer1 = 0;
     buffer2 = 0;
     trackPos = 0;
@@ -119,9 +118,9 @@ MGPlayer::MGPlayer(Amiga* amiga): AmigaPlayer(amiga)
     chans = 0;
     mixPeriod = 0;
 
-    songs = std::vector<MGSong*>(8);
+    songs = std::vector<MGSong *>(8);
     arpeggios = std::vector<int>(256);
-    voices = std::vector<MGVoice*>(7);
+    voices = std::vector<MGVoice *>(7);
 
     voices[0] = new MGVoice(0);
     voices[0]->next = voices[1] = new MGVoice(1);
@@ -134,29 +133,24 @@ MGPlayer::MGPlayer(Amiga* amiga): AmigaPlayer(amiga)
     tables();
 }
 
-MGPlayer::~MGPlayer()
-{
+MGPlayer::~MGPlayer() {
     arpeggios.clear();
     averages.clear();
     volumes.clear();
 
-    for (unsigned int i = 0; i < songs.size(); i++)
-    {
+    for (unsigned int i = 0; i < songs.size(); i++) {
         if (songs[i]) delete songs[i];
     }
     songs.clear();
-    for (unsigned int i = 1; i < samples.size(); i++)
-    {
+    for (unsigned int i = 1; i < samples.size(); i++) {
         if (samples[i]) delete samples[i];
     }
     samples.clear();
-    for (unsigned int i = 0; i < voices.size(); i++)
-    {
+    for (unsigned int i = 0; i < voices.size(); i++) {
         if (voices[i]) delete voices[i];
     }
     voices.clear();
-    for (unsigned int i = 0; i < patterns.size(); i++)
-    {
+    for (unsigned int i = 0; i < patterns.size(); i++) {
         if (patterns[i]) delete patterns[i];
     }
     patterns.clear();
@@ -164,8 +158,7 @@ MGPlayer::~MGPlayer()
     subSongsList.clear();
 }
 
-void MGPlayer::tables()
-{
+void MGPlayer::tables() {
     averages = std::vector<int>(1024);
     volumes = std::vector<int>(16384);
     mixPeriod = 203;
@@ -176,20 +169,17 @@ void MGPlayer::tables()
     int v1 = 0;
     int v2 = 0;
 
-    for (int i = 0; i < 1024; ++i)
-    {
+    for (int i = 0; i < 1024; ++i) {
         if (vol > 127) vol -= 256;
         averages[i] = vol;
         if (i > 383 && i < 639) vol = ++vol & 255;
     }
 
-    for (int i = 0; i < 64; ++i)
-    {
+    for (int i = 0; i < 64; ++i) {
         v1 = -128;
         v2 = 128;
 
-        for (int j = 0; j < 256; ++j)
-        {
+        for (int j = 0; j < 256; ++j) {
             vol = ((v1 * step) / 63) + 128;
             idx = pos + v2;
             volumes[idx] = vol & 255;
@@ -204,36 +194,27 @@ void MGPlayer::tables()
 }
 
 
-int MGPlayer::load(void* _data, unsigned long int _length)
-{
-    unsigned char* stream = static_cast<unsigned char*>(_data);
+int MGPlayer::load(void *_data, unsigned long int _length) {
+    unsigned char *stream = static_cast<unsigned char *>(_data);
     if (stream[0] == ' ' && stream[1] == 'M' && stream[2] == 'U' && stream[3] == 'G' && stream[4] == 'I' && stream[5] ==
         'C' && stream[6] == 'I' && stream[7] == 'A' && stream[8] == 'N' && stream[9] == '/' && stream[10] == 'S' &&
         stream[11] == 'O' && stream[12] == 'F' && stream[13] == 'T' && stream[14] == 'E' && stream[15] == 'Y' && stream[
             16] == 'E' && stream[17] == 'S' && stream[18] == ' ' && stream[19] == '1' && stream[20] == '9' && stream[21]
-        == '9' && stream[22] == '0' && stream[23] == ' ')
-    {
+        == '9' && stream[22] == '0' && stream[23] == ' ') {
         m_version = MUGICIAN_V1;
         format = "Digital Mugician 1";
         chans = 4;
         voices[3]->next = 0;
-    }
-    else if (stream[0] == ' ' && stream[1] == 'M' && stream[2] == 'U' && stream[3] == 'G' && stream[4] == 'I' && stream[
-            5] == 'C' && stream[6] == 'I' && stream[7] == 'A' && stream[8] == 'N' && stream[9] == '2' && stream[10] ==
-        '/'
-        && stream[11] == 'S' && stream[12] == 'O' && stream[13] == 'F' && stream[14] == 'T' && stream[15] == 'E' &&
-        stream[
-            16] == 'Y' && stream[17] == 'E' && stream[18] == 'S' && stream[19] == ' ' && stream[20] == '1' && stream[21]
-        ==
-        '9' && stream[22] == '9' && stream[23] == '0')
-    {
+    } else if (stream[0] == ' ' && stream[1] == 'M' && stream[2] == 'U' && stream[3] == 'G' && stream[4] == 'I' &&
+               stream[5] == 'C' && stream[6] == 'I' && stream[7] == 'A' && stream[8] == 'N' && stream[9] == '2' &&
+               stream[10] == '/' && stream[11] == 'S' && stream[12] == 'O' && stream[13] == 'F' && stream[14] == 'T' &&
+               stream[15] == 'E' && stream[16] == 'Y' && stream[17] == 'E' && stream[18] == 'S' && stream[19] == ' ' &&
+               stream[20] == '1' && stream[21] == '9' && stream[22] == '9' && stream[23] == '0') {
         m_version = MUGICIAN_V2;
         format = "Digital Mugician 2";
         chans = 7;
         voices[3]->next = voices[4];
-    }
-    else
-    {
+    } else {
         return -1;
     }
 
@@ -243,17 +224,15 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     std::vector<int> index(8);
 
 
-    for (int i = 0; i < 8; ++i)
-    {
+    for (int i = 0; i < 8; ++i) {
         index[i] = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
     }
 
     position = 76;
 
-    for (int i = 0; i < 8; ++i)
-    {
-        MGSong* song = new MGSong();
+    for (int i = 0; i < 8; ++i) {
+        MGSong *song = new MGSong();
         song->loop = stream[position];
         position++;
         song->loopStep = stream[position] << 2;
@@ -263,10 +242,8 @@ int MGPlayer::load(void* _data, unsigned long int _length)
         song->length = stream[position] << 2;
         position++;
         const int STRING_LENGTH = 12;
-        for (int j = 0; j < STRING_LENGTH; j++)
-        {
-            if (!stream[position + j])
-            {
+        for (int j = 0; j < STRING_LENGTH; j++) {
+            if (!stream[position + j]) {
                 break;
             }
             song->title += stream[position + j];
@@ -280,26 +257,22 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     subSongsList = std::vector<unsigned char>();
 
 
-    for (int i = 0; i < 8; ++i)
-    {
-        MGSong* song = songs[i];
+    for (int i = 0; i < 8; ++i) {
+        MGSong *song = songs[i];
         len = index[i] << 2;
 
         unsigned int patternSize = 0;
-        for (int j = 0; j < len; ++j)
-        {
-            BaseStep* step = new BaseStep();
+        for (int j = 0; j < len; ++j) {
+            BaseStep *step = new BaseStep();
             step->pattern = stream[position] << 6;
             position++;
-            step->transpose = (signed char)stream[position];
+            step->transpose = (signed char) stream[position];
             position++;
             song->tracks.push_back(step);
             patternSize += step->pattern;
         }
-        if (patternSize > 0)
-        {
-            if ((m_version == MUGICIAN_V1) || (m_version == MUGICIAN_V2 && (i + 1) % 2 == 1))
-            {
+        if (patternSize > 0) {
+            if ((m_version == MUGICIAN_V1) || (m_version == MUGICIAN_V2 && (i + 1) % 2 == 1)) {
                 subSongsList.push_back(i);
             }
         }
@@ -309,12 +282,11 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     position = 60;
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
-    samples = std::vector<MGSample*>(++len);
+    samples = std::vector<MGSample *>(++len);
     position = pos;
 
-    for (int i = 1; i < len; ++i)
-    {
-        MGSample* sample = new MGSample();
+    for (int i = 1; i < len; ++i) {
+        MGSample *sample = new MGSample();
         sample->wave = stream[position];
         position++;
         sample->waveLen = stream[position] << 1;
@@ -374,16 +346,15 @@ int MGPlayer::load(void* _data, unsigned long int _length)
 
     if (instr) instr = pos;
 
-    for (int i = 0; i < len; ++i)
-    {
-        BaseRow* row = new BaseRow();
+    for (int i = 0; i < len; ++i) {
+        BaseRow *row = new BaseRow();
         row->note = stream[position];
         position++;
         row->sample = stream[position] & 63;
         position++;
         row->effect = stream[position];
         position++;
-        row->param = (signed char)stream[position];
+        row->param = (signed char) stream[position];
         position++;
         patterns[i] = row;
     }
@@ -391,8 +362,7 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     pos = position;
     position = 72;
 
-    if (instr)
-    {
+    if (instr) {
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
         position = pos;
@@ -408,9 +378,8 @@ int MGPlayer::load(void* _data, unsigned long int _length)
 
         len = samples.size();
 
-        for (int i = 1; i < len; ++i)
-        {
-            MGSample* sample = samples[i];
+        for (int i = 1; i < len; ++i) {
+            MGSample *sample = samples[i];
             if (sample->wave < 32) continue;
             position = instr + ((sample->wave - 32) << 5);
 
@@ -425,24 +394,19 @@ int MGPlayer::load(void* _data, unsigned long int _length)
                                       stream[position + 3]);
             position += 4;
             const int STRING_LENGTH = 12;
-            for (int j = 0; j < STRING_LENGTH; j++)
-            {
-                if (!stream[position + j])
-                {
+            for (int j = 0; j < STRING_LENGTH; j++) {
+                if (!stream[position + j]) {
                     break;
                 }
                 sample->name += stream[position + j];
             }
             position += STRING_LENGTH;
 
-            if (sample->loop)
-            {
+            if (sample->loop) {
                 sample->loop -= sample->pointer;
                 sample->repeat = sample->length - sample->loop;
                 if (sample->repeat & 1) sample->repeat--;
-            }
-            else
-            {
+            } else {
                 sample->loopPtr = amiga->memory.size();
                 sample->repeat = 8;
             }
@@ -453,22 +417,18 @@ int MGPlayer::load(void* _data, unsigned long int _length)
             sample->pointer += data;
             if (!sample->loopPtr) sample->loopPtr = sample->pointer + sample->loop;
         }
-    }
-    else
-    {
+    } else {
         pos += readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
     }
 
     position = 24;
-    if (readEndian(stream[position], stream[position + 1]) == 1)
-    {
+    if (readEndian(stream[position], stream[position + 1]) == 1) {
         position += 2;
         position = pos;
         len = _length - pos;
         if (len > 256) len = 256;
-        for (int i = 0; i < len; ++i)
-        {
+        for (int i = 0; i < len; ++i) {
             arpeggios[i] = stream[position];
             position++;
         }
@@ -478,22 +438,18 @@ int MGPlayer::load(void* _data, unsigned long int _length)
     return 1;
 }
 
-std::vector<BaseSample*> MGPlayer::getSamples()
-{
-    std::vector<BaseSample*> samp(samples.size() - 1);
-    for (int i = 1; i < samples.size(); i++)
-    {
+std::vector<BaseSample *> MGPlayer::getSamples() {
+    std::vector<BaseSample *> samp(samples.size() - 1);
+    for (int i = 1; i < samples.size(); i++) {
         samp[i - 1] = samples[i];
-        if (!samp[i - 1])
-        {
+        if (!samp[i - 1]) {
             samp[i - 1] = new BaseSample();
         }
     }
     return samp;
 }
 
-bool MGPlayer::getTitle(std::string& title)
-{
+bool MGPlayer::getTitle(std::string &title) {
     title = songs[0]->title;
     return true;
 }
