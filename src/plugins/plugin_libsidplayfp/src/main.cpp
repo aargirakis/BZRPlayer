@@ -73,6 +73,9 @@ public:
     }
 
     ~pluginLibsidplayfp() {
+        delete mutePtr;
+        delete player;
+        delete rs;
         delete tune;
         delete [] kernal;
         delete [] basic;
@@ -82,15 +85,15 @@ public:
     Info *info;
     SidTune *tune = nullptr;
     unsigned int subsongs;
-    ReSIDfpBuilder *rs;
-    sidplayfp *player;
-    char *kernal;
-    char *basic;
-    char *chargen;
+    ReSIDfpBuilder *rs = nullptr;
+    sidplayfp *player = nullptr;
+    char *kernal = nullptr;
+    char *basic = nullptr;
+    char *chargen = nullptr;
     string hvscSonglengthsFile;
     unsigned int seekPosition;
     unsigned int maxVoices;
-    bool *mutePtr;
+    bool *mutePtr = nullptr;
     bool hvscSonglengthsDataBaseEnabled;
     bool isSeeking = false;
     unsigned int length = 0;
