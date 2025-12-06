@@ -79,6 +79,7 @@ public:
         plugin = 0;
         pluginName = "";
         allowedFields = nullptr;
+        fieldSet = 0;
         system = "";
         game = "";
         genre = "";
@@ -97,6 +98,7 @@ public:
         address = 0;
         turboSound = false;
         clockSpeed = 0;
+        clockSpeedStr = "";
         chips = "";
         numPatterns = 0;
         numTracksteps = 0;
@@ -107,7 +109,7 @@ public:
         numOrders = 0;
         numChannels = 0;
         numChannelsStream = 0;
-        startSubSong = 0;
+        defaultSubSong = 0;
         numSubsongs = 0;
         currentSubsong = 0;
         modPatternRestart = 0;
@@ -140,8 +142,7 @@ public:
         initAddr = 0;
         loadAddr = 0;
         playAddr = 0;
-        songSpeed = 0;
-        compatibility = 0;
+        compatibility = "";
 
         isContinuousPlaybackActive = false;
         isFmodSeamlessLoopEnabled = false;
@@ -292,6 +293,7 @@ public:
     unsigned char plugin;
     string pluginName;
     const vector<string> *allowedFields;
+    unsigned int fieldSet;
     string system;
     string game;
     string genre;
@@ -310,6 +312,7 @@ public:
     bool turboSound;
 
     int clockSpeed;
+    string clockSpeedStr;
     string chips;
     int numPatterns;
     int numTracksteps;
@@ -320,7 +323,7 @@ public:
     int numOrders;
     unsigned int numChannels;
     unsigned int numChannelsStream;
-    int startSubSong;
+    int defaultSubSong;
     int numSubsongs;
     int currentSubsong;
 
@@ -333,8 +336,7 @@ public:
     unsigned short initAddr;
     unsigned short loadAddr;
     unsigned short playAddr;
-    int songSpeed;
-    unsigned char compatibility;
+    string compatibility;
 
     vector<unsigned char> modTrackPositions;
     vector<BaseRow*> modRows;

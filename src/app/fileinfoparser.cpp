@@ -303,26 +303,37 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Positions", QString::number(SoundManager::getInstance().m_Info1->numOrders));
             break;
         case PLUGIN_libsidplayfp:
-            addInfo(tableInfo, &row, "SID Format", SoundManager::getInstance().m_Info1->fileformatSpecific.c_str());
-            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
-            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
-            addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
-            addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
-            addSidClockSpeed(tableInfo, &row);
-            addSidCompatibility(tableInfo, &row);
-            addInfo(tableInfo, &row, "Song Speed",
-                    "$" + QString::number(SoundManager::getInstance().m_Info1->songSpeed, 16));
+            if (SoundManager::getInstance().m_Info1->fieldSet == 0) {
+                const int defaultSubSong = SoundManager::getInstance().m_Info1->defaultSubSong;
+                addInfo(tableInfo, &row, "Default Subsong",
+                        defaultSubSong == 0 ? "-" : QString::number(defaultSubSong));
+
+                addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+                addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist));
+                addInfo(tableInfo, &row, "Released", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
+            }
+
+            addInfo(tableInfo, &row, "Format", SoundManager::getInstance().m_Info1->fileformatSpecific.c_str());
+            addInfo(tableInfo, &row, "Compatibility", SoundManager::getInstance().m_Info1->compatibility.c_str());
             addInfo(tableInfo, &row, "SID Chip", SoundManager::getInstance().m_Info1->chips.c_str());
-            addInfo(tableInfo, &row, "Load Address",
+            addInfo(tableInfo, &row, "Clock Speed", SoundManager::getInstance().m_Info1->clockSpeedStr.c_str());
+
+            if (SoundManager::getInstance().m_Info1->fieldSet == 0) {
+                addInfo(tableInfo, &row, "Replayer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer));
+            } else {
+                addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
+            }
+
+            addInfo(tableInfo, &row, "Load Addr",
                     "$" + QString::number(SoundManager::getInstance().m_Info1->loadAddr, 16));
-            addInfo(tableInfo, &row, "Init Address",
+            addInfo(tableInfo, &row, "Init Addr",
                     "$" + QString::number(SoundManager::getInstance().m_Info1->initAddr, 16));
-            addInfo(tableInfo, &row, "Play Address",
+            addInfo(tableInfo, &row, "Play Addr",
                     "$" + QString::number(SoundManager::getInstance().m_Info1->playAddr, 16));
-            addInfo(tableInfo, &row, "Start Subsong",
-                    QString::number(SoundManager::getInstance().m_Info1->startSubSong));
-            addInfo(tableInfo, &row, "Replayer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->songPlayer));
-            addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5.c_str());
+
+            if (SoundManager::getInstance().m_Info1->fieldSet == 0) {
+                addInfo(tableInfo, &row, "MD5", SoundManager::getInstance().m_Info1->md5.c_str());
+            }
             break;
         case PLUGIN_libstsound:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
@@ -460,38 +471,6 @@ void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
 
     addInfo(tableInfo, row, "Subsong",
             isSubsong ? QString::number(currentSubsong) + "/" + QString::number(numSubsongs) : "-");
-}
-
-void FileInfoParser::addSidClockSpeed(QTableWidget *tableInfo, int *row) {
-    string clockSpeed;
-    switch (SoundManager::getInstance().m_Info1->clockSpeed) {
-        case 1: clockSpeed = "PAL";
-            break;
-        case 2: clockSpeed = "NTSC";
-            break;
-        case 3: clockSpeed = "Any";
-            break;
-        default: clockSpeed = "Unknown";
-    }
-
-    addInfo(tableInfo, row, "Clock Speed", clockSpeed.c_str());
-}
-
-void FileInfoParser::addSidCompatibility(QTableWidget *tableInfo, int *row) {
-    string compatibility;
-    switch (SoundManager::getInstance().m_Info1->compatibility) {
-        case 0: compatibility = "C64 compatible";
-            break;
-        case 1: compatibility = "PSID specific";
-            break;
-        case 2: compatibility = "Real C64 only";
-            break;
-        case 3: compatibility = "Requires C64 Basic";
-            break;
-        default: compatibility = "Unknown";
-    }
-
-    addInfo(tableInfo, row, "Compatibility", compatibility.c_str());
 }
 
 void FileInfoParser::addAsapClockSpeed(QTableWidget *tableInfo, int *row) {

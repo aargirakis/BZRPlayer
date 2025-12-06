@@ -314,11 +314,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     const SidTuneInfo *s = plugin->tune->getInfo();
 
-    plugin->info->initAddr = s->initAddr();
-    plugin->info->loadAddr = s->loadAddr();
-    plugin->info->playAddr = s->playAddr();
-    plugin->info->songSpeed = s->songSpeed();
-
     plugin->subsongs = s->songs();
     plugin->tune->selectSong(0);
     plugin->player->load(plugin->tune);
@@ -331,17 +326,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     codec->numsubsounds = 0;
     codec->plugindata = plugin; //user data value
 
+    plugin->info->initAddr = s->initAddr();
+    plugin->info->loadAddr = s->loadAddr();
+    plugin->info->playAddr = s->playAddr();
+
     plugin->info->numChannels = voicesPerSidChip * s->sidChips();
 
     plugin->maxVoices = voicesPerSidChip * plugin->player->info().maxsids();
 
     plugin->mutePtr = new bool[plugin->maxVoices];
-
-    if (s->numberOfInfoStrings() == 3) {
-        plugin->info->title = s->infoString(0);
-        plugin->info->artist = s->infoString(1);
-        plugin->info->copyright = s->infoString(2);
-    }
 
     string comments;
     for (int i = 0; i < s->numberOfCommentStrings(); i++) {
@@ -351,67 +344,84 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->comments = comments;
     plugin->info->numSamples = 0;
 
-    switch (s->clockSpeed()) {
-        case SidTuneInfo::CLOCK_UNKNOWN:
-            plugin->info->clockSpeed = 0;
-            break;
-        case SidTuneInfo::CLOCK_PAL:
-            plugin->info->clockSpeed = 1;
-            break;
-        case SidTuneInfo::CLOCK_NTSC:
-            plugin->info->clockSpeed = 2;
-            break;
-        case SidTuneInfo::CLOCK_ANY:
-            plugin->info->clockSpeed = 3;
-            break;
+    plugin->info->clockSpeedStr = plugin->player->info().speedString();
+
+    vector<pair<int, int> > chipsPerModel;
+
+    for (int i = 0; i < s->sidChips(); i++) {
+        bool found = false;
+
+        for (auto &[chips, model]: chipsPerModel) {
+            if (model == s->sidModel(i)) {
+                ++chips;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            chipsPerModel.emplace_back(1, s->sidModel(i));
+        }
     }
 
-    string sidModel;
+    for (int i = 0; i < chipsPerModel.size(); i++) {
+        if (i != 0) {
+            plugin->info->chips += ", ";
+        }
 
-    switch (s->sidModel(0)) {
-        case SidTuneInfo::SIDMODEL_6581:
-            sidModel = "6581";
-            break;
-        case SidTuneInfo::SIDMODEL_8580:
-            sidModel = "8580";
-            break;
-        case SidTuneInfo::SIDMODEL_ANY:
-            sidModel = "Any";
-            break;
-        case SidTuneInfo::SIDMODEL_UNKNOWN:
-        default:
-            sidModel = "Unknown";
+        plugin->info->chips += format("{} (x{})", [&chipsPerModel, &i] {
+            switch (chipsPerModel[i].second) {
+                case SidTuneInfo::SIDMODEL_6581:
+                    return "6581";
+                case SidTuneInfo::SIDMODEL_8580:
+                    return "8580";
+                case SidTuneInfo::SIDMODEL_ANY:
+                    return "Any";
+                case SidTuneInfo::SIDMODEL_UNKNOWN:
+                default:
+                    return "Unknown";
+            }
+        }(), chipsPerModel[i].first);
     }
-
-    plugin->info->chips = format("{} (x{})", sidModel, s->sidChips());
 
     switch (s->compatibility()) {
         case SidTuneInfo::COMPATIBILITY_C64:
-            plugin->info->compatibility = 0;
+            plugin->info->compatibility = "C64 compatible";
             break;
         case SidTuneInfo::COMPATIBILITY_PSID:
-            plugin->info->compatibility = 1;
+            plugin->info->compatibility = "PSID specific";
             break;
         case SidTuneInfo::COMPATIBILITY_R64:
-            plugin->info->compatibility = 2;
+            plugin->info->compatibility = "Real C64 only";
             break;
         case SidTuneInfo::COMPATIBILITY_BASIC:
-            plugin->info->compatibility = 3;
+            plugin->info->compatibility = "Requires C64 Basic";
             break;
+        default:
+            plugin->info->compatibility = "Unknown";
     }
 
     if (plugin->isMus) {
-        plugin->info->songPlayer = "-";
-        plugin->info->md5 = "-";
+        plugin->info->fieldSet = 1;
     } else {
+        if (s->numberOfInfoStrings() == 3) {
+            plugin->info->title = s->infoString(0);
+            plugin->info->artist = s->infoString(1);
+            plugin->info->copyright = s->infoString(2);
+        }
+
         const string sididCfg = plugin->info->dataPath + SIDID_CFG_DATA_PATH;
         plugin->info->songPlayer = identifyBufferFromConfig(sididCfg.c_str(), myBuffer, filesize);
 
         plugin->info->md5 = plugin->tune->createMD5New();
     }
 
-    plugin->info->startSubSong = static_cast<int>(s->startSong());
     plugin->info->numSubsongs = static_cast<int>(plugin->subsongs);
+
+    if (plugin->info->numSubsongs > 1) {
+        plugin->info->defaultSubSong = static_cast<int>(s->startSong());
+    }
+
     plugin->info->fileformatSpecific = s->formatString();
     plugin->info->plugin = PLUGIN_libsidplayfp;
     plugin->info->pluginName = PLUGIN_libsidplayfp_NAME;
