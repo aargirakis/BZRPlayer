@@ -409,6 +409,8 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
             addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
             addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->system));
+            addInfo(tableInfo, &row, "Container Files", SoundManager::getInstance().m_Info1->containerFilenames.c_str());
+            addInfo(tableInfo, &row, "Container Formats", SoundManager::getInstance().m_Info1->containerFileformats.c_str());
             addInfo(tableInfo, &row, "Creation Date", SoundManager::getInstance().m_Info1->date.c_str());
             addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
             addInfo(tableInfo, &row, "Loop Position",

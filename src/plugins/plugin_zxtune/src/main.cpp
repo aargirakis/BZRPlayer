@@ -1,6 +1,8 @@
-#include <sstream>
+#include <filesystem>
+#include <regex>
 #include "attributes.h"
 #include "binary/container_factories.h"
+#include "core/data_location.h"
 #include "core/service.h"
 #include "error.h"
 #include "module/track_information.h"
@@ -12,47 +14,13 @@
 
 using namespace std;
 
-Binary::Container::Ptr CreateData(FMOD_CODEC_STATE *codec) {
-    unsigned int filesize;
-    unsigned int bytesread;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    if (filesize == 4294967295) //stream
-    {
-        return nullptr;
-    }
-
-    //rewind file pointer
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-    if (result != FMOD_OK) {
-        return nullptr;
-    }
-
-    /* Allocate space for buffer. */
-    auto myBuffer = make_unique<Binary::Dump>(filesize);
-
-    //read whole file to memory
-    result = FMOD_CODEC_FILE_READ(codec, myBuffer->data(), filesize, &bytesread);
-
-    if (result != FMOD_OK) {
-        return nullptr;
-    }
-
-    myBuffer->resize(bytesread);
-    return Binary::CreateContainer(move(myBuffer));
-}
-
-const ZXTune::Service &GetService() {
-    static const auto service = ZXTune::Service::Create(Parameters::Container::Create());
-    return *service;
-}
-
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
+
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
@@ -63,11 +31,11 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_zxtune_NAME, // Name.
     0x00009000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    nullptr,
+    &getLength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setPosition, // Setposition callback.
     nullptr,
@@ -88,8 +56,119 @@ public:
         //delete some stuff
     }
 
-    Module::Renderer::Ptr renderer;
+    class ModulesDetector : public Module::DetectCallback {
+        string filename;
+        vector<pair<Module::Holder::Ptr, string> > modulesWithFilenames;
+
+        Parameters::Container::Ptr CreateInitialProperties(const StringView subpath) const override {
+            return Parameters::Container::Create();
+        }
+
+        void ProcessModule(const ZXTune::DataLocation &location, const ZXTune::Plugin &decoder,
+                           Module::Holder::Ptr holder) override {
+            string containerFilenames = filesystem::path(filename).filename().string();
+
+            for (const auto path = location.GetPath(); const auto &element: path->Elements()) {
+                if (!element.starts_with("+")) {
+                    if (!element.empty()) {
+                        containerFilenames += " > ";
+                    }
+
+                    containerFilenames += element;
+                }
+            }
+
+            modulesWithFilenames.emplace_back(holder, containerFilenames);
+        }
+
+        Log::ProgressCallback *GetProgress() const override { return nullptr; }
+
+    public:
+        void setFilename(string_view const &_filename) {
+            this->filename = _filename;
+        }
+
+        auto getModulesWithFilenames() const {
+            return &modulesWithFilenames;
+        }
+    };
+
+    static const ZXTune::Service &GetService() {
+        static const auto service = ZXTune::Service::Create(Parameters::Container::Create());
+        return *service;
+    }
+
+    void setupTrackInfos(const pair<Module::Holder::Ptr, string> &moduleWithFilenames) const {
+        if (const auto *trackInfo = dynamic_cast<const Module::TrackInformation *>(moduleInfo.get())) {
+            info->numChannels = trackInfo->ChannelsCount();
+            info->loopPosition = trackInfo->LoopPosition();
+        }
+
+        if (subsongs > 1) {
+            info->containerFilenames = moduleWithFilenames.second;
+        }
+
+        const Parameters::Accessor::Ptr moduleProperties = moduleWithFilenames.first->GetModuleProperties();
+
+        string containerFormats = moduleProperties->FindString(Module::ATTR_CONTAINER).value_or("");
+        containerFormats = regex_replace(containerFormats, regex(">"), " > ");
+        info->containerFileformats = containerFormats;
+
+        info->author = moduleProperties->FindString(Module::ATTR_AUTHOR).value_or("");
+        info->comments = moduleProperties->FindString(Module::ATTR_COMMENT).value_or("");
+        info->date = moduleProperties->FindString(Module::ATTR_DATE).value_or("");
+        info->title = moduleProperties->FindString(Module::ATTR_TITLE).value_or("");
+
+        if (const auto type = moduleProperties->FindString(Module::ATTR_TYPE).value_or("");
+            type == "MTC") {
+            info->fileformat = "Multitrack Container";
+        } else if (type == "PSG") {
+            info->fileformat = "Programmable Sound Generator";
+        } else if (type == "TFD") {
+            info->fileformat = "TurboFM Dumped";
+        } else {
+            if (const auto program = moduleProperties->FindString(Module::ATTR_PROGRAM).value_or("");
+                !program.empty()) {
+                info->fileformat = program;
+            } else {
+                info->fileformat = type;
+            }
+        }
+
+        info->system = moduleProperties->FindString(Module::ATTR_PLATFORM).value_or("");
+
+        if (info->system.empty()) {
+            info->system = moduleProperties->FindString(Module::ATTR_COMPUTER).value_or("");
+        }
+
+        if (const auto samples = moduleProperties->FindString(Module::ATTR_STRINGS).value_or("");
+            !samples.empty()) {
+            vector<string> samplesVector;
+            stringstream ss(samples);
+            string sampleName;
+
+            while (getline(ss, sampleName)) {
+                samplesVector.push_back(sampleName);
+            }
+
+            const auto samplesCount = static_cast<int>(samplesVector.size());
+
+            info->numSamples = samplesCount;
+            info->samples = new string[samplesCount];
+
+            for (int i = 0; i < samplesCount; ++i) {
+                info->samples[i] = samplesVector[i];
+            }
+        }
+    }
+
     FMOD_CODEC_WAVEFORMAT waveformat;
+    ModulesDetector modulesDetector;
+    unsigned int subsongs;
+    shared_ptr<Parameters::Container> soundParams;
+    Module::Renderer::Ptr renderer;
+    Module::Information::Ptr moduleInfo;
+    Info *info;
     Sound::Chunk chunk;
     unsigned int chunkSamplesBuffered = 0;
 };
@@ -113,102 +192,85 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     try {
-        const auto dataContainer = CreateData(codec);
+        unsigned int filesize;
+        unsigned int bytesread;
+        FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-        if (!dataContainer) {
+        if (filesize == 4294967295) //stream
+        {
             return FMOD_ERR_FORMAT;
         }
 
-        const auto openedModule = GetService().OpenModule(dataContainer, "", Parameters::Container::Create());
+        //rewind file pointer
+        FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+
+        if (result != FMOD_OK) {
+            return FMOD_ERR_FORMAT;
+        }
+
+        /* Allocate space for buffer. */
+        auto myBuffer = make_unique<Binary::Dump>(filesize);
+
+        //read whole file to memory
+        result = FMOD_CODEC_FILE_READ(codec, myBuffer->data(), filesize, &bytesread);
+
+        if (result != FMOD_OK) {
+            return FMOD_ERR_FORMAT;
+        }
+
+        myBuffer->resize(bytesread);
+
+        const auto fileDataContainer = Binary::CreateContainer(move(myBuffer));
+
+        if (!fileDataContainer) {
+            return FMOD_ERR_FORMAT;
+        }
 
         auto *plugin = new pluginZxtune(codec);
+
+        plugin->info = static_cast<Info *>(userexinfo->userdata);
+
+        plugin->modulesDetector.setFilename(plugin->info->filename);
+        pluginZxtune::GetService().DetectModules(fileDataContainer, plugin->modulesDetector);
+
+        const auto &modulesWithFilenames = plugin->modulesDetector.getModulesWithFilenames();
+
+        if (modulesWithFilenames->empty()) {
+            delete plugin;
+            return FMOD_ERR_FORMAT;
+        }
+
+        // handle plugin preferences here
+        plugin->soundParams = Parameters::Container::Create();
+
+        const auto &moduleWithFilenames = modulesWithFilenames->at(0);
+
+        plugin->renderer = CreatePipelinedRenderer(*moduleWithFilenames.first, plugin->soundParams);
 
         plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
         plugin->waveformat.channels = 2;
         plugin->waveformat.frequency = 44100;
         plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
-
-        const auto moduleInfo = openedModule->GetModuleInformation();
-
-        const auto durationMs = moduleInfo->Duration().Get();
-        plugin->waveformat.lengthpcm = static_cast<unsigned int>(durationMs / 1000.0 * plugin->waveformat.frequency);
+        plugin->waveformat.lengthpcm = -1;
 
         codec->waveformat = &plugin->waveformat;
         codec->numsubsounds = 0;
         /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
         codec->plugindata = plugin; /* user data value */
 
-        // handle plugin preferences here
-        const auto params = Parameters::Container::Create();
-
-        plugin->renderer = CreatePipelinedRenderer(*openedModule, params);
-
-        const Parameters::Accessor::Ptr moduleProperties = openedModule->GetModuleProperties();
-
-        auto *info = static_cast<Info *>(userexinfo->userdata);
-
         if (const auto trackState = dynamic_pointer_cast<const Module::TrackState>(plugin->renderer->GetState())) {
             // TODO gather at-the-moment-state data for visualizer and tracker view in the read callback
             // TODO along with: ATTR_CURRENT_POSITION, ATTR_CURRENT_PATTERN, ATTR_CURRENT_LINE
         }
 
-        if (const auto *trackInfo = dynamic_cast<const Module::TrackInformation *>(moduleInfo.get())) {
-            info->numChannels = trackInfo->ChannelsCount();
-            info->loopPosition = trackInfo->LoopPosition();
-        }
+        plugin->moduleInfo = moduleWithFilenames.first->GetModuleInformation();
+        plugin->subsongs = static_cast<unsigned int>(modulesWithFilenames->size());
 
-        Parameters::FindValue(*moduleProperties, Module::ATTR_AUTHOR, info->author);
-        Parameters::FindValue(*moduleProperties, Module::ATTR_COMMENT, info->comments);
-        Parameters::FindValue(*moduleProperties, Module::ATTR_DATE, info->date);
-        Parameters::FindValue(*moduleProperties, Module::ATTR_TITLE, info->title);
+        plugin->setupTrackInfos(moduleWithFilenames);
 
-        string type;
-        Parameters::FindValue(*moduleProperties, Module::ATTR_TYPE, type);
-
-        if (type == "MTC") {
-            info->fileformat = "Multitrack Container";
-        } else if (type == "PSG") {
-            info->fileformat = "Programmable Sound Generator";
-        } else if (type == "TFD") {
-            info->fileformat = "TurboFM Dumped";
-        } else {
-            Parameters::FindValue(*moduleProperties, Module::ATTR_PROGRAM, info->fileformat);
-            if (info->fileformat.empty()) {
-                info->fileformat = type;
-            }
-        }
-
-        Parameters::FindValue(*moduleProperties, Module::ATTR_PLATFORM, info->system);
-
-        if (info->system.empty()) {
-            Parameters::FindValue(*moduleProperties, Module::ATTR_COMPUTER, info->system);
-        }
-
-        string samples;
-        Parameters::FindValue(*moduleProperties, Module::ATTR_STRINGS, samples);
-
-        if (!samples.empty()) {
-            vector<string> samplesVector;
-            stringstream ss(samples);
-            string sampleName;
-
-            while (getline(ss, sampleName)) {
-                samplesVector.push_back(sampleName);
-            }
-
-            const auto samplesCount = static_cast<int>(samplesVector.size());
-
-            info->numSamples = samplesCount;
-            info->samples = new string[samplesCount]; // Alloca array statico
-
-            for (int i = 0; i < samplesCount; ++i) {
-                info->samples[i] = samplesVector[i];
-            }
-        }
-
-        info->plugin = PLUGIN_zxtune;
-        info->pluginName = PLUGIN_zxtune_NAME;
-        info->setSeekable(true);
+        plugin->info->plugin = PLUGIN_zxtune;
+        plugin->info->pluginName = PLUGIN_zxtune_NAME;
+        plugin->info->setSeekable(true);
 
         return FMOD_OK;
     } catch (const Error &error) {
@@ -219,7 +281,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
     delete static_cast<pluginZxtune *>(codec->plugindata);
-
     return FMOD_OK;
 }
 
@@ -246,10 +307,38 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     return FMOD_OK;
 }
 
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    const auto *plugin = static_cast<pluginZxtune *>(codec->plugindata);
+
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
+        *length = plugin->subsongs;
+        return FMOD_OK;
+    }
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
+        *length = plugin->moduleInfo->Duration().Get();
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_FORMAT;
+}
+
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     const auto plugin = static_cast<pluginZxtune *>(codec->plugindata);
-    plugin->renderer->SetPosition(Time::Instant<Time::Millisecond>(position));
 
-    return FMOD_OK;
+    if (postype == FMOD_TIMEUNIT_MS) {
+        plugin->renderer->SetPosition(Time::Instant<Time::Millisecond>(position));
+        return FMOD_OK;
+    }
+    if (postype == FMOD_TIMEUNIT_SUBSONG) {
+        if (plugin->subsongs > 1) {
+            const auto &moduleWithFilenames = plugin->modulesDetector.getModulesWithFilenames()->at(position);
+            plugin->renderer = CreatePipelinedRenderer(*moduleWithFilenames.first, plugin->soundParams);
+            plugin->moduleInfo = moduleWithFilenames.first->GetModuleInformation();
+            plugin->setupTrackInfos(moduleWithFilenames);
+        }
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_FORMAT;
 }

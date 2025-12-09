@@ -1,0 +1,11 @@
+--- src/core/plugins/archives/plugins_packed.cpp	2025-12-09 16:28:50.832838823 +0100
++++ src/core/plugins/archives/plugins_packed.cpp	2025-12-09 16:35:41.500615604 +0100
+@@ -67,8 +67,6 @@
+ 
+   const ArchivePluginDescription CHIPTUNE_PACKERS[] =
+   {
+-    {"GZIP"_id,     &CreateGzipDecoder,                      Capabilities::Container::Type::ARCHIVE},//may contain source filename, so can be treated as archive
+-    {"MUSE"_id,     &CreateMUSEDecoder,                      Capabilities::Container::Type::COMPRESSOR},
+   };
+ 
+   const ArchivePluginDescription DECOMPILERS[] =

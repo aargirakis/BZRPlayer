@@ -1,0 +1,22 @@
+--- src/core/plugins/archives/plugins_archived.cpp	2025-05-30 12:43:47.000000000 +0200
++++ src/core/plugins/archives/plugins_archived.cpp	2025-12-09 16:32:53.642866100 +0100
+@@ -32,11 +32,6 @@
+   // clang-format off
+   const ContainerPluginDescription UNARCHIVES[] =
+   {
+-    {"ZIP"_id,     &CreateZipDecoder,     Capabilities::Container::Type::ARCHIVE | Capabilities::Container::Traits::DIRECTORIES},
+-    {"RAR"_id,     &CreateRarDecoder,     Capabilities::Container::Type::ARCHIVE | Capabilities::Container::Traits::DIRECTORIES},
+-    {"LHA"_id,     &CreateLhaDecoder,     Capabilities::Container::Type::ARCHIVE | Capabilities::Container::Traits::DIRECTORIES},
+-    {"UMX"_id,     &CreateUMXDecoder,     Capabilities::Container::Type::ARCHIVE | Capabilities::Container::Traits::PLAIN},
+-    {"7ZIP"_id,    &Create7zipDecoder,    Capabilities::Container::Type::ARCHIVE | Capabilities::Container::Traits::DIRECTORIES},
+   };
+ 
+   const ContainerPluginDescription ZXUNARCHIVES[] =
+@@ -50,7 +45,6 @@
+ 
+   const ContainerPluginDescription MULTITRACKS[] =
+   {
+-    {"AY"_id,      &CreateAYDecoder,      Capabilities::Container::Type::MULTITRACK},
+   };
+   // clang-format on
+ 

@@ -51,7 +51,8 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/binary/format/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/binary/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/archives/stub/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/archives/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/archives/full/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/ay/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/*.cpp
@@ -63,6 +64,13 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/devices/dac/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/devices/fm/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/devices/saa/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/hrip.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/scl.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/trd.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/trdos_catalogue.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/trdos_utils.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/zxstate.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/zxzip.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/aym/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/*.cpp
@@ -71,8 +79,38 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/multitrack/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/saa/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/multitrack/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/charpres.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/codecruncher3.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledasc.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledpt2.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledptu13.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledst3.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledstp.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compressorcode4.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/packed/container.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/datasquieezer.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/dsk.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/esvcruncher.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/fulldiskimage.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/gamepacker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/hobeta.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/hrum.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/hrust1.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/hrust2.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/image_utils.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/packed/lha_file.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/lzh.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/lzs.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/megalz.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/mspack.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/pack2.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/powerfullcodedecreaser6.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/sna128.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/teledisk.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/trush.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/turbolz.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/z80.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/zxzip_file.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/aym/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/*.cpp

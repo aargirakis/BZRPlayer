@@ -39,6 +39,7 @@ public:
         userPath = "";
         mutedChannelsMask = "";
         filename = "";
+        containerFilenames = "";
         artist = "";
         title = "";
         hasTitle = false;
@@ -93,6 +94,7 @@ public:
         hwname = "";
         fileformat = "";
         fileformatSpecific = "";
+        containerFileformats = "";
         md5 = "";
         rate = 0;
         address = 0;
@@ -231,6 +233,7 @@ public:
     string libPath;
     string userPath;
     string filename;
+    string containerFilenames;
     string artist;
     string title;
     string converter;
@@ -305,6 +308,7 @@ public:
     string hwname;
     string fileformat;
     string fileformatSpecific;
+    string containerFileformats;
     string md5;
     string volumeAmplificationStr;
     int rate;
