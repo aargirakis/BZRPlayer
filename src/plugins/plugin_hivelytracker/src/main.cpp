@@ -86,8 +86,9 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    uint8_t id[4] = "";
+    uint8_t id[4];
     unsigned int bytesread;
+    FMOD_CODEC_FILE_READ(codec, id, 4, &bytesread);
 
     auto *plugin = new pluginHivelyTracker(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
