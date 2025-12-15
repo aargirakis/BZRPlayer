@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libsidplayfp")
-set(VERSION "2.15.2")
+set(VERSION "2.16.0")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(URL "https://github.com/${NAME}/${NAME}/releases/download/v${VERSION}/${FILENAME}")
-set(SHA_256_HASH "7c6ab283fda53d34973fa266fc3809e16964dd8ccb7edcc11516ef5e3f66b3cd")
+set(SHA_256_HASH "81bfd58ccaa3a0ef28c903b841b4fa3014811901fd12fbb9a80b7b5d5ec2b151")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" ""
 )
@@ -86,15 +86,17 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE RUNTIME_DISPATCH)
+
 set(HVSC_SONGLENGTHS_FILENAME "Songlengths.md5")
 set(SID_DATA_DIR "${PLUGINS_DIR}/sid")
 set(HVSC_SONGLENGTHS_PATH "${SID_DATA_DIR}/${HVSC_SONGLENGTHS_FILENAME}")
 set(PLUGIN_${NAME}_DIR "${SID_DATA_DIR}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_HVSC_SONGLENGTHS_PATH "${HVSC_SONGLENGTHS_PATH}" PARENT_SCOPE)
 set(SIDID_CFG "sidid.cfg")
-set(BASIC_BIN "basic.bin")
-set(CHARACTERS_BIN "characters.bin")
-set(KERNAL_BIN "kernal.bin")
+set(BASIC_BIN "basic-901226-01.bin")
+set(CHARACTERS_BIN "chargen-901225-01.bin")
+set(KERNAL_BIN "kernal-901227-03.bin")
 set(BASIC_BIN_DATA_PATH "${SID_DATA_DIR}/${BASIC_BIN}")
 set(CHARACTERS_BIN_DATA_PATH "${SID_DATA_DIR}/${CHARACTERS_BIN}")
 set(KERNAL_BIN_DATA_PATH "${SID_DATA_DIR}/${KERNAL_BIN}")
@@ -120,32 +122,26 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
 )
 
-set(VICE "vice")
-set(VICE_VERSION "3.9")
-set(VICE_NAME_VERSIONED "${VICE}-${VICE_VERSION}")
-set(VICE_FILENAME "${VICE_NAME_VERSIONED}.tar.gz")
-set(VICE_URL "https://sourceforge.net/projects/${VICE}-emu/files/releases/${VICE_FILENAME}")
-set(VICE_SHA_256_HASH "40202b63455e26b87ecc63eb5a52322c6fa3f57cab12acf0c227cf9f4daec370")
-download_patch_and_add(
-        ${VICE_NAME_VERSIONED} ${VICE_FILENAME} ${VICE_URL} ${VICE_SHA_256_HASH} false "" ""
-)
+cmake_path(SET SID_DATA_PATH NORMALIZE ${OUTPUT_DIR}${DATA_DIR}${SID_DATA_DIR})
 
-set(EXTERNAL_SOURCE_DIR_${VICE} "${EXTERNAL_SOURCE_DIR}")
+set(BASIC_BIN_URL "https://sourceforge.net/p/vice-emu/code/HEAD/tree/tags/v3.10/vice/data/C64/${BASIC_BIN}?format=raw")
+set(DESTINATION_PATH "${SID_DATA_PATH}")
+download_to(${BASIC_BIN} ${BASIC_BIN_URL} "89878cea0a268734696de11c4bae593eaaa506465d2029d619c0e0cbccdfa62d" ${DESTINATION_PATH} true "")
+
+set(CHARACTERS_BIN_URL "https://sourceforge.net/p/vice-emu/code/HEAD/tree/tags/v3.10/vice/data/C64/${CHARACTERS_BIN}?format=raw")
+set(DESTINATION_PATH "${SID_DATA_PATH}")
+download_to(${CHARACTERS_BIN} ${CHARACTERS_BIN_URL} "fd0d53b8480e86163ac98998976c72cc58d5dd8eb824ed7b829774e74213b420" ${DESTINATION_PATH} true "")
+
+set(KERNAL_BIN_URL "https://sourceforge.net/p/vice-emu/code/HEAD/tree/tags/v3.10/vice/data/C64/${KERNAL_BIN}?format=raw")
+set(DESTINATION_PATH "${SID_DATA_PATH}")
+download_to(${KERNAL_BIN} ${KERNAL_BIN_URL} "83c60d47047d7beab8e5b7bf6f67f80daa088b7a6a27de0d7e016f6484042721" ${DESTINATION_PATH} true "")
 
 set(HVSC_SONGLENGTHS_URL "https://www.hvsc.c64.org/download/C64Music/DOCUMENTS/${HVSC_SONGLENGTHS_FILENAME}")
 set(PLUGIN_${NAME}_HVSC_SONGLENGTHS_URL "${HVSC_SONGLENGTHS_URL}" PARENT_SCOPE)
-set(DESTINATION_PATH "${OUTPUT_DIR}${DATA_DIR}${SID_DATA_DIR}")
+set(DESTINATION_PATH "${SID_DATA_PATH}")
 download_to(${HVSC_SONGLENGTHS_FILENAME} ${HVSC_SONGLENGTHS_URL} "" ${DESTINATION_PATH} true "")
-
-cmake_path(SET SID_DATA_PATH NORMALIZE ${OUTPUT_DIR}${DATA_DIR}${SID_DATA_DIR})
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_sidid}/${SIDID_CFG} ${SID_DATA_PATH}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${EXTERNAL_SOURCE_DIR_${VICE}}/data/C64/basic-901226-01.bin ${SID_DATA_PATH}/${BASIC_BIN}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${EXTERNAL_SOURCE_DIR_${VICE}}/data/C64/chargen-901225-01.bin ${SID_DATA_PATH}/${CHARACTERS_BIN}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${EXTERNAL_SOURCE_DIR_${VICE}}/data/C64/kernal-901227-03.bin ${SID_DATA_PATH}/${KERNAL_BIN}
         VERBATIM)
