@@ -192,7 +192,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.channels = 2;
 
     SidConfig::sid_model_t defaultSidModel = SidConfig::MOS6581;
-    SidConfig::c64_model_t c64Model = SidConfig::PAL;
+    SidConfig::c64_model_t c64Model = plugin->isMus ? SidConfig::NTSC : SidConfig::PAL;
     SidConfig::sampling_method_t samplingMethod = SidConfig::RESAMPLE_INTERPOLATE;
     bool forceSidModel = false;
     bool forcec64Model = false;
