@@ -1,7 +1,10 @@
+#include <cstring>
+
 extern "C" {
-#include "vgmstream.h"
+#include "libvgmstream.h"
 }
 
+#include "vgmstream_types.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "../app/plugins.h"
@@ -44,14 +47,13 @@ public:
 
     ~pluginVgmstream() {
         //delete some stuff
-        close_vgmstream(vgmstream);
-        vgmstream = nullptr;
+        libvgmstream_free(libvgmstream);
+        libvgmstream = nullptr;
     }
 
-    VGMSTREAM *vgmstream = nullptr;
-    Info *info;
-
     FMOD_CODEC_WAVEFORMAT waveformat;
+    libvgmstream_t *libvgmstream = nullptr;
+    Info *info;
 };
 
 /*
@@ -74,7 +76,6 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int bytesread;
     auto *smallBuffer = new uint8_t[16];
-    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     FMOD_CODEC_FILE_READ(codec, smallBuffer, 16, &bytesread);
 
     /* skip gm.dls:
@@ -87,49 +88,66 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    delete[] smallBuffer;
+
     auto *plugin = new pluginVgmstream(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->vgmstream = init_vgmstream(plugin->info->filename.c_str());
+    plugin->libvgmstream = libvgmstream_init();
 
-    if (!plugin->vgmstream) {
+    if (!plugin->libvgmstream) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->vgmstream->loop_flag = false;
+    libvgmstream_config_t config = {};
+    config.ignore_loop = true;
 
-    /* will we be able to play it? */
-    if (plugin->vgmstream->channels <= 0) {
+    libvgmstream_setup(plugin->libvgmstream, &config);
+
+    auto libsf = libstreamfile_open_from_stdio(plugin->info->filename.c_str());
+    if (!libsf) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    constexpr int loop_count = 1;
-    constexpr int fade_seconds = 0;
-    constexpr int fade_delay_seconds = 0;
+    if (libvgmstream_open_stream(plugin->libvgmstream, libsf, 0) < 0) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
 
-    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = plugin->vgmstream->channels;
-    plugin->waveformat.frequency = plugin->vgmstream->sample_rate;
-    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm =
-            get_vgmstream_play_samples(loop_count, fade_seconds, fade_delay_seconds, plugin->vgmstream);
+    switch (plugin->libvgmstream->format->sample_format) {
+        default:
+        case LIBVGMSTREAM_SFMT_PCM16:
+            plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+            break;
+        case LIBVGMSTREAM_SFMT_PCM24:
+            plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM24;
+            break;
+        case LIBVGMSTREAM_SFMT_PCM32:
+            plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM32;
+            break;
+        case LIBVGMSTREAM_SFMT_FLOAT:
+            plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
+            break;
+    }
+
+    plugin->waveformat.channels = plugin->libvgmstream->format->channels;
+    plugin->waveformat.frequency = plugin->libvgmstream->format->sample_rate;
+    plugin->waveformat.lengthpcm = static_cast<unsigned int>(plugin->libvgmstream->format->stream_samples);
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    vector<char> description(128);
-
-    if (plugin->vgmstream->meta_type == meta_FFMPEG || plugin->vgmstream->meta_type == meta_FFMPEG_faulty) {
-        get_vgmstream_coding_description(plugin->vgmstream, description.data(), description.size());
+    if (plugin->libvgmstream->format->format_id == meta_FFMPEG ||
+        plugin->libvgmstream->format->format_id == meta_FFMPEG_faulty) {
+        plugin->info->fileformat = plugin->libvgmstream->format->meta_name;
     } else {
-        get_vgmstream_meta_description(plugin->vgmstream, description.data(), description.size());
+        plugin->info->fileformat = plugin->libvgmstream->format->codec_name;
     }
 
-    plugin->info->fileformat = description.data();
     plugin->info->plugin = PLUGIN_vgmstream;
     plugin->info->pluginName = PLUGIN_vgmstream_NAME;
     plugin->info->setSeekable(true);
@@ -144,9 +162,18 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
-    render_vgmstream2(static_cast<sample_t *>(buffer), static_cast<int32_t>(size), plugin->vgmstream);
-    *read = size;
 
+    if (plugin->libvgmstream->decoder->done) {
+        // TODO needed? FMOD_ERR_FORMAT?
+        return FMOD_ERR_FILE_EOF;
+    }
+
+    if (libvgmstream_fill(plugin->libvgmstream, buffer, static_cast<int>(size)) < 0) {
+        // TODO needed? FMOD_ERR_FILE_EOF?
+        return FMOD_ERR_FORMAT;
+    }
+
+    *read = size;
     return FMOD_OK;
 }
 
@@ -154,7 +181,11 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
                                       FMOD_TIMEUNIT postype) {
     const auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
 
-    const auto seek_sample = static_cast<int32_t>(position * 0.001 * plugin->vgmstream->sample_rate);
-    seek_vgmstream(plugin->vgmstream, seek_sample);
-    return FMOD_OK;
+    if (postype == FMOD_TIMEUNIT_MS) {
+        const auto seek_sample = static_cast<int32_t>(position * 0.001 * plugin->libvgmstream->format->sample_rate);
+        libvgmstream_seek(plugin->libvgmstream, seek_sample);
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }

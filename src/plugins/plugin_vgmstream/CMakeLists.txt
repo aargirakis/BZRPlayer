@@ -25,6 +25,8 @@ download_patch_and_add(
 
 add_subdirectory(deps/ffmpeg)
 
+#TODO
+
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c
         ${EXTERNAL_SOURCE_DIR}/src/base/*.c
@@ -34,8 +36,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/meta/*.c
         ${EXTERNAL_SOURCE_DIR}/src/util/*.c
 
-        # some extra sources are included here
-        # in order to prevent linking failure on win and runtime failure on linux
+        # some extra sources are included here in order to prevent linking failure
         # since vgmstream lacks of some exports needed by our custom ffmpeg build
         ${EXTERNAL_SOURCE_DIR_ffmpeg}/libavcodec/adts_parser.c
         ${EXTERNAL_SOURCE_DIR_ffmpeg}/libavformat/demux.c
