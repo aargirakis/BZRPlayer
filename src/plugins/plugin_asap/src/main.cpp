@@ -4,6 +4,24 @@
 #include "info.h"
 #include "plugins.h"
 
+struct ASAPFileLoaderVtbl {
+    int (*load)(const ASAPFileLoader *self, const char *filename, uint8_t *buffer, int length);
+};
+
+static constexpr ASAPFileLoaderVtbl loadSamplesFile = {
+    [](const ASAPFileLoader *, const char *filename, uint8_t *buffer, int length) {
+        FILE *fp = fopen(filename, "rb");
+        if (!fp) return -1;
+        length = static_cast<int>(fread(buffer, 1, length, fp));
+        fclose(fp);
+        return length;
+    }
+};
+
+struct ASAPFileLoader {
+    const ASAPFileLoaderVtbl *vtbl = &loadSamplesFile;
+};
+
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
@@ -47,14 +65,12 @@ public:
 
     ~pluginAsap() {
         //delete some stuff
-        delete[] myBuffer;
         ASAP_Delete(asap);
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     ASAP *asap;
     const ASAPInfo *asap_info;
-    uint8_t *myBuffer;
     int current_song;
     unsigned int mask = 0;
 };
@@ -76,25 +92,30 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int bytesread;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    auto *plugin = new pluginAsap(codec);
-
-    plugin->myBuffer = new uint8_t[filesize];
+    auto *myBuffer = new uint8_t[filesize];
 
     FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
+    FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
     auto *info = static_cast<Info *>(userexinfo->userdata);
 
+    auto *plugin = new pluginAsap(codec);
+
     plugin->asap = ASAP_New();
 
-    if (!ASAP_Load(plugin->asap, info->filename.c_str(), plugin->myBuffer, static_cast<int>(filesize))) {
+    if (static constexpr ASAPFileLoader loader;
+        !ASAP_LoadWithExtraFiles(plugin->asap, info->filename.c_str(), myBuffer, static_cast<int>(filesize),
+                                 &loader)) {
+        delete[] myBuffer;
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
+    delete[] myBuffer;
+
     plugin->asap_info = ASAP_GetInfo(plugin->asap);
 
-    int song = ASAPInfo_GetDefaultSong(plugin->asap_info);
+    const int song = ASAPInfo_GetDefaultSong(plugin->asap_info);
     plugin->current_song = song;
 
     if (const int duration = ASAPInfo_GetDuration(plugin->asap_info, song); !
@@ -124,20 +145,20 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     info->pluginName = PLUGIN_asap_NAME;
     info->setSeekable(true);
 
-    if (ASAPInfo_GetOriginalModuleExt(plugin->asap_info, plugin->myBuffer, static_cast<int>(filesize)) == nullptr) {
+    if (const char *originalModuleExt = ASAPInfo_GetOriginalModuleExt(plugin->asap_info);
+        originalModuleExt == nullptr) {
         info->fileformat = "Slight Atari Player";
     } else {
-        info->fileformat = ASAPInfo_GetExtDescription(
-            ASAPInfo_GetOriginalModuleExt(plugin->asap_info, plugin->myBuffer, static_cast<int>(filesize)));
+        info->fileformat = ASAPInfo_GetExtDescription(originalModuleExt);
     }
 
     //int numberOfInstruments = 0;
-    //    const char *s = ASAPInfo_GetInstrumentName(plugin->asap_info, plugin->myBuffer, filesize, 0);
+    //    const char *s = ASAPInfo_GetInstrumentName(plugin->asap_info, myBuffer, filesize, 0);
     //    if (s != NULL)
     //    {
     //        do
     //        {
-    //            s = ASAPInfo_GetInstrumentName(plugin->asap_info, plugin->myBuffer, filesize,numberOfInstruments);
+    //            s = ASAPInfo_GetInstrumentName(plugin->asap_info, myBuffer, filesize,numberOfInstruments);
     //            numberOfInstruments++;
     //        }
     //        while (s != NULL);
@@ -154,7 +175,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     //        for(int i = 0; i < numberOfInstruments; i++)
     //        {
-    //            s = ASAPInfo_GetInstrumentName(plugin->asap_info, plugin->myBuffer, filesize,i);
+    //            s = ASAPInfo_GetInstrumentName(plugin->asap_info, myBuffer, filesize,i);
     //            sprintf(name,s);
     //            info->instruments[i] = name;
     //        }
@@ -171,8 +192,9 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginAsap *>(codec->plugindata);
 
-    int bufferedBytes = ASAP_Generate(plugin->asap, static_cast<unsigned char *>(buffer),
-                                      static_cast<int>(size) << plugin->waveformat.channels, ASAPSampleFormat_S16_L_E);
+    const int bufferedBytes = ASAP_Generate(plugin->asap, static_cast<unsigned char *>(buffer),
+                                            static_cast<int>(size) << plugin->waveformat.channels,
+                                            ASAPSampleFormat_S16_L_E);
 
     if (bufferedBytes <= 0) {
         return FMOD_ERR_FILE_EOF;
