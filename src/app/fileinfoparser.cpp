@@ -232,6 +232,10 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
             break;
         case PLUGIN_asap:
+            {
+            const int defaultSubSong = SoundManager::getInstance().m_Info1->defaultSubSong;
+            addInfo(tableInfo, &row, "Default Subsong", defaultSubSong == -1 ? "-" : QString::number(defaultSubSong));
+            }
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
             addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
             addInfo(tableInfo, &row, "Creation Date", SoundManager::getInstance().m_Info1->date.c_str());
@@ -243,7 +247,8 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                 addInfo(tableInfo, &row, "Channels", "Stereo");
             }
 
-            addAsapClockSpeed(tableInfo, &row);
+            addInfo(tableInfo, &row, "POKEY Chip", SoundManager::getInstance().m_Info1->chips.c_str());
+            addInfo(tableInfo, &row, "Replay Freq", SoundManager::getInstance().m_Info1->clockSpeedStr.c_str());
             break;
         case PLUGIN_furnace:
             addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
@@ -473,19 +478,6 @@ void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
 
     addInfo(tableInfo, row, "Subsong",
             isSubsong ? QString::number(currentSubsong) + "/" + QString::number(numSubsongs) : "-");
-}
-
-void FileInfoParser::addAsapClockSpeed(QTableWidget *tableInfo, int *row) {
-    string clockSpeed;
-    switch (SoundManager::getInstance().m_Info1->clockSpeed) {
-        case 0: clockSpeed = "NTSC";
-            break;
-        case 1: clockSpeed = "PAL";
-            break;
-        default: clockSpeed = "Unknown";
-    }
-
-    addInfo(tableInfo, row, "Clock Speed", clockSpeed.c_str());
 }
 
 void FileInfoParser::showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {

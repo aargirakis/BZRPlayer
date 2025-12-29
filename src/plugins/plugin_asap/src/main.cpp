@@ -1,4 +1,5 @@
 #include <cstring>
+#include <format>
 #include "asap.h"
 #include "fmod_errors.h"
 #include "info.h"
@@ -65,10 +66,12 @@ public:
 
     ~pluginAsap() {
         //delete some stuff
+        delete[] myBuffer;
         ASAP_Delete(asap);
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
+    uint8_t *myBuffer = nullptr;
     ASAP *asap;
     const ASAPInfo *asap_info;
     int current_song;
@@ -92,26 +95,23 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int bytesread;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    auto *myBuffer = new uint8_t[filesize];
+    auto *plugin = new pluginAsap(codec);
+
+    plugin->myBuffer = new uint8_t[filesize];
 
     FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
-
-    auto *info = static_cast<Info *>(userexinfo->userdata);
-
-    auto *plugin = new pluginAsap(codec);
+    FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
 
     plugin->asap = ASAP_New();
 
+    auto *info = static_cast<Info *>(userexinfo->userdata);
+
     if (static constexpr ASAPFileLoader loader;
-        !ASAP_LoadWithExtraFiles(plugin->asap, info->filename.c_str(), myBuffer, static_cast<int>(filesize),
+        !ASAP_LoadWithExtraFiles(plugin->asap, info->filename.c_str(), plugin->myBuffer, static_cast<int>(filesize),
                                  &loader)) {
-        delete[] myBuffer;
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
-
-    delete[] myBuffer;
 
     plugin->asap_info = ASAP_GetInfo(plugin->asap);
 
@@ -135,52 +135,48 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
+    info->defaultSubSong = ASAPInfo_GetSongs(plugin->asap_info) > 1
+                               ? ASAPInfo_GetDefaultSong(plugin->asap_info) + 1
+                               : -1;
     info->author = ASAPInfo_GetAuthor(plugin->asap_info);
     info->title = ASAPInfo_GetTitle(plugin->asap_info);
     info->numChannels = 8;
+    info->chips = format("x{} ({})", plugin->waveformat.channels,
+                        plugin->waveformat.channels > 1 ? "Stereo" : "Mono");
     info->date = ASAPInfo_GetDate(plugin->asap_info);
-    info->clockSpeed = !ASAPInfo_IsNtsc(plugin->asap_info);
-    info->fileformat = "Unknown ASAP";
+    info->clockSpeedStr = format("{} Hz / {} scanlines ({})", ASAPInfo_GetPlayerRateHz(plugin->asap_info),
+                                 ASAPInfo_GetPlayerRateScanlines(plugin->asap_info),
+                                 ASAPInfo_IsNtsc(plugin->asap_info) ? "NTSC" : "PAL");
     info->plugin = PLUGIN_asap;
     info->pluginName = PLUGIN_asap_NAME;
     info->setSeekable(true);
 
     if (const char *originalModuleExt = ASAPInfo_GetOriginalModuleExt(plugin->asap_info);
         originalModuleExt == nullptr) {
-        info->fileformat = "Slight Atari Player";
+        info->fileformat = format("Slight Atari Player (Type {:c})", ASAPInfo_GetTypeLetter(plugin->asap_info));
     } else {
         info->fileformat = ASAPInfo_GetExtDescription(originalModuleExt);
     }
 
-    //int numberOfInstruments = 0;
-    //    const char *s = ASAPInfo_GetInstrumentName(plugin->asap_info, myBuffer, filesize, 0);
-    //    if (s != NULL)
-    //    {
-    //        do
-    //        {
-    //            s = ASAPInfo_GetInstrumentName(plugin->asap_info, myBuffer, filesize,numberOfInstruments);
-    //            numberOfInstruments++;
-    //        }
-    //        while (s != NULL);
-    //    }
+    if (int offset = ASAPInfo_GetInstrumentNamesOffset(plugin->asap_info, plugin->myBuffer, static_cast<int>(filesize));
+        offset > 0) {
+        info->numInstruments = 0;
+        vector<string> instruments;
 
-    //    numberOfInstruments--;
-    //    if(numberOfInstruments>0)
-    //    {
-    //        info->numInstruments = numberOfInstruments;
-    //        info->instruments = new string[numberOfInstruments];
+        do {
+            const char *instrument = reinterpret_cast<const char *>(plugin->myBuffer) + offset;
+            instruments.emplace_back(instrument);
+            offset += static_cast<int>(strnlen(instrument, filesize - offset)) + 1;
+            info->numInstruments++;
+        } while (offset < filesize);
 
-    //        const int INSTRUMENT_NAME_MAX_LENGTH = 64;//TODO Check what's the max length, I just took a reasonable number
-    //        char name[INSTRUMENT_NAME_MAX_LENGTH];
+        info->instruments = new string[info->numInstruments];
 
-    //        for(int i = 0; i < numberOfInstruments; i++)
-    //        {
-    //            s = ASAPInfo_GetInstrumentName(plugin->asap_info, myBuffer, filesize,i);
-    //            sprintf(name,s);
-    //            info->instruments[i] = name;
-    //        }
-    //    }
-    //    plugin->mask = 0;
+        for (int i = 0; i < info->numInstruments; i++) {
+            info->instruments[i] = instruments[i];
+        }
+    }
+
     return FMOD_OK;
 }
 
@@ -236,7 +232,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         //position is a mask
         ASAP_MutePokeyChannels(plugin->asap, static_cast<int>(position));
         plugin->mask = position;
-        return FMOD_ERR_UNSUPPORTED;
+        return FMOD_OK;
     }
     return FMOD_ERR_UNSUPPORTED;
 }
