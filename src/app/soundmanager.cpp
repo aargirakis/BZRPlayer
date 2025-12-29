@@ -180,81 +180,81 @@ void SoundManager::loadPluginChain() {
 
     //loadPlugin("plugin_quartet.dll",1);
 
-    if (PLUGIN_klystron_LIB != "")
-    {
-        loadPlugin(PLUGIN_klystron_LIB, 2399);
-    }
-    if (PLUGIN_libkss_LIB != "")
-    {
-        loadPlugin(PLUGIN_libkss_LIB, 2399);
-    }
-    if (PLUGIN_asap_LIB != "")
-    {
-        loadPlugin(PLUGIN_asap_LIB, 2399);
-    }
-    if (PLUGIN_organya_decoder_LIB != "")
-    {
-        loadPlugin(PLUGIN_organya_decoder_LIB, 2399);
-    }
-    if (PLUGIN_sunvox_lib_LIB != "")
-    {
-        loadPlugin(PLUGIN_sunvox_lib_LIB, 2399);
-    }
-    if (PLUGIN_sc68_LIB != "")
-    {
-        loadPlugin(PLUGIN_sc68_LIB, 2399);
-    }
-    if (PLUGIN_kdm_LIB != "")
-    {
-        loadPlugin(PLUGIN_kdm_LIB, 2399);
-    }
-    if (PLUGIN_libpac_LIB != "")
-    {
-        loadPlugin(PLUGIN_libpac_LIB, 2399);
-    }
-    if (PLUGIN_libxmp_LIB != "")
-    {
-        loadPlugin(PLUGIN_libxmp_LIB, 2399);
-    }
-    if (PLUGIN_mdxmini_LIB != "")
-    {
-        loadPlugin(PLUGIN_mdxmini_LIB, 2399);
-    }
-    if (PLUGIN_adplug_LIB != "")
-    {
-        loadPlugin(PLUGIN_adplug_LIB, 2399);
-    }
-    if (PLUGIN_libvgm_LIB != "")
-    {
-        loadPlugin(PLUGIN_libvgm_LIB, 2399);
-    }
-    if (PLUGIN_game_music_emu_LIB != "")
-    {
-        loadPlugin(PLUGIN_game_music_emu_LIB, 2399);
-    }
-    if (PLUGIN_audiodecoder_wsr_LIB != "")
-    {
-        loadPlugin(PLUGIN_audiodecoder_wsr_LIB, 2399);
-    }
-    if (PLUGIN_v2m_player_LIB != "")
-    {
-        loadPlugin(PLUGIN_v2m_player_LIB, 2399);
-    }
-    if (PLUGIN_jaytrax_LIB != "")
-    {
-        loadPlugin(PLUGIN_jaytrax_LIB, 2399);
-    }
     if (PLUGIN_vgmstream_LIB != "")
     {
         loadPlugin(PLUGIN_vgmstream_LIB, 599);
     }
+    if (PLUGIN_klystron_LIB != "")
+    {
+        loadPlugin(PLUGIN_klystron_LIB, 1701);
+    }
+    if (PLUGIN_libkss_LIB != "")
+    {
+        loadPlugin(PLUGIN_libkss_LIB, 1701);
+    }
+    if (PLUGIN_asap_LIB != "")
+    {
+        loadPlugin(PLUGIN_asap_LIB, 1701);
+    }
+    if (PLUGIN_organya_decoder_LIB != "")
+    {
+        loadPlugin(PLUGIN_organya_decoder_LIB, 1701);
+    }
+    if (PLUGIN_sunvox_lib_LIB != "")
+    {
+        loadPlugin(PLUGIN_sunvox_lib_LIB, 1701);
+    }
+    if (PLUGIN_sc68_LIB != "")
+    {
+        loadPlugin(PLUGIN_sc68_LIB, 1701);
+    }
+    if (PLUGIN_kdm_LIB != "")
+    {
+        loadPlugin(PLUGIN_kdm_LIB, 1701);
+    }
+    if (PLUGIN_libpac_LIB != "")
+    {
+        loadPlugin(PLUGIN_libpac_LIB, 1701);
+    }
+    if (PLUGIN_libxmp_LIB != "")
+    {
+        loadPlugin(PLUGIN_libxmp_LIB, 1701);
+    }
+    if (PLUGIN_mdxmini_LIB != "")
+    {
+        loadPlugin(PLUGIN_mdxmini_LIB, 1701);
+    }
+    if (PLUGIN_adplug_LIB != "")
+    {
+        loadPlugin(PLUGIN_adplug_LIB, 1701);
+    }
+    if (PLUGIN_libvgm_LIB != "")
+    {
+        loadPlugin(PLUGIN_libvgm_LIB, 1701);
+    }
+    if (PLUGIN_game_music_emu_LIB != "")
+    {
+        loadPlugin(PLUGIN_game_music_emu_LIB, 1701);
+    }
+    if (PLUGIN_audiodecoder_wsr_LIB != "")
+    {
+        loadPlugin(PLUGIN_audiodecoder_wsr_LIB, 1701);
+    }
+    if (PLUGIN_v2m_player_LIB != "")
+    {
+        loadPlugin(PLUGIN_v2m_player_LIB, 1701);
+    }
+    if (PLUGIN_jaytrax_LIB != "")
+    {
+        loadPlugin(PLUGIN_jaytrax_LIB, 1701);
+    }
     if (PLUGIN_audiofile_LIB != "")
     {
-        loadPlugin(PLUGIN_audiofile_LIB, 2399);
+        loadPlugin(PLUGIN_audiofile_LIB, 1701);
     }
     if (PLUGIN_zxtune_LIB != "")
     {
-        loadPlugin(PLUGIN_zxtune_LIB, 2399);
+        loadPlugin(PLUGIN_zxtune_LIB, 1701);
     }
 }
 
