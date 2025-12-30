@@ -140,9 +140,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                                : -1;
     info->author = ASAPInfo_GetAuthor(plugin->asap_info);
     info->title = ASAPInfo_GetTitle(plugin->asap_info);
-    info->numChannels = 8;
     info->chips = format("x{} ({})", plugin->waveformat.channels,
                         plugin->waveformat.channels > 1 ? "Stereo" : "Mono");
+    info->numChannels = plugin->waveformat.channels * 4;
     info->date = ASAPInfo_GetDate(plugin->asap_info);
     info->clockSpeedStr = format("{} Hz / {} scanlines ({})", ASAPInfo_GetPlayerRateHz(plugin->asap_info),
                                  ASAPInfo_GetPlayerRateScanlines(plugin->asap_info),
