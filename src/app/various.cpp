@@ -106,10 +106,10 @@ QString fromUtf8OrLatin1(const string &str) {
 }
 
 string convertToUtf8(const string &input, const char *encoding) {
-    const auto cd = iconv_open("UTF-8//IGNORE", encoding);
+    const auto cd = iconv_open(utf8Ignore, encoding);
 
     if (cd == reinterpret_cast<iconv_t>(-1)) {
-        cerr << "Iconv error opening descriptor: " << strerror(errno) << endl;
+        logError(string("Iconv error opening descriptor: ") + strerror(errno), Various::getClassName());
         return input;
     }
 
@@ -123,11 +123,12 @@ string convertToUtf8(const string &input, const char *encoding) {
     const size_t result = iconv(cd, &inputPtr, &inputBytes, &outputPtr, &outputBytes);
 
     if (iconv_close(cd) == -1) {
-        cerr << "Iconv descriptor deallocation error: " << strerror(errno) << endl;
+        logError(string("Iconv descriptor deallocation error: ") + strerror(errno), Various::getClassName());
     }
 
     if (result == -1) {
-        cerr << "Iconv conversion error: " << strerror(errno) << endl;
+        logError(string("Iconv conversion error from ") + encoding + " to " + utf8Ignore + ": " + strerror(errno),
+                 Various::getClassName());
         return input;
     }
 

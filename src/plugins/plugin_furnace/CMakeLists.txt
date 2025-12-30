@@ -189,6 +189,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/icon
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(CONFIG_FILENAME "${PROJECT_NAME}.cfg")
@@ -200,10 +201,7 @@ if (WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_VIRTUAL_TERMINAL_PROCESSING=0x0004)
 endif ()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        adpcm
-        fmt
-        ZLIB::ZLIB)
+target_link_libraries(${PROJECT_NAME} PRIVATE adpcm fmt ZLIB::ZLIB logger)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE -lshlwapi)

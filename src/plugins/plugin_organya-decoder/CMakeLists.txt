@@ -31,10 +31,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/liborganya
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(ORGANYA_DATA_DIR "${PLUGINS_DIR}/${PROJECT_NAME}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE ORGANYA_DATA_DIR="${ORGANYA_DATA_DIR}")
+
+target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

@@ -58,6 +58,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_libcue}
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(CONFIG_FILENAME "${PROJECT_NAME}.cfg")
@@ -73,7 +74,7 @@ foreach (FFMPEG_STATIC_LIB ${FFMPEG_STATIC_LIBS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${FFMPEG_STATIC_LIB})
 endforeach ()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE libcue)
+target_link_libraries(${PROJECT_NAME} PRIVATE libcue logger)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE -lbcrypt)

@@ -1,7 +1,6 @@
 #include <cstring>
 #include <format>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <sstream>
 #include "uade/eagleplayer.h"
@@ -10,6 +9,7 @@
 #include "FileLoader.h"
 #include "fmod_errors.h"
 #include "info.h"
+#include "logger.h"
 #include "plugins.h"
 
 using namespace std;
@@ -87,6 +87,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    logDebug("Try", PLUGIN_uade_NAME);
+
     auto *plugin = new pluginUade(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
@@ -222,6 +224,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->uadeState = uade_new_state(uadeConfig);
 
     if (plugin->uadeState == nullptr) {
+        logError("Unable to create playback context", PLUGIN_uade_NAME);
         return FMOD_ERR_FORMAT;
     }
 
@@ -346,16 +349,21 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     while (uade_read_notification(&un, plugin->uadeState)) {
         switch (un.type) {
             case UADE_NOTIFICATION_MESSAGE:
-                cout << "Amiga message: " << un.msg << endl;
+                logDebug(string("Amiga message notification received: ") + un.msg, PLUGIN_uade_NAME);
                 break;
             case UADE_NOTIFICATION_SONG_END:
-                cout << (un.song_end.happy ? "" : "bad ") << "song end" << ": " << un.song_end.reason << endl;
+                if (un.song_end.happy) {
+                    logDebug(string("Song end notification received, reason: ") + un.song_end.reason, PLUGIN_uade_NAME);
+                } else {
+                    logWarning(string("Bad song end notification received, reason: ") + un.song_end.reason,
+                               PLUGIN_uade_NAME);
+                }
 
                 // FMOD_ERR_FILE_EOF is used here in order to let fmod playing the remaining audio bytes
                 return FMOD_ERR_FILE_EOF;
 
             default:
-                cout << "Unknown libuade notification" << endl;
+                logWarning("Unknown libuade notification received", PLUGIN_uade_NAME);
                 break;
         }
 
@@ -368,7 +376,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     }
 
     /*
-     * renderedBytes should never reach value 0 when uade songlengths file provides the song length
+     * renderedBytes should never reach value 0 when UADE Songlength db provides the song length
      * however this check *might* be still useful if no UADE_NOTIFICATION_SONG_END is received
      */
     if (renderedBytes == 0) {
@@ -429,8 +437,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
     ifstream ifs(filenameFromDb);
 
     if (ifs.fail()) {
-        // the file could not be opened
-        cout << "Couldn't open UADE songlengths file: " << filenameFromDb << endl;
+        logError("Couldn't open Songlength db " + filenameFromDb, PLUGIN_uade_NAME);
         return -1;
     }
 
@@ -442,7 +449,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
             // we found it
             int j = line.find_first_of("=");
             if (j == -1) {
-                cout << "Formatting error in uade songlengths file: " << filenameFromDb << endl;
+                logError(string("Formatting error in Songlength db for entry with md5 ") + md5, PLUGIN_uade_NAME);
                 return -1;
             }
 
@@ -453,7 +460,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
             vector vstrings(begin, end);
 
             if (subsong >= vstrings.size()) {
-                cout << "Subsong length not found" << endl;
+                logDebug(string("Songlength db subsong for entry with md5 ") + md5 + " not found", PLUGIN_uade_NAME);
                 return -1;
             }
 
@@ -461,7 +468,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
 
             int i = line.find_first_of(":");
             if (i == -1) {
-                cout << "Formatting error in uade songlengths file: " << filenameFromDb << endl;
+                logError(string("Formatting error in Songlength db for entry with md5 ") + md5, PLUGIN_uade_NAME);
                 return -1;
             }
 
@@ -487,7 +494,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
     }
 
     if (length == 0) {
-        cout << "Couldn't find song length for: " << filename << " [Hash: " << md5 << "]" << endl;
+        logDebug(string("Songlength db entry with md5 ") + md5 + " not found", PLUGIN_uade_NAME);
         return -1;
     }
 

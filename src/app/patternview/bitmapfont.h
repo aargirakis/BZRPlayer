@@ -2,8 +2,11 @@
 #define BITMAPFONT_H
 
 #include <QBitmap>
+#include "various.h"
 
 class BitmapFont {
+    PROVIDE_CLASS_NAME()
+
 public:
     BitmapFont();
 

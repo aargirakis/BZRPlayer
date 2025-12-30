@@ -14,7 +14,7 @@ QListWidgetCustom::QListWidgetCustom(QWidget *parent) : QListWidget(parent) {
 
 void QListWidgetCustom::startDrag(Qt::DropActions supportedActions) {
     if (currentRow() == 0) {
-        qDebug() << "Top row is locked. Not draggable.";
+        logDebug("Top row is locked: not draggable", getClassName());
         return; // don't start drag
     }
 

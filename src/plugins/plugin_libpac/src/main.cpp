@@ -2,6 +2,7 @@
 #include "pacP.h"
 #include "fmod_errors.h"
 #include "info.h"
+#include "logger.h"
 #include "plugins.h"
 
 using namespace std;
@@ -73,6 +74,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    logDebug("Try", PLUGIN_libpac_NAME);
+
     constexpr int freq = 44100;
     constexpr int channels = 2;
 

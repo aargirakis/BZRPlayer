@@ -30,13 +30,19 @@ void DialogDeleteWorkspace::on_buttonCancel_clicked() {
 }
 
 void DialogDeleteWorkspace::on_buttonDelete_clicked() {
-    if (const QString filename = ui->comboBoxWorkspace->currentText() + ".ini";
-        QFile::remove(userPath + LAYOUTS_DIR + "/" + filename)) {
-        const auto mw = static_cast<MainWindow *>(this->parent());
-        mw->deleteWorkspace(ui->comboBoxWorkspace->currentText());
-        ui->comboBoxWorkspace->removeItem(ui->comboBoxWorkspace->currentIndex());
-        close();
-    } else {
-        QMessageBox::critical(this, "Error", "Couldn't delete layout");
+    if (ui->comboBoxWorkspace->currentText().isEmpty()) {
+        return;
     }
+
+    const auto filename = ui->comboBoxWorkspace->currentText() + ".ini";
+    if (const auto filePath = userPath + LAYOUTS_DIR + "/" + filename; !QFile::remove(filePath)) {
+        logErrorQ("Couldn't delete layout file " + filePath, getClassName());
+        QMessageBox::critical(this, "Error", "Couldn't delete layout");
+        return;
+    }
+
+    const auto mw = static_cast<MainWindow *>(this->parent());
+    mw->deleteWorkspace(ui->comboBoxWorkspace->currentText());
+    ui->comboBoxWorkspace->removeItem(ui->comboBoxWorkspace->currentIndex());
+    close();
 }

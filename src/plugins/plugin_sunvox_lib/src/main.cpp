@@ -8,6 +8,7 @@
 #include "sunvox.h"
 #include "fmod_errors.h"
 #include "info.h"
+#include "logger.h"
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
@@ -75,6 +76,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    logDebug("Try", PLUGIN_sunvox_lib_NAME);
+
     auto *plugin = new pluginSunvoxLib(codec);
     const auto info = static_cast<Info *>(userexinfo->userdata);
 

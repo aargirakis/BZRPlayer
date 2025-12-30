@@ -39,19 +39,14 @@ file(GLOB SOURCES
         BZRPlayer.rc
         BZRPlayer.exe.manifest)
 
-if (NOT WIN32)
+if (NOT WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
     #TODO workaround
-    if (CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(CMAKE_BUILD_RPATH "${LIB_DIR}")
-        #set(CMAKE_INSTALL_RPATH "${LIB_DIR}")
-    else ()
-        set(CMAKE_BUILD_RPATH "${OUTPUT_DIR}${LIB_DIR}")
-    endif ()
+    set(CMAKE_BUILD_RPATH "${LIB_DIR}")
 endif ()
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${FMOD_API_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${FMOD_API_DIR} ${LOGGER_API_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_VERSION="${PROJECT_VERSION}")
 
@@ -76,10 +71,7 @@ foreach (QT_MODULE ${QT_MODULES})
 endforeach ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        ads::qtadvanceddocking-qt${QT_VERSION_MAJOR}
-        Iconv::Iconv
-        -L"${FMOD_DIR}" -lfmod
-)
+        ads::qtadvanceddocking-qt${QT_VERSION_MAJOR} Iconv::Iconv -L"${FMOD_DIR}" -lfmod logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME ${EXE_NAME}
@@ -88,7 +80,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         #ARCHIVE_OUTPUT_DIRECTORY DESTINATION ${OUTPUT_DIR}${LIB_DIR} #TODO
 )
 
-if (WIN32)
+if (WIN32 AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE true)
 endif ()
 

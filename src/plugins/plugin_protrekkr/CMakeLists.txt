@@ -49,6 +49,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE BZR2 __STAND_ALONE__ __WINAMP__)
@@ -59,7 +60,7 @@ else ()
     target_compile_definitions(${PROJECT_NAME} PRIVATE __GCC__ __LINUX__)
 endif ()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB logger)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE -lmsacm32)

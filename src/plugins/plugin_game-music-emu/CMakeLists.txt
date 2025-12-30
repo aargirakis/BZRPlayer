@@ -8,7 +8,7 @@ set(PLUGIN_${NAME}_NAME "Game_Music_Emu" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
@@ -31,6 +31,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/gme/ext
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(CONFIG_FILENAME "${PROJECT_NAME}.cfg")
@@ -43,6 +44,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE VGM_YM2612_MAME)
 if (WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE BLARGG_BUILD_DLL)
 endif ()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

@@ -9,6 +9,7 @@ extern "C" {
 #include "libcue.h"
 #include "fmod_errors.h"
 #include "../app/info.h"
+#include "../external/logger/src/logger.h"
 #include "../app/plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
@@ -82,6 +83,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    logDebug("Try", PLUGIN_vgmstream_NAME);
+
     auto *plugin = new pluginVgmstream(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 

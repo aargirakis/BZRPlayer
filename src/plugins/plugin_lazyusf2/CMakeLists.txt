@@ -74,6 +74,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE #TODO remove unnecessary
         ${EXTERNAL_SOURCE_DIR_psflib}
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(CONFIG_FILENAME "${PROJECT_NAME}.cfg")
@@ -87,7 +88,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE EMU_COMPILE ARCH_MIN_SSE2)
 #target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-fcommon>) #TODO for DYNAREC
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-return-mismatch>)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB logger)
 
 #if (WIN32) TODO
 #    target_link_libraries(${PROJECT_NAME} PRIVATE -lshlwapi)

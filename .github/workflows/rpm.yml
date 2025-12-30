@@ -16,8 +16,9 @@ jobs:
         run: |
           echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
           dnf update -y
-          dnf install -y @c-development @development-tools cmake dos2unix ninja-build Qt-Advanced-Docking-System-devel \
-                         qt6-qtbase-devel qt6-qtsvg-devel rpm-build rpmlint sdl2-compat-devel vulkan-headers which
+          dnf install -y @c-development @development-tools cmake dos2unix ninja-build patchelf \
+                         Qt-Advanced-Docking-System-devel qt6-qtbase-devel qt6-qtsvg-devel rpm-build rpmlint \
+                         sdl2-compat-devel vulkan-headers which
 
       - name: Build
         run: |
@@ -68,6 +69,11 @@ jobs:
 
           %install
           cp -r %{_builddir}/redhat-linux-build/output%{_prefix} %{buildroot}
+
+          # workaround
+          patchelf --set-rpath "%{_libdir}/%{name}" "%{buildroot}%{_bindir}/%{name}"
+          find %{buildroot}/%{_libdir}/%{name}/plugins -name "plugin_*.so" -exec patchelf --set-rpath "%{_libdir}/%{name}" {} \;
+          
           install -Dm644 %{_builddir}/redhat-linux-build/output/LICENSE %{buildroot}%{_defaultlicensedir}/%{name}/LICENSE
 
           for size in 16 32 48 64 128 256 512; do

@@ -37,6 +37,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_psflib}
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(CONFIG_FILENAME "${PROJECT_NAME}.cfg")
@@ -47,7 +48,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE BARRAY_DECORATE RESAMPLER_DEC
 
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-msse4.1>)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

@@ -2,8 +2,11 @@
 #define QLISTWIDGETCUSTOM_H
 
 #include <QListWidget>
+#include "various.h"
 
 class QListWidgetCustom : public QListWidget {
+    PROVIDE_CLASS_NAME()
+
 public:
     explicit QListWidgetCustom(QWidget *parent = nullptr);
 

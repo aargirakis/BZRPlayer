@@ -2,12 +2,15 @@
 #define DIALOGDELETEWORKSPACE_H
 
 #include <QDialog>
+#include "various.h"
 
 namespace Ui {
     class DialogDeleteWorkspace;
 }
 
 class DialogDeleteWorkspace : public QDialog {
+    PROVIDE_CLASS_NAME()
+
     Q_OBJECT
 
 public:

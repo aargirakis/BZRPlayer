@@ -1,7 +1,6 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
-#include <iostream>
 #include "residfp.h"
 #include "SidDatabase.h"
 #include "sidemu.h"
@@ -11,8 +10,9 @@
 #include "SidTune.h"
 #include "stil.h"
 #include "fmod_errors.h"
-#include "plugins.h"
 #include "info.h"
+#include "logger.h"
+#include "plugins.h"
 
 using namespace std;
 
@@ -63,24 +63,28 @@ public:
     static char *loadRom(const char *path, size_t romSize) {
         char *buffer = nullptr;
         ifstream is(path, ios::binary);
+
         if (is.good()) {
             buffer = new char[romSize];
             is.read(buffer, romSize);
         } else {
-            cout << "failed loading rom: " << path << endl;
+            logError(string("Failed loading rom ") + path, PLUGIN_libsidplayfp_NAME);
         }
+
         is.close();
         return buffer;
     }
 
     unsigned int getLengthFromDb(const string &databasePath, const string &md5, const unsigned int subsong) const {
         if (!sidDb) {
-            cout << "SidDatabase not initialized" << endl;
+            logError("Unable to get HVSC Songlength database entry (STIL won't be available too)",
+                     PLUGIN_libsidplayfp_NAME);
             return -1;
         }
 
         if (!sidDb->open(databasePath.c_str())) {
-            cout << sidDb->error() << " [" << databasePath.c_str() << "]" << endl;
+            logError(string("Error loading HVSC Songlength database (STIL won't be available too) from ")
+                     + databasePath, PLUGIN_libsidplayfp_NAME);
             return -1;
         }
 
@@ -109,7 +113,7 @@ public:
 
     string getSidPathFromOpenedDb(const string &md5) const {
         if (!sidDb) {
-            cout << "SidDatabase not initialized" << endl;
+            logError("Unable to get HVSC path entry (STIL won't be available too)", PLUGIN_libsidplayfp_NAME);
             return "";
         }
 
@@ -123,7 +127,7 @@ public:
         stil->setBaseDir(baseDir.c_str());
 
         if (stil->getError() != 0) {
-            cout << "HVSC STIL error: " << stil->getErrorStr() << endl;
+            logError(string("HVSC STIL error: ") + stil->getErrorStr(), PLUGIN_libsidplayfp_NAME);
             return "";
         }
 
@@ -233,6 +237,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    logDebug("Try", PLUGIN_libsidplayfp_NAME);
+
     auto *plugin = new pluginLibsidplayfp(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
@@ -679,7 +685,9 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 
         const string sidPath = plugin->getSidPathFromOpenedDb(plugin->info->md5);
 
-        plugin->sidDb->close();
+        if (plugin->sidDb) {
+            plugin->sidDb->close();
+        }
 
         if (sidPath.empty()) {
             return FMOD_OK;

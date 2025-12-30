@@ -1,6 +1,7 @@
 #include <cstring>
 #include "fmod_errors.h"
 #include "info.h"
+#include "logger.h"
 #include "plugins.h"
 
 extern "C" {
@@ -73,6 +74,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    logDebug("Try", PLUGIN_audiodecoder_wsr_NAME);
+
     constexpr int freq = 44100;
     SampleRate = freq;
 

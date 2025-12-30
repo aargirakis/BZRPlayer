@@ -54,6 +54,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(CONFIG_FILENAME "${PROJECT_NAME}.cfg")
@@ -64,6 +65,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGIN_CONFIGS_DIR="${PLUGIN_
 if (WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE BUILDING_DLL)
 endif ()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

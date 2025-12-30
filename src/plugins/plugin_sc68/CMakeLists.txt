@@ -53,6 +53,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/unice68
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(SC68_DATA_DIR "${PLUGINS_DIR}/${PROJECT_NAME}")
@@ -67,7 +68,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_STRING="")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_URL="")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_VERNUM)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

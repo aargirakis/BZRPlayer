@@ -85,6 +85,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         deps/sidid/src
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(SID_DATA_DIR "${PLUGINS_DIR}/${PROJECT_NAME}")
@@ -127,7 +128,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE="${NAME}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_URL="${URL}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION="${VERSION}")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE sidid)
+target_link_libraries(${PROJECT_NAME} PRIVATE sidid logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

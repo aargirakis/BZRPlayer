@@ -9,6 +9,8 @@ namespace Ui {
 }
 
 class settingsWindow : public QDialog {
+    PROVIDE_CLASS_NAME()
+
     Q_OBJECT
 
 public:

@@ -10,6 +10,7 @@
 #include "channels.h"
 #include "filesdownloader.h"
 #include "fileinfoparser.h"
+#include "various.h"
 #include "updatechecker.h"
 #include "visualizers/trackerfullscreen.h"
 #include "visualizers/visualizerfullscreen.h"
@@ -25,7 +26,10 @@ namespace Ui {
 }
 
 class MainWindow : public QMainWindow {
+    PROVIDE_CLASS_NAME()
+
     Q_OBJECT
+
 #define SWAP16(value) \
     ( \
         (((uint16_t)((value) & 0x00FF)) << 8) | \
@@ -125,8 +129,6 @@ public:
     void resetToDefaultColors();
 
     void changeStyleSheetColor();
-
-    void addDebugText(const QString &) const;
 
     void restoreFromTray();
 
@@ -414,11 +416,11 @@ private slots:
 
     void unmuteAllChannels() const;
 
-    void selectAllLogWindow() const;
+    void selectAllLogMessages() const;
 
-    void copyLogWindow() const;
+    void copyLogMessages() const;
 
-    void clearLogWindow() const;
+    void clearLogMessages() const;
 
     // drag'n'drop
     void dragEnterEvent(QDragEnterEvent *event);
@@ -652,7 +654,7 @@ private:
 
     void createThePopupMenuPlaylists();
 
-    void createThePopupLogWindow();
+    void createThePopupLogMessages();
 
     void createThePopupMenuCurrentPlaylist(const QString &);
 
@@ -675,6 +677,8 @@ private:
     void updateCheck();
 
     static bool isNetworkStream(const QString &);
+
+    void updateLogDisplay() const;
 
     int currentSubsong;
     PlayMode playMode;
@@ -718,9 +722,9 @@ private:
     QAction *deleteFilesInPlaylistInvertedAction;
     QAction *showContainingFolderAction;
 
-    QAction *selectAllLogWindowAction;
-    QAction *copyLogWindowAction;
-    QAction *clearLogWindowAction;
+    QAction *selectAllLogMessagesAction;
+    QAction *copyLogMessagesAction;
+    QAction *clearLogMessagesAction;
 
     QAction *exportInstrumentWavAction;
     QAction *exportInstrumentIffAction;

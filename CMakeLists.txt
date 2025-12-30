@@ -50,6 +50,7 @@ add_compile_options(-w) #TODO remove
 add_link_options(-Wl,--no-undefined)
 
 set(SUBDIRECTORIES_BY_MODULES
+        logger "src/external/logger"
         app "src/app"
         plugin_adplug "src/plugins/plugin_adplug"
         plugin_asap "src/plugins/plugin_asap"
@@ -122,6 +123,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 
         install(FILES
                 ${OUTPUT_DIR}/${EXE_NAME}.exe
+                ${OUTPUT_DIR}/$<TARGET_FILE_NAME:logger>
                 ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
                 ${OUTPUT_DIR}/LICENSE.txt
                 ${OUTPUT_DIR}/${FMOD_LIB}

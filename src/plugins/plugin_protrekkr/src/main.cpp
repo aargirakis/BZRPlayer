@@ -1,6 +1,7 @@
 #include "files.h"
 #include "fmod_errors.h"
 #include "info.h"
+#include "logger.h"
 #include "plugins.h"
 
 int AUDIO_Play_Flag;
@@ -99,6 +100,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    logDebug("Try", PLUGIN_protrekkr_NAME);
+
     memset(SampleName, 0, sizeof(SampleName));
     memset(nameins, 0, sizeof(nameins));
 

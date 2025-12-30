@@ -57,10 +57,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_${NAME}}/src/kss
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        emu2149 emu2212 emu2413 emu8950 emu76489 kmz80)
+        emu2149 emu2212 emu2413 emu8950 emu76489 kmz80 logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

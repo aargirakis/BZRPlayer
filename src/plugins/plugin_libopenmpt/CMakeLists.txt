@@ -51,6 +51,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/libopenmpt
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(CONFIG_FILENAME "${PROJECT_NAME}.cfg")
@@ -64,10 +65,7 @@ set_target_properties(LIBOPENMPT_STATIC PROPERTIES
         IMPORTED_LOCATION "${EXTERNAL_SOURCE_DIR}/${BUILD_BYPRODUCTS}"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        LIBOPENMPT_STATIC
-        ZLIB::ZLIB
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE LIBOPENMPT_STATIC ZLIB::ZLIB logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

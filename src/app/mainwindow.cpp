@@ -20,7 +20,6 @@
 #include "settingswindow.h"
 #include "soundmanager.h"
 #include "ui_mainwindow.h"
-#include "various.h"
 
 #define NEZPLAYLISTSPLITTER "::<>::?<>"
 #define PLAYLISTFIELDSPLITTER "<><>::????"
@@ -60,17 +59,17 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 #endif
 
     if (!QDir(dataPath).exists()) {
-        qFatal("Cannot find directory %s", dataPath.toStdString().c_str());
-        QCoreApplication::exit(EXIT_FAILURE);
+        logFatalQ("Cannot find directory " + dataPath, getClassName());
+        exit(1);
     }
 
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
     allowOnlyOneInstance = settings.value("allowOnlyOneInstance", true).toBool();
 
-    qDebug() << "Single instance mode is" << (allowOnlyOneInstance ? "enabled" : "disabled");
+    logDebug(string("Single instance mode is ") + (allowOnlyOneInstance ? "enabled" : "disabled"), getClassName());
 
     if (allowOnlyOneInstance && handleInstance()) {
-        qDebug() << "Another instance is already running: exiting";
+        logInfo("Another instance is already running: exiting", getClassName());
         exit(0);
     }
 
@@ -81,6 +80,12 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     QFontDatabase::addApplicationFont(resourcesFontsDir + "RobotoMono-Regular.ttf");
 
     ui->setupUi(this);
+
+    ui->plainTextEditLogMessages->moveCursor(QTextCursor::StartOfLine);
+
+    auto logTimer = new QTimer(this);
+    connect(logTimer, &QTimer::timeout, this, &MainWindow::updateLogDisplay);
+    logTimer->start(120);
 
     setWindowTitle(PROJECT_NAME_VERSIONED);
     windowTitle = PROJECT_NAME_VERSIONED;
@@ -112,7 +117,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     createThePopupMenuPlaylists();
     createThePopupMenuInstruments();
     createThePopupMenuChannels();
-    createThePopupLogWindow();
+    createThePopupLogMessages();
 
     createTrayMenu();
 
@@ -331,11 +336,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
                 }
             });
 
-    addDebugText("Settings, reverbpreset: " + reverbPreset);
-    addDebugText("Settings, reverbEnabled: " + QString::number(reverbEnabled));
-
-    addDebugText("isVolumeMuted: " + QString::number(isVolumeMuted));
-    addDebugText("resetVolume: " + QString::number(resetVolume));
+    logDebugQ("Settings, reverbpreset: " + reverbPreset, getClassName());
+    logDebugQ("Settings, reverbEnabled: " + QString::number(reverbEnabled), getClassName());
+    logDebugQ("isVolumeMuted: " + QString::number(isVolumeMuted), getClassName());
+    logDebugQ("resetVolume: " + QString::number(resetVolume), getClassName());
 
     ui->volumeSlider->setDefaultValue(100);
 
@@ -353,7 +357,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         isVolumeMuted = false;
     }
 
-    addDebugText("isVolumeMuted: " + QString::number(isVolumeMuted));
+    logDebugQ("isVolumeMuted: " + QString::number(isVolumeMuted), getClassName());
 
     if (isVolumeMuted) {
         ui->checkBoxVolumeOn->setCheckState(Qt::Unchecked);
@@ -378,7 +382,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     Timer->start(16);
 
-    qDebug() << "timerProgress started";
+    logDebug("timerProgress started", getClassName());
     playStarted = false;
     loaded = false;
     buttonNextClicked = true;
@@ -418,7 +422,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     playlists.removeOne(PLAYLIST_DEFAULT_FILENAME);
     playlists.insert(0, PLAYLIST_DEFAULT_FILENAME);
 
-    addDebugText("Loading " + QString::number(playlists.count()) + " playlists from " + userPath + PLAYLISTS_DIR);
+    logDebugQ("Loading " + QString::number(playlists.count()) + " playlists from " + userPath + PLAYLISTS_DIR,
+              getClassName());
 
     changeStyleSheetColor();
 
@@ -518,7 +523,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
     }
 
-    addDebugText("current playlist: " + currentPlaylist);
+    logDebugQ("Current playlist: " + currentPlaylist, getClassName());
     QList<QListWidgetItem *> items = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
 
     int row = 0;
@@ -616,7 +621,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     ui->dockWidgetFilename->hide();
     ui->dockWidgetInfo->hide();
     ui->dockWidgetInstruments->hide();
-    ui->dockWidgetLogger->hide();
+    ui->dockWidgetLogMessages->hide();
     ui->dockWidgetPlaylist->hide();
     ui->dockWidgetPlaylists->hide();
     ui->dockWidgetSamples->hide();
@@ -667,8 +672,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     ui->checkBoxLoop->installEventFilter(this);
     ui->checkBoxLoopPoints->installEventFilter(this);
     ui->pushButtonNewPlaylist->installEventFilter(this);
-
-    ui->Debug->moveCursor(QTextCursor::StartOfLine);
 
     on_buttonStop_clicked();
     updateButtons();
@@ -746,7 +749,7 @@ void MainWindow::dockWindowClosed(bool b) {
 }
 
 void MainWindow::slot_dockWidgetMenuChecked(ads::CDockWidget *d) const {
-    addDebugText("Clicked " + d->windowTitle());
+    logDebugQ("Clicked " + d->windowTitle(), getClassName());
 
     if (d->isClosed()) {
         d->toggleView(true);
@@ -774,7 +777,7 @@ void MainWindow::setPosition(const int offset) const {
     }
 
     SoundManager::getInstance().setPosition(targetPos, FMOD_TIMEUNIT_MS);
-    addDebugText("Set position to " + QString::number(targetPos));
+    logDebugQ("Set position to " + QString::number(targetPos), getClassName());
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
@@ -813,7 +816,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
             keyEvent = static_cast<QKeyEvent *>(event);
 
             if (keyEvent->key() == Qt::Key_Delete) {
-                addDebugText("Deleting playlists items");
+                logDebug("Deleting playlists items", getClassName());
                 deleteFilesInPlaylist();
             }
             //            else if(keyEvent->key()==Qt::Key_Enter || keyEvent->key()==Qt::Key_Return)
@@ -828,7 +831,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
             keyEvent = static_cast<QKeyEvent *>(event);
 
             if (keyEvent->key() == Qt::Key_Delete) {
-                addDebugText("Deleting playlist");
+                logDebug("Deleting playlist", getClassName());
                 deletePlaylist();
             }
         } else if (obj == visualizerFullScreen) {
@@ -1033,10 +1036,6 @@ bool MainWindow::handleMenuBarHiddenEvents(QEvent *event) {
 void MainWindow::resizeEvent(QResizeEvent *event) {
 }
 
-void MainWindow::addDebugText(const QString &debugText) const {
-    ui->Debug->appendPlainText(debugText);
-}
-
 void MainWindow::refreshInfoNetworkStream() {
     PlaylistItem pi;
     pi.fullPath = currentPlayingFilepath;
@@ -1191,13 +1190,13 @@ void MainWindow::updateButtons() {
 
 MainWindow::~MainWindow() {
     saveSettings();
-    addDebugText("Quitting...");
+    logDebug("Quitting...", getClassName());
     delete ui;
 }
 
 void MainWindow::playNextSong(const bool forceNext) {
-    addDebugText("Song ended. Time to play next song.");
-    addDebugText("PlayMode: " + QString::number(playMode));
+    logDebug("Track ended", getClassName());
+    logDebugQ("playMode: " + QString::number(playMode), getClassName());
 
     if (!tableWidgetPlaylists.contains(currentPlaylist)) {
         // this happens if a song is playing and that playlist is deleted while playing
@@ -1215,7 +1214,7 @@ void MainWindow::playNextSong(const bool forceNext) {
         }
     } else if (playMode == normal || playMode == repeatPlaylist || forceNext) {
         if (tableWidgetPlaylists[currentPlaylist]->model()->rowCount() == 0) {
-            addDebugText("Playlist is empty.");
+            logDebug("Playlist is empty", getClassName());
             on_buttonStop_clicked();
         } else {
             if (isShuffleEnabled()) {
@@ -1224,20 +1223,20 @@ void MainWindow::playNextSong(const bool forceNext) {
                 if (!shuffleToBePlayed[currentPlaylist].isEmpty()) {
                     if (currentShufflePosition[currentPlaylist] >= shufflePlayed[currentPlaylist].size()) {
                         const unsigned int next = rand() % shuffleToBePlayed[currentPlaylist].size();
-                        addDebugText("Next position shuffled: " + QString::number(next));
+                        logDebugQ("Next position shuffled: " + QString::number(next), getClassName());
                         removeHighlight();
                         currentRow = shuffleToBePlayed[currentPlaylist].at(next);
                         shufflePlayed[currentPlaylist].push_back(currentRow);
                         shuffleToBePlayed[currentPlaylist].remove(next);
                     } else {
-                        addDebugText("Previously had this position shuffled.");
+                        logDebug("Previously had this position shuffled", getClassName());
                         removeHighlight();
                         currentRow = shufflePlayed[currentPlaylist].at(currentShufflePosition[currentPlaylist]);
                     }
 
                     playSongAtRow(currentRow);
                 } else {
-                    addDebugText("No more songs in playlist.");
+                    logDebug("No more songs in playlist", getClassName());
                     on_buttonStop_clicked();
                 }
             } else // normal or repeat playlist with no shuffle
@@ -1251,13 +1250,13 @@ void MainWindow::playNextSong(const bool forceNext) {
                 } else {
                     if (playMode == normal || playMode == repeatSong) {
                         if (isUpdateCurrentRowToNextEnabled) {
-                            addDebugText("No more songs in playlist.");
+                            logDebug("No more songs in playlist", getClassName());
                             on_buttonStop_clicked();
                         } else {
                             playSongAtRow(currentRow);
                         }
                     } else {
-                        addDebugText("Repeat playlist.");
+                        logDebug("Repeat playlist", getClassName());
                         removeHighlight();
                         if (isUpdateCurrentRowToNextEnabled) {
                             currentRow = 0;
@@ -1281,7 +1280,7 @@ void MainWindow::highlightPlaylistItem(const QString &playlist, const int row) {
 }
 
 void MainWindow::resetShuffle(const QString &playlist) {
-    addDebugText("Reset shuffle for playlist '" + playlist + "'");
+    logDebugQ("Reset shuffle for playlist '" + playlist + "'", getClassName());
     shuffleToBePlayed[playlist].clear();
     shufflePlayed[playlist].clear();
 
@@ -1330,7 +1329,7 @@ void MainWindow::changeEvent(QEvent *event) {
 bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
     auto &sm = SoundManager::getInstance();
 
-    addDebugText("Try to load sound (playlistitem): " + fullPath);
+    logDebugQ("Try to load sound: " + fullPath, getClassName());
     ui->buttonPlay_2->setIcon(icons["pause"]);
     const QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
         currentRow, PlaylistModel::Section::Title);
@@ -1348,17 +1347,14 @@ bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
     const bool loadOK = sm.loadSound(fullPath, info);
 
     if (loadOK) {
-        addDebugText("Loaded sound succesfully.");
+        logDebug("Loaded sound succesfully", getClassName());
 
         loaded = true;
         currentPlayingFilepath = fullPath;
     } else {
         currentPlayingFilepath = "";
 
-        addDebugText("Failed to load sound " + fullPath);
-        qDebug() << "Failed to load sound setting bool to true";
-
-        cout << "Failed to load sound setting bool to true" << endl;
+        logErrorQ("Failed to load sound: " + fullPath, getClassName());
 
         QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
             currentRow, PlaylistModel::Section::IsPlayable, QModelIndex());
@@ -1521,7 +1517,7 @@ bool MainWindow::addSong(const QList<QUrl> &urls, const int row, const QString &
 
     while (it.hasNext()) {
         QUrl url = it.next();
-        addDebugText("opening url: " + url.toString());
+        logDebugQ("Opening url: " + url.toString(), getClassName());
 
         if (url.isLocalFile()) {
             QFile file(url.toLocalFile());
@@ -1593,7 +1589,7 @@ void MainWindow::addSong(const QStringList &filenames, int row, QString playlist
             continue;
         }
 
-        addDebugText("Added " + filenameFullPath);
+        logDebugQ("Added " + filenameFullPath, getClassName());
 
         if (filenameFullPath.endsWith(".m3u", Qt::CaseInsensitive) ||
             filenameFullPath.endsWith(".m3u8", Qt::CaseInsensitive)) {
@@ -1737,8 +1733,7 @@ void MainWindow::resetToDefaultColors() {
 }
 
 void MainWindow::on_playlist_itemDoubleClicked(const QModelIndex &index) {
-    addDebugText("dbl click! " + index.model()->data(index).toString());
-    addDebugText("dbl click! " + QString::number(index.row()));
+    logDebugQ("Double click track on row " + QString::number(index.row()), getClassName());
 
     // remove highlighted playlist
     // there might by a state where no playlist is highlighted if a user
@@ -1821,7 +1816,6 @@ void MainWindow::updateScrollText() const {
 void MainWindow::playSongAtRow(int rowProvided) {
     QString fullPath = tableWidgetPlaylists[currentPlaylist]->model()->index(
         rowProvided, PlaylistModel::Section::FullPath).data().toString();
-    addDebugText("Now playing and loading sound " + fullPath);
 
     // addDebugText("startSubsongPlayList: " + QString::number(playlists[currentPlaylist].at(playlistNumber)->startSubsongPlayList));
     currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, PlaylistModel::Section::Subsong)
@@ -1837,32 +1831,35 @@ void MainWindow::playSongAtRow(int rowProvided) {
     QString subsong = tableWidgetPlaylists[currentPlaylist]->model()->index(
         rowProvided, PlaylistModel::Section::Subsong).data().toString();
 
-    if (subsong != "") {
-        subsong = "[" + subsong + "]";
+    QString wavWriterFilename;
+
+    if (subsong == "") {
+        wavWriterFilename = baseName + subsong + "." + suffix;
+    } else {
+        wavWriterFilename = baseName + "[" + subsong + "]" + "." + suffix;
     }
 
-    setOutputDevice(outputDevice, baseName + subsong + "." + suffix);
+    setOutputDevice(outputDevice, wavWriterFilename);
 
-    addDebugText("setOutputDevice with extra data: " + fullPath + "/" + baseName + subsong + "." + suffix);
     playStarted = true;
 
     if (!loadSound(fullPath, currentSubsong - 1)) {
-        addDebugText("Error loading file.");
+        logError("Error loading file", getClassName());
         updateButtons();
         return;
     }
 
-    addDebugText("Check if we are playing already.");
+    logDebug("Check if we are playing already", getClassName());
 
     auto &sm = SoundManager::getInstance();
 
     if (sm.isPlaying()) {
-        addDebugText("Stopping sound.");
+        logDebug("Stopping sound", getClassName());
         playAction->setText("Play");
         sm.stop();
     }
 
-    addDebugText("Now playing");
+    logDebug("Now playing", getClassName());
 
     sm.playAudio(true);
 
@@ -1887,7 +1884,7 @@ void MainWindow::playSongAtRow(int rowProvided) {
         sm.setFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
     }
 
-    addDebugText("Mute is:" + QString::number(isVolumeMuted));
+    logDebugQ("Mute is: " + QString::number(isVolumeMuted), getClassName());
     sm.setMute(isVolumeMuted);
     sm.pause(false);
 
@@ -2511,7 +2508,7 @@ void MainWindow::restoreLayout() {
     ui->dockWidgetFilename->hide();
     ui->dockWidgetInfo->hide();
     ui->dockWidgetInstruments->hide();
-    ui->dockWidgetLogger->hide();
+    ui->dockWidgetLogMessages->hide();
     ui->dockWidgetPlaylist->hide();
     ui->dockWidgetPlaylists->hide();
     ui->dockWidgetSamples->hide();
@@ -2566,9 +2563,8 @@ void MainWindow::exportInstrument(const QString &format) {
 
     if (filename.isEmpty()) return;
 
-    addDebugText(
-        "Saving sample to " + format + ", no. " + QString::number(row) + ", filesize: " + QString::number(
-            info->samplesSize[row]));
+    logInfoQ("Saving sample to " + format + ", no. " + QString::number(row) + ", filesize: " +
+             QString::number(info->samplesSize[row]), getClassName());
 
     const unsigned int loopStart = info->samplesLoopStart[row];
     const unsigned int loopLength = info->samplesLoopEnd[row] - info->samplesLoopStart[row];
@@ -2614,7 +2610,7 @@ void MainWindow::exportInstrument(const QString &format) {
         // set "sampler" chunk if loop is enabled
         if (loopStart + loopLength > 2) // loop enabled?
         {
-            addDebugText("Loop is enabled.");
+            logDebug("Loop is enabled", getClassName());
             wavHeader.chunkSize += sizeof(samplerChunk_t);
             memset(&samplerChunk, 0, sizeof(samplerChunk_t));
             samplerChunk.chunkID = 0x6C706D73; // "smpl"
@@ -2714,16 +2710,16 @@ void MainWindow::fullscreenTracker() const {
     trackerFullScreen->showFullScreen();
 }
 
-void MainWindow::selectAllLogWindow() const {
-    ui->Debug->selectAll();
+void MainWindow::selectAllLogMessages() const {
+    ui->plainTextEditLogMessages->selectAll();
 }
 
-void MainWindow::copyLogWindow() const {
-    ui->Debug->copy();
+void MainWindow::copyLogMessages() const {
+    ui->plainTextEditLogMessages->copy();
 }
 
-void MainWindow::clearLogWindow() const {
-    ui->Debug->clear();
+void MainWindow::clearLogMessages() const {
+    ui->plainTextEditLogMessages->clear();
 }
 
 void MainWindow::renamePlaylist() {
@@ -2751,7 +2747,7 @@ void MainWindow::renamePlaylist() {
         QFile oldFile(playlistOldName);
         oldFile.rename(playlistNewName);
 
-        addDebugText("Renaming playlist " + playlistOldName + " to " + playlistNewName);
+        logDebugQ("Renaming playlist " + playlistOldName + " to " + playlistNewName, getClassName());
 
         ui->listWidget->currentItem()->setText(newName);
 
@@ -2793,7 +2789,8 @@ void MainWindow::savePlaylistAs() {
 
     savePlayList(playlistOldName, playlistNewName);
 
-    addDebugText("Saving playlist: " + playlistOldName + " as " + playlistNewName);
+    logDebugQ("Saving playlist: " + playlistOldName + " as " + playlistNewName,
+              getClassName());
     QListWidgetItem *newItem = ui->listWidget->currentItem()->clone();
     newItem->setText(newName);
     newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
@@ -2860,7 +2857,7 @@ void MainWindow::savePlayList(QString path, QString newPath) {
     out.setGenerateByteOrderMark(true);
 
     out << "#EXTM3U\n";
-    addDebugText("Saving playlist: " + newPath);
+    logDebugQ("Saving playlist: " + newPath, getClassName());
 
     for (int i = 0; i < tableWidgetPlaylists[fileInfoOld.fileName()]->model()->rowCount(); i++) {
         QString playlistKey = fileInfoOld.fileName();
@@ -2906,7 +2903,7 @@ void MainWindow::deleteAllPlaylists() {
         if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME) {
             QString playlistToDelete = userPath + PLAYLISTS_DIR + QDir::separator() + ui->listWidget->currentItem()
                                        ->text();
-            addDebugText("Deleting playlist " + playlistToDelete);
+            logDebugQ("Deleting playlist " + playlistToDelete, getClassName());
             QFile::remove(playlistToDelete);
             tableWidgetPlaylists.remove(ui->listWidget->currentItem()->text());
             delete ui->listWidget->takeItem(ui->listWidget->currentRow());
@@ -2925,7 +2922,7 @@ void MainWindow::deletePlaylist() {
 
     const QString playlistToDelete = userPath + PLAYLISTS_DIR + QDir::separator() + ui->listWidget->currentItem()->
                                      text();
-    addDebugText("Deleting playlist " + playlistToDelete);
+    logDebugQ("Deleting playlist " + playlistToDelete, getClassName());
     QFile::remove(playlistToDelete);
     //playlists.remove(ui->listWidget->currentItem()->text());
     tableWidgetPlaylists.remove(ui->listWidget->currentItem()->text());
@@ -2936,7 +2933,7 @@ void MainWindow::deletePlaylist() {
 }
 
 void MainWindow::clearPlaylist() {
-    addDebugText("Clears playlist " + selectedPlaylist);
+    logDebugQ("Clears playlist " + selectedPlaylist, getClassName());
     removeHighlight();
     currentRow = 0;
     tableWidgetPlaylists[selectedPlaylist]->model()->removeRows(
@@ -2966,11 +2963,11 @@ void MainWindow::deleteFilesInPlaylist() {
     bool rowDeleted = false;
     QVector<int> selectedRowsIdx;
 
-    addDebugText("Removing items from playlist: " + selectedPlaylist);
+    logDebugQ("Removing items from playlist: " + selectedPlaylist, getClassName());
 
     foreach(QModelIndex idx, tableWidgetPlaylists[selectedPlaylist]->selectionModel()->selectedRows()) {
         selectedRowsIdx.append(idx.row());
-        addDebugText("Removing items from playlist: " + QString::number(idx.row()));
+        logDebugQ("Removing items from playlist: " + QString::number(idx.row()), getClassName());
     }
 
     ranges::sort(selectedRowsIdx);
@@ -2985,11 +2982,11 @@ void MainWindow::deleteFilesInPlaylist() {
             currentRow--;
         }
 
-        addDebugText("Removing row: " + QString::number(selectedRowsIdx.at(idx)));
+        logDebugQ("Removing row: " + QString::number(selectedRowsIdx.at(idx)), getClassName());
     }
 
     if (rowDeleted) {
-        addDebugText("Row(s) in playlist deleted.");
+        logDebug("Row(s) in playlist deleted", getClassName());
 
         if (tableWidgetPlaylists[selectedPlaylist]->model()->rowCount() == 0) {
             on_buttonStop_clicked();
@@ -3013,7 +3010,7 @@ void MainWindow::deleteFilesInPlaylist() {
 void MainWindow::deleteFilesInvertedInPlaylist() {
     bool rowDeleted = false;
 
-    addDebugText("Removing items from playlist: " + selectedPlaylist);
+    logDebugQ("Removing items from playlist: " + selectedPlaylist, getClassName());
 
     // get all selected rows
     QVector<int> selectedRowsIdx;
@@ -3041,7 +3038,7 @@ void MainWindow::deleteFilesInvertedInPlaylist() {
     }
 
     if (rowDeleted) {
-        addDebugText("Row(s) in playlist deleted.");
+        logDebug("Row(s) in playlist deleted", getClassName());
 
         if (selectedPlaylist == currentPlaylist) {
             resetShuffle(currentPlaylist);
@@ -3085,20 +3082,20 @@ bool MainWindow::isChannelEnabled(const int index) const {
     return channels->getChannelEnabled(index);
 }
 
-void MainWindow::createThePopupLogWindow() {
-    selectAllLogWindowAction = new QAction(tr("&Select All"), this);
-    copyLogWindowAction = new QAction(tr("&Copy"), this);
-    clearLogWindowAction = new QAction(tr("C&lear"), this);
+void MainWindow::createThePopupLogMessages() {
+    selectAllLogMessagesAction = new QAction(tr("&Select All"), this);
+    copyLogMessagesAction = new QAction(tr("&Copy"), this);
+    clearLogMessagesAction = new QAction(tr("C&lear"), this);
 
-    connect(clearLogWindowAction, &QAction::triggered, this, &MainWindow::clearLogWindow);
-    connect(copyLogWindowAction, &QAction::triggered, this, &MainWindow::copyLogWindow);
-    connect(selectAllLogWindowAction, &QAction::triggered, this, &MainWindow::selectAllLogWindow);
+    connect(clearLogMessagesAction, &QAction::triggered, this, &MainWindow::clearLogMessages);
+    connect(copyLogMessagesAction, &QAction::triggered, this, &MainWindow::copyLogMessages);
+    connect(selectAllLogMessagesAction, &QAction::triggered, this, &MainWindow::selectAllLogMessages);
 
-    ui->Debug->setContextMenuPolicy(Qt::ActionsContextMenu);
+    ui->plainTextEditLogMessages->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    ui->Debug->addActions({clearLogWindowAction});
-    ui->Debug->addActions({copyLogWindowAction});
-    ui->Debug->addActions({selectAllLogWindowAction});
+    ui->plainTextEditLogMessages->addActions({clearLogMessagesAction});
+    ui->plainTextEditLogMessages->addActions({copyLogMessagesAction});
+    ui->plainTextEditLogMessages->addActions({selectAllLogMessagesAction});
 }
 
 // creates the popup menu for playlists window
@@ -3218,7 +3215,7 @@ void MainWindow::setCurrentRow(const int row) {
 }
 
 void MainWindow::playPrevSong() {
-    addDebugText("Play previous song.");
+    logDebug("Play previous song", getClassName());
 
     if ((currentRow != 0 && !isShuffleEnabled()) || (isShuffleEnabled() && currentShufflePosition[currentPlaylist] > 0)
         ||
@@ -3254,11 +3251,11 @@ void MainWindow::setOutputDeviceSetting(const int outputDeviceProvided) {
     outputDevice = outputDeviceProvided;
 }
 
-void MainWindow::setOutputDevice(const int outputDeviceProvided, const QString &fullPath) {
+void MainWindow::setOutputDevice(const int outputDeviceProvided, const QString &wavWriterFilename) {
     auto &sm = SoundManager::getInstance();
 
     sm.shutdown();
-    sm.Init(outputDeviceProvided, fullPath);
+    sm.Init(outputDeviceProvided, wavWriterFilename);
 
     sm.setNormalizeEnabled(normalizeEnabled);
     sm.setNormalizeFadeTime(normalizeFadeTime);
@@ -3662,7 +3659,7 @@ vector<PlaylistItem *> MainWindow::getPlayListEntriesM3u(QString filename) const
                 } else if (line.startsWith("file://", Qt::CaseInsensitive)) {
                     QUrl url(line);
                     line = url.toLocalFile();
-                    addDebugText("url: " + line);
+                    logDebugQ("Url: " + line, getClassName());
                     playlistItem->filename = line.trimmed();
                     playlistItem->fullPath = line.trimmed();
                     playlistItem->title = playlistItem->filename;
@@ -4211,7 +4208,7 @@ void MainWindow::on_checkBoxVolumeOn_clicked() {
 
     muteAction->setText(isVolumeMuted ? "Unmute" : "Mute");
 
-    addDebugText("Mute volume: " + strMute);
+    logDebugQ("Mute volume: " + strMute, getClassName());
     updateButtons();
 }
 
@@ -4239,7 +4236,7 @@ void MainWindow::on_volumeSlider_valueChanged(const int value) {
 }
 
 void MainWindow::on_playlist_doubleClicked(const QModelIndex &index) const {
-    addDebugText(" dbl clicked");
+    logDebug("Double click", getClassName());
 }
 
 void MainWindow::on_actionRestore_Default_triggered() {
@@ -4450,9 +4447,9 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet.replace(colorBackgroundOld, colorBackground);
     ui->dockWidgetContents_10->setStyleSheet(stylesheet);
 
-    stylesheet = ui->dockWidgetContents_9->styleSheet();
+    stylesheet = ui->dockWidgetLogMessagesContents->styleSheet();
     stylesheet.replace(colorBackgroundOld, colorBackground);
-    ui->dockWidgetContents_9->setStyleSheet(stylesheet);
+    ui->dockWidgetLogMessagesContents->setStyleSheet(stylesheet);
 
     stylesheet = ui->dockWidgetContents_4->styleSheet();
     stylesheet.replace(colorBackgroundOld, colorBackground);
@@ -4502,9 +4499,9 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet.replace(colorBackgroundOld, colorBackground);
     ui->dockWidgetInstruments->setStyleSheet(stylesheet);
 
-    stylesheet = ui->dockWidgetLogger->styleSheet();
+    stylesheet = ui->dockWidgetLogMessages->styleSheet();
     stylesheet.replace(colorBackgroundOld, colorBackground);
-    ui->dockWidgetLogger->setStyleSheet(stylesheet);
+    ui->dockWidgetLogMessages->setStyleSheet(stylesheet);
 
     stylesheet = ui->dockWidgetPlaylist->styleSheet();
     stylesheet.replace(colorBackgroundOld, colorBackground);
@@ -4554,9 +4551,9 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet.replace(colorBehindBackgroundOld, colorBehindBackground);
     ui->dockWidgetContents_10->setStyleSheet(stylesheet);
 
-    stylesheet = ui->dockWidgetContents_9->styleSheet();
+    stylesheet = ui->dockWidgetLogMessagesContents->styleSheet();
     stylesheet.replace(colorBehindBackgroundOld, colorBehindBackground);
-    ui->dockWidgetContents_9->setStyleSheet(stylesheet);
+    ui->dockWidgetLogMessagesContents->setStyleSheet(stylesheet);
 
     stylesheet = ui->pitchSlider->styleSheet();
     stylesheet.replace(colorMediumOld, colorMedium);
@@ -4590,9 +4587,9 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet.replace(colorMediumOld, colorMedium);
     ui->dockWidgetContents_8->setStyleSheet(stylesheet);
 
-    stylesheet = ui->dockWidgetContents_9->styleSheet();
+    stylesheet = ui->dockWidgetLogMessagesContents->styleSheet();
     stylesheet.replace(colorMediumOld, colorMedium);
-    ui->dockWidgetContents_9->setStyleSheet(stylesheet);
+    ui->dockWidgetLogMessagesContents->setStyleSheet(stylesheet);
 
     stylesheet = ui->dockWidgetContents_7->styleSheet();
     stylesheet.replace(colorMediumOld, colorMedium);
@@ -4606,9 +4603,9 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet.replace(colorMainTextOld, colorMainText);
     ui->dockWidgetContents_10->setStyleSheet(stylesheet);
 
-    stylesheet = ui->dockWidgetContents_9->styleSheet();
+    stylesheet = ui->dockWidgetLogMessagesContents->styleSheet();
     stylesheet.replace(colorMainTextOld, colorMainText);
-    ui->dockWidgetContents_9->setStyleSheet(stylesheet);
+    ui->dockWidgetLogMessagesContents->setStyleSheet(stylesheet);
 
     stylesheet = ui->dockWidgetContents_4->styleSheet();
     stylesheet.replace(colorMainTextOld, colorMainText);
@@ -4642,9 +4639,9 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet.replace(colorSelectionOld, colorSelection);
     ui->dockWidgetContents_10->setStyleSheet(stylesheet);
 
-    stylesheet = ui->dockWidgetContents_9->styleSheet();
+    stylesheet = ui->dockWidgetLogMessagesContents->styleSheet();
     stylesheet.replace(colorSelectionOld, colorSelection);
-    ui->dockWidgetContents_9->setStyleSheet(stylesheet);
+    ui->dockWidgetLogMessagesContents->setStyleSheet(stylesheet);
 
     stylesheet = ui->dockWidgetContents_4->styleSheet();
     stylesheet.replace(colorSelectionOld, colorSelection);
@@ -4760,9 +4757,9 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet.replace(colorDimmedTextOld, colorDimmedText);
     ui->dockWidgetInstruments->setStyleSheet(stylesheet);
 
-    stylesheet = ui->dockWidgetLogger->styleSheet();
+    stylesheet = ui->dockWidgetLogMessages->styleSheet();
     stylesheet.replace(colorDimmedTextOld, colorDimmedText);
-    ui->dockWidgetLogger->setStyleSheet(stylesheet);
+    ui->dockWidgetLogMessages->setStyleSheet(stylesheet);
 
     stylesheet = ui->dockWidgetPlaylist->styleSheet();
     stylesheet.replace(colorDimmedTextOld, colorDimmedText);
@@ -5041,7 +5038,7 @@ void MainWindow::handleSocketData(const QStringList &args) {
 
         const int rowCountBeforeAddSong = tableWidgetPlaylists[currentPlaylist]->model()->rowCount();
 
-        addDebugText("count: " + QString::number(list.count()));
+        logDebugQ("Row count: " + QString::number(list.count()), getClassName());
         //addSong(list,0,PLAYLIST_DEFAULT_FILENAME,false);
         addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
 
@@ -5122,8 +5119,10 @@ void MainWindow::deleteWorkspace(const QString &workspace) const {
 }
 
 void MainWindow::slot_LoadWorkspace(const QString &filename) {
-    if (const QSettings settings(userPath + LAYOUTS_DIR + "/" + filename, QSettings::IniFormat);
+    const auto filePath = userPath + LAYOUTS_DIR + "/" + filename;
+    if (const QSettings settings(filePath, QSettings::IniFormat);
         !dockManager->restoreState(settings.value("Internal/dockingState").toByteArray())) {
+        logErrorQ("Couldn't load layout from file " + filePath, getClassName());
         QMessageBox::critical(this, "Error", "Couldn't load layout");
     }
 }
@@ -5145,7 +5144,7 @@ void MainWindow::createNewWorkspace(const QString &filename) {
 
 void MainWindow::downloadHvscFilesComplete(const QString &error) {
     if (!error.isEmpty()) {
-        addDebugText("HVSC documents download: " + error);
+        logErrorQ("HVSC documents download: " + error, getClassName());
         return;
     }
 
@@ -5290,7 +5289,7 @@ void MainWindow::setupAdvancedDockingSystem() {
         "QScrollBar:vertical {background-color: #282828/*background*/;     width: 15px;     margin: 0 3px 0 3px;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:vertical {     background-color: #404040/*medium*/;     min-height: 25px;     border-radius: 4px; } QScrollBar:horizontal {     background-color: #282828/*background*/;     height: 15px;     margin: 3px 0 3px 0;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:horizontal {     background-color: #404040/*medium*/;     min-width: 5px;     border-radius: 4px; } QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {     background: none; } QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {     background: none; } QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal {     background: none; } QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {     background: none; } QScrollBar::sub-line:vertical {     height: 0;     width: 0; } QScrollBar::add-line:vertical {     height: 0;     width: 0; } QScrollBar::sub-line:horizontal {     height: 0;     width: 0; } QScrollBar::add-line:horizontal {     height: 0;     width: 0; }QScrollArea#dockWidgetScrollArea {	background: #282828/*background*/;padding: 0px;	border: none;} ads--CDockWidgetTab QLabel {font-family:Roboto;font-size:14px;color:#b1b1b1/*dimmed text*/;}ads--CDockWidgetTab[activeTab=\"true\"] QLabel {color:#ffffff/*main text*/;}#tabCloseButton {margin-top: 0;background: none;border: none;}ads--CDockContainerWidget ads--CDockSplitter::handle {background: #161616/*behind-background*/;}ads--CDockAreaTitleBar { background: #282828/*background*/;}ads--CDockWidgetTab {background: #282828/*background*/}");
 
     dockWidgetLogMessages = new ads::CDockWidget(dockManager, "Log Messages");
-    dockWidgetLogMessages->setWidget(ui->dockWidgetContents_9, ads::CDockWidget::ForceNoScrollArea);
+    dockWidgetLogMessages->setWidget(ui->dockWidgetLogMessagesContents, ads::CDockWidget::ForceNoScrollArea);
     dockManager->addDockWidget(ads::BottomDockWidgetArea, dockWidgetLogMessages);
     dockWidgets.append(dockWidgetLogMessages);
 
@@ -5372,7 +5371,7 @@ void MainWindow::updateCheck() {
 
     connect(checker, &UpdateChecker::checkDone, this, [this](const QString &version, const QString &error) {
         if (!error.isEmpty()) {
-            addDebugText("Update check: " + error);
+            logErrorQ("Update check: " + error, getClassName());
             return;
         }
 
@@ -5394,4 +5393,11 @@ void MainWindow::updateCheck() {
 
 bool MainWindow::isNetworkStream(const QString &str) {
     return str.startsWith("http://", Qt::CaseInsensitive) || str.startsWith("https://", Qt::CaseInsensitive);
+}
+
+void MainWindow::updateLogDisplay() const {
+    for (const auto msgs = fetchLogMessages();
+         const auto &msg: msgs) {
+        ui->plainTextEditLogMessages->appendPlainText(QString::fromStdString(msg));
+    }
 }

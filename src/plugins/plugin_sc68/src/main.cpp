@@ -3,6 +3,7 @@
 #include "file68/sc68/rsc68.h"
 #include "fmod_errors.h"
 #include "info.h"
+#include "logger.h"
 #include "plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
@@ -80,6 +81,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    logDebug("Try", PLUGIN_sc68_NAME);
+
     const auto plugin = new pluginSc68(codec);
 
     sc68_init(&plugin->init68);
@@ -157,7 +160,6 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     const auto *plugin = static_cast<pluginSc68 *>(codec->plugindata);
 
     if (sc68_process(plugin->sc68, buffer, static_cast<int>(plugin->waveformat.pcmblocksize)) == SC68_MIX_ERROR) {
-        //cout << "FMOD_ERR_FORMAT play" << endl;
         //return FMOD_ERR_FORMAT;
     }
 

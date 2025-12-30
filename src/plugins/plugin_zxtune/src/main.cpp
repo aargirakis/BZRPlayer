@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <iostream>
 #include <regex>
 #include <sstream>
 #include "attributes.h"
@@ -13,6 +12,7 @@
 #include "module/players/pipeline.h"
 #include "fmod_errors.h"
 #include "info.h"
+#include "logger.h"
 #include "plugins.h"
 
 using namespace std;
@@ -180,6 +180,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    logDebug("Try", PLUGIN_zxtune_NAME);
+
     auto *plugin = new pluginZxtune(codec);
     const auto info = static_cast<Info *>(userexinfo->userdata);
 
@@ -300,7 +302,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
         return FMOD_OK;
     } catch (const Error &error) {
-        cout << "ZXTune: " << error.ToString() << endl;
+        logError(error.ToString(), PLUGIN_zxtune_NAME);
         return FMOD_ERR_FORMAT;
     }
 }

@@ -15,11 +15,8 @@
 #include "plugins.h"
 #include "soundmanager.h"
 
-void SoundManager::Init(int outputDeviceProvided, const QString &filePathProvided) {
+void SoundManager::Init(int outputDeviceProvided, const QString &wavWriterFilename) {
     result = FMOD_System_Create(&system, FMOD_VERSION);
-    checkFmodError(result);
-
-    result = FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_LOG, FMOD_DEBUG_MODE_FILE, nullptr, "fmodlog.txt");
     checkFmodError(result);
 
     unsigned int version;
@@ -27,42 +24,40 @@ void SoundManager::Init(int outputDeviceProvided, const QString &filePathProvide
     checkFmodError(result);
 
     if (version < FMOD_VERSION) {
-        printf("Error!  You are using an old version of FMOD %08x.  This program requires %08x\n", version,
-               FMOD_VERSION);
+        logError(
+            format("You are using an old version of FMOD {:08x}: This program requires {:08x}", version, FMOD_VERSION ),
+            getClassName());
     }
 
     currentDevice = outputDeviceProvided;
 
-    printf("Setting output to: %i\n", currentDevice);
+    logDebug("Setting output to device " + to_string(currentDevice), getClassName());
 
     const auto outputType = static_cast<FMOD_OUTPUTTYPE>(outputDeviceProvided);
     result = FMOD_System_SetOutput(system, outputType);
     checkFmodError(result);
 
     if (outputType != FMOD_OUTPUTTYPE_WAVWRITER) {
-        printf("FMOD_System_Init: %i\n", currentDevice);
+        logDebug("FMOD_System_Init", getClassName());
         result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, nullptr);
         checkFmodError(result);
     } else {
-        QString outputFilePath = filePathProvided;
-
         if (const QDir pathDir(userPath + "/recordings"); !pathDir.exists()) {
             QDir().mkdir(userPath + "/recordings");
         }
 
-        outputFilePath = userPath + "/recordings/" + filePathProvided;
-        cout << "output file path: " << outputFilePath.toStdString().c_str() << "\n";
-
         const QDateTime date = QDateTime::currentDateTime();
         const QString formattedTime = date.toString("yyyy.MM.dd - hh.mm.ss.ms");
-        outputFilePath = outputFilePath + " " + formattedTime + ".wav";
 
-        printf("FMOD_System_Init: WAVWRITER %i\n", currentDevice);
+        QString outputFilePath = wavWriterFilename + " " + formattedTime + ".wav";
 
-        cout << "output file path complete: " << outputFilePath.toStdString().c_str() << "\n";
+        logInfoQ("Output filename: " + outputFilePath, getClassName());
+
+        outputFilePath = userPath + "/recordings/" + outputFilePath;
+
+        logDebugQ("FMOD_System_Init, WaveWriter output file path: " + outputFilePath, getClassName());
         result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, outputFilePath.toStdString().data());
         checkFmodError(result);
-        printf("WAVWRITER is set\n");
     }
 
     FMOD_System_CreateChannelGroup(system, "", &channelGroup);
@@ -77,16 +72,18 @@ void SoundManager::Init(int outputDeviceProvided, const QString &filePathProvide
     FMOD_DSP_SetActive(dspFft, true);
     checkFmodError(result);
 
+    // TODO: this never worked since should have been:
+    //  FMOD_DSP_SetParameterInt(dspFft,  FMOD_DSP_FFT_WINDOW, FMOD_DSP_FFT_WINDOW_HANNING);
     result = FMOD_DSP_SetParameterInt(dspFft, FMOD_DSP_FFT_WINDOW_HANNING, 16 * 2);
     checkFmodError(result);
 
-    FMOD_ChannelGroup_AddDSP(channelGroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspFft);
+    result = FMOD_ChannelGroup_AddDSP(channelGroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspFft);
     checkFmodError(result);
 
-    FMOD_ChannelGroup_AddDSP(channelGroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspNormalizer);
+    result = FMOD_ChannelGroup_AddDSP(channelGroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspNormalizer);
     checkFmodError(result);
 
-    FMOD_DSP_SetActive(dspNormalizer, true);
+    result = FMOD_DSP_SetActive(dspNormalizer, true);
     checkFmodError(result);
 }
 
@@ -429,16 +426,9 @@ void SoundManager::checkFmodError(const FMOD_RESULT result) {
 
 void SoundManager::checkFmodError(const FMOD_RESULT result, const QString &msg) {
     if (result != FMOD_OK) {
-        printf("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
-
-        if (msg == "") {
-            printf("\n");
-        }
-        if (msg != "") {
-            printf(" - %s\n", msg.toStdString().c_str());
-        }
-
-        flush(cout);
+        logError(
+            "FMOD error " + to_string(result) + ": " + FMOD_ErrorString(result) + (msg.isEmpty() ? "" : " " + msg.
+                toStdString()), getClassName());
     }
 }
 
@@ -597,7 +587,7 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
     extraInfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
     extraInfo.userdata = info;
 
-    cout << "Loading " << filePathStr << " (subsong " << info->currentSubsong + 1 << ")" << endl;
+    logInfo("Loading " + filePathStr + " (subsong " + to_string(info->currentSubsong + 1) + ")", getClassName());
 
     constexpr FMOD_MODE fmodModeNetwork = FMOD_ACCURATETIME | FMOD_CREATESTREAM;
     constexpr FMOD_MODE fmodModeLocal = fmodModeNetwork | FMOD_OPENMEMORY_POINT;
@@ -611,12 +601,15 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
     if (!isLocalFilePath) {
         fmodModeCurrent = fmodModeNetwork;
         pathOrBuffer = filePathStr.c_str();
+        logDebug("Try", PLUGIN_fmod_NAME);
     } else {
         pathOrBuffer = reinterpret_cast<const char *>(info->fileBuffer);
         extraInfo.length = static_cast<unsigned int>(info->filesize);
 
         // use fmod for midi playback
         if (isFormatMidi(info->fileBuffer, info->filesize)) {
+            logDebug("Try", PLUGIN_fmod_NAME);
+
             static const char *fmodDlsPath = strdup((dataPath + FMOD_DLS_PATH).toStdString().c_str());
             extraInfo.dlsname = fmodDlsPath;
 
@@ -643,7 +636,7 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
         return false;
     }
 
-    cout << "FMOD_System_CreateSound done\n";
+    logDebug("FMOD_System_CreateSound done", getClassName());
 
     FMOD_SOUND_TYPE type;
     int channels;
@@ -676,7 +669,7 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
         }
     }
 
-    cout << "selected plugin: " << info->pluginName << endl;
+    logInfo("Selected plugin: " + info->pluginName, getClassName());
 
     return true;
 }
@@ -690,14 +683,14 @@ pair<uint8_t *, size_t> SoundManager::mapFile(const QString &fileToMap) {
                                    nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
     if (hFile == INVALID_HANDLE_VALUE) {
-        cerr << "Error reading file " << fileToMapStr << ": error " << GetLastError() << endl;
+        logError("Error reading file " + fileToMapStr + ": error " + to_string(GetLastError()), getClassName());
         return {nullptr, NULL};
     }
 
     LARGE_INTEGER size;
 
     if (!GetFileSizeEx(hFile, &size)) {
-        cerr << "Error getting size of file " << fileToMapStr << ": error " << GetLastError() << endl;
+        logError("Error getting size of file " + fileToMapStr + ": error " + to_string(GetLastError()), getClassName());
         CloseHandle(hFile);
         return {nullptr, NULL};
     }
@@ -707,14 +700,14 @@ pair<uint8_t *, size_t> SoundManager::mapFile(const QString &fileToMap) {
     const int fd = open(fileToMapStr.c_str(), O_RDONLY);
 
     if (fd < 0) {
-        cerr << "Error reading file " << fileToMapStr << ": " << strerror(errno) << endl;
+        logError("Error reading file " + fileToMapStr + ": " + strerror(errno), getClassName());
         return {nullptr, NULL};
     }
 
     struct stat st = {};
 
     if (const int status = fstat(fd, &st); status < 0) {
-        cerr << "Stat failed for file " << fileToMapStr << ": " << strerror(errno) << endl;
+        logError("Stat failed for file " + fileToMapStr + ": " + strerror(errno), getClassName());
         close(fd);
         return {nullptr, NULL};
     }
@@ -722,7 +715,7 @@ pair<uint8_t *, size_t> SoundManager::mapFile(const QString &fileToMap) {
     filesize = st.st_size;
 #endif
     if (filesize <= 0) {
-        cerr << "Invalid size for file " << fileToMapStr << endl;
+        logError("Invalid size for file " + fileToMapStr, getClassName());
         return {nullptr, NULL};
     }
 
@@ -735,7 +728,8 @@ pair<uint8_t *, size_t> SoundManager::mapFile(const QString &fileToMap) {
     CloseHandle(hFile);
 
     if (hMapping == nullptr) {
-        cerr << "Error creating file mapping object for " << fileToMapStr << ": error " << err << endl;
+        logError("Error creating file mapping object for " + fileToMapStr + ": error " + to_string(err),
+                 getClassName());
         return {nullptr, NULL};
     }
 
@@ -746,7 +740,7 @@ pair<uint8_t *, size_t> SoundManager::mapFile(const QString &fileToMap) {
     CloseHandle(hMapping);
 
     if (fileMapped == nullptr) {
-        cerr << "Error mapping file " << fileToMapStr << " to memory: error " << err << endl;
+        logError("Error mapping file " + fileToMapStr + " to memory: error " + to_string(err), getClassName());
         return {nullptr, NULL};
     }
 #else
@@ -758,7 +752,7 @@ pair<uint8_t *, size_t> SoundManager::mapFile(const QString &fileToMap) {
     close(fd);
 
     if (fileMapped == MAP_FAILED) {
-        cerr << "Error mapping file " << fileToMapStr << " to memory: " << errStr << endl;
+        logError("Error mapping file " + fileToMapStr + " to memory: " + errStr, getClassName());
         return {nullptr, NULL};
     }
 #endif
@@ -766,15 +760,16 @@ pair<uint8_t *, size_t> SoundManager::mapFile(const QString &fileToMap) {
     return {fileMapped, filesize};
 }
 
-void SoundManager::unmapFile(uint8_t *fileMapped, const size_t filesize, const string_view &filePath) {
+void SoundManager::unmapFile(uint8_t *fileMapped, const size_t filesize, const string &filePath) {
     if (fileMapped != nullptr) {
 #ifdef WIN32
         if (!UnmapViewOfFile(fileMapped)) {
-            cerr << "Error unmapping file " << filePath << " from memory: error " << GetLastError() << endl;
+            logError("Error unmapping file " + filePath + " from memory: error " + to_string(GetLastError()),
+                     getClassName());
         }
 #else
         if (const int rc = munmap(fileMapped, filesize); rc < 0) {
-            cerr << "Error unmapping file " << filePath << " from memory: " << strerror(errno) << endl;
+            logError("Error unmapping file " + filePath + " from memory: " + strerror(errno), getClassName());
         }
 #endif
     }

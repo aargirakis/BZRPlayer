@@ -36,6 +36,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${SDL2_INCLUDE_DIR}
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE NOSDL_MIXER)
@@ -47,6 +48,8 @@ if (WIN32)
 endif ()
 
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-incompatible-pointer-types>)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE -lwinmm)

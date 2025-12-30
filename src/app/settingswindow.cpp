@@ -167,7 +167,7 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->comboBoxReverb->addItem("Sewer pipe", "Sewer pipe");
     ui->comboBoxReverb->addItem("Underwater", "Underwater");
 
-    mainWindow->addDebugText("settings window getReverbPreset: " + mainWindow->getReverbPreset());
+    logDebugQ("Settings window getReverbPreset: " + mainWindow->getReverbPreset(), getClassName());
     index = ui->comboBoxReverb->findData(mainWindow->getReverbPreset());
 
     ui->comboBoxReverb->setCurrentIndex(index);
@@ -192,11 +192,11 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->comboBoxDefaultPlayMode->setCurrentIndex(comboBoxDefaultPlayModeIndex);
 
     ui->checkBoxNormalizer->setChecked(mainWindow->isNormalizeEnabled());
-    mainWindow->
-            addDebugText("mainWindow->getNormalizeEnabled(): " + QString::number(mainWindow->isNormalizeEnabled()));
+    logDebugQ("mainWindow->getNormalizeEnabled(): " + QString::number(mainWindow->isNormalizeEnabled()),
+              getClassName());
 
     ui->checkBoxReverb->setChecked(mainWindow->isReverbEnabled());
-    mainWindow->addDebugText("mainWindow->getReverbEnabled(): " + QString::number(mainWindow->isReverbEnabled()));
+    logDebugQ("mainWindow->getReverbEnabled(): " + QString::number(mainWindow->isReverbEnabled()), getClassName());
 
     ui->checkBoxMilliseconds->setChecked(mainWindow->getDisplayMilliseconds());
 
@@ -656,7 +656,7 @@ void settingsWindow::on_sliderNormalizerMaxAmp_valueChanged(const int value) con
 }
 
 void settingsWindow::on_checkBoxNormalizer_toggled(const bool isChecked) const {
-    mainWindow->addDebugText("on_checkBoxNormalizer_toggled");
+    logDebug("on_checkBoxNormalizer_toggled", getClassName());
     ui->sliderNormalizerFadeTime->setEnabled(isChecked);
     ui->sliderNormalizerThreshold->setEnabled(isChecked);
     ui->sliderNormalizerMaxAmp->setEnabled(isChecked);
@@ -669,7 +669,7 @@ void settingsWindow::on_checkBoxNormalizer_toggled(const bool isChecked) const {
 }
 
 void settingsWindow::on_checkBoxReverb_toggled(const bool isChecked) const {
-    mainWindow->addDebugText("on_checkBoxReverb_toggled");
+    logDebug("on_checkBoxReverb_toggled", getClassName());
     ui->comboBoxReverb->setEnabled(isChecked);
 
     mainWindow->setReverbEnabled(isChecked);
@@ -3645,7 +3645,7 @@ void settingsWindow::on_buttonLibsidplayfpHvscFilesDownload_clicked() {
 
 void settingsWindow::downloadHvscFilesComplete(const QString &error) const {
     if (!error.isEmpty()) {
-        mainWindow->addDebugText("HVSC documents download: " + error);
+        logErrorQ("HVSC documents download: " + error, getClassName());
         return;
     }
 

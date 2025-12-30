@@ -67,6 +67,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         src/flod  #TODO
 
         ${CMAKE_SOURCE_DIR}/src/app
+        ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
 set(UADE_DATA_DIR "${PLUGINS_DIR}/${PROJECT_NAME}")
@@ -95,7 +96,7 @@ set_target_properties(LIBUADE_STATIC PROPERTIES
         IMPORTED_LOCATION "${EXTERNAL_SOURCE_DIR}/${BUILD_BYPRODUCTS}"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE LIBUADE_STATIC -L"${FMOD_DIR}" -lfmod)
+target_link_libraries(${PROJECT_NAME} PRIVATE LIBUADE_STATIC -L"${FMOD_DIR}" -lfmod logger)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE -lws2_32)

@@ -2,12 +2,15 @@
 #define SOUNDMANAGER_H
 
 #include <QString>
-#include "info.h"
 #include "fmod_errors.h"
+#include "info.h"
+#include "various.h"
 
 using namespace std;
 
 class SoundManager {
+    PROVIDE_CLASS_NAME()
+
 public:
     static SoundManager &getInstance() {
         static SoundManager instance;
@@ -16,7 +19,7 @@ public:
 
     Info *info;
 
-    void Init(int outputDeviceProvided, const QString &filePathProvided);
+    void Init(int outputDeviceProvided, const QString &wavWriterFilename);
 
     void loadPluginChain();
 
@@ -60,7 +63,7 @@ public:
 
     static pair<uint8_t *, size_t> mapFile(const QString &fileToMap);
 
-    static void unmapFile(uint8_t *fileMapped, size_t filesize, const string_view &filePath);
+    static void unmapFile(uint8_t *fileMapped, size_t filesize, const string &filePath);
 
     static const char *getFmodSoundTypeName(FMOD_SOUND_TYPE type);
 
