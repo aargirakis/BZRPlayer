@@ -55,13 +55,14 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 #endif
 
     if (!QDir(dataPath).exists()) {
-        qFatal("Cannot find directory %s", dataPath.toStdString().c_str());
+        qFatal("Cannot find directory %s", dataPath.toStdString().c_str()); // TODO
         QCoreApplication::exit(EXIT_FAILURE);
     }
 
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
     allowOnlyOneInstance = settings.value("allowOnlyOneInstance", true).toBool();
 
+    // TODO
     qDebug() << "Single instance mode is" << (allowOnlyOneInstance ? "enabled" : "disabled");
 
     if (allowOnlyOneInstance && handleInstance()) {
@@ -326,6 +327,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
                 }
             });
 
+    // TODO
     addDebugText("Settings, reverbpreset: " + reverbPreset);
     addDebugText("Settings, reverbEnabled: " + QString::number(reverbEnabled));
 
@@ -1327,6 +1329,7 @@ bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
     } else {
         currentPlayingFilepath = "";
 
+        // TODO how to flush qt debug text? https://forum.qt.io/topic/116416/qdebug-instant-output
         addDebugText("Failed to load sound " + fullPath);
         qDebug() << "Failed to load sound setting bool to true";
 

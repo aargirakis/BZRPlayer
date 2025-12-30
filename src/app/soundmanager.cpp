@@ -19,6 +19,7 @@ void SoundManager::Init(int outputDeviceProvided, const QString &filePathProvide
     result = FMOD_System_Create(&system, FMOD_VERSION);
     checkFmodError(result);
 
+    // TODO
     result = FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_LOG, FMOD_DEBUG_MODE_FILE, nullptr, "fmodlog.txt");
     checkFmodError(result);
 
@@ -27,12 +28,14 @@ void SoundManager::Init(int outputDeviceProvided, const QString &filePathProvide
     checkFmodError(result);
 
     if (version < FMOD_VERSION) {
+        // TODO
         printf("Error!  You are using an old version of FMOD %08x.  This program requires %08x\n", version,
                FMOD_VERSION);
     }
 
     currentDevice = outputDeviceProvided;
 
+    // TODO
     printf("Setting output to: %i\n", currentDevice);
 
     const auto outputType = static_cast<FMOD_OUTPUTTYPE>(outputDeviceProvided);
