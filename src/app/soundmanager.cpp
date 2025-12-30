@@ -188,13 +188,13 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_klystron_LIB, 1701);
     }
-    if (PLUGIN_libkss_LIB != "")
-    {
-        loadPlugin(PLUGIN_libkss_LIB, 1701);
-    }
     if (PLUGIN_asap_LIB != "")
     {
         loadPlugin(PLUGIN_asap_LIB, 1701);
+    }
+    if (PLUGIN_libkss_LIB != "")
+    {
+        loadPlugin(PLUGIN_libkss_LIB, 1701);
     }
     if (PLUGIN_organya_decoder_LIB != "")
     {
