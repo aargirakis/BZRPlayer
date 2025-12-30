@@ -1344,8 +1344,9 @@ bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
 
         addDebugText("Failed to load sound " + fullPath);
         qDebug() << "Failed to load sound setting bool to true";
-        cout << "Failed to load sound setting bool to true\n";
-        flush(cout);
+
+        cout << "Failed to load sound setting bool to true" << endl;
+
         QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 6, QModelIndex());
         tableWidgetPlaylists[currentPlaylist]->model()->setData(index, true, Qt::EditRole);
         tableWidgetPlaylists[currentPlaylist]->update();

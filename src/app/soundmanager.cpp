@@ -33,7 +33,7 @@ void SoundManager::Init(int outputDeviceProvided, const QString &filePathProvide
 
     currentDevice = outputDeviceProvided;
 
-    printf("Setting ouput to: %i\n", currentDevice);
+    printf("Setting output to: %i\n", currentDevice);
 
     const auto outputType = static_cast<FMOD_OUTPUTTYPE>(outputDeviceProvided);
     result = FMOD_System_SetOutput(system, outputType);
@@ -65,32 +65,27 @@ void SoundManager::Init(int outputDeviceProvided, const QString &filePathProvide
         printf("WAVWRITER is set\n");
     }
 
-    cout << "FMOD_System_CreateChannelGroup(system,"",&channelGroup)\n";
     FMOD_System_CreateChannelGroup(system, "", &channelGroup);
     checkFmodError(result);
 
-    cout << "FMOD_System_CreateDSPByType(system,FMOD_DSP_TYPE_NORMALIZE, &dspNormalizer)\n";
     result = FMOD_System_CreateDSPByType(system, FMOD_DSP_TYPE_NORMALIZE, &dspNormalizer);
     checkFmodError(result);
 
-    cout << "FMOD_System_CreateDSPByType(system,FMOD.DSP_TYPE.FFT, &dspFFT)\n";
     result = FMOD_System_CreateDSPByType(system, FMOD_DSP_TYPE_FFT, &dspFft);
     checkFmodError(result);
-    cout << "FMOD_DSP_SetActive(dspFFT,true)\n";
+
     FMOD_DSP_SetActive(dspFft, true);
     checkFmodError(result);
-    cout << "FMOD_DSP_SetParameterInt(dspFFT,FMOD_DSP_FFT_WINDOW_HANNING,1024*2\n";
+
     result = FMOD_DSP_SetParameterInt(dspFft, FMOD_DSP_FFT_WINDOW_HANNING, 16 * 2);
     checkFmodError(result);
-    cout << "FMOD_ChannelGroup_AddDSP(channelGroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspFFT)\n";
+
     FMOD_ChannelGroup_AddDSP(channelGroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspFft);
     checkFmodError(result);
 
-    cout << "FMOD_ChannelGroup_AddDSP(channelGroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspNormalizer))\n";
     FMOD_ChannelGroup_AddDSP(channelGroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspNormalizer);
     checkFmodError(result);
 
-    cout << "FMOD_DSP_SetActive(dspNormalizer,true)\n";
     FMOD_DSP_SetActive(dspNormalizer, true);
     checkFmodError(result);
 }
@@ -283,12 +278,6 @@ int SoundManager::getSoundData(const unsigned int channelProvided) {
     }
 
     return val / 5 * 100;
-
-    //    cout << "numchannels" << data->numchannels << "\n";
-    //    flush(cout);
-    //    cout << "length" << data->length << "\n";
-    //    flush(cout);
-
 
     //result = FMOD_System_GetSoftwareFormat(system,&rate , nullptr, nullptr);
     //    nyquist = windowsize / 2;
@@ -668,8 +657,7 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
         }
     }
 
-    cout << "plugin: " << info->pluginName << "\n";
-    flush(cout);
+    cout << "selected plugin: " << info->pluginName << endl;
 
     return true;
 }

@@ -119,8 +119,7 @@ void Amiga::reset() {
     loopLen = 4;
     //memory = vector<signed char>();
 
-    cout << "reset mem\n";
-    flush(cout);
+    cout << "reset mem" << endl;
 }
 
 void Amiga::mixer(void *_stream, unsigned long int length) {
@@ -236,8 +235,6 @@ void Amiga::mixer(void *_stream, unsigned long int length) {
         sample->l = sample->r = 0.0;
         sample = sample->next;
     }
-    //cout << "Amiga::mixer() done" << "\n";
-    //flush(cout);
 }
 
 void Amiga::setModel(int model) {

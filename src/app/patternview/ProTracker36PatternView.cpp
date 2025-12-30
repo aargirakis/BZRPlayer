@@ -119,8 +119,7 @@ void ProTracker36PatternView::paintAbove(QPainter *painter, int height, int curr
     painter->fillRect(534, 42, 1, height - topHeight() - 1, colorShadow);
     painter->fillRect(535, 42, 1, height - topHeight() - 1, colorHilite);
 
-    cout << "height: " << height << "\n";
-    fflush(stdout);
+    cout << "height: " << height << endl;
 
     float currentRowPos = currentRow / 64.0;
     int yPos = currentRowPos * (height - 88) + 44;

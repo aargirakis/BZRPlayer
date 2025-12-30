@@ -235,7 +235,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     if (uade_play_from_buffer(plugin->info->filePath.c_str(), plugin->info->fileBuffer, plugin->info->filesize,
                               -1, plugin->uadeState) <= 0) {
-        cout << "Can not play " << plugin->info->filePath << endl;
         return FMOD_ERR_FORMAT;
     }
 
@@ -254,7 +253,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
         if (uade_play_from_buffer(plugin->info->filePath.c_str(), plugin->info->fileBuffer, plugin->info->filesize,
                                   subsong, plugin->uadeState) <= 0) {
-            cout << "Can not play " << plugin->info->filePath << " subsong " << subsong << endl;
             return FMOD_ERR_FORMAT;
         }
     }
