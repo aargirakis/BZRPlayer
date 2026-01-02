@@ -74,9 +74,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
     auto *smallBuffer = new uint8_t[16];
-    FMOD_CODEC_FILE_READ(codec, smallBuffer, 16, &bytesread);
+    FMOD_CODEC_FILE_READ(codec, smallBuffer, 16, nullptr);
 
     /* skip gm.dls:
      * plugin_vgmstream has higher prio than FMOD_SOUND_TYPE_MIDI,

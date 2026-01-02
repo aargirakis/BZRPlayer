@@ -85,6 +85,18 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    auto *smallBuffer = new uint8_t[16];
+    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
+    FMOD_CODEC_FILE_READ(codec, smallBuffer, 16, nullptr);
+
+    // skip midi and gm.dls
+    if (memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF\x0c\x80" "4\0DLS colh", 16) == 0) {
+        delete[] smallBuffer;
+        return FMOD_ERR_FORMAT;
+    }
+
+    delete[] smallBuffer;
+
     auto *plugin = new pluginAdplug(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 

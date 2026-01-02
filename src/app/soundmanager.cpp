@@ -180,6 +180,10 @@ void SoundManager::loadPluginChain() {
 
     //loadPlugin("plugin_quartet.dll",1);
 
+    if (PLUGIN_adplug_LIB != "")
+    {
+        loadPlugin(PLUGIN_adplug_LIB, 599);
+    }
     if (PLUGIN_vgmstream_LIB != "")
     {
         loadPlugin(PLUGIN_vgmstream_LIB, 599);
@@ -223,10 +227,6 @@ void SoundManager::loadPluginChain() {
     if (PLUGIN_mdxmini_LIB != "")
     {
         loadPlugin(PLUGIN_mdxmini_LIB, 1701);
-    }
-    if (PLUGIN_adplug_LIB != "")
-    {
-        loadPlugin(PLUGIN_adplug_LIB, 1701);
     }
     if (PLUGIN_libvgm_LIB != "")
     {
