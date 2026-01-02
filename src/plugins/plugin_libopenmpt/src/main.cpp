@@ -116,8 +116,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     result = FMOD_CODEC_FILE_READ(codec, smallBuffer, smallBufferLength, &bytesread);
 
     if (
-        // skip midi and riff
-        memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF", 4) == 0 ||
+        // skip midi and gm.dls
+        memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF\x0c\x80" "4\0DLS colh", 16) == 0 ||
 
         // skip Farandole Composer module (as of today libxmp play this one really better)
         memcmp(&smallBuffer[farMagicOffset], farMagic, farMagicLength) == 0 &&
