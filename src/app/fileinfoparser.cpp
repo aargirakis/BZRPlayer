@@ -2,10 +2,36 @@
 #include "qdatetime.h"
 #include "soundmanager.h"
 #include "various.h"
-#include <QStringList>
 #include <QFileInfo>
 #include <QPlainTextEdit>
 #include "plugins.h"
+
+const string piTitleTag = "Title";
+const string piArtistTagPrio1 = "Artist";
+const string piArtistTagPrio2 = "Album Artist";
+const string piArtistTagPrio3 = "Composer";
+const string piArtistTagPrio4 = "Author";
+
+const unordered_map<string_view, int> metadataLookupMap = {
+    {piTitleTag, 0},
+    {piArtistTagPrio1, 1},
+    {piArtistTagPrio2, 2},
+    {piArtistTagPrio3, 3},
+    {piArtistTagPrio4, 4},
+    {"Album", 5},
+    {"Date", 6},
+    {"Track", 7},
+    {"Compilation", 8},
+    {"Disc", 9},
+    {"Genre", 10},
+    {"Copyright", 11},
+    {"Publisher", 12},
+    {"Encoded By", 13},
+    {"Encoder", 14},
+    {"Creation Time", 15},
+    {"Gapless Playback", 16},
+    {"Comment", 17}
+};
 
 const string FileInfoParser::ID3V1_GENRES[id3v1GenresMax + 1] = {
     "Blues", // 0
@@ -202,6 +228,22 @@ const string FileInfoParser::ID3V1_GENRES[id3v1GenresMax + 1] = {
     "Psybient" // 191
 };
 
+void normalizeText(string &str) {
+    bool isNewWord = true;
+
+    for (char &c: str) {
+        if (c == '_') {
+            c = ' ';
+        }
+        if (c == ' ') {
+            isNewWord = true;
+        } else if (std::isalpha(c)) {
+            c = isNewWord ? static_cast<const char>(toupper(c)) : static_cast<const char>(tolower(c));
+            isNewWord = false;
+        }
+    }
+}
+
 FileInfoParser::FileInfoParser() = default;
 
 void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playlistItem)
@@ -232,10 +274,10 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));
             break;
         case PLUGIN_asap:
-            {
+        {
             const int defaultSubSong = SoundManager::getInstance().m_Info1->defaultSubSong;
             addInfo(tableInfo, &row, "Default Subsong", defaultSubSong == -1 ? "-" : QString::number(defaultSubSong));
-            }
+        }
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
             addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
             addInfo(tableInfo, &row, "Creation Date", SoundManager::getInstance().m_Info1->date.c_str());
@@ -421,10 +463,69 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                     QString::number(SoundManager::getInstance().m_Info1->loopPosition));
             addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
             break;
+        case PLUGIN_vgmstream: {
+            addInfo(tableInfo, &row, "Encoding", SoundManager::getInstance().m_Info1->fileformatSpecific.c_str());
+            addInfo(tableInfo, &row, "Sample Rate",
+                    QString::number(SoundManager::getInstance().m_Info1->samplerate) + " Hz");
+
+            const auto bitRate = SoundManager::getInstance().m_Info1->bitRate;
+            addInfo(tableInfo, &row, "Bitrate", bitRate < 1000
+                                                    ? QString::number(bitRate) + " bps"
+                                                    : QString::number(bitRate / 1000) + " kbps");
+            addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
+
+            std::vector<std::pair<std::string, std::string> > metadataMain;
+            std::vector<std::pair<std::string, std::string> > metadataOther;
+
+            for (auto &metadata: SoundManager::getInstance().m_Info1->metadata) {
+                auto metadataPolished = metadata;
+                normalizeText(metadataPolished.first);
+
+                if (metadataLookupMap.contains(metadataPolished.first)) {
+                    metadataMain.push_back(metadataPolished);
+                } else {
+                    if (const string prefixToRemove = "id3v2_priv."; metadata.first.find(prefixToRemove) == 0) {
+                        metadata.first.erase(0, prefixToRemove.length());
+                    }
+
+                    metadataOther.push_back(metadata);
+                }
+            }
+
+            ranges::sort(metadataMain, [](const auto &a, const auto &b) {
+                return metadataLookupMap.at(a.first) < metadataLookupMap.at(b.first);
+            });
+
+            metadataMain.insert(metadataMain.end(), metadataOther.begin(), metadataOther.end());
+
+            bool isPiTitleSet = false;
+            bool isPiArtistSet = false;
+
+            for (auto const &[first, second]: metadataMain) {
+                if (first == "Comment" || first == "Comments") {
+                    addMultilineInfo(tableInfo, &row, first.c_str(), second);
+                } else {
+                    addInfo(tableInfo, &row, first.c_str(), fromUtf8OrLatin1(second));
+
+                    if (!isPiTitleSet && first == piTitleTag) {
+                        playlistItem->info->title = second;
+                        isPiTitleSet = true;
+                    }
+                    if (!isPiArtistSet && (first == piArtistTagPrio1 || first == piArtistTagPrio2 ||
+                                           first == piArtistTagPrio3 || first == piArtistTagPrio4)) {
+                        playlistItem->info->artist = second;
+                        isPiArtistSet = true;
+                    }
+                }
+            }
+        }
+        break;
+        case PLUGIN_fmod:
+            // Currently used for network streams only
+            showFmodSupportedTagsIfAny(tableInfo, playlistItem, &row);
+            break;
         default: ;
     }
-
-    showFmodSupportedTagsIfAny(tableInfo, playlistItem, &row);
 
     tableInfo->setRowCount(row);
     for (int i = 0; i < tableInfo->rowCount(); i++)

@@ -224,7 +224,9 @@ public:
             }
             (*itr).clear();
         }
+
         patterns.clear();
+        metadata.clear();
     }
 
     string mutedChannelsMask;
@@ -296,6 +298,7 @@ public:
     unsigned char plugin;
     string pluginName;
     const vector<string> *allowedFields;
+    vector<pair<string, string> > metadata;
     unsigned int fieldSet;
     string system;
     string game;

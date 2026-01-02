@@ -1,0 +1,21 @@
+--- src/coding/coding.h	2025-09-28 21:13:32.000000000 +0200
++++ src/coding/coding.h	2026-01-06 20:49:34.190564398 +0100
+@@ -8,6 +8,8 @@
+ //todo remove
+ #include "libs/clhca.h"
+ 
++#include <libavcodec/avcodec.h>
++
+ /* adx_decoder */
+ void decode_adx(VGMSTREAMCHANNEL* stream, sample_t* outbuf, int channelspacing, int32_t first_sample, int32_t samples_to_do, int32_t frame_bytes, coding_t coding_type, uint32_t codec_config);
+ void adx_next_key(VGMSTREAMCHANNEL* stream);
+@@ -600,6 +602,9 @@
+ void ffmpeg_set_allow_pcm24(ffmpeg_codec_data* data);
+ const char* ffmpeg_get_metadata_value(ffmpeg_codec_data* data, const char* key);
+ 
++const AVDictionaryEntry* ffmpeg_get_all_metadata (ffmpeg_codec_data* data);
++const char *get_ffmpeg_format_long_name(ffmpeg_codec_data *data);
++
+ int32_t ffmpeg_get_samples(ffmpeg_codec_data* data);
+ int ffmpeg_get_sample_rate(ffmpeg_codec_data* data);
+ int ffmpeg_get_channels(ffmpeg_codec_data* data);

@@ -1,10 +1,8 @@
-#include <cstring>
-
 extern "C" {
-#include "libvgmstream.h"
+#include "api_internal.h"
+#include "coding.h"
 }
 
-#include "vgmstream_types.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "../app/plugins.h"
@@ -140,13 +138,32 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    if (plugin->libvgmstream->format->format_id == meta_FFMPEG ||
-        plugin->libvgmstream->format->format_id == meta_FFMPEG_faulty) {
+    plugin->info->samplerate = plugin->waveformat.frequency;
+    plugin->info->bitRate = plugin->libvgmstream->format->stream_bitrate;
+    plugin->info->numChannels = plugin->waveformat.channels;
+
+    if (const auto priv = static_cast<libvgmstream_priv_t *>(plugin->libvgmstream->priv);
+        priv->vgmstream->coding_type != coding_FFmpeg) {
         plugin->info->fileformat = plugin->libvgmstream->format->meta_name;
     } else {
-        plugin->info->fileformat = plugin->libvgmstream->format->codec_name;
+        if (priv->vgmstream->meta_type == meta_FFMPEG || priv->vgmstream->meta_type == meta_FFMPEG_faulty) {
+            plugin->info->fileformat = get_ffmpeg_format_long_name(
+                static_cast<ffmpeg_codec_data *>(priv->vgmstream->codec_data));
+        } else {
+            plugin->info->fileformat = plugin->libvgmstream->format->meta_name;
+        }
+
+        const AVDictionaryEntry *tags = ffmpeg_get_all_metadata(
+            static_cast<ffmpeg_codec_data *>(priv->vgmstream->codec_data));
+
+        int i = 0;
+        while (tags[i].key != nullptr) {
+            plugin->info->metadata.emplace_back(tags[i].key, tags[i].value);
+            i++;
+        }
     }
 
+    plugin->info->fileformatSpecific = plugin->libvgmstream->format->codec_name;
     plugin->info->plugin = PLUGIN_vgmstream;
     plugin->info->pluginName = PLUGIN_vgmstream_NAME;
     plugin->info->setSeekable(true);

@@ -1,0 +1,48 @@
+--- src/coding/ffmpeg_decoder.c	2025-09-28 21:13:32.000000000 +0200
++++ src/coding/ffmpeg_decoder.c	2026-01-06 20:24:31.518350279 +0100
+@@ -1101,6 +1101,45 @@
+     return avde->value;
+ }
+ 
++const AVDictionaryEntry* ffmpeg_get_all_metadata(ffmpeg_codec_data* data) {
++
++    static AVDictionaryEntry tags[256] = {};
++    memset(tags, 0, sizeof(AVDictionaryEntry) * 256);
++
++    if (!data || !data->formatCtx)
++        return tags;
++
++    const AVDictionaryEntry *avde = NULL;
++    int i = 0;
++    const AVDictionary *avd = data->formatCtx->metadata; /* per format (like Flac) */
++
++    if (avd) {
++        while ((avde = av_dict_iterate(avd, avde))) {
++            tags[i++] = *avde;
++        }
++    }
++
++    if (!data->formatCtx->streams)
++        return tags;
++
++    avd = data->formatCtx->streams[data->stream_index]->metadata; /* per stream (like Ogg) */
++
++    if (avd) {
++        while ((avde = av_dict_iterate(avd, avde))) {
++            tags[i++] = *avde;
++        }
++    }
++
++    return tags;
++}
++
++const char *get_ffmpeg_format_long_name(ffmpeg_codec_data *data) {
++    if (data == NULL || data->formatCtx == NULL || data->formatCtx->iformat == NULL)
++        return NULL;
++
++    return data->formatCtx->iformat->long_name;
++}
++
+ int32_t ffmpeg_get_samples(ffmpeg_codec_data* data) {
+     if (!data)
+         return 0;
