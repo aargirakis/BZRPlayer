@@ -1,5 +1,9 @@
+#include <algorithm>
 #include <climits>
 #include <cmath>
+#ifndef WIN32
+#include <filesystem>
+#endif
 #include "psf2fs.h"
 #include "psx.h"
 #include "iop.h"
@@ -12,6 +16,45 @@
 #include "plugins.h"
 
 using namespace std;
+
+#ifndef WIN32
+static bool case_insensitive_compare(const std::string &a, const std::string &b) {
+    if (a.size() != b.size()) return false;
+
+    for (size_t i = 0; i < a.size(); ++i) {
+        const auto ca = static_cast<unsigned char>(a[i]);
+        if (const auto cb = static_cast<unsigned char>(b[i]); std::tolower(ca) != std::tolower(cb)) return false;
+    }
+
+    return true;
+}
+
+std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
+    std::FILE *fp = std::fopen(name.c_str(), mode);
+    if (fp) return fp;
+
+    const filesystem::path p(name);
+    const filesystem::path dir = p.parent_path();
+
+    if (dir.empty() || dir == ".") {
+        return nullptr;
+    }
+
+    const std::string target_basename = p.filename().string();
+
+    for (std::error_code ec; auto const &entry: filesystem::directory_iterator(dir, ec)) {
+        if (ec) break;
+        if (!entry.is_regular_file(ec) && !entry.is_symlink(ec)) continue;
+        if (std::string cand = entry.path().filename().string(); case_insensitive_compare(cand, target_basename)) {
+            std::string candidate_path = (dir / cand).string();
+            fp = std::fopen(candidate_path.c_str(), mode);
+            if (fp) return fp;
+        }
+    }
+
+    return nullptr;
+}
+#endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 
@@ -172,7 +215,20 @@ public:
         const auto plugin = static_cast<pluginHighlyExp *>(context);
         unsigned int filesize;
         FMOD_CODEC_FILE_SIZE(plugin->_codec, &filesize);
+
+#ifdef WIN32
         plugin->file = fopen(uri, "rb");
+#else
+        string ext = filesystem::path(uri).filename().string();
+        std::ranges::transform(ext, ext.begin(), ::tolower);
+
+        if (ext.ends_with(".psflib") || ext.ends_with(".psf2lib")) {
+            plugin->file = fopen_case_insensitive(uri, "rb");
+        } else {
+            plugin->file = fopen(uri, "rb");
+        }
+#endif
+
         return plugin->file;
     }
 
@@ -262,28 +318,20 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    if (const auto extPos = plugin->info->filename.find_last_of('.'); extPos == string::npos || strcasecmp(
-                                                                          plugin->info->filename.c_str() + extPos + 1,
-                                                                          plugin->psfType == 0x1 ? "psflib" : "psf2lib")
-                                                                      != 0) {
-        bios_set_image(hebios, HEBIOS_SIZE);
-        psx_init();
+    bios_set_image(hebios, HEBIOS_SIZE);
+    psx_init();
 
-        plugin->m_psxState = new uint8_t[psx_get_state_size(static_cast<uint8_t>(plugin->psfType))];
-        psx_clear_state(plugin->m_psxState, static_cast<uint8_t>(plugin->psfType));
+    plugin->m_psxState = new uint8_t[psx_get_state_size(static_cast<uint8_t>(plugin->psfType))];
+    psx_clear_state(plugin->m_psxState, static_cast<uint8_t>(plugin->psfType));
 
-        if (plugin->psfType == 2) {
-            plugin->m_psf2fs = psf2fs_create();
-        }
+    if (plugin->psfType == 2) {
+        plugin->m_psf2fs = psf2fs_create();
+    }
 
-        if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, static_cast<uint8_t>(plugin->psfType),
-                     plugin->psfType == 1 ? pluginHighlyExp::PsfLoad : psf2fs_load_callback,
-                     plugin->psfType == 1 ? plugin : plugin->m_psf2fs,
-                     nullptr, nullptr, 0, nullptr, nullptr) < 0) {
-            delete plugin;
-            return FMOD_ERR_FORMAT;
-        }
-    } else {
+    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, static_cast<uint8_t>(plugin->psfType),
+                 plugin->psfType == 1 ? pluginHighlyExp::PsfLoad : psf2fs_load_callback,
+                 plugin->psfType == 1 ? plugin : plugin->m_psf2fs,
+                 nullptr, nullptr, 0, nullptr, nullptr) < 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }

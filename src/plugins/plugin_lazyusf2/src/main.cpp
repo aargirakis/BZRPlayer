@@ -1,5 +1,9 @@
+#include <algorithm>
 #include <cmath>
 #include <cstring>
+#ifndef WIN32
+#include <filesystem>
+#endif
 #include "psflib.h"
 #include "usf.h"
 #include "main.h"
@@ -8,6 +12,45 @@
 #include "plugins.h"
 
 using namespace std;
+
+#ifndef WIN32
+static bool case_insensitive_compare(const std::string &a, const std::string &b) {
+    if (a.size() != b.size()) return false;
+
+    for (size_t i = 0; i < a.size(); ++i) {
+        const auto ca = static_cast<unsigned char>(a[i]);
+        if (const auto cb = static_cast<unsigned char>(b[i]); std::tolower(ca) != std::tolower(cb)) return false;
+    }
+
+    return true;
+}
+
+std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
+    std::FILE *fp = std::fopen(name.c_str(), mode);
+    if (fp) return fp;
+
+    const filesystem::path p(name);
+    const filesystem::path dir = p.parent_path();
+
+    if (dir.empty() || dir == ".") {
+        return nullptr;
+    }
+
+    const std::string target_basename = p.filename().string();
+
+    for (std::error_code ec; auto const &entry: filesystem::directory_iterator(dir, ec)) {
+        if (ec) break;
+        if (!entry.is_regular_file(ec) && !entry.is_symlink(ec)) continue;
+        if (std::string cand = entry.path().filename().string(); case_insensitive_compare(cand, target_basename)) {
+            std::string candidate_path = (dir / cand).string();
+            fp = std::fopen(candidate_path.c_str(), mode);
+            if (fp) return fp;
+        }
+    }
+
+    return nullptr;
+}
+#endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 
@@ -129,7 +172,20 @@ public:
         const auto plugin = static_cast<pluginLazyusf2 *>(context);
         unsigned int filesize;
         FMOD_CODEC_FILE_SIZE(plugin->_codec, &filesize);
+
+#ifdef WIN32
         plugin->file = fopen(uri, "rb");
+#else
+        string ext = filesystem::path(uri).filename().string();
+        std::ranges::transform(ext, ext.begin(), ::tolower);
+
+        if (ext.ends_with(".usflib")) {
+            plugin->file = fopen_case_insensitive(uri, "rb");
+        } else {
+            plugin->file = fopen(uri, "rb");
+        }
+#endif
+
         return plugin->file;
     }
 
@@ -219,13 +275,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                                   pluginLazyusf2::InfoMetaPSF,
                                   plugin, 0, nullptr, nullptr);
     if (psfType != 0x21) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
-    if (const auto extPos = plugin->info->filename.find_last_of('.'); extPos != string::npos && strcasecmp(
-                                                                          plugin->info->filename.c_str() + extPos + 1,
-                                                                          "usflib") == 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
