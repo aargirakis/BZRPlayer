@@ -28,8 +28,8 @@
 +	return *a == *b;
 +}
 +
-+FILE *fopen_case_insensitive(const char *name) {
-+	FILE *fp = fopen(name, "rb");
++FILE *fopen_case_insensitive(const char *name, const char *mode) {
++	FILE *fp = fopen(name, mode);
 +	if (fp) {
 +		return fp;
 +	}
@@ -54,7 +54,7 @@
 +		if (case_insensitive_compare(entry->d_name, basename(name))) {
 +			char pdxPath[PATH_MAX];
 +			snprintf(pdxPath, sizeof(pdxPath), "%s/%s", dirName, entry->d_name);
-+			fp = fopen(pdxPath, "rb");
++			fp = fopen(pdxPath, mode);
 +			break;
 +		}
 +	}
@@ -77,7 +77,7 @@
    fp = fopen(name,"rb");
 -
 +#else
-+  fp = fopen_case_insensitive(name);
++  fp = fopen_case_insensitive(name,"rb");
 +#endif
    if (!fp)
  	return NULL;
