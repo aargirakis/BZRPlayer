@@ -486,7 +486,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
                 SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
 
         QStringList columns;
-        columns << tr("TITLE") << tr("TYPE") << tr("LENGTH") << tr("SUBSONG");
+        columns << tr("TITLE") << tr("FORMAT") << tr("LENGTH") << tr("SUBSONG");
 
 
         //There was no existing default playlist

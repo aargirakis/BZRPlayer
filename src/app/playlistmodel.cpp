@@ -87,7 +87,7 @@ QVariant PlaylistModel::headerData(int section, Qt::Orientation orientation, int
     switch (section)
     {
     case 0: return "TITLE";
-    case 1: return "TYPE";
+    case 1: return "FORMAT";
     case 2: return "LENGTH";
     case 3: return "SUBSONG";
     case 4: return "FULLPATH";
