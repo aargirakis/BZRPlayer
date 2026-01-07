@@ -318,7 +318,6 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
                 addInfo(tableInfo, &row, "Released", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright));
             }
 
-            addInfo(tableInfo, &row, "Format", SoundManager::getInstance().m_Info1->fileformatSpecific.c_str());
             addInfo(tableInfo, &row, "Compatibility", SoundManager::getInstance().m_Info1->compatibility.c_str());
             addInfo(tableInfo, &row, "SID Chip", SoundManager::getInstance().m_Info1->chips.c_str());
             addInfo(tableInfo, &row, "Clock Speed", SoundManager::getInstance().m_Info1->clockSpeedStr.c_str());

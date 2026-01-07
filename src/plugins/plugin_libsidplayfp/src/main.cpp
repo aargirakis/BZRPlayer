@@ -422,10 +422,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->info->defaultSubSong = static_cast<int>(s->startSong());
     }
 
-    plugin->info->fileformatSpecific = s->formatString();
+    plugin->info->fileformat = s->formatString();
     plugin->info->plugin = PLUGIN_libsidplayfp;
     plugin->info->pluginName = PLUGIN_libsidplayfp_NAME;
-    plugin->info->fileformat = plugin->isMus ? "C64 MUS" : "C64 SID";
+
     plugin->info->setSeekable(true);
 
     plugin->seekPosition = 0;
