@@ -673,7 +673,8 @@ bool SoundManager::LoadSound(QString filename, Info* info)
         m_Info1->plugin != PLUGIN_libsidplayfp &&
         m_Info1->plugin != PLUGIN_libxmp &&
         m_Info1->plugin != PLUGIN_sndh_player &&
-        m_Info1->plugin != PLUGIN_uade
+        m_Info1->plugin != PLUGIN_uade &&
+        m_Info1->plugin != PLUGIN_vgmstream
     ) {
         m_Info1->isContinuousPlaybackActive = false;
 

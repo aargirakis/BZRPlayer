@@ -171,6 +171,8 @@ private slots:
 
     void on_checkBoxContinuousPlaybackSndhPlayer_toggled();
 
+    void on_checkBoxContinuousPlaybackVgmstream_toggled();
+
     void on_checkBoxSeamlessLoopFmod_toggled();
 
     void on_SliderStereoSeparationOpenMPT_valueChanged(int value);
@@ -269,6 +271,8 @@ private:
     void saveSndhPlayerSettings();
     void loadUadeSettings();
     void saveUadeSettings();
+    void loadVgmstreamSettings();
+    void saveVgmstreamSettings();
 
     MainWindow* mainWindow;
     Ui::settingsWindow* ui;

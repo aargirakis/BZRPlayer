@@ -1,3 +1,5 @@
+#include <fstream>
+
 extern "C" {
 #include "api_internal.h"
 #include "coding.h"
@@ -13,6 +15,8 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
+
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
@@ -26,7 +30,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    nullptr,
+    &getLength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setPosition, // Setposition callback.
     nullptr,
@@ -97,8 +101,40 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/vgmstream.cfg";
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        //The file could not be opened
+        useDefaults = true;
+    }
+
+    //defaults
+    plugin->info->isContinuousPlaybackActive = false;
+
+    if (!useDefaults) {
+        string line;
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word == "continuous_playback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                }
+            }
+        }
+        ifs.close();
+    }
+
     libvgmstream_config_t config = {};
-    config.ignore_loop = true;
+
+    if (plugin->info->isContinuousPlaybackActive) {
+        config.allow_play_forever = true;
+        config.play_forever = true;
+        config.force_loop = true;
+    }
 
     libvgmstream_setup(plugin->libvgmstream, &config);
 
@@ -131,7 +167,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->waveformat.channels = plugin->libvgmstream->format->channels;
     plugin->waveformat.frequency = plugin->libvgmstream->format->sample_rate;
-    plugin->waveformat.lengthpcm = static_cast<unsigned int>(plugin->libvgmstream->format->stream_samples);
+    plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -179,11 +215,6 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
 
-    if (plugin->libvgmstream->decoder->done) {
-        // TODO needed? FMOD_ERR_FORMAT?
-        return FMOD_ERR_FILE_EOF;
-    }
-
     if (libvgmstream_fill(plugin->libvgmstream, buffer, static_cast<int>(size)) < 0) {
         // TODO needed? FMOD_ERR_FILE_EOF?
         return FMOD_ERR_FORMAT;
@@ -191,6 +222,18 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
     *read = size;
     return FMOD_OK;
+}
+
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    const auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
+
+    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
+        *length = static_cast<unsigned int>(plugin->libvgmstream->format->stream_samples * 1000
+                                            / plugin->waveformat.frequency);
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,

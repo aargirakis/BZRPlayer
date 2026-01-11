@@ -59,6 +59,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${FMOD_API_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE VGM_USE_FFMPEG)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 foreach (FFMPEG_STATIC_LIB ${FFMPEG_STATIC_LIBS})
     add_library(${FFMPEG_STATIC_LIB} STATIC IMPORTED GLOBAL)
