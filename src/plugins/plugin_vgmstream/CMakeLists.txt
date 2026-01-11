@@ -25,8 +25,6 @@ download_patch_and_add(
 
 add_subdirectory(deps/ffmpeg)
 
-#TODO
-
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c
         ${EXTERNAL_SOURCE_DIR}/src/base/*.c
@@ -56,7 +54,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/meta
         ${EXTERNAL_SOURCE_DIR}/src/util
         ${EXTERNAL_SOURCE_DIR_ffmpeg} # needed by the included extra sources
-        ${EXTERNAL_SOURCE_DIR_ffmpeg}/out/include
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
