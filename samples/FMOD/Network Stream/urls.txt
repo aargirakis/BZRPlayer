@@ -1,0 +1,7 @@
+supported:
+https://corus.leanstream.co/CFIQAM-MP3
+http://stream.antenne.nrw/antenne-nrw/stream/mp3
+
+unsupported:
+https://as-hls-ww.live.cf.md.bbci.co.uk/pool_904/live/ww/bbc_radio_one/bbc_radio_one.isml/bbc_radio_one-audio%3d96000.norewind.m3u8
+https://as-hls-ww.live.cf.md.bbci.co.uk/pool_904/live/ww/bbc_radio_two/bbc_radio_two.isml/bbc_radio_two-audio%3d96000.norewind.m3u8
