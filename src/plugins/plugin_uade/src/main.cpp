@@ -70,8 +70,7 @@ public:
     const struct uade_song_info *uadeSongInfo;
     unsigned int filesize;
     uint8_t *myBuffer;
-    bool setPositionWithTimeunitSubSongHasBeenInvoked = false;
-    unsigned int totalSkippedBytes = 0;
+    bool isRenderingAllowed = false;
     bool isUadeSeekInvocationAllowed = false;
     unsigned int length = -1;
 };
@@ -365,9 +364,8 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
      * to start only after setposition with FMOD_TIMEUNIT_SUBSONG postype has been invoked
      * (skipping the fmod pre-buffering meanwhile).
      */
-    if (!plugin->setPositionWithTimeunitSubSongHasBeenInvoked) {
+    if (!plugin->isRenderingAllowed) {
         *read = 8;
-        plugin->totalSkippedBytes += *read;
         return FMOD_OK;
     }
 
@@ -451,7 +449,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
         *length = plugin->length;
     }
 
-    return FMOD_OK;
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
@@ -463,7 +461,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
          * issue #616 workaround:
          *
          * uade_seek might be used for initial subsong setting,
-         * introduces it audio pops, also when invoked before any uade_read:
+         * however it introduces audio pops, also when invoked before any uade_read:
          * so, in order to avoid any audio pop when playback starts,
          * uade_stop & uade_play_from_buffer are invoked for initial subsong setting.
          *
@@ -491,7 +489,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     }
 
     if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->setPositionWithTimeunitSubSongHasBeenInvoked = true;
+        plugin->isRenderingAllowed = true;
 
         if (plugin->uadeSongInfo->subsongs.max - plugin->uadeSongInfo->subsongs.min == 0) {
             return FMOD_OK;

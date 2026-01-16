@@ -56,8 +56,7 @@ public:
     uint32_t filesize;
     uint8_t *myBuffer;
     int loopNum;
-    bool setPositionWithTimeunitSubSongHasBeenInvoked = false;
-    unsigned int totalSkippedBytes = 0;
+    bool isRenderingAllowed = false;
 };
 
 #ifdef __cplusplus
@@ -187,10 +186,9 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
 
-    // TODO workaround: skipping fmod pre-buffering in order to avoid initial playback glitch
-    if (!plugin->setPositionWithTimeunitSubSongHasBeenInvoked) {
+    // workaround: skipping fmod pre-buffering in order to avoid initial playback glitch
+    if (!plugin->isRenderingAllowed) {
         *read = 8;
-        plugin->totalSkippedBytes += *read;
         return FMOD_OK;
     }
 
@@ -232,7 +230,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->setPositionWithTimeunitSubSongHasBeenInvoked = true;
+        plugin->isRenderingAllowed = true;
     }
 
     return FMOD_OK;
