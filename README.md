@@ -94,7 +94,7 @@ In order to build BZR2 following packages are required:
 - On **Debian-based** distros:\
   `build-essential` `cmake` `dos2unix` `libglvnd0` `libsdl2-dev` `libvulkan-dev` `ninja-build` `patchutils`
   `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
-  [libqt-advanced-docking-system4.4.0-dev](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4.4.0_4.4.0-0_amd64.deb)
+  [libqt-advanced-docking-system4.4.1-dev](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4.4.1_4.4.1-0_amd64.deb)
 
 
 - On **Fedora-based** distros:\
@@ -127,7 +127,7 @@ For running BZR2 following packages are required:
 
 - On **Debian-based** distros:\
   `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
-  [libqt-advanced-docking-system4.4.0](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4.4.0_4.4.0-0_amd64.deb)
+  [libqt-advanced-docking-system4.4.1](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4.4.1_4.4.1-0_amd64.deb)
 
 
 - On **Fedora-based** distros:\

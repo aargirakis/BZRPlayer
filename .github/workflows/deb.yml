@@ -25,23 +25,23 @@ jobs:
                                   patchutils qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-svg-dev \
                                   libqt6core6 libqt6network6 libqt6openglwidgets6 libqt6svg6 libqt6xml6
 
-      - name: Build qt-ads 4.4.0
+      - name: Build qt-ads 4.4.1
         run: |
-          git clone -b 4.4.0 --single-branch https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git
+          git clone -b 4.4.1 --single-branch https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git
           cmake -B cmake-build-qt-ads -S Qt-Advanced-Docking-System -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF \
-          -DADS_VERSION=4.4.0 -DQT_VERSION_MAJOR=6 -G Ninja
+          -DADS_VERSION=4.4.1 -DQT_VERSION_MAJOR=6 -G Ninja
           ninja -C cmake-build-qt-ads
-          sudo install -Dm644 cmake-build-qt-ads/x64/lib/libqtadvanceddocking-qt6.so.4.4.0 /usr/lib
-          sudo ln -s /usr/lib/libqtadvanceddocking-qt6.so.4.4.0 /usr/lib/libqtadvanceddocking-qt6.so
-          qt_ads_deb_name="libqt-advanced-docking-system4.4.0_4.4.0-0_amd64"
+          sudo install -Dm644 cmake-build-qt-ads/x64/lib/libqtadvanceddocking-qt6.so.4.4.1 /usr/lib
+          sudo ln -s /usr/lib/libqtadvanceddocking-qt6.so.4.4.1 /usr/lib/libqtadvanceddocking-qt6.so
+          qt_ads_deb_name="libqt-advanced-docking-system4.4.1_4.4.1-0_amd64"
           echo "QT_ADS_DEB_NAME=$qt_ads_deb_name" >> "$GITHUB_ENV"
           mkdir -p "$qt_ads_deb_name/usr/lib"
           sudo mv /usr/lib/libqtadvanceddocking-qt6.* "$qt_ads_deb_name/usr/lib"
           mkdir -p "$qt_ads_deb_name/DEBIAN"
 
           cat >"$qt_ads_deb_name/DEBIAN/control" <<'EOF'
-          Package: libqt-advanced-docking-system4.4.0
-          Version: 4.4.0-0
+          Package: libqt-advanced-docking-system4.4.1
+          Version: 4.4.1-0
           Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
           Architecture: amd64
           Description: Advanced Docking System for Qt
@@ -59,15 +59,15 @@ jobs:
           dpkg-deb --root-owner-group --build "$qt_ads_deb_name"
           sudo dpkg -i "$qt_ads_deb_name.deb"
 
-          qt_ads_deb_dev_name="libqt-advanced-docking-system-dev4.4.0_4.4.0-0_amd64"
+          qt_ads_deb_dev_name="libqt-advanced-docking-system-dev4.4.1_4.4.1-0_amd64"
           echo "QT_ADS_DEB_DEV_NAME=$qt_ads_deb_dev_name" >> "$GITHUB_ENV"
           mkdir -p "$qt_ads_deb_dev_name/usr/include/qtadvanceddocking-qt6"
           mv Qt-Advanced-Docking-System/src/*.h "$qt_ads_deb_dev_name/usr/include/qtadvanceddocking-qt6"
           mkdir -p "$qt_ads_deb_dev_name/DEBIAN"
 
           cat >"$qt_ads_deb_dev_name/DEBIAN/control" <<'EOF'
-          Package: libqt-advanced-docking-system-dev4.4.0
-          Version: 4.4.0-0
+          Package: libqt-advanced-docking-system-dev4.4.1
+          Version: 4.4.1-0
           Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
           Architecture: amd64
           Description: Advanced Docking System for Qt
@@ -76,7 +76,7 @@ jobs:
            integrated development environments (IDEs) such as Visual Studio.
            .
            This package contains the build-time libraries
-          Depends: libqt-advanced-docking-system4.4.0, qt6-base-dev
+          Depends: libqt-advanced-docking-system4.4.1, qt6-base-dev
           Section: libdevel
           Priority: optional
           Homepage: https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System
@@ -136,7 +136,7 @@ jobs:
           Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
           Architecture: amd64
           Description: Audio player supporting a wide array of multi-platform exotic file formats
-          Depends: libqt6core6, libqt6network6, libqt6openglwidgets6, libqt6svg6, libqt6xml6, libqt-advanced-docking-system4.4.0
+          Depends: libqt6core6, libqt6network6, libqt6openglwidgets6, libqt6svg6, libqt6xml6, libqt-advanced-docking-system4.4.1
           Homepage: https://bzrplayer.blazer.nu
           EOF
 
