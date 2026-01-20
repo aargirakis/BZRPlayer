@@ -98,9 +98,8 @@ In order to build BZR2 following packages are required:
 
 
 - On **Fedora-based** distros:\
-  `development-tools` (group), `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel` `sdl2-compat-devel`
-  `vulkan-headers` `which`
-  [libqtadvanceddockingsystem-qt6-devel](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqtadvanceddockingsystem-qt6-devel-4.4.0-0.x86_64.rpm)
+  `development-tools` (group), `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel`
+  `Qt-Advanced-Docking-System-devel` `sdl2-compat-devel` `vulkan-headers` `which`
 
 ---
 
@@ -132,8 +131,7 @@ For running BZR2 following packages are required:
 
 
 - On **Fedora-based** distros:\
-  `qt6-qtbase` `qt6-qtsvg`
-  [libqtadvanceddockingsystem-qt6](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqtadvanceddockingsystem-qt6-4.4.0-0.x86_64.rpm)
+  `qt6-qtbase` `qt6-qtsvg` `Qt-Advanced-Docking-System`
 
 #### Generated binaries
 
