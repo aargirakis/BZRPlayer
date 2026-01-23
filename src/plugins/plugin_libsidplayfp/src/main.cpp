@@ -36,7 +36,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_libsidplayfp_NAME, // Name.
     0x00012100, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_SUBSONG_MS,
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL | FMOD_TIMEUNIT_MUTE_VOICE,
     // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
@@ -85,7 +85,6 @@ public:
 
     Info *info;
     SidTune *tune = nullptr;
-    unsigned int subsongs;
     ReSIDfpBuilder *rs = nullptr;
     sidplayfp *player = nullptr;
     char *kernal = nullptr;
@@ -314,13 +313,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     const SidTuneInfo *s = plugin->tune->getInfo();
 
-    plugin->subsongs = s->songs();
-    plugin->tune->selectSong(0);
+    plugin->tune->selectSong(plugin->info->currentSubsong + 1);
     plugin->player->load(plugin->tune);
+
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.frequency = static_cast<int>(cfg.frequency);
     plugin->waveformat.pcmblocksize = 128 * plugin->waveformat.format * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = -1; //infinite length
+    plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -416,7 +415,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->info->md5 = plugin->tune->createMD5New();
     }
 
-    plugin->info->numSubsongs = static_cast<int>(plugin->subsongs);
+    plugin->info->numSubsongs = static_cast<int>(s->songs());
 
     if (plugin->info->numSubsongs > 1) {
         plugin->info->defaultSubSong = static_cast<int>(s->startSong());
@@ -434,6 +433,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->mutePtr[i] = false;
     }
 
+    return FMOD_OK;
+}
+
+static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
+    delete static_cast<pluginLibsidplayfp *>(codec->plugindata);
     return FMOD_OK;
 }
 
@@ -518,10 +522,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->tune->selectSong(position + 1);
-        return FMOD_OK;
-    }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
         for (int i = 0; i < plugin->maxVoices; i++) {
             plugin->mutePtr[i] = false;
@@ -538,11 +538,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
-    delete static_cast<pluginLibsidplayfp *>(codec->plugindata);
-    return FMOD_OK;
-}
-
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
 
@@ -550,7 +545,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
         *length = plugin->waveformat.lengthpcm;
         return FMOD_OK;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS) {
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         if (plugin->isMus || !plugin->hvscSonglengthsDataBaseEnabled) {
             *length = -1;
         } else {
@@ -560,16 +555,12 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
                 }
 
                 plugin->length = getLengthFromDb(plugin->hvscSonglengthsFile, plugin->info->md5,
-                                                 plugin->tune->getInfo()->currentSong());
+                                                 plugin->info->currentSubsong + 1);
             }
 
             *length = plugin->length;
         }
 
-        return FMOD_OK;
-    }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        *length = plugin->subsongs;
         return FMOD_OK;
     }
 
@@ -579,20 +570,15 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype) {
     const auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_SUBSONG_MS) {
+    if (postype == FMOD_TIMEUNIT_MS_REAL) {
         *position = plugin->player->timeMs();
-        return FMOD_OK;
-    }
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        const SidTuneInfo *s = plugin->tune->getInfo();
-        *position = s->currentSong();
         return FMOD_OK;
     }
 
     return FMOD_ERR_UNSUPPORTED;
 }
 
-unsigned int getLengthFromDb(const string &databasePath, const string &md5, unsigned int subsong) {
+unsigned int getLengthFromDb(const string &databasePath, const string &md5, const unsigned int subsong) {
     const auto sidDb = new SidDatabase(); //TODO sidDatabase->close() && Delete
 
     if (!sidDb->open(databasePath.c_str())) {

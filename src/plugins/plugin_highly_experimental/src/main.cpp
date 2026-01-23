@@ -437,14 +437,13 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     const auto *plugin = static_cast<pluginHighlyExp *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         if (plugin->m_length > 0) {
             *length = plugin->m_length;
         } else {
             *length = -1;
         }
 
-        plugin->info->numSubsongs = 1;
         return FMOD_OK;
     }
 

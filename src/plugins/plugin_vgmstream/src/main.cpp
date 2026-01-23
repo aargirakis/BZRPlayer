@@ -26,7 +26,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_vgmstream_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     0, // Don't force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG, // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
@@ -56,7 +56,6 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
     libvgmstream_t *libvgmstream = nullptr;
     Info *info;
-    bool isRenderingAllowed = false;
 };
 
 /*
@@ -216,12 +215,6 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
 
-    // workaround: skipping fmod pre-buffering in order to avoid initial playback glitch
-    if (!plugin->isRenderingAllowed) {
-        *read = 8;
-        return FMOD_OK;
-    }
-
     if (libvgmstream_fill(plugin->libvgmstream, buffer, static_cast<int>(size)) < 0) {
         return FMOD_ERR_FORMAT;
     }
@@ -236,13 +229,9 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
-    auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginVgmstream *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->isRenderingAllowed = true;
-        return FMOD_OK;
-    }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         *length = static_cast<unsigned int>(plugin->libvgmstream->format->stream_samples * 1000
                                             / plugin->waveformat.frequency);
         return FMOD_OK;

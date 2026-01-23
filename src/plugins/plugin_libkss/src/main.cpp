@@ -10,8 +10,6 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
@@ -21,11 +19,11 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_libkss_NAME, // Name.
     0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG, // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    &getLength,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setPosition, // Setposition callback.
     nullptr,
@@ -52,11 +50,9 @@ public:
     Info *info;
     KSS *kss = nullptr;
     KSSPLAY *kssplay = nullptr;
-    int currentSubsong;
     uint32_t filesize;
     uint8_t *myBuffer;
     int loopNum;
-    bool isRenderingAllowed = false;
 };
 
 #ifdef __cplusplus
@@ -108,9 +104,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     if (KSS_check_type(plugin->myBuffer, plugin->filesize, plugin->info->filename.c_str()) == MBMDATA) {
         /* TODO:
-         *  seems the KSS_autoload_mbk invocation introduces a beginning audio delay (somewhere in the code not in this function)
-         *  sufficient for having a smooth plauback without need to skip the fmod pre-buffering...
-         *  ... but still not a solution
+         *  seems the KSS_autoload_mbk invocation introduces a beginning audio delay
+         *  somewhere in the code not in this function
          */
         KSS_autoload_mbk(plugin->info->filename.c_str(), "", nullptr);
     }
@@ -124,9 +119,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->kssplay = KSSPLAY_new(plugin->waveformat.frequency, plugin->waveformat.channels, 16);
     KSSPLAY_set_data(plugin->kssplay, plugin->kss);
 
-    plugin->currentSubsong = 0;
-
-    KSSPLAY_reset(plugin->kssplay, plugin->currentSubsong, 0);
+    KSSPLAY_reset(plugin->kssplay, 0, 0);
 
     // TODO setting to 0 for continuous playback, however it results silent playback for some tracks (eg REQUIEM2.MGS)
     plugin->loopNum = 1;
@@ -186,12 +179,6 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
 
-    // workaround: skipping fmod pre-buffering in order to avoid initial playback glitch
-    if (!plugin->isRenderingAllowed) {
-        *read = 8;
-        return FMOD_OK;
-    }
-
     // TODO
     // plugin->kss->loop_detectable;
 
@@ -215,23 +202,11 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        *length = 1;
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    if (postype == FMOD_TIMEUNIT_MS) {
         return FMOD_OK;
     }
 
-    *length = -1;
-    return FMOD_OK;
-}
-
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
-                                      FMOD_TIMEUNIT postype) {
-    auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
-
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->isRenderingAllowed = true;
-    }
-
-    return FMOD_OK;
+    return FMOD_ERR_UNSUPPORTED;
 }

@@ -399,7 +399,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     qDebug() << "timerProgress started";
     playStarted = false;
     loaded = false;
-    currentSubsong = 1;
     buttonNextClicked = true;
 
 
@@ -1228,7 +1227,7 @@ void MainWindow::timerProgress()
             }
         }
 
-        currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_SUBSONG_MS);
+        currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MS_REAL);
         if (currentMs == 0)
         {
             currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MS);
@@ -1486,7 +1485,7 @@ void MainWindow::changeEvent(QEvent* event)
     return QMainWindow::changeEvent(event);
 }
 
-bool MainWindow::loadSound(QString fullPath)
+bool MainWindow::loadSound(QString fullPath, const int subsong)
 {
     SoundManager& sm = SoundManager::getInstance();
     addDebugText("Try to load sound (playlistitem): " + fullPath);
@@ -1500,6 +1499,7 @@ bool MainWindow::loadSound(QString fullPath)
     info->clear();
     info->isPlayModeRepeatSongEnabled = Playmode == repeatSong;
     info->isFmodSeamlessLoopEnabled = getFmodSeamlessLoopEnabled();
+    info->currentSubsong = subsong;
 
     bool loadOK = sm.LoadSound(fullPath, info);
 
@@ -1508,7 +1508,6 @@ bool MainWindow::loadSound(QString fullPath)
         addDebugText("Loaded sound succesfully.");
 
         loaded = true;
-        currentSubsong = 1;
         currentPlayingFilepath = fullPath;
     }
     else
@@ -1866,22 +1865,11 @@ void MainWindow::getLength()
 {
     if (SoundManager::getInstance().IsPlaying())
     {
-        //check if this sound has subsongs
-
-        unsigned int subsongs = 1;
-        subsongs = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_SUBSONG);
-        if (subsongs == 0)
-        {
-            subsongs = 1;
-        }
-        SoundManager::getInstance().m_Info1->numSubsongs = subsongs;
-        addDebugText("subsongs: " + QString::number(subsongs));
-        SoundManager::getInstance().m_Info1->currentSubsong = currentSubsong;
         song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
         addDebugText("song_length_ms: " + QString::number(song_length_ms));
         if (song_length_ms == 0 || song_length_ms == -1)
         {
-            song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_SUBSONG_MS);
+            song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS_REAL);
             addDebugText("song_length_ms: " + QString::number(song_length_ms));
         }
 
@@ -2072,13 +2060,20 @@ void MainWindow::PlaySong(int currentRow)
     QString fullPath = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 4).data().toString();
     addDebugText("Now playing and loading sound " + fullPath);
 
-
     QString subsong = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 3).data().toString();
 
     if (subsong != "")
     {
         subsong = "[" + subsong + "]";
     }
+
+    // addDebugText("startSubsongPlayList: " + QString::number(playlists[currentPlaylist].at(playlistNumber)->startSubsongPlayList));
+    currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 3).data().toInt();
+    if (currentSubsong < 1)
+    {
+        currentSubsong = 1;
+    }
+
     QFileInfo fileInfo(fullPath);
     QString suffix(fileInfo.suffix());
     QString baseName(fileInfo.baseName());
@@ -2088,7 +2083,8 @@ void MainWindow::PlaySong(int currentRow)
 
     addDebugText("setOutputDevice with extra data: " + fullPath + "/" + baseName + subsong + "." + suffix);
     playStarted = true;
-    if (loadSound(fullPath))
+
+    if (loadSound(fullPath, currentSubsong -1))
     {
         addDebugText("Check if we are playing already.");
         if (SoundManager::getInstance().IsPlaying())
@@ -2114,24 +2110,6 @@ void MainWindow::PlaySong(int currentRow)
         int pitchSliderMaxValue = 749700 / freq * 100;
         ui->pitchSlider->setMaximum(pitchSliderMaxValue);
         SoundManager::getInstance().SetFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
-
-        addDebugText("Now after playing");
-        //        addDebugText("startSubsongPlayList: " + QString::number(playlists[currentPlaylist].at(playlistNumber)->startSubsongPlayList));
-        currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 3).data().toInt();
-        if (currentSubsong < 1)
-        {
-            currentSubsong = 1;
-        }
-
-        SoundManager::getInstance().SetPosition(currentSubsong - 1, FMOD_TIMEUNIT_SUBSONG);
-
-        /*
-         * FMOD Channel SetPosition callback with timeunit FMOD_TIMEUNIT_MS and position 0
-         * is already internally invoked by FMOD System CreateSound
-         * (along with other callbacks, including the read one for the pre-buffering):
-         * however here it must be called again after having been set the subsong
-         */
-        SoundManager::getInstance().SetPosition(0, FMOD_TIMEUNIT_MS);
 
         addDebugText("Mute is:" + QString::number(m_muteVolume));
         SoundManager::getInstance().SetMute(m_muteVolume);

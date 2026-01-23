@@ -158,7 +158,12 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     const auto *plugin = static_cast<pluginKlystron *>(codec->plugindata);
-    //mus_set_song(&plugin->mus, &plugin->song, 0);
-    KSND_PlaySong(plugin->player, plugin->song, 0);
-    return FMOD_OK;
+
+    if (postype == FMOD_TIMEUNIT_MS) {
+        //mus_set_song(&plugin->mus, &plugin->song, 0);
+        KSND_PlaySong(plugin->player, plugin->song, 0);
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }

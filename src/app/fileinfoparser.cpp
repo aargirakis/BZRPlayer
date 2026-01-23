@@ -560,7 +560,7 @@ void FileInfoParser::addLengthInfo(QTableWidget *tableInfo, const PlaylistItem *
     unsigned int song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
 
     if (song_length_ms == 0 || song_length_ms == -1) {
-        song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_SUBSONG_MS);
+        song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS_REAL);
     }
     if (song_length_ms == 0) {
         song_length_ms = -1;
@@ -575,10 +575,10 @@ void FileInfoParser::addLengthInfo(QTableWidget *tableInfo, const PlaylistItem *
 void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
     int currentSubsong = SoundManager::getInstance().m_Info1->currentSubsong;
     int numSubsongs = SoundManager::getInstance().m_Info1->numSubsongs;
-    bool isSubsong = currentSubsong != 1 || numSubsongs != 1;
+    bool isSubsong = currentSubsong != 0 || numSubsongs > 1;
 
     addInfo(tableInfo, row, "Subsong",
-            isSubsong ? QString::number(currentSubsong) + "/" + QString::number(numSubsongs) : "-");
+            isSubsong ? QString::number(currentSubsong + 1) + "/" + QString::number(numSubsongs) : "-");
 }
 
 void FileInfoParser::showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {

@@ -17,8 +17,6 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
-
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
@@ -28,11 +26,11 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_audiodecoder_wsr_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG, // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
-    &getLength,
+    nullptr,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setPosition, // Setposition callback.
     nullptr,
@@ -109,14 +107,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
+    info->numSubsongs = 255;
     info->plugin = PLUGIN_audiodecoder_wsr;
     info->pluginName = PLUGIN_audiodecoder_wsr_NAME;
     info->fileformat = "Wonderswan";
     info->setSeekable(false);
-    info->numSubsongs = 255;
 
     Init_WSR();
-    Reset_WSR(Get_FirstSong());
+    Reset_WSR(info->currentSubsong);
 
     return FMOD_OK;
 }
@@ -138,25 +136,11 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     return FMOD_OK;
 }
 
-
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     if (postype == FMOD_TIMEUNIT_MS) {
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        Reset_WSR(static_cast<int>(position));
-        return FMOD_OK;
-    }
 
     return FMOD_ERR_UNSUPPORTED;
-}
-
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
-        *length = -1;
-    } else if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        *length = 255;
-    }
-    return FMOD_OK;
 }

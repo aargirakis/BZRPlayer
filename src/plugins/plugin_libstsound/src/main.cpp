@@ -90,6 +90,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     ymMusicSetLoopMode(plugin->pMusic, YMTRUE);
 
+    ymMusicPlay(plugin->pMusic);
+
     ymMusicInfo_t yminfo;
     ymMusicGetInfo(plugin->pMusic, &yminfo);
 
@@ -138,11 +140,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
-    const auto *plugin = static_cast<pluginLibstsound *>(codec->plugindata);
-
     if (postype == FMOD_TIMEUNIT_MS) {
-        ymMusicStop(plugin->pMusic);
-        ymMusicPlay(plugin->pMusic);
         return FMOD_OK;
     }
 

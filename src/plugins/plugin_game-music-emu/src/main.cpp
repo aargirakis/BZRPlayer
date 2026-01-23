@@ -20,15 +20,13 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
-
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
     PLUGIN_game_music_emu_NAME, // Name.
     0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_MUTE_VOICE,
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE,
     // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
@@ -36,7 +34,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &getLength,
     // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
     &setPosition, // Setposition callback.
-    &getPosition,
+    nullptr,
     // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
     nullptr // Sound create callback (don't need it)
 };
@@ -58,7 +56,6 @@ public:
     Music_Emu *emu = nullptr;
     FMOD_CODEC_WAVEFORMAT waveformat;
     gme_info_t *gmeInfo;
-    int track;
     Info *info;
 };
 
@@ -169,9 +166,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     delete [] myBuffer;
 
-    plugin->track = 0;
-
-    if (gme_track_info(plugin->emu, &plugin->gmeInfo, plugin->track)) {
+    if (gme_track_info(plugin->emu, &plugin->gmeInfo, plugin->info->currentSubsong)) {
         return FMOD_ERR_INTERNAL;
     }
 
@@ -199,7 +194,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     gme_set_equalizer(plugin->emu, &eq);
     gme_set_stereo_depth(plugin->emu, stereoDepth);
 
-    if (gme_start_track(plugin->emu, plugin->track)) {
+    if (gme_start_track(plugin->emu, plugin->info->currentSubsong)) {
         return FMOD_ERR_INTERNAL;
     }
 
@@ -242,19 +237,12 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         }
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->track = static_cast<int>(position);
-        if (gme_start_track(plugin->emu, plugin->track)) {
-            return FMOD_ERR_INTERNAL;
-        }
-        return FMOD_OK;
-    }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
         gme_mute_voices(plugin->emu, 0); //unmutes all voices
         //gme_mute_voices( plugin->emu, -1 ); //mutes all voices
         //position is a mask
         gme_mute_voices(plugin->emu, static_cast<int>(position));
-        return FMOD_ERR_UNSUPPORTED;
+        return FMOD_OK;
     }
 
     return FMOD_ERR_UNSUPPORTED;
@@ -263,13 +251,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     const auto plugin = static_cast<pluginGme *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        if (gme_track_info(plugin->emu, &plugin->gmeInfo, plugin->track)) {
-            return FMOD_ERR_INTERNAL;
-        }
-
-        plugin->info->title = plugin->gmeInfo->song;
-
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
         // If file doesn't have overall length, it might have intro and loop lengths
         if (plugin->gmeInfo->length <= 0)
             plugin->gmeInfo->length = plugin->gmeInfo->intro_length + plugin->gmeInfo->loop_length * 2;
@@ -280,25 +262,6 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
             *length = -1;
         }
 
-        return FMOD_OK;
-    }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        if (gme_track_info(plugin->emu, &plugin->gmeInfo, plugin->track)) {
-            return FMOD_ERR_INTERNAL;
-        }
-
-        plugin->info->title = plugin->gmeInfo->song;
-        *length = gme_track_count(plugin->emu);
-        return FMOD_OK;
-    }
-
-    return FMOD_ERR_UNSUPPORTED;
-}
-
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype) {
-    const auto plugin = static_cast<pluginGme *>(codec->plugindata);
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        *position = plugin->emu->current_track();
         return FMOD_OK;
     }
 

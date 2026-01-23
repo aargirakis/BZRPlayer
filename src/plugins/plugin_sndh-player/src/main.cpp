@@ -24,7 +24,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_sndh_player_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG, // The time format we would like to accept into setposition/getposition.
+    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
     &read, // Read callback.
@@ -54,13 +54,13 @@ public:
     Info *info;
     SndhFile *sndh;
     queue<uint32_t *> oscBuffer;
-    int m_subsongIndex = 0;
+    int songLength;
     uint32_t m_hash = 0;
 
     int32_t GetTickCountFromSc68() const {
         dbentry_t e;
         e.hash = m_hash >> HFIX;
-        e.track = m_subsongIndex;
+        e.track = info->currentSubsong;
         if (auto const *s = static_cast<dbentry_t *>(bsearch(&e, s_db.data(), s_db.size(),
                                                              sizeof(dbentry_t), [](const void *ea, const void *eb) {
                                                                  auto *a = static_cast<const dbentry_t *>(ea);
@@ -147,7 +147,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     delete[] buffer;
 
     plugin->BuildHash(plugin->sndh);
-    plugin->sndh->InitSubSong(1);
+
+    if (!plugin->sndh->InitSubSong(plugin->info->currentSubsong + 1)) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    };
 
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/sndh-player.cfg";
     ifstream ifs(filename.c_str());
@@ -187,6 +191,37 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
+    SndhFile::SubSongInfo subsongInfo{};
+
+    plugin->sndh->GetSubsongInfo(plugin->info->currentSubsong + 1, subsongInfo);
+
+    if (subsongInfo.musicAuthor != nullptr) {
+        plugin->info->artist = subsongInfo.musicAuthor;
+    }
+    if (subsongInfo.musicName != nullptr) {
+        plugin->info->title = subsongInfo.musicName;
+    }
+    if (subsongInfo.ripper != nullptr) {
+        plugin->info->ripper = subsongInfo.ripper;
+    }
+    if (subsongInfo.converter != nullptr) {
+        plugin->info->converter = subsongInfo.converter;
+    }
+    if (subsongInfo.year != nullptr) {
+        plugin->info->date = subsongInfo.year;
+    }
+
+    plugin->info->clockSpeed = subsongInfo.playerTickRate;
+
+    unsigned int ticks = subsongInfo.playerTickCount;
+
+    if (ticks == 0) {
+        ticks = plugin->GetTickCountFromSc68();
+    }
+
+    plugin->songLength = ticks * subsongInfo.samplePerTick / (plugin->waveformat.frequency / 1000);
+
+    plugin->info->numSubsongs = plugin->sndh->GetSubsongCount();
     plugin->info->numChannels = 4;
     plugin->info->plugin = PLUGIN_sndh_player;
     plugin->info->pluginName = PLUGIN_sndh_player_NAME;
@@ -223,13 +258,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
-    auto *plugin = static_cast<pluginSndhPlayer *>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS) {
-        return FMOD_OK;
-    }
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->m_subsongIndex = static_cast<int>(position);
-        plugin->sndh->InitSubSong(plugin->m_subsongIndex + 1);
         return FMOD_OK;
     }
 
@@ -237,42 +266,10 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
-    auto *plugin = static_cast<pluginSndhPlayer *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginSndhPlayer *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
-        SndhFile::SubSongInfo subsongInfo{};
-        plugin->sndh->GetSubsongInfo(plugin->m_subsongIndex + 1, subsongInfo);
-
-        if (subsongInfo.musicAuthor != nullptr) {
-            plugin->info->artist = subsongInfo.musicAuthor;
-        }
-        if (subsongInfo.musicName != nullptr) {
-            plugin->info->title = subsongInfo.musicName;
-        }
-        if (subsongInfo.ripper != nullptr) {
-            plugin->info->ripper = subsongInfo.ripper;
-        }
-        if (subsongInfo.converter != nullptr) {
-            plugin->info->converter = subsongInfo.converter;
-        }
-        if (subsongInfo.year != nullptr) {
-            plugin->info->date = subsongInfo.year;
-        }
-
-        plugin->info->clockSpeed = subsongInfo.playerTickRate;
-
-        unsigned int ticks = subsongInfo.playerTickCount;
-
-        if (ticks == 0) {
-            ticks = plugin->GetTickCountFromSc68();
-        }
-
-        const unsigned int milliseconds = ticks * subsongInfo.samplePerTick / (plugin->waveformat.frequency / 1000);
-        *length = milliseconds;
-        return FMOD_OK;
-    }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        *length = plugin->sndh->GetSubsongCount();
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
+        *length = plugin->songLength; //TODO use lengthpcm?
         return FMOD_OK;
     }
 

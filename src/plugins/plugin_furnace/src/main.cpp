@@ -23,7 +23,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_furnace_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_MODVUMETER,
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODVUMETER,
     // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
@@ -59,7 +59,6 @@ public:
     Info *info;
     DivEngine *m_engine = nullptr;
     float m_samples[2][maxSamples];
-    uint64_t m_position = 0;
     int32_t m_lastLoopPos = -1;
     uint32_t m_numRemainingSamples = 0;
     queue<unsigned char *> vumeterBuffer;
@@ -118,6 +117,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!plugin->m_engine->load(buffer, filesize) || !plugin->m_engine->init()) {
         return FMOD_ERR_FORMAT;
     }
+
+    plugin->m_engine->initDispatch();
+    plugin->m_engine->renderSamplesP();
+    plugin->m_engine->changeSongP(plugin->info->currentSubsong);
+    plugin->m_engine->play();
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
     plugin->waveformat.channels = 2;
@@ -252,32 +256,24 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
                                       FMOD_TIMEUNIT postype) {
     const auto plugin = static_cast<pluginFurnace *>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MS) {
-        plugin->m_engine->initDispatch();
-        plugin->m_engine->renderSamplesP();
-        plugin->m_engine->play();
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->m_engine->changeSongP(position);
-        plugin->m_engine->play();
-        plugin->m_position = 0;
-        plugin->m_lastLoopPos = -1;
-        plugin->m_numRemainingSamples = 0;
-        return FMOD_OK;
-    } else if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
         //position is a mask
         for (int i = 0; i < plugin->m_engine->getTotalChannelCount(); i++) {
             int m = position >> i & 1;
             bool mute = m == 1 ? true : false;
             plugin->m_engine->muteChannel(i, mute);
         }
+        return FMOD_OK;
     }
-    return FMOD_OK;
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
-    *length = -1;
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1;
         return FMOD_OK;
     }
 

@@ -29,7 +29,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_adplug_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_SUBSONG_MS,
+    FMOD_TIMEUNIT_MS,
     // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
@@ -62,9 +62,9 @@ public:
     Info *info;
     FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned long samplesToWrite = 0;
-    unsigned int currentSubsong = -1;
-    unsigned int songlength = -1;
+    int songLength;
     bool isSongEndReached = false;
+    bool isSeekSkipped = true;
 };
 
 /*
@@ -222,6 +222,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds.
     codec->plugindata = plugin; // user data value
 
+    plugin->songLength = plugin->player->songlength(plugin->info->currentSubsong);
+
+    plugin->info->numSubsongs = plugin->player->getsubsongs();
     plugin->info->fileformat = plugin->player->gettype();
     plugin->info->artist = plugin->player->getauthor();
     plugin->info->title = plugin->player->gettitle();
@@ -250,12 +253,6 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     auto *plugin = static_cast<pluginAdplug *>(codec->plugindata);
 
-    if (plugin->currentSubsong != -1 && plugin->songlength == -1) {
-        // songlength function does a rewind internally: call it only before start playing
-        plugin->songlength = static_cast<unsigned int>(plugin->player->songlength(
-            static_cast<int>(plugin->currentSubsong)));
-    }
-
     if (plugin->isSongEndReached && plugin->samplesToWrite == 0 && !plugin->info->isContinuousPlaybackActive) {
         return FMOD_ERR_FILE_EOF;
     }
@@ -276,26 +273,27 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     const auto *plugin = static_cast<pluginAdplug *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        *length = plugin->player->getsubsongs();
-    } else if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
-        *length = plugin->songlength;
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
+        *length = plugin->songLength;
+        return FMOD_OK;
     }
 
-    return FMOD_OK;
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     auto *plugin = static_cast<pluginAdplug *>(codec->plugindata);
+
     if (postype == FMOD_TIMEUNIT_MS) {
+        // workaround to make working Westwood ADL subsongs, however causing issue #593
+        if (plugin->isSeekSkipped) {
+            plugin->isSeekSkipped = false;
+            return FMOD_OK;
+        }
+
         plugin->samplesToWrite = 0;
         plugin->player->seek(position);
-        return FMOD_OK;
-    }
-
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->currentSubsong = position;
         return FMOD_OK;
     }
 

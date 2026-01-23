@@ -445,7 +445,7 @@ private:
                           int subsong, QString fullPath, int lengthInt, QString artist);
     void getLength();
     void loadPlugin(string filename);
-    bool loadSound(QString fullPath);
+    bool loadSound(QString fullPath, int subsong);
 
     void PlaySong(int);
 

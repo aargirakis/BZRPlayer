@@ -165,6 +165,11 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     auto *plugin = static_cast<pluginAudiofile *>(codec->plugindata);
-    plugin->seek_to_time = static_cast<int>(position);
-    return FMOD_OK;
+
+    if (postype == FMOD_TIMEUNIT_MS) {
+        plugin->seek_to_time = static_cast<int>(position);
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }

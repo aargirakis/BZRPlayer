@@ -24,8 +24,8 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_hivelytracker_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW |
-    FMOD_TIMEUNIT_MODPATTERN | FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_MODPATTERN_INFO | FMOD_TIMEUNIT_MODVUMETER,
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN |
+    FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_MODPATTERN_INFO | FMOD_TIMEUNIT_MODVUMETER,
     // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
@@ -59,13 +59,13 @@ public:
 
     ~pluginHivelyTracker() {
         //delete some stuff
-        delete subsongslengths;
+        hvl_FreeTune(m_tune);
     }
 
-    hvl_tune *m_tune;
+    hvl_tune *m_tune = nullptr;
     FMOD_CODEC_WAVEFORMAT waveformat;
-    unsigned int *subsongslengths;
     Info *info;
+    uint32 songLength;
 };
 
 /*
@@ -98,6 +98,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     } else if (memcmp(id, "THX", 3) == 0) {
         plugin->info->fileformat = "AHX";
     } else {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
@@ -145,6 +146,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->m_tune = hvl_ParseTune(myBuffer, filesize, 44100, defstereo);
 
     if (!plugin->m_tune) {
+        delete plugin;
         delete [] myBuffer;
         return FMOD_ERR_FORMAT;
     }
@@ -155,25 +157,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = 882; //(16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
-    int subsongs = plugin->m_tune->ht_SubsongNr;
-    if (subsongs == 0) {
-        subsongs = 1;
-    }
+    hvl_InitSubsong(plugin->m_tune, plugin->info->currentSubsong);
 
-    plugin->subsongslengths = new unsigned int[subsongs];
+    plugin->songLength = hvl_GetLen(plugin->m_tune);
 
-    for (int i = 0; i < subsongs; i++) {
-        hvl_InitSubsong(plugin->m_tune, i);
-        plugin->subsongslengths[i] = hvl_GetLen(plugin->m_tune);
-    }
-
-    plugin->waveformat.lengthpcm = -1;
     plugin->info->title = plugin->m_tune->ht_Name;
     plugin->info->numChannels = plugin->m_tune->ht_Channels;
     plugin->info->numPatterns = plugin->m_tune->ht_TrackNr;
@@ -217,12 +211,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 }
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
-    const auto *plugin = static_cast<pluginHivelyTracker *>(codec->plugindata);
-    if (plugin) {
-        hvl_FreeTune(plugin->m_tune);
-    }
-
-    delete plugin;
+    delete static_cast<pluginHivelyTracker *>(codec->plugindata);
     return FMOD_OK;
 }
 
@@ -241,20 +230,13 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     const auto *plugin = static_cast<pluginHivelyTracker *>(codec->plugindata);
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        //hvl_GetLen can't be called during playing, so loop through all subsongs at load and getlength for
-        //all songs and store them and return the current one here
-        *length = plugin->subsongslengths[plugin->m_tune->ht_SongNum];
-        return FMOD_OK;
-    }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        *length = plugin->m_tune->ht_SubsongNr;
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = plugin->songLength;
         return FMOD_OK;
     }
 
     return FMOD_ERR_UNSUPPORTED;
 }
-
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
@@ -262,10 +244,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
     if (postype == FMOD_TIMEUNIT_MS) {
         hvl_Seek(plugin->m_tune, position);
-        return FMOD_OK;
-    }
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        hvl_InitSubsong(plugin->m_tune, position);
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {

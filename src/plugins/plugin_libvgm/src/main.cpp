@@ -327,8 +327,8 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
     if (postype == FMOD_TIMEUNIT_MS) {
         plugin->mainPlr->Seek(PLAYPOS_SAMPLE, position * plugin->waveformat.frequency / 1000);
-    } else {
-        return FMOD_ERR_UNSUPPORTED;
+        return FMOD_OK;
     }
-    return FMOD_OK;
+
+    return FMOD_ERR_UNSUPPORTED;
 }

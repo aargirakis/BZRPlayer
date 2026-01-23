@@ -24,9 +24,9 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_libxmp_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     0, // Don't force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_SUBSONG_MS |
-    FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN | FMOD_TIMEUNIT_MODPATTERN_INFO |
-    FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS | FMOD_TIMEUNIT_MODVUMETER | FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_SPEED |
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN |
+    FMOD_TIMEUNIT_MODPATTERN_INFO | FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS | FMOD_TIMEUNIT_MODVUMETER |
+    FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_SPEED |
     FMOD_TIMEUNIT_BPM, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
@@ -71,14 +71,13 @@ public:
         myBuffer = nullptr;
     }
 
+    FMOD_CODEC_WAVEFORMAT waveformat;
     uint8_t *myBuffer;
     Info *info;
     xmp_context xmp;
     xmp_module_info mi;
     xmp_frame_info fi;
-    unsigned int subsong;
-
-    FMOD_CODEC_WAVEFORMAT waveformat;
+    int songLength;
 };
 
 /*
@@ -188,7 +187,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = channels;
     plugin->waveformat.frequency = freq;
@@ -200,6 +198,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
     codec->plugindata = plugin; /* user data value */
 
+    xmp_set_player(plugin->xmp,XMP_PLAYER_INTERP, interpolation);
+    xmp_set_player(plugin->xmp,XMP_PLAYER_DSP,XMP_DSP_LOWPASS);
+    xmp_set_player(plugin->xmp,XMP_PLAYER_MIX, stereoSeparation);
+
     if (channels == 1) {
         xmp_start_player(plugin->xmp, freq, XMP_FORMAT_MONO);
     } else {
@@ -207,11 +209,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     xmp_get_module_info(plugin->xmp, &plugin->mi);
+    xmp_set_position(plugin->xmp, plugin->mi.seq_data[plugin->info->currentSubsong].entry_point);
+
+    xmp_get_module_info(plugin->xmp, &plugin->mi);
     xmp_get_frame_info(plugin->xmp, &plugin->fi);
 
-    xmp_set_player(plugin->xmp,XMP_PLAYER_INTERP, interpolation);
-    xmp_set_player(plugin->xmp,XMP_PLAYER_DSP,XMP_DSP_LOWPASS);
-    xmp_set_player(plugin->xmp,XMP_PLAYER_MIX, stereoSeparation);
+    plugin->songLength = plugin->fi.total_time;
 
     plugin->info->title = plugin->mi.mod->name;
 
@@ -290,7 +293,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     //        }
     //    }
 
-    plugin->subsong = 0;
     plugin->info->numSubsongs = plugin->mi.num_sequences;
     plugin->info->fileformat = plugin->mi.mod->type;
     plugin->info->plugin = PLUGIN_libxmp;
@@ -322,13 +324,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         xmp_seek_time(plugin->xmp, static_cast<int>(position));
         return FMOD_OK;
     }
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->subsong = position;
-        const int startPattern = plugin->mi.seq_data[position].entry_point;
-        //xmp_restart_module(plugin->xmp);
-        xmp_set_position(plugin->xmp, startPattern);
-        return FMOD_OK;
-    }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
         //position is a mask
         for (int i = 0; i < plugin->info->numChannels; i++) {
@@ -348,13 +343,8 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     auto *plugin = static_cast<pluginLibxmp *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        xmp_get_frame_info(plugin->xmp, &plugin->fi);
-        *length = plugin->fi.total_time;
-        return FMOD_OK;
-    }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        *length = plugin->mi.num_sequences;
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = plugin->songLength;
         return FMOD_OK;
     }
 
@@ -364,10 +354,6 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype) {
     auto *plugin = static_cast<pluginLibxmp *>(codec->plugindata);
 
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        *position = plugin->subsong;
-        return FMOD_OK;
-    }
     if (postype == FMOD_TIMEUNIT_MODROW) {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
         *position = plugin->fi.row;

@@ -655,10 +655,7 @@ bool SoundManager::LoadSound(QString filename, Info* info)
     extrainfo1.dlsname = dls.c_str();
     extrainfo1.userdata = m_Info1;
 
-    cout << "m_Info1->filename: " << m_Info1->filename << "\n";
-    //DebugWindow::instance()->addText("Loading " + filename + " for playing");
-    cout << "FMOD_System_CreateSound\n";
-    flush(cout);
+    cout << "Loading " << m_Info1->filename << " (subsong " << m_Info1->currentSubsong + 1 << ")" << endl;
 
     loadPluginChain();
 

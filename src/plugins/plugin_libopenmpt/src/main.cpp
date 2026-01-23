@@ -27,9 +27,9 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_libopenmpt_NAME, // Name.
     0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
     1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_SUBSONG | FMOD_TIMEUNIT_SUBSONG_MS |
-    FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN | FMOD_TIMEUNIT_MODPATTERN_INFO |
-    FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS | FMOD_TIMEUNIT_MODVUMETER | FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_SPEED |
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN |
+    FMOD_TIMEUNIT_MODPATTERN_INFO | FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS | FMOD_TIMEUNIT_MODVUMETER |
+    FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_SPEED |
     FMOD_TIMEUNIT_BPM, // The time format we would like to accept into setposition/getposition.
     &open, // Open callback.
     &close, // Close callback.
@@ -214,12 +214,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->mod->set_render_param(openmpt::module::RENDER_STEREOSEPARATION_PERCENT, stereo_separation);
         plugin->mod->set_render_param(openmpt::module::RENDER_INTERPOLATIONFILTER_LENGTH, interpolation_filter);
 
+        plugin->mod->select_subsong(plugin->info->currentSubsong);
+
         plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
         plugin->waveformat.channels = 2;
         plugin->waveformat.frequency = 44100;
         plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
         plugin->waveformat.lengthpcm = -1;
-        //plugin->mod->get_duration_seconds()*plugin->waveformat.frequency;
 
         codec->waveformat = &plugin->waveformat;
         codec->numsubsounds = 0;
@@ -232,6 +233,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
         info->comments = plugin->mod->get_metadata("message_raw");
 
+        info->numSubsongs = plugin->mod->get_num_subsongs();
         info->numChannels = plugin->mod->get_num_channels();
         info->numPatterns = plugin->mod->get_num_patterns();
         info->numOrders = plugin->mod->get_num_orders();
@@ -333,13 +335,12 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     const auto *plugin = static_cast<pluginLibopenmpt *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS || lengthtype == FMOD_TIMEUNIT_MS || lengthtype ==
-        FMOD_TIMEUNIT_MUTE_VOICE) {
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         *length = static_cast<unsigned int>(plugin->mod->get_duration_seconds() * 1000.0);
         return FMOD_OK;
     }
-    if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        *length = plugin->mod->get_num_subsongs();
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1; // ignored
         return FMOD_OK;
     }
 
@@ -383,10 +384,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     }
     if (postype == FMOD_TIMEUNIT_MS) {
         plugin->mod->set_position_seconds(position / 1000.0);
-        return FMOD_OK;
-    }
-    if (postype == FMOD_TIMEUNIT_SUBSONG) {
-        plugin->mod->select_subsong(position);
         return FMOD_OK;
     }
 
