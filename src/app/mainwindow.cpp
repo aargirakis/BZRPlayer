@@ -1231,7 +1231,7 @@ void MainWindow::timerProgress()
         currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_SUBSONG_MS);
         if (currentMs == 0)
         {
-            currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MS);;
+            currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MS);
         }
 
         if (!ui->positionSlider->isSliderDown())

@@ -974,7 +974,7 @@ int JBPlayer::oldLoader(void *data, unsigned long int _length) {
                 }
                 break;
             case 0x117b: //move.b [xx(pc,d0.w),xx(a0)]
-                value = (position + readEndian(stream[position], stream[position + 1])) - 256;;
+                value = (position + readEndian(stream[position], stream[position + 1])) - 256;
                 position += 2;
                 valueTemp = readEndian(stream[position], stream[position + 1]);
                 position += 2;
@@ -1073,14 +1073,14 @@ int JBPlayer::oldLoader(void *data, unsigned long int _length) {
     m_variant = 2;
     position = 0xd6;
 
-    valueTemp = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);;
+    valueTemp = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
     if (valueTemp == 0x10bc0040) {
         //move.b [#$40,(a0)]
         m_variant = 0;
     } else {
         position = 0xf4;
-        valueTemp = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);;
+        valueTemp = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
         if (valueTemp == 0x08d00005) m_variant = 1; //bset [#5,(a0)]
     }

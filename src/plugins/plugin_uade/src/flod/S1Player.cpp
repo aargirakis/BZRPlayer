@@ -267,7 +267,7 @@ int S1Player::load(void *_data, unsigned long int _length) {
     start = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
     len = (readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]) - start) +
-          16;;
+          16;
     position += 4;
     int j = (totWaves + 2) << 4;
 

@@ -128,7 +128,7 @@ public:
     //Reflection
     void setReflectionEnabled(bool on) { reflectionEnabled = on; m_printer->setReflectionEnabled(on);m_scroller->setReflectionEnabled(on);m_vuMeters->setReflectionEnabled(on); }
     bool getReflectionEnabled() const override { return reflectionEnabled; }
-    void setReflectionOpacity(int pct) { reflectionOpacity = pct/100.0; m_scroller->setReflectionOpacity(reflectionOpacity);m_printer->setReflectionOpacity(reflectionOpacity);;m_vuMeters->setReflectionOpacity(reflectionOpacity); }
+    void setReflectionOpacity(int pct) { reflectionOpacity = pct/100.0; m_scroller->setReflectionOpacity(reflectionOpacity);m_printer->setReflectionOpacity(reflectionOpacity);m_vuMeters->setReflectionOpacity(reflectionOpacity); }
     int  getReflectionOpacity() const override { return int(reflectionOpacity*100); }
     void setScrollerReflectionColor(QColor c) { reflectionColor = c; m_printer->setReflectionColor(c); }
     QString getReflectionColor() const override { return reflectionColor.name(); }
