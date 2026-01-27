@@ -83,6 +83,7 @@ public:
         fieldSet = 0;
         system = "";
         game = "";
+        disk = "";
         genre = "";
         emulator = "";
         songPlayer = "";
@@ -302,6 +303,7 @@ public:
     unsigned int fieldSet;
     string system;
     string game;
+    string disk;
     string genre;
     string emulator;
     string songPlayer;

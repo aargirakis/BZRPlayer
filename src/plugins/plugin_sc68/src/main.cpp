@@ -54,10 +54,11 @@ public:
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
+    Info *info;
     sc68_t *sc68 = nullptr;
     sc68_init_t init68 = {};
     sc68_create_t create68 = {};
-    sc68_music_info_t info;
+    sc68_music_info_t musicInfo;
     int currentSubsong;
 };
 
@@ -118,9 +119,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     sc68_init(&plugin->init68);
 
-    const auto info = static_cast<Info *>(userexinfo->userdata);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    const string path = info->dataPath + SC68_DATA_DIR;
+    const string path = plugin->info->dataPath + SC68_DATA_DIR;
     rsc68_set_share(path.c_str());
 
     plugin->sc68 = sc68_create(&plugin->create68);
@@ -133,7 +134,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     delete[] myBuffer;
 
-    if (sc68_music_info(plugin->sc68, &plugin->info, 0, nullptr)) {
+    if (sc68_music_info(plugin->sc68, &plugin->musicInfo, 0, nullptr)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -152,26 +153,26 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->currentSubsong = 1;
     sc68_play(plugin->sc68, plugin->currentSubsong, 0);
 
-    info->plugin = PLUGIN_sc68;
-    info->pluginName = PLUGIN_sc68_NAME;
+    plugin->info->plugin = PLUGIN_sc68;
+    plugin->info->pluginName = PLUGIN_sc68_NAME;
 
     if (isSC68) {
-        info->fileformat = "SC68";
+        plugin->info->fileformat = "SC68";
     } else {
-        info->fileformat = "SNDH";
+        plugin->info->fileformat = "SNDH";
     }
 
-    info->author = plugin->info.author;
-    info->composer = plugin->info.composer;
-    info->replay = plugin->info.replay;
-    info->hwname = plugin->info.hwname;
-    info->title = plugin->info.title;
-    info->rate = static_cast<int>(plugin->info.rate);
-    info->address = static_cast<int>(plugin->info.addr);
-    info->converter = plugin->info.converter ? plugin->info.converter : "";
-    info->ripper = plugin->info.ripper ? plugin->info.ripper : "";
-    info->numSubsongs = plugin->info.tracks;
-    info->setSeekable(false);
+    plugin->info->author = plugin->musicInfo.author;
+    plugin->info->composer = plugin->musicInfo.composer;
+    plugin->info->replay = plugin->musicInfo.replay;
+    plugin->info->hwname = plugin->musicInfo.hwname;
+    plugin->info->disk = plugin->musicInfo.title;
+    plugin->info->rate = static_cast<int>(plugin->musicInfo.rate);
+    plugin->info->address = static_cast<int>(plugin->musicInfo.addr);
+    plugin->info->converter = plugin->musicInfo.converter ? plugin->musicInfo.converter : "";
+    plugin->info->ripper = plugin->musicInfo.ripper ? plugin->musicInfo.ripper : "";
+    plugin->info->numSubsongs = plugin->musicInfo.tracks;
+    plugin->info->setSeekable(false);
 
     return FMOD_OK;
 }
@@ -207,8 +208,9 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     }
     if (postype == FMOD_TIMEUNIT_SUBSONG) {
         sc68_play(plugin->sc68, static_cast<int>(position) + 1, 0);
-        sc68_music_info(plugin->sc68, &plugin->info, static_cast<int>(position) + 1, nullptr);
+        sc68_music_info(plugin->sc68, &plugin->musicInfo, static_cast<int>(position) + 1, nullptr);
         plugin->currentSubsong = static_cast<int>(position) + 1;
+        plugin->info->title = plugin->musicInfo.title;
         return FMOD_OK;
     }
 
@@ -219,18 +221,18 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginSc68 *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG_MS) {
-        if (plugin->info.time_ms > 0xfffff || plugin->info.time_ms == 0)
+        if (plugin->musicInfo.time_ms > 0xfffff || plugin->musicInfo.time_ms == 0)
         //if length > 4.6 hours (or 0) then set it to unlimited, some songs report a ridiculous large time
         {
             *length = -1;
         } else {
-            *length = plugin->info.time_ms;
+            *length = plugin->musicInfo.time_ms;
         }
 
         return FMOD_OK;
     }
     if (lengthtype == FMOD_TIMEUNIT_SUBSONG) {
-        *length = plugin->info.tracks;
+        *length = plugin->musicInfo.tracks;
         return FMOD_OK;
     }
 

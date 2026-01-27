@@ -403,6 +403,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, PlaylistItem* playl
             addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->author));
             addInfo(tableInfo, &row, "Composer", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->composer));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Disk", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->disk));
             addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->converter));
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->ripper));
             addInfo(tableInfo, &row, "Replay", SoundManager::getInstance().m_Info1->replay.c_str());
