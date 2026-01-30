@@ -128,7 +128,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     codec->plugindata = plugin; /* user data value */
 
     info->fileformat = "Farbrausch V2M";
-    info->setSeekable(false);
+    info->setSeekable(true);
     info->plugin = PLUGIN_v2m_player;
     info->pluginName = PLUGIN_v2m_player_NAME;
 

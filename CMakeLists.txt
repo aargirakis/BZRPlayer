@@ -80,7 +80,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_sndh-player "src/plugins/plugin_sndh-player"
         plugin_sunvox_lib "src/plugins/plugin_sunvox_lib"                    #TODO add sv_unload_dll() (see sunvox_lib README)
         plugin_uade "src/plugins/plugin_uade"
-        plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO seeking it is now supported (should be implemented into main.cpp). #TODO add v2mz support (see sources/v2m dir for example files)
+        plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO add v2mz support (see sources/v2m dir for example files)
         plugin_vgmstream "src/plugins/plugin_vgmstream"
         plugin_vio2sf "src/plugins/plugin_vio2sf"
         plugin_zxtune "src/plugins/plugin_zxtune"
