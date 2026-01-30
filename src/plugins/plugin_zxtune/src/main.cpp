@@ -62,6 +62,7 @@ public:
         int currentModuleNum = 0;
         Module::Holder::Ptr currentModule;
         string containerFilenames;
+        bool isContainer = false;
 
         Parameters::Container::Ptr CreateInitialProperties(const StringView subpath) const override {
             return Parameters::Container::Create();
@@ -75,13 +76,16 @@ public:
 
             containerFilenames = filesystem::path(filename).filename().string();
 
-            for (const auto path = location.GetPath(); const auto &element: path->Elements()) {
-                if (!element.starts_with("+")) {
-                    if (!element.empty()) {
-                        containerFilenames += " > ";
-                    }
+            if (const auto path = location.GetPath(); !path->Empty()) {
+                isContainer = true;
+                for (const auto &element: path->Elements()) {
+                    if (!element.starts_with("+")) {
+                        if (!element.empty()) {
+                            containerFilenames += " > ";
+                        }
 
-                    containerFilenames += element;
+                        containerFilenames += element;
+                    }
                 }
             }
 
@@ -109,6 +113,10 @@ public:
 
         auto getNumModules() const {
             return numModules;
+        }
+
+        auto isInContainer() const {
+            return isContainer;
         }
     };
 
@@ -207,17 +215,16 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
         codec->plugindata = plugin; /* user data value */
 
+        info->numSubsongs = plugin->modulesDetector.getNumModules();
         plugin->moduleInfo = plugin->modulesDetector.getCurrentModule()->GetModuleInformation();
+
+        if (plugin->modulesDetector.isInContainer()) {
+            info->containerFilenames = plugin->modulesDetector.getContainerFilenames();
+        }
 
         if (const auto *trackInfo = dynamic_cast<const Module::TrackInformation *>(plugin->moduleInfo.get())) {
             info->numChannels = trackInfo->ChannelsCount();
             info->loopPosition = trackInfo->LoopPosition();
-        }
-
-        info->numSubsongs = plugin->modulesDetector.getNumModules();
-
-        if (info->numSubsongs > 1) {
-            info->containerFilenames = plugin->modulesDetector.getContainerFilenames();
         }
 
         const Parameters::Accessor::Ptr moduleProperties = plugin->modulesDetector.getCurrentModule()->
