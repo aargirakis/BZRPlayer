@@ -144,7 +144,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    if (libvgmstream_open_stream(plugin->libvgmstream, libsf, 0) < 0) {
+    auto retval = libvgmstream_open_stream(plugin->libvgmstream, libsf, plugin->info->currentSubsong + 1);
+
+    libstreamfile_close(libsf);
+
+    if (retval < 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -178,6 +182,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->bitRate = plugin->libvgmstream->format->stream_bitrate;
     plugin->info->numChannels = plugin->waveformat.channels;
 
+    if (plugin->libvgmstream->format->stream_name[0] != '\0') {
+        plugin->info->title = plugin->libvgmstream->format->stream_name;
+    }
+
     if (const auto priv = static_cast<libvgmstream_priv_t *>(plugin->libvgmstream->priv);
         priv->vgmstream->coding_type != coding_FFmpeg) {
         plugin->info->fileformat = plugin->libvgmstream->format->meta_name;
@@ -199,6 +207,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         }
     }
 
+    plugin->info->numSubsongs = plugin->libvgmstream->format->subsong_count;
     plugin->info->fileformatSpecific = plugin->libvgmstream->format->codec_name;
     plugin->info->plugin = PLUGIN_vgmstream;
     plugin->info->pluginName = PLUGIN_vgmstream_NAME;
