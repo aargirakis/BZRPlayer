@@ -801,7 +801,17 @@ void MainWindow::setPosition(const int offset) const {
         }
     }
 
-    SoundManager::getInstance().setPosition(targetPos, FMOD_TIMEUNIT_MS);
+    if (!SoundManager::getInstance().setPosition(targetPos, FMOD_TIMEUNIT_MS)) {
+        logError("SetPosition callback returned with error", getClassName()); //TODO use logWarning instead?
+
+        // TODO export as method
+        const QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 6, QModelIndex());
+        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, true, Qt::EditRole);
+        tableWidgetPlaylists[currentPlaylist]->update();
+
+        return;
+    }
+
     logDebugQ("Set position to " + QString::number(targetPos), getClassName());
 }
 
