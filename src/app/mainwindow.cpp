@@ -757,7 +757,19 @@ void MainWindow::setPosition(const int offset) const {
         }
     }
 
-    SoundManager::getInstance().setPosition(targetPos, FMOD_TIMEUNIT_MS);
+    if (!SoundManager::getInstance().setPosition(targetPos, FMOD_TIMEUNIT_MS)) {
+        addDebugText("SetPosition callback returned with error");
+        qDebug() << "SetPosition callback returned with error";
+        cout << "SetPosition callback returned with error" << endl;
+
+        // TODO export as method
+        const QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 6, QModelIndex());
+        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, true, Qt::EditRole);
+        tableWidgetPlaylists[currentPlaylist]->update();
+
+        return;
+    }
+
     addDebugText("Set position to " + QString::number(targetPos));
 }
 
