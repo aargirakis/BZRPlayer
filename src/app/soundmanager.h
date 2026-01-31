@@ -50,7 +50,7 @@ public:
 
     unsigned int getLength(FMOD_TIMEUNIT timeUnit) const;
 
-    void setPosition(unsigned int positon, FMOD_TIMEUNIT timeUnit) const;
+    bool setPosition(unsigned int positon, FMOD_TIMEUNIT timeUnit);
 
     void setVolume(float volume) const;
 

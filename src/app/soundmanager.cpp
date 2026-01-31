@@ -467,8 +467,15 @@ bool SoundManager::isWavWriterDeviceSelected() const {
     return static_cast<FMOD_OUTPUTTYPE>(currentDevice) == FMOD_OUTPUTTYPE_WAVWRITER;
 }
 
-void SoundManager::setPosition(const unsigned int positon, const FMOD_TIMEUNIT timeUnit) const {
-    FMOD_Channel_SetPosition(channel, positon, timeUnit);
+bool SoundManager::setPosition(const unsigned int positon, const FMOD_TIMEUNIT timeUnit) {
+    result = FMOD_Channel_SetPosition(channel, positon, timeUnit);
+
+    if (result == FMOD_OK || result == FMOD_ERR_UNSUPPORTED || result == FMOD_ERR_INVALID_POSITION) {
+        return true;
+    }
+
+    checkFmodError(result);
+    return false;
 }
 
 void SoundManager::setVolume(const float volume) const {

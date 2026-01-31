@@ -347,5 +347,5 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         return FMOD_OK;
     }
 
-    return FMOD_ERR_FORMAT;
+    return FMOD_ERR_UNSUPPORTED;
 }
