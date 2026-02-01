@@ -1,23 +1,22 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "vgmstream")
-set(VERSION "2055")
+set(VERSION "756aa56d036599e53a563afdfa8b4d143b95f9b4")
+string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
-set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
+set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(NAME_VERSIONED "${NAME}-${VERSION}")
-set(TAG "r${VERSION}")
-set(NAME_TAGGED "${NAME}-${TAG}")
-set(FILENAME "${NAME_TAGGED}.tar.gz")
-set(FILENAME_URL "${TAG}.tar.gz")
-set(URL "https://github.com/${NAME}/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "86eb37caa8d4cc882de00b42787fe557d313e58f6055c6e4d3a27403b9048f96")
-set(UNPACKED_DIR "${NAME_TAGGED}")
+set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
+set(FILENAME_URL "${VERSION}.tar.gz")
+set(URL "https://github.com/${NAME}/${NAME}/archive/${FILENAME_URL}")
+set(SHA_256_HASH "5ee055b812dd5615114490a4c04db0bd9f643296a78938d75af560ee73188422")
+set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches

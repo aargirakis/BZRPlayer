@@ -1,6 +1,6 @@
---- src/coding/ffmpeg_decoder.c	2025-09-28 21:13:32.000000000 +0200
-+++ src/coding/ffmpeg_decoder.c	2026-01-06 20:24:31.518350279 +0100
-@@ -1101,6 +1101,45 @@
+--- src/coding/ffmpeg_decoder.c	2026-01-25 17:20:56.000000000 +0100
++++ src/coding/ffmpeg_decoder.c	2026-02-03 14:48:07.844963735 +0100
+@@ -1115,6 +1115,38 @@
      return avde->value;
  }
  
@@ -34,13 +34,6 @@
 +    }
 +
 +    return tags;
-+}
-+
-+const char *get_ffmpeg_format_long_name(ffmpeg_codec_data *data) {
-+    if (data == NULL || data->formatCtx == NULL || data->formatCtx->iformat == NULL)
-+        return NULL;
-+
-+    return data->formatCtx->iformat->long_name;
 +}
 +
  int32_t ffmpeg_get_samples(ffmpeg_codec_data* data) {

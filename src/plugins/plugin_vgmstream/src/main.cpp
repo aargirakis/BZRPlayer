@@ -6,7 +6,7 @@ extern "C" {
 }
 
 #include "fmod_errors.h"
-#include "info.h"
+#include "../app/info.h"
 #include "../app/plugins.h"
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
@@ -191,7 +191,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->info->fileformat = plugin->libvgmstream->format->meta_name;
     } else {
         if (priv->vgmstream->meta_type == meta_FFMPEG || priv->vgmstream->meta_type == meta_FFMPEG_faulty) {
-            plugin->info->fileformat = get_ffmpeg_format_long_name(
+            plugin->info->fileformat = ffmpeg_get_format_name(
                 static_cast<ffmpeg_codec_data *>(priv->vgmstream->codec_data));
         } else {
             plugin->info->fileformat = plugin->libvgmstream->format->meta_name;
