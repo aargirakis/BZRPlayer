@@ -64,7 +64,6 @@ public:
     unsigned long samplesToWrite = 0;
     int songLength;
     bool isSongEndReached = false;
-    bool isSeekSkipped = true;
 };
 
 /*
@@ -166,7 +165,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             break;
 
         case 1:
-            // Ken Silverman (only supports one instance so does not work properly in surround mode in old versions of the adplug library)
+            // Ken Silverman (left channel only when stereo)
             if (harmonic) {
                 COPLprops a = {};
                 COPLprops b = {};
@@ -191,7 +190,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             } else plugin->opl = new CWemuopl(freq, bits == 16, plugin->waveformat.channels == 2);
             break;
 
-        case 3: // Nuked OPL3 (only works in stereo 16 bits)
+        case 3: // Nuked OPL3
             if (harmonic) {
                 COPLprops a = {};
                 COPLprops b = {};
@@ -286,12 +285,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     auto *plugin = static_cast<pluginAdplug *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
-        // workaround to make working Westwood ADL subsongs, however causing issue #593
-        if (plugin->isSeekSkipped) {
-            plugin->isSeekSkipped = false;
-            return FMOD_OK;
-        }
-
         plugin->samplesToWrite = 0;
         plugin->player->seek(position);
         return FMOD_OK;

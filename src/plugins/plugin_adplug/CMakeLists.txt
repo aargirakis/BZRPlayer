@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "adplug")
-set(VERSION "2.3.3")
+set(VERSION "2.4")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "AdPlug" PARENT_SCOPE)
@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.bz2")
 set(URL "https://github.com/${NAME}/${NAME}/releases/download/${NAME_VERSIONED}/${FILENAME}")
-set(SHA_256_HASH "a0f3c1b18fb49dea7ac3e8f820e091a663afa5410d3443612bf416cff29fa928")
+set(SHA_256_HASH "de18463bf7c0cb639a3228ad47e69eb7f78a5a197802d325f3a5ed7e1c56d57f")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches
