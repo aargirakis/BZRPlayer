@@ -114,7 +114,7 @@ jobs:
           [Desktop Entry]
           Type=Application
           Name=BZR Player 2
-          GenericName=Audio player
+          GenericName=Audio Player
           Comment=Audio player supporting a wide array of multi-platform exotic file formats
           Exec=/usr/bin/bzr-player %U
           Icon=bzr-player
