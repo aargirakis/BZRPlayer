@@ -237,7 +237,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         info->author = moduleProperties->FindString(Module::ATTR_AUTHOR).value_or("");
         info->comments = moduleProperties->FindString(Module::ATTR_COMMENT).value_or("");
         info->date = moduleProperties->FindString(Module::ATTR_DATE).value_or("");
-        info->title = moduleProperties->FindString(Module::ATTR_TITLE).value_or("");
+        info->title = moduleProperties->FindString(Module::ATTR_TITLE).value_or(info->containerFilenames);
 
         if (const auto type = moduleProperties->FindString(Module::ATTR_TYPE).value_or("");
             type == "MTC") {
