@@ -541,10 +541,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        *length = plugin->waveformat.lengthpcm;
-        return FMOD_OK;
-    }
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         if (plugin->isMus || !plugin->hvscSonglengthsDataBaseEnabled) {
             *length = -1;
@@ -561,6 +557,10 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
             *length = plugin->length;
         }
 
+        return FMOD_OK;
+    }
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1; // ignored
         return FMOD_OK;
     }
 

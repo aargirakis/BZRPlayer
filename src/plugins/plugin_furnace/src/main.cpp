@@ -272,8 +272,12 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
-    if (lengthtype == FMOD_TIMEUNIT_MS_REAL || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         *length = -1;
+        return FMOD_OK;
+    }
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1; // ignored
         return FMOD_OK;
     }
 

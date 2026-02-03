@@ -200,29 +200,35 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     auto const *plugin = static_cast<pluginAsap *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_MS_REAL || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         *length = plugin->songLength;
+        return FMOD_OK;
+    }
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1; // ignored
         return FMOD_OK;
     }
 
     return FMOD_ERR_UNSUPPORTED;
 }
 
-
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     auto *plugin = static_cast<pluginAsap *>(codec->plugindata);
+
     if (postype == FMOD_TIMEUNIT_MS) {
         if (ASAP_Seek(plugin->asap, static_cast<int>(position))) {
             ASAP_MutePokeyChannels(plugin->asap, static_cast<int>(plugin->mask));
-            return FMOD_OK;
         }
-    } else if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        return FMOD_OK;
+    }
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
         //mutes voices
         //position is a mask
         ASAP_MutePokeyChannels(plugin->asap, static_cast<int>(position));
         plugin->mask = position;
         return FMOD_OK;
     }
+
     return FMOD_ERR_UNSUPPORTED;
 }

@@ -230,8 +230,13 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     const auto *plugin = static_cast<pluginHivelyTracker *>(codec->plugindata);
-    if (lengthtype == FMOD_TIMEUNIT_MS_REAL || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         *length = plugin->songLength;
+        return FMOD_OK;
+    }
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1; // ignored
         return FMOD_OK;
     }
 

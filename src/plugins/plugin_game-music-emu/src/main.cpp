@@ -161,17 +161,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     if (gme_load_data(plugin->emu, myBuffer, filesize)) {
         delete plugin;
-        return FMOD_ERR_INTERNAL;
+        return FMOD_ERR_FORMAT;
     }
 
     delete [] myBuffer;
 
     if (gme_track_info(plugin->emu, &plugin->gmeInfo, plugin->info->currentSubsong)) {
-        return FMOD_ERR_INTERNAL;
+        return FMOD_ERR_FORMAT;
     }
 
     if (!plugin->gmeInfo) {
-        return FMOD_ERR_INTERNAL;
+        return FMOD_ERR_FORMAT;
     }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
@@ -195,7 +195,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     gme_set_stereo_depth(plugin->emu, stereoDepth);
 
     if (gme_start_track(plugin->emu, plugin->info->currentSubsong)) {
-        return FMOD_ERR_INTERNAL;
+        return FMOD_ERR_FORMAT;
     }
 
     plugin->info->title = plugin->gmeInfo->song;
@@ -233,7 +233,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
     if (postype == FMOD_TIMEUNIT_MS) {
         if (gme_seek(plugin->emu, static_cast<int>(position))) {
-            return FMOD_ERR_INTERNAL;
+            return FMOD_ERR_FORMAT;
         }
         return FMOD_OK;
     }
@@ -251,7 +251,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
     const auto plugin = static_cast<pluginGme *>(codec->plugindata);
 
-    if (lengthtype == FMOD_TIMEUNIT_MS_REAL || lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         // If file doesn't have overall length, it might have intro and loop lengths
         if (plugin->gmeInfo->length <= 0)
             plugin->gmeInfo->length = plugin->gmeInfo->intro_length + plugin->gmeInfo->loop_length * 2;
@@ -262,6 +262,10 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
             *length = -1;
         }
 
+        return FMOD_OK;
+    }
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1; // ignored
         return FMOD_OK;
     }
 
