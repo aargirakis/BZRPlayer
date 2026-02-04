@@ -45,7 +45,7 @@
  # - mpc,mpc8: Android games
  # - tak,ape: extra for rips with compressed .wav
 ---enable-demuxer=ac3,eac3,spdif,asf,xwma,mov,oma,xmv,ogg,flac,wav,aac,mp3,smacker,bink,binka,caf,mpc,mpc8,tak,ape
-+--enable-demuxer=ac3,eac3,spdif,asf,xwma,mov,oma,xmv,ogg,flac,wav,aac,mp3,smacker,bink,binka,caf,mpc,mpc8,tak,ape,aiff,amr,amrnb,au,avr,epaf,gsm,iff,ircam,nistsphere,nsp,pvf,rm,sds,sdx,tta,voc,w64,wv
++--enable-demuxer=ac3,eac3,spdif,asf,xwma,mov,oma,xmv,ogg,flac,wav,aac,mp3,smacker,bink,binka,caf,mpc,mpc8,tak,ape,aiff,amr,amrnb,au,avr,dts,ea,epaf,gsm,iff,ircam,nistsphere,nsp,pvf,qoa,rm,sds,sdx,tta,voc,w64,wv
  
  # parsers take data streams and splits into frames (handles raw-ish formats)
  # - ac3: raw AC3 
@@ -63,7 +63,7 @@
  # - adpcm_ima_dk3,adpcm_ima_dk4: Saturn videos
  # - tak,ape: extra for rips with compressed .wav
 ---enable-decoder=ac3,eac3,wmapro,wmav1,wmav2,xma1,xma2,aac,atrac3,atrac3p,mp2float,mp3float,smackaud,binkaudio_dct,binkaudio_rdft,pcm_s16be,pcm_s16be_planar,pcm_s16le,pcm_s16le_planar,pcm_s8,pcm_s8_planar,flac,vorbis,libopus,mpc7,mpc8,alac,adpcm_ima_qt,adpcm_ima_dk3,adpcm_ima_dk4,tak,ape
-+--enable-decoder=ac3,eac3,wmapro,wmav1,wmav2,xma1,xma2,aac,atrac3,atrac3p,mp2float,mp3float,smackaud,binkaudio_dct,binkaudio_rdft,pcm_s16be,pcm_s16be_planar,pcm_s16le,pcm_s16le_planar,pcm_s8,pcm_s8_planar,flac,vorbis,opus,mpc7,mpc8,alac,adpcm_ima_qt,adpcm_ima_dk3,adpcm_ima_dk4,tak,ape,adpcm_g722,adpcm_g726le,adpcm_ima_oki,adpcm_ima_wav,adpcm_ms,adpcm_sbpro_4,amrnb,gsm,gsm_ms,mace3,mace6,pcm_alaw,pcm_f32be,pcm_f32le,pcm_f64be,pcm_mulaw,pcm_s24be,pcm_s32be,pcm_u16le,pcm_u32le,pcm_u8,ra_144,truespeech,tta,speex,wavpack,wmalossless
++--enable-decoder=ac3,eac3,wmapro,wmav1,wmav2,xma1,xma2,aac,atrac3,atrac3p,mp2float,mp3float,smackaud,binkaudio_dct,binkaudio_rdft,pcm_s16be,pcm_s16be_planar,pcm_s16le,pcm_s16le_planar,pcm_s8,pcm_s8_planar,flac,vorbis,opus,mpc7,mpc8,alac,adpcm_ima_qt,adpcm_ima_dk3,adpcm_ima_dk4,tak,ape,adpcm_ea,adpcm_ea_maxis_xa,adpcm_ea_r1,adpcm_ea_r2,adpcm_ea_r3,adpcm_ea_xas,adpcm_g722,adpcm_g726le,adpcm_ima_ea_eacs,adpcm_ima_ea_sead,adpcm_ima_oki,adpcm_ima_wav,adpcm_ms,adpcm_sbpro_4,amrnb,dca,gsm,gsm_ms,mace3,mace6,pcm_alaw,pcm_f32be,pcm_f32le,pcm_f64be,pcm_mulaw,pcm_s24be,pcm_s32be,pcm_u16le,pcm_u32le,pcm_u8,qoa,ra_144,truespeech,tta,speex,wavpack,wmalossless
  
  ###############################################################################
  # OS/TESTS
