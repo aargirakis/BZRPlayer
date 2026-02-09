@@ -13,7 +13,7 @@ void SoundManager::Init(int device, QString outputfilename)
     result = FMOD_System_Create(&system, FMOD_VERSION);
     ERRCHECK(result);
 
-    result = FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_LOG, FMOD_DEBUG_MODE_FILE, 0, "fmodlog.txt");
+    result = FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_LOG, FMOD_DEBUG_MODE_FILE, nullptr, "fmodlog.txt");
     ERRCHECK(result);
     unsigned int version;
     result = FMOD_System_GetVersion(system, &version, nullptr);
@@ -799,7 +799,7 @@ const char* SoundManager::getFMODSoundFormat(FMOD_SOUND* sound)
     }
     else
     {
-        format = 0; //3rd party format
+        format = nullptr; //3rd party format
     }
     return format;
 }

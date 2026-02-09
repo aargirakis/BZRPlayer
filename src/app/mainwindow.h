@@ -99,7 +99,7 @@ public:
     void resetAll();
     void resetToDefaultColors();
     void changeStyleSheetColor();
-    void addDebugText(QString);
+    void addDebugText(const QString &) const;
     void restoreFromTray();
     void SaveSettings();
     void setOutputDevice(int outputDevice, QString);

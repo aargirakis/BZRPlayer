@@ -1106,8 +1106,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
     {
         if (event->type() == QEvent::MouseButtonDblClick)
         {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-            if (mouseEvent->button() == Qt::LeftButton)
+            if (auto const* mouseEvent = static_cast<QMouseEvent*>(event); mouseEvent->button() == Qt::LeftButton)
             {
                 visualizerFullScreen->hide();
             }
@@ -1118,8 +1117,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
     {
         if (event->type() == QEvent::MouseButtonDblClick)
         {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-            if (mouseEvent->button() == Qt::LeftButton)
+            if (QMouseEvent const* mouseEvent = static_cast<QMouseEvent*>(event); mouseEvent->button() == Qt::LeftButton)
             {
                 visualizerFullScreen->showFullScreen();
             }
@@ -1129,8 +1127,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
     {
         if (event->type() == QEvent::MouseButtonDblClick)
         {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-            if (mouseEvent->button() == Qt::LeftButton)
+            if (const QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event); mouseEvent->button() == Qt::LeftButton)
             {
                 trackerFullScreen->hide();
             }
@@ -1140,8 +1137,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
     {
         if (event->type() == QEvent::MouseButtonDblClick)
         {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-            if (mouseEvent->button() == Qt::LeftButton)
+            if (const QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event); mouseEvent->button() == Qt::LeftButton)
             {
                 trackerFullScreen->showFullScreen();
             }
@@ -1179,8 +1175,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
 }
 
-void MainWindow::addDebugText(QString debugText)
-{
+void MainWindow::addDebugText(const QString &debugText) const {
     ui->Debug->appendPlainText(debugText);
 }
 
@@ -1191,19 +1186,12 @@ void MainWindow::refreshInfo()
     pi.info = SoundManager::getInstance().m_Info1;
     fileInfoParser->updateFileInfo(ui->tableInfo, &pi);
 
+    const QString title = fromUtf8OrLatin1(pi.info->title.empty() ? pi.info->filename : pi.info->title);
     QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
-    if (pi.info->title != "")
-    {
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->title), Qt::EditRole);
-    }
-    else
-    {
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->filename), Qt::EditRole);
-    }
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, title, Qt::EditRole);
 
     index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 8, QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->artist), Qt::EditRole);
-
 }
 
 void MainWindow::timerProgress()
@@ -2156,7 +2144,8 @@ void MainWindow::PlaySong(int currentRow)
         QFileInfo fileInfo(file.fileName());
         QString filename(fileInfo.fileName());
         QString artist = "";
-        if (pi.info->title != "")
+
+        if (!pi.info->title.empty())
         {
             if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
             {
@@ -2167,8 +2156,7 @@ void MainWindow::PlaySong(int currentRow)
                 filename = fromUtf8OrLatin1(pi.info->title);
             }
         }
-
-        if (pi.info->artist != "")
+        if (!pi.info->artist.empty())
         {
             if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
             {
@@ -2179,7 +2167,7 @@ void MainWindow::PlaySong(int currentRow)
                 artist = fromUtf8OrLatin1(pi.info->artist);
             }
         }
-        else if (pi.info->author != "")
+        else if (!pi.info->author.empty())
         {
             if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
             {
@@ -2190,7 +2178,7 @@ void MainWindow::PlaySong(int currentRow)
                 artist = fromUtf8OrLatin1(pi.info->author);
             }
         }
-        else if (pi.info->composer != "")
+        else if (!pi.info->composer.empty())
         {
             if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
             {
@@ -2227,7 +2215,7 @@ void MainWindow::PlaySong(int currentRow)
         }
 
         QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
-        if (pi.info->title != "")
+        if (!pi.info->title.empty())
         {
             tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->title), Qt::EditRole);
         }

@@ -1,9 +1,10 @@
 #include "album.h"
 #include <QHBoxLayout>
 #include <QApplication>
+#include <QMouseEvent>
 #include <QPainter>
 
-Album::Album(QString id, QWidget* parent): QLabel(parent)
+Album::Album(const QString &id, QWidget* parent): QLabel(parent)
 {
     this->id = id;
 
@@ -18,7 +19,7 @@ Album::Album(QString id, QWidget* parent): QLabel(parent)
     this->playButton = new QPushButton(this);
     connect(playButton, &QPushButton::clicked, [this]() { emit clickedAddAlbum(this->path); });
 
-    int size = 175;
+    const int size = 175;
 
     this->installEventFilter(playButton);
 
@@ -28,24 +29,22 @@ Album::Album(QString id, QWidget* parent): QLabel(parent)
     this->playButton->setGeometry(0, 0, 125, 125);
     this->playButton->setStyleSheet("background-color:rgba(0,0,0,210);font-weight:bold");
 
-    this->labelText->setGeometry(2, static_cast<int>(size - 50), static_cast<int>(size), 60);
+    this->labelText->setGeometry(2, size - 50, size, 60);
 }
 
-void Album::putPixmap(const QString& path)
-{
+void Album::putPixmap(const QString& path) const {
     this->labelText->setText(
         "<span style=\"font-size:9pt;color:#fff;font-weight:bold;\">" + title +
         "</span><br><span style=\" font-size:9pt;color:#999;\"></span>");
     this->labelText->setWordWrap(true);
     this->labelText->setTextFormat(Qt::RichText);
-    QPixmap pix(path);
+    const QPixmap pix(path);
     labelAlbum->setPixmap(pix);
 }
 
 void Album::enterEvent(QEnterEvent* event)
 {
     event->accept();
-
     playButton->setVisible(true);
 }
 

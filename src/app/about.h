@@ -2,7 +2,6 @@
 #define ABOUT_H
 
 #include <QDialog>
-#include <QString>
 #include "mainwindow.h"
 
 namespace Ui
@@ -18,7 +17,7 @@ class about : public QDialog
 public:
     explicit about(QWidget* parent = nullptr);
     ~about();
-    void setVersion(QString);
+    void setVersion(const QString &) const;
 
 private:
 

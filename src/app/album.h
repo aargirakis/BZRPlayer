@@ -3,17 +3,16 @@
 
 #include <QLabel>
 #include <QPushButton>
-#include <QMouseEvent>
 
 class Album : public QLabel
 {
     Q_OBJECT
 
 public:
-    Album(QString, QWidget* parent = nullptr);
+    Album(const QString &, QWidget* parent = nullptr);
     QLabel* labelAlbum;
     QLabel* labelText;
-    void putPixmap(const QString&);
+    void putPixmap(const QString&) const;
     QString artwork;
     QString title;
     QString path;

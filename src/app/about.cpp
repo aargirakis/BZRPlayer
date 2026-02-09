@@ -18,8 +18,7 @@ about::~about()
 }
 
 
-void about::setVersion(QString version)
-{
+void about::setVersion(const QString &version) const {
     ui->labelVersion->setText(version);
 }
 
