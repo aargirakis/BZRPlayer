@@ -1190,6 +1190,20 @@ void MainWindow::refreshInfo()
     pi.fullPath = currentPlayingFilepath;
     pi.info = SoundManager::getInstance().m_Info1;
     fileInfoParser->updateFileInfo(ui->tableInfo, &pi);
+
+    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
+    if (pi.info->title != "")
+    {
+        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->title), Qt::EditRole);
+    }
+    else
+    {
+        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->filename), Qt::EditRole);
+    }
+
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 8, QModelIndex());
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->artist), Qt::EditRole);
+
 }
 
 void MainWindow::timerProgress()
@@ -2098,6 +2112,14 @@ void MainWindow::PlaySong(int currentRow)
 
 
         SoundManager::getInstance().PlayAudio(true);
+
+        /*
+         * when playing network streams, this SetPosition invocation
+         * prevents delays in displaying full track metadata
+         */
+        if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod && fileInfo.size() == 0) {
+            SoundManager::getInstance().SetPosition(0, FMOD_TIMEUNIT_MS);
+        }
 
         int vol = ui->volumeSlider->value();
         SoundManager::getInstance().SetVolume((float)vol / 100);
