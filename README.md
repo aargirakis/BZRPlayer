@@ -98,7 +98,7 @@ In order to build BZR2 following packages are required:
 
 
 - On **Fedora-based** distros:\
-  `development-tools` (group), `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel`
+  `@c-development` `@development-tools` `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel`
   `Qt-Advanced-Docking-System-devel` `sdl2-compat-devel` `vulkan-headers` `which`
 
 ---

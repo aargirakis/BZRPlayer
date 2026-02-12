@@ -23,6 +23,7 @@ download_patch_and_add(
 )
 
 add_subdirectory(deps/ffmpeg)
+add_subdirectory(deps/libcue)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.c
@@ -53,6 +54,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/meta
         ${EXTERNAL_SOURCE_DIR}/src/util
         ${EXTERNAL_SOURCE_DIR_ffmpeg} # needed by the included extra sources
+        ${EXTERNAL_SOURCE_DIR_libcue}
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
@@ -66,6 +68,8 @@ foreach (FFMPEG_STATIC_LIB ${FFMPEG_STATIC_LIBS})
     set_target_properties(${FFMPEG_STATIC_LIB} PROPERTIES IMPORTED_LOCATION ${EXTERNAL_SOURCE_DIR_ffmpeg}/out/lib/${FFMPEG_STATIC_LIB}.a)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${FFMPEG_STATIC_LIB})
 endforeach ()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE libcue)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE -lbcrypt)

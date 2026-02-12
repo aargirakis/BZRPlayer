@@ -40,6 +40,8 @@ public:
         mutedChannelsMask = "";
         filename = "";
         containerFilenames = "";
+        isTrackFromCueSheet = false;
+        cueSheetTrackFilename = "";
         artist = "";
         title = "";
         hasTitle = false;
@@ -237,6 +239,8 @@ public:
     string userPath;
     string filename;
     string containerFilenames;
+    bool isTrackFromCueSheet;
+    string cueSheetTrackFilename;
     string artist;
     string title;
     string converter;

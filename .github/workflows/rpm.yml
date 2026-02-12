@@ -22,9 +22,8 @@ jobs:
         run: |
           echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
           dnf update -y
-          dnf group install -y development-tools
-          dnf install -y cmake dos2unix ninja-build Qt-Advanced-Docking-System-devel qt6-qtbase-devel qt6-qtsvg-devel \
-                         rpm-build rpmlint sdl2-compat-devel vulkan-headers which
+          dnf install -y @c-development @development-tools cmake dos2unix ninja-build Qt-Advanced-Docking-System-devel \
+                         qt6-qtbase-devel qt6-qtsvg-devel rpm-build rpmlint sdl2-compat-devel vulkan-headers which
 
       - name: Build
         run: |

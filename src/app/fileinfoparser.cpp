@@ -5,6 +5,8 @@
 #include <QPlainTextEdit>
 #include "plugins.h"
 
+using namespace std;
+
 const string piTitleTag = "Title";
 const string piArtistTagPrio1 = "Artist";
 const string piArtistTagPrio2 = "Album Artist";
@@ -41,7 +43,7 @@ void normalizeText(string &str) {
         }
         if (c == ' ') {
             isNewWord = true;
-        } else if (std::isalpha(c)) {
+        } else if (isalpha(c)) {
             c = isNewWord ? static_cast<const char>(toupper(c)) : static_cast<const char>(tolower(c));
             isNewWord = false;
         }
@@ -265,6 +267,11 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, const PlaylistItem*
             addMultilineInfo(tableInfo, &row, "Comments", SoundManager::getInstance().m_Info1->comments);
             break;
         case PLUGIN_vgmstream: {
+            if (SoundManager::getInstance().m_Info1->isTrackFromCueSheet) {
+                addInfo(tableInfo, &row, "Track Filename",
+                        SoundManager::getInstance().m_Info1->cueSheetTrackFilename.c_str());
+            }
+
             addInfo(tableInfo, &row, "Encoding", SoundManager::getInstance().m_Info1->fileformatSpecific.c_str());
             addInfo(tableInfo, &row, "Sample Rate",
                     QString::number(SoundManager::getInstance().m_Info1->samplerate) + " Hz");
@@ -275,21 +282,35 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, const PlaylistItem*
                                                     : QString::number(bitRate / 1000) + " kbps");
             addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
 
-            std::vector<std::pair<std::string, std::string> > metadataMain;
-            std::vector<std::pair<std::string, std::string> > metadataOther;
+            vector<pair<string, string> > metadataMain;
+            vector<pair<string, string> > metadataOther;
 
             for (auto &metadata: SoundManager::getInstance().m_Info1->metadata) {
+                if (metadata.first.empty()) {
+                    continue;
+                }
+
                 auto metadataPolished = metadata;
                 normalizeText(metadataPolished.first);
 
                 if (metadataLookupMap.contains(metadataPolished.first)) {
-                    metadataMain.push_back(metadataPolished);
-                } else {
-                    if (const string prefixToRemove = "id3v2_priv."; metadata.first.find(prefixToRemove) == 0) {
-                        metadata.first.erase(0, prefixToRemove.length());
+                    // handle metadata duplicates according to insertion order
+                    if (ranges::find_if(metadataMain, [&metadataPolished](const auto &p) {
+                        return p.first == metadataPolished.first;
+                    }) == metadataMain.end()) {
+                        metadataMain.push_back(metadataPolished);
                     }
+                } else {
+                    // handle metadata duplicates according to insertion order
+                    if (ranges::find_if(metadataOther, [&metadata](const auto &p) {
+                        return p.first == metadata.first;
+                    }) == metadataOther.end()) {
+                        if (const string prefixToRemove = "id3v2_priv."; metadata.first.find(prefixToRemove) == 0) {
+                            metadata.first.erase(0, prefixToRemove.length());
+                        }
 
-                    metadataOther.push_back(metadata);
+                        metadataOther.push_back(metadata);
+                    }
                 }
             }
 
@@ -318,6 +339,10 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, const PlaylistItem*
                         isPiArtistSet = true;
                     }
                 }
+            }
+
+            if (!isPiTitleSet && SoundManager::getInstance().m_Info1->isTrackFromCueSheet) {
+                playlistItem->info->title = SoundManager::getInstance().m_Info1->cueSheetTrackFilename;
             }
         }
         break;
