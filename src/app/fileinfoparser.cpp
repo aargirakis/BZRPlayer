@@ -134,6 +134,10 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, const PlaylistItem*
             break;
         case PLUGIN_libopenmpt:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->title));
+            addInfo(tableInfo, &row, "Tracker",
+                    fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->fileformatSpecific));
+            addInfo(tableInfo, &row, "Container Format",
+                    fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->containerFileformats));
             addInfo(tableInfo, &row, "Channels", QString::number(SoundManager::getInstance().m_Info1->numChannels));
             addInfo(tableInfo, &row, "Patters", QString::number(SoundManager::getInstance().m_Info1->numPatterns));
             addInfo(tableInfo, &row, "Orders", QString::number(SoundManager::getInstance().m_Info1->numOrders));

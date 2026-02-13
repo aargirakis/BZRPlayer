@@ -281,6 +281,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         }
 
         info->fileformat = plugin->mod->get_metadata("type_long");
+        info->fileformatSpecific = plugin->mod->get_metadata("tracker");
+        info->containerFileformats = plugin->mod->get_metadata("container_long");
 
         //get_current_channel_vu_mono seems to return 1.40317 for max volume for most formats, but max for protracker it is 1.11105
         if (info->fileformat.substr(0, 10) == "ProTracker" || info->fileformat.substr(0, 12) == "Soundtracker") {
