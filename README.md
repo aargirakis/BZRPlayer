@@ -41,7 +41,7 @@ BZR2 is designed with a modular plugin system to support multiple third party au
 - **plugin_sc68**: [sc68](https://sourceforge.net/p/sc68)
 - **plugin_sndh-player**: [SNDH-Archive-Player](https://github.com/arnaud-carre/sndh-player)
 - **plugin_sunvox_lib**: [SunVox Library](https://warmplace.ru/soft/sunvox)
-- **plugin_uade**: [UADE (mvtiaine)](https://gitlab.com/mvtiaine/uade) + custom C++ port of [Flod](https://github.com/photonstorm/Flod) (for samples viewer)
+- **plugin_uade**: [UADE (mvtiaine)](https://gitlab.com/mvtiaine/uade)
 - **plugin_v2m-player**: [v2m-player](https://github.com/jgilje/v2m-player)
 - **plugin_vgmstream**: [vgmstream](https://github.com/vgmstream/vgmstream) + extended [ffmpeg](https://github.com/FFmpeg/FFmpeg) support + [libcue](https://github.com/lipnitsk/libcue)
 - **plugin_vio2sf**: [vio2sf](https://gitlab.com/kode54/vio2sf) + [psflib](https://gitlab.com/kode54/psflib)
