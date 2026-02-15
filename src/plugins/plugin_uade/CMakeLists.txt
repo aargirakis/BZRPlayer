@@ -64,7 +64,10 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 add_dependencies(${PROJECT_NAME} ${NAME_VERSIONED})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
+        ${EXTERNAL_SOURCE_DIR}/src/frontends/common
         ${EXTERNAL_SOURCE_DIR}/src/frontends/include
+        ${EXTERNAL_SOURCE_DIR}/src/frontends/uade
+        ${EXTERNAL_SOURCE_DIR}/src/frontends/uadesimple
 
         src/flod  #TODO
 

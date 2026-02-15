@@ -275,6 +275,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->plugin = PLUGIN_uade;
     plugin->info->pluginName = PLUGIN_uade_NAME;
 
+    if (char infotext[16384];
+        !uade_song_info(infotext, sizeof infotext, plugin->uadeSongInfo->modulefname, UADE_MODULE_INFO)) {
+        cout << endl << infotext << endl;
+    }
+
     if (plugin->info->fileFormat == "BenDaglish" || plugin->info->fileFormat == "DeltaMusic1.3" ||
         plugin->info->fileFormat == "DeltaMusic2.0" || plugin->info->fileFormat == "DavidWhittaker" ||
         plugin->info->fileFormat == "Fred" || plugin->info->fileFormat == "Infogrames" ||
