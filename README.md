@@ -50,8 +50,8 @@ These are the settings for any IDE that supports CMake:
 
 
 - set the CMake command with following flags:\
-  **-DCMAKE_PREFIX_PATH="<MSYS2_dir>/ucrt64" -G "Ninja"**\
-  (e.g. `-DCMAKE_PREFIX_PATH="c:/msys64/ucrt64" -G "Ninja"`)
+  **-DCMAKE_PREFIX_PATH="<MSYS2_dir>/ucrt64" -G Ninja**\
+  (e.g. `-DCMAKE_PREFIX_PATH="c:/msys64/ucrt64" -G Ninja`)
 
 
 - set additional environment variables **MSYSTEM=UCRT64** and **PATH=<MSYS2_dir>/usr/bin**\
@@ -66,9 +66,9 @@ These are the settings for any IDE that supports CMake:
 
 #### Windows installer
 
-Although the **BZR2 installer for Windows** is scripted in **Nullsoft Scriptable Install System (NSIS)**, it can
-be only compiled using **WSL2** or cross-compiled on Linux since it contains Linux specific code (mostly the bash script
-for the XDG MIME types handling), also **MSYS2** it is currently not viable since the required **NSIS** plugins are
+The **BZR2 installer for Windows**, which is scripted in **Nullsoft Scriptable Install System (NSIS)**, can
+be only compiled using **WSL2** or cross-compiled on Linux, since contains Linux specific code (mostly the bash script
+for the XDG MIME types handling), also **MSYS2** is currently not viable since the required **NSIS** plugins are
 still missing.
 
 **NSIS** (3.10 or newer) with following plugins (check AUR entries) is required:
