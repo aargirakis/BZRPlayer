@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 
 extern "C" {
@@ -201,7 +202,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             static_cast<ffmpeg_codec_data *>(priv->vgmstream->codec_data));
 
         int i = 0;
-        while (tags[i].key != nullptr) {
+        while (tags[i].key != nullptr &&
+               ranges::all_of(string(tags[i].value), [](const char c) { return isspace(c); })) {
             plugin->info->metadata.emplace_back(tags[i].key, tags[i].value);
             i++;
         }
