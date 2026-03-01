@@ -318,10 +318,10 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
-    auto *plugin = static_cast<pluginLibxmp *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginLibxmp *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
-        xmp_seek_time(plugin->xmp, static_cast<int>(position));
+        xmp_seek_time_frame(plugin->xmp, static_cast<int>(position));
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {

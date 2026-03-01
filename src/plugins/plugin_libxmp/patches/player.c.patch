@@ -1,158 +1,106 @@
---- src/player.c	2023-06-15 22:11:10.000000000 +0200
-+++ src/player.c	2024-12-25 11:51:36.825803303 +0100
-@@ -1795,6 +1795,21 @@
+--- src/player.c	2026-02-25 01:50:10.000000000 +0100
++++ src/player.c	2026-03-02 09:16:26.295293717 +0100
+@@ -1943,6 +1943,14 @@
  	if (libxmp_mixer_on(ctx, rate, format, m->c4rate) < 0)
  		return -XMP_ERROR_INTERNAL;
  
-+    unsigned char queue_size;
-+    if(strcmp(mod->type,"Composer 669"))
-+    {
-+        queue_size=22;
-+    }
-+    else
-+    {
-+        queue_size=14;
-+    }
-+    p->patternPosBuffer = CreateQueue(queue_size);
++	unsigned char queue_size = strcmp(mod->type,"Composer 669") ? 22 : 14;
++
++	p->patternPosBuffer = CreateQueue(queue_size);
 +	p->posBuffer = CreateQueue(queue_size);
-+    p->trackPosBuffer = CreateQueue(queue_size);
-+    p->vumeterBuffer = CreateQueue(queue_size);
++	p->trackPosBuffer = CreateQueue(queue_size);
++	p->vumeterBuffer = CreateQueue(queue_size);
 +	p->speedBuffer = CreateQueue(queue_size);
 +	p->bpmBuffer = CreateQueue(queue_size);
+ 	p->time_factor_relative = 1.0;
  	p->master_vol = 100;
  	p->smix_vol = 100;
- 	p->gvol = m->volbase;
-@@ -2020,6 +2035,35 @@
+@@ -2167,6 +2175,32 @@
  
  	libxmp_mixer_softmixer(ctx);
  
-+    if(IsFull(p->trackPosBuffer))
-+
-+    {
-+
-+        Dequeue(p->trackPosBuffer);
-+        Dequeue(p->patternPosBuffer);
-+        Dequeue(p->posBuffer);
-+        Dequeue(p->vumeterBuffer);
++	if (IsFull(p->trackPosBuffer)) {
++		Dequeue(p->trackPosBuffer);
++		Dequeue(p->patternPosBuffer);
++		Dequeue(p->posBuffer);
++		Dequeue(p->vumeterBuffer);
 +		Dequeue(p->speedBuffer);
 +		Dequeue(p->bpmBuffer);
++	}
 +
-+    }
++	int chan;
++	int numChans = mod->chn;
++	unsigned char* vumeters = malloc(sizeof(unsigned char) * numChans );
 +
-+    int chan;
-+    int numChans = mod->chn;
-+    unsigned char* vumeters = malloc( sizeof(unsigned char) * numChans );
-+    for(chan = 0;chan<numChans;chan++)
-+    {
-+        struct channel_data *c = &p->xc_data[chan];
-+        unsigned char vol = c->info_finalvol >> 4;
-+        vumeters[chan] = vol;
-+    }
-+    Enqueue(p->row,p->trackPosBuffer);
-+    Enqueue(mod->xxo[p->pos],p->patternPosBuffer);
-+    Enqueue(p->pos,p->posBuffer);
-+    Enqueue((ElementType) vumeters,p->vumeterBuffer);
-+	Enqueue(p->speed,p->speedBuffer);
-+	Enqueue(p->bpm,p->bpmBuffer);
++	for (chan = 0; chan < numChans; chan++) {
++		struct channel_data *c = &p->xc_data[chan];
++		unsigned char vol = c->info_finalvol >> 4;
++		vumeters[chan] = vol;
++	}
++
++	Enqueue(p->row, p->trackPosBuffer);
++	Enqueue(mod->xxo[p->pos], p->patternPosBuffer);
++	Enqueue(p->pos, p->posBuffer);
++	Enqueue((ElementType) vumeters, p->vumeterBuffer);
++	Enqueue(p->speed, p->speedBuffer);
++	Enqueue(p->bpm, p->bpmBuffer);
 +
  	return 0;
  }
  
-@@ -2092,7 +2136,12 @@
- 
+@@ -2240,6 +2274,13 @@
  	if (ctx->state < XMP_STATE_PLAYING)
  		return;
--
-+    DisposeQueue(p->patternPosBuffer);
-+    DisposeQueue(p->trackPosBuffer);
-+    DisposeQueue(p->vumeterBuffer);
-+    DisposeQueue(p->posBuffer);
+ 
++	DisposeQueue(p->patternPosBuffer);
++	DisposeQueue(p->trackPosBuffer);
++	DisposeQueue(p->vumeterBuffer);
++	DisposeQueue(p->posBuffer);
 +	DisposeQueue(p->speedBuffer);
 +	DisposeQueue(p->bpmBuffer);
++
  	ctx->state = XMP_STATE_LOADED;
  
  #ifndef LIBXMP_CORE_PLAYER
-@@ -2159,10 +2208,52 @@
- 		info->num_rows = 0;
- 	}
+@@ -2314,10 +2355,16 @@
+ 	CLAMP(current_time, 0.0, (double)INT_MAX);
+ 	CLAMP(total_time, 0.0, (double)INT_MAX);
  
 -	info->row = p->row;
-+    //info->row = p->row;
++	info->row = IsEmpty(p->trackPosBuffer) ? 0 : Front(p->trackPosBuffer);
++	info->pattern = IsEmpty(p->patternPosBuffer) ? 0 : Front(p->patternPosBuffer);
++	info->pos = IsEmpty(p->posBuffer) ? 0 : Front(p->posBuffer);
++	info->speed = IsEmpty(p->speedBuffer) ? 0 : Front(p->speedBuffer);
++	info->bpm = IsEmpty(p->bpmBuffer) ? 0 : Front(p->bpmBuffer);
 +
-+    if(!IsEmpty(p->trackPosBuffer))
-+    {
-+        info->row = Front(p->trackPosBuffer);
-+    }
-+    else
-+    {
-+        info->row=0;
-+    }
-+    if(!IsEmpty(p->patternPosBuffer))
-+    {
-+        info->pattern = Front(p->patternPosBuffer);
-+    }
-+    else
-+    {
-+        info->pattern = 0;
-+    }
-+    if(!IsEmpty(p->posBuffer))
-+    {
-+        info->pos = Front(p->posBuffer);
-+    }
-+    else
-+    {
-+        info->pos = 0;
-+    }
-+    if(!IsEmpty(p->speedBuffer))
-+    {
-+        info->speed = Front(p->speedBuffer);
-+    }
-+    else
-+    {
-+        info->speed = 0;
-+    }
-+    if(!IsEmpty(p->bpmBuffer))
-+    {
-+        info->bpm = Front(p->bpmBuffer);
-+    }
-+    else
-+    {
-+        info->bpm = 0;
-+    }
-+
++	//info->row = p->row;
  	info->frame = p->frame;
 -	info->speed = p->speed;
 -	info->bpm = p->bpm;
 +	//info->speed = p->speed;
 +	//info->bpm = p->bpm;
- 	info->total_time = p->scan[p->sequence].time;
- 	info->frame_time = p->frame_time * 1000;
- 	info->time = p->current_time;
-@@ -2214,3 +2305,26 @@
+ 	info->total_time = (int)total_time;
+ 	info->frame_time = (int)(libxmp_get_frame_time(ctx) * 1000.0);
+ 	info->time = (int)current_time;
+@@ -2363,3 +2410,20 @@
  		}
  	}
  }
-+void  xmp_get_channel_volumes(xmp_context opaque, unsigned char* volumes)
-+{
-+    struct context_data *ctx = (struct context_data *)opaque;
-+    struct player_data *p = &ctx->p;
-+    struct module_data *m = &ctx->m;
-+    struct xmp_module *mod = &m->mod;
-+    int chn;
-+    chn = mod->chn;
 +
++void xmp_get_channel_volumes(xmp_context opaque, unsigned char* volumes) {
++	struct context_data *ctx = (struct context_data *) opaque;
++	struct player_data *p = &ctx->p;
++	struct module_data *m = &ctx->m;
++	struct xmp_module *mod = &m->mod;
++	int chn = mod->chn;
 +	unsigned char* test = (unsigned char*) Front(p->vumeterBuffer);
 +
-+    if(test != 0)
-+    {
-+        for(int i=0;i<chn;i++)
-+        {
-+            volumes[i]=test[i];
-+        }
-+    }
-+    else
-+    {
-+        volumes = 0;
-+    }
++	if (test == 0) {
++		volumes = 0;
++	} else {
++		for (int i=0; i < chn; i++) {
++			volumes[i] = test[i];
++		}
++	}
 +}
 \ No newline at end of file
