@@ -217,6 +217,11 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     auto *plugin = static_cast<pluginAsap *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
+        /*
+         * asap issue workaround
+         * in version 8.0.0 has been fixed for forward seeking only,
+         * however still present for backward seeking
+         */
         if (ASAP_Seek(plugin->asap, static_cast<int>(position))) {
             ASAP_MutePokeyChannels(plugin->asap, static_cast<int>(plugin->mask));
         }

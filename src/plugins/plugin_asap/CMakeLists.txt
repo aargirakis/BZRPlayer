@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "asap")
-set(VERSION "7.0.0")
+set(VERSION "8.0.0")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "ASAP" PARENT_SCOPE)
@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(URL "https://sourceforge.net/projects/${NAME}/files/${NAME}/${VERSION}/${FILENAME}")
-set(SHA_256_HASH "3ffca0cecc1bd993ba8dd992e6c27b683d717440439a2dc61f81f38d86b3434f")
+set(SHA_256_HASH "062d7db2a0747bf9200560141452f8fa2289909b147ac40a5bb5b60d5275a14f")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" ""
 )
