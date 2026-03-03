@@ -668,6 +668,7 @@ bool SoundManager::LoadSound(QString filename, Info* info)
         m_Info1->plugin != PLUGIN_hivelytracker &&
         m_Info1->plugin != PLUGIN_libopenmpt &&
         m_Info1->plugin != PLUGIN_libsidplayfp &&
+        m_Info1->plugin != PLUGIN_libvgm &&
         m_Info1->plugin != PLUGIN_libxmp &&
         m_Info1->plugin != PLUGIN_sndh_player &&
         m_Info1->plugin != PLUGIN_uade &&

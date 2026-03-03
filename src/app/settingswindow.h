@@ -169,6 +169,8 @@ private slots:
 
     void on_checkBoxContinuousPlaybackHivelytracker_toggled();
 
+    void on_checkBoxContinuousPlaybackLibvgm_toggled();
+
     void on_checkBoxContinuousPlaybackSndhPlayer_toggled();
 
     void on_checkBoxContinuousPlaybackVgmstream_toggled();
@@ -266,6 +268,8 @@ private:
     void saveHivelytrackerSettings();
     void loadlibopenmptSettings();
     void savelibopenmptSettings();
+    void loadLibvgmSettings();
+    void saveLibvgmSettings();
     void loadLibxmpSettings();
     void saveLibxmpSettings();
     void loadSidplaySettings();

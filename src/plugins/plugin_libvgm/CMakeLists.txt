@@ -52,6 +52,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STDINT_H)
 target_compile_definitions(${PROJECT_NAME} PRIVATE VGM_LITTLE_ENDIAN)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 

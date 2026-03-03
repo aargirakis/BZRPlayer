@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstring>
 #include <format>
+#include <fstream>
 #include <emu/SoundDevs.h>
 #include <emu/SoundEmu.h>
 #include <player/droplayer.hpp>
@@ -53,16 +54,16 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // Sound create callback (don't need it)
 };
 
-class pluginVgmplayLegacy {
+class pluginLibvgm {
     FMOD_CODEC_STATE *_codec;
 
 public:
-    pluginVgmplayLegacy(FMOD_CODEC_STATE *codec) {
+    pluginLibvgm(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
-    ~pluginVgmplayLegacy() {
+    ~pluginLibvgm() {
         DataLoader_Deinit(loader);
         delete [] myBuffer;
     }
@@ -96,7 +97,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    auto *plugin = new pluginVgmplayLegacy(codec);
+    auto *plugin = new pluginLibvgm(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->myBuffer = new uint8_t[filesize];
@@ -115,16 +116,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
-
-    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
-
-    codec->waveformat = &plugin->waveformat;
-    codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
 
     plugin->mainPlr = new PlayerA();
     plugin->mainPlr->RegisterPlayerEngine(new DROPlayer);
@@ -146,6 +137,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return loader;
     }, nullptr);
 
+    plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
+    plugin->waveformat.channels = 2;
+    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
+    plugin->waveformat.lengthpcm = -1;
+
+    codec->waveformat = &plugin->waveformat;
+    codec->numsubsounds = 0;
+    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
+    codec->plugindata = plugin; /* user data value */
+
     if (plugin->mainPlr->SetOutputSettings(plugin->waveformat.frequency,
                                            static_cast<UINT8>(plugin->waveformat.channels),
                                            static_cast<UINT8>(8 * plugin->waveformat.format),
@@ -153,9 +155,36 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/libvgm.cfg";
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        //The file could not be opened
+        useDefaults = true;
+    }
+
+    //defaults
+    plugin->info->isContinuousPlaybackActive = false;
+
+    if (!useDefaults) {
+        string line;
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word == "continuous_playback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                }
+            }
+        }
+        ifs.close();
+    }
+
     PlayerA::Config pCfg = plugin->mainPlr->GetConfiguration();
     pCfg.masterVol = 0x10000;
-    pCfg.loopCount = 1;
+    pCfg.loopCount = plugin->info->isContinuousPlaybackActive ? 0 : 1;
     pCfg.fadeSmpls = 0;
     pCfg.endSilenceSmpls = 0;
     pCfg.pbSpeed = 1.0;
@@ -163,12 +192,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     if (plugin->mainPlr->LoadFile(plugin->loader)) {
         return FMOD_ERR_FORMAT;
-    }
-
-    if (const auto length = plugin->mainPlr->GetTotalTime(PLAYTIME_LOOP_INCL | PLAYTIME_TIME_FILE); length != 0) {
-        plugin->waveformat.lengthpcm = static_cast<unsigned int>(length * plugin->waveformat.frequency);
-    } else {
-        plugin->waveformat.lengthpcm = -1;
     }
 
     plugin->mainPlr->Start();
@@ -315,15 +338,19 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 }
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
-    delete static_cast<pluginVgmplayLegacy *>(codec->plugindata);
+    delete static_cast<pluginLibvgm *>(codec->plugindata);
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
-    const auto *plugin = static_cast<pluginVgmplayLegacy *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginLibvgm *>(codec->plugindata);
 
-    if (plugin->waveformat.lengthpcm == -1 && plugin->mainPlr->GetState() & PLAYSTATE_END) {
-        return FMOD_ERR_FILE_EOF;
+    if (plugin->mainPlr->GetState() & PLAYSTATE_END) {
+        if (!plugin->info->isContinuousPlaybackActive) {
+            return FMOD_ERR_FILE_EOF;
+        }
+
+        plugin->mainPlr->Seek(PLAYPOS_SAMPLE, 0);
     }
 
     const UINT32 renderedBytes = plugin->mainPlr->Render(size, buffer);
@@ -332,6 +359,12 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    const auto *plugin = static_cast<pluginLibvgm *>(codec->plugindata);
+
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
+        *length = static_cast<unsigned int>(plugin->mainPlr->GetTotalTime(PLAYTIME_LOOP_EXCL) * 1000.0);
+        return FMOD_OK;
+    }
     if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
         *length = -1; // ignored
         return FMOD_OK;
@@ -342,7 +375,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
-    const auto *plugin = static_cast<pluginVgmplayLegacy *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginLibvgm *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
         plugin->mainPlr->Seek(PLAYPOS_SAMPLE, position * plugin->waveformat.frequency / 1000);
