@@ -247,7 +247,9 @@ private slots:
 
     void on_checkBoxFilterEmuUade_toggled(bool checked);
 
-    void on_checkBoxSystrayOnQuit_toggled(bool checked);
+    void on_checkBoxSystray_toggled(bool isChecked);
+
+    void on_checkBoxSystrayOnMinimize_toggled(bool isChecked);
 
     void on_sliderNowPlayingFontSize_valueChanged(int value);
 

@@ -198,8 +198,9 @@ settingsWindow::settingsWindow(QWidget* parent) :
 
     ui->checkBoxMilliseconds->setChecked(mainWindow->getDisplayMilliseconds());
 
-
-    ui->checkBoxSystrayOnQuit->setChecked(mainWindow->getSystrayOnQuitEnabled());
+    ui->checkBoxSystray->setChecked(mainWindow->getSystrayChecked());
+    ui->checkBoxSystrayOnMinimize->setChecked(mainWindow->getSystrayOnMinimizeChecked());
+    ui->checkBoxSystrayOnMinimize->setEnabled(mainWindow->getSystrayChecked());
 
     ui->SliderNormalizerFadeTim->setValue(mainWindow->getNormalizeFadeTime());
     ui->SliderNormalizerThreshold->setValue(mainWindow->getNormalizeThreshold());
@@ -739,12 +740,12 @@ void settingsWindow::on_buttonOK_clicked()
     {
         mainWindow->setOutputDeviceSetting(ui->comboBox->itemData(ui->comboBox->currentIndex()).toInt());
     }
-    bool checkedResetVolume = ui->checkBoxResetVolume->checkState() == Qt::Checked ? true : false;
-    bool checkedSystrayOnQuit = ui->checkBoxSystrayOnQuit->checkState() == Qt::Checked ? true : false;
-    mainWindow->setResetVolume(checkedResetVolume);
+
+    mainWindow->setResetVolume(ui->checkBoxResetVolume->checkState() == Qt::Checked);
     mainWindow->setResetVolumeValue(ui->sliderResetVolumeToValue->value());
     mainWindow->setDefaultPlaymode(ui->comboBoxDefaultPlaymode->currentData().toInt());
-    mainWindow->setSystrayOnQuitEnabled(checkedSystrayOnQuit);
+    mainWindow->setSystrayChecked(ui->checkBoxSystray->checkState() == Qt::Checked);
+    mainWindow->setSystrayOnMinimizeChecked(ui->checkBoxSystrayOnMinimize->checkState() == Qt::Checked);
     mainWindow->setIgnoreSuffix(ui->lineEditIgnoreSuffix->text());
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
     updateScrollText();
@@ -3408,14 +3409,11 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxOnlyOneInstance->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxSystrayOnQuit->isChecked())
-    {
-        ui->checkBoxSystrayOnQuit->setIcon(mainWindow->icons["checkbox-on"]);
-    }
-    else
-    {
-        ui->checkBoxSystrayOnQuit->setIcon(mainWindow->icons["checkbox-off"]);
-    }
+
+    ui->checkBoxSystray->setIcon(mainWindow->icons[ui->checkBoxSystray->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxSystrayOnMinimize->setIcon(
+        mainWindow->icons[ui->checkBoxSystrayOnMinimize->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
     if (ui->checkBoxNormalizer->isChecked())
     {
         ui->checkBoxNormalizer->setIcon(mainWindow->icons["checkbox-on"]);
@@ -3645,19 +3643,31 @@ void settingsWindow::on_checkBoxFilterEmuUade_toggled(bool checked)
     }
 }
 
+void settingsWindow::on_checkBoxSystray_toggled(const bool isChecked) {
+    ui->checkBoxSystrayOnMinimize->setEnabled(isChecked);
+    mainWindow->setSystrayOnMinimizeEnabled(isChecked);
 
-void settingsWindow::on_checkBoxSystrayOnQuit_toggled(bool checked)
-{
-    if (ui->checkBoxSystrayOnQuit->isChecked())
-    {
-        ui->checkBoxSystrayOnQuit->setIcon(mainWindow->icons["checkbox-on"]);
-    }
-    else
-    {
-        ui->checkBoxSystrayOnQuit->setIcon(mainWindow->icons["checkbox-off"]);
+    if (isChecked) {
+        ui->checkBoxSystray->setIcon(mainWindow->icons["checkbox-on"]);
+        if (ui->checkBoxSystrayOnMinimize->isChecked()) {
+            ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons["checkbox-on"]);
+        } else {
+            ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons["checkbox-off"]);
+        }
+    } else {
+        ui->checkBoxSystray->setIcon(mainWindow->icons["checkbox-off"]);
+        if (ui->checkBoxSystrayOnMinimize->isChecked()) {
+            ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons["checkbox-on-disabled"]);
+        } else {
+            ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons["checkbox-off-disabled"]);
+        }
     }
 }
 
+void settingsWindow::on_checkBoxSystrayOnMinimize_toggled(const bool isChecked)
+{
+    ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
 
 void settingsWindow::on_sliderNowPlayingFontSize_valueChanged(int value)
 {

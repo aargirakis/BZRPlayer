@@ -137,7 +137,10 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     createThePopupLogWindow();
 
     createTrayMenu();
-    m_Tray->show();
+
+    setSystrayChecked(settings.value("systray", true).toBool());
+    isSystrayOnMinimizeChecked = settings.value("systrayonminimize", false).toBool();
+    isSystrayOnMinimizeEnabled = isSystrayChecked;
 
     m_outputDevice = settings.value("outputdevice").toInt();
     m_resetVolume = settings.value("resetvolume", false).toBool();
@@ -166,8 +169,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     }
 
     ui->checkBoxShuffle->setChecked(settings.value("shuffle", false).toBool());
-
-    m_systrayOnQuitEnabled = settings.value("systrayonquitenabled", false).toBool();
 
     m_displayMilliseconds = settings.value("displaymilliseconds", false).toBool();
 
@@ -1534,12 +1535,12 @@ void MainWindow::changeEvent(QEvent* event)
         {
             this->setWindowTitle(PROJECT_NAME_VERSIONED);
         }
-        if (isMinimized() == true && m_systrayOnQuitEnabled)
+        if (isMinimized() == true && isSystrayOnMinimizeEnabled && isSystrayOnMinimizeChecked)
         {
             wasMaxmimized = false;
             hide();
         }
-        if (isMaximized() == true && m_systrayOnQuitEnabled)
+        if (isMaximized() == true && isSystrayOnMinimizeEnabled && isSystrayOnMinimizeChecked)
         {
             wasMaxmimized = true;
         }
@@ -2275,10 +2276,7 @@ void MainWindow::PlaySong(int currentRow)
             this->setWindowTitle(PROJECT_NAME_VERSIONED);
         }
 
-        if (m_Tray->isVisible())
-        {
-            m_Tray->setToolTip(windowTitle);
-        }
+        m_Tray->setToolTip(windowTitle);
 
         QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
         if (!pi.info->title.empty())
@@ -3744,9 +3742,14 @@ bool MainWindow::getShowCheckBoxLoopPoints() const {
     return isShownCheckBoxLoopPoints;
 }
 
-bool MainWindow::getSystrayOnQuitEnabled() const
+bool MainWindow::getSystrayChecked() const
 {
-    return m_systrayOnQuitEnabled;
+    return isSystrayChecked;
+}
+
+bool MainWindow::getSystrayOnMinimizeChecked() const
+{
+    return isSystrayOnMinimizeChecked;
 }
 
 void MainWindow::setNormalizeFadeTime(int fadeTime)
@@ -3827,9 +3830,19 @@ void MainWindow::setResetVolumeValue(int value)
     m_resetVolumeValue = value;
 }
 
-void MainWindow::setSystrayOnQuitEnabled(bool enabled)
+void MainWindow::setSystrayChecked(const bool isChecked)
 {
-    m_systrayOnQuitEnabled = enabled;
+    isSystrayChecked = isChecked;
+    m_Tray->setVisible(isChecked);
+}
+
+void MainWindow::setSystrayOnMinimizeChecked(const bool isChecked)
+{
+    isSystrayOnMinimizeChecked = isChecked;
+}
+
+void MainWindow::setSystrayOnMinimizeEnabled(const bool isEnabled) {
+    isSystrayOnMinimizeEnabled = isEnabled;
 }
 
 void MainWindow::SaveSettings()
@@ -3861,7 +3874,8 @@ void MainWindow::SaveSettings()
     settings.setValue("reverbenabled", m_reverbEnabled);
     settings.setValue("reverbpreset", m_reverbPreset);
 
-    settings.setValue("systrayonquitenabled", m_systrayOnQuitEnabled);
+    settings.setValue("systray", isSystrayChecked);
+    settings.setValue("systrayonminimize", isSystrayOnMinimizeChecked);
 
     settings.setValue("selectedplaylist", selectedPlaylist);
     settings.setValue("currentplaylist", currentPlaylist);
@@ -4465,10 +4479,8 @@ void MainWindow::restoreFromTray()
             wasMaxmimized = false;
         }
         hide();
-        if (m_Tray->isVisible())
-        {
-            m_Tray->setToolTip(windowTitle);
-        }
+
+        m_Tray->setToolTip(windowTitle);
     }
     //Restore from system tray but when we clicked system tray (and not minimized window)
     else

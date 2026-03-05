@@ -225,7 +225,7 @@ QScrollBar#scrollArea:vertical {
       <x>0</x>
       <y>0</y>
       <width>700</width>
-      <height>800</height>
+      <height>830</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -237,7 +237,7 @@ QScrollBar#scrollArea:vertical {
     <property name="minimumSize">
      <size>
       <width>0</width>
-      <height>800</height>
+      <height>830</height>
      </size>
     </property>
     <property name="maximumSize">
@@ -768,17 +768,36 @@ QCheckBox::indicator {
       </size>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBoxSystrayOnQuit">
+    <widget class="QCheckBox" name="checkBoxSystray">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>10</x>
        <y>620</y>
        <width>301</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
-      <string>Minimize to System Tray on Minimize</string>
+      <string>System Tray Icon</string>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxSystrayOnMinimize">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>650</y>
+       <width>301</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Minimize to System Tray</string>
      </property>
      <property name="iconSize">
       <size>
@@ -791,7 +810,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>270</x>
-       <y>670</y>
+       <y>700</y>
        <width>311</width>
        <height>31</height>
       </rect>
@@ -801,7 +820,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>270</x>
-       <y>710</y>
+       <y>740</y>
        <width>311</width>
        <height>31</height>
       </rect>
@@ -811,7 +830,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>670</y>
+       <y>700</y>
        <width>125</width>
        <height>31</height>
       </rect>
@@ -824,7 +843,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>710</y>
+       <y>740</y>
        <width>125</width>
        <height>31</height>
       </rect>
@@ -869,7 +888,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>750</y>
+       <y>780</y>
        <width>271</width>
        <height>41</height>
       </rect>

@@ -133,7 +133,8 @@ public:
     bool getDisplayMilliseconds() const;
     bool getEnqueueItems() const;
     bool getShowCheckBoxLoopPoints() const;
-    bool getSystrayOnQuitEnabled() const;
+    bool getSystrayChecked() const;
+    bool getSystrayOnMinimizeChecked() const;
     void setNormalizeEnabled(bool);
     int getNormalizeFadeTime() const;
     void setNormalizeFadeTime(int);
@@ -142,7 +143,9 @@ public:
     int getNormalizeMaxAmp() const;
     void setNormalizeMaxAmp(int);
     void setResetVolumeValue(int value);
-    void setSystrayOnQuitEnabled(bool enabled);
+    void setSystrayChecked(bool isChecked);
+    void setSystrayOnMinimizeChecked(bool isChecked);
+    void setSystrayOnMinimizeEnabled(bool isEnabled);
     void createTrayMenu();
     void setScrolltext(QString text);
     void updateScrollText();
@@ -540,7 +543,9 @@ private:
     int m_resetVolumeValue;
     int m_defaultPlaymode;
 
-    bool m_systrayOnQuitEnabled;
+    bool isSystrayChecked;
+    bool isSystrayOnMinimizeChecked;
+    bool isSystrayOnMinimizeEnabled;
     bool m_reverbEnabled;
     QString m_reverbPreset;
     QString m_ignoreSuffix;
