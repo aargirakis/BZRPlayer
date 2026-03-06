@@ -1,5 +1,18 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include <QProxyStyle>
+
+class NoMenuBarAltKeyNavigationStyle : public QProxyStyle {
+public:
+    int styleHint(StyleHint stylehint, const QStyleOption *opt, const QWidget *widget,
+                  QStyleHintReturn *returnData) const override {
+        if (stylehint == SH_MenuBar_AltKeyNavigation) {
+            return 0;
+        }
+
+        return QProxyStyle::styleHint(stylehint, opt, widget, returnData);
+    }
+};
 
 int main(int argc, char* argv[])
 {
@@ -12,6 +25,10 @@ int main(int argc, char* argv[])
 
     // see https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/issues/732
     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
+#ifdef WIN32
+    QApplication::setStyle(new NoMenuBarAltKeyNavigationStyle());
+#endif
 
     QApplication a(argc, argv);
     MainWindow w(argc, argv);

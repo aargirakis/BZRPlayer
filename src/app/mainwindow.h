@@ -135,6 +135,7 @@ public:
     bool getShowCheckBoxLoopPoints() const;
     bool getSystrayChecked() const;
     bool getSystrayOnMinimizeChecked() const;
+    bool getMenuBarHiddenChecked() const;
     void setNormalizeEnabled(bool);
     int getNormalizeFadeTime() const;
     void setNormalizeFadeTime(int);
@@ -146,6 +147,7 @@ public:
     void setSystrayChecked(bool isChecked);
     void setSystrayOnMinimizeChecked(bool isChecked);
     void setSystrayOnMinimizeEnabled(bool isEnabled);
+    void setMenuBarHiddenChecked(bool isChecked);
     void createTrayMenu();
     void setScrolltext(QString text);
     void updateScrollText();
@@ -356,6 +358,9 @@ private:
                                   const QColor &color2 = nullptr);
     void SetAttrRecur(QDomElement elem, QString strtagname, QString strtagname2, QString strattr, QString strattrval);
 
+    bool handleMenuBarHiddenEvents(QEvent *event);
+    bool altKeyPressCaught = false;
+
     dropWidget DropWidget;
     static const QString VERSION;
     QTcpServer* tcpServer;
@@ -546,6 +551,7 @@ private:
     bool isSystrayChecked;
     bool isSystrayOnMinimizeChecked;
     bool isSystrayOnMinimizeEnabled;
+    bool isMenuBarHiddenChecked;
     bool m_reverbEnabled;
     QString m_reverbPreset;
     QString m_ignoreSuffix;

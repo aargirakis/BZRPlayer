@@ -142,6 +142,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     isSystrayOnMinimizeChecked = settings.value("systrayonminimize", false).toBool();
     isSystrayOnMinimizeEnabled = isSystrayChecked;
 
+    setMenuBarHiddenChecked(settings.value("menubarhidden", false).toBool());
+
     m_outputDevice = settings.value("outputdevice").toInt();
     m_resetVolume = settings.value("resetvolume", false).toBool();
     m_resetVolumeValue = settings.value("resetvolumevalue", 100).toInt();
@@ -826,6 +828,10 @@ void MainWindow::setPosition(int offset) {
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event)
 {
+    if (isMenuBarHiddenChecked && handleMenuBarHiddenEvents(event)) {
+        return QWidget::eventFilter(obj, event);
+    }
+
     if (event->type() == QEvent::KeyPress)
     {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
@@ -1175,6 +1181,29 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
     }
 
     return QWidget::eventFilter(obj, event);
+}
+
+bool MainWindow::handleMenuBarHiddenEvents(QEvent *event) {
+    if (event->type() == QEvent::WindowDeactivate) {
+        menuBar()->setHidden(true);
+        altKeyPressCaught = false;
+        return true;
+    }
+
+    if (const QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event); keyEvent->key() == Qt::Key_Alt) {
+        if (altKeyPressCaught) {
+            if (event->type() == QEvent::KeyRelease && QGuiApplication::keyboardModifiers() == Qt::AltModifier) {
+                menuBar()->setHidden(!menuBar()->isHidden());
+                altKeyPressCaught = false;
+                return true;
+            }
+        } else if (event->type() == QEvent::KeyPress && QApplication::keyboardModifiers() == Qt::NoModifier) {
+            altKeyPressCaught = true;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 unsigned MainWindow::getFontSize(QRect rect, QFont font, QString text)
@@ -3752,6 +3781,11 @@ bool MainWindow::getSystrayOnMinimizeChecked() const
     return isSystrayOnMinimizeChecked;
 }
 
+bool MainWindow::getMenuBarHiddenChecked() const
+{
+    return isMenuBarHiddenChecked;
+}
+
 void MainWindow::setNormalizeFadeTime(int fadeTime)
 {
     m_normalizeFadeTime = fadeTime;
@@ -3845,6 +3879,12 @@ void MainWindow::setSystrayOnMinimizeEnabled(const bool isEnabled) {
     isSystrayOnMinimizeEnabled = isEnabled;
 }
 
+void MainWindow::setMenuBarHiddenChecked(const bool isChecked)
+{
+    isMenuBarHiddenChecked = isChecked;
+    menuBar()->setHidden(isChecked);
+}
+
 void MainWindow::SaveSettings()
 {
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
@@ -3876,6 +3916,8 @@ void MainWindow::SaveSettings()
 
     settings.setValue("systray", isSystrayChecked);
     settings.setValue("systrayonminimize", isSystrayOnMinimizeChecked);
+
+    settings.setValue("menubarhidden", isMenuBarHiddenChecked);
 
     settings.setValue("selectedplaylist", selectedPlaylist);
     settings.setValue("currentplaylist", currentPlaylist);

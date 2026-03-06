@@ -225,7 +225,7 @@ QScrollBar#scrollArea:vertical {
       <x>0</x>
       <y>0</y>
       <width>700</width>
-      <height>830</height>
+      <height>860</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -237,7 +237,7 @@ QScrollBar#scrollArea:vertical {
     <property name="minimumSize">
      <size>
       <width>0</width>
-      <height>830</height>
+      <height>860</height>
      </size>
     </property>
     <property name="maximumSize">
@@ -806,11 +806,30 @@ QCheckBox::indicator {
       </size>
      </property>
     </widget>
+    <widget class="QCheckBox" name="checkBoxMenuBarHidden">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>680</y>
+       <width>301</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Hidden Menu Bar (Alt key to toggle)</string>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+    </widget>
     <widget class="QLineEdit" name="lineEditIgnoreSuffix">
      <property name="geometry">
       <rect>
        <x>270</x>
-       <y>700</y>
+       <y>730</y>
        <width>311</width>
        <height>31</height>
       </rect>
@@ -820,7 +839,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>270</x>
-       <y>740</y>
+       <y>770</y>
        <width>311</width>
        <height>31</height>
       </rect>
@@ -830,7 +849,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>700</y>
+       <y>730</y>
        <width>125</width>
        <height>31</height>
       </rect>
@@ -843,7 +862,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>740</y>
+       <y>770</y>
        <width>125</width>
        <height>31</height>
       </rect>
@@ -888,7 +907,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>780</y>
+       <y>810</y>
        <width>271</width>
        <height>41</height>
       </rect>

@@ -202,6 +202,8 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->checkBoxSystrayOnMinimize->setChecked(mainWindow->getSystrayOnMinimizeChecked());
     ui->checkBoxSystrayOnMinimize->setEnabled(mainWindow->getSystrayChecked());
 
+    ui->checkBoxMenuBarHidden->setChecked(mainWindow->getMenuBarHiddenChecked());
+
     ui->SliderNormalizerFadeTim->setValue(mainWindow->getNormalizeFadeTime());
     ui->SliderNormalizerThreshold->setValue(mainWindow->getNormalizeThreshold());
     ui->SliderNormalizerMaxAmp->setValue(mainWindow->getNormalizeMaxAmp());
@@ -746,6 +748,7 @@ void settingsWindow::on_buttonOK_clicked()
     mainWindow->setDefaultPlaymode(ui->comboBoxDefaultPlaymode->currentData().toInt());
     mainWindow->setSystrayChecked(ui->checkBoxSystray->checkState() == Qt::Checked);
     mainWindow->setSystrayOnMinimizeChecked(ui->checkBoxSystrayOnMinimize->checkState() == Qt::Checked);
+    mainWindow->setMenuBarHiddenChecked(ui->checkBoxMenuBarHidden->checkState() == Qt::Checked);
     mainWindow->setIgnoreSuffix(ui->lineEditIgnoreSuffix->text());
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
     updateScrollText();
@@ -3414,6 +3417,9 @@ void settingsWindow::updateCheckBoxes()
     ui->checkBoxSystrayOnMinimize->setIcon(
         mainWindow->icons[ui->checkBoxSystrayOnMinimize->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
+    ui->checkBoxMenuBarHidden->setIcon(
+        mainWindow->icons[ui->checkBoxMenuBarHidden->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
     if (ui->checkBoxNormalizer->isChecked())
     {
         ui->checkBoxNormalizer->setIcon(mainWindow->icons["checkbox-on"]);
@@ -3667,6 +3673,11 @@ void settingsWindow::on_checkBoxSystray_toggled(const bool isChecked) {
 void settingsWindow::on_checkBoxSystrayOnMinimize_toggled(const bool isChecked)
 {
     ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxMenuBarHidden_toggled(const bool isChecked)
+{
+    ui->checkBoxMenuBarHidden->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::on_sliderNowPlayingFontSize_valueChanged(int value)

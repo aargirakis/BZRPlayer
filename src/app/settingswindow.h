@@ -251,6 +251,8 @@ private slots:
 
     void on_checkBoxSystrayOnMinimize_toggled(bool isChecked);
 
+    void on_checkBoxMenuBarHidden_toggled(bool isChecked);
+
     void on_sliderNowPlayingFontSize_valueChanged(int value);
 
     void on_checkBoxHvscSonglengthsEnabled_toggled(bool checked);
