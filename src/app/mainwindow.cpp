@@ -379,15 +379,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     SoundManager &sm = SoundManager::getInstance();
     sm.Init(FMOD_OUTPUTTYPE_NOSOUND, ""); //Set sound device to silent
 
-
-    fileInfoParser = new FileInfoParser();
-
-    refreshInfoTimer = 0;
-
-    m_Timer = new QTimer(this);
-    connect(m_Timer, SIGNAL(timeout()), this, SLOT(timerProgress()));
-
-
     sm.setNormalizeEnabled(m_normalizeEnabled);
     sm.setNormalizeFadeTime(m_normalizeFadeTime);
     sm.setNormalizeMaxAmp(m_normalizeMaxAmp);
@@ -395,6 +386,12 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     sm.setReverbPreset(m_reverbPreset);
     sm.setReverbEnabled(m_reverbEnabled);
 
+    fileInfoParser = new FileInfoParser();
+
+    refreshInfoTimer = 0;
+
+    m_Timer = new QTimer(this);
+    connect(m_Timer, SIGNAL(timeout()), this, SLOT(timerProgress()));
 
     m_Timer->start(16);
 
@@ -3639,13 +3636,18 @@ void MainWindow::setOutputDeviceSetting(int outputDevice)
 
 void MainWindow::setOutputDevice(int outputDevice, QString fullPath)
 {
-    {
-        SoundManager::getInstance().ShutDown();
-        SoundManager::getInstance().Init(outputDevice, fullPath);
-        resetAll();
-        setReverbEnabled(getReverbEnabled());
-        setNormalizeEnabled(getNormalizeEnabled());
-    }
+    SoundManager::getInstance().ShutDown();
+    SoundManager::getInstance().Init(outputDevice, fullPath);
+
+    SoundManager::getInstance().setNormalizeEnabled(m_normalizeEnabled);
+    SoundManager::getInstance().setNormalizeFadeTime(m_normalizeFadeTime);
+    SoundManager::getInstance().setNormalizeMaxAmp(m_normalizeMaxAmp);
+    SoundManager::getInstance().setNormalizeThreshold(m_normalizeThreshold);
+    SoundManager::getInstance().setReverbPreset(m_reverbPreset);
+    SoundManager::getInstance().setReverbEnabled(m_reverbEnabled);
+
+    resetAll();
+
     m_outputDevice = outputDevice;
 }
 

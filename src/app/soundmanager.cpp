@@ -465,8 +465,13 @@ void SoundManager::setNormalizeMaxAmp(int param)
 
 void SoundManager::setNormalizeEnabled(bool enabled)
 {
-    FMOD_DSP_SetBypass(dspNormalizer, !enabled);
-    //DebugWindow::instance()->addText("setNormalizeEnabled " + QString::number(enabled));
+    FMOD_DSP *dsp = nullptr;
+    FMOD_ChannelGroup_GetDSP(channelgroup, 0, &dsp);
+
+    if (dsp) {
+        FMOD_DSP_SetBypass(dspNormalizer, !enabled);
+        //DebugWindow::instance()->addText("setNormalizeEnabled " + QString::number(enabled));
+    }
 }
 
 FMOD_RESULT SoundManager::getTag(const char* name, int index, FMOD_TAG* tag)
