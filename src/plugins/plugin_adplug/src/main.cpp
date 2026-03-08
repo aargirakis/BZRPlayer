@@ -142,7 +142,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                         plugin->waveformat.channels = 2;
                         harmonic = true;
                     }
-                } else if (word == "continuous_playback") {
+                } else if (word == "continuousPlayback") {
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }

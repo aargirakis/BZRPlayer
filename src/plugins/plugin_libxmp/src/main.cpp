@@ -176,9 +176,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                     } else if (value == "cubic") {
                         interpolation = XMP_INTERP_SPLINE;
                     }
-                } else if (word == "stereo_separation") {
+                } else if (word == "stereoSeparation") {
                     stereoSeparation = atoi(value.c_str());
-                } else if (word == "continuous_playback") {
+                } else if (word == "continuousPlayback") {
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }

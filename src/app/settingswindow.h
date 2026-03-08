@@ -21,24 +21,24 @@ public:
     bool eventFilter(QObject* obj, QEvent* event);
     void changeStyleSheetColor();
     void saveSidplaySettings();
-    void setUiLineEditHvscSonglengthTextForcingRelativePaths(const QString& text);
+    void setUiLineEditLibsidplayfpHvscSonglengthsPath(const QString& text);
 
 private slots:
     void updateScrollText();
 
     void downloadHvscSonglengthsComplete();
 
-    void on_sliderResetVolumeToValue_sliderMoved(int position);
+    void on_sliderDefaultAudioLevel_sliderMoved(int position);
 
-    void on_checkBoxResetVolume_toggled(bool checked);
+    void on_checkBoxDefaultAudioLevel_toggled(bool checked);
 
-    void on_sliderResetVolumeToValue_valueChanged(int value);
+    void on_sliderDefaultAudioLevel_valueChanged(int value);
 
-    void on_SliderNormalizerFadeTim_valueChanged(int value);
+    void on_sliderNormalizerFadeTime_valueChanged(int value);
 
-    void on_SliderNormalizerThreshold_valueChanged(int value);
+    void on_sliderNormalizerThreshold_valueChanged(int value);
 
-    void on_SliderNormalizerMaxAmp_valueChanged(int value);
+    void on_sliderNormalizerMaxAmp_valueChanged(int value);
 
     void on_checkBoxNormalizer_toggled(bool checked);
 
@@ -51,213 +51,209 @@ private slots:
     void on_comboBoxReverb_textActivated(const QString& arg1);
 
 
-    void on_buttonBrowseHvscSonglengths_clicked();
+    void on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked();
     void on_buttonGeneral_clicked();
 
     void on_buttonPlugins_clicked();
 
     void on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item);
 
-    void on_buttonMainColor_clicked();
+    void on_buttonAppearanceMainColor_clicked();
 
     void on_buttonAppearance_clicked();
 
-    void on_buttonMediumColor_clicked();
+    void on_buttonAppearanceMediumColor_clicked();
 
-    void on_buttonBackgroundColor_clicked();
+    void on_buttonAppearanceBackgroundColor_clicked();
 
-    void on_buttonBehindBackgroundColor_clicked();
+    void on_buttonAppearanceBehindBackgroundColor_clicked();
 
-    void on_buttonMainTextColor_clicked();
+    void on_buttonAppearanceMainTextColor_clicked();
 
-    void on_buttonButtonColor_clicked();
+    void on_buttonAppearanceButtonColor_clicked();
 
-    void on_buttonDimmedTextColor_clicked();
+    void on_buttonAppearanceDimmedTextColor_clicked();
 
-    void on_buttonMainHoverColor_clicked();
+    void on_buttonAppearanceMainHoverColor_clicked();
 
-    void on_buttonButtonHoverColor_clicked();
+    void on_buttonAppearanceButtonHoverColor_clicked();
 
-    void on_buttonColorsDefault_clicked();
+    void on_buttonAppearanceResetColors_clicked();
 
     void on_buttonVisualizer_clicked();
 
-    void on_buttonColorVUMeterTop_clicked();
+    void on_buttonVuMeterTopColor_clicked();
 
-    void on_buttonColorVUMeterBottom_clicked();
+    void on_buttonVuMeterBottomColor_clicked();
 
-    void on_buttonColorVUMeterMiddle_clicked();
+    void on_buttonVuMeterMiddleColor_clicked();
 
-    void on_sliderRowHeight_valueChanged(int value);
+    void on_sliderAppearancePlaylistItemRowHeight_valueChanged(int value);
 
-    void on_sliderPlaylistsRowHeight_valueChanged(int value);
+    void on_sliderAppearancePlaylistRowHeight_valueChanged(int value);
 
-    void on_sliderAmplitude_valueChanged(int value);
+    void on_sliderScrollerAmplitude_valueChanged(int value);
 
-    void on_sliderFrequency_valueChanged(int value);
+    void on_sliderScrollerFrequency_valueChanged(int value);
 
-    void on_sliderSinusSpeed_valueChanged(int value);
+    void on_sliderScrollerSinusSpeed_valueChanged(int value);
 
-    void on_sliderScrollSpeed_valueChanged(int value);
+    void on_sliderScrollerScrollSpeed_valueChanged(int value);
 
-    void on_slider3DCubeFocalLength_valueChanged(int value);
+    void on_sliderRotatingObjectFocalLength_valueChanged(int value);
 
-    void on_slider3DCubeOrbitSize_valueChanged(int value);
+    void on_sliderRotatingObjectOrbitSize_valueChanged(int value);
 
-    void on_slider3DCubeOrbitSpeed_valueChanged(int value);
+    void on_sliderRotatingObjectSpeed_valueChanged(int value);
 
-    void on_slider3DCubeSize_valueChanged(int value);
+    void on_sliderRotatingObjectModelSize_valueChanged(int value);
 
-    void on_comboBox3dCubeModel_textActivated(const QString& arg1);
+    void on_comboBoxRotatingObjectModel_textActivated(const QString& arg1);
 
-    void on_comboBox3dCubeMaterial_textActivated(const QString& arg1);
+    void on_comboBoxRotatingObjectMaterial_textActivated(const QString& arg1);
 
-    void on_buttonColorVUMeterPeak_clicked();
+    void on_buttonVuMeterPeakColor_clicked();
 
-    void on_checkBoxPeaks_toggled(bool checked);
+    void on_checkBoxVuMeterPeaks_toggled(bool checked);
 
-    void on_sliderPeakHeight_valueChanged(int value);
+    void on_sliderVuMeterPeakHeight_valueChanged(int value);
 
-    void on_sliderScrollerXScale_valueChanged(int value);
+    void on_sliderScrollerFontXScale_valueChanged(int value);
 
-    void on_sliderScrollerYScale_valueChanged(int value);
+    void on_sliderScrollerFontYScale_valueChanged(int value);
 
-    void on_sliderVerticalScrollPosition_valueChanged(int value);
+    void on_sliderScrollerVerticalPosition_valueChanged(int value);
 
     void on_checkBoxReflectionEnabled_toggled(bool checked);
 
     void on_checkBoxStarsEnabled_toggled(bool checked);
 
-    void on_buttonColorReflection_clicked();
+    void on_buttonReflectionColor_clicked();
 
-    void on_buttonColor3DCube_clicked();
+    void on_buttonRotatingObjectMaterialColor_clicked();
 
-    void on_buttonColorWireframe3DCube_clicked();
-
-    void on_buttonBrowseFont_clicked();
+    void on_buttonRotatingObjectWireframeColor_clicked();
 
     void on_sliderReflectionOpacity_valueChanged(int value);
 
-    void on_sliderVUMeterWidth_valueChanged(int value);
+    void on_sliderVuMeterWidth_valueChanged(int value);
 
-    void on_sliderVumeterOpacity_valueChanged(int value);
+    void on_sliderVuMeterOpacity_valueChanged(int value);
 
-    void on_buttonBrowseFontPrinter_clicked();
+    void on_sliderPrinterFontXScale_valueChanged(int value);
 
-    void on_sliderPrinterXScale_valueChanged(int value);
-
-    void on_sliderPrinterYScale_valueChanged(int value);
+    void on_sliderPrinterFontYScale_valueChanged(int value);
 
     void on_checkBoxOnlyOneInstance_toggled(bool checked);
 
-    void on_sliderSilenceTimeOutUade_valueChanged(int value);
+    void on_sliderUadeSilenceTimeOut_valueChanged(int value);
 
-    void on_sliderPanningUade_valueChanged(int value);
+    void on_sliderUadePanning_valueChanged(int value);
 
-    void on_checkBoxSilenceTimeoutUade_toggled(bool checked);
+    void on_checkBoxUadeSilenceTimeout_toggled(bool checked);
 
-    void on_buttonBrowseUadeSonglengths_clicked();
+    void on_buttonUadeSonglengthsBrowse_clicked();
 
-    void on_buttonSelectionColor_clicked();
+    void on_buttonAppearanceSelectionColor_clicked();
 
     void loadBitmapFont(QString);
     void loadBitmapFontPrinter(QString);
 
     void on_checkBoxMilliseconds_toggled(bool checked);
 
-    void on_checkBoxContinuousPlaybackAdplug_toggled();
+    void on_checkBoxAdPlugContinuousPlayback_toggled();
 
-    void on_checkBoxContinuousPlaybackHivelytracker_toggled();
+    void on_checkBoxHivelyTrackerContinuousPlayback_toggled();
 
-    void on_checkBoxContinuousPlaybackLibvgm_toggled();
+    void on_checkBoxLibvgmContinuousPlayback_toggled();
 
-    void on_checkBoxContinuousPlaybackSndhPlayer_toggled();
+    void on_checkBoxSndhPlayerContinuousPlayback_toggled();
 
-    void on_checkBoxContinuousPlaybackVgmstream_toggled();
+    void on_checkBoxVgmstreamContinuousPlayback_toggled();
 
-    void on_checkBoxSeamlessLoopFmod_toggled();
+    void on_checkBoxFmodSeamlessLoop_toggled();
 
-    void on_SliderStereoSeparationOpenMPT_valueChanged(int value);
+    void on_sliderLibopenmptStereoSeparation_valueChanged(int value);
 
-    void on_checkBoxContinuousPlaybackOpenMPT_toggled();
+    void on_checkBoxLibopenmptContinuousPlayback_toggled();
 
     void on_checkBoxEnqueueItems_toggled(bool checked);
 
     void on_checkBoxShowLoopPoints_toggled(bool checked) const;
 
-    void on_checkBoxVUMeterEnabled_toggled(bool checked);
+    void on_checkBoxVuMeterEnabled_toggled(bool checked);
 
     void on_checkBoxScrollerEnabled_toggled(bool checked);
 
     void on_checkBoxPrinterEnabled_toggled(bool checked);
 
-    void on_sliderNumberOfStars_valueChanged(int value);
+    void on_sliderStarfieldAmount_valueChanged(int value);
 
-    void on_sliderStarSpeed_valueChanged(int value);
+    void on_sliderStarfieldSpeed_valueChanged(int value);
 
-    void on_comboBoxStarsDirection_textActivated(const QString& arg1);
+    void on_comboBoxStarfieldDirection_textActivated(const QString& arg1);
 
-    void on_checkBoxSinusFontScaling_toggled(bool checked);
+    void on_checkBoxScrollerSinusFontScaling_toggled(bool checked);
 
-    void on_buttonColorVisualizerBackground_clicked();
+    void on_buttonVisualizerBackgroundColor_clicked();
 
     void on_buttonScrollerFontImage_clicked();
 
     void on_buttonPrinterFontImage_clicked();
 
-    void on_sliderResolutionWidth_valueChanged(int value);
+    void on_sliderVisualizerResolutionWidth_valueChanged(int value);
 
-    void on_sliderResolutionHeight_valueChanged(int value);
+    void on_sliderVisualizerResolutionHeight_valueChanged(int value);
 
-    void on_checkBoxAspectRatio_toggled(bool checked);
+    void on_checkBoxVisualizerMaintainAspectRatio_toggled(bool checked);
 
-    void on_comboBoxHvscSonglengthsUpdateFrequency_textActivated(const QString& arg1);
+    void on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString& arg1);
 
-    void on_buttonDownloadHvscSonglengths_clicked();
+    void on_buttonLibsidplayfpHvscSonglengthsDownload_clicked();
 
-    void on_sliderNumberOfRasterBars_valueChanged(int value);
+    void on_sliderRasterBarsAmount_valueChanged(int value);
 
     void on_sliderRasterBarsVerticalSpacing_valueChanged(int value);
 
-    void on_sliderRasterBarsBarHeight_valueChanged(int value);
+    void on_sliderRasterBarsHeight_valueChanged(int value);
 
     void on_sliderRasterBarsSpeed_valueChanged(int value);
 
-    void on_checkBoxRasterbarsEnabled_toggled(bool checked);
+    void on_checkBoxRasterBarsEnabled_toggled(bool checked);
 
-    void on_checkBox3DCubeEnabled_toggled(bool checked);
+    void on_checkBoxRotatingObjectEnabled_toggled(bool checked);
 
-    void on_checkBox3DCubeOrbit_toggled(bool checked);
+    void on_checkBoxRotatingObjectOrbit_toggled(bool checked);
 
-    void on_checkBox3DCubeWireframeEnabled_toggled(bool checked);
+    void on_checkBoxRotatingObjectWireframeEnabled_toggled(bool checked);
 
-    void on_checkBoxCustomScrolltextEnabled_toggled(bool checked);
+    void on_checkBoxScrollerCustomTextEnabled_toggled(bool checked);
 
-    void on_sliderRasterbarsOpacity_valueChanged(int value);
+    void on_sliderRasterBarsOpacity_valueChanged(int value);
 
-    void on_checkBoxContinuousPlaybackUade_toggled();
+    void on_checkBoxUadeContinuousPlayback_toggled();
 
-    void on_checkBoxSongLengthUade_toggled(bool checked);
+    void on_checkBoxUadeSongLengths_toggled(bool checked);
 
-    void on_checkBoxFilterOpenMPT_toggled(bool checked);
+    void on_checkBoxLibopenmptAmigaResampler_toggled(bool checked);
 
-    void on_checkBoxContinuousPlaybackLibxmp_toggled();
+    void on_checkBoxLibxmpContinuousPlayback_toggled();
 
     void on_checkBoxOnlyOneInstance_clicked();
 
-    void on_checkBoxFilterEmuUade_toggled(bool checked);
+    void on_checkBoxUadeFilterEmu_toggled(bool checked);
 
     void on_checkBoxSystray_toggled(bool isChecked);
 
-    void on_checkBoxSystrayOnMinimize_toggled(bool isChecked);
+    void on_checkBoxMinimizeToSystray_toggled(bool isChecked);
 
     void on_checkBoxMenuBarHidden_toggled(bool isChecked);
 
-    void on_sliderNowPlayingFontSize_valueChanged(int value);
+    void on_sliderAppearanceNowPlayingFontSize_valueChanged(int value);
 
-    void on_checkBoxHvscSonglengthsEnabled_toggled(bool checked);
+    void on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled(bool checked);
 
-    void on_checkBoxSIDContinuousPlayback_toggled();
+    void on_checkBoxLibsidplayfpContinuousPlayback_toggled();
 
 private:
     void updateColorButtons();

@@ -4,7 +4,7 @@ set(NAME "libkss")
 set(VERSION "1.2.1")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
-set(PLUGIN_${NAME}_NAME "LIBKSS" PARENT_SCOPE)
+set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
 add_subdirectory(deps/emu2149)

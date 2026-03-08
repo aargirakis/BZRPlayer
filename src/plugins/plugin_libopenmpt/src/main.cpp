@@ -161,19 +161,19 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                 if (int i = line.find_first_of("="); i != -1) {
                     string word = line.substr(0, i);
                     string value = line.substr(i + 1);
-                    if (word == "stereo_separation") {
+                    if (word == "stereoSeparation") {
                         stereo_separation = atoi(value.c_str());
-                    } else if (word == "continuous_playback") {
+                    } else if (word == "continuousPlayback") {
                         info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
-                    } else if (word == "interpolation_filter") {
+                    } else if (word == "interpolationFilter") {
                         interpolation_filter = atoi(value.c_str());
-                    } else if (word == "emulate_amiga_filter") {
+                    } else if (word == "emulateAmigaFilter") {
                         if (value == "true") {
                             emulate_amiga_filter = "1";
                         } else {
                             emulate_amiga_filter = "0";
                         }
-                    } else if (word == "amiga_filter") {
+                    } else if (word == "amigaFilter") {
                         if (value == "a500") {
                             amiga_filter = "a500";
                         } else if (value == "a1200") {

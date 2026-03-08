@@ -77,9 +77,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     bool instanceExists = false;
 
-    QSettings settings(userPath + "/settings.ini",
-                       QSettings::IniFormat);
-    m_bAllowOnlyOneInstanceEnabled = settings.value("AllowOnlyOneInstance", true).toBool();
+    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
+    m_bAllowOnlyOneInstanceEnabled = settings.value("allowOnlyOneInstance", true).toBool();
 
     qDebug() << "m_bAllowOnlyOneInstanceEnabled: " << m_bAllowOnlyOneInstanceEnabled;
 
@@ -139,20 +138,20 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     createTrayMenu();
 
     setSystrayChecked(settings.value("systray", true).toBool());
-    isSystrayOnMinimizeChecked = settings.value("systrayonminimize", false).toBool();
+    isSystrayOnMinimizeChecked = settings.value("minimizeToSystray", false).toBool();
     isSystrayOnMinimizeEnabled = isSystrayChecked;
 
-    setMenuBarHiddenChecked(settings.value("menubarhidden", false).toBool());
+    setMenuBarHiddenChecked(settings.value("menuBarHidden", false).toBool());
 
-    m_outputDevice = settings.value("outputdevice").toInt();
-    m_resetVolume = settings.value("resetvolume", false).toBool();
-    m_resetVolumeValue = settings.value("resetvolumevalue", 100).toInt();
+    m_outputDevice = settings.value("outputDevice").toInt();
+    m_resetVolume = settings.value("defaultAudioLevel", false).toBool();
+    m_resetVolumeValue = settings.value("defaultAudioLevelValue", 100).toInt();
 
-    lastDir = settings.value("lastOpenedDir", "/").toString();
+    lastDir = settings.value("Internal/lastOpenedDir", "/").toString();
 
-    m_defaultPlaymode = settings.value("default_playmode", -1).toInt();
+    m_defaultPlaymode = settings.value("defaultPlayMode", -1).toInt();
     Playmode = static_cast<playmode>(m_defaultPlaymode == -1
-                                         ? settings.value("playmode", 0).toInt()
+                                         ? settings.value("Internal/playMode", 0).toInt()
                                          : m_defaultPlaymode);
 
     if (Playmode == normal) {
@@ -164,31 +163,33 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     }
 
     if (PLUGIN_libsidplayfp_LIB != "") {
-        HvscSonglengthsDownloadedEpoch = settings.value("libsidplayfp/timehvscsonglengthsdownloaded", 0).
-                toLongLong();
-        HvscSonglengthsPathDownloaded = settings.value("libsidplayfp/hvscsonglengthspath", "").toString();
-        HvscSonglengthsFrequency = settings.value("libsidplayfp/updateFrequency", "Weekly").toString();
+        bundledHvscSonglengthsPath = settings.value("Plugins/libsidplayfpBundledHvscSonglengthsPath",
+                                                    dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH).toString();
+        bundledHvscSonglengthsDownloadEpoch = settings.value("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch",
+                                                             0).toLongLong();
+        bundledHvscSonglengthsUpdateFrequency = settings.value("Plugins/libsidplayfpBundledHvscSonglengthsUpdate",
+                                                               "Weekly").toString();
     }
 
-    ui->checkBoxShuffle->setChecked(settings.value("shuffle", false).toBool());
+    ui->checkBoxShuffle->setChecked(settings.value("Internal/shuffle", false).toBool());
 
-    m_displayMilliseconds = settings.value("displaymilliseconds", false).toBool();
+    m_displayMilliseconds = settings.value("displayMilliseconds", false).toBool();
 
-    m_enqueueItems = settings.value("enqueueitems", false).toBool();
+    m_enqueueItems = settings.value("enqueueItems", false).toBool();
 
-    isShownCheckBoxLoopPoints = settings.value("showlooppoints", false).toBool();
+    isShownCheckBoxLoopPoints = settings.value("showLoopPoints", false).toBool();
 
-    m_normalizeEnabled = settings.value("normalizeenabled", false).toBool();
-    m_normalizeFadeTime = settings.value("normalizefadetime", 5000).toInt();
-    m_normalizeThreshold = settings.value("normalizethreshold", 10).toInt();
-    m_normalizeMaxAmp = settings.value("normalizemaxamp", 20).toInt();
-    currentPlaylist = settings.value("currentPlaylist", PLAYLIST_DEFAULT).toString();
-    currentRow = settings.value("currentRow", -1).toInt();
-    selectedPlaylist = settings.value("selectedPlaylist", PLAYLIST_DEFAULT).toString();
-    m_reverbEnabled = settings.value("reverbenabled", false).toBool();
-    m_reverbPreset = settings.value("reverbpreset", "Generic").toString();
-    m_ignoreSuffix = settings.value("ignoresuffix", "psflib;psf2lib;dsflib").toString();
-    m_ignorePrefix = settings.value("ignoreprefix", "").toString();
+    m_normalizeEnabled = settings.value("normalizer", false).toBool();
+    m_normalizeFadeTime = settings.value("normalizerFadeTime", 5000).toInt();
+    m_normalizeThreshold = settings.value("normalizerThreshold", 10).toInt();
+    m_normalizeMaxAmp = settings.value("normalizerMaxAmp", 20).toInt();
+    currentPlaylist = settings.value("Internal/currentPlaylist", PLAYLIST_DEFAULT).toString();
+    currentRow = settings.value("Internal/currentRow", -1).toInt();
+    selectedPlaylist = settings.value("Internal/selectedPlaylist", PLAYLIST_DEFAULT).toString();
+    m_reverbEnabled = settings.value("reverb", false).toBool();
+    m_reverbPreset = settings.value("reverbPreset", "Generic").toString();
+    m_ignoreSuffix = settings.value("ignoreSuffixes", "psflib;psf2lib;dsflib").toString();
+    m_ignorePrefix = settings.value("ignorePrefixes", "").toString();
 
 
     colorMainDefault = "#009379/*main*/";
@@ -202,102 +203,100 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     colorButtonHoverDefault = "#ffffff/*button hover*/";
     colorDimmedTextDefault = "#b1b1b1/*dimmed text*/";
 
-    colorMain = settings.value("colormain", colorMainDefault).toString();
-    colorMainHover = settings.value("colormainhover", colorMainHoverDefault).toString();
-    colorMedium = settings.value("colormedium", colorMediumDefault).toString();
-    colorBackground = settings.value("colorbackground", colorBackgroundDefault).toString();
-    colorBehindBackground = settings.value("colorbehindbackground", colorBehindBackgroundDefault).toString();
-    colorMainText = settings.value("colormaintext", colorMainTextDefault).toString();
-    colorSelection = settings.value("colorselection", colorSelectionDefault).toString();
-    colorButton = settings.value("colorbutton", colorButtonDefault).toString();
-    colorButtonHover = settings.value("colorbuttonhover", colorButtonHoverDefault).toString();
-    colorDimmedText = settings.value("colordimmedtext", colorDimmedTextDefault).toString();
+    colorMain = settings.value("Appearance/colorMain", colorMainDefault).toString();
+    colorMainHover = settings.value("Appearance/colorMainHover", colorMainHoverDefault).toString();
+    colorMedium = settings.value("Appearance/colorMedium", colorMediumDefault).toString();
+    colorBackground = settings.value("Appearance/colorBackground", colorBackgroundDefault).toString();
+    colorBehindBackground = settings.value("Appearance/colorBehindBackground", colorBehindBackgroundDefault).toString();
+    colorMainText = settings.value("Appearance/colorMainText", colorMainTextDefault).toString();
+    colorSelection = settings.value("Appearance/colorSelection", colorSelectionDefault).toString();
+    colorButton = settings.value("Appearance/colorButton", colorButtonDefault).toString();
+    colorButtonHover = settings.value("Appearance/colorButtonHover", colorButtonHoverDefault).toString();
+    colorDimmedText = settings.value("Appearance/colorDimmedText", colorDimmedTextDefault).toString();
 
-    colorVisualizerTop = settings.value("colorvumetertop", "#ff00dd").toString();
-    colorVisualizerMiddle = settings.value("colorvumetermiddle", "#0000ff").toString();
-    colorVisualizerBottom = settings.value("colorvumeterbottom", "#00ff5e").toString();
-    colorVisualizerBackground = settings.value("colorvisualizerbackground", "#000000").toString();
+    colorVisualizerTop = settings.value("Visualizer/vuMeterColorTop", "#ff00dd").toString();
+    colorVisualizerMiddle = settings.value("Visualizer/vuMeterColorMiddle", "#0000ff").toString();
+    colorVisualizerBottom = settings.value("Visualizer/vuMeterColorBottom", "#00ff5e").toString();
+    colorVisualizerBackground = settings.value("Visualizer/colorBackground", "#000000").toString();
 
-    sampleColumnNumberWidth = settings.value("samplescolumns/number", 35).toInt();
-    sampleColumnNameWidth = settings.value("samplescolumns/name", 185).toInt();
-    sampleColumnSizeWidth = settings.value("samplescolumns/size", 70).toInt();
-    sampleColumnLoopStartWidth = settings.value("samplescolumns/loopstart", 70).toInt();
-    sampleColumnLoopEndWidth = settings.value("samplescolumns/loopend", 70).toInt();
-    sampleColumnVolumeWidth = settings.value("samplescolumns/volume", 70).toInt();
-    sampleColumnFinetuneWidth = settings.value("samplescolumns/finetune", 70).toInt();
-    sampleColumnResolutionWidth = settings.value("samplescolumns/resolution", 70).toInt();
+    sampleColumnNumberWidth = settings.value("Internal/columnSamplesNumberWidth", 35).toInt();
+    sampleColumnNameWidth = settings.value("Internal/columnSamplesNameWidth", 185).toInt();
+    sampleColumnSizeWidth = settings.value("Internal/columnSamplesSizeWidth", 70).toInt();
+    sampleColumnLoopStartWidth = settings.value("Internal/columnSamplesLoopStartWidth", 70).toInt();
+    sampleColumnLoopEndWidth = settings.value("Internal/columnSamplesLoopEndWidth", 70).toInt();
+    sampleColumnVolumeWidth = settings.value("Internal/columnSamplesVolumeWidth", 70).toInt();
+    sampleColumnFinetuneWidth = settings.value("Internal/columnSamplesFineTuneWidth", 70).toInt();
+    sampleColumnResolutionWidth = settings.value("Internal/columnSamplesResolutionWidth", 70).toInt();
 
-    instrumentColumnNumberWidth = settings.value("instrumentscolumns/number", 35).toInt();
-    instrumentColumnNameWidth = settings.value("instrumentscolumns/name", 185).toInt();
-    instrumentColumnVolumeWidth = settings.value("instrumentscolumns/volume", 70).toInt();
-    instrumentColumnWaveLengthWidth = settings.value("instrumentscolumns/wavelength", 70).toInt();
+    instrumentColumnNumberWidth = settings.value("Internal/columnInstrumentsNumberWidth", 35).toInt();
+    instrumentColumnNameWidth = settings.value("Internal/columnInstrumentsNameWidth", 185).toInt();
+    instrumentColumnVolumeWidth = settings.value("Internal/columnInstrumentsVolumeWidth", 70).toInt();
+    instrumentColumnWaveLengthWidth = settings.value("Internal/columnInstrumentsWaveLengthWidth", 70).toInt();
 
-    infoNameWidth = settings.value("infocolumns/name", 70).toInt();
-    infoValueWidth = settings.value("infocolumns/value", 70).toInt();
+    infoNameWidth = settings.value("Internal/columnInfoNameWidth", 70).toInt();
+    infoValueWidth = settings.value("Internal/columnInfoValueWidth", 70).toInt();
 
-    colorVisualizerPeak = settings.value("colorvumeterpeak", "#b00e3e").toString();
-    vumeterPeaksEnabled = settings.value("vumeterpeaksenabled", true).toBool();
-    vumeterPeaksHeight = settings.value("vumeterpeaksheight", 8).toInt();
-    getEffect()->setVumeterWidth(settings.value("vumeterwidth", 50.0).toDouble());
-    getEffect()->setVumeterOpacity(settings.value("vumeteropacity", 65).toInt());
-
-    getEffect()->setAmplitude(settings.value("scroller/amplitude", 32).toInt());
-    getEffect()->setSinusFrequency(settings.value("scroller/frequency", 0.0027).toDouble());
-    getEffect()->setSinusSpeed(settings.value("scroller/sinusspeed", 0.1).toDouble());
-    getEffect()->setScrollSpeed(settings.value("scroller/scrollspeed", 3).toInt());
-    getEffect()->setVerticalScrollPosition(settings.value("scroller/verticalscrollposition", 0).toInt());
-    getEffect()->setFontScaleX(settings.value("scroller/fontscaleX", 1).toInt());
-    getEffect()->setFontScaleY(settings.value("scroller/fontscaleY", 2).toInt());
-    getEffect()->setPrinterFontScaleX(settings.value("printer/fontscaleX", 1).toInt());
-    getEffect()->setPrinterFontScaleY(settings.value("printer/fontscaleY", 1).toInt());
-    getEffect()->setReflectionEnabled(settings.value("scroller/reflection", true).toBool());
-    getEffect()->setStarsEnabled(settings.value("scroller/starfield", true).toBool());
-    getEffect()->setCustomScrolltextEnabled(settings.value("scroller/customscrolltextenabled", false).toBool());
-    getEffect()->setCustomScrolltext(settings.value("scroller/customscrolltext", "").toString());
-    getEffect()->setNumberOfStars(settings.value("scroller/numberofstars", 1000).toInt());
-    getEffect()->setStarsDirection(settings.value("scroller/starsdirection", "right").toString());
-    getEffect()->setStarSpeed(settings.value("scroller/starspeed", 5).toInt());
-    getEffect()->setScrollerEnabled(settings.value("scroller/scrollerenabled", true).toBool());
-    getEffect()->setPrinterEnabled(settings.value("scroller/printerenabled", true).toBool());
-    getEffect()->setVUMeterEnabled(settings.value("scroller/vumeterenabled", true).toBool());
+    colorVisualizerPeak = settings.value("Visualizer/vuMeterColorPeak", "#b00e3e").toString();
+    vumeterPeaksEnabled = settings.value("Visualizer/vuMeterPeaks", true).toBool();
+    vumeterPeaksHeight = settings.value("Visualizer/vuMeterPeakHeight", 8).toInt();
+    getEffect()->setVumeterWidth(settings.value("Visualizer/vuMeterWidth", 50.0).toDouble());
+    getEffect()->setVumeterOpacity(settings.value("Visualizer/vuMeterOpacity", 100).toInt());
+    getEffect()->setAmplitude(settings.value("Visualizer/scrollerAmplitude", 32).toInt());
+    getEffect()->setSinusFrequency(settings.value("Visualizer/scrollerFrequency", 0.0027).toDouble());
+    getEffect()->setSinusSpeed(settings.value("Visualizer/scrollerSinusSpeed", 0.1).toDouble());
+    getEffect()->setScrollSpeed(settings.value("Visualizer/scrollerScrollSpeed", 3).toInt());
+    getEffect()->setVerticalScrollPosition(settings.value("Visualizer/scrollerVerticalPosition", 0).toInt());
+    getEffect()->setFontScaleX(settings.value("Visualizer/scrollerFontXScale", 1).toInt());
+    getEffect()->setFontScaleY(settings.value("Visualizer/scrollerFontYScale", 2).toInt());
+    getEffect()->setPrinterFontScaleX(settings.value("Visualizer/printerFontXScale", 1).toInt());
+    getEffect()->setPrinterFontScaleY(settings.value("Visualizer/printerFontYScale", 1).toInt());
+    getEffect()->setReflectionEnabled(settings.value("Visualizer/reflection", true).toBool());
+    getEffect()->setStarsEnabled(settings.value("Visualizer/starfield", true).toBool());
+    getEffect()->setCustomScrolltextEnabled(settings.value("Visualizer/scrollerCustomText", false).toBool());
+    getEffect()->setCustomScrolltext(settings.value("Visualizer/scrollerCustomTextContent", "").toString());
+    getEffect()->setNumberOfStars(settings.value("Visualizer/starfieldAmount", 1000).toInt());
+    getEffect()->setStarsDirection(settings.value("Visualizer/starfieldDirection", "right").toString());
+    getEffect()->setStarSpeed(settings.value("Visualizer/starfieldSpeed", 5).toInt());
+    getEffect()->setScrollerEnabled(settings.value("Visualizer/scroller", true).toBool());
+    getEffect()->setPrinterEnabled(settings.value("Visualizer/printer", true).toBool());
+    getEffect()->setVUMeterEnabled(settings.value("Visualizer/vuMeter", true).toBool());
     getEffect()->setScrollerReflectionColor(
-        QColor(settings.value("scroller/reflectionColor", "#00032e").toString()));
-    getEffect()->setSinusFontScalingEnabled(settings.value("scroller/setsinusfontscaling", false).toBool());
-    getEffect()->set3DCubeEnabled(settings.value("scroller/3dcube", false).toBool());
-    getEffect()->set3DCubeOrbit(settings.value("scroller/3dcubeorbit", true).toBool());
-    getEffect()->set3DCubeColor(settings.value("scroller/3dcubecolor", "#009379").toString());
-    getEffect()->set3DCubeSize(settings.value("scroller/3dcubesize", 21).toInt());
-    getEffect()->set3DCubeFocalLength(settings.value("scroller/3dcubefocallength", 220).toInt());
-    getEffect()->set3DCubeOrbitSize(settings.value("scroller/3dcubeorbitsize", 245).toInt());
-    getEffect()->set3DCubeOrbitSpeed(settings.value("scroller/3dcubeorbitspeed", 2).toInt());
-    getEffect()->set3DCubeColorWireframe(settings.value("scroller/3dcubecolorwireframe", "#ffffff").toString());
-    getEffect()->set3DCubeWireframeEnabled(settings.value("scroller/3dcubewireframeenabled", false).toBool());
-    getEffect()->set3dCubeModel(settings.value("scroller/3dcubemodel", "cube").toString());
-    getEffect()->set3dCubeMaterial(settings.value("scroller/3dcubematerial", "blinn").toString());
-    getEffect()->setRasterBarsEnabled(settings.value("scroller/rasterbars", false).toBool());
-    getEffect()->setNumberOfRasterBars(settings.value("scroller/rasterbarsamount", 8).toInt());
-    getEffect()->setRasterBarsSpeed(settings.value("scroller/rasterbarsspeed", 35).toInt());
-    getEffect()->setRasterBarsBarHeight(settings.value("scroller/rasterbarsheight", 16).toInt());
-    getEffect()->setVumeterOpacity(settings.value("scroller/vumeteropacity", 100).toInt());
-    getEffect()->setRasterBarsVerticalSpacing(settings.value("scroller/rasterbarsverticalspacing", 16).toInt());
-    getEffect()->setRasterBarsOpacity(settings.value("scroller/rasterbarsopacity", 100).toInt());
-    getEffect()->setKeepAspectRatio(settings.value("visualizer/keepaspectratio", false).toBool());
-    getEffect()->setResolutionWidth(settings.value("visualizer/resolutionwidth", 320).toInt());
-    getEffect()->setResolutionHeight(settings.value("visualizer/resolutionheight", 256).toInt());
+        QColor(settings.value("Visualizer/reflectionColor", "#00032e").toString()));
+    getEffect()->setSinusFontScalingEnabled(settings.value("Visualizer/scrollerSinusFontScaling", false).toBool());
+    getEffect()->set3DCubeEnabled(settings.value("Visualizer/rotatingObject", false).toBool());
+    getEffect()->set3DCubeOrbit(settings.value("Visualizer/rotatingObjectOrbit", true).toBool());
+    getEffect()->set3DCubeColor(settings.value("Visualizer/rotatingObjectMaterialColor", "#009379").toString());
+    getEffect()->set3DCubeSize(settings.value("Visualizer/rotatingObjectModelSize", 21).toInt());
+    getEffect()->set3DCubeFocalLength(settings.value("Visualizer/rotatingObjectFocalLength", 220).toInt());
+    getEffect()->set3DCubeOrbitSize(settings.value("Visualizer/rotatingObjectOrbitSize", 245).toInt());
+    getEffect()->set3DCubeOrbitSpeed(settings.value("Visualizer/rotatingObjectOrbitSpeed", 2).toInt());
+    getEffect()->set3DCubeColorWireframe(settings.value("Visualizer/rotatingObjectWireframeColor", "#ffffff").toString());
+    getEffect()->set3DCubeWireframeEnabled(settings.value("Visualizer/rotatingObjectWireframe", false).toBool());
+    getEffect()->set3dCubeModel(settings.value("Visualizer/rotatingObjectModel", "cube").toString());
+    getEffect()->set3dCubeMaterial(settings.value("Visualizer/rotatingObjectMaterial", "blinn").toString());
+    getEffect()->setRasterBarsEnabled(settings.value("Visualizer/rasterBars", false).toBool());
+    getEffect()->setNumberOfRasterBars(settings.value("Visualizer/rasterBarsAmount", 8).toInt());
+    getEffect()->setRasterBarsSpeed(settings.value("Visualizer/rasterBarsSpeed", 35).toInt());
+    getEffect()->setRasterBarsBarHeight(settings.value("Visualizer/rasterBarsHeight", 16).toInt());
+    getEffect()->setRasterBarsVerticalSpacing(settings.value("Visualizer/rasterBarsVerticalSpacing", 16).toInt());
+    getEffect()->setRasterBarsOpacity(settings.value("Visualizer/rasterBarsOpacity", 100).toInt());
+    getEffect()->setKeepAspectRatio(settings.value("Visualizer/maintainAspectRatio", false).toBool());
+    getEffect()->setResolutionWidth(settings.value("Visualizer/resolutionWidth", 320).toInt());
+    getEffect()->setResolutionHeight(settings.value("Visualizer/resolutionHeight", 256).toInt());
 
-    getEffect()->setScrollerFont(settings.value("scroller/font",
+    getEffect()->setScrollerFont(settings.value("Visualizer/scrollerFontImage",
                                                 dataPath + "/resources/visualizer/bitmapfonts/angels_font.png").
         toString());
-    getEffect()->setPrinterFont(settings.value("printer/font",
+    getEffect()->setPrinterFont(settings.value("Visualizer/printerFontImage",
                                                dataPath + "/resources/visualizer/bitmapfonts/angels_font.png").
         toString());
 
 
-    getEffect()->setReflectionOpacity(settings.value("reflectionopacity", 50).toInt());
+    getEffect()->setReflectionOpacity(settings.value("Visualizer/reflectionOpacity", 50).toInt());
 
-    playlistRowHeight = settings.value("playlistrowheight", "30").toInt();
-    playlistsRowHeight = settings.value("playlistsrowheight", "30").toInt();
-    nowPlayingFontSize = settings.value("nowplayingfontsize", "16").toInt();
+    playlistRowHeight = settings.value("Appearance/playlistItemRowHeight", "30").toInt();
+    playlistsRowHeight = settings.value("Appearance/playlistRowHeight", "30").toInt();
+    nowPlayingFontSize = settings.value("Appearance/nowPlayingFontSize", "16").toInt();
 
 
     setColorVisualizerTop(colorVisualizerTop);
@@ -362,13 +361,13 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     ui->volumeSlider->setDefaultValue(100);
 
-    int vol = settings.value("volume", 100).toInt();
+    int vol = settings.value("Internal/volume", 100).toInt();
     if (m_resetVolume) {
         ui->volumeSlider->setValue(m_resetVolumeValue);
     } else {
         ui->volumeSlider->setValue(vol);
     }
-    m_muteVolume = settings.value("mutevolume", false).toBool();
+    m_muteVolume = settings.value("Internal/mute", false).toBool();
     if (m_resetVolume) {
         m_muteVolume = false;
     }
@@ -446,7 +445,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     changeStyleSheetColor();
 
     //Read all columns orders, size etc. from settings for all playlists
-    settings.beginGroup("playlists");
+    settings.beginGroup("InternalPlaylists");
 
     QStringList playlistsGeometryKeys = settings.childKeys();
     QMap<QString, QByteArray> playlistsGeometryMap;
@@ -457,7 +456,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     }
     settings.endGroup();
 
-    QStringList previousSortedPlaylists = settings.value("playlistOrder").toStringList();
+    QStringList previousSortedPlaylists = settings.value("Internal/playlistsOrder").toStringList();
     QStringList sortedPlaylists = sortPreservingOrder(playlists, previousSortedPlaylists);
 
     foreach(QString filename, sortedPlaylists) {
@@ -541,7 +540,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() + currentPlaylist)) {
         currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
     }
-    addDebugText("currentPlaylist: " + currentPlaylist);
+    addDebugText("current playlist: " + currentPlaylist);
     QList<QListWidgetItem *> items = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
     int row = 0;
     for (int i = 0; i < items.count(); i++) {
@@ -577,16 +576,16 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     qint64 currentSeconds = QDateTime::currentDateTime().toSecsSinceEpoch();
 
     if (PLUGIN_libsidplayfp_LIB != "") {
-        if (HvscSonglengthsFrequency == "Never") {
+        if (bundledHvscSonglengthsUpdateFrequency == "Never") {
             //Do nothing
-        } else if (HvscSonglengthsFrequency == "At every start") {
+        } else if (bundledHvscSonglengthsUpdateFrequency == "At every start") {
             connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-        } else if (HvscSonglengthsFrequency == "Daily" && (currentSeconds - HvscSonglengthsDownloadedEpoch >= 86400)) {
+        } else if (bundledHvscSonglengthsUpdateFrequency == "Daily" && (currentSeconds - bundledHvscSonglengthsDownloadEpoch >= 86400)) {
             connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-        } else if (HvscSonglengthsFrequency == "Weekly" && (currentSeconds - HvscSonglengthsDownloadedEpoch >=
+        } else if (bundledHvscSonglengthsUpdateFrequency == "Weekly" && (currentSeconds - bundledHvscSonglengthsDownloadEpoch >=
                                                             604800)) {
             connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-        } else if (HvscSonglengthsFrequency == "Monthly" && (currentSeconds - HvscSonglengthsDownloadedEpoch >=
+        } else if (bundledHvscSonglengthsUpdateFrequency == "Monthly" && (currentSeconds - bundledHvscSonglengthsDownloadEpoch >=
                                                              2629743)) {
             connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
         }
@@ -649,9 +648,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     ui->dockWidgetSamples->hide();
     ui->dockWidgetTrackerView->hide();
     ui->dockWidgetVisualizer->hide();
-    m_DockManager->restoreState(settings.value("dockingState").toByteArray());
-    restoreGeometry(settings.value("geometry").toByteArray());
-    restoreState(settings.value("windowState").toByteArray());
+    m_DockManager->restoreState(settings.value("Internal/dockingState").toByteArray());
+    restoreGeometry(settings.value("Internal/geometry").toByteArray());
+    restoreState(settings.value("Internal/windowState").toByteArray());
     visualizerFullScreen = new VisualizerFullScreen(ui->visualizer->getEffect());
     trackerFullScreen = new TrackerFullScreen(ui->trackerView->getTracker());
     createThePopupMenuVisualizer();
@@ -3829,24 +3828,32 @@ int MainWindow::getPlaylistRowHeight() const
     return playlistRowHeight;
 }
 
-qint64 MainWindow::getHvscSonglengthsDownloaded() const
-{
-    return HvscSonglengthsDownloadedEpoch;
+QString MainWindow::getHvscSonglengthsPath() {
+    return hvscSonglengthsPath;
 }
 
-QString MainWindow::getHvscSonglengthsFrequency()
-{
-    return HvscSonglengthsFrequency;
+void MainWindow::setHvscSonglengthsPath(QString path) {
+    hvscSonglengthsPath = path;
 }
 
-QString MainWindow::getHvscSonglengthsPathDownloaded()
+qint64 MainWindow::getBundledHvscSonglengthsDownloadEpoch() const
 {
-    return HvscSonglengthsPathDownloaded;
+    return bundledHvscSonglengthsDownloadEpoch;
 }
 
-void MainWindow::setHvscSonglengthsPathDownloaded(QString path)
+QString MainWindow::getBundledHvscSonglengthsUpdateFrequency()
 {
-    HvscSonglengthsPathDownloaded = path;
+    return bundledHvscSonglengthsUpdateFrequency;
+}
+
+QString MainWindow::getBundledHvscSonglengthsPath()
+{
+    return bundledHvscSonglengthsPath;
+}
+
+void MainWindow::setBundledHvscSonglengthsPath(QString path)
+{
+    bundledHvscSonglengthsPath = path;
 }
 
 int MainWindow::getPlaylistsRowHeight() const
@@ -3888,148 +3895,148 @@ void MainWindow::setMenuBarHiddenChecked(const bool isChecked)
 void MainWindow::SaveSettings()
 {
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-    settings.setValue("outputdevice", m_outputDevice);
-    settings.setValue("volume", ui->volumeSlider->value());
-    settings.setValue("shuffle", ui->checkBoxShuffle->isChecked());
+    settings.setValue("outputDevice", m_outputDevice);
+    settings.setValue("Internal/volume", ui->volumeSlider->value());
+    settings.setValue("Internal/shuffle", ui->checkBoxShuffle->isChecked());
 
-    settings.setValue("default_playmode", m_defaultPlaymode);
-    settings.setValue("playmode", m_defaultPlaymode == -1 ? Playmode : m_defaultPlaymode);
+    settings.setValue("defaultPlayMode", m_defaultPlaymode);
+    settings.setValue("Internal/playMode", m_defaultPlaymode == -1 ? Playmode : m_defaultPlaymode);
 
-    settings.setValue("resetvolume", m_resetVolume);
-    settings.setValue("resetvolumevalue", m_resetVolumeValue);
-    settings.setValue("mutevolume", ui->checkBoxVolumeOn->checkState() != Qt::Checked);
+    settings.setValue("defaultAudioLevel", m_resetVolume);
+    settings.setValue("defaultAudioLevelValue", m_resetVolumeValue);
+    settings.setValue("Internal/mute", ui->checkBoxVolumeOn->checkState() != Qt::Checked);
 
 
-    settings.setValue("displaymilliseconds", m_displayMilliseconds);
+    settings.setValue("displayMilliseconds", m_displayMilliseconds);
 
-    settings.setValue("enqueueitems", m_enqueueItems);
+    settings.setValue("enqueueItems", m_enqueueItems);
 
-    settings.setValue("showlooppoints", isShownCheckBoxLoopPoints);
+    settings.setValue("showLoopPoints", isShownCheckBoxLoopPoints);
 
-    settings.setValue("normalizeenabled", m_normalizeEnabled);
-    settings.setValue("normalizefadetime", m_normalizeFadeTime);
-    settings.setValue("normalizethreshold", m_normalizeThreshold);
-    settings.setValue("normalizemaxamp", m_normalizeMaxAmp);
+    settings.setValue("normalizer", m_normalizeEnabled);
+    settings.setValue("normalizerFadeTime", m_normalizeFadeTime);
+    settings.setValue("normalizerThreshold", m_normalizeThreshold);
+    settings.setValue("normalizerMaxAmp", m_normalizeMaxAmp);
 
-    settings.setValue("reverbenabled", m_reverbEnabled);
-    settings.setValue("reverbpreset", m_reverbPreset);
+    settings.setValue("reverb", m_reverbEnabled);
+    settings.setValue("reverbPreset", m_reverbPreset);
 
     settings.setValue("systray", isSystrayChecked);
-    settings.setValue("systrayonminimize", isSystrayOnMinimizeChecked);
+    settings.setValue("minimizeToSystray", isSystrayOnMinimizeChecked);
 
-    settings.setValue("menubarhidden", isMenuBarHiddenChecked);
+    settings.setValue("menuBarHidden", isMenuBarHiddenChecked);
 
-    settings.setValue("selectedplaylist", selectedPlaylist);
-    settings.setValue("currentplaylist", currentPlaylist);
-    settings.setValue("currentRow", currentRow);
+    settings.setValue("Internal/selectedPlaylist", selectedPlaylist);
+    settings.setValue("Internal/currentPlaylist", currentPlaylist);
+    settings.setValue("Internal/currentRow", currentRow);
 
-    settings.setValue("ignoresuffix", m_ignoreSuffix);
-    settings.setValue("ignoreprefix", m_ignorePrefix);
+    settings.setValue("ignoreSuffixes", m_ignoreSuffix);
+    settings.setValue("ignorePrefixes", m_ignorePrefix);
 
-    settings.setValue("colormain", colorMain);
-    settings.setValue("colormainhover", colorMainHover);
-    settings.setValue("colormedium", colorMedium);
-    settings.setValue("colorbackground", colorBackground);
-    settings.setValue("colorbehindbackground", colorBehindBackground);
-    settings.setValue("colormaintext", colorMainText);
-    settings.setValue("colorselection", colorSelection);
-    settings.setValue("colorbutton", colorButton);
-    settings.setValue("colorbuttonhover", colorButtonHover);
-    settings.setValue("colordimmedtext", colorDimmedText);
+    settings.setValue("Appearance/colorMain", colorMain);
+    settings.setValue("Appearance/colorMainHover", colorMainHover);
+    settings.setValue("Appearance/colorMedium", colorMedium);
+    settings.setValue("Appearance/colorBackground", colorBackground);
+    settings.setValue("Appearance/colorBehindBackground", colorBehindBackground);
+    settings.setValue("Appearance/colorMainText", colorMainText);
+    settings.setValue("Appearance/colorSelection", colorSelection);
+    settings.setValue("Appearance/colorButton", colorButton);
+    settings.setValue("Appearance/colorButtonHover", colorButtonHover);
+    settings.setValue("Appearance/colorDimmedText", colorDimmedText);
 
-    settings.setValue("colorvumetertop", colorVisualizerTop);
-    settings.setValue("colorvumeterbottom", colorVisualizerBottom);
-    settings.setValue("colorvumetermiddle", colorVisualizerMiddle);
+    settings.setValue("Visualizer/vuMeterColorTop", colorVisualizerTop);
+    settings.setValue("Visualizer/vuMeterColorBottom", colorVisualizerBottom);
+    settings.setValue("Visualizer/vuMeterColorMiddle", colorVisualizerMiddle);
 
-    settings.setValue("colorvisualizerbackground", colorVisualizerBackground);
+    settings.setValue("Visualizer/colorBackground", colorVisualizerBackground);
 
-    settings.setValue("colorvumeterpeak", colorVisualizerPeak);
-    settings.setValue("vumeterpeaksenabled", vumeterPeaksEnabled);
-    settings.setValue("vumeterpeaksheight", vumeterPeaksHeight);
+    settings.setValue("Visualizer/vuMeterColorPeak", colorVisualizerPeak);
+    settings.setValue("Visualizer/vuMeterPeaks", vumeterPeaksEnabled);
+    settings.setValue("Visualizer/vuMeterPeakHeight", vumeterPeaksHeight);
 
-    settings.setValue("playlistrowheight", playlistRowHeight);
-    settings.setValue("playlistsrowheight", playlistsRowHeight);
-    settings.setValue("nowplayingfontsize", nowPlayingFontSize);
+    settings.setValue("Appearance/playlistItemRowHeight", playlistRowHeight);
+    settings.setValue("Appearance/playlistRowHeight", playlistsRowHeight);
+    settings.setValue("Appearance/nowPlayingFontSize", nowPlayingFontSize);
 
-    settings.setValue("vumeterwidth", getEffect()->getVumeterWidth());
-    settings.setValue("vumeteropacity", getEffect()->getVumeterOpacity());
-
-
-    settings.setValue("scroller/amplitude", getEffect()->getAmplitude());
-    settings.setValue("scroller/frequency", getEffect()->getFrequency());
-    settings.setValue("scroller/sinusspeed", getEffect()->getSinusSpeed());
-    settings.setValue("scroller/scrollspeed", getEffect()->getScrollSpeed());
-    settings.setValue("scroller/verticalscrollposition", getEffect()->getVerticalScrollPosition());
-    settings.setValue("scroller/fontscaleX", getEffect()->getFontScaleX());
-    settings.setValue("scroller/fontscaleY", getEffect()->getFontScaleY());
-    settings.setValue("scroller/reflection", getEffect()->getReflectionEnabled());
-    settings.setValue("scroller/customscrolltextenabled", getEffect()->getCustomScrolltextEnabled());
-    settings.setValue("scroller/customscrolltext", getEffect()->getCustomScrolltext());
-    settings.setValue("scroller/starfield", getEffect()->getStarsEnabled());
-    settings.setValue("scroller/rasterbars", getEffect()->getRasterBarsEnabled());
-    settings.setValue("scroller/3dcube", getEffect()->get3DCubeEnabled());
-    settings.setValue("scroller/3dcubeWireframeEnabled", getEffect()->get3DCubeWireframeEnabled());
-    settings.setValue("scroller/3dcubemodel", getEffect()->get3dCubeModel());
-    settings.setValue("scroller/3dcubeorbit", getEffect()->get3DCubeOrbit());
-    settings.setValue("scroller/3dcubecolor", getEffect()->get3DCubeColor());
-    settings.setValue("scroller/3dcubesize", getEffect()->get3DCubeSize());
-    settings.setValue("scroller/3dcubefocallength", getEffect()->get3DCubeFocalLength());
-    settings.setValue("scroller/3dcubeorbitsize", getEffect()->get3DCubeOrbitSize());
-    settings.setValue("scroller/3dcubeorbitspeed", getEffect()->get3DCubeOrbitSpeed());
-    settings.setValue("scroller/3dcubecolorwireframe", getEffect()->get3DCubeColorWireframe());
-    settings.setValue("scroller/3dcubematerial", getEffect()->get3dCubeMaterial());
-    settings.setValue("scroller/rasterbarsamount", getEffect()->getNumberOfRasterBars());
-    settings.setValue("scroller/rasterbarsspeed", getEffect()->getRasterBarsSpeed());
-    settings.setValue("scroller/rasterbarsheight", getEffect()->getRasterBarsHeight());
-    settings.setValue("scroller/rasterbarsverticalspacing", getEffect()->getRasterBarsVerticalSpacing());
-    settings.setValue("scroller/rasterbarsopacity", getEffect()->getRasterbarsOpacity());
-    settings.setValue("scroller/numberofstars", getEffect()->getNumberOfStars());
-    settings.setValue("scroller/starsdirection", getEffect()->getStarsDirection());
-    settings.setValue("scroller/starspeed", getEffect()->getStarSpeed());
-    settings.setValue("scroller/scrollerenabled", getEffect()->getScrollerEnabled());
-    settings.setValue("scroller/printerenabled", getEffect()->getPrinterEnabled());
-    settings.setValue("scroller/vumeterenabled", getEffect()->getVUMeterEnabled());
-    settings.setValue("scroller/reflectionColor", getEffect()->getReflectionColor());
-    settings.setValue("scroller/font", getEffect()->getFont());
-    settings.setValue("reflectionopacity", getEffect()->getReflectionOpacity());
-    settings.setValue("scroller/sinusfontscaling", getEffect()->getSinusFontScalingEnabled());
-
-    settings.setValue("visualizer/keepaspectratio", getEffect()->getKeepAspectRatio());
-    settings.setValue("visualizer/resolutionwidth", getEffect()->getResolutionWidth());
-    settings.setValue("visualizer/resolutionheight", getEffect()->getResolutionHeight());
+    settings.setValue("Visualizer/vuMeterWidth", getEffect()->getVumeterWidth());
+    settings.setValue("Visualizer/vuMeterOpacity", getEffect()->getVumeterOpacity());
 
 
-    settings.setValue("printer/font", getEffect()->getPrinterFont());
-    settings.setValue("printer/fontscaleX", getEffect()->getPrinterFontScaleX());
-    settings.setValue("printer/fontscaleY", getEffect()->getPrinterFontScaleY());
+    settings.setValue("Visualizer/scrollerAmplitude", getEffect()->getAmplitude());
+    settings.setValue("Visualizer/scrollerFrequency", getEffect()->getFrequency());
+    settings.setValue("Visualizer/scrollerSinusSpeed", getEffect()->getSinusSpeed());
+    settings.setValue("Visualizer/scrollerScrollSpeed", getEffect()->getScrollSpeed());
+    settings.setValue("Visualizer/scrollerVerticalPosition", getEffect()->getVerticalScrollPosition());
+    settings.setValue("Visualizer/scrollerFontXScale", getEffect()->getFontScaleX());
+    settings.setValue("Visualizer/scrollerFontYScale", getEffect()->getFontScaleY());
+    settings.setValue("Visualizer/reflection", getEffect()->getReflectionEnabled());
+    settings.setValue("Visualizer/scrollerCustomText", getEffect()->getCustomScrolltextEnabled());
+    settings.setValue("Visualizer/scrollerCustomTextContent", getEffect()->getCustomScrolltext());
+    settings.setValue("Visualizer/starfield", getEffect()->getStarsEnabled());
+    settings.setValue("Visualizer/rasterBars", getEffect()->getRasterBarsEnabled());
+    settings.setValue("Visualizer/rotatingObject", getEffect()->get3DCubeEnabled());
+    settings.setValue("Visualizer/rotatingObjectWireframe", getEffect()->get3DCubeWireframeEnabled());
+    settings.setValue("Visualizer/rotatingObjectModel", getEffect()->get3dCubeModel());
+    settings.setValue("Visualizer/rotatingObjectOrbit", getEffect()->get3DCubeOrbit());
+    settings.setValue("Visualizer/rotatingObjectMaterialColor", getEffect()->get3DCubeColor());
+    settings.setValue("Visualizer/rotatingObjectModelSize", getEffect()->get3DCubeSize());
+    settings.setValue("Visualizer/rotatingObjectFocalLength", getEffect()->get3DCubeFocalLength());
+    settings.setValue("Visualizer/rotatingObjectOrbitSize", getEffect()->get3DCubeOrbitSize());
+    settings.setValue("Visualizer/rotatingObjectOrbitSpeed", getEffect()->get3DCubeOrbitSpeed());
+    settings.setValue("Visualizer/rotatingObjectWireframeColor", getEffect()->get3DCubeColorWireframe());
+    settings.setValue("Visualizer/rotatingObjectMaterial", getEffect()->get3dCubeMaterial());
+    settings.setValue("Visualizer/rasterBarsAmount", getEffect()->getNumberOfRasterBars());
+    settings.setValue("Visualizer/rasterBarsSpeed", getEffect()->getRasterBarsSpeed());
+    settings.setValue("Visualizer/rasterBarsHeight", getEffect()->getRasterBarsHeight());
+    settings.setValue("Visualizer/rasterBarsVerticalSpacing", getEffect()->getRasterBarsVerticalSpacing());
+    settings.setValue("Visualizer/rasterBarsOpacity", getEffect()->getRasterbarsOpacity());
+    settings.setValue("Visualizer/starfieldAmount", getEffect()->getNumberOfStars());
+    settings.setValue("Visualizer/starfieldDirection", getEffect()->getStarsDirection());
+    settings.setValue("Visualizer/starfieldSpeed", getEffect()->getStarSpeed());
+    settings.setValue("Visualizer/scroller", getEffect()->getScrollerEnabled());
+    settings.setValue("Visualizer/printer", getEffect()->getPrinterEnabled());
+    settings.setValue("Visualizer/vuMeter", getEffect()->getVUMeterEnabled());
+    settings.setValue("Visualizer/reflectionColor", getEffect()->getReflectionColor());
+    settings.setValue("Visualizer/scrollerFontImage", getEffect()->getFont());
+    settings.setValue("Visualizer/reflectionOpacity", getEffect()->getReflectionOpacity());
+    settings.setValue("Visualizer/scrollerSinusFontScaling", getEffect()->getSinusFontScalingEnabled());
 
-    settings.setValue("samplescolumns/number", sampleColumnNumberWidth);
-    settings.setValue("samplescolumns/name", sampleColumnNameWidth);
-    settings.setValue("samplescolumns/size", sampleColumnSizeWidth);
-    settings.setValue("samplescolumns/loopstart", sampleColumnLoopStartWidth);
-    settings.setValue("samplescolumns/loopend", sampleColumnLoopEndWidth);
-    settings.setValue("samplescolumns/volume", sampleColumnVolumeWidth);
-    settings.setValue("samplescolumns/finetune", sampleColumnFinetuneWidth);
-    settings.setValue("samplescolumns/resolution", sampleColumnResolutionWidth);
-
-    settings.setValue("instrumentscolumns/number", instrumentColumnNumberWidth);
-    settings.setValue("instrumentscolumns/name", instrumentColumnNameWidth);
-    settings.setValue("instrumentscolumns/volume", instrumentColumnVolumeWidth);
-    settings.setValue("instrumentscolumns/wavelength", instrumentColumnWaveLengthWidth);
-
-    settings.setValue("infocolumns/name", infoNameWidth);
-    settings.setValue("infocolumns/value", infoValueWidth);
+    settings.setValue("Visualizer/maintainAspectRatio", getEffect()->getKeepAspectRatio());
+    settings.setValue("Visualizer/resolutionWidth", getEffect()->getResolutionWidth());
+    settings.setValue("Visualizer/resolutionHeight", getEffect()->getResolutionHeight());
 
 
-    settings.setValue("AllowOnlyOneInstance", isOnlyOneInstanceEnabled());
+    settings.setValue("Visualizer/printerFontImage", getEffect()->getPrinterFont());
+    settings.setValue("Visualizer/printerFontXScale", getEffect()->getPrinterFontScaleX());
+    settings.setValue("Visualizer/printerFontYScale", getEffect()->getPrinterFontScaleY());
 
-    settings.setValue("lastOpenedDir", lastDir);
+    settings.setValue("Internal/columnSamplesNumberWidth", sampleColumnNumberWidth);
+    settings.setValue("Internal/columnSamplesNameWidth", sampleColumnNameWidth);
+    settings.setValue("Internal/columnSamplesSizeWidth", sampleColumnSizeWidth);
+    settings.setValue("Internal/columnSamplesLoopStartWidth", sampleColumnLoopStartWidth);
+    settings.setValue("Internal/columnSamplesLoopEndWidth", sampleColumnLoopEndWidth);
+    settings.setValue("Internal/columnSamplesVolumeWidth", sampleColumnVolumeWidth);
+    settings.setValue("Internal/columnSamplesFineTuneWidth", sampleColumnFinetuneWidth);
+    settings.setValue("Internal/columnSamplesResolutionWidth", sampleColumnResolutionWidth);
+
+    settings.setValue("Internal/columnInstrumentsNumberWidth", instrumentColumnNumberWidth);
+    settings.setValue("Internal/columnInstrumentsNameWidth", instrumentColumnNameWidth);
+    settings.setValue("Internal/columnInstrumentsVolumeWidth", instrumentColumnVolumeWidth);
+    settings.setValue("Internal/columnInstrumentsWaveLengthWidth", instrumentColumnWaveLengthWidth);
+
+    settings.setValue("Internal/columnInfoNameWidth", infoNameWidth);
+    settings.setValue("Internal/columnInfoValueWidth", infoValueWidth);
+
+
+    settings.setValue("allowOnlyOneInstance", isOnlyOneInstanceEnabled());
+
+    settings.setValue("Internal/lastOpenedDir", lastDir);
 
     savePlayListSettings();
 
     if (PLUGIN_libsidplayfp_LIB != "")
     {
-        settings.setValue(QString("libsidplayfp/updateFrequency"), HvscSonglengthsFrequency);
+        settings.setValue(QString("Plugins/libsidplayfpBundledHvscSonglengthsUpdate"), bundledHvscSonglengthsUpdateFrequency);
     }
 }
 
@@ -4037,11 +4044,11 @@ void MainWindow::savePlayListSettings()
 {
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
     //Clear old playlist settings
-    settings.remove("playlists");
+    settings.remove("InternalPlaylists");
 
     //Iterate all current playlists and save the order and the column settings
     QStringList orderedKeys;
-    settings.beginGroup("playlists");
+    settings.beginGroup("InternalPlaylists");
     for (int i = 0; i < ui->listWidget->count(); ++i) {
         orderedKeys << ui->listWidget->item(i)->text();
         QListWidgetItem* item = ui->listWidget->item(i);
@@ -4052,7 +4059,7 @@ void MainWindow::savePlayListSettings()
         }
     }
     settings.endGroup();
-    settings.setValue("playlistOrder", orderedKeys);
+    settings.setValue("Internal/playlistsOrder", orderedKeys);
 
 }
 
@@ -4555,9 +4562,9 @@ void MainWindow::quit()
     }
 
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-    settings.setValue("geometry", saveGeometry());
-    settings.setValue("windowState", saveState());
-    settings.setValue("dockingState", m_DockManager->saveState());
+    settings.setValue("Internal/geometry", saveGeometry());
+    settings.setValue("Internal/windowState", saveState());
+    settings.setValue("Internal/dockingState", m_DockManager->saveState());
     QApplication::quit();
 }
 
@@ -5770,7 +5777,7 @@ void MainWindow::DeleteWorkspace(QString workspace) const
 void MainWindow::slot_LoadWorkspace(const QString& filename)
 {
     QSettings settings(userPath + LAYOUTS_DIR + "/" + filename, QSettings::IniFormat);
-    if (!m_DockManager->restoreState(settings.value("dockingState").toByteArray()))
+    if (!m_DockManager->restoreState(settings.value("Internal/dockingState").toByteArray()))
     {
         QMessageBox::critical(this, "Error", "Couldn't load layout.");
     }
@@ -5780,7 +5787,7 @@ void MainWindow::CreateNewWorkspace(const QString& filename)
 {
     QString fileNameAndExtension = filename + ".ini";
     QSettings settings(userPath + LAYOUTS_DIR + "/" + fileNameAndExtension, QSettings::IniFormat);
-    settings.setValue("dockingState", m_DockManager->saveState());
+    settings.setValue("Internal/dockingState", m_DockManager->saveState());
     QAction* action = new QAction(filename);
     ui->menuRestore_Layout->insertAction(workspaceSeparator, action);
     connect(action, &QAction::triggered, this, [&, this, fileNameAndExtension]
@@ -5793,31 +5800,30 @@ void MainWindow::downloadHvscSonglengthsComplete()
 {
     if (filedownloader->downloadedData().size() > 0)
     {
-        QFile file(userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
+        QString hvscSonglengthsDownloadPath = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
+
+        QFile file(hvscSonglengthsDownloadPath);
         if (file.open(QIODevice::ReadWrite))
         {
             QTextStream stream(&file);
             stream << filedownloader->downloadedData();
             file.close();
-            QDateTime::currentDateTime().toSecsSinceEpoch();
-            QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-            qint64 seconds = QDateTime::currentDateTime().toSecsSinceEpoch();
 
-            if (getHvscSonglengthsPathDownloaded().compare(
-                dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH))
-            {
-                settingsWindow settingsWindow(this);
-                settingsWindow.setUiLineEditHvscSonglengthTextForcingRelativePaths(
-                    userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
+            bundledHvscSonglengthsDownloadEpoch = QDateTime::currentDateTime().toSecsSinceEpoch();
+            bundledHvscSonglengthsPath = hvscSonglengthsDownloadPath;
+
+            settingsWindow settingsWindow(this);
+
+            if (hvscSonglengthsPath.compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
+                hvscSonglengthsPath = hvscSonglengthsDownloadPath;
+
+                settingsWindow.setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsDownloadPath);
                 settingsWindow.saveSidplaySettings();
             }
 
-            settings.setValue("libsidplayfp/timehvscsonglengthsdownloaded", seconds);
-            settings.setValue("libsidplayfp/hvscsonglengthspath",
-                              userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
-            HvscSonglengthsPathDownloaded = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
-            HvscSonglengthsDownloadedEpoch = seconds;
-            addDebugText("Downloaded " + filedownloader->getUrl().toString() + " to " + file.fileName());
+            QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
+            settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsPath", hvscSonglengthsDownloadPath);
+            settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch", bundledHvscSonglengthsDownloadEpoch);
         }
         else
         {
@@ -5830,9 +5836,9 @@ void MainWindow::downloadHvscSonglengthsComplete()
     }
 }
 
-void MainWindow::setHvscSonglengthsFrequency(QString freq)
+void MainWindow::setBundledHvscSonglengthsUpdateFrequency(QString freq)
 {
-    HvscSonglengthsFrequency = freq;
+    bundledHvscSonglengthsUpdateFrequency = freq;
 }
 
 //Swaps columns so that artist column is first for default and new playlists

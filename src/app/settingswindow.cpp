@@ -17,133 +17,133 @@ settingsWindow::settingsWindow(QWidget* parent) :
     setWindowFlags(windowFlags().setFlag(Qt::WindowContextHelpButtonHint, false));
     ui->setupUi(this);
     mainWindow = static_cast<MainWindow*>(this->parent());
-    connect(ui->textEditCustomScrolltext, SIGNAL(textChanged()), this, SLOT(updateScrollText()));
+    connect(ui->textEditScrollerCustomText, SIGNAL(textChanged()), this, SLOT(updateScrollText()));
 
-    ui->sliderVUMeterWidth->installEventFilter(this);
-    ui->sliderVumeterOpacity->installEventFilter(this);
-    ui->sliderAmplitude->installEventFilter(this);
-    ui->sliderFrequency->installEventFilter(this);
-    ui->sliderSinusSpeed->installEventFilter(this);
-    ui->sliderScrollSpeed->installEventFilter(this);
-    ui->sliderVerticalScrollPosition->installEventFilter(this);
-    ui->sliderScrollerXScale->installEventFilter(this);
-    ui->sliderScrollerYScale->installEventFilter(this);
-    ui->sliderPrinterXScale->installEventFilter(this);
-    ui->sliderPrinterYScale->installEventFilter(this);
-    ui->sliderPeakHeight->installEventFilter(this);
+    ui->sliderVuMeterWidth->installEventFilter(this);
+    ui->sliderVuMeterOpacity->installEventFilter(this);
+    ui->sliderScrollerAmplitude->installEventFilter(this);
+    ui->sliderScrollerFrequency->installEventFilter(this);
+    ui->sliderScrollerSinusSpeed->installEventFilter(this);
+    ui->sliderScrollerScrollSpeed->installEventFilter(this);
+    ui->sliderScrollerVerticalPosition->installEventFilter(this);
+    ui->sliderScrollerFontXScale->installEventFilter(this);
+    ui->sliderScrollerFontYScale->installEventFilter(this);
+    ui->sliderPrinterFontXScale->installEventFilter(this);
+    ui->sliderPrinterFontYScale->installEventFilter(this);
+    ui->sliderVuMeterPeakHeight->installEventFilter(this);
     ui->sliderReflectionOpacity->installEventFilter(this);
-    ui->sliderPlaylistsRowHeight->installEventFilter(this);
-    ui->sliderRowHeight->installEventFilter(this);
-    ui->sliderNowPlayingFontSize->installEventFilter(this);
-    ui->sliderResetVolumeToValue->installEventFilter(this);
-    ui->SliderNormalizerFadeTim->installEventFilter(this);
-    ui->SliderNormalizerMaxAmp->installEventFilter(this);
-    ui->SliderNormalizerThreshold->installEventFilter(this);
-    ui->sliderNumberOfStars->installEventFilter(this);
-    ui->sliderStarSpeed->installEventFilter(this);
-    ui->sliderResolutionWidth->installEventFilter(this);
-    ui->sliderResolutionHeight->installEventFilter(this);
-    ui->sliderRasterBarsBarHeight->installEventFilter(this);
+    ui->sliderAppearancePlaylistRowHeight->installEventFilter(this);
+    ui->sliderAppearancePlaylistItemRowHeight->installEventFilter(this);
+    ui->sliderAppearanceNowPlayingFontSize->installEventFilter(this);
+    ui->sliderDefaultAudioLevel->installEventFilter(this);
+    ui->sliderNormalizerFadeTime->installEventFilter(this);
+    ui->sliderNormalizerMaxAmp->installEventFilter(this);
+    ui->sliderNormalizerThreshold->installEventFilter(this);
+    ui->sliderStarfieldAmount->installEventFilter(this);
+    ui->sliderStarfieldSpeed->installEventFilter(this);
+    ui->sliderVisualizerResolutionWidth->installEventFilter(this);
+    ui->sliderVisualizerResolutionHeight->installEventFilter(this);
+    ui->sliderRasterBarsHeight->installEventFilter(this);
     ui->sliderRasterBarsSpeed->installEventFilter(this);
-    ui->sliderRasterbarsOpacity->installEventFilter(this);
+    ui->sliderRasterBarsOpacity->installEventFilter(this);
     ui->sliderRasterBarsVerticalSpacing->installEventFilter(this);
-    ui->sliderNumberOfRasterBars->installEventFilter(this);
-    ui->slider3DCubeFocalLength->installEventFilter(this);
-    ui->slider3DCubeSize->installEventFilter(this);
-    ui->slider3DCubeOrbitSize->installEventFilter(this);
+    ui->sliderRasterBarsAmount->installEventFilter(this);
+    ui->sliderRotatingObjectFocalLength->installEventFilter(this);
+    ui->sliderRotatingObjectModelSize->installEventFilter(this);
+    ui->sliderRotatingObjectOrbitSize->installEventFilter(this);
 
-    ui->comboBoxEmulatorAdplug->installEventFilter(this);
-    ui->comboBoxEmulatorAdplug->addItem("Tatsuyuki Satoh", "0");
-    ui->comboBoxEmulatorAdplug->addItem("Ken Silverman", "1");
-    ui->comboBoxEmulatorAdplug->addItem("Woody (DOSBox)", "2");
-    ui->comboBoxEmulatorAdplug->addItem("Nuked OPL3", "3");
+    ui->comboBoxAdPlugEmulator->installEventFilter(this);
+    ui->comboBoxAdPlugEmulator->addItem("Tatsuyuki Satoh", "0");
+    ui->comboBoxAdPlugEmulator->addItem("Ken Silverman", "1");
+    ui->comboBoxAdPlugEmulator->addItem("Woody (DOSBox)", "2");
+    ui->comboBoxAdPlugEmulator->addItem("Nuked OPL3", "3");
 
-    ui->comboBoxFreqAdplug->installEventFilter(this);
-    ui->comboBoxFreqAdplug->addItem("11025", "11025");
-    ui->comboBoxFreqAdplug->addItem("22050", "22050");
-    ui->comboBoxFreqAdplug->addItem("44100", "44100");
+    ui->comboBoxAdPlugFreq->installEventFilter(this);
+    ui->comboBoxAdPlugFreq->addItem("11025", "11025");
+    ui->comboBoxAdPlugFreq->addItem("22050", "22050");
+    ui->comboBoxAdPlugFreq->addItem("44100", "44100");
 
-    ui->comboBoxPlaybackAdplug->installEventFilter(this);
-    ui->comboBoxPlaybackAdplug->addItem("Mono", "0");
-    ui->comboBoxPlaybackAdplug->addItem("Stereo", "1");
-    ui->comboBoxPlaybackAdplug->addItem("Surround", "2");
+    ui->comboBoxAdPlugPlayback->installEventFilter(this);
+    ui->comboBoxAdPlugPlayback->addItem("Mono", "0");
+    ui->comboBoxAdPlugPlayback->addItem("Stereo", "1");
+    ui->comboBoxAdPlugPlayback->addItem("Surround", "2");
 
-    ui->comboBoxStereoSeparationHivelytracker->installEventFilter(this);
-    ui->comboBoxStereoSeparationHivelytracker->addItem("0% (Mono)", "0");
-    ui->comboBoxStereoSeparationHivelytracker->addItem("25%", "1");
-    ui->comboBoxStereoSeparationHivelytracker->addItem("50%", "2");
-    ui->comboBoxStereoSeparationHivelytracker->addItem("75%", "3");
-    ui->comboBoxStereoSeparationHivelytracker->addItem("100% (Paula)", "4");
+    ui->comboBoxHivelyTrackerStereoSeparation->installEventFilter(this);
+    ui->comboBoxHivelyTrackerStereoSeparation->addItem("0% (Mono)", "0");
+    ui->comboBoxHivelyTrackerStereoSeparation->addItem("25%", "1");
+    ui->comboBoxHivelyTrackerStereoSeparation->addItem("50%", "2");
+    ui->comboBoxHivelyTrackerStereoSeparation->addItem("75%", "3");
+    ui->comboBoxHivelyTrackerStereoSeparation->addItem("100% (Paula)", "4");
 
-    ui->comboBoxFilterOpenMPT->installEventFilter(this);
-    ui->comboBoxFilterOpenMPT->addItem("Auto", "auto");
-    ui->comboBoxFilterOpenMPT->addItem("A500 Filter", "a500");
-    ui->comboBoxFilterOpenMPT->addItem("A1200 Filter", "a1200");
-    ui->comboBoxFilterOpenMPT->addItem("Unfiltered", "unfiltered");
+    ui->comboBoxLibopenmptFilter->installEventFilter(this);
+    ui->comboBoxLibopenmptFilter->addItem("Auto", "auto");
+    ui->comboBoxLibopenmptFilter->addItem("A500 Filter", "a500");
+    ui->comboBoxLibopenmptFilter->addItem("A1200 Filter", "a1200");
+    ui->comboBoxLibopenmptFilter->addItem("Unfiltered", "unfiltered");
 
-    ui->comboBoxResamplingOpenMPT->installEventFilter(this);
-    ui->comboBoxResamplingOpenMPT->addItem("Internal Default", "0");
-    ui->comboBoxResamplingOpenMPT->addItem("No Interpolation (1 tap)", "1");
-    ui->comboBoxResamplingOpenMPT->addItem("Linear (2 taps)", "2");
-    ui->comboBoxResamplingOpenMPT->addItem("Cubic (4 taps)", "4");
-    ui->comboBoxResamplingOpenMPT->addItem("Sinc (8 taps)", "8");
+    ui->comboBoxLibopenmptResampling->installEventFilter(this);
+    ui->comboBoxLibopenmptResampling->addItem("Internal Default", "0");
+    ui->comboBoxLibopenmptResampling->addItem("No Interpolation (1 tap)", "1");
+    ui->comboBoxLibopenmptResampling->addItem("Linear (2 taps)", "2");
+    ui->comboBoxLibopenmptResampling->addItem("Cubic (4 taps)", "4");
+    ui->comboBoxLibopenmptResampling->addItem("Sinc (8 taps)", "8");
 
-    ui->comboBoxDitherOpenMPT->installEventFilter(this);
-    ui->comboBoxDitherOpenMPT->addItem("No dithering", "0");
-    ui->comboBoxDitherOpenMPT->addItem("Default", "1");
-    ui->comboBoxDitherOpenMPT->addItem("Rectangular, 0.5 bit depth", "2");
-    ui->comboBoxDitherOpenMPT->addItem("Rectangular, 1 bit depth", "3");
+    ui->comboBoxLibopenmptDither->installEventFilter(this);
+    ui->comboBoxLibopenmptDither->addItem("No dithering", "0");
+    ui->comboBoxLibopenmptDither->addItem("Default", "1");
+    ui->comboBoxLibopenmptDither->addItem("Rectangular, 0.5 bit depth", "2");
+    ui->comboBoxLibopenmptDither->addItem("Rectangular, 1 bit depth", "3");
 
-    ui->SliderStereoSeparationOpenMPT->installEventFilter(this);
+    ui->sliderLibopenmptStereoSeparation->installEventFilter(this);
 
-    ui->comboBoxFreqUade->installEventFilter(this);
-    ui->comboBoxFreqUade->addItem("11025", "11025");
-    ui->comboBoxFreqUade->addItem("22050", "22050");
-    ui->comboBoxFreqUade->addItem("32000", "32000");
-    ui->comboBoxFreqUade->addItem("44100", "44100");
-    ui->comboBoxFreqUade->addItem("48000", "48000");
+    ui->comboBoxUadeFreq->installEventFilter(this);
+    ui->comboBoxUadeFreq->addItem("11025", "11025");
+    ui->comboBoxUadeFreq->addItem("22050", "22050");
+    ui->comboBoxUadeFreq->addItem("32000", "32000");
+    ui->comboBoxUadeFreq->addItem("44100", "44100");
+    ui->comboBoxUadeFreq->addItem("48000", "48000");
 
-    ui->comboBoxResamplerUade->installEventFilter(this);
-    ui->comboBoxResamplerUade->addItem("None", "none");
-    ui->comboBoxResamplerUade->addItem("Default", "default");
-    ui->comboBoxResamplerUade->addItem("Sinc (best for freqs > 44100)", "sinc");
+    ui->comboBoxUadeResampler->installEventFilter(this);
+    ui->comboBoxUadeResampler->addItem("None", "none");
+    ui->comboBoxUadeResampler->addItem("Default", "default");
+    ui->comboBoxUadeResampler->addItem("Sinc (best for freqs > 44100)", "sinc");
 
-    ui->sliderPanningUade->installEventFilter(this);
+    ui->sliderUadePanning->installEventFilter(this);
 
-    ui->sliderSilenceTimeOutUade->installEventFilter(this);
+    ui->sliderUadeSilenceTimeOut->installEventFilter(this);
 
-    ui->comboBoxFilterEmuModeUade->installEventFilter(this);
-    ui->comboBoxFilterEmuModeUade->addItem("A500", "a500");
-    ui->comboBoxFilterEmuModeUade->addItem("A1200", "a1200");
+    ui->comboBoxUadeFilterEmuMode->installEventFilter(this);
+    ui->comboBoxUadeFilterEmuMode->addItem("A500", "a500");
+    ui->comboBoxUadeFilterEmuMode->addItem("A1200", "a1200");
 
-    ui->comboBoxLedFilterUade->installEventFilter(this);
-    ui->comboBoxLedFilterUade->addItem("Auto", "Auto");
-    ui->comboBoxLedFilterUade->addItem("Always On", "Always On");
-    ui->comboBoxLedFilterUade->addItem("Always Off", "Always Off");
+    ui->comboBoxUadeLedFilter->installEventFilter(this);
+    ui->comboBoxUadeLedFilter->addItem("Auto", "Auto");
+    ui->comboBoxUadeLedFilter->addItem("Always On", "Always On");
+    ui->comboBoxUadeLedFilter->addItem("Always Off", "Always Off");
 
-    ui->comboBox->installEventFilter(this);
+    ui->comboBoxOutputDevice->installEventFilter(this);
     ui->comboBoxReverb->installEventFilter(this);
 
-    ui->comboBox->addItem("Default", FMOD_OUTPUTTYPE_AUTODETECT);
-    ui->comboBox->addItem("No Sound", FMOD_OUTPUTTYPE_NOSOUND);
-    ui->comboBox->addItem("WAV Writer", FMOD_OUTPUTTYPE_WAVWRITER);
+    ui->comboBoxOutputDevice->addItem("Default", FMOD_OUTPUTTYPE_AUTODETECT);
+    ui->comboBoxOutputDevice->addItem("No Sound", FMOD_OUTPUTTYPE_NOSOUND);
+    ui->comboBoxOutputDevice->addItem("WAV Writer", FMOD_OUTPUTTYPE_WAVWRITER);
 #ifdef WIN32
-    ui->comboBox->addItem("Windows Audio Session API", FMOD_OUTPUTTYPE_WASAPI);
-    ui->comboBox->addItem("ASIO 2.0", FMOD_OUTPUTTYPE_ASIO);
-    ui->comboBox->addItem("Windows Sonic", FMOD_OUTPUTTYPE_WINSONIC);
+    ui->comboBoxOutputDevice->addItem("WASAPI", FMOD_OUTPUTTYPE_WASAPI);
+    ui->comboBoxOutputDevice->addItem("ASIO 2.0", FMOD_OUTPUTTYPE_ASIO);
+    ui->comboBoxOutputDevice->addItem("Windows Sonic", FMOD_OUTPUTTYPE_WINSONIC);
 #else
-    ui->comboBox->addItem("ALSA", FMOD_OUTPUTTYPE_PULSEAUDIO);
-    ui->comboBox->addItem("PulseAudio", FMOD_OUTPUTTYPE_ALSA);
+    ui->comboBoxOutputDevice->addItem("ALSA", FMOD_OUTPUTTYPE_PULSEAUDIO);
+    ui->comboBoxOutputDevice->addItem("PulseAudio", FMOD_OUTPUTTYPE_ALSA);
 #endif
 
-    ui->comboBoxDefaultPlaymode->installEventFilter(this);
-    ui->comboBoxDefaultPlaymode->addItem("Last used", -1);
-    ui->comboBoxDefaultPlaymode->addItem("Repeat disabled", mainWindow->playmode::normal);
-    ui->comboBoxDefaultPlaymode->addItem("Repeat all", mainWindow->playmode::repeatPlaylist);
-    ui->comboBoxDefaultPlaymode->addItem("Repeat one", mainWindow->playmode::repeatSong);
+    ui->comboBoxDefaultPlayMode->installEventFilter(this);
+    ui->comboBoxDefaultPlayMode->addItem("Last used", -1);
+    ui->comboBoxDefaultPlayMode->addItem("Repeat disabled", mainWindow->playmode::normal);
+    ui->comboBoxDefaultPlayMode->addItem("Repeat all", mainWindow->playmode::repeatPlaylist);
+    ui->comboBoxDefaultPlayMode->addItem("Repeat one", mainWindow->playmode::repeatSong);
 
-    int index = ui->comboBox->findData(mainWindow->getOutputDevice());
-    ui->comboBox->setCurrentIndex(index);
+    int index = ui->comboBoxOutputDevice->findData(mainWindow->getOutputDevice());
+    ui->comboBoxOutputDevice->setCurrentIndex(index);
 
     ui->comboBoxReverb->addItem("Generic", "Generic");
     ui->comboBoxReverb->addItem("Padded cell", "Padded cell");
@@ -177,16 +177,15 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->checkBoxOnlyOneInstance->setChecked(mainWindow->isOnlyOneInstanceEnabled());
     ui->checkBoxEnqueueItems->setChecked(mainWindow->getEnqueueItems());
     ui->checkBoxEnqueueItems->setEnabled(mainWindow->isOnlyOneInstanceEnabled());
-    ui->labelEnqueueItems->setEnabled(mainWindow->isOnlyOneInstanceEnabled());
 
     ui->checkBoxShowLoopPoints->setChecked(mainWindow->getShowCheckBoxLoopPoints());
     mainWindow->showCheckBoxLoopPoints(mainWindow->getShowCheckBoxLoopPoints());
 
-    ui->checkBoxResetVolume->setChecked(mainWindow->getResetVolume());
-    ui->sliderResetVolumeToValue->setValue(mainWindow->getResetVolumeValue());
+    ui->checkBoxDefaultAudioLevel->setChecked(mainWindow->getResetVolume());
+    ui->sliderDefaultAudioLevel->setValue(mainWindow->getResetVolumeValue());
 
-    int comboBoxDefaultPlaymodeIndex = ui->comboBoxDefaultPlaymode->findData(mainWindow->getDefaultPlaymode());
-    ui->comboBoxDefaultPlaymode->setCurrentIndex(comboBoxDefaultPlaymodeIndex);
+    int comboBoxDefaultPlaymodeIndex = ui->comboBoxDefaultPlayMode->findData(mainWindow->getDefaultPlaymode());
+    ui->comboBoxDefaultPlayMode->setCurrentIndex(comboBoxDefaultPlaymodeIndex);
 
     ui->checkBoxNormalizer->setChecked(mainWindow->getNormalizeEnabled());
     mainWindow->
@@ -199,102 +198,102 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->checkBoxMilliseconds->setChecked(mainWindow->getDisplayMilliseconds());
 
     ui->checkBoxSystray->setChecked(mainWindow->getSystrayChecked());
-    ui->checkBoxSystrayOnMinimize->setChecked(mainWindow->getSystrayOnMinimizeChecked());
-    ui->checkBoxSystrayOnMinimize->setEnabled(mainWindow->getSystrayChecked());
+    ui->checkBoxMinimizeToSystray->setChecked(mainWindow->getSystrayOnMinimizeChecked());
+    ui->checkBoxMinimizeToSystray->setEnabled(mainWindow->getSystrayChecked());
 
     ui->checkBoxMenuBarHidden->setChecked(mainWindow->getMenuBarHiddenChecked());
 
-    ui->SliderNormalizerFadeTim->setValue(mainWindow->getNormalizeFadeTime());
-    ui->SliderNormalizerThreshold->setValue(mainWindow->getNormalizeThreshold());
-    ui->SliderNormalizerMaxAmp->setValue(mainWindow->getNormalizeMaxAmp());
+    ui->sliderNormalizerFadeTime->setValue(mainWindow->getNormalizeFadeTime());
+    ui->sliderNormalizerThreshold->setValue(mainWindow->getNormalizeThreshold());
+    ui->sliderNormalizerMaxAmp->setValue(mainWindow->getNormalizeMaxAmp());
 
-    ui->lineEditIgnoreSuffix->setText(mainWindow->getIgnoreSuffix());
-    ui->lineEditIgnorePrefix->setText(mainWindow->getIgnorePrefix());
+    ui->lineEditIgnoreSuffixes->setText(mainWindow->getIgnoreSuffix());
+    ui->lineEditIgnorePrefixes->setText(mainWindow->getIgnorePrefix());
 
-    ui->sliderRowHeight->setValue(mainWindow->getPlaylistRowHeight());
-    ui->sliderPlaylistsRowHeight->setValue(mainWindow->getPlaylistsRowHeight());
-    ui->sliderNowPlayingFontSize->setValue(mainWindow->getNowPlayingFontSize());
+    ui->sliderAppearancePlaylistItemRowHeight->setValue(mainWindow->getPlaylistRowHeight());
+    ui->sliderAppearancePlaylistRowHeight->setValue(mainWindow->getPlaylistsRowHeight());
+    ui->sliderAppearanceNowPlayingFontSize->setValue(mainWindow->getNowPlayingFontSize());
 
-    ui->sliderVUMeterWidth->setValue(mainWindow->getEffect()->getVumeterWidth());
-    ui->sliderVumeterOpacity->setValue(mainWindow->getEffect()->getVumeterOpacity());
-    ui->sliderPeakHeight->setValue((mainWindow->getVUMeterPeaksHeight()));
-    ui->checkBoxPeaks->setChecked((mainWindow->getVUMeterPeaksEnabled()));
-    ui->sliderAmplitude->setValue(mainWindow->getEffect()->getAmplitude());
-    ui->sliderFrequency->setValue(mainWindow->getEffect()->getFrequency() * 10000);
-    ui->sliderSinusSpeed->setValue(mainWindow->getEffect()->getSinusSpeed() * 100);
-    ui->sliderScrollSpeed->setValue(mainWindow->getEffect()->getScrollSpeed());
-    ui->sliderVerticalScrollPosition->setValue(mainWindow->getEffect()->getVerticalScrollPosition());
-    ui->sliderScrollerXScale->setValue(mainWindow->getEffect()->getFontScaleX());
-    ui->sliderScrollerYScale->setValue(mainWindow->getEffect()->getFontScaleY());
-    ui->sliderPrinterXScale->setValue(mainWindow->getEffect()->getPrinterFontScaleX());
-    ui->sliderPrinterYScale->setValue(mainWindow->getEffect()->getPrinterFontScaleY());
+    ui->sliderVuMeterWidth->setValue(mainWindow->getEffect()->getVumeterWidth());
+    ui->sliderVuMeterOpacity->setValue(mainWindow->getEffect()->getVumeterOpacity());
+    ui->sliderVuMeterPeakHeight->setValue((mainWindow->getVUMeterPeaksHeight()));
+    ui->checkBoxVuMeterPeaks->setChecked((mainWindow->getVUMeterPeaksEnabled()));
+    ui->sliderScrollerAmplitude->setValue(mainWindow->getEffect()->getAmplitude());
+    ui->sliderScrollerFrequency->setValue(mainWindow->getEffect()->getFrequency() * 10000);
+    ui->sliderScrollerSinusSpeed->setValue(mainWindow->getEffect()->getSinusSpeed() * 100);
+    ui->sliderScrollerScrollSpeed->setValue(mainWindow->getEffect()->getScrollSpeed());
+    ui->sliderScrollerVerticalPosition->setValue(mainWindow->getEffect()->getVerticalScrollPosition());
+    ui->sliderScrollerFontXScale->setValue(mainWindow->getEffect()->getFontScaleX());
+    ui->sliderScrollerFontYScale->setValue(mainWindow->getEffect()->getFontScaleY());
+    ui->sliderPrinterFontXScale->setValue(mainWindow->getEffect()->getPrinterFontScaleX());
+    ui->sliderPrinterFontYScale->setValue(mainWindow->getEffect()->getPrinterFontScaleY());
     ui->checkBoxReflectionEnabled->setChecked(mainWindow->getEffect()->getReflectionEnabled());
     ui->sliderReflectionOpacity->setValue(mainWindow->getEffect()->getReflectionOpacity());
-    ui->sliderNumberOfStars->setValue(mainWindow->getEffect()->getNumberOfStars());
-    ui->sliderStarSpeed->setValue(mainWindow->getEffect()->getStarSpeed());
+    ui->sliderStarfieldAmount->setValue(mainWindow->getEffect()->getNumberOfStars());
+    ui->sliderStarfieldSpeed->setValue(mainWindow->getEffect()->getStarSpeed());
     ui->checkBoxStarsEnabled->setChecked(mainWindow->getEffect()->getStarsEnabled());
 
-    ui->checkBox3DCubeOrbit->setChecked(mainWindow->getEffect()->get3DCubeOrbit());
-    ui->checkBox3DCubeWireframeEnabled->setChecked(mainWindow->getEffect()->get3DCubeWireframeEnabled());
-    ui->comboBox3dCubeModel->installEventFilter(this);
-    ui->comboBox3dCubeModel->addItem("Cube", "cube");
-    ui->comboBox3dCubeModel->addItem("Sphere", "sphere");
-    ui->comboBox3dCubeModel->addItem("Pyramid", "pyramid");
-    int dirindex = ui->comboBox3dCubeModel->findData(mainWindow->getEffect()->get3dCubeModel());
-    ui->comboBox3dCubeModel->setCurrentIndex(dirindex);
+    ui->checkBoxRotatingObjectOrbit->setChecked(mainWindow->getEffect()->get3DCubeOrbit());
+    ui->checkBoxRotatingObjectWireframeEnabled->setChecked(mainWindow->getEffect()->get3DCubeWireframeEnabled());
+    ui->comboBoxRotatingObjectModel->installEventFilter(this);
+    ui->comboBoxRotatingObjectModel->addItem("Cube", "cube");
+    ui->comboBoxRotatingObjectModel->addItem("Sphere", "sphere");
+    ui->comboBoxRotatingObjectModel->addItem("Pyramid", "pyramid");
+    int dirindex = ui->comboBoxRotatingObjectModel->findData(mainWindow->getEffect()->get3dCubeModel());
+    ui->comboBoxRotatingObjectModel->setCurrentIndex(dirindex);
 
-    ui->comboBox3dCubeMaterial->installEventFilter(this);
-    ui->comboBox3dCubeMaterial->addItem("None", "none");
-    ui->comboBox3dCubeMaterial->addItem("Flat", "flat");
-    ui->comboBox3dCubeMaterial->addItem("Lambert", "lambert");
-    ui->comboBox3dCubeMaterial->addItem("Blinn", "blinn");
-    int materialindex = ui->comboBox3dCubeMaterial->findData(mainWindow->getEffect()->get3dCubeMaterial());
-    ui->comboBox3dCubeMaterial->setCurrentIndex(materialindex);
+    ui->comboBoxRotatingObjectMaterial->installEventFilter(this);
+    ui->comboBoxRotatingObjectMaterial->addItem("None", "none");
+    ui->comboBoxRotatingObjectMaterial->addItem("Flat", "flat");
+    ui->comboBoxRotatingObjectMaterial->addItem("Lambert", "lambert");
+    ui->comboBoxRotatingObjectMaterial->addItem("Blinn", "blinn");
+    int materialindex = ui->comboBoxRotatingObjectMaterial->findData(mainWindow->getEffect()->get3dCubeMaterial());
+    ui->comboBoxRotatingObjectMaterial->setCurrentIndex(materialindex);
 
-    ui->slider3DCubeFocalLength->setValue(mainWindow->getEffect()->get3DCubeFocalLength());
-    ui->slider3DCubeSize->setValue(mainWindow->getEffect()->get3DCubeSize());
-    ui->slider3DCubeOrbitSize->setValue(mainWindow->getEffect()->get3DCubeOrbitSize());
-    ui->slider3DCubeOrbitSpeed->setValue(mainWindow->getEffect()->get3DCubeOrbitSpeed());
-    ui->checkBox3DCubeEnabled->setChecked(mainWindow->getEffect()->get3DCubeEnabled()); //Don't understand why it's not triggered, hence the following row
-    on_checkBox3DCubeEnabled_toggled(mainWindow->getEffect()->get3DCubeEnabled());
+    ui->sliderRotatingObjectFocalLength->setValue(mainWindow->getEffect()->get3DCubeFocalLength());
+    ui->sliderRotatingObjectModelSize->setValue(mainWindow->getEffect()->get3DCubeSize());
+    ui->sliderRotatingObjectOrbitSize->setValue(mainWindow->getEffect()->get3DCubeOrbitSize());
+    ui->sliderRotatingObjectSpeed->setValue(mainWindow->getEffect()->get3DCubeOrbitSpeed());
+    ui->checkBoxRotatingObjectEnabled->setChecked(mainWindow->getEffect()->get3DCubeEnabled()); //Don't understand why it's not triggered, hence the following row
+    on_checkBoxRotatingObjectEnabled_toggled(mainWindow->getEffect()->get3DCubeEnabled());
 
     ui->checkBoxScrollerEnabled->setChecked(mainWindow->getEffect()->getScrollerEnabled());
-    ui->textEditCustomScrolltext->setText(mainWindow->getEffect()->getCustomScrolltext());
-    ui->checkBoxCustomScrolltextEnabled->setChecked(mainWindow->getEffect()->getCustomScrolltextEnabled());
+    ui->textEditScrollerCustomText->setText(mainWindow->getEffect()->getCustomScrolltext());
+    ui->checkBoxScrollerCustomTextEnabled->setChecked(mainWindow->getEffect()->getCustomScrolltextEnabled());
     ui->checkBoxPrinterEnabled->setChecked(mainWindow->getEffect()->getPrinterEnabled());
-    ui->checkBoxVUMeterEnabled->setChecked(mainWindow->getEffect()->getVUMeterEnabled());
-    ui->checkBoxSinusFontScaling->setChecked(mainWindow->getEffect()->getSinusFontScalingEnabled());
-    ui->comboBoxStarsDirection->installEventFilter(this);
-    ui->comboBoxStarsDirection->addItem("Left", "left");
-    ui->comboBoxStarsDirection->addItem("Right", "right");
-    ui->comboBoxStarsDirection->addItem("Up", "up");
-    ui->comboBoxStarsDirection->addItem("Down", "down");
-    ui->comboBoxStarsDirection->addItem("In", "in");
-    ui->comboBoxStarsDirection->addItem("Out", "out");
-    int modelindex = ui->comboBoxStarsDirection->findData(mainWindow->getEffect()->getStarsDirection());
-    ui->comboBoxStarsDirection->setCurrentIndex(modelindex);
-    ui->sliderResolutionWidth->setValue(mainWindow->getEffect()->getResolutionWidth());
-    ui->sliderResolutionHeight->setValue(mainWindow->getEffect()->getResolutionHeight());
-    ui->checkBoxAspectRatio->setChecked(mainWindow->getEffect()->getKeepAspectRatio());
-    ui->checkBoxRasterbarsEnabled->setChecked(mainWindow->getEffect()->getRasterBarsEnabled());
-    ui->sliderNumberOfRasterBars->setValue(mainWindow->getEffect()->getNumberOfRasterBars());
-    ui->sliderRasterBarsBarHeight->setValue(mainWindow->getEffect()->getRasterBarsHeight());
+    ui->checkBoxVuMeterEnabled->setChecked(mainWindow->getEffect()->getVUMeterEnabled());
+    ui->checkBoxScrollerSinusFontScaling->setChecked(mainWindow->getEffect()->getSinusFontScalingEnabled());
+    ui->comboBoxStarfieldDirection->installEventFilter(this);
+    ui->comboBoxStarfieldDirection->addItem("Left", "left");
+    ui->comboBoxStarfieldDirection->addItem("Right", "right");
+    ui->comboBoxStarfieldDirection->addItem("Up", "up");
+    ui->comboBoxStarfieldDirection->addItem("Down", "down");
+    ui->comboBoxStarfieldDirection->addItem("In", "in");
+    ui->comboBoxStarfieldDirection->addItem("Out", "out");
+    int modelindex = ui->comboBoxStarfieldDirection->findData(mainWindow->getEffect()->getStarsDirection());
+    ui->comboBoxStarfieldDirection->setCurrentIndex(modelindex);
+    ui->sliderVisualizerResolutionWidth->setValue(mainWindow->getEffect()->getResolutionWidth());
+    ui->sliderVisualizerResolutionHeight->setValue(mainWindow->getEffect()->getResolutionHeight());
+    ui->checkBoxVisualizerMaintainAspectRatio->setChecked(mainWindow->getEffect()->getKeepAspectRatio());
+    ui->checkBoxRasterBarsEnabled->setChecked(mainWindow->getEffect()->getRasterBarsEnabled());
+    ui->sliderRasterBarsAmount->setValue(mainWindow->getEffect()->getNumberOfRasterBars());
+    ui->sliderRasterBarsHeight->setValue(mainWindow->getEffect()->getRasterBarsHeight());
     ui->sliderRasterBarsVerticalSpacing->setValue(mainWindow->getEffect()->getRasterBarsVerticalSpacing());
     ui->sliderRasterBarsSpeed->setValue(mainWindow->getEffect()->getRasterBarsSpeed());
-    ui->sliderRasterbarsOpacity->setValue(mainWindow->getEffect()->getRasterbarsOpacity());
+    ui->sliderRasterBarsOpacity->setValue(mainWindow->getEffect()->getRasterbarsOpacity());
     forceUpdateToSliders();
 
     if (PLUGIN_libsidplayfp_LIB != "")
     {
-        ui->comboBoxHvscSonglengthsUpdateFrequency->installEventFilter(this);
-        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("At every start", "At every start");
-        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("Daily", "Daily");
-        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("Weekly", "Weekly");
-        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("Monthly", "Monthly");
-        ui->comboBoxHvscSonglengthsUpdateFrequency->addItem("Never", "Never");
+        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->installEventFilter(this);
+        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("At every start", "At every start");
+        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Daily", "Daily");
+        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Weekly", "Weekly");
+        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Monthly", "Monthly");
+        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Never", "Never");
 
-        index = ui->comboBoxHvscSonglengthsUpdateFrequency->findData(mainWindow->getHvscSonglengthsFrequency());
-        ui->comboBoxHvscSonglengthsUpdateFrequency->setCurrentIndex(index);
+        index = ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->findData(mainWindow->getBundledHvscSonglengthsUpdateFrequency());
+        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->setCurrentIndex(index);
     }
 
     int extensionPos = mainWindow->getEffect()->getFont().lastIndexOf('.');
@@ -541,23 +540,23 @@ settingsWindow::settingsWindow(QWidget* parent) :
 
     if (PLUGIN_libsidplayfp_LIB != "")
     {
-        QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getHvscSonglengthsDownloaded());
-        if (mainWindow->getHvscSonglengthsDownloaded() > 0)
+        QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscSonglengthsDownloadEpoch());
+        if (mainWindow->getBundledHvscSonglengthsDownloadEpoch() > 0)
         {
-            ui->labelHvscSonglengthsDownloaded->setText(
-                "Downloaded HVSC Songlengths.md5 to " + mainWindow->getHvscSonglengthsPathDownloaded() + " at " +
-                qdt.toString("yyyy-MM-dd hh:mm:ss"));
+            ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText(
+                "Downloaded to " + mainWindow->getBundledHvscSonglengthsPath() + " at " + qdt.toString(
+                    "yyyy-MM-dd hh:mm:ss"));
         }
         else
         {
-            ui->labelHvscSonglengthsDownloaded->setText("Never downloaded HVSC Songlengths.md5");
+            ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText("Never downloaded");
         }
     }
 
     ui->tableWidgetPlugins->sortItems(0);
     ui->tableWidgetPlugins->setRowCount(row);
-    ui->fontWidget->setVisible(false);
-    ui->fontWidgetPrinter->setVisible(false);
+    ui->albumGridScrollerFont->setVisible(false);
+    ui->albumGridPrinterFont->setVisible(false);
     QDir directory(dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts");
     QStringList images = directory.entryList(QStringList() << "*.thumb.png", QDir::Files);
     foreach(QString filename, images)
@@ -569,14 +568,14 @@ settingsWindow::settingsWindow(QWidget* parent) :
         album->title = filename.replace(".thumb.png", "");
         album->path = fullfilename.replace(".thumb.png", ".png");
         album->putPixmap(album->artwork);
-        ui->fontWidget->AddAlbum(album);
+        ui->albumGridScrollerFont->AddAlbum(album);
 
         Album* albumPrinter = new Album(filename);
         albumPrinter->artwork = fullfilename;
         albumPrinter->title = filename.replace(".thumb.png", "");
         albumPrinter->path = fullfilename.replace(".thumb.png", ".png");
         albumPrinter->putPixmap(album->artwork);
-        ui->fontWidgetPrinter->AddAlbum(albumPrinter);
+        ui->albumGridPrinterFont->AddAlbum(albumPrinter);
 
         connect(album, SIGNAL(clickedAddAlbum(QString)), this, SLOT(loadBitmapFont(QString)));
         connect(albumPrinter, SIGNAL(clickedAddAlbum(QString)), this, SLOT(loadBitmapFontPrinter(QString)));
@@ -591,53 +590,53 @@ settingsWindow::~settingsWindow()
     delete ui;
 }
 
-void settingsWindow::on_sliderResetVolumeToValue_sliderMoved(int position)
+void settingsWindow::on_sliderDefaultAudioLevel_sliderMoved(int position)
 {
 }
 
-void settingsWindow::on_checkBoxResetVolume_toggled(bool checked)
+void settingsWindow::on_checkBoxDefaultAudioLevel_toggled(bool checked)
 {
-    ui->labelSliderResetVolume->setEnabled(checked);
-    ui->sliderResetVolumeToValue->setEnabled(checked);
-    if (ui->checkBoxResetVolume->isChecked())
+    ui->labelDefaultAudioLevelValue->setEnabled(checked);
+    ui->sliderDefaultAudioLevel->setEnabled(checked);
+    if (ui->checkBoxDefaultAudioLevel->isChecked())
     {
-        ui->checkBoxResetVolume->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxDefaultAudioLevel->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxResetVolume->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxDefaultAudioLevel->setIcon(mainWindow->icons["checkbox-off"]);
     }
 }
 
-void settingsWindow::on_sliderResetVolumeToValue_valueChanged(int value)
+void settingsWindow::on_sliderDefaultAudioLevel_valueChanged(int value)
 {
-    ui->labelSliderResetVolume->setText(QString::number(value) + " %");
+    ui->labelDefaultAudioLevelValue->setText(QString::number(value) + "%");
 }
 
-void settingsWindow::on_SliderNormalizerFadeTim_valueChanged(int value)
+void settingsWindow::on_sliderNormalizerFadeTime_valueChanged(int value)
 {
     ui->labelNormalizerFadeTimeValue->setText(QString::number(value));
-    mainWindow->setNormalizeFadeTime(ui->SliderNormalizerFadeTim->value());
+    mainWindow->setNormalizeFadeTime(ui->sliderNormalizerFadeTime->value());
 }
 
-void settingsWindow::on_SliderNormalizerThreshold_valueChanged(int value)
+void settingsWindow::on_sliderNormalizerThreshold_valueChanged(int value)
 {
-    ui->labelNormalizerThresholdValue->setText(QString::number(value) + " %");
-    mainWindow->setNormalizeThreshold(ui->SliderNormalizerThreshold->value());
+    ui->labelNormalizerThresholdValue->setText(QString::number(value) + "%");
+    mainWindow->setNormalizeThreshold(ui->sliderNormalizerThreshold->value());
 }
 
-void settingsWindow::on_SliderNormalizerMaxAmp_valueChanged(int value)
+void settingsWindow::on_sliderNormalizerMaxAmp_valueChanged(int value)
 {
     ui->labelNormalizerMaxAmpValue->setText(QString::number(value));
-    mainWindow->setNormalizeMaxAmp(ui->SliderNormalizerMaxAmp->value());
+    mainWindow->setNormalizeMaxAmp(ui->sliderNormalizerMaxAmp->value());
 }
 
 void settingsWindow::on_checkBoxNormalizer_toggled(bool checked)
 {
     mainWindow->addDebugText("on_checkBoxNormalizer_toggled");
-    ui->SliderNormalizerFadeTim->setEnabled(checked);
-    ui->SliderNormalizerThreshold->setEnabled(checked);
-    ui->SliderNormalizerMaxAmp->setEnabled(checked);
+    ui->sliderNormalizerFadeTime->setEnabled(checked);
+    ui->sliderNormalizerThreshold->setEnabled(checked);
+    ui->sliderNormalizerMaxAmp->setEnabled(checked);
     ui->labelNormalizerFadeTimeValue->setEnabled(checked);
     ui->labelNormalizerThresholdValue->setEnabled(checked);
     ui->labelNormalizerMaxAmpValue->setEnabled(checked);
@@ -656,7 +655,6 @@ void settingsWindow::on_checkBoxNormalizer_toggled(bool checked)
 void settingsWindow::on_checkBoxReverb_toggled(bool checked)
 {
     mainWindow->addDebugText("on_checkBoxReverb_toggled");
-    ui->labelReverbPreset->setEnabled(checked);
     ui->comboBoxReverb->setEnabled(checked);
 
     mainWindow->setReverbEnabled(checked);
@@ -674,56 +672,56 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
 {
     if (event->type() == QEvent::Wheel &&
         (
-            obj == ui->sliderVUMeterWidth ||
-            obj == ui->sliderVumeterOpacity ||
-            obj == ui->sliderAmplitude ||
-            obj == ui->sliderFrequency ||
-            obj == ui->sliderSinusSpeed ||
-            obj == ui->sliderScrollSpeed ||
-            obj == ui->sliderVerticalScrollPosition ||
-            obj == ui->sliderScrollerXScale ||
-            obj == ui->sliderScrollerYScale ||
-            obj == ui->sliderPrinterXScale ||
-            obj == ui->sliderPrinterYScale ||
-            obj == ui->sliderPeakHeight ||
+            obj == ui->sliderVuMeterWidth ||
+            obj == ui->sliderVuMeterOpacity ||
+            obj == ui->sliderScrollerAmplitude ||
+            obj == ui->sliderScrollerFrequency ||
+            obj == ui->sliderScrollerSinusSpeed ||
+            obj == ui->sliderScrollerScrollSpeed ||
+            obj == ui->sliderScrollerVerticalPosition ||
+            obj == ui->sliderScrollerFontXScale ||
+            obj == ui->sliderScrollerFontYScale ||
+            obj == ui->sliderPrinterFontXScale ||
+            obj == ui->sliderPrinterFontYScale ||
+            obj == ui->sliderVuMeterPeakHeight ||
             obj == ui->sliderReflectionOpacity ||
-            obj == ui->sliderNumberOfStars ||
-            obj == ui->sliderStarSpeed ||
-            obj == ui->sliderPlaylistsRowHeight ||
-            obj == ui->sliderRowHeight ||
-            obj == ui->sliderNowPlayingFontSize ||
-            obj == ui->sliderResetVolumeToValue ||
-            obj == ui->SliderNormalizerFadeTim ||
-            obj == ui->SliderNormalizerMaxAmp ||
-            obj == ui->SliderNormalizerThreshold ||
+            obj == ui->sliderStarfieldAmount ||
+            obj == ui->sliderStarfieldSpeed ||
+            obj == ui->sliderAppearancePlaylistRowHeight ||
+            obj == ui->sliderAppearancePlaylistItemRowHeight ||
+            obj == ui->sliderAppearanceNowPlayingFontSize ||
+            obj == ui->sliderDefaultAudioLevel ||
+            obj == ui->sliderNormalizerFadeTime ||
+            obj == ui->sliderNormalizerMaxAmp ||
+            obj == ui->sliderNormalizerThreshold ||
             obj == ui->comboBoxReverb ||
-            obj == ui->comboBoxFreqUade ||
-            obj == ui->comboBoxResamplerUade ||
-            obj == ui->sliderPanningUade ||
-            obj == ui->comboBoxFilterEmuModeUade ||
-            obj == ui->comboBoxLedFilterUade ||
-            obj == ui->comboBox ||
-            obj == ui->comboBoxStarsDirection ||
-            obj == ui->sliderResolutionHeight ||
-            obj == ui->sliderResolutionWidth ||
-            obj == ui->sliderRasterBarsBarHeight ||
+            obj == ui->comboBoxUadeFreq ||
+            obj == ui->comboBoxUadeResampler ||
+            obj == ui->sliderUadePanning ||
+            obj == ui->comboBoxUadeFilterEmuMode ||
+            obj == ui->comboBoxUadeLedFilter ||
+            obj == ui->comboBoxOutputDevice ||
+            obj == ui->comboBoxStarfieldDirection ||
+            obj == ui->sliderVisualizerResolutionHeight ||
+            obj == ui->sliderVisualizerResolutionWidth ||
+            obj == ui->sliderRasterBarsHeight ||
             obj == ui->sliderRasterBarsSpeed ||
-            obj == ui->sliderRasterbarsOpacity ||
+            obj == ui->sliderRasterBarsOpacity ||
             obj == ui->sliderRasterBarsVerticalSpacing ||
-            obj == ui->sliderNumberOfRasterBars ||
-            obj == ui->slider3DCubeFocalLength ||
-            obj == ui->slider3DCubeSize ||
-            obj == ui->comboBoxFilterOpenMPT ||
-            obj == ui->comboBoxResamplingOpenMPT ||
-            obj == ui->comboBoxDitherOpenMPT ||
-            obj == ui->SliderStereoSeparationOpenMPT ||
-            obj == ui->comboBoxHvscSonglengthsUpdateFrequency ||
-            obj == ui->sliderSilenceTimeOutUade ||
-            obj == ui->comboBoxEmulatorAdplug ||
-            obj == ui->comboBoxFreqAdplug ||
-            obj == ui->comboBoxPlaybackAdplug ||
-            obj == ui->comboBoxStereoSeparationHivelytracker ||
-            obj == ui->comboBoxDefaultPlaymode
+            obj == ui->sliderRasterBarsAmount ||
+            obj == ui->sliderRotatingObjectFocalLength ||
+            obj == ui->sliderRotatingObjectModelSize ||
+            obj == ui->comboBoxLibopenmptFilter ||
+            obj == ui->comboBoxLibopenmptResampling ||
+            obj == ui->comboBoxLibopenmptDither ||
+            obj == ui->sliderLibopenmptStereoSeparation ||
+            obj == ui->comboBoxLibsidplayfpHvscSonglengthsUpdate ||
+            obj == ui->sliderUadeSilenceTimeOut ||
+            obj == ui->comboBoxAdPlugEmulator ||
+            obj == ui->comboBoxAdPlugFreq ||
+            obj == ui->comboBoxAdPlugPlayback ||
+            obj == ui->comboBoxHivelyTrackerStereoSeparation ||
+            obj == ui->comboBoxDefaultPlayMode
         )
     )
 
@@ -738,19 +736,19 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
 
 void settingsWindow::on_buttonOK_clicked()
 {
-    if (ui->comboBox->itemData(ui->comboBox->currentIndex()).toInt() != mainWindow->getOutputDevice())
+    if (ui->comboBoxOutputDevice->itemData(ui->comboBoxOutputDevice->currentIndex()).toInt() != mainWindow->getOutputDevice())
     {
-        mainWindow->setOutputDeviceSetting(ui->comboBox->itemData(ui->comboBox->currentIndex()).toInt());
+        mainWindow->setOutputDeviceSetting(ui->comboBoxOutputDevice->itemData(ui->comboBoxOutputDevice->currentIndex()).toInt());
     }
 
-    mainWindow->setResetVolume(ui->checkBoxResetVolume->checkState() == Qt::Checked);
-    mainWindow->setResetVolumeValue(ui->sliderResetVolumeToValue->value());
-    mainWindow->setDefaultPlaymode(ui->comboBoxDefaultPlaymode->currentData().toInt());
+    mainWindow->setResetVolume(ui->checkBoxDefaultAudioLevel->checkState() == Qt::Checked);
+    mainWindow->setResetVolumeValue(ui->sliderDefaultAudioLevel->value());
+    mainWindow->setDefaultPlaymode(ui->comboBoxDefaultPlayMode->currentData().toInt());
     mainWindow->setSystrayChecked(ui->checkBoxSystray->checkState() == Qt::Checked);
-    mainWindow->setSystrayOnMinimizeChecked(ui->checkBoxSystrayOnMinimize->checkState() == Qt::Checked);
+    mainWindow->setSystrayOnMinimizeChecked(ui->checkBoxMinimizeToSystray->checkState() == Qt::Checked);
     mainWindow->setMenuBarHiddenChecked(ui->checkBoxMenuBarHidden->checkState() == Qt::Checked);
-    mainWindow->setIgnoreSuffix(ui->lineEditIgnoreSuffix->text());
-    mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefix->text());
+    mainWindow->setIgnoreSuffix(ui->lineEditIgnoreSuffixes->text());
+    mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefixes->text());
     updateScrollText();
 
     saveFmodSettings();
@@ -801,13 +799,14 @@ void settingsWindow::on_comboBoxReverb_textActivated(const QString& arg1)
 }
 
 
-void settingsWindow::on_buttonBrowseHvscSonglengths_clicked()
+void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked()
 {
-    QString startFolder = ui->lineEditHvscSonglength->text();
+    QString startFolder = ui->lineEditLibsidplayfpHvscSonglengthsPath->text();
     QString file = QFileDialog::getOpenFileName(this, "Choose your Songlengths.md5", startFolder, "*.md5");
     if (!file.isEmpty())
     {
-        setUiLineEditHvscSonglengthTextForcingRelativePaths(file);
+        setUiLineEditLibsidplayfpHvscSonglengthsPath(file);
+        mainWindow->setHvscSonglengthsPath(file);
     }
 }
 
@@ -824,10 +823,10 @@ void settingsWindow::loadAdplugSettings()
         useDefaults = true;
     }
     //defaults
-    ui->comboBoxEmulatorAdplug->setCurrentIndex(ui->comboBoxEmulatorAdplug->findData("2"));
-    ui->comboBoxFreqAdplug->setCurrentIndex(ui->comboBoxFreqAdplug->findData("44100"));
-    ui->comboBoxPlaybackAdplug->setCurrentIndex(ui->comboBoxPlaybackAdplug->findData("2"));
-    ui->checkBoxContinuousPlaybackAdplug->setChecked(false);
+    ui->comboBoxAdPlugEmulator->setCurrentIndex(ui->comboBoxAdPlugEmulator->findData("2"));
+    ui->comboBoxAdPlugFreq->setCurrentIndex(ui->comboBoxAdPlugFreq->findData("44100"));
+    ui->comboBoxAdPlugPlayback->setCurrentIndex(ui->comboBoxAdPlugPlayback->findData("2"));
+    ui->checkBoxAdPlugContinuousPlayback->setChecked(false);
 
     if (!useDefaults)
     {
@@ -841,22 +840,22 @@ void settingsWindow::loadAdplugSettings()
                 string value = line.substr(i + 1);
                 if (word.compare("emulator") == 0)
                 {
-                    int index = ui->comboBoxEmulatorAdplug->findData(value.c_str());
-                    ui->comboBoxEmulatorAdplug->setCurrentIndex(index);
+                    int index = ui->comboBoxAdPlugEmulator->findData(value.c_str());
+                    ui->comboBoxAdPlugEmulator->setCurrentIndex(index);
                 }
                 else if (word.compare("frequency") == 0)
                 {
-                    int index = ui->comboBoxFreqAdplug->findData(value.c_str());
-                    ui->comboBoxFreqAdplug->setCurrentIndex(index);
+                    int index = ui->comboBoxAdPlugFreq->findData(value.c_str());
+                    ui->comboBoxAdPlugFreq->setCurrentIndex(index);
                 }
                 else if (word.compare("playback") == 0)
                 {
-                    int index = ui->comboBoxPlaybackAdplug->findData(value.c_str());
-                    ui->comboBoxPlaybackAdplug->setCurrentIndex(index);
+                    int index = ui->comboBoxAdPlugPlayback->findData(value.c_str());
+                    ui->comboBoxAdPlugPlayback->setCurrentIndex(index);
                 }
-                else if (word.compare("continuous_playback") == 0)
+                else if (word.compare("continuousPlayback") == 0)
                 {
-                    ui->checkBoxContinuousPlaybackAdplug->setChecked(value.compare("true") == 0);
+                    ui->checkBoxAdPlugContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -877,7 +876,7 @@ void settingsWindow::loadFmodSettings()
         useDefaults = true;
     }
     //defaults
-    ui->checkBoxSeamlessLoopFmod->setChecked(false);
+    ui->checkBoxFmodSeamlessLoop->setChecked(false);
 
     if (!useDefaults)
     {
@@ -889,16 +888,16 @@ void settingsWindow::loadFmodSettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("seamless_loop") == 0)
+                if (word.compare("seamlessLoop") == 0)
                 {
-                    ui->checkBoxSeamlessLoopFmod->setChecked(value.compare("true") == 0);
+                    ui->checkBoxFmodSeamlessLoop->setChecked(value.compare("true") == 0);
                 }
             }
         }
         ifs.close();
     }
 
-    mainWindow->setFmodSeamlessLoopEnabled(ui->checkBoxSeamlessLoopFmod->isChecked());
+    mainWindow->setFmodSeamlessLoopEnabled(ui->checkBoxFmodSeamlessLoop->isChecked());
 }
 
 void settingsWindow::loadHivelytrackerSettings()
@@ -914,9 +913,9 @@ void settingsWindow::loadHivelytrackerSettings()
         useDefaults = true;
     }
     //defaults
-    int index = ui->comboBoxStereoSeparationHivelytracker->findData("4");
-    ui->comboBoxStereoSeparationHivelytracker->setCurrentIndex(index);
-    ui->checkBoxContinuousPlaybackHivelytracker->setChecked(false);
+    int index = ui->comboBoxHivelyTrackerStereoSeparation->findData("4");
+    ui->comboBoxHivelyTrackerStereoSeparation->setCurrentIndex(index);
+    ui->checkBoxHivelyTrackerContinuousPlayback->setChecked(false);
 
     if (!useDefaults)
     {
@@ -928,14 +927,14 @@ void settingsWindow::loadHivelytrackerSettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("stereo_separation") == 0)
+                if (word.compare("stereoSeparation") == 0)
                 {
-                    int index = ui->comboBoxStereoSeparationHivelytracker->findData(value.c_str());
-                    ui->comboBoxStereoSeparationHivelytracker->setCurrentIndex(index);
+                    int index = ui->comboBoxHivelyTrackerStereoSeparation->findData(value.c_str());
+                    ui->comboBoxHivelyTrackerStereoSeparation->setCurrentIndex(index);
                 }
-                else if (word.compare("continuous_playback") == 0)
+                else if (word.compare("continuousPlayback") == 0)
                 {
-                    ui->checkBoxContinuousPlaybackHivelytracker->setChecked(value.compare("true") == 0);
+                    ui->checkBoxHivelyTrackerContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -956,15 +955,15 @@ void settingsWindow::loadlibopenmptSettings()
         useDefaults = true;
     }
     //defaults
-    ui->SliderStereoSeparationOpenMPT->setValue(100);
-    ui->checkBoxContinuousPlaybackOpenMPT->setChecked(false);
-    ui->checkBoxFilterOpenMPT->setChecked(true);
-    int index = ui->comboBoxFilterOpenMPT->findData("auto");
-    ui->comboBoxFilterOpenMPT->setCurrentIndex(index);
-    int index2 = ui->comboBoxResamplingOpenMPT->findData("0");
-    ui->comboBoxResamplingOpenMPT->setCurrentIndex(index2);
-    int index3 = ui->comboBoxDitherOpenMPT->findData("1");
-    ui->comboBoxDitherOpenMPT->setCurrentIndex(index3);
+    ui->sliderLibopenmptStereoSeparation->setValue(100);
+    ui->checkBoxLibopenmptContinuousPlayback->setChecked(false);
+    ui->checkBoxLibopenmptAmigaResampler->setChecked(true);
+    int index = ui->comboBoxLibopenmptFilter->findData("auto");
+    ui->comboBoxLibopenmptFilter->setCurrentIndex(index);
+    int index2 = ui->comboBoxLibopenmptResampling->findData("0");
+    ui->comboBoxLibopenmptResampling->setCurrentIndex(index2);
+    int index3 = ui->comboBoxLibopenmptDither->findData("1");
+    ui->comboBoxLibopenmptDither->setCurrentIndex(index3);
     if (!useDefaults)
     {
         while (getline(ifs, line))
@@ -975,37 +974,37 @@ void settingsWindow::loadlibopenmptSettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("stereo_separation") == 0)
+                if (word.compare("stereoSeparation") == 0)
                 {
-                    ui->SliderStereoSeparationOpenMPT->setValue(atoi(value.c_str()));
-                } else if (word.compare("continuous_playback") == 0) {
-                    ui->checkBoxContinuousPlaybackOpenMPT->setChecked(value.compare("true") == 0);
+                    ui->sliderLibopenmptStereoSeparation->setValue(atoi(value.c_str()));
+                } else if (word.compare("continuousPlayback") == 0) {
+                    ui->checkBoxLibopenmptContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
-                else if (word.compare("emulate_amiga_filter") == 0)
+                else if (word.compare("emulateAmigaFilter") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        ui->checkBoxFilterOpenMPT->setChecked(true);
+                        ui->checkBoxLibopenmptAmigaResampler->setChecked(true);
                     }
                     else
                     {
-                        ui->checkBoxFilterOpenMPT->setChecked(false);
+                        ui->checkBoxLibopenmptAmigaResampler->setChecked(false);
                     }
                 }
-                else if (word.compare("interpolation_filter") == 0)
+                else if (word.compare("interpolationFilter") == 0)
                 {
-                    int index = ui->comboBoxResamplingOpenMPT->findData(value.c_str());
-                    ui->comboBoxResamplingOpenMPT->setCurrentIndex(index);
+                    int index = ui->comboBoxLibopenmptResampling->findData(value.c_str());
+                    ui->comboBoxLibopenmptResampling->setCurrentIndex(index);
                 }
-                else if (word.compare("amiga_filter") == 0)
+                else if (word.compare("amigaFilter") == 0)
                 {
-                    int index = ui->comboBoxFilterOpenMPT->findData(value.c_str());
-                    ui->comboBoxFilterOpenMPT->setCurrentIndex(index);
+                    int index = ui->comboBoxLibopenmptFilter->findData(value.c_str());
+                    ui->comboBoxLibopenmptFilter->setCurrentIndex(index);
                 }
                 else if (word.compare("dither") == 0)
                 {
-                    int index = ui->comboBoxDitherOpenMPT->findData(value.c_str());
-                    ui->comboBoxDitherOpenMPT->setCurrentIndex(index);
+                    int index = ui->comboBoxLibopenmptDither->findData(value.c_str());
+                    ui->comboBoxLibopenmptDither->setCurrentIndex(index);
                 }
             }
         }
@@ -1026,7 +1025,7 @@ void settingsWindow::loadLibxmpSettings()
         useDefaults = true;
     }
     //defaults
-    ui->checkBoxContinuousPlaybackLibxmp->setChecked(false);
+    ui->checkBoxLibxmpContinuousPlayback->setChecked(false);
 
     if (!useDefaults)
     {
@@ -1038,9 +1037,9 @@ void settingsWindow::loadLibxmpSettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("continuous_playback") == 0)
+                if (word.compare("continuousPlayback") == 0)
                 {
-                    ui->checkBoxContinuousPlaybackLibxmp->setChecked(value.compare("true") == 0);
+                    ui->checkBoxLibxmpContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1061,7 +1060,7 @@ void settingsWindow::loadLibvgmSettings()
         useDefaults = true;
     }
     //defaults
-    ui->checkBoxContinuousPlaybackLibvgm->setChecked(false);
+    ui->checkBoxLibvgmContinuousPlayback->setChecked(false);
 
     if (!useDefaults)
     {
@@ -1073,9 +1072,9 @@ void settingsWindow::loadLibvgmSettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("continuous_playback") == 0)
+                if (word.compare("continuousPlayback") == 0)
                 {
-                    ui->checkBoxContinuousPlaybackLibvgm->setChecked(value.compare("true") == 0);
+                    ui->checkBoxLibvgmContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1098,17 +1097,17 @@ void settingsWindow::loadUadeSettings()
     }
 
     //defaults
-    ui->comboBoxFreqUade->setCurrentIndex(ui->comboBoxFreqUade->findData("48000"));
-    ui->comboBoxResamplerUade->setCurrentIndex(ui->comboBoxResamplerUade->findData("sinc"));
-    ui->checkBoxFilterEmuUade->setChecked(true);
-    ui->comboBoxFilterEmuModeUade->setCurrentIndex(1);
-    ui->comboBoxLedFilterUade->setCurrentIndex(0);
-    ui->sliderPanningUade->setValue(5);
-    ui->labelPanning4Uade->setText("0.5");
-    ui->sliderSilenceTimeOutUade->setValue(5);
-    ui->lineEditUadeSonglength->setText("/uade.md5");
-    ui->checkBoxSongLengthUade->setChecked(true);
-    ui->checkBoxContinuousPlaybackUade->setChecked(false);
+    ui->comboBoxUadeFreq->setCurrentIndex(ui->comboBoxUadeFreq->findData("48000"));
+    ui->comboBoxUadeResampler->setCurrentIndex(ui->comboBoxUadeResampler->findData("sinc"));
+    ui->checkBoxUadeFilterEmu->setChecked(true);
+    ui->comboBoxUadeFilterEmuMode->setCurrentIndex(1);
+    ui->comboBoxUadeLedFilter->setCurrentIndex(0);
+    ui->sliderUadePanning->setValue(5);
+    ui->labelUadePanningValue->setText("0.5");
+    ui->sliderUadeSilenceTimeOut->setValue(5);
+    ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
+    ui->checkBoxUadeSongLengths->setChecked(true);
+    ui->checkBoxUadeContinuousPlayback->setChecked(false);
 
     if (!useDefaults)
     {
@@ -1122,92 +1121,92 @@ void settingsWindow::loadUadeSettings()
                 string value = line.substr(i + 1);
                 if (word.compare("frequency") == 0)
                 {
-                    int index = ui->comboBoxFreqUade->findData(value.c_str());
-                    ui->comboBoxFreqUade->setCurrentIndex(index);
+                    int index = ui->comboBoxUadeFreq->findData(value.c_str());
+                    ui->comboBoxUadeFreq->setCurrentIndex(index);
                 }
                 else if (word.compare("resampler") == 0)
                 {
-                    int index = ui->comboBoxResamplerUade->findData(value.c_str());
-                    ui->comboBoxResamplerUade->setCurrentIndex(index);
+                    int index = ui->comboBoxUadeResampler->findData(value.c_str());
+                    ui->comboBoxUadeResampler->setCurrentIndex(index);
                 }
-                else if (word.compare("filter_emu") == 0) {
+                else if (word.compare("filterEmu") == 0) {
                     if (value.compare("true") == 0)
                     {
-                        ui->checkBoxFilterEmuUade->setChecked(true);
+                        ui->checkBoxUadeFilterEmu->setChecked(true);
                     }
                     else
                     {
-                        ui->checkBoxFilterEmuUade->setChecked(false);
+                        ui->checkBoxUadeFilterEmu->setChecked(false);
                     }
                 }
-                else if (word.compare("filter_mode") == 0) {
+                else if (word.compare("filterMode") == 0) {
                     if (value.compare("a500") == 0)
                     {
-                        ui->comboBoxFilterEmuModeUade->setCurrentIndex(0);
+                        ui->comboBoxUadeFilterEmuMode->setCurrentIndex(0);
                     }
                     else
                     {
-                        ui->comboBoxFilterEmuModeUade->setCurrentIndex(1);
+                        ui->comboBoxUadeFilterEmuMode->setCurrentIndex(1);
                     }
                 }
-                else if (word.compare("led_forced") == 0)
+                else if (word.compare("ledForced") == 0)
                 {
                     if (value.compare("auto") == 0)
                     {
-                        ui->comboBoxLedFilterUade->setCurrentIndex(0);
+                        ui->comboBoxUadeLedFilter->setCurrentIndex(0);
                     }
                     else if (value.compare("on") == 0)
                     {
-                        ui->comboBoxLedFilterUade->setCurrentIndex(1);
+                        ui->comboBoxUadeLedFilter->setCurrentIndex(1);
                     }
                     else
                     {
-                        ui->comboBoxLedFilterUade->setCurrentIndex(2);
+                        ui->comboBoxUadeLedFilter->setCurrentIndex(2);
                     }
                 }
                 else if (word.compare("panning") == 0)
                 {
-                    ui->sliderPanningUade->setValue(stoi(value));
+                    ui->sliderUadePanning->setValue(stoi(value));
                 }
-                else if (word.compare("silence_timeout_enabled") == 0)
+                else if (word.compare("silenceTimeoutEnabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        ui->checkBoxSilenceTimeoutUade->setChecked(true);
+                        ui->checkBoxUadeSilenceTimeout->setChecked(true);
                     }
                     else
                     {
-                        ui->checkBoxSilenceTimeoutUade->setChecked(false);
+                        ui->checkBoxUadeSilenceTimeout->setChecked(false);
                     }
                 }
-                else if (word.compare("silence_timeout") == 0)
+                else if (word.compare("silenceTimeout") == 0)
                 {
-                    ui->sliderSilenceTimeOutUade->setValue(atoi(value.c_str()));
+                    ui->sliderUadeSilenceTimeOut->setValue(atoi(value.c_str()));
                 }
-                else if (word.compare("continuous_playback") == 0)
+                else if (word.compare("continuousPlayback") == 0)
                 {
-                    ui->checkBoxContinuousPlaybackUade->setChecked(value.compare("true") == 0);
+                    ui->checkBoxUadeContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
-                else if (word.compare("uade_songlengths_enabled") == 0)
+                else if (word.compare("uadeSonglengthsEnabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        ui->checkBoxSongLengthUade->setChecked(true);
+                        ui->checkBoxUadeSongLengths->setChecked(true);
                     }
                     else
                     {
-                        ui->checkBoxSongLengthUade->setChecked(false);
+                        ui->checkBoxUadeSongLengths->setChecked(false);
                     }
                 }
-                else if (word.compare("uade_songlengths_path") == 0)
+                else if (word.compare("uadeSonglengthsPath") == 0)
                 {
                     if (value == "")
                     {
-                        ui->lineEditUadeSonglength->setText("/uade.md5");
+                        ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
                     }
                     else
                     {
-                        ui->lineEditUadeSonglength->setText(value.c_str());
+                        ui->lineEditUadeSonglengthsPath->setText(value.c_str());
                     }
                 }
             }
@@ -1230,11 +1229,11 @@ void settingsWindow::loadSidplaySettings()
     }
     //Hack, because "toggled" means changing value,
     //so just to be sure, set it to both values so
-    //that on_checkBoxHvscSonglengthsEnabled_toggled is called
-    ui->checkBoxHvscSonglengthsEnabled->setChecked(false);
-    ui->checkBoxHvscSonglengthsEnabled->setChecked(true);
+    //that on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled is called
+    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(false);
+    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(true);
 
-    ui->checkBoxSIDContinuousPlayback->setChecked(false);
+    ui->checkBoxLibsidplayfpContinuousPlayback->setChecked(false);
     if (!useDefaults)
     {
         while (getline(ifs, line))
@@ -1245,30 +1244,29 @@ void settingsWindow::loadSidplaySettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("hvsc_songlengths_path") == 0)
-                {
-                    if (value == "")
-                    {
-                        setUiLineEditHvscSonglengthTextForcingRelativePaths(
-                            dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
+                if (word.compare("hvscSonglengthsPath") == 0) {
+                    QString hvscSonglengthsPathToLoad = value.c_str();
+
+                    if (hvscSonglengthsPathToLoad.isEmpty()) {
+                        hvscSonglengthsPathToLoad = mainWindow->getBundledHvscSonglengthsPath();
                     }
-                    else
-                    {
-                        setUiLineEditHvscSonglengthTextForcingRelativePaths(value.c_str());
-                    }
+
+                    mainWindow->setHvscSonglengthsPath(hvscSonglengthsPathToLoad);
+                    setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsPathToLoad);
+
                 }
-                else if (word.compare("hvsc_songlengths_enabled") == 0)
+                else if (word.compare("hvscSonglengthsEnabled") == 0)
                 {
                     if (value.compare("true") == 0)
                     {
-                        ui->checkBoxHvscSonglengthsEnabled->setChecked(true);
+                        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(true);
                     }
                     else
                     {
-                        ui->checkBoxHvscSonglengthsEnabled->setChecked(false);
+                        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(false);
                     }
-                } else if (word.compare("continuous_playback") == 0) {
-                    ui->checkBoxSIDContinuousPlayback->setChecked(value.compare("true") == 0);
+                } else if (word.compare("continuousPlayback") == 0) {
+                    ui->checkBoxLibsidplayfpContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1276,9 +1274,10 @@ void settingsWindow::loadSidplaySettings()
     }
     else
     {
-        ui->checkBoxHvscSonglengthsEnabled->setChecked(false);
-        ui->checkBoxHvscSonglengthsEnabled->setChecked(true);
-        setUiLineEditHvscSonglengthTextForcingRelativePaths(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
+        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(false);
+        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(true);
+        mainWindow->setHvscSonglengthsPath(mainWindow->getBundledHvscSonglengthsPath());
+        setUiLineEditLibsidplayfpHvscSonglengthsPath(mainWindow->getBundledHvscSonglengthsPath());
     }
 }
 
@@ -1295,7 +1294,7 @@ void settingsWindow::loadSndhPlayerSettings()
         useDefaults = true;
     }
     //defaults
-    ui->checkBoxContinuousPlaybackSndhPlayer->setChecked(false);
+    ui->checkBoxSndhPlayerContinuousPlayback->setChecked(false);
 
     if (!useDefaults)
     {
@@ -1307,9 +1306,9 @@ void settingsWindow::loadSndhPlayerSettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("continuous_playback") == 0)
+                if (word.compare("continuousPlayback") == 0)
                 {
-                    ui->checkBoxContinuousPlaybackSndhPlayer->setChecked(value.compare("true") == 0);
+                    ui->checkBoxSndhPlayerContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1330,7 +1329,7 @@ void settingsWindow::loadVgmstreamSettings()
         useDefaults = true;
     }
     //defaults
-    ui->checkBoxContinuousPlaybackVgmstream->setChecked(false);
+    ui->checkBoxVgmstreamContinuousPlayback->setChecked(false);
 
     if (!useDefaults)
     {
@@ -1342,9 +1341,9 @@ void settingsWindow::loadVgmstreamSettings()
             {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word.compare("continuous_playback") == 0)
+                if (word.compare("continuousPlayback") == 0)
                 {
-                    ui->checkBoxContinuousPlaybackVgmstream->setChecked(value.compare("true") == 0);
+                    ui->checkBoxVgmstreamContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1364,10 +1363,10 @@ void settingsWindow::saveAdplugSettings()
         //The file could not be opened
         return;
     }
-    ofs << "emulator=" << ui->comboBoxEmulatorAdplug->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "frequency=" << ui->comboBoxFreqAdplug->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "playback=" << ui->comboBoxPlaybackAdplug->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackAdplug->isChecked() ? "true" : "false") << "\n";
+    ofs << "emulator=" << ui->comboBoxAdPlugEmulator->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "frequency=" << ui->comboBoxAdPlugFreq->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "playback=" << ui->comboBoxAdPlugPlayback->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxAdPlugContinuousPlayback->isChecked() ? "true" : "false") << "\n";
     ofs.close();
 }
 
@@ -1384,9 +1383,9 @@ void settingsWindow::saveFmodSettings()
         return;
     }
 
-    bool isFmodSeamlessLoopEnabled = ui->checkBoxSeamlessLoopFmod->isChecked();
+    bool isFmodSeamlessLoopEnabled = ui->checkBoxFmodSeamlessLoop->isChecked();
 
-    ofs << "seamless_loop=" << (isFmodSeamlessLoopEnabled ? "true" : "false") << "\n";
+    ofs << "seamlessLoop=" << (isFmodSeamlessLoopEnabled ? "true" : "false") << "\n";
     ofs.close();
 
     mainWindow->setFmodSeamlessLoopEnabled(isFmodSeamlessLoopEnabled);
@@ -1404,8 +1403,8 @@ void settingsWindow::saveHivelytrackerSettings()
         //The file could not be opened
         return;
     }
-    ofs << "stereo_separation=" << ui->comboBoxStereoSeparationHivelytracker->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackHivelytracker->isChecked()?"true":"false") << "\n";
+    ofs << "stereoSeparation=" << ui->comboBoxHivelyTrackerStereoSeparation->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxHivelyTrackerContinuousPlayback->isChecked()?"true":"false") << "\n";
     ofs.close();
 }
 
@@ -1422,9 +1421,18 @@ void settingsWindow::saveSidplaySettings()
         return;
     }
 
-    ofs << "hvsc_songlengths_enabled=" << (ui->checkBoxHvscSonglengthsEnabled->isChecked()?"true":"false") << "\n";
-    ofs << "hvsc_songlengths_path=" << ui->lineEditHvscSonglength->text().toStdString().c_str() << "\n";
-    ofs << "continuous_playback=" << (ui->checkBoxSIDContinuousPlayback->isChecked()?"true":"false") << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxLibsidplayfpContinuousPlayback->isChecked() ? "true" : "false") << "\n";
+    ofs << "hvscSonglengthsEnabled=" << (ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->isChecked()?"true":"false") << "\n";
+
+    QString hvscSonglengthsPathToSave = ui->lineEditLibsidplayfpHvscSonglengthsPath->text();
+
+    if (hvscSonglengthsPathToSave.isEmpty()) {
+        hvscSonglengthsPathToSave = mainWindow->getBundledHvscSonglengthsPath();
+    }
+
+    ofs << "hvscSonglengthsPath=" << hvscSonglengthsPathToSave.toStdString().c_str() << "\n";
+
+    mainWindow->setHvscSonglengthsPath(hvscSonglengthsPathToSave);
     ofs.close();
 }
 
@@ -1440,13 +1448,13 @@ void settingsWindow::savelibopenmptSettings()
         //The file could not be opened
         return;
     }
-    ofs << "stereo_separation=" << ui->SliderStereoSeparationOpenMPT->value() << "\n";
-    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackOpenMPT->isChecked()?"true":"false") << "\n";
-    ofs << "interpolation_filter=" << ui->comboBoxResamplingOpenMPT->currentData().toString().toStdString().c_str() <<
+    ofs << "stereoSeparation=" << ui->sliderLibopenmptStereoSeparation->value() << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxLibopenmptContinuousPlayback->isChecked()?"true":"false") << "\n";
+    ofs << "interpolationFilter=" << ui->comboBoxLibopenmptResampling->currentData().toString().toStdString().c_str() <<
         "\n";
-    ofs << "amiga_filter=" << ui->comboBoxFilterOpenMPT->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "dither=" << ui->comboBoxDitherOpenMPT->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "emulate_amiga_filter=" << (ui->checkBoxFilterOpenMPT->isChecked()?"true":"false") << "\n";
+    ofs << "amigaFilter=" << ui->comboBoxLibopenmptFilter->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "dither=" << ui->comboBoxLibopenmptDither->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "emulateAmigaFilter=" << (ui->checkBoxLibopenmptAmigaResampler->isChecked()?"true":"false") << "\n";
     ofs.close();
 }
 
@@ -1462,7 +1470,7 @@ void settingsWindow::saveLibvgmSettings()
         //The file could not be opened
         return;
     }
-    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackLibvgm->isChecked() ? "true" : "false") << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxLibvgmContinuousPlayback->isChecked() ? "true" : "false") << "\n";
     ofs.close();
 }
 
@@ -1478,7 +1486,7 @@ void settingsWindow::saveLibxmpSettings()
         //The file could not be opened
         return;
     }
-    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackLibxmp->isChecked() ? "true" : "false") << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxLibxmpContinuousPlayback->isChecked() ? "true" : "false") << "\n";
     ofs.close();
 }
 
@@ -1497,7 +1505,7 @@ void settingsWindow::saveUadeSettings()
 
     QString filterMode;
 
-    if (ui->comboBoxFilterEmuModeUade->currentIndex() == 0)
+    if (ui->comboBoxUadeFilterEmuMode->currentIndex() == 0)
     {
         filterMode = "a500";
     }
@@ -1508,11 +1516,11 @@ void settingsWindow::saveUadeSettings()
 
     QString ledFilter;
 
-    if (ui->comboBoxLedFilterUade->currentIndex() == 0)
+    if (ui->comboBoxUadeLedFilter->currentIndex() == 0)
     {
         ledFilter = "auto";
     }
-    else if (ui->comboBoxLedFilterUade->currentIndex() == 1)
+    else if (ui->comboBoxUadeLedFilter->currentIndex() == 1)
     {
         ledFilter = "on";
     }
@@ -1521,17 +1529,17 @@ void settingsWindow::saveUadeSettings()
         ledFilter = "off";
     }
 
-    ofs << "frequency=" << ui->comboBoxFreqUade->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "resampler=" << ui->comboBoxResamplerUade->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "filter_emu=" << (ui->checkBoxFilterEmuUade->isChecked()?"true":"false") << "\n";
-    ofs << "filter_mode=" << filterMode.toStdString().c_str() << "\n";
-    ofs << "led_forced=" << ledFilter.toStdString().c_str() << "\n";
-    ofs << "panning=" << ui->sliderPanningUade->value() << "\n";
-    ofs << "silence_timeout=" << ui->sliderSilenceTimeOutUade->value() << "\n";
-    ofs << "silence_timeout_enabled=" << (ui->checkBoxSilenceTimeoutUade->isChecked()?"true":"false") << "\n";
-    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackUade->isChecked()?"true":"false") << "\n";
-    ofs << "uade_songlengths_enabled=" << (ui->checkBoxSongLengthUade->isChecked()?"true":"false") << "\n";
-    ofs << "uade_songlengths_path=" << ui->lineEditUadeSonglength->text().toStdString().c_str() << "\n";
+    ofs << "frequency=" << ui->comboBoxUadeFreq->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "resampler=" << ui->comboBoxUadeResampler->currentData().toString().toStdString().c_str() << "\n";
+    ofs << "filterEmu=" << (ui->checkBoxUadeFilterEmu->isChecked()?"true":"false") << "\n";
+    ofs << "filterMode=" << filterMode.toStdString().c_str() << "\n";
+    ofs << "ledForced=" << ledFilter.toStdString().c_str() << "\n";
+    ofs << "panning=" << ui->sliderUadePanning->value() << "\n";
+    ofs << "silenceTimeout=" << ui->sliderUadeSilenceTimeOut->value() << "\n";
+    ofs << "silenceTimeoutEnabled=" << (ui->checkBoxUadeSilenceTimeout->isChecked()?"true":"false") << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxUadeContinuousPlayback->isChecked()?"true":"false") << "\n";
+    ofs << "uadeSonglengthsEnabled=" << (ui->checkBoxUadeSongLengths->isChecked()?"true":"false") << "\n";
+    ofs << "uadeSonglengthsPath=" << ui->lineEditUadeSonglengthsPath->text().toStdString().c_str() << "\n";
     ofs.close();
 }
 
@@ -1547,7 +1555,7 @@ void settingsWindow::saveSndhPlayerSettings()
         //The file could not be opened
         return;
     }
-    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackSndhPlayer->isChecked() ? "true" : "false") << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxSndhPlayerContinuousPlayback->isChecked() ? "true" : "false") << "\n";
     ofs.close();
 }
 
@@ -1563,7 +1571,7 @@ void settingsWindow::saveVgmstreamSettings()
         //The file could not be opened
         return;
     }
-    ofs << "continuous_playback=" << (ui->checkBoxContinuousPlaybackVgmstream->isChecked() ? "true" : "false") << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxVgmstreamContinuousPlayback->isChecked() ? "true" : "false") << "\n";
     ofs.close();
 }
 
@@ -1576,8 +1584,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(false);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1589,8 +1597,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(false);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1602,8 +1610,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(false);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1615,8 +1623,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(false);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(false);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1628,8 +1636,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(false);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(false);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1641,8 +1649,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(false);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1654,8 +1662,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(false);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1667,8 +1675,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(false);
@@ -1680,8 +1688,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1693,8 +1701,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1706,8 +1714,8 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item)
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
-        ui->groupBoxLibOpenMPT->setHidden(true);
-        ui->groupBoxLibsid->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
         ui->groupBoxSndhPlayer->setHidden(true);
@@ -1765,14 +1773,14 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     ui->buttonOK->setStyleSheet(stylesheet);
 
-    stylesheet = ui->buttonColorsDefault->styleSheet();
+    stylesheet = ui->buttonAppearanceResetColors->styleSheet();
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
-    ui->buttonColorsDefault->setStyleSheet(stylesheet);
+    ui->buttonAppearanceResetColors->setStyleSheet(stylesheet);
 
 
-    stylesheet = ui->scrollAreaWidgetContents->styleSheet();
+    stylesheet = ui->scrollAreaWidgetContentsGeneral->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
@@ -1781,25 +1789,25 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
     stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
-    ui->scrollAreaWidgetContents->setStyleSheet(stylesheet);
+    ui->scrollAreaWidgetContentsGeneral->setStyleSheet(stylesheet);
 
-    stylesheet = ui->scrollAreaWidgetContents_2->styleSheet();
+    stylesheet = ui->scrollAreaWidgetContentsAppearance->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
     stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
     stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
-    ui->scrollAreaWidgetContents_2->setStyleSheet(stylesheet);
+    ui->scrollAreaWidgetContentsAppearance->setStyleSheet(stylesheet);
 
-    stylesheet = ui->scrollAreaWidgetContents_3->styleSheet();
+    stylesheet = ui->scrollAreaWidgetContentsVisualizer->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
     stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
     stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
-    ui->scrollAreaWidgetContents_3->setStyleSheet(stylesheet);
+    ui->scrollAreaWidgetContentsVisualizer->setStyleSheet(stylesheet);
 
     stylesheet = ui->tableWidgetPlugins->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -1852,7 +1860,7 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxUade->setStyleSheet(stylesheet);
 
-    stylesheet = ui->groupBoxLibsid->styleSheet();
+    stylesheet = ui->groupBoxLibsidplayfp->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
@@ -1861,9 +1869,9 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
-    ui->groupBoxLibsid->setStyleSheet(stylesheet);
+    ui->groupBoxLibsidplayfp->setStyleSheet(stylesheet);
 
-    stylesheet = ui->groupBoxLibOpenMPT->styleSheet();
+    stylesheet = ui->groupBoxLibopenmpt->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
@@ -1872,7 +1880,7 @@ void settingsWindow::changeStyleSheetColor()
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
-    ui->groupBoxLibOpenMPT->setStyleSheet(stylesheet);
+    ui->groupBoxLibopenmpt->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxLibvgm->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -1919,22 +1927,11 @@ void settingsWindow::changeStyleSheetColor()
     ui->groupBoxVgmstream->setStyleSheet(stylesheet);
 }
 
-void settingsWindow::setUiLineEditHvscSonglengthTextForcingRelativePaths(const QString& text) {
-    /*
-     * TODO: temporary disabled since the generated relative path string is currently "/plugin/sid/Songlengths.md5"
-     *  instead of "data/plugin/sid/Songlengths.md5" (default) or "user/plugin/sid/Songlengths.md5" (downloaded)
-     *  due to adaptations made for linux paths structure, not allowing distinguishing between the two
-     */
-
-    // if (text.compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0 ||
-    //     text.compare(userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
-    //     ui->lineEditHvscSonglength->setText(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
-    // } else {
-        ui->lineEditHvscSonglength->setText(text);
-    // }
+void settingsWindow::setUiLineEditLibsidplayfpHvscSonglengthsPath(const QString& text) {
+        ui->lineEditLibsidplayfpHvscSonglengthsPath->setText(text);
 }
 
-void settingsWindow::on_buttonMainColor_clicked()
+void settingsWindow::on_buttonAppearanceMainColor_clicked()
 {
     QColor oldColor(mainWindow->getColorMain().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -1944,11 +1941,11 @@ void settingsWindow::on_buttonMainColor_clicked()
         mainWindow->channels->updateChannelColors();
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonMainColor->setStyleSheet(qss);
+        ui->buttonAppearanceMainColor->setStyleSheet(qss);
     }
 }
 
-void settingsWindow::on_buttonMediumColor_clicked()
+void settingsWindow::on_buttonAppearanceMediumColor_clicked()
 {
     QColor oldColor(mainWindow->getColorMedium().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -1958,12 +1955,12 @@ void settingsWindow::on_buttonMediumColor_clicked()
         mainWindow->channels->updateChannelColors();
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonMediumColor->setStyleSheet(qss);
+        ui->buttonAppearanceMediumColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonBackgroundColor_clicked()
+void settingsWindow::on_buttonAppearanceBackgroundColor_clicked()
 {
     QColor oldColor(mainWindow->getColorBackground().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -1972,12 +1969,12 @@ void settingsWindow::on_buttonBackgroundColor_clicked()
         mainWindow->setColorBackground(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonBackgroundColor->setStyleSheet(qss);
+        ui->buttonAppearanceBackgroundColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonBehindBackgroundColor_clicked()
+void settingsWindow::on_buttonAppearanceBehindBackgroundColor_clicked()
 {
     QColor oldColor(mainWindow->getColorBehindBackground().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -1987,12 +1984,12 @@ void settingsWindow::on_buttonBehindBackgroundColor_clicked()
         mainWindow->channels->updateChannelColors();
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonBehindBackgroundColor->setStyleSheet(qss);
+        ui->buttonAppearanceBehindBackgroundColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonMainTextColor_clicked()
+void settingsWindow::on_buttonAppearanceMainTextColor_clicked()
 {
     QColor oldColor(mainWindow->getColorMainText().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2003,12 +2000,12 @@ void settingsWindow::on_buttonMainTextColor_clicked()
 
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonMainTextColor->setStyleSheet(qss);
+        ui->buttonAppearanceMainTextColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonButtonColor_clicked()
+void settingsWindow::on_buttonAppearanceButtonColor_clicked()
 {
     QColor oldColor(mainWindow->getColorButton().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2017,12 +2014,12 @@ void settingsWindow::on_buttonButtonColor_clicked()
         mainWindow->setColorButton(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonButtonColor->setStyleSheet(qss);
+        ui->buttonAppearanceButtonColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonDimmedTextColor_clicked()
+void settingsWindow::on_buttonAppearanceDimmedTextColor_clicked()
 {
     QColor oldColor(mainWindow->getColorDimmedText().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2031,12 +2028,12 @@ void settingsWindow::on_buttonDimmedTextColor_clicked()
         mainWindow->setColorDimmedText(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonDimmedTextColor->setStyleSheet(qss);
+        ui->buttonAppearanceDimmedTextColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonMainHoverColor_clicked()
+void settingsWindow::on_buttonAppearanceMainHoverColor_clicked()
 {
     QColor oldColor(mainWindow->getColorMainHover().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2045,12 +2042,12 @@ void settingsWindow::on_buttonMainHoverColor_clicked()
         mainWindow->setColorMainHover(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonMainHoverColor->setStyleSheet(qss);
+        ui->buttonAppearanceMainHoverColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonButtonHoverColor_clicked()
+void settingsWindow::on_buttonAppearanceButtonHoverColor_clicked()
 {
     QColor oldColor(mainWindow->getColorButtonHover().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2059,12 +2056,12 @@ void settingsWindow::on_buttonButtonHoverColor_clicked()
         mainWindow->setColorButtonHover(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonButtonHoverColor->setStyleSheet(qss);
+        ui->buttonAppearanceButtonHoverColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonColorsDefault_clicked()
+void settingsWindow::on_buttonAppearanceResetColors_clicked()
 {
     mainWindow->resetToDefaultColors();
     updateColorButtons();
@@ -2073,15 +2070,15 @@ void settingsWindow::on_buttonColorsDefault_clicked()
 
 void settingsWindow::on_buttonVisualizer_clicked()
 {
-    ui->scrollArea->setHidden(true);
+    ui->scrollAreaGeneral->setHidden(true);
     ui->scrollAreaAppearance->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(false);
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
-    ui->groupBoxLibOpenMPT->setHidden(true);
-    ui->groupBoxLibsid->setHidden(true);
+    ui->groupBoxLibopenmpt->setHidden(true);
+    ui->groupBoxLibsidplayfp->setHidden(true);
     ui->groupBoxLibvgm->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
     ui->groupBoxSndhPlayer->setHidden(true);
@@ -2092,15 +2089,15 @@ void settingsWindow::on_buttonVisualizer_clicked()
 
 void settingsWindow::on_buttonGeneral_clicked()
 {
-    ui->scrollArea->setHidden(false);
+    ui->scrollAreaGeneral->setHidden(false);
     ui->scrollAreaAppearance->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(true);
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
-    ui->groupBoxLibOpenMPT->setHidden(true);
-    ui->groupBoxLibsid->setHidden(true);
+    ui->groupBoxLibopenmpt->setHidden(true);
+    ui->groupBoxLibsidplayfp->setHidden(true);
     ui->groupBoxLibvgm->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
     ui->groupBoxSndhPlayer->setHidden(true);
@@ -2111,23 +2108,23 @@ void settingsWindow::on_buttonGeneral_clicked()
 
 void settingsWindow::on_buttonPlugins_clicked()
 {
-    ui->scrollArea->setHidden(true);
+    ui->scrollAreaGeneral->setHidden(true);
     ui->scrollAreaAppearance->setHidden(true);
-    ui->tableWidgetPlugins->setHidden(false);
     ui->scrollAreaVisualizer->setHidden(true);
+    ui->tableWidgetPlugins->setHidden(false);
 }
 
 void settingsWindow::on_buttonAppearance_clicked()
 {
-    ui->scrollArea->setHidden(true);
+    ui->scrollAreaGeneral->setHidden(true);
     ui->scrollAreaAppearance->setHidden(false);
-    ui->tableWidgetPlugins->setHidden(true);
     ui->scrollAreaVisualizer->setHidden(true);
+    ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
-    ui->groupBoxLibOpenMPT->setHidden(true);
-    ui->groupBoxLibsid->setHidden(true);
+    ui->groupBoxLibopenmpt->setHidden(true);
+    ui->groupBoxLibsidplayfp->setHidden(true);
     ui->groupBoxLibvgm->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
     ui->groupBoxSndhPlayer->setHidden(true);
@@ -2135,7 +2132,7 @@ void settingsWindow::on_buttonAppearance_clicked()
     ui->groupBoxVgmstream->setHidden(true);
 }
 
-void settingsWindow::on_buttonColorVUMeterTop_clicked()
+void settingsWindow::on_buttonVuMeterTopColor_clicked()
 {
     QColor oldColor(mainWindow->getColorVisualizerTop());
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2144,12 +2141,12 @@ void settingsWindow::on_buttonColorVUMeterTop_clicked()
         mainWindow->setColorVisualizerTop(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonColorVUMeterTop->setStyleSheet(qss);
+        ui->buttonVuMeterTopColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonColorVUMeterBottom_clicked()
+void settingsWindow::on_buttonVuMeterBottomColor_clicked()
 {
     QColor oldColor(mainWindow->getColorVisualizerBottom());
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2158,12 +2155,12 @@ void settingsWindow::on_buttonColorVUMeterBottom_clicked()
         mainWindow->setColorVisualizerBottom(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonColorVUMeterBottom->setStyleSheet(qss);
+        ui->buttonVuMeterBottomColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_buttonColorVUMeterMiddle_clicked()
+void settingsWindow::on_buttonVuMeterMiddleColor_clicked()
 {
     QColor oldColor(mainWindow->getColorVisualizerMiddle());
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2172,11 +2169,11 @@ void settingsWindow::on_buttonColorVUMeterMiddle_clicked()
         mainWindow->setColorVisualizerMiddle(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonColorVUMeterMiddle->setStyleSheet(qss);
+        ui->buttonVuMeterMiddleColor->setStyleSheet(qss);
     }
 }
 
-void settingsWindow::on_buttonColorVisualizerBackground_clicked()
+void settingsWindow::on_buttonVisualizerBackgroundColor_clicked()
 {
     QColor oldColor(mainWindow->getColorVisualizerBackground());
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2185,20 +2182,20 @@ void settingsWindow::on_buttonColorVisualizerBackground_clicked()
         mainWindow->setColorVisualizerBackground(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonColorVisualizerBackground->setStyleSheet(qss);
+        ui->buttonVisualizerBackgroundColor->setStyleSheet(qss);
     }
 }
 
-void settingsWindow::on_sliderRowHeight_valueChanged(int value)
+void settingsWindow::on_sliderAppearancePlaylistItemRowHeight_valueChanged(int value)
 {
-    ui->labelRowHeight->setText(QString::number(value) + " pixels");
+    ui->labelAppearancePlaylistItemRowHeightValue->setText(QString::number(value) + "px");
     mainWindow->setPlaylistRowHeight(value);
 }
 
 
-void settingsWindow::on_sliderPlaylistsRowHeight_valueChanged(int value)
+void settingsWindow::on_sliderAppearancePlaylistRowHeight_valueChanged(int value)
 {
-    ui->labelPlaylistsRowHeight->setText(QString::number(value) + " pixels");
+    ui->labelAppearancePlaylistRowHeightValue->setText(QString::number(value) + "px");
     mainWindow->setPlaylistsRowHeight(value);
 }
 
@@ -2206,126 +2203,126 @@ void settingsWindow::updateColorButtons()
 {
     QString qss;
     qss = QString("background-color: %1").arg(mainWindow->getColorMain());
-    ui->buttonMainColor->setStyleSheet(qss);
+    ui->buttonAppearanceMainColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorBackground());
-    ui->buttonBackgroundColor->setStyleSheet(qss);
+    ui->buttonAppearanceBackgroundColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorBehindBackground());
-    ui->buttonBehindBackgroundColor->setStyleSheet(qss);
+    ui->buttonAppearanceBehindBackgroundColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorMainText());
-    ui->buttonMainTextColor->setStyleSheet(qss);
+    ui->buttonAppearanceMainTextColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorSelection());
-    ui->buttonSelectionColor->setStyleSheet(qss);
+    ui->buttonAppearanceSelectionColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorDimmedText());
-    ui->buttonDimmedTextColor->setStyleSheet(qss);
+    ui->buttonAppearanceDimmedTextColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorMedium());
-    ui->buttonMediumColor->setStyleSheet(qss);
+    ui->buttonAppearanceMediumColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorButton());
-    ui->buttonButtonColor->setStyleSheet(qss);
+    ui->buttonAppearanceButtonColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorMainHover());
-    ui->buttonMainHoverColor->setStyleSheet(qss);
+    ui->buttonAppearanceMainHoverColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorButtonHover());
-    ui->buttonButtonHoverColor->setStyleSheet(qss);
+    ui->buttonAppearanceButtonHoverColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorVisualizerTop());
-    ui->buttonColorVUMeterTop->setStyleSheet(qss);
+    ui->buttonVuMeterTopColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorVisualizerBottom());
-    ui->buttonColorVUMeterBottom->setStyleSheet(qss);
+    ui->buttonVuMeterBottomColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorVisualizerMiddle());
-    ui->buttonColorVUMeterMiddle->setStyleSheet(qss);
+    ui->buttonVuMeterMiddleColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorVisualizerPeakColor());
-    ui->buttonColorVUMeterPeak->setStyleSheet(qss);
+    ui->buttonVuMeterPeakColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getEffect()->getReflectionColor());
-    ui->buttonColorReflection->setStyleSheet(qss);
+    ui->buttonReflectionColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getEffect()->get3DCubeColor());
-    ui->buttonColor3DCube->setStyleSheet(qss);
+    ui->buttonRotatingObjectMaterialColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getEffect()->get3DCubeColorWireframe());
-    ui->buttonColorWireframe3DCube->setStyleSheet(qss);
+    ui->buttonRotatingObjectWireframeColor->setStyleSheet(qss);
 
     qss = QString("background-color: %1").arg(mainWindow->getColorVisualizerBackground());
-    ui->buttonColorVisualizerBackground->setStyleSheet(qss);
+    ui->buttonVisualizerBackgroundColor->setStyleSheet(qss);
 }
 
-void settingsWindow::on_sliderAmplitude_valueChanged(int value)
+void settingsWindow::on_sliderScrollerAmplitude_valueChanged(int value)
 {
     mainWindow->getEffect()->setAmplitude(value);
-    ui->labelAmplitude->setText(QString::number(value));
+    ui->labelScrollerAmplitudeValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_sliderFrequency_valueChanged(int value)
+void settingsWindow::on_sliderScrollerFrequency_valueChanged(int value)
 {
     mainWindow->getEffect()->setSinusFrequency(value / 10000.0f);
-    ui->labelFrequency->setText(QString::number(value / 10000.0f));
+    ui->labelScrollerFrequencyValue->setText(QString::number(value / 10000.0f));
 }
 
 
-void settingsWindow::on_sliderSinusSpeed_valueChanged(int value)
+void settingsWindow::on_sliderScrollerSinusSpeed_valueChanged(int value)
 {
     mainWindow->getEffect()->setSinusSpeed(value / 100.0f);
-    ui->labelSinusSpeed->setText(QString::number(value / 100.0f));
+    ui->labelScrollerSinusSpeedValue->setText(QString::number(value / 100.0f));
 }
 
 
-void settingsWindow::on_sliderScrollSpeed_valueChanged(int value)
+void settingsWindow::on_sliderScrollerScrollSpeed_valueChanged(int value)
 {
     mainWindow->getEffect()->setScrollSpeed(value);
-    ui->labelScrollSpeed->setText(QString::number(value));
+    ui->labelScrollerScrollSpeedValue->setText(QString::number(value));
 }
 
-void settingsWindow::on_slider3DCubeFocalLength_valueChanged(int value)
+void settingsWindow::on_sliderRotatingObjectFocalLength_valueChanged(int value)
 {
     mainWindow->getEffect()->set3DCubeFocalLength(value);
-    ui->label3DCubeFocalLength->setText(QString::number(int((value/500.0)*100)));
+    ui->labelRotatingObjectFocalLengthValue->setText(QString::number(int((value/500.0)*100)));
 }
 
-void settingsWindow::on_slider3DCubeOrbitSize_valueChanged(int value)
+void settingsWindow::on_sliderRotatingObjectOrbitSize_valueChanged(int value)
 {
     mainWindow->getEffect()->set3DCubeOrbitSize(value);
-    ui->label3DCubeOrbitSize->setText(QString::number(value));
+    ui->labelRotatingObjectOrbitSizeValue->setText(QString::number(value));
 }
 
-void settingsWindow::on_slider3DCubeOrbitSpeed_valueChanged(int value)
+void settingsWindow::on_sliderRotatingObjectSpeed_valueChanged(int value)
 {
     mainWindow->getEffect()->set3DCubeOrbitSpeed(value);
-    ui->label3DCubeOrbitSpeed->setText(QString::number(value));
+    ui->labelRotatingObjectOrbitSpeedValue->setText(QString::number(value));
 }
 
-void settingsWindow::on_slider3DCubeSize_valueChanged(int value)
+void settingsWindow::on_sliderRotatingObjectModelSize_valueChanged(int value)
 {
     mainWindow->getEffect()->set3DCubeSize(value);
-    ui->label3DCubeSize->setText(QString::number(value));
+    ui->labelRotatingObjectModelSizeValue->setText(QString::number(value));
 }
 
-void settingsWindow::on_sliderScrollerXScale_valueChanged(int value)
+void settingsWindow::on_sliderScrollerFontXScale_valueChanged(int value)
 {
     mainWindow->getEffect()->setFontScaleX(value);
-    ui->labelScrollerXScale->setText(QString::number(value));
+    ui->labelScrollerFontXScaleValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_sliderScrollerYScale_valueChanged(int value)
+void settingsWindow::on_sliderScrollerFontYScale_valueChanged(int value)
 {
     mainWindow->getEffect()->setFontScaleY(value);
-    ui->labelScrollerYScale->setText(QString::number(value));
+    ui->labelScrollerFontYScaleValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_buttonColorVUMeterPeak_clicked()
+void settingsWindow::on_buttonVuMeterPeakColor_clicked()
 {
     QColor oldColor(mainWindow->getColorVisualizerPeakColor());
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2334,48 +2331,48 @@ void settingsWindow::on_buttonColorVUMeterPeak_clicked()
         mainWindow->setColorVisualizerPeakColor(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonColorVUMeterPeak->setStyleSheet(qss);
+        ui->buttonVuMeterPeakColor->setStyleSheet(qss);
     }
 }
 
 
-void settingsWindow::on_checkBoxPeaks_toggled(bool checked)
+void settingsWindow::on_checkBoxVuMeterPeaks_toggled(bool checked)
 {
-    if (ui->checkBoxPeaks->isChecked())
+    if (ui->checkBoxVuMeterPeaks->isChecked())
     {
-        ui->checkBoxPeaks->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxPeaks->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-off"]);
     }
     mainWindow->setVUMeterPeaksEnabled(checked);
-    ui->labelVUMeterPeakColor->setEnabled(checked);
-    ui->buttonColorVUMeterPeak->setEnabled(checked);
-    ui->labelTitleVUMeterPeak->setEnabled(checked);
-    ui->sliderPeakHeight->setEnabled(checked);
-    ui->labelVUMeterPeakHeight->setEnabled(checked);
+    ui->labelVuMeterPeakColor->setEnabled(checked);
+    ui->buttonVuMeterPeakColor->setEnabled(checked);
+    ui->labelVuMeterPeakHeight->setEnabled(checked);
+    ui->sliderVuMeterPeakHeight->setEnabled(checked);
+    ui->labelVuMeterPeakHeightValue->setEnabled(checked);
 }
 
 
-void settingsWindow::on_sliderPeakHeight_valueChanged(int value)
+void settingsWindow::on_sliderVuMeterPeakHeight_valueChanged(int value)
 {
     mainWindow->setVUMeterPeaksHeight(value);
-    ui->labelVUMeterPeakHeight->setText(QString::number(value));
+    ui->labelVuMeterPeakHeightValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_sliderVUMeterWidth_valueChanged(int value)
+void settingsWindow::on_sliderVuMeterWidth_valueChanged(int value)
 {
     mainWindow->getEffect()->setVumeterWidth(value);
-    ui->labelVUMeterWidth->setText(QString::number(value) + " %");
+    ui->labelVuMeterWidthValue->setText(QString::number(value) + "%");
 }
 
 
-void settingsWindow::on_sliderVerticalScrollPosition_valueChanged(int value)
+void settingsWindow::on_sliderScrollerVerticalPosition_valueChanged(int value)
 {
     mainWindow->getEffect()->setVerticalScrollPosition(value);
-    ui->labelVerticalScrollPosition->setText(QString::number(value));
+    ui->labelScrollerVerticalPositionValue->setText(QString::number(value));
 }
 
 
@@ -2386,20 +2383,20 @@ void settingsWindow::on_checkBoxReflectionEnabled_toggled(bool checked)
     if (checkedReflection)
     {
         ui->checkBoxReflectionEnabled->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelTitleReflectionColor->setEnabled(true);
-        ui->buttonColorReflection->setEnabled(true);
-        ui->labelTitleReflectionOpacity->setEnabled(true);
-        ui->sliderReflectionOpacity->setEnabled(true);
+        ui->labelReflectionColor->setEnabled(true);
+        ui->buttonReflectionColor->setEnabled(true);
         ui->labelReflectionOpacity->setEnabled(true);
+        ui->sliderReflectionOpacity->setEnabled(true);
+        ui->labelReflectionOpacityValue->setEnabled(true);
     }
     else
     {
         ui->checkBoxReflectionEnabled->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelTitleReflectionColor->setEnabled(false);
-        ui->buttonColorReflection->setEnabled(false);
-        ui->labelTitleReflectionOpacity->setEnabled(false);
-        ui->sliderReflectionOpacity->setEnabled(false);
+        ui->labelReflectionColor->setEnabled(false);
+        ui->buttonReflectionColor->setEnabled(false);
         ui->labelReflectionOpacity->setEnabled(false);
+        ui->sliderReflectionOpacity->setEnabled(false);
+        ui->labelReflectionOpacityValue->setEnabled(false);
     }
 }
 
@@ -2411,31 +2408,31 @@ void settingsWindow::on_checkBoxStarsEnabled_toggled(bool checked)
     if (checkedStars)
     {
         ui->checkBoxStarsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelTitleNumberOfStars->setEnabled(true);
-        ui->sliderNumberOfStars->setEnabled(true);
-        ui->labelNumberOfStars->setEnabled(true);
-        ui->sliderStarSpeed->setEnabled(true);
-        ui->labelTitleStarSpeed->setEnabled(true);
-        ui->labelStarSpeed->setEnabled(true);
-        ui->comboBoxStarsDirection->setEnabled(true);
-        ui->labelTitleStarDirection->setEnabled(true);
+        ui->labelStarfieldAmount->setEnabled(true);
+        ui->sliderStarfieldAmount->setEnabled(true);
+        ui->labelStarfieldAmountValue->setEnabled(true);
+        ui->sliderStarfieldSpeed->setEnabled(true);
+        ui->labelStarfieldSpeed->setEnabled(true);
+        ui->labelStarfieldSpeedValue->setEnabled(true);
+        ui->comboBoxStarfieldDirection->setEnabled(true);
+        ui->labelStarfieldDirection->setEnabled(true);
     }
     else
     {
         ui->checkBoxStarsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelTitleNumberOfStars->setEnabled(false);
-        ui->sliderNumberOfStars->setEnabled(false);
-        ui->labelNumberOfStars->setEnabled(false);
-        ui->sliderStarSpeed->setEnabled(false);
-        ui->labelTitleStarSpeed->setEnabled(false);
-        ui->labelStarSpeed->setEnabled(false);
-        ui->comboBoxStarsDirection->setEnabled(false);
-        ui->labelTitleStarDirection->setEnabled(false);
+        ui->labelStarfieldAmount->setEnabled(false);
+        ui->sliderStarfieldAmount->setEnabled(false);
+        ui->labelStarfieldAmountValue->setEnabled(false);
+        ui->sliderStarfieldSpeed->setEnabled(false);
+        ui->labelStarfieldSpeed->setEnabled(false);
+        ui->labelStarfieldSpeedValue->setEnabled(false);
+        ui->comboBoxStarfieldDirection->setEnabled(false);
+        ui->labelStarfieldDirection->setEnabled(false);
     }
 }
 
 
-void settingsWindow::on_buttonColorReflection_clicked()
+void settingsWindow::on_buttonReflectionColor_clicked()
 {
     QColor oldColor(mainWindow->getEffect()->getReflectionColor());
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2444,11 +2441,11 @@ void settingsWindow::on_buttonColorReflection_clicked()
         mainWindow->getEffect()->setScrollerReflectionColor(newColor.name());
 
         QString qss = QString("background-color: %1").arg(mainWindow->getEffect()->getReflectionColor());
-        ui->buttonColorReflection->setStyleSheet(qss);
+        ui->buttonReflectionColor->setStyleSheet(qss);
     }
 }
 
-void settingsWindow::on_buttonColor3DCube_clicked()
+void settingsWindow::on_buttonRotatingObjectMaterialColor_clicked()
 {
     QColor oldColor(mainWindow->getEffect()->get3DCubeColor());
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2457,10 +2454,10 @@ void settingsWindow::on_buttonColor3DCube_clicked()
         mainWindow->getEffect()->set3DCubeColor(newColor.name());
 
         QString qss = QString("background-color: %1").arg(mainWindow->getEffect()->get3DCubeColor());
-        ui->buttonColor3DCube->setStyleSheet(qss);
+        ui->buttonRotatingObjectMaterialColor->setStyleSheet(qss);
     }
 }
-void settingsWindow::on_buttonColorWireframe3DCube_clicked()
+void settingsWindow::on_buttonRotatingObjectWireframeColor_clicked()
 {
     QColor oldColor(mainWindow->getEffect()->get3DCubeColorWireframe());
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2469,25 +2466,13 @@ void settingsWindow::on_buttonColorWireframe3DCube_clicked()
         mainWindow->getEffect()->set3DCubeColorWireframe(newColor.name());
 
         QString qss = QString("background-color: %1").arg(mainWindow->getEffect()->get3DCubeColorWireframe());
-        ui->buttonColorWireframe3DCube->setStyleSheet(qss);
-    }
-}
-
-void settingsWindow::on_buttonBrowseFont_clicked()
-{
-    if (ui->fontWidget->isHidden())
-    {
-        ui->fontWidget->setVisible(true);
-    }
-    else
-    {
-        ui->fontWidget->setVisible(false);
+        ui->buttonRotatingObjectWireframeColor->setStyleSheet(qss);
     }
 }
 
 void settingsWindow::loadBitmapFont(QString file)
 {
-    ui->fontWidget->setVisible(false);
+    ui->albumGridScrollerFont->setVisible(false);
     mainWindow->getEffect()->setScrollerFont(file);
 
     int extensionPos = file.lastIndexOf('.');
@@ -2497,7 +2482,7 @@ void settingsWindow::loadBitmapFont(QString file)
 
 void settingsWindow::loadBitmapFontPrinter(QString file)
 {
-    ui->fontWidgetPrinter->setVisible(false);
+    ui->albumGridPrinterFont->setVisible(false);
     mainWindow->getEffect()->setPrinterFont(file);
     int extensionPos = file.lastIndexOf('.');
     QString thumb(file.left(extensionPos) + ".thumb.png");
@@ -2507,41 +2492,27 @@ void settingsWindow::loadBitmapFontPrinter(QString file)
 void settingsWindow::on_sliderReflectionOpacity_valueChanged(int value)
 {
     mainWindow->getEffect()->setReflectionOpacity(value);
-    ui->labelReflectionOpacity->setText(QString::number(value) + " %");
+    ui->labelReflectionOpacityValue->setText(QString::number(value) + "%");
 }
 
 
-void settingsWindow::on_sliderVumeterOpacity_valueChanged(int value)
+void settingsWindow::on_sliderVuMeterOpacity_valueChanged(int value)
 {
     mainWindow->getEffect()->setVumeterOpacity(value);
-    ui->labelVumeterOpacity->setText(QString::number(value) + " %");
+    ui->labelVuMeterOpacityValue->setText(QString::number(value) + "%");
 }
 
-
-void settingsWindow::on_buttonBrowseFontPrinter_clicked()
-{
-    if (ui->fontWidgetPrinter->isHidden())
-    {
-        ui->fontWidgetPrinter->setVisible(true);
-    }
-    else
-    {
-        ui->fontWidgetPrinter->setVisible(false);
-    }
-}
-
-
-void settingsWindow::on_sliderPrinterXScale_valueChanged(int value)
+void settingsWindow::on_sliderPrinterFontXScale_valueChanged(int value)
 {
     mainWindow->getEffect()->setPrinterFontScaleX(value);
-    ui->labelPrinterXScale->setText(QString::number(value));
+    ui->labelPrinterFontXScaleValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_sliderPrinterYScale_valueChanged(int value)
+void settingsWindow::on_sliderPrinterFontYScale_valueChanged(int value)
 {
     mainWindow->getEffect()->setPrinterFontScaleY(value);
-    ui->labelPrinterYScale->setText(QString::number(value));
+    ui->labelPrinterFontYScaleValue->setText(QString::number(value));
 }
 
 
@@ -2549,7 +2520,7 @@ void settingsWindow::on_checkBoxOnlyOneInstance_toggled(bool checked)
 {
     mainWindow->setAllowOnlyOneInstanceEnabled(checked);
     ui->checkBoxEnqueueItems->setEnabled(checked);
-    ui->labelEnqueueItems->setEnabled(checked);
+
     if (ui->checkBoxOnlyOneInstance->isChecked())
     {
         ui->checkBoxOnlyOneInstance->setIcon(mainWindow->icons["checkbox-on"]);
@@ -2577,43 +2548,38 @@ void settingsWindow::on_checkBoxOnlyOneInstance_toggled(bool checked)
 }
 
 
-void settingsWindow::on_sliderPanningUade_valueChanged(int value)
+void settingsWindow::on_sliderUadePanning_valueChanged(int value)
 {
-    ui->labelPanning4Uade->setText(QString::number(static_cast<float>(value) / 10, 'f', 1));
+    ui->labelUadePanningValue->setText(QString::number(static_cast<float>(value) / 10, 'f', 1));
 }
 
-void settingsWindow::on_sliderSilenceTimeOutUade_valueChanged(int value)
+void settingsWindow::on_sliderUadeSilenceTimeOut_valueChanged(int value)
 {
-    QString sec = "seconds";
-    if (value == 1)
-    {
-        sec = "second";
-    }
-    ui->labelSilenceTimeOut2Uade->setText(QString::number(value) + " " + sec);
+    ui->labelUadeSilenceTimeOutValue->setText(QString::number(value) + "s");
 }
 
 
-void settingsWindow::on_checkBoxSilenceTimeoutUade_toggled(bool checked)
+void settingsWindow::on_checkBoxUadeSilenceTimeout_toggled(bool checked)
 {
-    bool checkedSilenceTimeout = ui->checkBoxSilenceTimeoutUade->checkState() == Qt::Checked ? true : false;
+    bool checkedSilenceTimeout = ui->checkBoxUadeSilenceTimeout->checkState() == Qt::Checked ? true : false;
     if (checkedSilenceTimeout)
     {
-        ui->checkBoxSilenceTimeoutUade->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelSilenceTimeOut2Uade->setEnabled(true);
-        ui->sliderSilenceTimeOutUade->setEnabled(true);
+        ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelUadeSilenceTimeOutValue->setEnabled(true);
+        ui->sliderUadeSilenceTimeOut->setEnabled(true);
     }
     else
     {
-        ui->checkBoxSilenceTimeoutUade->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelSilenceTimeOut2Uade->setEnabled(false);
-        ui->sliderSilenceTimeOutUade->setEnabled(false);
+        ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelUadeSilenceTimeOutValue->setEnabled(false);
+        ui->sliderUadeSilenceTimeOut->setEnabled(false);
     }
 }
 
 
-void settingsWindow::on_buttonBrowseUadeSonglengths_clicked()
+void settingsWindow::on_buttonUadeSonglengthsBrowse_clicked()
 {
-    QString startFolder = ui->lineEditUadeSonglength->text();
+    QString startFolder = ui->lineEditUadeSonglengthsPath->text();
     if (startFolder.compare("/uade.md5") == 0)
     {
         startFolder = dataPath + PLUGIN_uade_DIR + "/uade.md5";
@@ -2623,17 +2589,17 @@ void settingsWindow::on_buttonBrowseUadeSonglengths_clicked()
     {
         if (file.compare(dataPath + PLUGIN_uade_DIR + "/uade.md5") == 0)
         {
-            ui->lineEditUadeSonglength->setText("/uade.md5");
+            ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
         }
         else
         {
-            ui->lineEditUadeSonglength->setText(file);
+            ui->lineEditUadeSonglengthsPath->setText(file);
         }
     }
 }
 
 
-void settingsWindow::on_buttonSelectionColor_clicked()
+void settingsWindow::on_buttonAppearanceSelectionColor_clicked()
 {
     QColor oldColor(mainWindow->getColorSelection().left(7));
     QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2642,7 +2608,7 @@ void settingsWindow::on_buttonSelectionColor_clicked()
         mainWindow->setColorSelection(newColor.name());
 
         QString qss = QString("background-color: %1").arg(newColor.name());
-        ui->buttonSelectionColor->setStyleSheet(qss);
+        ui->buttonAppearanceSelectionColor->setStyleSheet(qss);
     }
 }
 
@@ -2661,15 +2627,15 @@ void settingsWindow::on_checkBoxMilliseconds_toggled(bool checked)
 }
 
 
-void settingsWindow::on_SliderStereoSeparationOpenMPT_valueChanged(int value)
+void settingsWindow::on_sliderLibopenmptStereoSeparation_valueChanged(int value)
 {
-    ui->labelStereoSeparationOpenMPT->setText(QString::number(value / 2) + " %");
+    ui->labelLibopenmptStereoSeparationValue->setText(QString::number(value / 2) + "%");
 }
 
-void settingsWindow::on_checkBoxContinuousPlaybackOpenMPT_toggled()
+void settingsWindow::on_checkBoxLibopenmptContinuousPlayback_toggled()
 {
-    ui->checkBoxContinuousPlaybackOpenMPT->setIcon(
-        mainWindow->icons[(ui->checkBoxContinuousPlaybackOpenMPT->isChecked() ? "checkbox-on" : "checkbox-off")]);
+    ui->checkBoxLibopenmptContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxLibopenmptContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
 void settingsWindow::on_checkBoxEnqueueItems_toggled(bool checked)
@@ -2690,75 +2656,73 @@ void settingsWindow::on_checkBoxShowLoopPoints_toggled(const bool checked) const
     mainWindow->showCheckBoxLoopPoints(checked);
 }
 
-void settingsWindow::on_checkBoxVUMeterEnabled_toggled(bool checked)
+void settingsWindow::on_checkBoxVuMeterEnabled_toggled(bool checked)
 {
-    bool checkedVUMeters = ui->checkBoxVUMeterEnabled->checkState() == Qt::Checked ? true : false;
+    bool checkedVUMeters = ui->checkBoxVuMeterEnabled->checkState() == Qt::Checked ? true : false;
     mainWindow->getEffect()->setVUMeterEnabled(checkedVUMeters);
 
     if (checkedVUMeters)
     {
-        ui->checkBoxVUMeterEnabled->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelVUMeterTitleBottomColor->setEnabled(true);
-        ui->labelVUMeterTitleTopColor->setEnabled(true);
-        ui->labelVUMeterTitleMiddleColor->setEnabled(true);
-        ui->buttonColorVUMeterTop->setEnabled(true);
-        ui->buttonColorVUMeterMiddle->setEnabled(true);
-        ui->buttonColorVUMeterBottom->setEnabled(true);
-        ui->labelVUMeterTitleWidth->setEnabled(true);
-        ui->labelVumeterTitleOpacity->setEnabled(true);
-        ui->sliderVUMeterWidth->setEnabled(true);
-        ui->sliderVumeterOpacity->setEnabled(true);
-        ui->labelVUMeterWidth->setEnabled(true);
-        ui->labelVumeterOpacity->setEnabled(true);
-        ui->checkBoxPeaks->setEnabled(true);
-        ui->labelVUMeterTitleFallingPeaks->setEnabled(true);
+        ui->checkBoxVuMeterEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelVuMeterBottomColor->setEnabled(true);
+        ui->labelVuMeterTopColor->setEnabled(true);
+        ui->labelVuMeterMiddleColor->setEnabled(true);
+        ui->buttonVuMeterTopColor->setEnabled(true);
+        ui->buttonVuMeterMiddleColor->setEnabled(true);
+        ui->buttonVuMeterBottomColor->setEnabled(true);
+        ui->labelVuMeterWidth->setEnabled(true);
+        ui->labelVuMeterOpacity->setEnabled(true);
+        ui->sliderVuMeterWidth->setEnabled(true);
+        ui->sliderVuMeterOpacity->setEnabled(true);
+        ui->labelVuMeterWidthValue->setEnabled(true);
+        ui->labelVuMeterOpacityValue->setEnabled(true);
+        ui->checkBoxVuMeterPeaks->setEnabled(true);
 
-        bool checkedPeaks = ui->checkBoxPeaks->checkState() == Qt::Checked ? true : false;
+        bool checkedPeaks = ui->checkBoxVuMeterPeaks->checkState() == Qt::Checked ? true : false;
         if (checkedPeaks)
         {
-            ui->checkBoxPeaks->setIcon(mainWindow->icons["checkbox-on"]);
-            ui->labelVUMeterPeakColor->setEnabled(true);
-            ui->labelTitleVUMeterPeak->setEnabled(true);
-            ui->buttonColorVUMeterPeak->setEnabled(true);
-            ui->sliderPeakHeight->setEnabled(true);
-            ui->labelVUMeterPeakHeight->setEnabled(true);
+            ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-on"]);
+            ui->labelVuMeterPeakColor->setEnabled(true);
+            ui->labelVuMeterPeakHeight->setEnabled(true);
+            ui->buttonVuMeterPeakColor->setEnabled(true);
+            ui->sliderVuMeterPeakHeight->setEnabled(true);
+            ui->labelVuMeterPeakHeightValue->setEnabled(true);
         }
         else
         {
-            ui->checkBoxPeaks->setIcon(mainWindow->icons["checkbox-off"]);
-            ui->labelVUMeterPeakColor->setEnabled(false);
-            ui->labelTitleVUMeterPeak->setEnabled(false);
-            ui->buttonColorVUMeterPeak->setEnabled(false);
-            ui->sliderPeakHeight->setEnabled(false);
-            ui->labelVUMeterPeakHeight->setEnabled(false);
+            ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-off"]);
+            ui->labelVuMeterPeakColor->setEnabled(false);
+            ui->labelVuMeterPeakHeight->setEnabled(false);
+            ui->buttonVuMeterPeakColor->setEnabled(false);
+            ui->sliderVuMeterPeakHeight->setEnabled(false);
+            ui->labelVuMeterPeakHeightValue->setEnabled(false);
         }
     }
     else
     {
-        ui->checkBoxVUMeterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelVUMeterTitleBottomColor->setEnabled(false);
-        ui->labelVUMeterTitleTopColor->setEnabled(false);
-        ui->labelVUMeterTitleMiddleColor->setEnabled(false);
-        ui->buttonColorVUMeterTop->setEnabled(false);
-        ui->buttonColorVUMeterMiddle->setEnabled(false);
-        ui->buttonColorVUMeterBottom->setEnabled(false);
-        ui->sliderPeakHeight->setEnabled(false);
-        ui->labelVUMeterPeakHeight->setEnabled(false);
-        ui->labelVUMeterTitleWidth->setEnabled(false);
-        ui->labelVumeterTitleOpacity->setEnabled(false);
-        ui->sliderVUMeterWidth->setEnabled(false);
-        ui->sliderVumeterOpacity->setEnabled(false);
-        ui->labelVUMeterWidth->setEnabled(false);
-        ui->labelVumeterOpacity->setEnabled(false);
+        ui->checkBoxVuMeterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelVuMeterBottomColor->setEnabled(false);
+        ui->labelVuMeterTopColor->setEnabled(false);
+        ui->labelVuMeterMiddleColor->setEnabled(false);
+        ui->buttonVuMeterTopColor->setEnabled(false);
+        ui->buttonVuMeterMiddleColor->setEnabled(false);
+        ui->buttonVuMeterBottomColor->setEnabled(false);
+        ui->sliderVuMeterPeakHeight->setEnabled(false);
+        ui->labelVuMeterPeakHeightValue->setEnabled(false);
+        ui->labelVuMeterWidth->setEnabled(false);
+        ui->labelVuMeterOpacity->setEnabled(false);
+        ui->sliderVuMeterWidth->setEnabled(false);
+        ui->sliderVuMeterOpacity->setEnabled(false);
+        ui->labelVuMeterWidthValue->setEnabled(false);
+        ui->labelVuMeterOpacityValue->setEnabled(false);
 
-        ui->checkBoxPeaks->setEnabled(false);
-        ui->labelVUMeterTitleFallingPeaks->setEnabled(false);
-        ui->labelVUMeterPeakColor->setEnabled(false);
-        ui->labelTitleVUMeterPeak->setEnabled(false);
-        ui->checkBoxPeaks->setEnabled(false);
-        ui->buttonColorVUMeterPeak->setEnabled(false);
-        ui->sliderPeakHeight->setEnabled(false);
-        ui->labelVUMeterPeakHeight->setEnabled(false);
+        ui->checkBoxVuMeterPeaks->setEnabled(false);
+        ui->labelVuMeterPeakColor->setEnabled(false);
+        ui->labelVuMeterPeakHeight->setEnabled(false);
+        ui->checkBoxVuMeterPeaks->setEnabled(false);
+        ui->buttonVuMeterPeakColor->setEnabled(false);
+        ui->sliderVuMeterPeakHeight->setEnabled(false);
+        ui->labelVuMeterPeakHeightValue->setEnabled(false);
     }
 }
 
@@ -2770,58 +2734,58 @@ void settingsWindow::on_checkBoxScrollerEnabled_toggled(bool checked)
     if (checkedScroller)
     {
         ui->checkBoxScrollerEnabled->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelTitleAmplitude->setEnabled(true);
-        ui->sliderAmplitude->setEnabled(true);
-        ui->labelAmplitude->setEnabled(true);
-        ui->labelTitleFrequency->setEnabled(true);
-        ui->sliderFrequency->setEnabled(true);
-        ui->labelFrequency->setEnabled(true);
-        ui->labelTitleSinusSpeed->setEnabled(true);
-        ui->sliderSinusSpeed->setEnabled(true);
-        ui->labelSinusSpeed->setEnabled(true);
-        ui->labelTitleScrollSpeed->setEnabled(true);
-        ui->sliderScrollSpeed->setEnabled(true);
-        ui->labelScrollSpeed->setEnabled(true);
-        ui->labelTitleVerticalScrollPosition->setEnabled(true);
-        ui->sliderVerticalScrollPosition->setEnabled(true);
-        ui->labelVerticalScrollPosition->setEnabled(true);
-        ui->labelTitleScrollerXScale->setEnabled(true);
-        ui->sliderScrollerXScale->setEnabled(true);
-        ui->labelScrollerXScale->setEnabled(true);
-        ui->labelTitleScrollerYScale->setEnabled(true);
-        ui->sliderScrollerYScale->setEnabled(true);
-        ui->labelScrollerYScale->setEnabled(true);
-        ui->labelTitleFont->setEnabled(true);
-        ui->labelTitleSinusFontScaling->setEnabled(true);
-        ui->checkBoxSinusFontScaling->setEnabled(true);
+        ui->labelScrollerAmplitude->setEnabled(true);
+        ui->sliderScrollerAmplitude->setEnabled(true);
+        ui->labelScrollerAmplitudeValue->setEnabled(true);
+        ui->labelScrollerFrequency->setEnabled(true);
+        ui->sliderScrollerFrequency->setEnabled(true);
+        ui->labelScrollerFrequencyValue->setEnabled(true);
+        ui->labelScrollerSinusSpeed->setEnabled(true);
+        ui->sliderScrollerSinusSpeed->setEnabled(true);
+        ui->labelScrollerSinusSpeedValue->setEnabled(true);
+        ui->labelScrollerScrollSpeed->setEnabled(true);
+        ui->sliderScrollerScrollSpeed->setEnabled(true);
+        ui->labelScrollerScrollSpeedValue->setEnabled(true);
+        ui->labelScrollerVerticalPosition->setEnabled(true);
+        ui->sliderScrollerVerticalPosition->setEnabled(true);
+        ui->labelScrollerVerticalPositionValue->setEnabled(true);
+        ui->labelScrollerFontXScale->setEnabled(true);
+        ui->sliderScrollerFontXScale->setEnabled(true);
+        ui->labelScrollerFontXScaleValue->setEnabled(true);
+        ui->labelScrollerFontYScale->setEnabled(true);
+        ui->sliderScrollerFontYScale->setEnabled(true);
+        ui->labelScrollerFontYScaleValue->setEnabled(true);
+        ui->checkBoxScrollerSinusFontScaling->setEnabled(true);
+        ui->checkBoxScrollerCustomTextEnabled->setEnabled(true);
+        ui->textEditScrollerCustomText->setEnabled(true);
     }
     else
     {
         ui->checkBoxScrollerEnabled->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelTitleAmplitude->setEnabled(false);
-        ui->sliderAmplitude->setEnabled(false);
-        ui->labelAmplitude->setEnabled(false);
-        ui->labelTitleFrequency->setEnabled(false);
-        ui->sliderFrequency->setEnabled(false);
-        ui->labelFrequency->setEnabled(false);
-        ui->labelTitleSinusSpeed->setEnabled(false);
-        ui->sliderSinusSpeed->setEnabled(false);
-        ui->labelSinusSpeed->setEnabled(false);
-        ui->labelTitleScrollSpeed->setEnabled(false);
-        ui->sliderScrollSpeed->setEnabled(false);
-        ui->labelScrollSpeed->setEnabled(false);
-        ui->labelTitleVerticalScrollPosition->setEnabled(false);
-        ui->sliderVerticalScrollPosition->setEnabled(false);
-        ui->labelVerticalScrollPosition->setEnabled(false);
-        ui->labelTitleScrollerXScale->setEnabled(false);
-        ui->sliderScrollerXScale->setEnabled(false);
-        ui->labelScrollerXScale->setEnabled(false);
-        ui->labelTitleScrollerYScale->setEnabled(false);
-        ui->sliderScrollerYScale->setEnabled(false);
-        ui->labelScrollerYScale->setEnabled(false);
-        ui->labelTitleFont->setEnabled(false);
-        ui->labelTitleSinusFontScaling->setEnabled(false);
-        ui->checkBoxSinusFontScaling->setEnabled(false);
+        ui->labelScrollerAmplitude->setEnabled(false);
+        ui->sliderScrollerAmplitude->setEnabled(false);
+        ui->labelScrollerAmplitudeValue->setEnabled(false);
+        ui->labelScrollerFrequency->setEnabled(false);
+        ui->sliderScrollerFrequency->setEnabled(false);
+        ui->labelScrollerFrequencyValue->setEnabled(false);
+        ui->labelScrollerSinusSpeed->setEnabled(false);
+        ui->sliderScrollerSinusSpeed->setEnabled(false);
+        ui->labelScrollerSinusSpeedValue->setEnabled(false);
+        ui->labelScrollerScrollSpeed->setEnabled(false);
+        ui->sliderScrollerScrollSpeed->setEnabled(false);
+        ui->labelScrollerScrollSpeedValue->setEnabled(false);
+        ui->labelScrollerVerticalPosition->setEnabled(false);
+        ui->sliderScrollerVerticalPosition->setEnabled(false);
+        ui->labelScrollerVerticalPositionValue->setEnabled(false);
+        ui->labelScrollerFontXScale->setEnabled(false);
+        ui->sliderScrollerFontXScale->setEnabled(false);
+        ui->labelScrollerFontXScaleValue->setEnabled(false);
+        ui->labelScrollerFontYScale->setEnabled(false);
+        ui->sliderScrollerFontYScale->setEnabled(false);
+        ui->labelScrollerFontYScaleValue->setEnabled(false);
+        ui->checkBoxScrollerSinusFontScaling->setEnabled(false);
+        ui->checkBoxScrollerCustomTextEnabled->setEnabled(false);
+        ui->textEditScrollerCustomText->setEnabled(true);
     }
 }
 
@@ -2833,68 +2797,66 @@ void settingsWindow::on_checkBoxPrinterEnabled_toggled(bool checked)
     if (checkedPrinter)
     {
         ui->checkBoxPrinterEnabled->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->sliderPrinterXScale->setEnabled(true);
-        ui->sliderPrinterYScale->setEnabled(true);
-        ui->labelTitlePrinterXScale->setEnabled(true);
-        ui->labelTitlePrinterYScale->setEnabled(true);
-        ui->labelPrinterXScale->setEnabled(true);
-        ui->labelPrinterYScale->setEnabled(true);
-        ui->labelTitlePrinterFont->setEnabled(true);
+        ui->sliderPrinterFontXScale->setEnabled(true);
+        ui->sliderPrinterFontYScale->setEnabled(true);
+        ui->labelPrinterFontXScale->setEnabled(true);
+        ui->labelPrinterFontYScale->setEnabled(true);
+        ui->labelPrinterFontXScaleValue->setEnabled(true);
+        ui->labelPrinterFontYScaleValue->setEnabled(true);
     }
     else
     {
         ui->checkBoxPrinterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->sliderPrinterXScale->setEnabled(false);
-        ui->sliderPrinterYScale->setEnabled(false);
-        ui->labelTitlePrinterXScale->setEnabled(false);
-        ui->labelTitlePrinterYScale->setEnabled(false);
-        ui->labelPrinterXScale->setEnabled(false);
-        ui->labelPrinterYScale->setEnabled(false);
-        ui->labelTitlePrinterFont->setEnabled(false);
+        ui->sliderPrinterFontXScale->setEnabled(false);
+        ui->sliderPrinterFontYScale->setEnabled(false);
+        ui->labelPrinterFontXScale->setEnabled(false);
+        ui->labelPrinterFontYScale->setEnabled(false);
+        ui->labelPrinterFontXScaleValue->setEnabled(false);
+        ui->labelPrinterFontYScaleValue->setEnabled(false);
     }
 }
 
 
-void settingsWindow::on_sliderNumberOfStars_valueChanged(int value)
+void settingsWindow::on_sliderStarfieldAmount_valueChanged(int value)
 {
     mainWindow->getEffect()->setNumberOfStars(value);
-    ui->labelNumberOfStars->setText(QString::number(value));
+    ui->labelStarfieldAmountValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_sliderStarSpeed_valueChanged(int value)
+void settingsWindow::on_sliderStarfieldSpeed_valueChanged(int value)
 {
     mainWindow->getEffect()->setStarSpeed(value);
-    ui->labelStarSpeed->setText(QString::number(value));
+    ui->labelStarfieldSpeedValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_comboBoxStarsDirection_textActivated(const QString& arg1)
+void settingsWindow::on_comboBoxStarfieldDirection_textActivated(const QString& arg1)
 {
-    QString selected = ui->comboBoxStarsDirection->itemData(ui->comboBoxStarsDirection->currentIndex()).toString();
+    QString selected = ui->comboBoxStarfieldDirection->itemData(ui->comboBoxStarfieldDirection->currentIndex()).toString();
     mainWindow->getEffect()->setStarsDirection(selected);
 }
-void settingsWindow::on_comboBox3dCubeModel_textActivated(const QString& arg1)
+void settingsWindow::on_comboBoxRotatingObjectModel_textActivated(const QString& arg1)
 {
-    QString selected = ui->comboBox3dCubeModel->itemData(ui->comboBox3dCubeModel->currentIndex()).toString();
+    QString selected = ui->comboBoxRotatingObjectModel->itemData(ui->comboBoxRotatingObjectModel->currentIndex()).toString();
     mainWindow->getEffect()->set3dCubeModel(selected);
 }
 
-void settingsWindow::on_comboBox3dCubeMaterial_textActivated(const QString& arg1)
+void settingsWindow::on_comboBoxRotatingObjectMaterial_textActivated(const QString& arg1)
 {
-    QString selected = ui->comboBox3dCubeMaterial->itemData(ui->comboBox3dCubeMaterial->currentIndex()).toString();
+    QString selected = ui->comboBoxRotatingObjectMaterial->itemData(ui->comboBoxRotatingObjectMaterial->currentIndex()).toString();
     mainWindow->getEffect()->set3dCubeMaterial(selected);
 }
 
-void settingsWindow::on_checkBoxSinusFontScaling_toggled(bool checked)
+void settingsWindow::on_checkBoxScrollerSinusFontScaling_toggled(bool checked)
 {
-    if (ui->checkBoxSinusFontScaling->isChecked())
+    if (ui->checkBoxScrollerSinusFontScaling->isChecked())
     {
-        ui->checkBoxSinusFontScaling->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxScrollerSinusFontScaling->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxSinusFontScaling->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxScrollerSinusFontScaling->setIcon(mainWindow->icons["checkbox-off"]);
     }
     mainWindow->getEffect()->setSinusFontScalingEnabled(checked);
 }
@@ -2902,73 +2864,73 @@ void settingsWindow::on_checkBoxSinusFontScaling_toggled(bool checked)
 
 void settingsWindow::on_buttonScrollerFontImage_clicked()
 {
-    if (ui->fontWidget->isHidden())
+    if (ui->albumGridScrollerFont->isHidden())
     {
-        ui->fontWidget->setVisible(true);
+        ui->albumGridScrollerFont->setVisible(true);
     }
     else
     {
-        ui->fontWidget->setVisible(false);
+        ui->albumGridScrollerFont->setVisible(false);
     }
 }
 
 
 void settingsWindow::on_buttonPrinterFontImage_clicked()
 {
-    if (ui->fontWidgetPrinter->isHidden())
+    if (ui->albumGridPrinterFont->isHidden())
     {
-        ui->fontWidgetPrinter->setVisible(true);
+        ui->albumGridPrinterFont->setVisible(true);
     }
     else
     {
-        ui->fontWidgetPrinter->setVisible(false);
+        ui->albumGridPrinterFont->setVisible(false);
     }
 }
 
 
-void settingsWindow::on_sliderResolutionWidth_valueChanged(int value)
+void settingsWindow::on_sliderVisualizerResolutionWidth_valueChanged(int value)
 {
     mainWindow->getEffect()->setResolutionWidth(value);
-    ui->labelResolutionWidth->setText(QString::number(value));
+    ui->labelVisualizerResolutionWidthValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_sliderResolutionHeight_valueChanged(int value)
+void settingsWindow::on_sliderVisualizerResolutionHeight_valueChanged(int value)
 {
     mainWindow->getEffect()->setResolutionHeight(value);
-    ui->labelResolutionHeight->setText(QString::number(value));
+    ui->labelVisualizerResolutionHeightValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_checkBoxAspectRatio_toggled(bool checked)
+void settingsWindow::on_checkBoxVisualizerMaintainAspectRatio_toggled(bool checked)
 {
-    bool checkedAspectRatio = ui->checkBoxAspectRatio->checkState() == Qt::Checked ? true : false;
+    bool checkedAspectRatio = ui->checkBoxVisualizerMaintainAspectRatio->checkState() == Qt::Checked ? true : false;
     if (checkedAspectRatio)
     {
-        ui->checkBoxAspectRatio->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxVisualizerMaintainAspectRatio->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxAspectRatio->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxVisualizerMaintainAspectRatio->setIcon(mainWindow->icons["checkbox-off"]);
     }
     mainWindow->getEffect()->setKeepAspectRatio(checkedAspectRatio);
 }
 
 
-void settingsWindow::on_comboBoxHvscSonglengthsUpdateFrequency_textActivated(const QString& arg1)
+void settingsWindow::on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString& arg1)
 {
-    QString selected = ui->comboBoxHvscSonglengthsUpdateFrequency->itemData(
-        ui->comboBoxHvscSonglengthsUpdateFrequency->currentIndex()).toString();
-    mainWindow->setHvscSonglengthsFrequency(selected);
+    QString selected = ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->itemData(
+        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->currentIndex()).toString();
+    mainWindow->setBundledHvscSonglengthsUpdateFrequency(selected);
 }
 
 
-void settingsWindow::on_buttonDownloadHvscSonglengths_clicked()
+void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsDownload_clicked()
 {
     QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
     mainWindow->filedownloader = new FileDownloader(imageUrl, this);
-    ui->buttonDownloadHvscSonglengths->setEnabled(true);
-    ui->buttonDownloadHvscSonglengths->setText("Downloading...");
+    ui->buttonLibsidplayfpHvscSonglengthsDownload->setEnabled(true);
+    ui->buttonLibsidplayfpHvscSonglengthsDownload->setText("Downloading...");
 
     connect(mainWindow->filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
 }
@@ -2977,30 +2939,34 @@ void settingsWindow::downloadHvscSonglengthsComplete()
 {
     if (mainWindow->filedownloader->downloadedData().size() > 0)
     {
-        QFile file(userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
+        QString hvscSonglengthsDownloadPath = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
+
+        QFile file(hvscSonglengthsDownloadPath);
         if (file.open(QIODevice::ReadWrite))
         {
             QTextStream stream(&file);
             stream << mainWindow->filedownloader->downloadedData();
             file.close();
-            QDateTime::currentDateTime().toSecsSinceEpoch();
-            QSettings settings(userPath + "/settings.ini",
-                               QSettings::IniFormat);
-            qint64 seconds = QDateTime::currentDateTime().toSecsSinceEpoch();
-            settings.setValue("libsidplayfp/timehvscsonglengthsdownloaded", seconds);
-            settings.setValue("libsidplayfp/hvscsonglengthspath",
-                              userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
-            mainWindow->HvscSonglengthsDownloadedEpoch = seconds;
-            mainWindow->addDebugText(
-                "Downloaded " + mainWindow->filedownloader->getUrl().toString() + " to " + file.fileName());
-            mainWindow->setHvscSonglengthsPathDownloaded(
-                userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH);
-            QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getHvscSonglengthsDownloaded());
-            ui->labelHvscSonglengthsDownloaded->setText(
-                "Downloaded HVSC Songlengths.md5 to " + mainWindow->getHvscSonglengthsPathDownloaded() + " at " + qdt.
-                toString("yyyy-MM-dd hh:mm:ss"));
-            ui->buttonDownloadHvscSonglengths->setEnabled(true);
-            ui->buttonDownloadHvscSonglengths->setText("Download now");
+
+            mainWindow->bundledHvscSonglengthsDownloadEpoch = QDateTime::currentDateTime().toSecsSinceEpoch();
+            mainWindow->setBundledHvscSonglengthsPath(hvscSonglengthsDownloadPath);
+
+            if (ui->lineEditLibsidplayfpHvscSonglengthsPath->text()
+                .compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
+                setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsDownloadPath);
+                mainWindow->setHvscSonglengthsPath(hvscSonglengthsDownloadPath);
+            }
+
+            QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscSonglengthsDownloadEpoch());
+            ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText(
+                "Downloaded to " + hvscSonglengthsDownloadPath + " at " + qdt.toString("yyyy-MM-dd hh:mm:ss"));
+            ui->buttonLibsidplayfpHvscSonglengthsDownload->setEnabled(true);
+            ui->buttonLibsidplayfpHvscSonglengthsDownload->setText("Download now");
+
+            QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
+            settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsPath", hvscSonglengthsDownloadPath);
+            settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch",
+                              mainWindow->bundledHvscSonglengthsDownloadEpoch);
         }
         else
         {
@@ -3013,235 +2979,231 @@ void settingsWindow::downloadHvscSonglengthsComplete()
     }
 }
 
-void settingsWindow::on_sliderNumberOfRasterBars_valueChanged(int value)
+void settingsWindow::on_sliderRasterBarsAmount_valueChanged(int value)
 {
     mainWindow->getEffect()->setNumberOfRasterBars(value);
-    ui->labelNumberOfRasterBars->setText(QString::number(value));
+    ui->labelRasterBarsAmountValue->setText(QString::number(value));
 }
 
 
 void settingsWindow::on_sliderRasterBarsVerticalSpacing_valueChanged(int value)
 {
     mainWindow->getEffect()->setRasterBarsVerticalSpacing(value);
-    ui->labelRasterBarsVerticalSpacing->setText(QString::number(value));
+    ui->labelRasterBarsVerticalSpacingValue->setText(QString::number(value));
 }
 
 
-void settingsWindow::on_sliderRasterBarsBarHeight_valueChanged(int value)
+void settingsWindow::on_sliderRasterBarsHeight_valueChanged(int value)
 {
     mainWindow->getEffect()->setRasterBarsBarHeight(value);
-    ui->labelRasterBarsBarHeight->setText(QString::number(value));
+    ui->labelRasterBarsHeightValue->setText(QString::number(value));
 }
 
 
 void settingsWindow::on_sliderRasterBarsSpeed_valueChanged(int value)
 {
     mainWindow->getEffect()->setRasterBarsSpeed(value);
-    ui->labelRasterBarsSpeed->setText(QString::number(value));
+    ui->labelRasterBarsSpeedValue->setText(QString::number(value));
 }
 
-void settingsWindow::on_sliderRasterbarsOpacity_valueChanged(int value)
+void settingsWindow::on_sliderRasterBarsOpacity_valueChanged(int value)
 {
     mainWindow->getEffect()->setRasterBarsOpacity(value);
-    ui->labelRasterbarsOpacity->setText(QString::number(value));
+    ui->labelRasterBarsOpacityValue->setText(QString::number(value));
 }
 
-void settingsWindow::on_checkBox3DCubeEnabled_toggled(bool checked)
+void settingsWindow::on_checkBoxRotatingObjectEnabled_toggled(bool checked)
 {
     bool checked3dCube = checked;
     mainWindow->getEffect()->set3DCubeEnabled(checked3dCube);
     if (checked3dCube)
     {
-        ui->checkBox3DCubeEnabled->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->slider3DCubeOrbitSize->setEnabled(true);
-        ui->label_3d_cube_orbit_size->setEnabled(true);
-        ui->label_3d_cube_orbit->setEnabled(true);
-        ui->label3DCubeOrbitSize->setEnabled(true);
-        ui->slider3DCubeOrbitSpeed->setEnabled(true);
-        ui->label_3d_cube_orbit_speed->setEnabled(true);
-        ui->label3DCubeOrbitSpeed->setEnabled(true);
-        ui->slider3DCubeFocalLength->setEnabled(true);
-        ui->label3DCubeFocalLength->setEnabled(true);
-        ui->label_3d_cube_focal_length->setEnabled(true);
-        ui->label_3d_cube_size->setEnabled(true);
-        ui->buttonColorWireframe3DCube->setEnabled(true);
-        ui->labelWireframeColorText->setEnabled(true);
-        ui->labelMaterialColorText->setEnabled(true);
-        ui->checkBox3DCubeOrbit->setEnabled(true);
-        ui->checkBox3DCubeWireframeEnabled->setEnabled(true);
-        ui->comboBox3dCubeMaterial->setEnabled(true);
-        ui->slider3DCubeSize->setEnabled(true);
-        ui->label_3d_cube_wireframe->setEnabled(true);
-        ui->label_3d_cube_material->setEnabled(true);
-        ui->label_3d_cube_model->setEnabled(true);
-        ui->comboBox3dCubeModel->setEnabled(true);
-        ui->buttonColor3DCube->setEnabled(true);
-        ui->label3DCubeSize->setEnabled(true);
+        ui->checkBoxRotatingObjectEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->sliderRotatingObjectOrbitSize->setEnabled(true);
+        ui->labelRotatingObjectOrbitSize->setEnabled(true);
+        ui->labelRotatingObjectOrbitSizeValue->setEnabled(true);
+        ui->sliderRotatingObjectSpeed->setEnabled(true);
+        ui->labelRotatingObjectOrbitSpeed->setEnabled(true);
+        ui->labelRotatingObjectOrbitSpeedValue->setEnabled(true);
+        ui->sliderRotatingObjectFocalLength->setEnabled(true);
+        ui->labelRotatingObjectFocalLengthValue->setEnabled(true);
+        ui->labelRotatingObjectFocalLength->setEnabled(true);
+        ui->labelRotatingObjectModelSize->setEnabled(true);
+        ui->buttonRotatingObjectWireframeColor->setEnabled(true);
+        ui->labelRotatingObjectWireframeColor->setEnabled(true);
+        ui->labelRotatingObjectMaterialColor->setEnabled(true);
+        ui->checkBoxRotatingObjectOrbit->setEnabled(true);
+        ui->checkBoxRotatingObjectWireframeEnabled->setEnabled(true);
+        ui->comboBoxRotatingObjectMaterial->setEnabled(true);
+        ui->sliderRotatingObjectModelSize->setEnabled(true);
+        ui->labelRotatingObjectMaterial->setEnabled(true);
+        ui->labelRotatingObjectModel->setEnabled(true);
+        ui->comboBoxRotatingObjectModel->setEnabled(true);
+        ui->buttonRotatingObjectMaterialColor->setEnabled(true);
+        ui->labelRotatingObjectModelSizeValue->setEnabled(true);
     }
     else
     {
-        ui->checkBox3DCubeEnabled->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->slider3DCubeOrbitSize->setEnabled(false);
-        ui->label_3d_cube_orbit_size->setEnabled(false);
-        ui->label_3d_cube_orbit->setEnabled(false);
-        ui->label3DCubeOrbitSize->setEnabled(false);
-        ui->slider3DCubeOrbitSpeed->setEnabled(false);
-        ui->label_3d_cube_orbit_speed->setEnabled(false);
-        ui->label3DCubeOrbitSpeed->setEnabled(false);
-        ui->slider3DCubeFocalLength->setEnabled(false);
-        ui->label3DCubeFocalLength->setEnabled(false);
-        ui->label_3d_cube_focal_length->setEnabled(false);
-        ui->label_3d_cube_size->setEnabled(false);
-        ui->buttonColorWireframe3DCube->setEnabled(false);
-        ui->labelWireframeColorText->setEnabled(false);
-        ui->labelMaterialColorText->setEnabled(false);
-        ui->checkBox3DCubeOrbit->setEnabled(false);
-        ui->checkBox3DCubeWireframeEnabled->setEnabled(false);
-        ui->comboBox3dCubeMaterial->setEnabled(false);
-        ui->slider3DCubeSize->setEnabled(false);
-        ui->label_3d_cube_wireframe->setEnabled(false);
-        ui->label_3d_cube_material->setEnabled(false);
-        ui->label_3d_cube_model->setEnabled(false);
-        ui->comboBox3dCubeModel->setEnabled(false);
-        ui->buttonColor3DCube->setEnabled(false);
-        ui->label3DCubeSize->setEnabled(false);
+        ui->checkBoxRotatingObjectEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->sliderRotatingObjectOrbitSize->setEnabled(false);
+        ui->labelRotatingObjectOrbitSize->setEnabled(false);
+        ui->labelRotatingObjectOrbitSizeValue->setEnabled(false);
+        ui->sliderRotatingObjectSpeed->setEnabled(false);
+        ui->labelRotatingObjectOrbitSpeed->setEnabled(false);
+        ui->labelRotatingObjectOrbitSpeedValue->setEnabled(false);
+        ui->sliderRotatingObjectFocalLength->setEnabled(false);
+        ui->labelRotatingObjectFocalLengthValue->setEnabled(false);
+        ui->labelRotatingObjectFocalLength->setEnabled(false);
+        ui->labelRotatingObjectModelSize->setEnabled(false);
+        ui->buttonRotatingObjectWireframeColor->setEnabled(false);
+        ui->labelRotatingObjectWireframeColor->setEnabled(false);
+        ui->labelRotatingObjectMaterialColor->setEnabled(false);
+        ui->checkBoxRotatingObjectOrbit->setEnabled(false);
+        ui->checkBoxRotatingObjectWireframeEnabled->setEnabled(false);
+        ui->comboBoxRotatingObjectMaterial->setEnabled(false);
+        ui->sliderRotatingObjectModelSize->setEnabled(false);
+        ui->labelRotatingObjectMaterial->setEnabled(false);
+        ui->labelRotatingObjectModel->setEnabled(false);
+        ui->comboBoxRotatingObjectModel->setEnabled(false);
+        ui->buttonRotatingObjectMaterialColor->setEnabled(false);
+        ui->labelRotatingObjectModelSizeValue->setEnabled(false);
     }
 }
-void settingsWindow::on_checkBox3DCubeOrbit_toggled(bool checked)
+void settingsWindow::on_checkBoxRotatingObjectOrbit_toggled(bool checked)
 {
-    bool checked3dCubeOrbit = ui->checkBox3DCubeOrbit->checkState() == Qt::Checked ? true : false;
+    bool checked3dCubeOrbit = ui->checkBoxRotatingObjectOrbit->checkState() == Qt::Checked ? true : false;
     mainWindow->getEffect()->set3DCubeOrbit(checked3dCubeOrbit);
     if (checked3dCubeOrbit)
     {
-        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->slider3DCubeOrbitSize->setEnabled(true);
-        ui->label_3d_cube_orbit_size->setEnabled(true);
-        ui->label3DCubeOrbitSize->setEnabled(true);
-        ui->slider3DCubeOrbitSpeed->setEnabled(true);
-        ui->label_3d_cube_orbit_speed->setEnabled(true);
-        ui->label3DCubeOrbitSpeed->setEnabled(true);
+        ui->checkBoxRotatingObjectOrbit->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->sliderRotatingObjectOrbitSize->setEnabled(true);
+        ui->labelRotatingObjectOrbitSize->setEnabled(true);
+        ui->labelRotatingObjectOrbitSizeValue->setEnabled(true);
+        ui->sliderRotatingObjectSpeed->setEnabled(true);
+        ui->labelRotatingObjectOrbitSpeed->setEnabled(true);
+        ui->labelRotatingObjectOrbitSpeedValue->setEnabled(true);
     }
     else
     {
-        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->slider3DCubeOrbitSize->setEnabled(false);
-        ui->label_3d_cube_orbit_size->setEnabled(false);
-        ui->label3DCubeOrbitSize->setEnabled(false);
-        ui->slider3DCubeOrbitSpeed->setEnabled(false);
-        ui->label_3d_cube_orbit_speed->setEnabled(false);
-        ui->label3DCubeOrbitSpeed->setEnabled(false);
+        ui->checkBoxRotatingObjectOrbit->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->sliderRotatingObjectOrbitSize->setEnabled(false);
+        ui->labelRotatingObjectOrbitSize->setEnabled(false);
+        ui->labelRotatingObjectOrbitSizeValue->setEnabled(false);
+        ui->sliderRotatingObjectSpeed->setEnabled(false);
+        ui->labelRotatingObjectOrbitSpeed->setEnabled(false);
+        ui->labelRotatingObjectOrbitSpeedValue->setEnabled(false);
     }
 }
 
-void settingsWindow::on_checkBox3DCubeWireframeEnabled_toggled(bool checked)
+void settingsWindow::on_checkBoxRotatingObjectWireframeEnabled_toggled(bool checked)
 {
-    bool checked3dCubeWireframeEnabled = ui->checkBox3DCubeWireframeEnabled->checkState() == Qt::Checked ? true : false;
+    bool checked3dCubeWireframeEnabled = ui->checkBoxRotatingObjectWireframeEnabled->checkState() == Qt::Checked ? true : false;
     mainWindow->getEffect()->set3DCubeWireframeEnabled(checked3dCubeWireframeEnabled);
     if (checked3dCubeWireframeEnabled)
     {
-        ui->checkBox3DCubeWireframeEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxRotatingObjectWireframeEnabled->setIcon(mainWindow->icons["checkbox-on"]);
 
     }
     else
     {
-        ui->checkBox3DCubeWireframeEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxRotatingObjectWireframeEnabled->setIcon(mainWindow->icons["checkbox-off"]);
 
     }
 }
-void settingsWindow::on_checkBoxRasterbarsEnabled_toggled(bool checked)
+void settingsWindow::on_checkBoxRasterBarsEnabled_toggled(bool checked)
 {
-    bool checkedRasterbars = ui->checkBoxRasterbarsEnabled->checkState() == Qt::Checked ? true : false;
+    bool checkedRasterbars = ui->checkBoxRasterBarsEnabled->checkState() == Qt::Checked ? true : false;
     mainWindow->getEffect()->setRasterBarsEnabled(checkedRasterbars);
     if (checkedRasterbars)
     {
-        ui->checkBoxRasterbarsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelTitleNumberOfRasterBars->setEnabled(true);
-        ui->sliderNumberOfRasterBars->setEnabled(true);
-        ui->labelNumberOfRasterBars->setEnabled(true);
-        ui->labelTitleRasterBarsBarHeight->setEnabled(true);
-        ui->sliderRasterBarsBarHeight->setEnabled(true);
-        ui->labelRasterBarsBarHeight->setEnabled(true);
-        ui->labelTitleRasterBarsVerticalSpacing->setEnabled(true);
-        ui->sliderRasterBarsVerticalSpacing->setEnabled(true);
+        ui->checkBoxRasterBarsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelRasterBarsAmount->setEnabled(true);
+        ui->sliderRasterBarsAmount->setEnabled(true);
+        ui->labelRasterBarsAmountValue->setEnabled(true);
+        ui->labelRasterBarsHeight->setEnabled(true);
+        ui->sliderRasterBarsHeight->setEnabled(true);
+        ui->labelRasterBarsHeightValue->setEnabled(true);
         ui->labelRasterBarsVerticalSpacing->setEnabled(true);
-        ui->labelTitleRasterBarsSpeed->setEnabled(true);
-        ui->sliderRasterBarsSpeed->setEnabled(true);
+        ui->sliderRasterBarsVerticalSpacing->setEnabled(true);
+        ui->labelRasterBarsVerticalSpacingValue->setEnabled(true);
         ui->labelRasterBarsSpeed->setEnabled(true);
-        ui->labelTitleRasterbarsOpacity->setEnabled(true);
-        ui->sliderRasterbarsOpacity->setEnabled(true);
-        ui->labelRasterbarsOpacity->setEnabled(true);
+        ui->sliderRasterBarsSpeed->setEnabled(true);
+        ui->labelRasterBarsSpeedValue->setEnabled(true);
+        ui->labelRasterBarsOpacity->setEnabled(true);
+        ui->sliderRasterBarsOpacity->setEnabled(true);
+        ui->labelRasterBarsOpacityValue->setEnabled(true);
     }
     else
     {
-        ui->checkBoxRasterbarsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelTitleNumberOfRasterBars->setEnabled(false);
-        ui->sliderNumberOfRasterBars->setEnabled(false);
-        ui->labelNumberOfRasterBars->setEnabled(false);
-        ui->labelTitleRasterBarsBarHeight->setEnabled(false);
-        ui->sliderRasterBarsBarHeight->setEnabled(false);
-        ui->labelRasterBarsBarHeight->setEnabled(false);
-        ui->labelTitleRasterBarsVerticalSpacing->setEnabled(false);
-        ui->sliderRasterBarsVerticalSpacing->setEnabled(false);
+        ui->checkBoxRasterBarsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelRasterBarsAmount->setEnabled(false);
+        ui->sliderRasterBarsAmount->setEnabled(false);
+        ui->labelRasterBarsAmountValue->setEnabled(false);
+        ui->labelRasterBarsHeight->setEnabled(false);
+        ui->sliderRasterBarsHeight->setEnabled(false);
+        ui->labelRasterBarsHeightValue->setEnabled(false);
         ui->labelRasterBarsVerticalSpacing->setEnabled(false);
-        ui->labelTitleRasterBarsSpeed->setEnabled(false);
-        ui->sliderRasterBarsSpeed->setEnabled(false);
+        ui->sliderRasterBarsVerticalSpacing->setEnabled(false);
+        ui->labelRasterBarsVerticalSpacingValue->setEnabled(false);
         ui->labelRasterBarsSpeed->setEnabled(false);
-        ui->labelTitleRasterbarsOpacity->setEnabled(false);
-        ui->sliderRasterbarsOpacity->setEnabled(false);
-        ui->labelRasterbarsOpacity->setEnabled(false);
+        ui->sliderRasterBarsSpeed->setEnabled(false);
+        ui->labelRasterBarsSpeedValue->setEnabled(false);
+        ui->labelRasterBarsOpacity->setEnabled(false);
+        ui->sliderRasterBarsOpacity->setEnabled(false);
+        ui->labelRasterBarsOpacityValue->setEnabled(false);
     }
 }
 
 
-void settingsWindow::on_checkBoxCustomScrolltextEnabled_toggled(bool checked)
+void settingsWindow::on_checkBoxScrollerCustomTextEnabled_toggled(bool checked)
 {
-    bool checkedCustomScrolltextEnabled = ui->checkBoxCustomScrolltextEnabled->checkState() == Qt::Checked
+    bool checkedCustomScrolltextEnabled = ui->checkBoxScrollerCustomTextEnabled->checkState() == Qt::Checked
                                               ? true
                                               : false;
     if (checkedCustomScrolltextEnabled)
     {
-        ui->checkBoxCustomScrolltextEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxScrollerCustomTextEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxCustomScrolltextEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxScrollerCustomTextEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
     mainWindow->getEffect()->setCustomScrolltextEnabled(checkedCustomScrolltextEnabled);
     updateScrollText();
-    ui->textEditCustomScrolltext->setEnabled(checkedCustomScrolltextEnabled);
+    ui->textEditScrollerCustomText->setEnabled(checkedCustomScrolltextEnabled);
 }
 
 void settingsWindow::updateScrollText()
 {
-    mainWindow->getEffect()->setCustomScrolltext(ui->textEditCustomScrolltext->toPlainText());
+    mainWindow->getEffect()->setCustomScrolltext(ui->textEditScrollerCustomText->toPlainText());
     mainWindow->updateScrollText();
 }
 
 void settingsWindow::updateCheckBoxes()
 {
-    if (ui->checkBoxCustomScrolltextEnabled->isChecked())
+    if (ui->checkBoxScrollerCustomTextEnabled->isChecked())
     {
-        ui->checkBoxCustomScrolltextEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxScrollerCustomTextEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxCustomScrolltextEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxScrollerCustomTextEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxSinusFontScaling->isChecked())
+    if (ui->checkBoxScrollerSinusFontScaling->isChecked())
     {
-        ui->checkBoxSinusFontScaling->setIcon(mainWindow->icons["checkbox-on"]);
-    }
-    else
-    {
-        ui->checkBoxSinusFontScaling->setIcon(mainWindow->icons["checkbox-off"]);
-    }
-    if (ui->checkBoxPeaks->isChecked())
-    {
-        ui->checkBoxPeaks->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxScrollerSinusFontScaling->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxPeaks->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxScrollerSinusFontScaling->setIcon(mainWindow->icons["checkbox-off"]);
+    }
+    if (ui->checkBoxVuMeterPeaks->isChecked())
+    {
+        ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-off"]);
     }
     if (ui->checkBoxReflectionEnabled->isChecked())
     {
@@ -3259,45 +3221,45 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxScrollerEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxRasterbarsEnabled->isChecked())
+    if (ui->checkBoxRasterBarsEnabled->isChecked())
     {
-        ui->checkBoxRasterbarsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxRasterBarsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxRasterbarsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxRasterBarsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBox3DCubeEnabled->isChecked())
+    if (ui->checkBoxRotatingObjectEnabled->isChecked())
     {
-        ui->checkBox3DCubeEnabled->setIcon(mainWindow->icons["checkbox-on"]);
-    }
-    else
-    {
-        ui->checkBox3DCubeEnabled->setIcon(mainWindow->icons["checkbox-off"]);
-    }
-    if (ui->checkBox3DCubeWireframeEnabled->isChecked())
-    {
-        ui->checkBox3DCubeWireframeEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxRotatingObjectEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBox3DCubeWireframeEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxRotatingObjectEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBox3DCubeOrbit->isChecked())
+    if (ui->checkBoxRotatingObjectWireframeEnabled->isChecked())
     {
-        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-on"]);
-    }
-    else
-    {
-        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-off"]);
-    }
-    if (ui->checkBox3DCubeOrbit->isChecked())
-    {
-        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxRotatingObjectWireframeEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBox3DCubeOrbit->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxRotatingObjectWireframeEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+    }
+    if (ui->checkBoxRotatingObjectOrbit->isChecked())
+    {
+        ui->checkBoxRotatingObjectOrbit->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBoxRotatingObjectOrbit->setIcon(mainWindow->icons["checkbox-off"]);
+    }
+    if (ui->checkBoxRotatingObjectOrbit->isChecked())
+    {
+        ui->checkBoxRotatingObjectOrbit->setIcon(mainWindow->icons["checkbox-on"]);
+    }
+    else
+    {
+        ui->checkBoxRotatingObjectOrbit->setIcon(mainWindow->icons["checkbox-off"]);
     }
     if (ui->checkBoxPrinterEnabled->isChecked())
     {
@@ -3315,94 +3277,94 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxStarsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxAspectRatio->isChecked())
+    if (ui->checkBoxVisualizerMaintainAspectRatio->isChecked())
     {
-        ui->checkBoxAspectRatio->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxVisualizerMaintainAspectRatio->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxAspectRatio->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxVisualizerMaintainAspectRatio->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxVUMeterEnabled->isChecked())
+    if (ui->checkBoxVuMeterEnabled->isChecked())
     {
-        ui->checkBoxVUMeterEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxVuMeterEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxVUMeterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxVuMeterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
 
-    ui->checkBoxContinuousPlaybackAdplug->setIcon(
-            mainWindow->icons[ui->checkBoxContinuousPlaybackAdplug->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxAdPlugContinuousPlayback->setIcon(
+            mainWindow->icons[ui->checkBoxAdPlugContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
-    ui->checkBoxContinuousPlaybackHivelytracker->setIcon(
-        mainWindow->icons[ui->checkBoxContinuousPlaybackHivelytracker->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxHivelyTrackerContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxHivelyTrackerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
-    ui->checkBoxContinuousPlaybackLibvgm->setIcon(
-        mainWindow->icons[ui->checkBoxContinuousPlaybackLibvgm->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLibvgmContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxLibvgmContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
-    ui->checkBoxContinuousPlaybackSndhPlayer->setIcon(
-        mainWindow->icons[ui->checkBoxContinuousPlaybackSndhPlayer->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxSndhPlayerContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxSndhPlayerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
-    ui->checkBoxContinuousPlaybackVgmstream->setIcon(
-    mainWindow->icons[ui->checkBoxContinuousPlaybackVgmstream->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxVgmstreamContinuousPlayback->setIcon(
+    mainWindow->icons[ui->checkBoxVgmstreamContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
-    ui->checkBoxContinuousPlaybackOpenMPT->setIcon(
-        mainWindow->icons[ui->checkBoxContinuousPlaybackOpenMPT->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLibopenmptContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxLibopenmptContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
-    ui->checkBoxSeamlessLoopFmod->setIcon(
-        mainWindow->icons[ui->checkBoxSeamlessLoopFmod->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxFmodSeamlessLoop->setIcon(
+        mainWindow->icons[ui->checkBoxFmodSeamlessLoop->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
-    if (ui->checkBoxFilterOpenMPT->isChecked())
+    if (ui->checkBoxLibopenmptAmigaResampler->isChecked())
     {
-        ui->checkBoxFilterOpenMPT->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxFilterOpenMPT->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxFilterEmuUade->isChecked())
+    if (ui->checkBoxUadeFilterEmu->isChecked())
     {
-        ui->checkBoxFilterEmuUade->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxFilterEmuUade->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxSilenceTimeoutUade->isChecked())
+    if (ui->checkBoxUadeSilenceTimeout->isChecked())
     {
-        ui->checkBoxSilenceTimeoutUade->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxSilenceTimeoutUade->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-off"]);
     }
 
-    ui->checkBoxContinuousPlaybackUade->setIcon(
-        mainWindow->icons[ui->checkBoxContinuousPlaybackUade->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxUadeContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxUadeContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
-    if (ui->checkBoxSongLengthUade->isChecked())
+    if (ui->checkBoxUadeSongLengths->isChecked())
     {
-        ui->checkBoxSongLengthUade->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxSongLengthUade->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxHvscSonglengthsEnabled->isChecked())
+    if (ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->isChecked())
     {
-        ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
 
-    ui->checkBoxSIDContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxSIDContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLibsidplayfpContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxLibsidplayfpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
-    ui->checkBoxContinuousPlaybackLibxmp->setIcon(
-        mainWindow->icons[ui->checkBoxContinuousPlaybackLibxmp->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLibxmpContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxLibxmpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
     if (ui->checkBoxOnlyOneInstance->isChecked())
     {
@@ -3414,8 +3376,8 @@ void settingsWindow::updateCheckBoxes()
     }
 
     ui->checkBoxSystray->setIcon(mainWindow->icons[ui->checkBoxSystray->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxSystrayOnMinimize->setIcon(
-        mainWindow->icons[ui->checkBoxSystrayOnMinimize->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxMinimizeToSystray->setIcon(
+        mainWindow->icons[ui->checkBoxMinimizeToSystray->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
     ui->checkBoxMenuBarHidden->setIcon(
         mainWindow->icons[ui->checkBoxMenuBarHidden->isChecked() ? "checkbox-on" : "checkbox-off"]);
@@ -3444,13 +3406,13 @@ void settingsWindow::updateCheckBoxes()
     {
         ui->checkBoxEnqueueItems->setIcon(mainWindow->icons["checkbox-off"]);
     }
-    if (ui->checkBoxResetVolume->isChecked())
+    if (ui->checkBoxDefaultAudioLevel->isChecked())
     {
-        ui->checkBoxResetVolume->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxDefaultAudioLevel->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxResetVolume->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxDefaultAudioLevel->setIcon(mainWindow->icons["checkbox-off"]);
     }
     if (ui->checkBoxMilliseconds->isChecked())
     {
@@ -3483,142 +3445,138 @@ void settingsWindow::updateCheckBoxes()
 
 void settingsWindow::forceUpdateToSliders()
 {
-    on_sliderVumeterOpacity_valueChanged(ui->sliderVumeterOpacity->value());
-    on_sliderAmplitude_valueChanged(ui->sliderAmplitude->value());
-    on_sliderFrequency_valueChanged(ui->sliderFrequency->value());
-    on_sliderSinusSpeed_valueChanged(ui->sliderSinusSpeed->value());
-    on_sliderScrollSpeed_valueChanged(ui->sliderScrollSpeed->value());
-    on_sliderVerticalScrollPosition_valueChanged(ui->sliderVerticalScrollPosition->value());
-    on_sliderScrollerXScale_valueChanged(ui->sliderScrollerXScale->value());
-    on_sliderScrollerYScale_valueChanged(ui->sliderScrollerYScale->value());
-    on_sliderPrinterXScale_valueChanged(ui->sliderPrinterXScale->value());
-    on_sliderPrinterYScale_valueChanged(ui->sliderPrinterYScale->value());
-    on_sliderPeakHeight_valueChanged(ui->sliderPeakHeight->value());
+    on_sliderVuMeterOpacity_valueChanged(ui->sliderVuMeterOpacity->value());
+    on_sliderScrollerAmplitude_valueChanged(ui->sliderScrollerAmplitude->value());
+    on_sliderScrollerFrequency_valueChanged(ui->sliderScrollerFrequency->value());
+    on_sliderScrollerSinusSpeed_valueChanged(ui->sliderScrollerSinusSpeed->value());
+    on_sliderScrollerScrollSpeed_valueChanged(ui->sliderScrollerScrollSpeed->value());
+    on_sliderScrollerVerticalPosition_valueChanged(ui->sliderScrollerVerticalPosition->value());
+    on_sliderScrollerFontXScale_valueChanged(ui->sliderScrollerFontXScale->value());
+    on_sliderScrollerFontYScale_valueChanged(ui->sliderScrollerFontYScale->value());
+    on_sliderPrinterFontXScale_valueChanged(ui->sliderPrinterFontXScale->value());
+    on_sliderPrinterFontYScale_valueChanged(ui->sliderPrinterFontYScale->value());
+    on_sliderVuMeterPeakHeight_valueChanged(ui->sliderVuMeterPeakHeight->value());
     on_sliderReflectionOpacity_valueChanged(ui->sliderReflectionOpacity->value());
-    on_sliderPlaylistsRowHeight_valueChanged(ui->sliderPlaylistsRowHeight->value());
-    on_sliderRowHeight_valueChanged(ui->sliderRowHeight->value());
-    on_sliderNowPlayingFontSize_valueChanged(ui->sliderNowPlayingFontSize->value());
-    on_sliderResetVolumeToValue_valueChanged(ui->sliderResetVolumeToValue->value());
-    on_SliderNormalizerFadeTim_valueChanged(ui->SliderNormalizerFadeTim->value());
-    on_SliderNormalizerMaxAmp_valueChanged(ui->SliderNormalizerMaxAmp->value());
-    on_SliderNormalizerThreshold_valueChanged(ui->SliderNormalizerThreshold->value());
-    on_sliderNumberOfStars_valueChanged(ui->sliderNumberOfStars->value());
-    on_sliderStarSpeed_valueChanged(ui->sliderStarSpeed->value());
-    on_sliderResolutionWidth_valueChanged(ui->sliderResolutionWidth->value());
-    on_sliderResolutionHeight_valueChanged(ui->sliderResolutionHeight->value());
-    on_sliderRasterBarsBarHeight_valueChanged(ui->sliderRasterBarsBarHeight->value());
+    on_sliderAppearancePlaylistRowHeight_valueChanged(ui->sliderAppearancePlaylistRowHeight->value());
+    on_sliderAppearancePlaylistItemRowHeight_valueChanged(ui->sliderAppearancePlaylistItemRowHeight->value());
+    on_sliderAppearanceNowPlayingFontSize_valueChanged(ui->sliderAppearanceNowPlayingFontSize->value());
+    on_sliderDefaultAudioLevel_valueChanged(ui->sliderDefaultAudioLevel->value());
+    on_sliderNormalizerFadeTime_valueChanged(ui->sliderNormalizerFadeTime->value());
+    on_sliderNormalizerMaxAmp_valueChanged(ui->sliderNormalizerMaxAmp->value());
+    on_sliderNormalizerThreshold_valueChanged(ui->sliderNormalizerThreshold->value());
+    on_sliderStarfieldAmount_valueChanged(ui->sliderStarfieldAmount->value());
+    on_sliderStarfieldSpeed_valueChanged(ui->sliderStarfieldSpeed->value());
+    on_sliderVisualizerResolutionWidth_valueChanged(ui->sliderVisualizerResolutionWidth->value());
+    on_sliderVisualizerResolutionHeight_valueChanged(ui->sliderVisualizerResolutionHeight->value());
+    on_sliderRasterBarsHeight_valueChanged(ui->sliderRasterBarsHeight->value());
     on_sliderRasterBarsSpeed_valueChanged(ui->sliderRasterBarsSpeed->value());
-    on_sliderRasterbarsOpacity_valueChanged(ui->sliderRasterbarsOpacity->value());
+    on_sliderRasterBarsOpacity_valueChanged(ui->sliderRasterBarsOpacity->value());
     on_sliderRasterBarsVerticalSpacing_valueChanged(ui->sliderRasterBarsVerticalSpacing->value());
-    on_sliderNumberOfRasterBars_valueChanged(ui->sliderNumberOfRasterBars->value());
-    on_slider3DCubeFocalLength_valueChanged(ui->slider3DCubeFocalLength->value());
-    on_slider3DCubeSize_valueChanged(ui->slider3DCubeSize->value());
+    on_sliderRasterBarsAmount_valueChanged(ui->sliderRasterBarsAmount->value());
+    on_sliderRotatingObjectFocalLength_valueChanged(ui->sliderRotatingObjectFocalLength->value());
+    on_sliderRotatingObjectModelSize_valueChanged(ui->sliderRotatingObjectModelSize->value());
 }
 
-void settingsWindow::on_checkBoxContinuousPlaybackAdplug_toggled()
+void settingsWindow::on_checkBoxAdPlugContinuousPlayback_toggled()
 {
-    ui->checkBoxContinuousPlaybackAdplug->setIcon(
-        mainWindow->icons[(ui->checkBoxContinuousPlaybackAdplug->isChecked() ? "checkbox-on" : "checkbox-off")]);
+    ui->checkBoxAdPlugContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxAdPlugContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
-void settingsWindow::on_checkBoxContinuousPlaybackHivelytracker_toggled()
+void settingsWindow::on_checkBoxHivelyTrackerContinuousPlayback_toggled()
 {
-    ui->checkBoxContinuousPlaybackHivelytracker->setIcon(
-        mainWindow->icons[(ui->checkBoxContinuousPlaybackHivelytracker->isChecked() ? "checkbox-on" : "checkbox-off")]);
+    ui->checkBoxHivelyTrackerContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxHivelyTrackerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
-void settingsWindow::on_checkBoxContinuousPlaybackLibvgm_toggled()
+void settingsWindow::on_checkBoxLibvgmContinuousPlayback_toggled()
 {
-    ui->checkBoxContinuousPlaybackLibvgm->setIcon(
-        mainWindow->icons[(ui->checkBoxContinuousPlaybackLibvgm->isChecked() ? "checkbox-on" : "checkbox-off")]);
+    ui->checkBoxLibvgmContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxLibvgmContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
-void settingsWindow::on_checkBoxContinuousPlaybackSndhPlayer_toggled()
+void settingsWindow::on_checkBoxSndhPlayerContinuousPlayback_toggled()
 {
-    ui->checkBoxContinuousPlaybackSndhPlayer->setIcon(
-        mainWindow->icons[(ui->checkBoxContinuousPlaybackSndhPlayer->isChecked() ? "checkbox-on" : "checkbox-off")]);
+    ui->checkBoxSndhPlayerContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxSndhPlayerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
-void settingsWindow::on_checkBoxContinuousPlaybackUade_toggled()
+void settingsWindow::on_checkBoxUadeContinuousPlayback_toggled()
 {
-    ui->checkBoxContinuousPlaybackUade->setIcon(
-        mainWindow->icons[(ui->checkBoxContinuousPlaybackUade->isChecked() ? "checkbox-on" : "checkbox-off")]);
+    ui->checkBoxUadeContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxUadeContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
-void settingsWindow::on_checkBoxContinuousPlaybackVgmstream_toggled()
+void settingsWindow::on_checkBoxVgmstreamContinuousPlayback_toggled()
 {
-    ui->checkBoxContinuousPlaybackVgmstream->setIcon(
-        mainWindow->icons[(ui->checkBoxContinuousPlaybackVgmstream->isChecked() ? "checkbox-on" : "checkbox-off")]);
+    ui->checkBoxVgmstreamContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxVgmstreamContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
-void settingsWindow::on_checkBoxSeamlessLoopFmod_toggled() {
-    ui->checkBoxSeamlessLoopFmod->setIcon(
-        mainWindow->icons[(ui->checkBoxSeamlessLoopFmod->isChecked() ? "checkbox-on" : "checkbox-off")]);
+void settingsWindow::on_checkBoxFmodSeamlessLoop_toggled() {
+    ui->checkBoxFmodSeamlessLoop->setIcon(
+        mainWindow->icons[(ui->checkBoxFmodSeamlessLoop->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
-void settingsWindow::on_checkBoxSongLengthUade_toggled(bool checked)
+void settingsWindow::on_checkBoxUadeSongLengths_toggled(bool checked)
 {
-    bool checkedSongLengthUade = ui->checkBoxSongLengthUade->checkState() == Qt::Checked ? true : false;
+    bool checkedSongLengthUade = ui->checkBoxUadeSongLengths->checkState() == Qt::Checked ? true : false;
     if (checkedSongLengthUade)
     {
-        ui->checkBoxSongLengthUade->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelUadeSongFilePath->setEnabled(true);
-        ui->lineEditUadeSonglength->setEnabled(true);
-        ui->buttonBrowseUadeSonglengths->setEnabled(true);
+        ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->lineEditUadeSonglengthsPath->setEnabled(true);
+        ui->buttonUadeSonglengthsBrowse->setEnabled(true);
     }
     else
     {
-        ui->checkBoxSongLengthUade->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelUadeSongFilePath->setEnabled(false);
-        ui->lineEditUadeSonglength->setEnabled(false);
-        ui->buttonBrowseUadeSonglengths->setEnabled(false);
+        ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->lineEditUadeSonglengthsPath->setEnabled(false);
+        ui->buttonUadeSonglengthsBrowse->setEnabled(false);
     }
 }
 
 
-void settingsWindow::on_checkBoxHvscSonglengthsEnabled_toggled(bool checked)
+void settingsWindow::on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled(bool checked)
 {
-    ui->labelHvscSonglengthsFilePath->setEnabled(checked);
-    ui->lineEditHvscSonglength->setEnabled(checked);
-    ui->buttonBrowseHvscSonglengths->setEnabled(checked);
-    ui->checkBoxSIDContinuousPlayback->setEnabled(checked);
-    if (ui->checkBoxHvscSonglengthsEnabled->isChecked())
+    ui->lineEditLibsidplayfpHvscSonglengthsPath->setEnabled(checked);
+    ui->buttonLibsidplayfpHvscSonglengthsBrowse->setEnabled(checked);
+    if (ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->isChecked())
     {
-        ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
     }
     else
     {
-        ui->checkBoxHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
     }
 }
 
-void settingsWindow::on_checkBoxSIDContinuousPlayback_toggled()
+void settingsWindow::on_checkBoxLibsidplayfpContinuousPlayback_toggled()
 {
-    ui->checkBoxSIDContinuousPlayback->setIcon(
-        mainWindow->icons[(ui->checkBoxSIDContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
+    ui->checkBoxLibsidplayfpContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxLibsidplayfpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
-void settingsWindow::on_checkBoxFilterOpenMPT_toggled(bool checked)
+void settingsWindow::on_checkBoxLibopenmptAmigaResampler_toggled(bool checked)
 {
-    bool checkedFilterOpenMPT = ui->checkBoxFilterOpenMPT->checkState() == Qt::Checked ? true : false;
-    if (checkedFilterOpenMPT)
+    bool checkedFilterLibopenmpt = ui->checkBoxLibopenmptAmigaResampler->checkState() == Qt::Checked ? true : false;
+    if (checkedFilterLibopenmpt)
     {
-        ui->checkBoxFilterOpenMPT->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->label_50->setEnabled(true);
-        ui->comboBoxFilterOpenMPT->setEnabled(true);
+        ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelLibopenmptFilter->setEnabled(true);
+        ui->comboBoxLibopenmptFilter->setEnabled(true);
     }
     else
     {
-        ui->checkBoxFilterOpenMPT->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->label_50->setEnabled(false);
-        ui->comboBoxFilterOpenMPT->setEnabled(false);
+        ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelLibopenmptFilter->setEnabled(false);
+        ui->comboBoxLibopenmptFilter->setEnabled(false);
     }
 }
 
-void settingsWindow::on_checkBoxContinuousPlaybackLibxmp_toggled()
+void settingsWindow::on_checkBoxLibxmpContinuousPlayback_toggled()
 {
-    ui->checkBoxContinuousPlaybackLibxmp->setIcon(
-        mainWindow->icons[(ui->checkBoxContinuousPlaybackLibxmp->isChecked() ? "checkbox-on" : "checkbox-off")]);
+    ui->checkBoxLibxmpContinuousPlayback->setIcon(
+        mainWindow->icons[(ui->checkBoxLibxmpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off")]);
 }
 
 void settingsWindow::on_checkBoxOnlyOneInstance_clicked()
@@ -3629,50 +3587,50 @@ void settingsWindow::on_checkBoxOnlyOneInstance_clicked()
 }
 
 
-void settingsWindow::on_checkBoxFilterEmuUade_toggled(bool checked)
+void settingsWindow::on_checkBoxUadeFilterEmu_toggled(bool checked)
 {
-    if (ui->checkBoxFilterEmuUade->isChecked())
+    if (ui->checkBoxUadeFilterEmu->isChecked())
     {
-        ui->checkBoxFilterEmuUade->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelFilterEmuModeUade->setEnabled(true);
-        ui->comboBoxFilterEmuModeUade->setEnabled(true);
-        ui->labelLedFilterUade->setEnabled(true);
-        ui->comboBoxLedFilterUade->setEnabled(true);
+        ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelUadeFilterEmuMode->setEnabled(true);
+        ui->comboBoxUadeFilterEmuMode->setEnabled(true);
+        ui->labelUadeLedFilter->setEnabled(true);
+        ui->comboBoxUadeLedFilter->setEnabled(true);
     }
     else
     {
-        ui->checkBoxFilterEmuUade->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelFilterEmuModeUade->setEnabled(false);
-        ui->comboBoxFilterEmuModeUade->setEnabled(false);
-        ui->labelLedFilterUade->setEnabled(false);
-        ui->comboBoxLedFilterUade->setEnabled(false);
+        ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelUadeFilterEmuMode->setEnabled(false);
+        ui->comboBoxUadeFilterEmuMode->setEnabled(false);
+        ui->labelUadeLedFilter->setEnabled(false);
+        ui->comboBoxUadeLedFilter->setEnabled(false);
     }
 }
 
 void settingsWindow::on_checkBoxSystray_toggled(const bool isChecked) {
-    ui->checkBoxSystrayOnMinimize->setEnabled(isChecked);
+    ui->checkBoxMinimizeToSystray->setEnabled(isChecked);
     mainWindow->setSystrayOnMinimizeEnabled(isChecked);
 
     if (isChecked) {
         ui->checkBoxSystray->setIcon(mainWindow->icons["checkbox-on"]);
-        if (ui->checkBoxSystrayOnMinimize->isChecked()) {
-            ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons["checkbox-on"]);
+        if (ui->checkBoxMinimizeToSystray->isChecked()) {
+            ui->checkBoxMinimizeToSystray->setIcon(mainWindow->icons["checkbox-on"]);
         } else {
-            ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons["checkbox-off"]);
+            ui->checkBoxMinimizeToSystray->setIcon(mainWindow->icons["checkbox-off"]);
         }
     } else {
         ui->checkBoxSystray->setIcon(mainWindow->icons["checkbox-off"]);
-        if (ui->checkBoxSystrayOnMinimize->isChecked()) {
-            ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons["checkbox-on-disabled"]);
+        if (ui->checkBoxMinimizeToSystray->isChecked()) {
+            ui->checkBoxMinimizeToSystray->setIcon(mainWindow->icons["checkbox-on-disabled"]);
         } else {
-            ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons["checkbox-off-disabled"]);
+            ui->checkBoxMinimizeToSystray->setIcon(mainWindow->icons["checkbox-off-disabled"]);
         }
     }
 }
 
-void settingsWindow::on_checkBoxSystrayOnMinimize_toggled(const bool isChecked)
+void settingsWindow::on_checkBoxMinimizeToSystray_toggled(const bool isChecked)
 {
-    ui->checkBoxSystrayOnMinimize->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxMinimizeToSystray->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::on_checkBoxMenuBarHidden_toggled(const bool isChecked)
@@ -3680,8 +3638,8 @@ void settingsWindow::on_checkBoxMenuBarHidden_toggled(const bool isChecked)
     ui->checkBoxMenuBarHidden->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
-void settingsWindow::on_sliderNowPlayingFontSize_valueChanged(int value)
+void settingsWindow::on_sliderAppearanceNowPlayingFontSize_valueChanged(int value)
 {
-    ui->labelNowPlayingFontSize->setText(QString::number(value) + " pixels");
+    ui->labelAppearanceNowPlayingFontSizeValue->setText(QString::number(value) + "px");
     mainWindow->setNowPlayingFontSize(value);
 }

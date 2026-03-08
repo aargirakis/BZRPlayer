@@ -120,9 +120,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word == "stereo_separation") {
+                if (word == "stereoSeparation") {
                     defstereo = atoi(value.c_str());
-                } else if (word == "continuous_playback") {
+                } else if (word == "continuousPlayback") {
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }

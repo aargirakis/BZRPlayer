@@ -94,11 +94,13 @@ public:
     bool isShuffleEnabled() const;
     void swapColumns(QTableView* tableview);
     QStringList sortPreservingOrder(const QStringList&, const QStringList&);
-    void setHvscSonglengthsFrequency(QString);
-    void setHvscSonglengthsPathDownloaded(QString);
-    QString getHvscSonglengthsFrequency();
-    QString getHvscSonglengthsPathDownloaded();
-    qint64 getHvscSonglengthsDownloaded() const;
+    void setHvscSonglengthsPath(QString);
+    QString getHvscSonglengthsPath();
+    void setBundledHvscSonglengthsUpdateFrequency(QString);
+    void setBundledHvscSonglengthsPath(QString);
+    QString getBundledHvscSonglengthsUpdateFrequency();
+    QString getBundledHvscSonglengthsPath();
+    qint64 getBundledHvscSonglengthsDownloadEpoch() const;
     void DeleteWorkspace(QString workspace) const;
     void CreateNewWorkspace(const QString& filename);
     void DownloadFile();
@@ -214,7 +216,7 @@ public:
 
     bool isOnlyOneInstanceEnabled() const;
     FileDownloader* filedownloader;
-    qint64 HvscSonglengthsDownloadedEpoch;
+    qint64 bundledHvscSonglengthsDownloadEpoch;
 
     QMap<QString, QPixmap> icons;
 
@@ -349,8 +351,9 @@ private slots:
 
 
 private:
-    QString HvscSonglengthsPathDownloaded;
-    QString HvscSonglengthsFrequency;
+    QString hvscSonglengthsPath;
+    QString bundledHvscSonglengthsPath;
+    QString bundledHvscSonglengthsUpdateFrequency;
     FileInfoParser* fileInfoParser;
     void LoadWorkspaces();
     void updateButtons();

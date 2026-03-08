@@ -261,15 +261,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                     } else {
                         filter = false;
                     }
-                } else if (word == "hvsc_songlengths_path") {
+                } else if (word == "hvscSonglengthsPath") {
                     plugin->hvscSonglengthsFile = value;
-                } else if (word == "hvsc_songlengths_enabled") {
+                } else if (word == "hvscSonglengthsEnabled") {
                     if (value == "true") {
                         plugin->hvscSonglengthsDataBaseEnabled = true;
                     } else {
                         plugin->hvscSonglengthsDataBaseEnabled = false;
                     }
-                } else if (word == "continuous_playback") {
+                } else if (word == "continuousPlayback") {
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }

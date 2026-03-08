@@ -143,15 +143,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                     frequency = value;
                 } else if (word == "resampler") {
                     resampler = value;
-                } else if (word == "filter_emu") {
+                } else if (word == "filterEmu") {
                     if (value == "true") {
                         filter_emu = 1;
                     } else {
                         filter_emu = 0;
                     }
-                } else if (word == "filter_mode") {
+                } else if (word == "filterMode") {
                     filter_mode = value;
-                } else if (word == "led_forced") {
+                } else if (word == "ledForced") {
                     if (value == "auto") {
                         led_forced = 0;
                     } else if (value == "on") {
@@ -164,20 +164,20 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                 } else if (word == "panning") {
                     int x = stoi(value);
                     panning = format("{}.{}", x / 10, x % 10);
-                } else if (word == "silence_timeout") {
+                } else if (word == "silenceTimeout") {
                     silence_timeout = value;
-                } else if (word == "silence_timeout_enabled") {
+                } else if (word == "silenceTimeoutEnabled") {
                     if (value == "true") {
                         silence_timeout_enabled = true;
                     } else {
                         silence_timeout_enabled = false;
                     }
-                } else if (word == "continuous_playback") {
+                } else if (word == "continuousPlayback") {
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
-                } else if (word == "uade_songlengths_path") {
+                } else if (word == "uadeSonglengthsPath") {
                     plugin->uade_songlengthspath = value;
-                } else if (word == "uade_songlengths_enabled") {
+                } else if (word == "uadeSonglengthsEnabled") {
                     if (value == "true") {
                         plugin->uade_songlengths_enabled = true;
                     } else {
