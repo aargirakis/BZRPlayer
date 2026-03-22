@@ -86,7 +86,7 @@
 +void org_decoder_mute_channel(org_decoder_t *decoder, size_t channel, bool mute)
 +{
 +    decoder->state.tracks[channel].muted=mute;
-+    //reset and fast forward to current position
++    // reset and fast forward to current position
 +    org_decoder_seek_sample(decoder,decoder->state.current_sample);
 +}
 +

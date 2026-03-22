@@ -20,19 +20,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_v2m_player_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    nullptr,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_v2m_player_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    nullptr, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginV2mPlayer {
@@ -45,7 +44,7 @@ public:
     }
 
     ~pluginV2mPlayer() {
-        //delete some stuff
+        // delete some stuff
 
         player->Close();
         delete player;
@@ -58,9 +57,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -87,13 +86,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    /* Allocate space for buffer. */
+    // allocate space for buffer
     auto *myBuffer = new uint8_t[filesize];
 
-    //rewind file pointer
+    // rewind file pointer
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
 
-    //read whole file to memory
+    // read whole file to memory
     unsigned int bytesread;
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
@@ -124,10 +123,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
-    info->fileformat = "Farbrausch V2M";
+    info->fileFormat = "Farbrausch V2M";
     info->setSeekable(true);
     info->plugin = PLUGIN_v2m_player;
     info->pluginName = PLUGIN_v2m_player_NAME;

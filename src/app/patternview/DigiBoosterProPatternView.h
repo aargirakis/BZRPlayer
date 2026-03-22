@@ -1,5 +1,6 @@
 #ifndef DIGIBOOSTERPROPATTERNVIEW_H
 #define DIGIBOOSTERPROPATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class DigiBoosterProPatternView : public AbstractPatternView
@@ -14,10 +15,6 @@ public:
     QString rowNumber(int rowNumber);
     QString effect(BaseRow* row);
     QString effect2(BaseRow* row);
-
-private:
-
-private slots:
 };
 
 #endif // DIGIBOOSTERPROPATTERNVIEW_H

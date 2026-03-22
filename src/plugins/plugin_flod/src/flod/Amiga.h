@@ -49,8 +49,8 @@ public:
 private:
     double clock;
     double master;
-    vector<Sample *> m_buffer;
-    int m_complete;
+    vector<Sample *> buffer;
+    int complete;
     int samplesLeft;
     int remains;
 

@@ -87,7 +87,7 @@ void BDPlayer::process() {
             }
         }
 
-        if (m_variant == 1) {
+        if (variant == 1) {
             if (voice->v1word14) {
                 if (--voice->v1word18 == 0) {
                     voice->v1word18 = voice->v1word14;
@@ -140,7 +140,7 @@ void BDPlayer::process() {
         chan = voice->channel;
         loop = 1;
 
-        if (m_variant) {
+        if (variant) {
             if (voice->s1byte35) {
                 if (voice->s1byte35 > 0x7f) {
                     temp = voice->period * (voice->s1long38 & 0xffff);
@@ -200,7 +200,7 @@ void BDPlayer::process() {
                         } else if (value == 0xfe) {
                             voice->s1byte19 = (signed char) stream[position];
                             position++;
-                        } else if (m_variant < 2) {
+                        } else if (variant < 2) {
                             if (value < 0x80) {
                                 voice->s1byte20 = 0;
                                 voice->trackPos = position;
@@ -259,7 +259,7 @@ void BDPlayer::process() {
                         fx(voice);
 
                         if (voice->s1byte20) {
-                            if (m_variant > 1 && !voice->s1byte21) voice->s1byte21 = 1;
+                            if (variant > 1 && !voice->s1byte21) voice->s1byte21 = 1;
                             break;
                         }
                     } else {
@@ -269,7 +269,7 @@ void BDPlayer::process() {
                         if (value != 0x7f) {
                             voice->s1byte23 = value + voice->s1byte19;
 
-                            if (m_variant) {
+                            if (variant) {
                                 voice->s2word10 = 0;
                                 voice->s1byte35 = voice->s1byte31;
                                 pos = position;
@@ -318,7 +318,7 @@ void BDPlayer::process() {
                                 voice->volume = (temp >> 14) & 0xffff;
                                 voice->s1byte24 = 0;
 
-                                if (m_variant == 1) {
+                                if (variant == 1) {
                                     voice->v1word14 = voice->s1word68;
                                     voice->v1word16 = voice->s1word68;
                                     voice->v1word18 = voice->s1word70;
@@ -332,7 +332,7 @@ void BDPlayer::process() {
                             value = stream[position];
                             position++;
 
-                            if (!value && m_variant > 1) {
+                            if (!value && variant > 1) {
                                 value = -1;
                                 voice->s1byte21 = stream[position];
                                 position++;
@@ -416,7 +416,7 @@ int BDPlayer::load(void *_data, unsigned long int _length) {
             case 0x0c00: //cmpi.b [xx,d0]
                 tempVal = readEndian(stream[position], stream[position + 1]);
                 position += 2;
-                if (tempVal == 0x00fd) m_variant = 3; //xx = #$fd
+                if (tempVal == 0x00fd) variant = 3; //xx = #$fd
                 break;
             case 0x294b: //move.l [a3,xx]
                 position += 2;
@@ -465,10 +465,10 @@ int BDPlayer::load(void *_data, unsigned long int _length) {
                             position += 2;
                             if (tempVal == 0x00c1) {
                                 //xx = $c1
-                                if (m_variant) {
-                                    m_variant--;
+                                if (variant) {
+                                    variant--;
                                 } else {
-                                    m_variant++;
+                                    variant++;
                                 }
                                 break;
                             }
@@ -569,7 +569,7 @@ int BDPlayer::load(void *_data, unsigned long int _length) {
         songs.push_back(tracks + value);
     } while (position < len);
 
-    m_totalSongs = songs.size() >> 2;
+    totalSongs = songs.size() >> 2;
 
     len = banks.size() >> 2;
 
@@ -580,7 +580,7 @@ int BDPlayer::load(void *_data, unsigned long int _length) {
         banks[(i + (len * 3))] = i;
     }
 
-    m_version = 1;
+    version = 1;
     format = "Ben Daglish";
     //printData();
     return 1;
@@ -639,7 +639,7 @@ void BDPlayer::fx(BDVoice *voice) {
     int still = 0;
     int value = stream[position];
     position++;
-    if (m_variant > 2) {
+    if (variant > 2) {
         if (value <= 0x8a) {
             value = (value - 0x80) + voice->bank;
             voice->sample2 = samples[banks[value]];
@@ -659,7 +659,7 @@ void BDPlayer::fx(BDVoice *voice) {
             voice->s1byte20 = value;
         } else if (value < 0xc0) {
             voice->s1byte56 = (value & 0x0f);
-        } else if (!m_variant) {
+        } else if (!variant) {
             if (value != 0xc2) position += 3;
         } else {
             still = 1;
@@ -705,7 +705,7 @@ void BDPlayer::fx(BDVoice *voice) {
         case 0xc6:
             voice->s1word66 = (stream[position] << 8) | 0xff;
             position++;
-            if (m_variant == 1) {
+            if (variant == 1) {
                 voice->s1word68 = stream[position];
                 position++;
                 voice->s1word70 = (signed char) stream[position];
@@ -713,7 +713,7 @@ void BDPlayer::fx(BDVoice *voice) {
             }
             break;
         case 0xc7:
-            if (m_variant != 1) break;
+            if (variant != 1) break;
             voice->s1word68 = 0;
             voice->s1word70 = 0xffff;
             break;
@@ -721,7 +721,7 @@ void BDPlayer::fx(BDVoice *voice) {
 }
 
 unsigned char BDPlayer::getSubsongsCount() {
-    return m_totalSongs;
+    return totalSongs;
 }
 
 void BDPlayer::selectSong(unsigned char subsong) {

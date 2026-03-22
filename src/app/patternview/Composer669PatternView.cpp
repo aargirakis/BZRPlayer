@@ -1,11 +1,9 @@
-#include "Composer669PatternView.h"
-
-#include <mainwindow.h>
-#include <QApplication>
 #include <QDir>
+#include "Composer669PatternView.h"
+#include "mainwindow.h"
 
-Composer669PatternView::Composer669PatternView(Tracker* parent, unsigned int channels)
-    : AbstractPatternView(parent, channels)
+Composer669PatternView::Composer669PatternView(Tracker *parent, const unsigned int channels) : AbstractPatternView(
+    parent, channels)
 {
     m_font.setPixelSize(8);
     m_fontWidth = 8;
@@ -49,42 +47,42 @@ Composer669PatternView::Composer669PatternView(Tracker* parent, unsigned int cha
 
 void Composer669PatternView::paintAbove(QPainter* painter, int height, int currentRow)
 {
-    //Always 8 channels
+    // always 8 channels
     QColor colorBlue(28, 56, 85);
     QColor colorLightBlue(44, 89, 134);
     QColor colorPurple(65, 0, 130);
 
-    //left
+    // left
     painter->fillRect(0, 0, 8, height, colorBlue);
     painter->fillRect(24, 0, 8, height, colorBlue);
     painter->fillRect(32, 0, 24, height, colorPurple);
     for (int chan = 0; chan < 8; chan++)
     {
-        painter->fillRect((56 + chan * 72), 0, 8, height, colorBlue);
+        painter->fillRect(56 + chan * 72, 0, 8, height, colorBlue);
     }
 
-    //right
+    // right
     painter->fillRect(632, 0, 8, height, colorBlue);
-    //bottom
+    // bottom
     painter->fillRect(0, height - 16, 640, 8, colorBlue);
     painter->fillRect(0, height - 8, 640, 8, colorLightBlue);
-    //top
+    // top
     painter->fillRect(0, 0, 640, 8, colorLightBlue);
     painter->fillRect(0, 8, 640, 8, colorBlue);
     QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() + "trackerview" + QDir::separator() +
                         "composer669_top.png";
 
-    //symbol
+    // symbol
     QImage spriteSheet(imagepath);
     QRectF source(0, 0, 23, 7);
-    QRectF target(32, (height / 2) - 7, 23, 7);
+    QRectF target(32, height / 2 - 7, 23, 7);
     painter->drawImage(target, spriteSheet, source);
 }
 
-void Composer669PatternView::paintBelow(QPainter* painter, int height, int currentRow)
+void Composer669PatternView::paintBelow(QPainter* painter, const int height, int currentRow)
 {
-    //main
-    painter->fillRect(64, (height / 2) - 7, 568, 8, m_colorCurrentRowBackground);
+    // main
+    painter->fillRect(64, height / 2 - 7, 568, 8, m_colorCurrentRowBackground);
 }
 
 Composer669PatternView::~Composer669PatternView()
@@ -94,12 +92,14 @@ Composer669PatternView::~Composer669PatternView()
 QString Composer669PatternView::volume(BaseRow* row)
 {
     if (note(row) == m_emptyNote) return m_emptyVolume;
+
     return AbstractPatternView::volume(row);
 }
 
 QString Composer669PatternView::note(BaseRow* row)
 {
     int note = row->note;
+
     switch (note)
     {
     case 37: return "C'0";
@@ -115,8 +115,8 @@ QString Composer669PatternView::note(BaseRow* row)
     case 47: return "A#0";
     }
 
-
     note -= octaveOffset;
+
     if (note >= 109 || note < 0)
     {
         note = 0;
@@ -125,15 +125,14 @@ QString Composer669PatternView::note(BaseRow* row)
     {
         return m_emptyNote;
     }
-    else
-    {
-        return QString(NOTES[note])[0] + QString("'") + QString(NOTES[note])[2];
-    }
+
+    return QString(NOTES[note])[0] + QString("'") + QString(NOTES[note])[2];
 }
 
 QString Composer669PatternView::effect(BaseRow* row)
 {
     QString effectStr;
+
     switch (row->effect)
     {
     case 121: effectStr = "a";
@@ -151,13 +150,16 @@ QString Composer669PatternView::effect(BaseRow* row)
     default: effectStr = m_emptyEffect;
         break;
     }
+
     return effectStr;
 }
 
 QString Composer669PatternView::parameter(BaseRow* row)
 {
     int parameter = row->param;
+
     if (row->effect == 0 && parameter == 0) return m_emptyParameter;
+
     if (row->effect == 166)
     {
         switch (parameter)
@@ -196,7 +198,8 @@ QString Composer669PatternView::parameter(BaseRow* row)
             break;
         }
     }
-    int base = parameterHex ? 16 : 10;
+
+    const int base = parameterHex ? 16 : 10;
 
     QString parameterStr = QString::number(parameter, base).toUpper();
     parameterStr = parameterPad && parameterStr.length() == 1 ? "0" + parameterStr : parameterStr;

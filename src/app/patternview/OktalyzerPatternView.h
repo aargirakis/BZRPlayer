@@ -1,5 +1,6 @@
 #ifndef OKTALYZERPATTERNVIEW_H
 #define OKTALYZERPATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class OktalyzerPatternView : public AbstractPatternView
@@ -10,10 +11,6 @@ public:
     QString effect(BaseRow* row);
     QString instrument(BaseRow* row);
     ~OktalyzerPatternView();
-
-private:
-
-private slots:
 };
 
 #endif // OKTALYZERPATTERNVIEW_H

@@ -1,7 +1,9 @@
 #ifndef QDRAGGABLETABLEVIEW_H
 #define QDRAGGABLETABLEVIEW_H
 
+#include <QTableView>
 #include "myitemdelegate.h"
+
 class DraggableTableView : public QTableView
 {
     Q_OBJECT

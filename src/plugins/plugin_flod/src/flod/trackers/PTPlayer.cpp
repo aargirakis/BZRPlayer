@@ -108,7 +108,7 @@ PTPlayer::~PTPlayer() {
 
 void PTPlayer::setNTSC(bool value) {
     ntsc = value;
-    if (m_version == ULTIMATE_SOUNDTRACKER) {
+    if (version == ULTIMATE_SOUNDTRACKER) {
         amiga->samplesTick = int((240 - tempo) * (value ? 7.5152005551 : 7.58437970472));
     }
 }
@@ -127,7 +127,7 @@ void PTPlayer::initialize() {
 
     restartCopy = 0; //this is not really used?
     ntsc = m_ntsc;
-    setVersion(m_version);
+    setVersion(version);
 
     PTVoice *voice = voices[0];
 
@@ -139,8 +139,8 @@ void PTPlayer::initialize() {
 }
 
 void PTPlayer::setVersion(int value) {
-    if ((m_version < SOUNDTRACKER_24 && value > DOC_SOUNDTRACKER_20) ||
-        (m_version > DOC_SOUNDTRACKER_20 && value < SOUNDTRACKER_24))
+    if ((version < SOUNDTRACKER_24 && value > DOC_SOUNDTRACKER_20) ||
+        (version > DOC_SOUNDTRACKER_20 && value < SOUNDTRACKER_24))
         return;
 
     if (value < ULTIMATE_SOUNDTRACKER) {
@@ -149,7 +149,7 @@ void PTPlayer::setVersion(int value) {
         value = FASTTRACKER_10;
     }
 
-    m_version = value;
+    version = value;
 
     if (value >= PROTRACKER_10) {
         vibratoDepth = 6;
@@ -180,12 +180,12 @@ int PTPlayer::load(void *data, unsigned long int _length) {
             int value = strtol(id, NULL, 10);
             if (value < 2 || value > 32) return -1;
             m_channels = value;
-            m_version = FASTTRACKER_10;
+            version = FASTTRACKER_10;
         } else {
             return -1;
         }
     } else {
-        m_version = PROTRACKER_10;
+        version = PROTRACKER_10;
     }
 
     patternLen = m_channels << 6;
@@ -202,7 +202,7 @@ int PTPlayer::load(void *data, unsigned long int _length) {
         if (!stream[position + j]) {
             break;
         }
-        m_title += stream[position + j];
+        title += stream[position + j];
     }
     position += STRING_LENGTH;
 
@@ -286,10 +286,10 @@ int PTPlayer::load(void *data, unsigned long int _length) {
 
         if (row->sample > 31 || !samples[row->sample]) row->sample = 0;
 
-        if (m_version != FASTTRACKER_10) {
-            if (row->effect == 15 && row->param > 31) m_version = PROTRACKER_11;
+        if (version != FASTTRACKER_10) {
+            if (row->effect == 15 && row->param > 31) version = PROTRACKER_11;
 
-            if (row->effect == 8) m_version = PROTRACKER_12;
+            if (row->effect == 8) version = PROTRACKER_12;
         }
         patterns[i] = row;
     }
@@ -325,7 +325,7 @@ int PTPlayer::load(void *data, unsigned long int _length) {
     }
 
 
-    switch (m_version) {
+    switch (version) {
         case PROTRACKER_10:
             format = "ProTracker 1.0";
             break;
@@ -339,7 +339,7 @@ int PTPlayer::load(void *data, unsigned long int _length) {
             format = "FastTracker 1.0";
             break;
         default:
-            format = "Error getting fileformat";
+            format = "Error getting file format";
             break;
     }
 
@@ -742,7 +742,7 @@ void PTPlayer::updateFunk(PTVoice *voice) {
     if (voice->funkPos < 128) return;
     voice->funkPos = 0;
 
-    if (m_version == PROTRACKER_10) {
+    if (version == PROTRACKER_10) {
         p1 = voice->pointer + (voice->sample->length - voice->repeat);
         p2 = voice->funkWave + voice->repeat;
 
@@ -911,7 +911,7 @@ vector<BaseSample *> PTPlayer::getSamples() {
 }
 
 bool PTPlayer::getTitle(string &title) {
-    title = m_title;
+    title = title;
     return true;
 }
 

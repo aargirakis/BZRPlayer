@@ -16,19 +16,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_audiofile_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Don't force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    nullptr,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_audiofile_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    nullptr, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginAudiofile {
@@ -41,7 +40,7 @@ public:
     }
 
     ~pluginAudiofile() {
-        //delete some stuff
+        // delete some stuff
         afCloseFile(file);
     }
 
@@ -52,9 +51,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -81,44 +80,44 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     switch (afGetFileFormat(plugin->file, nullptr)) {
         case AF_FILE_UNKNOWN:
-            info->fileformat = "Unknown Audio File Library";
+            info->fileFormat = "Unknown Audio File Library";
             break;
         case AF_FILE_RAWDATA:
-            info->fileformat = "Audio File Library Raw Data";
+            info->fileFormat = "Audio File Library Raw Data";
             break;
         case AF_FILE_AIFFC:
-            info->fileformat = "AIFFC";
+            info->fileFormat = "AIFFC";
             break;
         case AF_FILE_AIFF:
-            info->fileformat = "AIFF";
+            info->fileFormat = "AIFF";
             break;
         case AF_FILE_NEXTSND:
-            info->fileformat = "Next snd";
+            info->fileFormat = "Next snd";
             break;
         case AF_FILE_WAVE:
-            info->fileformat = "Wave";
+            info->fileFormat = "Wave";
             break;
         case AF_FILE_BICSF:
-            info->fileformat = "Berkeley";
+            info->fileFormat = "Berkeley";
             break;
         case AF_FILE_AVR:
-            info->fileformat = "Audio Visual Research";
+            info->fileFormat = "Audio Visual Research";
             break;
         case AF_FILE_IFF_8SVX:
-            info->fileformat = "Amiga IFF/8SVX";
+            info->fileFormat = "Amiga IFF/8SVX";
             break;
         case AF_FILE_NIST_SPHERE:
-            info->fileformat = "NIST SPHERE";
+            info->fileFormat = "NIST SPHERE";
             break;
         case AF_FILE_VOC:
-            info->fileformat = "Creative Voice File";
+            info->fileFormat = "Creative Voice File";
             delete plugin;
             return FMOD_ERR_FORMAT;
         case AF_FILE_SAMPLEVISION:
-            info->fileformat = "SampleVision";
+            info->fileFormat = "SampleVision";
             break;
         default:
-            //should not happen
+            // should not happen
             delete plugin;
             return FMOD_ERR_FORMAT;
     }
@@ -136,8 +135,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
     info->plugin = PLUGIN_audiofile;
     info->pluginName = PLUGIN_audiofile_NAME;
     info->setSeekable(true);

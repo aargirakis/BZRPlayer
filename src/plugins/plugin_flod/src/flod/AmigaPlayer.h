@@ -19,7 +19,7 @@ public:
     int getFrequency();
 
     Amiga *amiga;
-    string m_title;
+    string title;
     string format;
     int loopSong;
 
@@ -84,10 +84,10 @@ protected:
     int m_channels;
     int m_flags;
     int m_mute;
-    int m_version;
-    int m_variant;
+    int version;
+    int variant;
     int m_songNumber;
-    int m_totalSongs;
+    int totalSongs;
 };
 
 #endif // AMIGAPLAYER_H

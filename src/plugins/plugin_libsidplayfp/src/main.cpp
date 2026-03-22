@@ -1,6 +1,8 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <iostream>
+
 #include "sidplayfp.h"
 #include "SidTune.h"
 #include "SidInfo.h"
@@ -33,20 +35,18 @@ unsigned int getLengthFromDb(const string &databasePath, const string &md5, unsi
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_libsidplayfp_NAME, // Name.
-    0x00012100, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL | FMOD_TIMEUNIT_MUTE_VOICE,
-    // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    &getPosition,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_libsidplayfp_NAME, // name.
+    0x00012100, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL | FMOD_TIMEUNIT_MUTE_VOICE, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    &getPosition, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 constexpr uint8_t voicesPerSidChip = 4;
@@ -103,9 +103,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -122,7 +122,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    if (filesize > 1024 * 96) //96kb, biggest sid in HVSC is 63kb while biggest mus/str in CGSC is 29kb
+    if (filesize > 1024 * 96) // 96kb (biggest sid in HVSC is 63kb while biggest mus/str in CGSC is 29kb)
     {
         return FMOD_ERR_FORMAT;
     }
@@ -130,10 +130,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int bytesread;
     auto *myBuffer = new uint8_t[filesize];
 
-    //rewind file pointer
+    // rewind file pointer
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
 
-    //read whole file to memory
+    // read whole file to memory
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
     auto *plugin = new pluginLibsidplayfp(codec);
@@ -165,11 +165,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                             (const uint8_t *) plugin->chargen);
 
     plugin->rs = new ReSIDfpBuilder("Demo");
-    // Get the number of SIDs supported by the engine
 
+    // get the number of SIDs supported by the engine
     plugin->rs->create(plugin->player->info().maxsids());
 
-    // Check if builder is ok
+    // check if builder is ok
     if (!plugin->rs->getStatus()) {
         delete[] myBuffer;
         delete plugin;
@@ -181,7 +181,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     bool useDefaults = false;
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         useDefaults = true;
     }
 
@@ -208,7 +208,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                 if (word == "frequency") {
                     freq = atoi(value.c_str());
                 } else if (word == "playback") {
-                    if (value == "left") //old, just for compability
+                    if (value == "left") // old, just for compability
                     {
                         playback = SidConfig::MONO;
                         plugin->waveformat.channels = 1;
@@ -218,7 +218,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                     } else if (value == "stereo") {
                         playback = SidConfig::STEREO;
                         plugin->waveformat.channels = 2;
-                    } else if (value == "right") //old, just for compability
+                    } else if (value == "right") // old, just for compability
                     {
                         playback = SidConfig::MONO;
                         plugin->waveformat.channels = 1;
@@ -284,7 +284,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->tune = new SidTune(myBuffer, filesize);
     }
 
-    // Check if the tune is valid
+    // check if the tune is valid
     if (!plugin->tune->getStatus()) {
         delete[] myBuffer;
         return FMOD_ERR_FORMAT;
@@ -323,7 +323,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    codec->plugindata = plugin; //user data value
+    codec->plugindata = plugin; // user data value
 
     plugin->info->initAddr = s->initAddr();
     plugin->info->loadAddr = s->loadAddr();
@@ -418,10 +418,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->numSubsongs = static_cast<int>(s->songs());
 
     if (plugin->info->numSubsongs > 1) {
-        plugin->info->defaultSubSong = static_cast<int>(s->startSong());
+        plugin->info->defaultSubsong = static_cast<int>(s->startSong());
     }
 
-    plugin->info->fileformat = s->formatString();
+    plugin->info->fileFormat = s->formatString();
     plugin->info->plugin = PLUGIN_libsidplayfp;
     plugin->info->pluginName = PLUGIN_libsidplayfp_NAME;
 
@@ -526,7 +526,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         for (int i = 0; i < plugin->maxVoices; i++) {
             plugin->mutePtr[i] = false;
         }
-        //position is a mask
+        // position is a mask
         for (int i = 0; i < plugin->maxVoices; i++) {
             plugin->player->mute(i / voicesPerSidChip, i % voicesPerSidChip, position >> i & 1);
             plugin->mutePtr[i] = position >> i & 1;
@@ -579,7 +579,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
 }
 
 unsigned int getLengthFromDb(const string &databasePath, const string &md5, const unsigned int subsong) {
-    const auto sidDb = new SidDatabase(); //TODO sidDatabase->close() && Delete
+    const auto sidDb = new SidDatabase(); // TODO sidDatabase->close() && Delete
 
     if (!sidDb->open(databasePath.c_str())) {
         cout << sidDb->error() << " [" << databasePath.c_str() << "]" << endl;

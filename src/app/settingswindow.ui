@@ -227,8 +227,6 @@ QPushButton:hover
         border-radius: 5px;
     }
 
-
-
 QScrollBar#scrollArea:vertical {
         width: 23px;
     }
@@ -319,7 +317,6 @@ QSlider::handle:horizontal:hover {
 	border: 2px solid #00c09e/*main hover*/; 
 }
 
-
 QSlider::sub-page:horizontal {
 background-color:#009379/*main*/; 
 }
@@ -329,7 +326,6 @@ QComboBox {
     border-radius: 3px;
     padding: 1px 18px 1px 3px;
 }
-
 
 QComboBox:!editable, QComboBox::drop-down:editable {
 }
@@ -366,7 +362,6 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
     top: 1px;
     left: 1px;
 }
-
 
 QLineEdit {
     border: 1px solid;
@@ -1062,7 +1057,6 @@ QSlider::handle:horizontal:hover {
 	border: 2px solid #00c09e/*main hover*/; 
 }
 
-
 QSlider::sub-page:horizontal {
 background-color:#009379/*main*/; 
 }
@@ -1115,7 +1109,6 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
     top: 1px;
     left: 1px;
 }
-
 
 QLineEdit {
     border: 1px solid;
@@ -1779,7 +1772,6 @@ QSlider::handle:horizontal:hover {
 	border: 2px solid #00c09e/*main hover*/; 
 }
 
-
 QSlider::sub-page:horizontal {
 background-color:#009379/*main*/; 
 }
@@ -1789,7 +1781,6 @@ QComboBox {
     border-radius: 3px;
     padding: 1px 18px 1px 3px;
 }
-
 
 QComboBox:!editable, QComboBox::drop-down:editable {
      background: ;
@@ -1827,7 +1818,6 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
     top: 1px;
     left: 1px;
 }
-
 
 QLineEdit {
     border: 1px solid;
@@ -3981,7 +3971,7 @@ QComboBox::drop-down:disabled {
       <string>Speed</string>
      </property>
     </widget>
-    <widget class="QSlider" name="sliderRotatingObjectSpeed">
+    <widget class="QSlider" name="sliderRotatingObjectOrbitSpeed">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -4188,7 +4178,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -4198,8 +4187,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;
@@ -4492,7 +4479,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -4502,8 +4488,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;
@@ -4667,7 +4651,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -4677,8 +4660,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;
@@ -4889,7 +4870,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -4899,8 +4879,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;
@@ -5301,7 +5279,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -5311,8 +5288,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;
@@ -5596,7 +5571,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -5606,8 +5580,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;
@@ -5771,7 +5743,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -5781,8 +5752,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;
@@ -5943,7 +5912,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -5953,8 +5921,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;
@@ -6121,7 +6087,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -6131,8 +6096,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;
@@ -6694,7 +6657,6 @@ QComboBox::drop-down:disabled {
                 border: 2px solid #00c09e/*main hover*/;
                 }
 
-
                 QSlider::sub-page:horizontal {
                 background-color:#009379/*main*/;
                 }
@@ -6704,8 +6666,6 @@ QComboBox::drop-down:disabled {
                 border-radius: 3px;
                 padding: 1px 18px 1px 3px;
                 }
-
-
 
                 QComboBox:!editable, QComboBox::drop-down:editable {
                 background: ;

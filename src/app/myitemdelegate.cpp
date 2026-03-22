@@ -10,7 +10,7 @@ void MyItemDelegate::paint(QPainter* pPainter, const QStyleOptionViewItem& rOpti
     QStyleOptionViewItem ViewOption(rOption);
 
 
-    if (auto ItemForegroundColor = rIndex.data(Qt::ForegroundRole).value<QColor>();
+    if (const auto ItemForegroundColor = rIndex.data(Qt::ForegroundRole).value<QColor>();
         ItemForegroundColor.isValid() && ItemForegroundColor != rOption.palette.color(QPalette::WindowText))
     {
         QColor mainTextColorDimmed = mainTextColor;
@@ -25,8 +25,9 @@ void MyItemDelegate::paint(QPainter* pPainter, const QStyleOptionViewItem& rOpti
             ViewOption.palette.setColor(QPalette::HighlightedText, mainTextColorDimmed);
         }
     }
+
     if (m_dragActive) {
-        // Remove *all* visual states
+        // remove *all* visual states
         ViewOption.state &= ~QStyle::State_MouseOver;
         ViewOption.state &= ~QStyle::State_Selected;
         ViewOption.state &= ~QStyle::State_HasFocus;
@@ -37,18 +38,20 @@ void MyItemDelegate::paint(QPainter* pPainter, const QStyleOptionViewItem& rOpti
     QStyledItemDelegate::paint(pPainter, ViewOption, rIndex);
 }
 
-void MyItemDelegate::setDragActive(bool active)
+void MyItemDelegate::setDragActive(const bool active)
 {
     if (m_dragActive != active) {
         m_dragActive = active;
         emit repaintRequested();  // request repaint
     }
 }
-void MyItemDelegate::setMainColor(QColor c)
+
+void MyItemDelegate::setMainColor(const QColor c)
 {
     mainColor = c;
 }
-void MyItemDelegate::setMainTextColor(QColor c)
+
+void MyItemDelegate::setMainTextColor(const QColor c)
 {
     mainTextColor = c;
 }

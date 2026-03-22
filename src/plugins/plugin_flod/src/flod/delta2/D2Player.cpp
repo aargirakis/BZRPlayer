@@ -488,7 +488,7 @@ int D2Player::load(void *_data, unsigned long int length) {
     }
 
 
-    m_version = 2;
+    version = 2;
     format = "Delta Music 2";
     //printData();
     return 1;

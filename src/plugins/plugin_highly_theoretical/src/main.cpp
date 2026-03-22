@@ -65,19 +65,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_highly_theoretical_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_highly_theoretical_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginHighlyTheo {
@@ -91,8 +90,8 @@ public:
     }
 
     ~pluginHighlyTheo() {
-        //delete some stuff
-        delete[] m_segaState;
+        // delete some stuff
+        delete[] segaState;
     }
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
@@ -148,15 +147,15 @@ public:
                     length *= 1000;
 
                 if (length > 0)
-                    plugin->m_length = length;
+                    plugin->length = length;
             }
         } else if (!strcasecmp(name, "fade")) {
         } else if (!strcasecmp(name, "utf8")) {
         } else if (!strcasecmp(name, "_lib")) {
-            //plugin->m_hasLib = true;
+            //plugin->hasLib = true;
         } else if (name[0] == '_') {
         } else {
-            plugin->m_tags[name] = value;
+            plugin->tags[name] = value;
         }
         return 0;
     }
@@ -198,16 +197,16 @@ public:
         return ftell(static_cast<FILE *>(handle));
     }
 
-    static int SdsfLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t * /*reserved*/,
-                        size_t /*reserved_size*/) {
+    static int SdsfLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t * /* reserved */,
+                        size_t /* reserved_size */) {
         auto *plugin = static_cast<pluginHighlyTheo *>(context);
         if (exe_size < 4) return -1;
 
-        uint8_t *dst = plugin->m_loaderState.data;
+        uint8_t *dst = plugin->loaderState.data;
 
-        if (plugin->m_loaderState.data_size < 4) {
-            plugin->m_loaderState.data = dst = static_cast<uint8_t *>(malloc(exe_size));
-            plugin->m_loaderState.data_size = exe_size;
+        if (plugin->loaderState.data_size < 4) {
+            plugin->loaderState.data = dst = static_cast<uint8_t *>(malloc(exe_size));
+            plugin->loaderState.data_size = exe_size;
             memcpy(dst, exe, exe_size);
             return 0;
         }
@@ -216,25 +215,25 @@ public:
         uint32_t src_start = get_le32(exe);
         dst_start &= 0x7fffff;
         src_start &= 0x7fffff;
-        size_t dst_len = plugin->m_loaderState.data_size - 4;
+        size_t dst_len = plugin->loaderState.data_size - 4;
         size_t src_len = exe_size - 4;
         if (dst_len > 0x800000) dst_len = 0x800000;
         if (src_len > 0x800000) src_len = 0x800000;
 
         if (src_start < dst_start) {
-            uint32_t diff = dst_start - src_start;
-            plugin->m_loaderState.data_size = dst_len + 4 + diff;
-            plugin->m_loaderState.data = dst = static_cast<uint8_t *>(realloc(dst, plugin->m_loaderState.data_size));
+            const uint32_t diff = dst_start - src_start;
+            plugin->loaderState.data_size = dst_len + 4 + diff;
+            plugin->loaderState.data = dst = static_cast<uint8_t *>(realloc(dst, plugin->loaderState.data_size));
             memmove(dst + 4 + diff, dst + 4, dst_len);
             memset(dst + 4, 0, diff);
             dst_len += diff;
             dst_start = src_start;
             set_le32(dst, dst_start);
         }
-        if ((src_start + src_len) > (dst_start + dst_len)) {
-            size_t diff = (src_start + src_len) - (dst_start + dst_len);
-            plugin->m_loaderState.data_size = dst_len + 4 + diff;
-            plugin->m_loaderState.data = dst = static_cast<uint8_t *>(realloc(dst, plugin->m_loaderState.data_size));
+        if (src_start + src_len > dst_start + dst_len) {
+            const size_t diff = src_start + src_len - (dst_start + dst_len);
+            plugin->loaderState.data_size = dst_len + 4 + diff;
+            plugin->loaderState.data = dst = static_cast<uint8_t *>(realloc(dst, plugin->loaderState.data_size));
             memset(dst + 4 + dst_len, 0, diff);
         }
 
@@ -245,10 +244,10 @@ public:
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
-    unordered_map<string, string> m_tags;
+    unordered_map<string, string> tags;
     int psfType = 0;
-    unsigned int m_length = -1;
-    uint8_t *m_segaState = nullptr;
+    unsigned int length = -1;
+    uint8_t *segaState = nullptr;
 
     struct LoaderState {
         uint8_t *data = nullptr;
@@ -257,9 +256,9 @@ public:
         void Clear() { new(this) LoaderState(); }
 
         ~LoaderState() { Clear(); }
-    } m_loaderState = {};
+    } loaderState = {};
 
-    const psf_file_callbacks m_psfFileSystem = {
+    const psf_file_callbacks psfFileSystem = {
         "\\/|:",
         this,
         OpenPSF,
@@ -271,9 +270,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -306,7 +305,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginHighlyTheo(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    const auto psfType = psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0, nullptr, nullptr,
+    const auto psfType = psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0, nullptr, nullptr,
                                   pluginHighlyTheo::InfoMetaPSF,
                                   plugin, 0, nullptr, nullptr);
 
@@ -315,7 +314,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, static_cast<uint8_t>(psfType),
+    if (psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(psfType),
                  pluginHighlyTheo::SdsfLoad, plugin, nullptr, nullptr, 0, nullptr, nullptr) < 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -325,7 +324,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     sega_init();
 
-    plugin->m_segaState = new uint8_t[sega_get_state_size(plugin->psfType - 0x10)];
+    plugin->segaState = new uint8_t[sega_get_state_size(plugin->psfType - 0x10)];
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
@@ -335,44 +334,44 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     if (psfType == 0x12) {
-        plugin->info->fileformat = "Dreamcast (DSF)";
+        plugin->info->fileFormat = "Dreamcast (DSF)";
     } else {
-        plugin->info->fileformat = "Sega Saturn (SSF)";
+        plugin->info->fileFormat = "Sega Saturn (SSF)";
     }
 
     plugin->info->plugin = PLUGIN_highly_theoretical;
     plugin->info->pluginName = PLUGIN_highly_theoretical_NAME;
 
-    if (keyExists(plugin->m_tags, "title")) {
-        plugin->info->title = plugin->m_tags["title"];
+    if (keyExists(plugin->tags, "title")) {
+        plugin->info->title = plugin->tags["title"];
     }
-    if (keyExists(plugin->m_tags, "artist")) {
-        plugin->info->artist = plugin->m_tags["artist"];
+    if (keyExists(plugin->tags, "artist")) {
+        plugin->info->artist = plugin->tags["artist"];
     }
-    if (keyExists(plugin->m_tags, "game")) {
-        plugin->info->game = plugin->m_tags["game"];
+    if (keyExists(plugin->tags, "game")) {
+        plugin->info->game = plugin->tags["game"];
     }
-    if (keyExists(plugin->m_tags, "copyright")) {
-        plugin->info->copyright = plugin->m_tags["copyright"];
+    if (keyExists(plugin->tags, "copyright")) {
+        plugin->info->copyright = plugin->tags["copyright"];
     }
-    if (const string ripperTagKey = psfType == 0x11 ? "ssfby" : "dsfby"; keyExists(plugin->m_tags, ripperTagKey)) {
-        plugin->info->ripper = plugin->m_tags[ripperTagKey];
+    if (const string ripperTagKey = psfType == 0x11 ? "ssfby" : "dsfby"; keyExists(plugin->tags, ripperTagKey)) {
+        plugin->info->ripper = plugin->tags[ripperTagKey];
     }
-    if (keyExists(plugin->m_tags, "year")) {
-        plugin->info->date = plugin->m_tags["year"];
+    if (keyExists(plugin->tags, "year")) {
+        plugin->info->date = plugin->tags["year"];
     }
-    if (keyExists(plugin->m_tags, "volume")) {
-        plugin->info->volumeAmplificationStr = plugin->m_tags["volume"];
+    if (keyExists(plugin->tags, "volume")) {
+        plugin->info->volumeAmplificationStr = plugin->tags["volume"];
     }
-    if (keyExists(plugin->m_tags, "genre")) {
-        plugin->info->genre = plugin->m_tags["genre"];
+    if (keyExists(plugin->tags, "genre")) {
+        plugin->info->genre = plugin->tags["genre"];
     }
-    if (keyExists(plugin->m_tags, "comment")) {
-        plugin->info->comments = plugin->m_tags["comment"];
+    if (keyExists(plugin->tags, "comment")) {
+        plugin->info->comments = plugin->tags["comment"];
     }
 
     return FMOD_OK;
@@ -385,9 +384,8 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginHighlyTheo *>(codec->plugindata);
-    unsigned int numSamples;
 
-    sega_execute(plugin->m_segaState, 0x7fffffff, static_cast<short *>(buffer), &size);
+    sega_execute(plugin->segaState, 0x7fffffff, static_cast<short *>(buffer), &size);
     *read = size;
 
     return FMOD_OK;
@@ -396,17 +394,17 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     const auto *plugin = static_cast<pluginHighlyTheo *>(codec->plugindata);
-    sega_clear_state(plugin->m_segaState, plugin->psfType - 0x10);
-    sega_enable_dry(plugin->m_segaState, 1);
-    sega_enable_dsp(plugin->m_segaState, 1);
-    sega_enable_dsp_dynarec(plugin->m_segaState, 0);
-    const uint32_t start = *reinterpret_cast<uint32_t *>(plugin->m_loaderState.data);
-    uint32_t length = plugin->m_loaderState.data_size;
+    sega_clear_state(plugin->segaState, plugin->psfType - 0x10);
+    sega_enable_dry(plugin->segaState, 1);
+    sega_enable_dsp(plugin->segaState, 1);
+    sega_enable_dsp_dynarec(plugin->segaState, 0);
+    const uint32_t start = *reinterpret_cast<uint32_t *>(plugin->loaderState.data);
+    uint32_t length = plugin->loaderState.data_size;
     if (const size_t maxLength = (plugin->psfType == 0x12) ? 0x800000 : 0x80000; (start + (length - 4)) > maxLength) {
         length = maxLength - start + 4;
     }
 
-    sega_upload_program(plugin->m_segaState, plugin->m_loaderState.data, length);
+    sega_upload_program(plugin->segaState, plugin->loaderState.data, length);
 
     return FMOD_OK;
 }
@@ -415,8 +413,8 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginHighlyTheo *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        if (plugin->m_length > 0) {
-            *length = plugin->m_length;
+        if (plugin->length > 0) {
+            *length = plugin->length;
         } else {
             *length = -1;
         }

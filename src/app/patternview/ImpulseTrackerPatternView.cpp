@@ -1,6 +1,6 @@
 #include "ImpulseTrackerPatternView.h"
 
-ImpulseTrackerPatternView::ImpulseTrackerPatternView(Tracker* parent, unsigned int channels)
+ImpulseTrackerPatternView::ImpulseTrackerPatternView(Tracker* parent, const unsigned int channels)
     : AbstractPatternView(parent, channels)
 {
     octaveOffset = 12;
@@ -39,7 +39,7 @@ ImpulseTrackerPatternView::ImpulseTrackerPatternView(Tracker* parent, unsigned i
     m_yOffsetRowHighlight = -7;
 
     m_xOffsetRow = 8;
-    m_RowLength = (5 + m_channels * 14) + 5;
+    m_RowLength = 5 + m_channels * 14 + 5;
 
     m_xChannelStart = 39;
     m_channelWidth = 106;
@@ -57,27 +57,28 @@ void ImpulseTrackerPatternView::paintAbove(QPainter* painter, int height, int cu
     QColor colorShadow(124, 88, 68);
     QColor colorRed(255, 38, 38);
 
-    //channel separators
+    // channel separators
     for (unsigned int chan = 1; chan < m_channels; chan++)
     {
-        painter->fillRect((33 + chan * 112), 0, 6, height, colorBase);
+        painter->fillRect(33 + chan * 112, 0, 6, height, colorBase);
     }
-    //right
-    painter->fillRect((34 + m_channels * 112), 0, 46, height, colorBase);
-    painter->fillRect((32 + m_channels * 112), 16, 2, height - (14), colorHilite);
 
-    //bottom
-    painter->fillRect(40, height - 24, (m_channels * 112 - 6), 2, colorHilite);
-    painter->fillRect(8, height - 22, (32 + m_channels * 112), 22, colorBase);
+    // right
+    painter->fillRect(34 + m_channels * 112, 0, 46, height, colorBase);
+    painter->fillRect(32 + m_channels * 112, 16, 2, height - 14, colorHilite);
 
-    //left
+    // bottom
+    painter->fillRect(40, height - 24, m_channels * 112 - 6, 2, colorHilite);
+    painter->fillRect(8, height - 22, 32 + m_channels * 112, 22, colorBase);
+
+    // left
     painter->fillRect(0, 0, 1, height, colorHilite);
-    painter->fillRect(38, 0, 2, height - (21), colorShadow);
+    painter->fillRect(38, 0, 2, height - 21, colorShadow);
 
-    //top
-    painter->fillRect(39, 14, (m_channels * 112 - 5), 2, colorShadow);
-    painter->fillRect(8, 1, (32 + m_channels * 112), 13, colorBase);
-    painter->fillRect(0, 0, (80 + m_channels * 112), 1, colorHilite);
+    // top
+    painter->fillRect(39, 14, m_channels * 112 - 5, 2, colorShadow);
+    painter->fillRect(8, 1, 32 + m_channels * 112, 13, colorBase);
+    painter->fillRect(0, 0, 80 + m_channels * 112, 1, colorHilite);
 }
 
 void ImpulseTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)
@@ -85,10 +86,10 @@ void ImpulseTrackerPatternView::paintBelow(QPainter* painter, int height, int cu
     QColor colorBase(180, 148, 120);
     QColor colorHilite(232, 232, 200);
     QColor colorShadow(124, 88, 68);
-    //main
-    painter->fillRect(40, (height / 2) - 7, (40 + m_channels * 112), 8, m_colorCurrentRowBackground);
+    // main
+    painter->fillRect(40, height / 2 - 7, 40 + m_channels * 112, 8, m_colorCurrentRowBackground);
 
-    //left
+    // left
     painter->fillRect(1, 0, 39, height, colorBase);
 }
 
@@ -99,19 +100,23 @@ ImpulseTrackerPatternView::~ImpulseTrackerPatternView()
 QString ImpulseTrackerPatternView::volume(BaseRow* row)
 {
     if (!volumeEnabled) return "";
+
     int volume = row->vol;
+
     if (volume < 1) volume = -1;
+
     if (volume == -1) return m_emptyVolume;
-    int base = volumeHex ? 16 : 10;
+
+    const int base = volumeHex ? 16 : 10;
 
     QString volumeStr = QString::number(volume, base).toUpper();
     volumeStr = volumePad && volumeStr.length() == 1 ? "0" + volumeStr : volumeStr;
     return volumeStr;
 }
 
-QString ImpulseTrackerPatternView::rowNumber(int rowNumber)
+QString ImpulseTrackerPatternView::rowNumber(const int rowNumber)
 {
-    int base = rowNumberHex ? 16 : 10;
+    const int base = rowNumberHex ? 16 : 10;
 
     QString rowNumberStr = QString::number(rowNumber + rowNumberOffset, base).toUpper();
     rowNumberStr = rowNumberStr.length() == 1 ? "00" + rowNumberStr : rowNumberStr;
@@ -122,6 +127,7 @@ QString ImpulseTrackerPatternView::rowNumber(int rowNumber)
 QString ImpulseTrackerPatternView::note(BaseRow* row)
 {
     if (row->note == 130) return "$$$";
+
     return AbstractPatternView::note(row);
 }
 
@@ -129,7 +135,9 @@ QString ImpulseTrackerPatternView::effect(BaseRow* row)
 {
     QString effectStr;
     //std::cout << QString::number(row->effect+1).toStdString() << std::endl;
+
     if (row->effect < 1) return m_emptyEffect;
+
     switch (row->effect + 1)
     {
     case 2: effectStr = "F";
@@ -154,6 +162,7 @@ QString ImpulseTrackerPatternView::effect(BaseRow* row)
         break;
     case 12: effectStr = "B";
         break;
+
     case 14: effectStr = "C";
         break;
     case 15: effectStr = "S";
@@ -173,6 +182,7 @@ QString ImpulseTrackerPatternView::effect(BaseRow* row)
         break;
     case 24: effectStr = "W";
         break;
+
     case 26: effectStr = "U";
         break;
     case 27: effectStr = "X";
@@ -185,14 +195,15 @@ QString ImpulseTrackerPatternView::effect(BaseRow* row)
         break;
     case 31: effectStr = "Y";
         break;
+
     case 37: effectStr = m_emptyEffect;
         break;
 
     case 133: effectStr = "Z";
         break;
+
     case 136: effectStr = "T";
         break;
-
 
     case 172: effectStr = "T";
         break;
@@ -202,5 +213,6 @@ QString ImpulseTrackerPatternView::effect(BaseRow* row)
     default: effectStr = "???";
         break;
     }
+
     return effectStr;
 }

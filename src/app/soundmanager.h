@@ -1,9 +1,9 @@
 #ifndef SOUNDMANAGER_H
 #define SOUNDMANAGER_H
-#include "fmod_errors.h"
-#include "info.h"
-#include <string>
+
 #include <QString>
+#include "info.h"
+#include "fmod_errors.h"
 
 using namespace std;
 
@@ -16,42 +16,40 @@ public:
         return instance;
     }
 
-    Info* m_Info1;
-    void Init(int device, QString outputFilename);
+    Info* info;
+    void Init(int outputDeviceProvided, const QString &outputFilenameProvided);
     void loadPluginChain();
-    void loadPlugin(string filename, int priority);
-    void ERRCHECK(FMOD_RESULT result);
-    void ERRCHECK(FMOD_RESULT result, QString string);
-    void Stop();
-    bool IsPlaying();
-    bool isWavWriterDeviceSelected();
-
-    void PlayAudio(bool startPaused);
-    void Release();
-    void ShutDown();
-    void MuteChannels(unsigned int mask, QString maskStr);
-    bool isChannelMuted(unsigned int channel);
-    void Pause(bool pause);
-    bool GetPaused();
-    unsigned int GetPosition(FMOD_TIMEUNIT);
-    unsigned int GetLength(FMOD_TIMEUNIT timeunit);
-    void SetPosition(unsigned int positon, FMOD_TIMEUNIT timeunit);
-    void SetVolume(float volume);
-    void SetMute(bool mute);
-    bool LoadSound(QString filename, Info* info);
-    const char* getFMODSoundFormat(FMOD_SOUND* sound);
+    void loadPlugin(const string_view &filename, int priority);
+    static void checkFmodError(FMOD_RESULT result);
+    static void checkFmodError(FMOD_RESULT result, const QString &msg);
+    void stop() const;
+    bool isPlaying() const;
+    bool isWavWriterDeviceSelected() const;
+    void playAudio(bool startPaused);
+    void release() const;
+    void shutdown() const;
+    void muteChannels(unsigned int mask, const QString &maskStr);
+    bool isChannelMuted(unsigned int channelProvided) const;
+    void pause(bool pause) const;
+    bool isPaused() const;
+    unsigned int getPosition(FMOD_TIMEUNIT) const;
+    unsigned int getLength(FMOD_TIMEUNIT timeUnit) const;
+    void setPosition(unsigned int positon, FMOD_TIMEUNIT timeUnit) const;
+    void setVolume(float volume) const;
+    void setMute(bool mute) const;
+    bool loadSound(const QString &filename, Info* infoProvided);
+    static const char* getFmodSoundTypeName(FMOD_SOUND_TYPE type);
     void setReverbEnabled(bool);
-    void setReverbPreset(QString preset);
-    void setNormalizeEnabled(bool);
-    void setNormalizeFadeTime(int);
-    void setNormalizeMaxAmp(int);
-    void setNormalizeThreshold(int);
-    void SetFrequencyByMultiplier(float);
-    float GetNominalFrequency();
-    float getAudibility();
-    int getSoundData(int channel);
-    int getNumTags();
-    FMOD_RESULT getTag(const char* name, int index, FMOD_TAG* tag);
+    void setReverbPreset(const QString& preset);
+    void setNormalizeEnabled(bool) const;
+    void setNormalizeFadeTime(int) const;
+    void setNormalizeMaxAmp(int) const;
+    void setNormalizeThreshold(int) const;
+    void setFrequencyByMultiplier(float) const;
+    float getNominalFrequency() const;
+    int getSoundData(unsigned int channelProvided);
+    int getNumTags() const;
+    FMOD_RESULT getTag(const char* name, int index, FMOD_TAG* tag) const;
 
 private:
     SoundManager()
@@ -62,15 +60,15 @@ private:
     FMOD_SOUND* sound;
     FMOD_CHANNEL* channel = nullptr;
     FMOD_RESULT result;
-    FMOD_CHANNELGROUP* channelgroup;
+    FMOD_CHANNELGROUP* channelGroup;
     FMOD_DSP* dspNormalizer;
     FMOD_DSP* dspReverb;
-    FMOD_DSP* dspFFT;
+    FMOD_DSP* dspFft;
     FMOD_REVERB_PROPERTIES currentReverbPreset;
     int currentDevice;
-    float m_nominalFrequency;
-    unsigned int m_mutedChannelsMask;
-    QString m_mutedChannelsMaskString;
+    float nominalFrequency;
+    unsigned int mutedChannelsMask;
+    QString mutedChannelsMaskString;
 };
 
 #endif // SOUNDMANAGER_H

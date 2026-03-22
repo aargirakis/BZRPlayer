@@ -21,21 +21,19 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_hivelytracker_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
+    PLUGIN_hivelytracker_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN |
-    FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_MODPATTERN_INFO | FMOD_TIMEUNIT_MODVUMETER,
-    // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    &getPosition,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_MODPATTERN_INFO | FMOD_TIMEUNIT_MODVUMETER, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    &getPosition, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 const char *NOTES[67] =
@@ -58,20 +56,20 @@ public:
     }
 
     ~pluginHivelyTracker() {
-        //delete some stuff
-        hvl_FreeTune(m_tune);
+        // delete some stuff
+        hvl_FreeTune(tune);
     }
 
-    hvl_tune *m_tune = nullptr;
+    hvl_tune *tune = nullptr;
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
     uint32 songLength;
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -94,9 +92,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     if (memcmp(id, "HVL", 3) == 0) {
-        plugin->info->fileformat = "HivelyTracker";
+        plugin->info->fileFormat = "HivelyTracker";
     } else if (memcmp(id, "THX", 3) == 0) {
-        plugin->info->fileformat = "AHX";
+        plugin->info->fileFormat = "AHX";
     } else {
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -106,11 +104,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         useDefaults = true;
     }
 
-    //defaults
+    // defaults
     uint32 defstereo = 4;
     plugin->info->isContinuousPlaybackActive = false;
 
@@ -137,15 +135,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
     auto *myBuffer = new uint8_t[filesize];
 
-    //rewind file pointer
+    // rewind file pointer
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
 
-    //read whole file to memory
+    // read whole file to memory
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
-    plugin->m_tune = hvl_ParseTune(myBuffer, filesize, 44100, defstereo);
+    plugin->tune = hvl_ParseTune(myBuffer, filesize, 44100, defstereo);
 
-    if (!plugin->m_tune) {
+    if (!plugin->tune) {
         delete plugin;
         delete [] myBuffer;
         return FMOD_ERR_FORMAT;
@@ -161,23 +159,23 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
-    hvl_InitSubsong(plugin->m_tune, plugin->info->currentSubsong);
+    hvl_InitSubsong(plugin->tune, plugin->info->currentSubsong);
 
-    plugin->songLength = hvl_GetLen(plugin->m_tune);
+    plugin->songLength = hvl_GetLen(plugin->tune);
 
-    plugin->info->title = plugin->m_tune->ht_Name;
-    plugin->info->numChannels = plugin->m_tune->ht_Channels;
-    plugin->info->numPatterns = plugin->m_tune->ht_TrackNr;
-    plugin->info->modPatternRows = plugin->m_tune->ht_TrackLength;
+    plugin->info->title = plugin->tune->ht_Name;
+    plugin->info->numChannels = plugin->tune->ht_Channels;
+    plugin->info->numPatterns = plugin->tune->ht_TrackNr;
+    plugin->info->modPatternRows = plugin->tune->ht_TrackLength;
 
-    int numInstruments = plugin->m_tune->ht_InstrumentNr;
+    int numInstruments = plugin->tune->ht_InstrumentNr;
     plugin->info->numInstruments = numInstruments;
-    plugin->info->numSubsongs = plugin->m_tune->ht_SubsongNr;
-    plugin->info->numOrders = plugin->m_tune->ht_PositionNr;
-    plugin->info->modPatternRestart = plugin->m_tune->ht_Restart;
+    plugin->info->numSubsongs = plugin->tune->ht_SubsongNr;
+    plugin->info->numOrders = plugin->tune->ht_PositionNr;
+    plugin->info->modPatternRestart = plugin->tune->ht_Restart;
 
     if (numInstruments > 0) {
         const unsigned char WAVELENGTH[6] =
@@ -193,13 +191,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         //        plugin->info->instrumentsFilterSpeed = new unsigned char[numInstruments];
 
         for (int j = 1; j <= numInstruments; j++) {
-            plugin->info->instruments[j - 1] = plugin->m_tune->ht_Instruments[j].ins_Name;
-            plugin->info->instrumentsVolume[j - 1] = plugin->m_tune->ht_Instruments[j].ins_Volume;
-            plugin->info->instrumentsWavelen[j - 1] = WAVELENGTH[plugin->m_tune->ht_Instruments[j].ins_WaveLength];
+            plugin->info->instruments[j - 1] = plugin->tune->ht_Instruments[j].ins_Name;
+            plugin->info->instrumentsVolume[j - 1] = plugin->tune->ht_Instruments[j].ins_Volume;
+            plugin->info->instrumentsWavelen[j - 1] = WAVELENGTH[plugin->tune->ht_Instruments[j].ins_WaveLength];
 
-            //            plugin->info->instrumentsFilterLowerLimit[j-1] = plugin->m_tune->ht_Instruments[j].ins_FilterLowerLimit;
-            //            plugin->info->instrumentsFilterUpperLimit[j-1] = plugin->m_tune->ht_Instruments[j].ins_FilterUpperLimit;
-            //            plugin->info->instrumentsFilterSpeed[j-1] = plugin->m_tune->ht_Instruments[j].ins_FilterSpeed;
+            //            plugin->info->instrumentsFilterLowerLimit[j-1] = plugin->tune->ht_Instruments[j].ins_FilterLowerLimit;
+            //            plugin->info->instrumentsFilterUpperLimit[j-1] = plugin->tune->ht_Instruments[j].ins_FilterUpperLimit;
+            //            plugin->info->instrumentsFilterSpeed[j-1] = plugin->tune->ht_Instruments[j].ins_FilterSpeed;
         }
     }
 
@@ -217,7 +215,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginHivelyTracker *>(codec->plugindata);
-    hvl_DecodeFrame(plugin->m_tune, static_cast<int8 *>(buffer), static_cast<int8 *>(buffer) + 2, 4);
+    hvl_DecodeFrame(plugin->tune, static_cast<int8 *>(buffer), static_cast<int8 *>(buffer) + 2, 4);
 
     if (size < plugin->waveformat.pcmblocksize) {
         *read = size;
@@ -248,15 +246,15 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     const auto plugin = static_cast<pluginHivelyTracker *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
-        hvl_Seek(plugin->m_tune, position);
+        hvl_Seek(plugin->tune, position);
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        //position is a mask
+        // position is a mask
         for (int i = 0; i < plugin->info->numChannels; i++) {
             const unsigned int m = position >> i & 1;
             const unsigned char mute = m == 0 ? 1 : 0;
-            plugin->m_tune->ht_Voices[i].vc_TrackOn = mute;
+            plugin->tune->ht_Voices[i].vc_TrackOn = mute;
         }
 
         return FMOD_OK;
@@ -269,41 +267,41 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
     const auto *plugin = static_cast<pluginHivelyTracker *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MODROW) {
-        *position = Front(plugin->m_tune->trackPosBuffer);
+        *position = Front(plugin->tune->trackPosBuffer);
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MODORDER) {
-        *position = Front(plugin->m_tune->patternPosBuffer);
+        *position = Front(plugin->tune->patternPosBuffer);
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MODPATTERN) {
-        //set the current track positions in the info struct and just return 0
+        // set the current track positions in the info struct and just return 0
         plugin->info->modTrackPositions.clear();
-        for (int i = 0; i < plugin->m_tune->ht_Channels; i++) {
+        for (int i = 0; i < plugin->tune->ht_Channels; i++) {
             plugin->info->modTrackPositions.push_back(
-                plugin->m_tune->ht_Positions[Front(plugin->m_tune->patternPosBuffer)].pos_Track[i]);
+                plugin->tune->ht_Positions[Front(plugin->tune->patternPosBuffer)].pos_Track[i]);
         }
 
         *position = 0;
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO) {
-        //set the mod pattern (notes etc.) in the info struct and just return 0
+        // set the mod pattern (notes etc.) in the info struct and just return 0
         for (const auto &modRow: plugin->info->modRows) {
             delete modRow;
         }
         plugin->info->modRows.clear();
-        for (int i = 0; i <= plugin->m_tune->ht_TrackNr; i++) {
-            for (int j = 0; j < plugin->m_tune->ht_TrackLength; j++) {
+        for (int i = 0; i <= plugin->tune->ht_TrackNr; i++) {
+            for (int j = 0; j < plugin->tune->ht_TrackLength; j++) {
                 auto *row = new BaseRow();
-                const uint8 note = plugin->m_tune->ht_Tracks[i][j].stp_Note;
+                const uint8 note = plugin->tune->ht_Tracks[i][j].stp_Note;
                 row->note = note;
-                row->noteText = note == 0 ? "---" : NOTES[plugin->m_tune->ht_Tracks[i][j].stp_Note - 1];
-                row->sample = plugin->m_tune->ht_Tracks[i][j].stp_Instrument;
-                row->effect = plugin->m_tune->ht_Tracks[i][j].stp_FX;
-                row->param = plugin->m_tune->ht_Tracks[i][j].stp_FXParam;
-                row->effect2 = plugin->m_tune->ht_Tracks[i][j].stp_FXb;
-                row->param2 = plugin->m_tune->ht_Tracks[i][j].stp_FXbParam;
+                row->noteText = note == 0 ? "---" : NOTES[plugin->tune->ht_Tracks[i][j].stp_Note - 1];
+                row->sample = plugin->tune->ht_Tracks[i][j].stp_Instrument;
+                row->effect = plugin->tune->ht_Tracks[i][j].stp_FX;
+                row->param = plugin->tune->ht_Tracks[i][j].stp_FXParam;
+                row->effect2 = plugin->tune->ht_Tracks[i][j].stp_FXb;
+                row->param2 = plugin->tune->ht_Tracks[i][j].stp_FXbParam;
                 plugin->info->modRows.push_back(row);
             }
         }
@@ -312,10 +310,10 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MODVUMETER) {
-        const auto vumeters = new unsigned char[plugin->info->numChannels];
-        hvl_GetChannelVolumes(plugin->m_tune, vumeters);
+        const auto vuMeters = new unsigned char[plugin->info->numChannels];
+        hvl_GetChannelVolumes(plugin->tune, vuMeters);
 
-        plugin->info->modVUMeters = vumeters;
+        plugin->info->modVuMeters = vuMeters;
         return FMOD_OK;
     }
 

@@ -1,6 +1,6 @@
 #ifndef VARIOUS_H
 #define VARIOUS_H
-#include <string>
+
 #include <QString>
 #include "info.h"
 
@@ -39,10 +39,7 @@ struct Equalizer
     float eq16000;
 };
 
-inline const char* const BoolToString();
-
-QString groupDigits(int number);
-unsigned int stringTimeToMs(QString strTime);
-QString msToNiceStringExact(unsigned int lenms, bool displayMilliseconds);
+QString groupDigits(int64_t number);
+QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds);
 QString fromUtf8OrLatin1(const std::string &str);
 #endif // VARIOUS_H

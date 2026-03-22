@@ -14,21 +14,21 @@ Amiga::Amiga() {
     channels = vector<AmigaChannel *>();
     filter = new AmigaFilter();
     filter->setModel(MODEL_A1200);
-    m_buffer = vector<Sample *>(8192);
-    m_buffer[8192 - 1] = new Sample();
-    m_complete = samplesLeft = remains = 0;
+    buffer = vector<Sample *>(8192);
+    buffer[8192 - 1] = new Sample();
+    complete = samplesLeft = remains = 0;
 
     for (int i = 8192 - 2; i >= 0; --i) {
-        m_buffer[i] = new Sample();
-        m_buffer[i]->next = m_buffer[i + 1];
+        buffer[i] = new Sample();
+        buffer[i]->next = buffer[i + 1];
     }
 }
 
 Amiga::~Amiga() {
-    for (unsigned int i = 0; i < m_buffer.size(); i++) {
-        if (m_buffer[i]) delete m_buffer[i];
+    for (unsigned int i = 0; i < buffer.size(); i++) {
+        if (buffer[i]) delete buffer[i];
     }
-    m_buffer.clear();
+    buffer.clear();
     for (unsigned int i = 0; i < channels.size(); i++) {
         if (channels[i]) delete channels[i];
     }
@@ -41,7 +41,7 @@ void Amiga::setFilter(int filterVal) {
 }
 
 void Amiga::setComplete(int value) {
-    m_complete = value ^ player->loopSong;
+    complete = value ^ player->loopSong;
 }
 
 void Amiga::setVolume(int value) {
@@ -109,7 +109,7 @@ void Amiga::initialize() {
 
     Sample *sample;
     for (int i = 0; i < 8192; ++i) {
-        sample = m_buffer[i];
+        sample = buffer[i];
         sample->l = sample->r = 0.0;
     }
 }
@@ -134,7 +134,7 @@ void Amiga::mixer(void *_stream, unsigned long int length) {
     int mixPos = 0;
     Sample *sample;
 
-    if (m_complete) {
+    if (complete) {
         if (!remains) return;
         size = remains;
     }
@@ -146,7 +146,7 @@ void Amiga::mixer(void *_stream, unsigned long int length) {
             samplesLeft = samplesTick;
 
 
-            if (m_complete) {
+            if (complete) {
                 size = mixed + samplesTick;
                 if (size > bufferSize) {
                     remains = size - bufferSize;
@@ -162,7 +162,7 @@ void Amiga::mixer(void *_stream, unsigned long int length) {
 
         AmigaChannel *chan = channels[0];
         do {
-            sample = m_buffer[mixPos];
+            sample = buffer[mixPos];
             if (chan->audena && chan->audper) {
                 double speed = chan->audper / clock;
                 if (chan->mute) {
@@ -214,10 +214,10 @@ void Amiga::mixer(void *_stream, unsigned long int length) {
         samplesLeft -= toMix;
     }
 
-    sample = m_buffer[0];
+    sample = buffer[0];
     short *stream = (short *) _stream;
     for (int i = 0; i < size; ++i) {
-        sample = m_buffer[i];
+        sample = buffer[i];
 
         filter->process(sample);
         //cout << "model " << model << " active " << filter->active << " forced " << filter->forced << "\n";
@@ -245,5 +245,5 @@ void Amiga::setModel(int model) {
 }
 
 int Amiga::isCompleted() {
-    return m_complete;
+    return complete;
 }

@@ -34,7 +34,7 @@ Queue CreateQueue(int MaxElements) {
         Error("CreateQueue Error: Queue size is too small.");
     }
 
-    Queue Q = malloc(sizeof(struct QueueRecord));
+    const Queue Q = malloc(sizeof(struct QueueRecord));
     if (Q == NULL) {
         FatalError("CreateQueue Error: Unable to allocate more memory.");
     }
@@ -73,11 +73,11 @@ static int Succ(int Value, Queue Q) {
 void Enqueue(ElementType X, Queue Q) {
     if (IsFull(Q)) {
         Error("Enqueue Error: The queue is full.");
-    } else {
-        Q->Size++;
-        Q->Rear = Succ(Q->Rear, Q);
-        Q->Array[Q->Rear] = X;
     }
+
+    Q->Size++;
+    Q->Rear = Succ(Q->Rear, Q);
+    Q->Array[Q->Rear] = X;
 }
 
 ElementType Front(Queue Q) {
@@ -90,10 +90,10 @@ ElementType Front(Queue Q) {
 void Dequeue(Queue Q) {
     if (IsEmpty(Q)) {
         Error("Dequeue Error: The queue is empty.");
-    } else {
-        Q->Size--;
-        Q->Front = Succ(Q->Front, Q);
     }
+
+    Q->Size--;
+    Q->Front = Succ(Q->Front, Q);
 }
 
 ElementType FrontAndDequeue(Queue Q) {
@@ -101,10 +101,10 @@ ElementType FrontAndDequeue(Queue Q) {
 
     if (IsEmpty(Q)) {
         Error("FrontAndDequeue Error: The queue is empty.");
-    } else {
-        Q->Size--;
-        X = Q->Array[Q->Front];
-        Q->Front = Succ(Q->Front, Q);
     }
+
+    Q->Size--;
+    X = Q->Array[Q->Front];
+    Q->Front = Succ(Q->Front, Q);
     return X;
 }

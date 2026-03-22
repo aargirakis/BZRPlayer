@@ -1,6 +1,6 @@
 #include "filedownloader.h"
 
-FileDownloader::FileDownloader(QUrl url, QObject* parent) :
+FileDownloader::FileDownloader(const QUrl &url, QObject* parent) :
     QObject(parent)
 {
     connect(
@@ -14,7 +14,7 @@ FileDownloader::FileDownloader(QUrl url, QObject* parent) :
     // );
 
     this->url = url;
-    QNetworkRequest request(url);
+    const QNetworkRequest request(url);
     m_WebCtrl.get(request);
 }
 
@@ -26,7 +26,7 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 {
     m_DownloadedData = pReply->readAll();
     //qDebug() << "downloaded!";
-    //emit a signal
+    // emit a signal
 
     pReply->deleteLater();
     emit downloaded();
@@ -35,7 +35,7 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 void FileDownloader::errorOccured(QNetworkReply::NetworkError code)
 {
     qDebug() << "error!!";
-    //emit a signal
+    // emit a signal
 }
 
 QByteArray FileDownloader::downloadedData() const

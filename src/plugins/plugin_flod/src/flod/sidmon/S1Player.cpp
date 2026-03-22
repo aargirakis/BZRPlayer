@@ -459,11 +459,11 @@ int S1Player::load(void *_data, unsigned long int _length) {
 
         if (start == 0xffd4) {
             if (j == 0x0fec) {
-                m_variant = SIDMON_0FFA;
+                variant = SIDMON_0FFA;
             } else if (j == 0x1466) {
-                m_variant = SIDMON_1444;
+                variant = SIDMON_1444;
             } else {
-                m_variant = j;
+                variant = j;
             }
 
             pos = j + position - 6;
@@ -723,7 +723,7 @@ int S1Player::load(void *_data, unsigned long int _length) {
         sample->pitchFall = (signed char) stream[position];
         position++;
 
-        if (m_variant == SIDMON_1444) {
+        if (variant == SIDMON_1444) {
             sample->pitchFall = sample->finetune;
             sample->finetune = 0;
         } else {
@@ -768,7 +768,7 @@ int S1Player::load(void *_data, unsigned long int _length) {
                     sample->loopPtr == 199999 ||
                     sample->loopPtr >= sample->length) {
                     sample->loopPtr = 0;
-                    sample->repeat = m_variant == SIDMON_0FFA ? 2 : 4;
+                    sample->repeat = variant == SIDMON_0FFA ? 2 : 4;
                 } else {
                     sample->repeat = sample->length - sample->loopPtr;
                     sample->loopPtr -= sample->pointer;
@@ -815,7 +815,7 @@ int S1Player::load(void *_data, unsigned long int _length) {
         position++;
 
 
-        if (m_variant == SIDMON_1444) {
+        if (variant == SIDMON_1444) {
             if (row->note > 0 && row->note < 255) row->note += 469;
             if (row->effect > 0 && row->effect < 255) row->effect += 469;
             if (row->sample > 59) row->sample = totInstr + (row->sample - 60);
@@ -825,15 +825,15 @@ int S1Player::load(void *_data, unsigned long int _length) {
         patterns[i] = row;
     }
 
-    if (m_variant == SIDMON_1170 || m_variant == SIDMON_11C6 || m_variant == SIDMON_1444) {
+    if (variant == SIDMON_1170 || variant == SIDMON_11C6 || variant == SIDMON_1444) {
         doReset = doFilter = 0;
-        if (m_variant == SIDMON_1170) mix1Speed = mix2Speed = 0;
+        if (variant == SIDMON_1170) mix1Speed = mix2Speed = 0;
     } else {
         doReset = doFilter = 1;
     }
 
 
-    m_version = 1;
+    version = 1;
     format = "Sidmon 1";
     //printData();
     return 1;

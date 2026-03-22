@@ -1,6 +1,6 @@
 #include "SoundFXPatternView.h"
 
-SoundFXPatternView::SoundFXPatternView(Tracker* parent, unsigned int channels)
+SoundFXPatternView::SoundFXPatternView(Tracker* parent, const unsigned int channels)
     : AbstractPatternView(parent, channels)
 {
     m_font = QFont("Sound FX V1.8");
@@ -11,7 +11,6 @@ SoundFXPatternView::SoundFXPatternView(Tracker* parent, unsigned int channels)
     m_bitmapFont = BitmapFont("Sound FX V1.8");
     m_fontWidth = 8;
     m_fontHeight = 16;
-
 
     m_ColorWindowBackground = "00ffee";
     m_ColorRowNumberBackground = m_ColorWindowBackground;
@@ -39,54 +38,55 @@ SoundFXPatternView::~SoundFXPatternView()
 {
 }
 
-void SoundFXPatternView::paintAbove(QPainter* painter, int height, int currentRow)
+void SoundFXPatternView::paintAbove(QPainter* painter, const int height, int currentRow)
 {
-    QColor colorCyan = QColor(0, 255, 238);
-    //top
+    constexpr auto colorCyan = QColor(0, 255, 238);
+    // top
     painter->fillRect(1, 2, 609, 2, QColor(0, 0, 0));
-    //bottom line
-    painter->fillRect(1, height - (3), 609, 2, QColor(0, 0, 0));
+    // bottom line
+    painter->fillRect(1, height - 3, 609, 2, QColor(0, 0, 0));
 
-    //bottom blue
-    painter->fillRect(16, height - (1), 570, 2, colorCyan);
-    //top blue
+    // bottom blue
+    painter->fillRect(16, height - 1, 570, 2, colorCyan);
+    // top blue
     painter->fillRect(16, 0, 570, 2, colorCyan);
 }
 
-void SoundFXPatternView::paintBelow(QPainter* painter, int height, int currentRow)
+void SoundFXPatternView::paintBelow(QPainter* painter, const int height, const int currentRow)
 {
-    QColor colorCyan = QColor(0, 255, 238);
-    //background
+    constexpr auto colorCyan = QColor(0, 255, 238);
+    // background
     painter->fillRect(0, 0, 640, height, colorCyan);
 
-    //channel separators
+    // channel separators
     for (unsigned int chan = 0; chan < m_channels + 1; chan++)
     {
-        int xtra = chan == m_channels ? 1 : 0;
-        painter->fillRect((1 + chan * 152) - (xtra), 4, 2, height - (5), QColor(0, 0, 0));
+        const int xtra = chan == m_channels ? 1 : 0;
+        painter->fillRect(1 + chan * 152 - xtra, 4, 2, height - 5, QColor(0, 0, 0));
     }
 
+    painter->fillRect(1, height / 2 - 17, 607, 18, QColor(0, 0, 0));
+    painter->fillRect(2, height / 2 - 15, 606, 14, m_colorCurrentRowBackground);
 
-    painter->fillRect(1, (height / 2) - 17, 607, 18, QColor(0, 0, 0));
-    painter->fillRect(2, (height / 2) - 15, 606, 14, m_colorCurrentRowBackground);
-
-    //scrollbar
-    painter->fillRect(611, 4, 1, height - (5), QColor(0, 0, 0));
-    painter->fillRect(639, 4, 1, height - (5), QColor(0, 0, 0));
+    // scrollbar
+    painter->fillRect(611, 4, 1, height - 5, QColor(0, 0, 0));
+    painter->fillRect(639, 4, 1, height - 5, QColor(0, 0, 0));
     painter->fillRect(611, 2, 29, 2, QColor(0, 0, 0));
-    painter->fillRect(611, height - (3), 29, 2, QColor(0, 0, 0));
+    painter->fillRect(611, height - 3, 29, 2, QColor(0, 0, 0));
 
-    float currentRowPos = currentRow / 64.0;
-    int yPos = (currentRowPos * (height - 16)) + 4;
+    const float currentRowPos = currentRow / 64.0;
+    const int yPos = currentRowPos * (height - 16) + 4;
     painter->fillRect(614, yPos, 23, 8, m_colorDefault);
 }
 
 QString SoundFXPatternView::note(BaseRow* row)
 {
     QString note = AbstractPatternView::note(row);
+
     if (note != "---")
     {
         note.replace('-', ' ');
     }
+
     return note;
 }

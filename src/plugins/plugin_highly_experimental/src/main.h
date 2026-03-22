@@ -7,7 +7,7 @@
 using namespace std;
 
 inline bool keyExists(const unordered_map<string, string> &m, const string &key) {
-    // Key is not present
+    // key is not present
     if (!m.contains(key))
         return false;
 

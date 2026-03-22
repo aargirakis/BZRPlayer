@@ -34,7 +34,7 @@ JHPlayer::JHPlayer(Amiga *amiga) : AmigaPlayer(amiga) {
     vols = 0;
     sampleData = 0;
     coso = 0;
-    m_variant = 0;
+    variant = 0;
 }
 
 JHPlayer::~JHPlayer() {
@@ -57,7 +57,7 @@ void JHPlayer::initialize() {
     JHVoice *voice = voices[0];
     song = songs[m_songNumber];
     speed = song->speed;
-    tick = (coso || m_variant > 1) ? 1 : speed;
+    tick = (coso || variant > 1) ? 1 : speed;
 
     do {
         voice->initialize();
@@ -124,7 +124,7 @@ void JHPlayer::process() {
 
                                 pos1 = stream[position];
 
-                                if ((m_variant > 3) && (pos1 > 127)) {
+                                if ((variant > 3) && (pos1 > 127)) {
                                     pos2 = (pos1 >> 4) & 15;
                                     pos1 &= 15;
 
@@ -176,7 +176,7 @@ void JHPlayer::process() {
                                 voice->patternPos = position;
                                 voice->portaDelta = 0;
                                 if (value >= 0) {
-                                    if (m_variant == 1) chan->setEnabled(0);
+                                    if (variant == 1) chan->setEnabled(0);
 
                                     value = (voice->info & 31) + voice->volTrans;
                                     position = vols + (value << 1);
@@ -200,7 +200,7 @@ void JHPlayer::process() {
                                     voice->volsPos = 0;
 
                                     if (value != -128) {
-                                        if (m_variant > 1 && (voice->info & 64)) value = voice->infoPrev;
+                                        if (variant > 1 && (voice->info & 64)) value = voice->infoPrev;
                                         position = freqs + (value << 1);
                                         voice->freqsPtr = readEndian(stream[position], stream[position + 1]);
                                         position += 2;
@@ -258,7 +258,7 @@ void JHPlayer::process() {
                     position++;
 
                     if (value >= 0) {
-                        if (m_variant == 1) chan->setEnabled(0);
+                        if (variant == 1) chan->setEnabled(0);
                         value = (voice->info & 31) + voice->volTrans;
                         position = vols + (value << 6);
 
@@ -279,7 +279,7 @@ void JHPlayer::process() {
                         voice->volsPtr = position;
                         voice->volsPos = 0;
 
-                        if (m_variant > 1 && (voice->info & 64)) value = voice->infoPrev;
+                        if (variant > 1 && (voice->info & 64)) value = voice->infoPrev;
 
                         voice->freqsPtr = freqs + (value << 6);
                         voice->freqsPos = 0;
@@ -311,7 +311,7 @@ void JHPlayer::process() {
                     if (value == -31) break;
                     loop = 3;
 
-                    if (m_variant == 3 && coso) {
+                    if (variant == 3 && coso) {
                         if (value == -27) {
                             value = -30;
                         } else if (value == -26) {
@@ -365,13 +365,13 @@ void JHPlayer::process() {
                             voice->freqsPos += 2;
                             break;
                         case -27:
-                            if (m_variant < 2) break;
+                            if (variant < 2) break;
                             sample = samples[stream[position]];
                             position++;
                             chan->setEnabled(0);
                             voice->enabled = 1;
 
-                            if (m_variant == 2) {
+                            if (variant == 2) {
                                 pos1 = stream[position] * sample->length;
                                 position++;
 
@@ -412,7 +412,7 @@ void JHPlayer::process() {
                             voice->volCtr = 1;
                             break;
                         case -26:
-                            if (m_variant < 3) break;
+                            if (variant < 3) break;
 
                             voice->sldLen = readEndian(stream[position], stream[position + 1]) << 1;
                             position += 2;
@@ -427,7 +427,7 @@ void JHPlayer::process() {
                             voice->freqsPos += 6;
                             break;
                         case -25:
-                            if (m_variant == 1) {
+                            if (variant == 1) {
                                 voice->freqsPtr = freqs + (stream[position] << 6);
                                 position++;
                                 voice->freqsPos = 0;
@@ -464,7 +464,7 @@ void JHPlayer::process() {
                             loop = 1;
                             break;
                         case -23:
-                            if (m_variant < 2) break;
+                            if (variant < 2) break;
                             sample = samples[stream[position]];
                             position++;
                             voice->sample = -1;
@@ -598,7 +598,7 @@ void JHPlayer::process() {
         if (voice->vibDelay) {
             voice->vibDelay--;
         } else {
-            if (m_variant > 3) {
+            if (variant > 3) {
                 if (voice->vibrato & 32) {
                     value = voice->vibDelta + voice->vibSpeed;
 
@@ -618,7 +618,7 @@ void JHPlayer::process() {
                 voice->vibDelta = value;
                 value = (value - (voice->vibDepth >> 1)) * period;
                 period += (value >> 10);
-            } else if (m_variant > 2) {
+            } else if (variant > 2) {
                 value = voice->vibSpeed;
 
                 if (value < 0) {
@@ -681,12 +681,12 @@ void JHPlayer::process() {
             }
         }
 
-        if (m_variant < 3) voice->vibrato ^= 1;
+        if (variant < 3) voice->vibrato ^= 1;
 
         if (voice->info & 32) {
             value = voice->infoPrev;
 
-            if (m_variant > 3) {
+            if (variant > 3) {
                 if (value < 0) {
                     voice->portaDelta -= value;
                     value = voice->portaDelta * period;
@@ -707,7 +707,7 @@ void JHPlayer::process() {
             }
         }
 
-        if (m_variant > 3) {
+        if (variant > 3) {
             value = (voice->volFade * voice->volume) / 100;
         } else {
             value = voice->volume;
@@ -726,7 +726,7 @@ void JHPlayer::process() {
 
 int JHPlayer::load(void *_data, unsigned long int _length) {
     stream = static_cast<unsigned char *>(_data);
-    m_version = 0;
+    version = 0;
     position = 4;
     base = periods = 0;
     int value = 0;
@@ -756,12 +756,12 @@ int JHPlayer::load(void *_data, unsigned long int _length) {
             case 30015: //Chambers of Shaolin
             case 22469:
             case 3549: //Over the Net
-                m_variant = 1;
+                variant = 1;
                 break;
             case 16948: //Dragonflight
             case 18337:
             case 13704:
-                m_variant = 2;
+                variant = 2;
                 break;
             case 18548: //Wings of Death
             case 13928:
@@ -773,15 +773,15 @@ int JHPlayer::load(void *_data, unsigned long int _length) {
             case 13578: //Dragonflight
 
             case 6524:
-                m_variant = 3;
+                variant = 3;
                 break;
             default:
-                m_variant = 4;
+                variant = 4;
                 break;
         }
 
 
-        m_version = 2;
+        version = 2;
         position = 4;
 
 
@@ -837,11 +837,11 @@ int JHPlayer::load(void *_data, unsigned long int _length) {
         len = ((sampleData - headers) / 10) - 1;
 
         if (len < 1 || len > 255) {
-            m_version = 0;
+            version = 0;
             return 0;
         }
 
-        m_totalSongs = (headers - songData) / 6;
+        totalSongs = (headers - songData) / 6;
     } else {
         do {
             value = readEndian(stream[position], stream[position + 1]);
@@ -890,10 +890,10 @@ int JHPlayer::load(void *_data, unsigned long int _length) {
         } while (_length - position > 12);
 
         if (!id || !base || !periods) {
-            m_version = 0;
+            version = 0;
             return 0;
         }
-        m_version = 1;
+        version = 1;
 
         position = id + 4;
         freqs = pos = id + 32;
@@ -917,9 +917,9 @@ int JHPlayer::load(void *_data, unsigned long int _length) {
         songData = (pos += (++value * 12));
 
         position = id + 16;
-        m_totalSongs = readEndian(stream[position], stream[position + 1]);
+        totalSongs = readEndian(stream[position], stream[position + 1]);
         position += 2;
-        headers = (pos += (++m_totalSongs * 6));
+        headers = (pos += (++totalSongs * 6));
 
         len = readEndian(stream[position], stream[position + 1]);
         position += 2;
@@ -972,7 +972,7 @@ int JHPlayer::load(void *_data, unsigned long int _length) {
     songs = vector<JHSong *>();
     value = 0;
 
-    for (int i = 0; i < m_totalSongs; ++i) {
+    for (int i = 0; i < totalSongs; ++i) {
         JHSong *song = new JHSong();
         song->pointer = readEndian(stream[position], stream[position + 1]);
         position += 2;
@@ -986,11 +986,11 @@ int JHPlayer::load(void *_data, unsigned long int _length) {
         if (song->length > 12) songs.push_back(song);
     }
 
-    m_totalSongs = songs.size();
+    totalSongs = songs.size();
 
     if (!coso) {
         position = 0;
-        m_variant = 1;
+        variant = 1;
 
         do {
             value = readEndian(stream[position], stream[position + 1]);
@@ -1003,19 +1003,19 @@ int JHPlayer::load(void *_data, unsigned long int _length) {
 
                 if (value == 0x00e5 || value == 0x00e6 || value == 0x00e9) {
                     //effects
-                    m_variant = 2;
+                    variant = 2;
                     break;
                 }
             } else if (value == 0x4efb) {
                 //jmp $(pc,d0.w)
-                m_variant = 3;
+                variant = 3;
                 break;
             }
         } while (position < id);
     }
 
 
-    m_version = 1;
+    version = 1;
     if (!coso) {
         format = "Hippel";
     } else {

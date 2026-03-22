@@ -459,7 +459,7 @@ void FEPlayer::process() {
 }
 
 int FEPlayer::load(void *_data, unsigned long int _length) {
-    m_version = 0;
+    version = 0;
     unsigned char *stream = static_cast<unsigned char *>(_data);
     int value = 0;
     position = 0;
@@ -500,12 +500,12 @@ int FEPlayer::load(void *_data, unsigned long int _length) {
                 //lea $x,a3
                 base = position + (signed short) readEndian(stream[position], stream[position + 1]);
                 position += 2;
-                m_version = 1;
+                version = 1;
                 break;
             }
         }
     }
-    if (!m_version) return 0;
+    if (!version) return 0;
 
     position = data + 0x8a2;
 
@@ -640,7 +640,7 @@ int FEPlayer::load(void *_data, unsigned long int _length) {
     position = data + 0x895;
     len = stream[position] + 1;
     position++;
-    m_totalSongs = len;
+    totalSongs = len;
 
     songs = vector<FESong *>(len);
     base = data + 0xb0e;
@@ -683,7 +683,7 @@ int FEPlayer::load(void *_data, unsigned long int _length) {
         songs[i] = song;
     }
 
-    m_version = 1;
+    version = 1;
     format = "Fred Editor";
     //printData();
     return 1;

@@ -27,7 +27,7 @@ private:
     vector<BaseRow *> patterns;
     vector<MGSample *> samples;
     vector<MGVoice *> voices;
-    vector<unsigned char> subSongsList;
+    vector<unsigned char> subsongsList;
     int buffer1;
     int buffer2;
     MGSong *song1;

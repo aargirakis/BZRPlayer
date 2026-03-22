@@ -1,20 +1,11 @@
-//
-// Created by Andreas on 2025-09-16.
-//
+#ifndef BZR2_ROTATINGOBJECT_H
+#define BZR2_ROTATINGOBJECT_H
 
-#ifndef BZR2_ROTATINGMODEL3D_H
-#define BZR2_ROTATINGMODEL3D_H
-
-#include <vector>
-#include <array>
-#include <algorithm>
 #include <QPainter>
-#include <iostream>
-
 #include "Point2D.h"
 #include "Point3D.h"
 
-class RotatingModel3D {
+class RotatingObject {
 public:
     enum class ShadeMode {
         None,
@@ -24,48 +15,55 @@ public:
     };
     enum class NearPolicy { ClampInFront, HideWhenTooClose };
 
-    RotatingModel3D();
+    RotatingObject();
 
     void initCube(double size);
     void initPyramid(double size);
     void initSphere(int rings = 10, int segments = 10, double radius = 40.0);
     void initModels();
 
-    //settings
-    void setSize(int size) { model_size = size; initModels();}
+    // settings
+    void setSize(const int size) { model_size = size; initModels();}
     int size() const { return model_size; }
-    void setEnabled(bool on) { m_enabled = on; }
+    void setEnabled(const bool on) { m_enabled = on; }
     bool enabled() const { return m_enabled; }
-    void setFocalLength(double f) { m_focalLen = std::max(1.0, f); }
+    void setFocalLength(const double f) { m_focalLen = std::max(1.0, f); }
     int focalLength() const { return static_cast<int>(m_focalLen + 0.5); }
-    void setOrbitSize(int v) { m_orbitRadius = v;}
+    void setOrbitSize(const int v) { m_orbitRadius = v;}
     int orbitSize() const { return m_orbitRadius; }
-    void setOrbitSpeed(int v) {m_orbitSpeed = (double)v/100;}
+    void setOrbitSpeed(const int v) {m_orbitSpeed = static_cast<double>(v)/100;}
     int orbitSpeed() const { return m_orbitSpeed*100; }
-    void setOrbitEnabled(bool on) { m_orbitEnabled = on; }
+    void setOrbitEnabled(const bool on) { m_orbitEnabled = on; }
     bool orbitEnabled() const { return m_orbitEnabled; }
-    void setFillColor(QColor c) { m_fillColor = c; }
+    void setFillColor(const QColor c) { m_fillColor = c; }
     QColor fillColor() const { return m_fillColor; }
-    void setWireColor(QColor c) { m_wireColor = c; }
+    void setWireColor(const QColor c) { m_wireColor = c; }
     QColor wireColor() const { return m_wireColor; }
-    void setWireframeEnabled(bool on) { m_wireframeEnabled = on; }
+    void setWireframeEnabled(const bool on) { m_wireframeEnabled = on; }
     bool wireframeEnabled() const { return m_wireframeEnabled; }
-    void setMaterial(QString m) { m_shaderString = m; if(m=="flat") {m_shade = ShadeMode::Flat;} else if(m=="lambert") {m_shade = ShadeMode::Lambert;}else if(m=="blinn") {m_shade = ShadeMode::LambertSpecular;}else if(m=="none") {m_shade = ShadeMode::None;} }
+
+    void setMaterial(const QString &m) {
+        m_shaderString = m;
+        if (m == "flat") { m_shade = ShadeMode::Flat; } else if (m == "lambert") { m_shade = ShadeMode::Lambert; } else
+            if (m == "blinn") { m_shade = ShadeMode::LambertSpecular; } else if (m == "none") {
+                m_shade = ShadeMode::None;
+            }
+    }
+
     QString material() const { return m_shaderString; }
-    void setModel(QString model) { m_model = model;initModels();}
+    void setModel(const QString &model) { m_model = model;initModels();}
     QString model() const { return m_model; }
-    //end settings
+    // end settings
 
     void update(double ampScaledRotation);
-    void paint(QPainter* p, int canvasW, int canvasH);
+    void paint(QPainter* p, int canvasW, int canvasH) const;
 
     void setLightDir(double x, double y, double z);
-
 
 private:
     struct OrbitXform { double tx, ty, tz; bool visible; };
 
-    //settings
+    // settings
     bool m_enabled;
     bool m_orbitEnabled;
     double m_orbitSpeed;
@@ -77,7 +75,7 @@ private:
     ShadeMode m_shade;
     double m_focalLen;
     QString m_model;
-    //end settings
+    // end settings
 
     std::vector<Point3D>  m_vertices;
     std::vector<std::array<int,4>> m_quads; // quad indices into m_vertices
@@ -106,4 +104,4 @@ private:
                  std::vector<Point2D>& out2D, std::vector<Point3D>& outCam) const;
 };
 
-#endif // BZR2_ROTATINGMODEL3D_H
+#endif // BZR2_ROTATINGOBJECT_H

@@ -1,11 +1,7 @@
 #ifndef MYITEMDELEGATE_H
 #define MYITEMDELEGATE_H
 
-#include "mainwindow.h"
 #include <QStyledItemDelegate>
-#include <QAbstractItemView>
-#include <QPainter>
-#include <QPropertyAnimation>
 
 class MyItemDelegate : public QStyledItemDelegate
 {

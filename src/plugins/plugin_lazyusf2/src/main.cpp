@@ -66,19 +66,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_lazyusf2_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_lazyusf2_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginLazyusf2 {
@@ -92,18 +91,18 @@ public:
     }
 
     ~pluginLazyusf2() {
-        if (m_lazyState) {
-            usf_shutdown(m_lazyState);
-            delete[] m_lazyState;
+        if (lazyState) {
+            usf_shutdown(lazyState);
+            delete[] lazyState;
         }
     }
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
         auto *plugin = static_cast<pluginLazyusf2 *>(context);
         if (!strcasecmp(name, "_enablecompare")) {
-            plugin->m_loaderState.enablecompare = 1;
+            plugin->loaderState.enablecompare = 1;
         } else if (!strcasecmp(name, "_enablefifofull")) {
-            plugin->m_loaderState.enablefifofull = 1;
+            plugin->loaderState.enablefifofull = 1;
         } else if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1)) {
         }
 
@@ -155,15 +154,15 @@ public:
                     length *= 1000;
 
                 if (length > 0)
-                    plugin->m_length = length;
+                    plugin->length = length;
             }
         } else if (!strcasecmp(name, "fade")) {
         } else if (!strcasecmp(name, "utf8")) {
         } else if (!strcasecmp(name, "_lib")) {
-            //plugin->m_hasLib = true;
+            //plugin->hasLib = true;
         } else if (name[0] == '_') {
         } else {
-            plugin->m_tags[name] = value;
+            plugin->tags[name] = value;
         }
         return 0;
     }
@@ -211,21 +210,21 @@ public:
         if (exe && exe_size > 0)
             return -1;
 
-        return usf_upload_section(plugin->m_lazyState, reserved, reserved_size);
+        return usf_upload_section(plugin->lazyState, reserved, reserved_size);
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
-    unordered_map<string, string> m_tags;
-    unsigned int m_length = -1;
-    uint8_t *m_lazyState = nullptr;
+    unordered_map<string, string> tags;
+    unsigned int length = -1;
+    uint8_t *lazyState = nullptr;
 
     struct LoaderState {
         uint32_t enablecompare = 0;
         uint32_t enablefifofull = 0;
-    } m_loaderState;
+    } loaderState;
 
-    const psf_file_callbacks m_psfFileSystem = {
+    const psf_file_callbacks psfFileSystem = {
         "\\/|:",
         this,
         OpenPSF,
@@ -237,9 +236,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -271,7 +270,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginLazyusf2(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    const auto psfType = psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x21, nullptr, nullptr,
+    const auto psfType = psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0x21, nullptr, nullptr,
                                   pluginLazyusf2::InfoMetaPSF,
                                   plugin, 0, nullptr, nullptr);
     if (psfType != 0x21) {
@@ -279,12 +278,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    if (plugin->m_lazyState == nullptr) {
-        plugin->m_lazyState = new uint8_t[usf_get_state_size()];
+    if (plugin->lazyState == nullptr) {
+        plugin->lazyState = new uint8_t[usf_get_state_size()];
     }
 
-    usf_clear(plugin->m_lazyState);
-    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, static_cast<uint8_t>(psfType),
+    usf_clear(plugin->lazyState);
+    if (psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(psfType),
                  pluginLazyusf2::UsfLoad, plugin,
                  nullptr, nullptr, 0, nullptr, nullptr) < 0) {
         delete plugin;
@@ -299,39 +298,39 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     plugin->info->plugin = PLUGIN_lazyusf2;
     plugin->info->pluginName = PLUGIN_lazyusf2_NAME;
-    plugin->info->fileformat = "Nintendo 64 (USF)";
+    plugin->info->fileFormat = "Nintendo 64 (USF)";
 
-    if (keyExists(plugin->m_tags, "title")) {
-        plugin->info->title = plugin->m_tags["title"];
+    if (keyExists(plugin->tags, "title")) {
+        plugin->info->title = plugin->tags["title"];
     }
-    if (keyExists(plugin->m_tags, "artist")) {
-        plugin->info->artist = plugin->m_tags["artist"];
+    if (keyExists(plugin->tags, "artist")) {
+        plugin->info->artist = plugin->tags["artist"];
     }
-    if (keyExists(plugin->m_tags, "game")) {
-        plugin->info->game = plugin->m_tags["game"];
+    if (keyExists(plugin->tags, "game")) {
+        plugin->info->game = plugin->tags["game"];
     }
-    if (keyExists(plugin->m_tags, "copyright")) {
-        plugin->info->copyright = plugin->m_tags["copyright"];
+    if (keyExists(plugin->tags, "copyright")) {
+        plugin->info->copyright = plugin->tags["copyright"];
     }
-    if (keyExists(plugin->m_tags, "usfby")) {
-        plugin->info->ripper = plugin->m_tags["usfby"];
+    if (keyExists(plugin->tags, "usfby")) {
+        plugin->info->ripper = plugin->tags["usfby"];
     }
-    if (keyExists(plugin->m_tags, "year")) {
-        plugin->info->date = plugin->m_tags["year"];
+    if (keyExists(plugin->tags, "year")) {
+        plugin->info->date = plugin->tags["year"];
     }
-    if (keyExists(plugin->m_tags, "volume")) {
-        plugin->info->volumeAmplificationStr = plugin->m_tags["volume"];
+    if (keyExists(plugin->tags, "volume")) {
+        plugin->info->volumeAmplificationStr = plugin->tags["volume"];
     }
-    if (keyExists(plugin->m_tags, "genre")) {
-        plugin->info->genre = plugin->m_tags["genre"];
+    if (keyExists(plugin->tags, "genre")) {
+        plugin->info->genre = plugin->tags["genre"];
     }
-    if (keyExists(plugin->m_tags, "comment")) {
-        plugin->info->comments = plugin->m_tags["comment"];
+    if (keyExists(plugin->tags, "comment")) {
+        plugin->info->comments = plugin->tags["comment"];
     }
 
     return FMOD_OK;
@@ -344,7 +343,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginLazyusf2 *>(codec->plugindata);
-    usf_render_resampled(plugin->m_lazyState, static_cast<short *>(buffer), size, plugin->waveformat.frequency);
+    usf_render_resampled(plugin->lazyState, static_cast<short *>(buffer), size, plugin->waveformat.frequency);
     *read = size;
     return FMOD_OK;
 }
@@ -352,13 +351,13 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     auto *plugin = static_cast<pluginLazyusf2 *>(codec->plugindata);
-    usf_shutdown(plugin->m_lazyState);
-    usf_clear(plugin->m_lazyState);
-    psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x21, pluginLazyusf2::UsfLoad, plugin, nullptr,
+    usf_shutdown(plugin->lazyState);
+    usf_clear(plugin->lazyState);
+    psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0x21, pluginLazyusf2::UsfLoad, plugin, nullptr,
              nullptr, 0, nullptr, nullptr);
-    usf_set_hle_audio(plugin->m_lazyState, 1);
-    usf_set_compare(plugin->m_lazyState, plugin->m_loaderState.enablecompare);
-    usf_set_fifo_full(plugin->m_lazyState, plugin->m_loaderState.enablefifofull);
+    usf_set_hle_audio(plugin->lazyState, 1);
+    usf_set_compare(plugin->lazyState, plugin->loaderState.enablecompare);
+    usf_set_fifo_full(plugin->lazyState, plugin->loaderState.enablefifofull);
     return FMOD_OK;
 }
 
@@ -366,8 +365,8 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginLazyusf2 *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        if (plugin->m_length > 0) {
-            *length = plugin->m_length;
+        if (plugin->length > 0) {
+            *length = plugin->length;
         } else {
             *length = -1;
         }

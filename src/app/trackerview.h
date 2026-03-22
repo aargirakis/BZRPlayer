@@ -1,21 +1,19 @@
 #ifndef TRACKERVIEW_H
 #define TRACKERVIEW_H
 
-#include "visualizers/tracker.h"
 #include <QOpenGLWidget>
-#include <QObject>
-#include <QWidget>
+#include "visualizers/tracker.h"
 
 class TrackerView : public QOpenGLWidget
 {
     Q_OBJECT
 
 public:
-    explicit TrackerView(QWidget* parent = 0);
+    explicit TrackerView(QWidget* parent = nullptr);
     void init();
     void paintEvent(QPaintEvent* event);
     bool inited;
-    Tracker* getTracker();
+    Tracker* getTracker() const;
     void setBackgroundColor(QColor newColor);
 
 private:

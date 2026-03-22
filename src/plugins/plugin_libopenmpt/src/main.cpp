@@ -24,22 +24,21 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_libopenmpt_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
+    PLUGIN_libopenmpt_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN |
     FMOD_TIMEUNIT_MODPATTERN_INFO | FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS | FMOD_TIMEUNIT_MODVUMETER |
     FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_SPEED |
-    FMOD_TIMEUNIT_BPM, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    &getPosition,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    FMOD_TIMEUNIT_BPM, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    &getPosition, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginLibopenmpt {
@@ -68,11 +67,11 @@ public:
     }
 
     uint8_t *myBuffer;
-    queue<unsigned char *> vumeterBuffer;
+    queue<unsigned char *> vuMeterBuffer;
     queue<int> rowBuffer;
     queue<int> patternBuffer;
     queue<int> orderBuffer;
-    double maxVUMeter;
+    double maxVuMeter;
     Info *info;
     openmpt::module_ext *mod;
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -95,15 +94,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    if (filesize == 4294967295) //stream
+    if (filesize == 4294967295) // stream
     {
         return FMOD_ERR_FORMAT;
     }
 
     constexpr char farMagic[] = "FAR\xFE";
     constexpr uint8_t farMagicLength = sizeof(farMagic) - 1;
-    constexpr uint8_t farMagicOffset = 0;
-
     constexpr char farCrLfEof[] = "\x0D\x0A\x1A";
     constexpr uint8_t farCrLfEofLength = sizeof(farCrLfEof) - 1;
     constexpr uint8_t farCrLfEofOffset = 0x2C;
@@ -115,7 +112,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
     result = FMOD_CODEC_FILE_READ(codec, smallBuffer, smallBufferLength, &bytesread);
 
-    if (
+    if (constexpr uint8_t farMagicOffset = 0;
         // skip midi and gm.dls
         memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF\x0c\x80" "4\0DLS colh", 16) == 0 ||
 
@@ -143,11 +140,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         ifstream ifs(filename.c_str());
         bool useDefaults = false;
         if (ifs.fail()) {
-            //The file could not be opened
+            // the file could not be opened
             useDefaults = true;
         }
 
-        //defaults
+        // defaults
         int stereo_separation = 100;
         int interpolation_filter = 0;
         string emulate_amiga_filter = "1";
@@ -210,7 +207,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->mod = nullptr;
         plugin->mod = new openmpt::module_ext(plugin->myBuffer, filesize, clog, ctls);
 
-        plugin->mod->set_repeat_count(0); //it is 0 by default, and ignored with "continue" play mode
+        plugin->mod->set_repeat_count(0); // it is 0 by default, and ignored with "continue" play mode
         plugin->mod->set_render_param(openmpt::module::RENDER_STEREOSEPARATION_PERCENT, stereo_separation);
         plugin->mod->set_render_param(openmpt::module::RENDER_INTERPOLATIONFILTER_LENGTH, interpolation_filter);
 
@@ -224,8 +221,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
         codec->waveformat = &plugin->waveformat;
         codec->numsubsounds = 0;
-        /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-        codec->plugindata = plugin; /* user data value */
+        // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+        codec->plugindata = plugin; // user data value
 
         info->numSamples = plugin->mod->get_num_samples();
         info->numInstruments = plugin->mod->get_num_instruments();
@@ -280,21 +277,21 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             }
         }
 
-        info->fileformat = plugin->mod->get_metadata("type_long");
-        info->fileformatSpecific = plugin->mod->get_metadata("tracker");
+        info->fileFormat = plugin->mod->get_metadata("type_long");
+        info->fileFormatSpecific = plugin->mod->get_metadata("tracker");
         info->containerFileformats = plugin->mod->get_metadata("container_long");
 
         //get_current_channel_vu_mono seems to return 1.40317 for max volume for most formats, but max for protracker it is 1.11105
-        if (info->fileformat.substr(0, 10) == "ProTracker" || info->fileformat.substr(0, 12) == "Soundtracker") {
-            plugin->maxVUMeter = 1.11105;
+        if (info->fileFormat.substr(0, 10) == "ProTracker" || info->fileFormat.substr(0, 12) == "Soundtracker") {
+            plugin->maxVuMeter = 1.11105;
         } else {
-            plugin->maxVUMeter = 1.40317;
+            plugin->maxVuMeter = 1.40317;
         }
 
         info->plugin = PLUGIN_libopenmpt;
         info->pluginName = PLUGIN_libopenmpt_NAME;
         info->setSeekable(true);
-        //plugin->vumeterBuffer = CreateQueue(22);
+        //plugin->vuMeterBuffer = CreateQueue(22);
         return FMOD_OK;
     } catch (...) {
         delete plugin->mod;
@@ -312,20 +309,20 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     auto *plugin = static_cast<pluginLibopenmpt *>(codec->plugindata);
     plugin->mod->read_interleaved_stereo(plugin->waveformat.frequency, size, static_cast<short *>(buffer));
-    const auto vumeters = new unsigned char[plugin->info->numChannels];
+    const auto vuMeters = new unsigned char[plugin->info->numChannels];
 
 
     for (int i = 0; i < plugin->info->numChannels; i++) {
-        vumeters[i] = (plugin->mod->get_current_channel_vu_mono(i) / plugin->maxVUMeter) * 100;
+        vuMeters[i] = (plugin->mod->get_current_channel_vu_mono(i) / plugin->maxVuMeter) * 100;
     }
 
-    if (plugin->vumeterBuffer.size() >= 70) {
-        plugin->vumeterBuffer.pop();
+    if (plugin->vuMeterBuffer.size() >= 70) {
+        plugin->vuMeterBuffer.pop();
         plugin->rowBuffer.pop();
         plugin->patternBuffer.pop();
         plugin->orderBuffer.pop();
     }
-    plugin->vumeterBuffer.push(vumeters);
+    plugin->vuMeterBuffer.push(vuMeters);
     plugin->rowBuffer.push(plugin->mod->get_current_row());
     plugin->patternBuffer.push(plugin->mod->get_current_pattern());
     plugin->orderBuffer.push(plugin->mod->get_current_order());
@@ -353,7 +350,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
                                       FMOD_TIMEUNIT postype) {
     const auto *plugin = static_cast<pluginLibopenmpt *>(codec->plugindata);
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        //         //position is a mask
+        //         // position is a mask
         //         for(int i = 0 ; i<plugin->info->numChannels ; i++)
         //         {
         //               openmpt::ext::interactive *interactive = static_cast<openmpt::ext::interactive *>( plugin->mod->get_interface( openmpt::ext::interactive_id ) );
@@ -396,7 +393,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
     const auto *plugin = static_cast<pluginLibopenmpt *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MODVUMETER) {
-        plugin->info->modVUMeters = plugin->vumeterBuffer.front();
+        plugin->info->modVuMeters = plugin->vuMeterBuffer.front();
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MODROW) {
@@ -420,7 +417,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO) {
-        //set the mod pattern (notes etc.) in the info struct and just return 0
+        // set the mod pattern (notes etc.) in the info struct and just return 0
 
         plugin->info->modRows.clear();
 

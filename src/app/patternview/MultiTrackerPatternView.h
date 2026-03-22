@@ -1,5 +1,6 @@
 #ifndef MULTITRACKERPATTERNVIEW_H
 #define MULTITRACKERPATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class MultiTrackerPatternView : public AbstractPatternView
@@ -16,11 +17,6 @@ public:
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);
     void paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow);
-
-private:
-
-
-private slots:
 };
 
 #endif // MULTITRACKERPATTERNVIEW_H

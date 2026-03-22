@@ -37,20 +37,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codec =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_asap_NAME, // Name.
-    0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE,
-    // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_asap_NAME, // name.
+    0x00012300, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginAsap {
@@ -63,7 +61,7 @@ public:
     }
 
     ~pluginAsap() {
-        //delete some stuff
+        // delete some stuff
         delete[] myBuffer;
         ASAP_Delete(asap);
     }
@@ -128,11 +126,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     info->numSubsongs = ASAPInfo_GetSongs(plugin->asap_info);
-    info->defaultSubSong = info->numSubsongs > 1
+    info->defaultSubsong = info->numSubsongs > 1
                                ? ASAPInfo_GetDefaultSong(plugin->asap_info) + 1
                                : -1;
     info->author = ASAPInfo_GetAuthor(plugin->asap_info);
@@ -150,9 +148,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     if (const char *originalModuleExt = ASAPInfo_GetOriginalModuleExt(plugin->asap_info);
         originalModuleExt == nullptr) {
-        info->fileformat = format("Slight Atari Player (Type {:c})", ASAPInfo_GetTypeLetter(plugin->asap_info));
+        info->fileFormat = format("Slight Atari Player (Type {:c})", ASAPInfo_GetTypeLetter(plugin->asap_info));
     } else {
-        info->fileformat = ASAPInfo_GetExtDescription(originalModuleExt);
+        info->fileFormat = ASAPInfo_GetExtDescription(originalModuleExt);
     }
 
     if (int offset = ASAPInfo_GetInstrumentNamesOffset(plugin->asap_info, plugin->myBuffer, static_cast<int>(filesize));
@@ -228,8 +226,8 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        //mutes voices
-        //position is a mask
+        // mutes voices
+        // position is a mask
         ASAP_MutePokeyChannels(plugin->asap, static_cast<int>(position));
         plugin->mask = position;
         return FMOD_OK;

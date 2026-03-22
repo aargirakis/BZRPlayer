@@ -23,20 +23,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_game_music_emu_NAME, // Name.
-    0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE,
-    // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_game_music_emu_NAME, // name.
+    0x00012300, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginGme {
@@ -49,7 +47,7 @@ public:
     }
 
     ~pluginGme() {
-        //delete some stuff
+        // delete some stuff
         gme_delete(emu);
     }
 
@@ -60,9 +58,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -79,7 +77,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    if (filesize == 4294967295) //stream
+    if (filesize == 4294967295) // stream
     {
         return FMOD_ERR_FORMAT;
     }
@@ -91,7 +89,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         useDefaults = true;
     }
 
@@ -131,7 +129,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-    //check what music format the file is
+    // check what music format the file is
     unsigned int bytesread;
     FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
 
@@ -147,16 +145,16 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->info->fileformat = file_type->system;
+    plugin->info->fileFormat = file_type->system;
     plugin->emu = gme_new_emu(file_type, freq);
 
-    /* Allocate space for buffer. */
+    // allocate space for buffer
     auto myBuffer = new uint8_t[filesize];
 
-    //rewind file pointer
+    // rewind file pointer
     result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
 
-    //read whole file to memory
+    // read whole file to memory
     result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
     if (gme_load_data(plugin->emu, myBuffer, filesize)) {
@@ -182,8 +180,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     gme_ignore_silence(plugin->emu, !ignore_silence);
 
@@ -238,9 +236,9 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        gme_mute_voices(plugin->emu, 0); //unmutes all voices
-        //gme_mute_voices( plugin->emu, -1 ); //mutes all voices
-        //position is a mask
+        gme_mute_voices(plugin->emu, 0); // unmutes all voices
+        //gme_mute_voices( plugin->emu, -1 ); // mutes all voices
+        // position is a mask
         gme_mute_voices(plugin->emu, static_cast<int>(position));
         return FMOD_OK;
     }

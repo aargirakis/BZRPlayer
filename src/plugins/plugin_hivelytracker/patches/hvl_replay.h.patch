@@ -15,7 +15,7 @@
    uint8                  ht_Version;
 +  Queue                  trackPosBuffer;
 +  Queue                  patternPosBuffer;
-+  Queue                  vumeterBuffer;
++  Queue                  vuMeterBuffer;
  };
  
  void hvl_DecodeFrame( struct hvl_tune *ht, int8 *buf1, int8 *buf2, int32 bufmod );

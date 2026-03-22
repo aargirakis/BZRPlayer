@@ -122,8 +122,6 @@ namespace core {
 
     private:
         ItemType *Grow(size_t oldNumItems, size_t newNumItems);
-
-    private:
         ItemType *m_items = nullptr;
         uint32_t m_numItems = 0;
         uint32_t m_maxItems = 0;

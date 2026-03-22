@@ -67,19 +67,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_vio2sf_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_vio2sf_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginVio2sf {
@@ -93,8 +92,8 @@ public:
     }
 
     ~pluginVio2sf() {
-        //delete some stuff
-        state_deinit(&m_ndsState);
+        // delete some stuff
+        state_deinit(&ndsState);
     }
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
@@ -150,15 +149,15 @@ public:
                     length *= 1000;
 
                 if (length > 0)
-                    plugin->m_length = length;
+                    plugin->length = length;
             }
         } else if (!strcasecmp(name, "fade")) {
         } else if (!strcasecmp(name, "utf8")) {
         } else if (!strcasecmp(name, "_lib")) {
-            //plugin->m_hasLib = true;
+            //plugin->hasLib = true;
         } else if (name[0] == '_') {
         } else {
-            plugin->m_tags[name] = value;
+            plugin->tags[name] = value;
         }
         return 0;
     }
@@ -237,15 +236,15 @@ public:
         const unsigned xsize = get_le32(udata + 4);
         const unsigned xofs = get_le32(udata + 0);
         if (issave) {
-            iptr = plugin->m_loaderState.state;
-            isize = plugin->m_loaderState.state_size;
-            plugin->m_loaderState.state = nullptr;
-            plugin->m_loaderState.state_size = 0;
+            iptr = plugin->loaderState.state;
+            isize = plugin->loaderState.state_size;
+            plugin->loaderState.state = nullptr;
+            plugin->loaderState.state_size = 0;
         } else {
-            iptr = plugin->m_loaderState.rom;
-            isize = plugin->m_loaderState.rom_size;
-            plugin->m_loaderState.rom = nullptr;
-            plugin->m_loaderState.rom_size = 0;
+            iptr = plugin->loaderState.rom;
+            isize = plugin->loaderState.rom_size;
+            plugin->loaderState.rom = nullptr;
+            plugin->loaderState.rom_size = 0;
         }
         if (!iptr) {
             size_t rsize = xofs + xsize;
@@ -284,11 +283,11 @@ public:
         }
         memcpy(iptr + xofs, udata + 8, xsize);
         if (issave) {
-            plugin->m_loaderState.state = iptr;
-            plugin->m_loaderState.state_size = isize;
+            plugin->loaderState.state = iptr;
+            plugin->loaderState.state_size = isize;
         } else {
-            plugin->m_loaderState.rom = iptr;
-            plugin->m_loaderState.rom_size = isize;
+            plugin->loaderState.rom = iptr;
+            plugin->loaderState.rom_size = isize;
         }
         return 0;
     }
@@ -336,8 +335,7 @@ public:
         }
 
         if constexpr (false) {
-            uLong ccrc = crc32(crc32(0L, Z_NULL, 0), rdata, static_cast<uInt>(usize));
-            if (ccrc != zcrc)
+            if (uLong ccrc = crc32(crc32(0L, Z_NULL, 0), rdata, static_cast<uInt>(usize)); ccrc != zcrc)
                 return -1;
         }
 
@@ -348,10 +346,9 @@ public:
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
-    unordered_map<string, string> m_tags;
-    int32_t ms_interpolation = 0;
-    unsigned int m_length = -1;
-    NDS_state m_ndsState = {};
+    unordered_map<string, string> tags;
+    unsigned int length = -1;
+    NDS_state ndsState = {};
 
     struct LoaderState {
         uint8_t *rom = nullptr;
@@ -361,7 +358,6 @@ public:
 
         int initial_frames = -1;
         int sync_type = 0;
-        int clockdown = 0;
         int arm9_clockdown_level = 0;
         int arm7_clockdown_level = 0;
 
@@ -372,9 +368,9 @@ public:
         }
 
         ~LoaderState() { Clear(); }
-    } m_loaderState = {};
+    } loaderState = {};
 
-    const psf_file_callbacks m_psfFileSystem = {
+    const psf_file_callbacks psfFileSystem = {
         "\\/|:",
         this,
         OpenPSF,
@@ -386,9 +382,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -420,14 +416,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginVio2sf(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    if (!psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, nullptr, nullptr,
+    if (!psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0x24, nullptr, nullptr,
                   pluginVio2sf::InfoMetaPSF, plugin, 0,
                   nullptr, nullptr)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, pluginVio2sf::TwosfLoad, plugin,
+    if (psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0x24, pluginVio2sf::TwosfLoad, plugin,
                  nullptr,
                  nullptr, 0, nullptr, nullptr) < 0) {
         delete plugin;
@@ -442,39 +438,39 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
-    plugin->info->fileformat = "Nintendo DS (2SF)";
+    plugin->info->fileFormat = "Nintendo DS (2SF)";
     plugin->info->plugin = PLUGIN_vio2sf;
     plugin->info->pluginName = PLUGIN_vio2sf_NAME;
 
-    if (keyExists(plugin->m_tags, "title")) {
-        plugin->info->title = plugin->m_tags["title"];
+    if (keyExists(plugin->tags, "title")) {
+        plugin->info->title = plugin->tags["title"];
     }
-    if (keyExists(plugin->m_tags, "artist")) {
-        plugin->info->artist = plugin->m_tags["artist"];
+    if (keyExists(plugin->tags, "artist")) {
+        plugin->info->artist = plugin->tags["artist"];
     }
-    if (keyExists(plugin->m_tags, "game")) {
-        plugin->info->game = plugin->m_tags["game"];
+    if (keyExists(plugin->tags, "game")) {
+        plugin->info->game = plugin->tags["game"];
     }
-    if (keyExists(plugin->m_tags, "copyright")) {
-        plugin->info->copyright = plugin->m_tags["copyright"];
+    if (keyExists(plugin->tags, "copyright")) {
+        plugin->info->copyright = plugin->tags["copyright"];
     }
-    if (keyExists(plugin->m_tags, "2sfby")) {
-        plugin->info->ripper = plugin->m_tags["2sfby"];
+    if (keyExists(plugin->tags, "2sfby")) {
+        plugin->info->ripper = plugin->tags["2sfby"];
     }
-    if (keyExists(plugin->m_tags, "year")) {
-        plugin->info->date = plugin->m_tags["year"];
+    if (keyExists(plugin->tags, "year")) {
+        plugin->info->date = plugin->tags["year"];
     }
-    if (keyExists(plugin->m_tags, "volume")) {
-        plugin->info->volumeAmplificationStr = plugin->m_tags["volume"];
+    if (keyExists(plugin->tags, "volume")) {
+        plugin->info->volumeAmplificationStr = plugin->tags["volume"];
     }
-    if (keyExists(plugin->m_tags, "genre")) {
-        plugin->info->genre = plugin->m_tags["genre"];
+    if (keyExists(plugin->tags, "genre")) {
+        plugin->info->genre = plugin->tags["genre"];
     }
-    if (keyExists(plugin->m_tags, "comment")) {
-        plugin->info->comments = plugin->m_tags["comment"];
+    if (keyExists(plugin->tags, "comment")) {
+        plugin->info->comments = plugin->tags["comment"];
     }
 
     return FMOD_OK;
@@ -487,7 +483,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto plugin = static_cast<pluginVio2sf *>(codec->plugindata);
-    state_render(&plugin->m_ndsState, static_cast<s16 *>(buffer), size);
+    state_render(&plugin->ndsState, static_cast<s16 *>(buffer), size);
     *read = size;
     return FMOD_OK;
 }
@@ -496,25 +492,25 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
                                       FMOD_TIMEUNIT postype) {
     auto *plugin = static_cast<pluginVio2sf *>(codec->plugindata);
 
-    psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x24, pluginVio2sf::TwosfLoad, plugin,
+    psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0x24, pluginVio2sf::TwosfLoad, plugin,
              pluginVio2sf::InfoMetaPSF, plugin, 0,
              nullptr, nullptr);
-    state_deinit(&plugin->m_ndsState);
-    state_init(&plugin->m_ndsState);
+    state_deinit(&plugin->ndsState);
+    state_init(&plugin->ndsState);
 
-    plugin->m_ndsState.dwInterpolation = 0;
-    plugin->m_ndsState.dwChannelMute = 0;
-    plugin->m_ndsState.initial_frames = plugin->m_loaderState.initial_frames;
-    plugin->m_ndsState.sync_type = plugin->m_loaderState.sync_type;
-    plugin->m_ndsState.arm7_clockdown_level = plugin->m_loaderState.arm7_clockdown_level;
-    plugin->m_ndsState.arm9_clockdown_level = plugin->m_loaderState.arm9_clockdown_level;
+    plugin->ndsState.dwInterpolation = 0;
+    plugin->ndsState.dwChannelMute = 0;
+    plugin->ndsState.initial_frames = plugin->loaderState.initial_frames;
+    plugin->ndsState.sync_type = plugin->loaderState.sync_type;
+    plugin->ndsState.arm7_clockdown_level = plugin->loaderState.arm7_clockdown_level;
+    plugin->ndsState.arm9_clockdown_level = plugin->loaderState.arm9_clockdown_level;
 
-    if (plugin->m_loaderState.rom)
-        state_setrom(&plugin->m_ndsState, plugin->m_loaderState.rom, static_cast<u32>(plugin->m_loaderState.rom_size),
+    if (plugin->loaderState.rom)
+        state_setrom(&plugin->ndsState, plugin->loaderState.rom, static_cast<u32>(plugin->loaderState.rom_size),
                      1);
 
-    state_loadstate(&plugin->m_ndsState, plugin->m_loaderState.state,
-                    static_cast<u32>(plugin->m_loaderState.state_size));
+    state_loadstate(&plugin->ndsState, plugin->loaderState.state,
+                    static_cast<u32>(plugin->loaderState.state_size));
 
     return FMOD_OK;
 }
@@ -523,8 +519,8 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginVio2sf *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        if (plugin->m_length > 0) {
-            *length = plugin->m_length;
+        if (plugin->length > 0) {
+            *length = plugin->length;
         } else {
             *length = -1;
         }

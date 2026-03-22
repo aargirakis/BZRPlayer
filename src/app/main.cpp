@@ -1,10 +1,10 @@
-#include "mainwindow.h"
 #include <QApplication>
 #include <QProxyStyle>
+#include "mainwindow.h"
 
 class NoMenuBarAltKeyNavigationStyle : public QProxyStyle {
 public:
-    int styleHint(StyleHint stylehint, const QStyleOption *opt, const QWidget *widget,
+    int styleHint(const StyleHint stylehint, const QStyleOption *opt, const QWidget *widget,
                   QStyleHintReturn *returnData) const override {
         if (stylehint == SH_MenuBar_AltKeyNavigation) {
             return 0;

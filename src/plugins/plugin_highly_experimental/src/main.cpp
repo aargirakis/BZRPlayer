@@ -70,19 +70,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_highly_experimental_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_highly_experimental_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginHighlyExp {
@@ -96,18 +95,17 @@ public:
     }
 
     ~pluginHighlyExp() {
-        //delete some stuff
-        if (m_psf2fs) {
-            psf2fs_delete(m_psf2fs);
+        // delete some stuff
+        if (psf2fs) {
+            psf2fs_delete(psf2fs);
         }
-        delete[] m_psxState;
+        delete[] psxState;
     }
-
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
         auto *plugin = static_cast<pluginHighlyExp *>(context);
         if (!strcasecmp(name, "_refresh")) {
-            sscanf(value, "%u", &plugin->m_loaderState.refresh);
+            sscanf(value, "%u", &plugin->loaderState.refresh);
         } else if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1)) {
         }
 
@@ -159,21 +157,21 @@ public:
                     length *= 1000;
 
                 if (length > 0)
-                    plugin->m_length = length;
+                    plugin->length = length;
             }
         } else if (!strcasecmp(name, "fade")) {
         } else if (!strcasecmp(name, "utf8")) {
         } else if (!strcasecmp(name, "_lib")) {
-            //plugin->m_hasLib = true;
+            //plugin->hasLib = true;
         } else if (name[0] == '_') {
         } else {
-            plugin->m_tags[name] = value;
+            plugin->tags[name] = value;
         }
         return 0;
     }
 
-    static int PsfLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t * /*reserved*/,
-                       size_t /*reserved_size*/) {
+    static int PsfLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t * /* reserved */,
+                       size_t /* reserved_size */) {
         auto *plugin = static_cast<pluginHighlyExp *>(context);
         const auto psx = (psxexe_hdr_t *) exe;
 
@@ -189,23 +187,23 @@ public:
         if ((addr < 0x10000) || (size > 0x1f0000) || (addr + size > 0x200000))
             return -1;
 
-        void *pIOP = psx_get_iop_state(plugin->m_psxState);
+        void *pIOP = psx_get_iop_state(plugin->psxState);
         iop_upload_to_ram(pIOP, addr, exe + 0x800, size);
 
-        if (!plugin->m_loaderState.refresh) {
+        if (!plugin->loaderState.refresh) {
             if (!strncasecmp((const char *) exe + 113, "Japan", 5))
-                plugin->m_loaderState.refresh = 60;
+                plugin->loaderState.refresh = 60;
             else if (!strncasecmp((const char *) exe + 113, "Europe", 6))
-                plugin->m_loaderState.refresh = 50;
+                plugin->loaderState.refresh = 50;
             else if (!strncasecmp((const char *) exe + 113, "North America", 13))
-                plugin->m_loaderState.refresh = 60;
+                plugin->loaderState.refresh = 60;
         }
 
-        if (plugin->m_loaderState.first) {
+        if (plugin->loaderState.first) {
             void *pR3000 = iop_get_r3000_state(pIOP);
             r3000_setreg(pR3000, R3000_REG_PC, get_le32(&psx->exec.pc0));
             r3000_setreg(pR3000, R3000_REG_GEN + 29, get_le32(&psx->exec.s_ptr));
-            plugin->m_loaderState.first = false;
+            plugin->loaderState.first = false;
         }
 
         return 0;
@@ -249,12 +247,12 @@ public:
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
-    uint8_t *m_psxState = nullptr;
-    void *m_psf2fs = nullptr;
+    uint8_t *psxState = nullptr;
+    void *psf2fs = nullptr;
     int psfType = 0;
     Info *info;
-    unordered_map<string, string> m_tags;
-    unsigned int m_length = -1;
+    unordered_map<string, string> tags;
+    unsigned int length = -1;
 
     struct LoaderState {
         bool first = true;
@@ -263,9 +261,9 @@ public:
         void Clear() { new(this) LoaderState(); }
 
         ~LoaderState() { Clear(); }
-    } m_loaderState = {};
+    } loaderState = {};
 
-    const psf_file_callbacks m_psfFileSystem = {
+    const psf_file_callbacks psfFileSystem = {
         "\\/|:",
         this,
         OpenPSF,
@@ -277,9 +275,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -310,7 +308,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginHighlyExp(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->psfType = psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0, nullptr, nullptr,
+    plugin->psfType = psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0, nullptr, nullptr,
                                pluginHighlyExp::InfoMetaPSF, plugin, 1, nullptr, nullptr);
 
     if (plugin->psfType != 1 && plugin->psfType != 2) {
@@ -321,16 +319,16 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     bios_set_image(hebios, HEBIOS_SIZE);
     psx_init();
 
-    plugin->m_psxState = new uint8_t[psx_get_state_size(static_cast<uint8_t>(plugin->psfType))];
-    psx_clear_state(plugin->m_psxState, static_cast<uint8_t>(plugin->psfType));
+    plugin->psxState = new uint8_t[psx_get_state_size(static_cast<uint8_t>(plugin->psfType))];
+    psx_clear_state(plugin->psxState, static_cast<uint8_t>(plugin->psfType));
 
     if (plugin->psfType == 2) {
-        plugin->m_psf2fs = psf2fs_create();
+        plugin->psf2fs = psf2fs_create();
     }
 
-    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, static_cast<uint8_t>(plugin->psfType),
+    if (psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(plugin->psfType),
                  plugin->psfType == 1 ? pluginHighlyExp::PsfLoad : psf2fs_load_callback,
-                 plugin->psfType == 1 ? plugin : plugin->m_psf2fs,
+                 plugin->psfType == 1 ? plugin : plugin->psf2fs,
                  nullptr, nullptr, 0, nullptr, nullptr) < 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -344,45 +342,45 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     plugin->info->plugin = PLUGIN_highly_experimental;
     plugin->info->pluginName = PLUGIN_highly_experimental_NAME;
 
     if (plugin->psfType == 1) {
-        plugin->info->fileformat = "PlayStation (PSF1)";
+        plugin->info->fileFormat = "PlayStation (PSF1)";
     } else {
-        plugin->info->fileformat = "PlayStation 2 (PSF2)";
+        plugin->info->fileFormat = "PlayStation 2 (PSF2)";
     }
     plugin->info->numSamples = 0;
 
-    if (keyExists(plugin->m_tags, "title")) {
-        plugin->info->title = plugin->m_tags["title"];
+    if (keyExists(plugin->tags, "title")) {
+        plugin->info->title = plugin->tags["title"];
     }
-    if (keyExists(plugin->m_tags, "artist")) {
-        plugin->info->artist = plugin->m_tags["artist"];
+    if (keyExists(plugin->tags, "artist")) {
+        plugin->info->artist = plugin->tags["artist"];
     }
-    if (keyExists(plugin->m_tags, "game")) {
-        plugin->info->game = plugin->m_tags["game"];
+    if (keyExists(plugin->tags, "game")) {
+        plugin->info->game = plugin->tags["game"];
     }
-    if (keyExists(plugin->m_tags, "copyright")) {
-        plugin->info->copyright = plugin->m_tags["copyright"];
+    if (keyExists(plugin->tags, "copyright")) {
+        plugin->info->copyright = plugin->tags["copyright"];
     }
-    if (keyExists(plugin->m_tags, "psfby")) {
-        plugin->info->ripper = plugin->m_tags["psfby"];
+    if (keyExists(plugin->tags, "psfby")) {
+        plugin->info->ripper = plugin->tags["psfby"];
     }
-    if (keyExists(plugin->m_tags, "year")) {
-        plugin->info->date = plugin->m_tags["year"];
+    if (keyExists(plugin->tags, "year")) {
+        plugin->info->date = plugin->tags["year"];
     }
-    if (keyExists(plugin->m_tags, "volume")) {
-        plugin->info->volumeAmplificationStr = plugin->m_tags["volume"];
+    if (keyExists(plugin->tags, "volume")) {
+        plugin->info->volumeAmplificationStr = plugin->tags["volume"];
     }
-    if (keyExists(plugin->m_tags, "genre")) {
-        plugin->info->genre = plugin->m_tags["genre"];
+    if (keyExists(plugin->tags, "genre")) {
+        plugin->info->genre = plugin->tags["genre"];
     }
-    if (keyExists(plugin->m_tags, "comment")) {
-        plugin->info->comments = plugin->m_tags["comment"];
+    if (keyExists(plugin->tags, "comment")) {
+        plugin->info->comments = plugin->tags["comment"];
     }
 
     return FMOD_OK;
@@ -395,29 +393,28 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginHighlyExp *>(codec->plugindata);
-    int maybeerror = psx_execute(plugin->m_psxState, 0x7fffffff, static_cast<short *>(buffer), &size, 0);
+    int maybeerror = psx_execute(plugin->psxState, 0x7fffffff, static_cast<short *>(buffer), &size, 0);
 
     *read = size;
     return FMOD_OK;
 }
 
-
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     auto *plugin = static_cast<pluginHighlyExp *>(codec->plugindata);
 
-    psx_clear_state(plugin->m_psxState, static_cast<uint8_t>(plugin->psfType));
-    if (plugin->m_psf2fs) {
-        psf2fs_delete(plugin->m_psf2fs);
-        plugin->m_psf2fs = psf2fs_create();
+    psx_clear_state(plugin->psxState, static_cast<uint8_t>(plugin->psfType));
+    if (plugin->psf2fs) {
+        psf2fs_delete(plugin->psf2fs);
+        plugin->psf2fs = psf2fs_create();
     }
-    plugin->m_loaderState.Clear();
-    psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, static_cast<uint8_t>(plugin->psfType),
+    plugin->loaderState.Clear();
+    psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(plugin->psfType),
              plugin->psfType == 1 ? pluginHighlyExp::PsfLoad : psf2fs_load_callback,
-             plugin->psfType == 1 ? plugin : plugin->m_psf2fs, nullptr,
+             plugin->psfType == 1 ? plugin : plugin->psf2fs, nullptr,
              nullptr, 0, nullptr, nullptr);
-    if (plugin->m_loaderState.refresh) {
-        psx_set_refresh(plugin->m_psxState, plugin->m_loaderState.refresh);
+    if (plugin->loaderState.refresh) {
+        psx_set_refresh(plugin->psxState, plugin->loaderState.refresh);
     }
     if (plugin->psfType == 2) {
         struct {
@@ -426,9 +423,9 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
                 return psf2fs_virtual_readfile(context, path, offset, buffer, length);
             }
         } cb;
-        psx_set_readfile(plugin->m_psxState, cb.virtual_readfile, plugin->m_psf2fs);
+        psx_set_readfile(plugin->psxState, cb.virtual_readfile, plugin->psf2fs);
     }
-    void *pIOP = psx_get_iop_state(plugin->m_psxState);
+    void *pIOP = psx_get_iop_state(plugin->psxState);
     iop_set_compat(pIOP, IOP_COMPAT_HARSH);
 
     return FMOD_OK;
@@ -438,8 +435,8 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginHighlyExp *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        if (plugin->m_length > 0) {
-            *length = plugin->m_length;
+        if (plugin->length > 0) {
+            *length = plugin->length;
         } else {
             *length = -1;
         }

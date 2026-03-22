@@ -502,7 +502,7 @@ int D1Player::load(void *_data, unsigned long int length) {
     sample->length = sample->repeat = 4;
     samples[20] = sample;
 
-    m_version = 1;
+    version = 1;
     format = "Delta Music";
     //printData();
     return 1;

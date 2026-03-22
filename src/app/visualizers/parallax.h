@@ -1,8 +1,8 @@
 #ifndef PARALLAX_H
 #define PARALLAX_H
 
-#include "qevent.h"
-#include "qpixmap.h"
+#include <QPixmap>
+
 #include "effect.h"
 
 class Parallax : public Effect

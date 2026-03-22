@@ -645,7 +645,7 @@ int S2Player::load(void *data, unsigned long int _length) {
             step->pattern = pointers[step->pattern];
         }
         length++;
-        m_version = 2;
+        version = 2;
         format = "Sidmon 2";
         //printData();
     } else {

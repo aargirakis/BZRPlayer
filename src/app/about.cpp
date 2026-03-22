@@ -1,5 +1,4 @@
 #include "about.h"
-#include "playlistmodel.h"
 #include "ui_about.h"
 
 about::about(QWidget* parent) :
@@ -16,7 +15,6 @@ about::~about()
 {
     delete ui;
 }
-
 
 void about::setVersion(const QString &version) const {
     ui->labelVersion->setText(version);

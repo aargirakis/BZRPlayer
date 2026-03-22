@@ -1,6 +1,6 @@
 #include "FastTracker24ChanPatternView.h"
 
-FastTracker24ChanPatternView::FastTracker24ChanPatternView(Tracker* parent, unsigned int channels)
+FastTracker24ChanPatternView::FastTracker24ChanPatternView(Tracker* parent, const unsigned int channels)
     : FastTracker2PatternView(parent, channels)
 {
     m_font = QFont("Fasttracker 2 16px");
@@ -20,10 +20,10 @@ FastTracker24ChanPatternView::FastTracker24ChanPatternView(Tracker* parent, unsi
     m_bitmapFontInstrument = BitmapFont("Fasttracker 2");
     m_fontParameters.setPixelSize(8);
     m_fontWidthEffects = 8;
-    m_fontRownumber = QFont("Fasttracker 2");
-    m_bitmapFontRownumber = BitmapFont("Fasttracker 2");
-    m_fontRownumber.setPixelSize(8);
-    m_fontWidthRownumber = 8;
+    m_fontRowNumber = QFont("Fasttracker 2");
+    m_bitmapFontRowNumber = BitmapFont("Fasttracker 2");
+    m_fontRowNumber.setPixelSize(8);
+    m_fontWidthRowNumber = 8;
     m_fontWidthEffects = 8;
     m_fontWidthInstrument = 8;
     m_fontWidthEffects = 8;
@@ -41,17 +41,17 @@ FastTracker24ChanPatternView::~FastTracker24ChanPatternView()
 {
 }
 
-int FastTracker24ChanPatternView::fontWidthRownumber()
+int FastTracker24ChanPatternView::fontWidthRowNumber()
 {
-    return m_fontWidthRownumber;
+    return m_fontWidthRowNumber;
 }
 
-QFont FastTracker24ChanPatternView::fontRownumber()
+QFont FastTracker24ChanPatternView::fontRowNumber()
 {
-    return m_fontRownumber;
+    return m_fontRowNumber;
 }
 
-BitmapFont FastTracker24ChanPatternView::bitmapFontRownumber()
+BitmapFont FastTracker24ChanPatternView::bitmapFontRowNumber()
 {
-    return m_bitmapFontRownumber;
+    return m_bitmapFontRowNumber;
 }

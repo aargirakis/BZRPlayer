@@ -36,9 +36,6 @@ QGroupBox
 border: 1px solid gray;
 }
 
-
-
-
 QLineEdit {
     border: 1px solid gray;
     border-radius: 3px;

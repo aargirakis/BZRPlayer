@@ -1,6 +1,6 @@
 #include "MEDPatternView.h"
 
-MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels)
+MEDPatternView::MEDPatternView(Tracker* parent, const unsigned int channels)
     : AbstractPatternView(parent, channels)
 {
     octaveOffset = 12;
@@ -8,7 +8,7 @@ MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels)
     m_font.setPixelSize(16);
     m_fontWidth = 16;
     m_renderTop = true;
-    m_renderVUMeter = true;
+    m_renderVuMeter = true;
 
     m_bitmapFont = BitmapFont("MED 3.21");
     m_bitmapFont3 = BitmapFont("MED 3.21 Compressed");
@@ -34,21 +34,20 @@ MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels)
     m_width = 640;
     m_height = 512;
 
-    m_vumeterWidth = 24;
-    m_vumeterHeight = 128;
-    m_vumeterLeftOffset = 152;
-    m_vumeterHilightWidth = 4;
-    m_vumeterOffset = 144;
-    m_vumeterTopOffset = -6;
+    m_vuMeterWidth = 24;
+    m_vuMeterHeight = 128;
+    m_vuMeterLeftOffset = 152;
+    m_vuMeterHilightWidth = 4;
+    m_vuMeterOffset = 144;
+    m_vuMeterTopOffset = -6;
 
-    setupVUMeters();
+    setupVuMeters();
 
-
-    //main color
+    // main color
     m_linearGrad.setColorAt(0, QColor(187, 187, 187).rgb());
     m_linearGrad.setColorAt(0.045, QColor(187, 187, 187).rgb());
-    m_linearGrad.setColorAt(0.04501, QColor(255, 34, 17).rgb()); //red
-    m_linearGrad.setColorAt(0.46, QColor(255, 255, 51).rgb()); //yellow
+    m_linearGrad.setColorAt(0.04501, QColor(255, 34, 17).rgb()); // red
+    m_linearGrad.setColorAt(0.46, QColor(255, 255, 51).rgb()); // yellow
     m_linearGrad.setColorAt(0.75, QColor(0, 255, 0).rgb()); // green
     m_linearGrad.setColorAt(1, QColor(0, 136, 0).rgb()); // dark green
 
@@ -57,8 +56,6 @@ MEDPatternView::MEDPatternView(Tracker* parent, unsigned int channels)
 
     m_linearGradDark.setColorAt(0, QColor(187, 187, 187).rgb());
     m_linearGradDark.setColorAt(1, QColor(187, 187, 187).rgb());
-
-
 }
 
 BitmapFont MEDPatternView::infoFont()
@@ -66,9 +63,9 @@ BitmapFont MEDPatternView::infoFont()
     return m_bitmapFont3;
 }
 
-QString MEDPatternView::rowNumber(int rowNumber)
+QString MEDPatternView::rowNumber(const int rowNumber)
 {
-    int base = rowNumberHex ? 16 : 10;
+    const int base = rowNumberHex ? 16 : 10;
 
     QString rowNumberStr = QString::number(rowNumber + rowNumberOffset, base).toUpper();
     rowNumberStr = rowNumberStr.length() == 1 ? "00" + rowNumberStr : rowNumberStr;
@@ -78,34 +75,41 @@ QString MEDPatternView::rowNumber(int rowNumber)
 
 QString MEDPatternView::effect(BaseRow* row)
 {
-    if (row->effect == 171) return "F"; //might be a bug in libxmp
-    if (row->effect == 146) return "4"; //might be a bug in libxmp
+    if (row->effect == 171) return "F"; // might be a bug in libxmp
+
+    if (row->effect == 146) return "4"; // might be a bug in libxmp
+
     return AbstractPatternView::effect(row);
 }
 
 QString MEDPatternView::note(BaseRow* row)
 {
-    //hold/decay
+    // hold/decay
     if (row->effect2 == 177)
     {
         return "-|-";
     }
+
     QString note = AbstractPatternView::note(row);
+
     if (note.left(1) == "B")
     {
         note = "H" + note.right(2);
     }
+
     return note;
 }
 
 QString MEDPatternView::instrument(BaseRow* row)
 {
-    int instrument = row->sample;
+    const int instrument = row->sample;
     QString padding = m_SeparatorRowNumber;
+
     if (instrument >= 32)
     {
         padding = "";
     }
+
     return padding + QString::number(instrument, 32).toUpper();
 }
 
@@ -115,18 +119,18 @@ void MEDPatternView::paintAbove(QPainter* painter, int height, int currentRow)
     QColor colorHilite(204, 204, 204);
     QColor colorShadow(102, 102, 119);
 
-    //bottom
-    painter->fillRect(8, (height) - 8, 625, 2, colorHilite);
-    painter->fillRect(6, (height) - 6, 628, 2, colorBase);
-    painter->fillRect(4, (height) - 4, 633, 2, colorShadow);
-    painter->fillRect(4, (height) - 2, 634, 2, colorShadow);
+    // bottom
+    painter->fillRect(8, height - 8, 625, 2, colorHilite);
+    painter->fillRect(6, height - 6, 628, 2, colorBase);
+    painter->fillRect(4, height - 4, 633, 2, colorShadow);
+    painter->fillRect(4, height - 2, 634, 2, colorShadow);
 
-    //vumeter bottom
+    // vu-meter bottom
     for (unsigned int i = 0; i < m_channels; i++)
     {
-        painter->fillRect((152) + 144 * i, (height) - (8), 4, 2, QColor(170, 170, 170));
-        painter->fillRect((156) + 144 * i, (height) - (8), 16, 2, QColor(0, 136, 0));
-        painter->fillRect((172) + 144 * i, (height) - (8), 4, 2, QColor(187, 187, 187));
+        painter->fillRect(152 + 144 * i, height - 8, 4, 2, QColor(170, 170, 170));
+        painter->fillRect(156 + 144 * i, height - 8, 16, 2, QColor(0, 136, 0));
+        painter->fillRect(172 + 144 * i, height - 8, 4, 2, QColor(187, 187, 187));
     }
 }
 
@@ -139,16 +143,15 @@ void MEDPatternView::paintBelow(QPainter* painter, int height, int currentRow)
     pen.setWidth(1);
     painter->setPen(pen);
 
-    painter->fillRect(8, (height / 2) - 17, 628, 18, m_colorCurrentRowBackground);
+    painter->fillRect(8, height / 2 - 17, 628, 18, m_colorCurrentRowBackground);
 
-    //left border
+    // left border
 
     painter->fillRect(0, 0, 4, height, colorShadow);
     painter->fillRect(4, 0, 2, height, colorBase);
     painter->fillRect(6, 0, 2, height, colorHilite);
 
-
-    //right border
+    // right border
     painter->fillRect(636, 0, 4, height, colorHilite);
     painter->fillRect(634, 0, 2, height, colorBase);
     painter->fillRect(632, 0, 2, height, colorShadow);
@@ -156,31 +159,31 @@ void MEDPatternView::paintBelow(QPainter* painter, int height, int currentRow)
 
 void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
-    if(QString(info->fileformat.c_str()).toLower().startsWith("octamed (mmd0"))
+    if(QString(info->fileFormat.c_str()).toLower().startsWith("octamed (mmd0"))
     {
         QColor colorBase(153, 153, 170);
         QColor colorHilite(204, 204, 204);
         QColor colorShadow(102, 102, 119);
         int left = 0;
 
-        //left
+        // left
         painter->fillRect(left, 0, 4, 32, colorShadow);
         painter->fillRect(left + 4, 4, 2, 28, colorBase);
 
-        //right
+        // right
         painter->fillRect(left + 636, 4, 4, 28, colorHilite);
         painter->fillRect(left + 634, 30, 2, 2, colorBase);
 
-        //top
+        // top
         painter->fillRect(left + 4, 4, 632, 26, colorBase);
         painter->fillRect(left + 1, 0, 639, 2, colorHilite);
         painter->fillRect(left + 3, 2, 637, 2, colorHilite);
 
-        //bottom
+        // bottom
         painter->fillRect(left + 6, 30, 1, 2, colorHilite);
         painter->fillRect(left + 7, 30, 627, 2, colorShadow);
 
-        //position info etc.
+        // position info etc.
         painter->fillRect(left + 6, 6, 154, 22, colorShadow);
         painter->fillRect(left + 7, 8, 83, 2, colorHilite);
         painter->fillRect(left + 91, 8, 67, 2, colorHilite);
@@ -208,24 +211,22 @@ void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_curr
         QColor colorShadow(102, 102, 119);
         int left = 0;
 
-        //background
+        // background
         painter->fillRect(left + 2, 0, 636, m_topHeight, colorBase);
 
-        //left
+        // left
         painter->fillRect(left, 0, 2, m_topHeight, colorShadow);
 
-
-        //right
+        // right
         painter->fillRect(left + 638, 2, 2, m_topHeight-2, colorHilite);
 
-        //top
+        // top
         painter->fillRect(left + 1, 0, 639, 2, colorHilite);
 
-
-        //bottom
+        // bottom
         painter->fillRect(left + 1, 26, 638, 2, colorShadow);
 
-        //position info etc.
+        // position info etc.
         painter->fillRect(left + 3, 4, 253, 22, colorShadow);
         painter->fillRect(left + 4, 4, 83, 2, colorHilite);
         painter->fillRect(left + 88, 4, 67, 2, colorHilite);

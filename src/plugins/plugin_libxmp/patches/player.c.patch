@@ -9,7 +9,7 @@
 +	p->patternPosBuffer = CreateQueue(queue_size);
 +	p->posBuffer = CreateQueue(queue_size);
 +	p->trackPosBuffer = CreateQueue(queue_size);
-+	p->vumeterBuffer = CreateQueue(queue_size);
++	p->vuMeterBuffer = CreateQueue(queue_size);
 +	p->speedBuffer = CreateQueue(queue_size);
 +	p->bpmBuffer = CreateQueue(queue_size);
  	p->time_factor_relative = 1.0;
@@ -23,25 +23,25 @@
 +		Dequeue(p->trackPosBuffer);
 +		Dequeue(p->patternPosBuffer);
 +		Dequeue(p->posBuffer);
-+		Dequeue(p->vumeterBuffer);
++		Dequeue(p->vuMeterBuffer);
 +		Dequeue(p->speedBuffer);
 +		Dequeue(p->bpmBuffer);
 +	}
 +
 +	int chan;
 +	int numChans = mod->chn;
-+	unsigned char* vumeters = malloc(sizeof(unsigned char) * numChans );
++	unsigned char* vuMeters = malloc(sizeof(unsigned char) * numChans );
 +
 +	for (chan = 0; chan < numChans; chan++) {
 +		struct channel_data *c = &p->xc_data[chan];
 +		unsigned char vol = c->info_finalvol >> 4;
-+		vumeters[chan] = vol;
++		vuMeters[chan] = vol;
 +	}
 +
 +	Enqueue(p->row, p->trackPosBuffer);
 +	Enqueue(mod->xxo[p->pos], p->patternPosBuffer);
 +	Enqueue(p->pos, p->posBuffer);
-+	Enqueue((ElementType) vumeters, p->vumeterBuffer);
++	Enqueue((ElementType) vuMeters, p->vuMeterBuffer);
 +	Enqueue(p->speed, p->speedBuffer);
 +	Enqueue(p->bpm, p->bpmBuffer);
 +
@@ -54,7 +54,7 @@
  
 +	DisposeQueue(p->patternPosBuffer);
 +	DisposeQueue(p->trackPosBuffer);
-+	DisposeQueue(p->vumeterBuffer);
++	DisposeQueue(p->vuMeterBuffer);
 +	DisposeQueue(p->posBuffer);
 +	DisposeQueue(p->speedBuffer);
 +	DisposeQueue(p->bpmBuffer);
@@ -93,7 +93,7 @@
 +	struct module_data *m = &ctx->m;
 +	struct xmp_module *mod = &m->mod;
 +	int chn = mod->chn;
-+	unsigned char* test = (unsigned char*) Front(p->vumeterBuffer);
++	unsigned char* test = (unsigned char*) Front(p->vuMeterBuffer);
 +
 +	if (test == 0) {
 +		volumes = 0;

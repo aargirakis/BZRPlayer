@@ -1,8 +1,6 @@
-#include "trackerfullscreen.h"
-#include <plugins.h>
-#include "visualizers/tracker.h"
-#include <QtOpenGL>
+#include "plugins.h"
 #include "soundmanager.h"
+#include "trackerfullscreen.h"
 
 TrackerFullScreen::TrackerFullScreen(Tracker* tracker, QWidget* parent): QOpenGLWidget(parent)
 {
@@ -13,12 +11,12 @@ void TrackerFullScreen::paintEvent(QPaintEvent* event)
 {
     if (tracker)
     {
-        if ((tracker->m_trackerview!= nullptr && SoundManager::getInstance().IsPlaying()) && (SoundManager::getInstance().m_Info1->
-            plugin == PLUGIN_libopenmpt || SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp ||
-            SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker || SoundManager::getInstance().m_Info1->
-            plugin == PLUGIN_sunvox_lib))
+        const auto &sm = SoundManager::getInstance();
+
+        if (const auto &info = sm.info; tracker->trackerView != nullptr && sm.isPlaying() &&
+                                        (info->plugin == PLUGIN_libopenmpt || info->plugin == PLUGIN_libxmp ||
+                                         info->plugin == PLUGIN_hivelytracker || info->plugin == PLUGIN_sunvox_lib))
         {
-            SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
             QPainter painter;
             painter.begin(this);
             tracker->paint(&painter, event);

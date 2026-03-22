@@ -16,19 +16,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_libkss_NAME, // Name.
-    0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    nullptr,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_libkss_NAME, // name.
+    0x00012300, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    nullptr, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginLibkss {
@@ -41,7 +40,7 @@ public:
     }
 
     ~pluginLibkss() {
-        //delete some stuff
+        // delete some stuff
         delete[] myBuffer;
     }
 
@@ -72,7 +71,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     FMOD_CODEC_FILE_SIZE(codec, &plugin->filesize);
-    if (plugin->filesize == 4294967295) //stream
+    if (plugin->filesize == 4294967295) // stream
     {
         return FMOD_ERR_FORMAT;
     }
@@ -85,8 +84,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     plugin->myBuffer = new uint8_t[plugin->filesize];
 
@@ -149,7 +148,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->kssplay->silent_limit = 5000;
 
     plugin->info->title = KSS_get_title(plugin->kss);
-    plugin->info->fileformat = reinterpret_cast<char *>(plugin->kss->idstr);
+    plugin->info->fileFormat = reinterpret_cast<char *>(plugin->kss->idstr);
 
     if (plugin->kss->extra) {
         plugin->info->comments = reinterpret_cast<char *>(plugin->kss->extra);
@@ -177,7 +176,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
-    auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
 
     // TODO
     // plugin->kss->loop_detectable;
@@ -187,7 +186,6 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     if (KSSPLAY_get_stop_flag(plugin->kssplay)) {
         return FMOD_ERR_FILE_EOF;
     }
-
 
     // TODO
     if (KSSPLAY_get_loop_count(plugin->kssplay) >= plugin->loopNum) {

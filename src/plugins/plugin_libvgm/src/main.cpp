@@ -38,20 +38,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_libvgm_NAME, // Name.
-    0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE,
-    // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_libvgm_NAME, // name.
+    0x00012300, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginLibvgm {
@@ -77,9 +75,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -145,8 +143,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     if (plugin->mainPlr->SetOutputSettings(plugin->waveformat.frequency,
                                            static_cast<UINT8>(plugin->waveformat.channels),
@@ -160,11 +158,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     bool useDefaults = false;
 
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         useDefaults = true;
     }
 
-    //defaults
+    // defaults
     plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -286,23 +284,23 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             }
         }
 
-        plugin->info->fileformat = "DOSBox Raw OPL v";
+        plugin->info->fileFormat = "DOSBox Raw OPL v";
 
         if (songInfo.fileVerMin == 0) {
-            plugin->info->fileformat += format("{}", songInfo.fileVerMaj);
+            plugin->info->fileFormat += format("{}", songInfo.fileVerMaj);
         } else {
-            plugin->info->fileformat += format("{}.{}", songInfo.fileVerMaj, songInfo.fileVerMin);
+            plugin->info->fileFormat += format("{}.{}", songInfo.fileVerMaj, songInfo.fileVerMin);
         }
 
         plugin->info->allowedFields = &allowedFieldsDro;
     } else if (plugin->player->GetPlayerType() == FCC_GYM) {
-        plugin->info->fileformat = "Genesis YM2612";
+        plugin->info->fileFormat = "Genesis YM2612";
         plugin->info->allowedFields = &allowedFieldsGym;
     } else if (plugin->player->GetPlayerType() == FCC_S98) {
-        plugin->info->fileformat = format("S98 v{}", songInfo.fileVerMaj);
+        plugin->info->fileFormat = format("S98 v{}", songInfo.fileVerMaj);
         plugin->info->allowedFields = &allowedFieldsS98;
     } else if (plugin->player->GetPlayerType() == FCC_VGM) {
-        plugin->info->fileformat = format("Video Game Music v{:x}.{:02x}", songInfo.fileVerMaj, songInfo.fileVerMin);
+        plugin->info->fileFormat = format("Video Game Music v{:x}.{:02x}", songInfo.fileVerMaj, songInfo.fileVerMin);
         plugin->info->allowedFields = &allowedFieldsVgm;
     }
 

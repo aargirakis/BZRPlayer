@@ -8,15 +8,13 @@ using uint128_t = unsigned __int128;
 
 constexpr int maxChannels = 127;
 
-Channels::Channels(MainWindow* mw, QWidget* parent)
-    : QWidget(parent)
-{
+Channels::Channels(MainWindow *mw, QWidget *parent) : QWidget(parent) {
     m_root = mw;
-    QGridLayout* gridlayout = new QGridLayout(this);
-
+    const auto gridlayout = new QGridLayout(this);
 
     int row = 0;
     int col = 0;
+
     for (int i = 0; i < maxChannels; i++)
     {
         channels.append(new ButtonOscilloscope(this, i));
@@ -36,6 +34,7 @@ Channels::Channels(MainWindow* mw, QWidget* parent)
 
         gridlayout->addWidget(channels.at(i), row, col);
         col++;
+
         if (col == 4)
         {
             col = 0;
@@ -48,8 +47,7 @@ Channels::Channels(MainWindow* mw, QWidget* parent)
     parent->setLayout(gridlayout);
 }
 
-void Channels::updateChannelColors()
-{
+void Channels::updateChannelColors() const {
     for (int i = 0; i < maxChannels; i++)
     {
         channels.at(i)->setEnabledColor(QColor(m_root->colorMain.left(7)));
@@ -59,37 +57,34 @@ void Channels::updateChannelColors()
     }
 }
 
-void Channels::updateChannels()
-{
-    unsigned int numChannels;
-    if (SoundManager::getInstance().m_Info1 == nullptr)
+void Channels::updateChannels() const {
+    const auto &info = SoundManager::getInstance().info;
+
+    if (info == nullptr)
     {
         for (unsigned int i = 0; i < maxChannels; i++)
         {
             channels.at(i)->setVisible(false);
             channels.at(i)->update();
         }
+
         return;
-    }
-    else
-    {
-        numChannels = SoundManager::getInstance().m_Info1->numChannels;
     }
 
     for (unsigned int i = 0; i < maxChannels; i++)
     {
         channels.at(i)->setChecked(true);
-        if (i < numChannels &&
-            (SoundManager::getInstance().m_Info1->plugin == PLUGIN_asap ||
-                SoundManager::getInstance().m_Info1->plugin == PLUGIN_game_music_emu ||
-                SoundManager::getInstance().m_Info1->plugin == PLUGIN_libsidplayfp ||
-                SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
-                SoundManager::getInstance().m_Info1->plugin == PLUGIN_libvgm ||
-                SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker ||
-                SoundManager::getInstance().m_Info1->plugin == PLUGIN_furnace ||
-                // SoundManager::getInstance().m_Info1->plugin==PLUGIN_sndh_player ||
-                SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp))
-        {
+
+        if (i < info->numChannels &&
+            (info->plugin == PLUGIN_asap ||
+             info->plugin == PLUGIN_game_music_emu ||
+             info->plugin == PLUGIN_libsidplayfp ||
+             info->plugin == PLUGIN_libopenmpt ||
+             info->plugin == PLUGIN_libvgm ||
+             info->plugin == PLUGIN_hivelytracker ||
+             info->plugin == PLUGIN_furnace ||
+             // info->plugin == PLUGIN_sndh_player ||
+             info->plugin == PLUGIN_libxmp)) {
             channels.at(i)->setVisible(true);
             channels.at(i)->update();
         }
@@ -101,22 +96,22 @@ void Channels::updateChannels()
     }
 }
 
-void Channels::setChannelEnabled(int index, bool enable)
-{
+void Channels::setChannelEnabled(const int index, const bool enable) const {
     channels.at(index)->setChecked(enable);
     muteChannels();
 }
 
-bool Channels::getChannelEnabled(int index)
-{
+bool Channels::getChannelEnabled(const int index) const {
     return channels.at(index)->isChecked();
 }
 
-void Channels::muteAllChannels()
-{
-    unsigned int numChannels = SoundManager::getInstance().m_Info1->numChannels;
+void Channels::muteAllChannels() const {
+    auto &sm = SoundManager::getInstance();
+    const auto &info = sm.info;
+    const unsigned int numChannels = info->numChannels;
     uint128_t mask = 0;
     QString maskStr = "";
+
     for (int i = 0; i < numChannels; i++)
     {
         mask |= 1 << i;
@@ -124,33 +119,39 @@ void Channels::muteAllChannels()
         channels.at(i)->setChecked(false);
     }
 
-    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
-        SoundManager::getInstance().m_Info1->plugin == PLUGIN_libvgm ||
-        SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp)
+    if (info->plugin == PLUGIN_libopenmpt ||
+        info->plugin == PLUGIN_libvgm ||
+        info->plugin == PLUGIN_libxmp)
     {
         mask = 0;
     }
-    SoundManager::getInstance().MuteChannels(mask, maskStr);
+
+    sm.muteChannels(mask, maskStr);
 }
 
-void Channels::unmuteAllChannels()
-{
-    unsigned int numChannels = SoundManager::getInstance().m_Info1->numChannels;
+void Channels::unmuteAllChannels() const {
+    auto &sm = SoundManager::getInstance();
+    const auto &info = sm.info;
+    const unsigned int numChannels = info->numChannels;
     QString maskStr = "";
+
     for (int i = 0; i < numChannels; i++)
     {
         maskStr += "1";
         channels.at(i)->setChecked(true);
     }
 
-    SoundManager::getInstance().MuteChannels(0, maskStr);
+    sm.muteChannels(0, maskStr);
 }
 
-void Channels::muteChannels()
-{
-    unsigned int numChannels = SoundManager::getInstance().m_Info1->numChannels;
+void Channels::muteChannels() const {
+    auto &sm = SoundManager::getInstance();
+    const auto &info = sm.info;
+
+    const unsigned int numChannels = info->numChannels;
     uint128_t mask = 0;
     QString maskStr = "";
+
     for (int i = 0; i < numChannels; i++)
     {
         if (!channels.at(i)->isChecked())
@@ -164,11 +165,12 @@ void Channels::muteChannels()
         }
     }
 
-    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt ||
-    SoundManager::getInstance().m_Info1->plugin == PLUGIN_libvgm ||
-    SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp)
+    if (info->plugin == PLUGIN_libopenmpt ||
+        info->plugin == PLUGIN_libvgm ||
+        info->plugin == PLUGIN_libxmp)
     {
         mask = 0;
     }
-    SoundManager::getInstance().MuteChannels(mask, maskStr);
+
+   sm.muteChannels(mask, maskStr);
 }

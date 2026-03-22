@@ -1,99 +1,75 @@
+#include <QPainter>
+#include <QPainterPath>
+#include <QPaintEvent>
 #include "buttonoscilloscope.h"
-#include <plugins.h>
-#include "qevent.h"
-#include "qpainter.h"
-#include "qpainterpath.h"
+#include "plugins.h"
 #include "soundmanager.h"
 #include "channels.h"
 
-ButtonOscilloscope::ButtonOscilloscope(Channels* channels, int i)
-{
+ButtonOscilloscope::ButtonOscilloscope(Channels *channelsProvided, const int i) {
     channelNumber = i;
     font.setFamily("Roboto");
     font.setPixelSize(14);
     checked = true;
-    this->channels = channels;
+    channels = channelsProvided;
 }
 
-bool ButtonOscilloscope::isChecked()
-{
+bool ButtonOscilloscope::isChecked() const {
     return checked;
 }
 
-void ButtonOscilloscope::setEnabledColor(QColor enabled)
-{
+void ButtonOscilloscope::setEnabledColor(const QColor enabled) {
     enabledColor = enabled;
 }
 
-void ButtonOscilloscope::setDisabledColor(QColor disabled)
-{
+void ButtonOscilloscope::setDisabledColor(const QColor disabled) {
     disabledColor = disabled;
 }
 
-void ButtonOscilloscope::setBackgroundColor(QColor background)
-{
+void ButtonOscilloscope::setBackgroundColor(const QColor background) {
     backgroundColor = background;
 }
 
-void ButtonOscilloscope::setTextColor(QColor text)
-{
+void ButtonOscilloscope::setTextColor(const QColor text) {
     textColor = text;
 }
 
-void ButtonOscilloscope::setChecked(bool c)
-{
+void ButtonOscilloscope::setChecked(const bool c) {
     checked = c;
     update();
 }
 
-void ButtonOscilloscope::paintEvent(QPaintEvent* event)
-{
-    if (SoundManager::getInstance().m_Info1 == nullptr)
-    {
+void ButtonOscilloscope::paintEvent(QPaintEvent *event) {
+    const auto &info = SoundManager::getInstance().info;
+
+    if (info == nullptr) {
         return;
     }
-    //TODO refactor this shit
-    if (checked || SoundManager::getInstance().m_Info1->plugin == PLUGIN_sndh_player)
-    {
-        if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_sndh_player)
-        {
-            QPainter painter(this);
-            painter.setBrush(QBrush(backgroundColor));
-            painter.setRenderHint(QPainter::Antialiasing);
-            painter.begin(this);
-            painter.drawRect(event->rect());
 
-            QPainterPath myPath;
+    QPainter painter(this);
+    painter.begin(this);
 
-            int kLatencySampleCount = 256; //44100/60;
-            drawOscilloVoice(SoundManager::getInstance().m_Info1->waveformDisplay, kLatencySampleCount, channelNumber);
-            drawChannelNumber(QString::number(channelNumber));
+    if (info->plugin == PLUGIN_sndh_player) {
+        painter.setBrush(QBrush(backgroundColor));
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.drawRect(event->rect());
 
-            painter.end();
-            update();
-        }
-        else
-        {
-            QPainter painter(this);
-            painter.begin(this);
-            painter.setBrush(QBrush(enabledColor));
-            painter.drawRect(event->rect());
-            painter.end();
-        }
-    }
-    else
-    {
-        QPainter painter(this);
-        painter.begin(this);
-        painter.setBrush(QBrush(disabledColor));
+        constexpr int kLatencySampleCount = 256; // 44100 / 60;
+        drawOscilloVoice(info->waveformDisplay, kLatencySampleCount, channelNumber);
+        drawChannelNumber(QString::number(channelNumber));
+
+        painter.end();
+        update();
+    } else {
+        painter.setBrush(QBrush(checked ? enabledColor : disabledColor));
         painter.drawRect(event->rect());
         painter.end();
     }
+
     drawChannelNumber(QString::number(channelNumber));
 }
 
-void ButtonOscilloscope::drawChannelNumber(QString text)
-{
+void ButtonOscilloscope::drawChannelNumber(const QString &text) {
     QPainter painter(this);
     QPen pen;
     painter.setFont(font);
@@ -102,51 +78,46 @@ void ButtonOscilloscope::drawChannelNumber(QString text)
     painter.drawText(5, 15, text);
 }
 
-void ButtonOscilloscope::mouseReleaseEvent(QMouseEvent* event)
-{
-    if (event->button() == Qt::LeftButton)
-    {
+void ButtonOscilloscope::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
         checked = !checked;
         channels->muteChannels();
         update();
     }
 }
 
-void ButtonOscilloscope::drawOscilloVoice(const uint32_t* audio, int count, int index)
-{
+void ButtonOscilloscope::drawOscilloVoice(const uint32_t *audio, const int count, const int index) {
     QPainter painter(this);
 
-
-    const float dpiScale = 1.0f;
+    constexpr float dpiScale = 1.0f;
     const int voiceShift = index * 8;
 
-
     int w = width();
+
     if (w > count)
         w = count;
+
     if (w <= 0)
         w = 1;
 
     int rPos = 0;
-    int rStep = (count << 16) / w;
+    const int rStep = (count << 16) / w;
     QPainterPath myPath;
     QPen pen;
     pen.setColor(enabledColor);
     pen.setWidth(2);
     painter.setPen(pen);
 
-    //cout << "w: " << w  << "\n";
-    //flush(cout);
-    for (int i = 0; i < w; i++)
-    {
-        float x = (float)i / float(w);
+    for (int i = 0; i < w; i++) {
+        float x = static_cast<float>(i) / static_cast<float>(w);
         float y = 0.f;
-        if (audio)
-        {
-            int8_t sv = int8_t((audio[rPos >> 16] >> voiceShift) & 0xff);
-            y = float(sv * (1.0f / 256.f));
+
+        if (audio) {
+            const auto sv = static_cast<int8_t>(audio[rPos >> 16] >> voiceShift & 0xff);
+            y = sv * (1.0f / 256.f);
             rPos += rStep;
         }
+
         //waveform[i] = ImLerp(inRect.Min, inRect.Max, ImVec2(x, 0.5f - y));
         //dl->AddPolyline(waveform, w, color, ImDrawFlags_None, dpiScale);
 
@@ -155,20 +126,13 @@ void ButtonOscilloscope::drawOscilloVoice(const uint32_t* audio, int count, int 
         x = x * width();
         y = -1 * (y * height() * 1.5) + height() / 2;
 
-        if (i == 0)
-        {
+        if (i == 0) {
             myPath.moveTo(x, y);
-        }
-        else
-        {
+        } else {
             myPath.lineTo(x, y);
         }
-        //cout << "Drawing " << x << "," << y << " DONE\n";
-        //flush(cout);
+
     }
-    //cout << "FOR LOOP END\n";
-    //flush(cout);
+
     painter.drawPath(myPath);
-    //cout << "drawPath\n";
-    //flush(cout);
 }

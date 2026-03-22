@@ -43,7 +43,7 @@ void JBPlayer::initialize() {
 
     JBSong *song = songs[m_songNumber];
     speed = song->speed;
-    tick = (m_variant < 3) ? 1 : 255;
+    tick = (variant < 3) ? 1 : 255;
 
     transpose = 0;
     waveDir = 0;
@@ -58,7 +58,7 @@ void JBPlayer::initialize() {
         voice->channel = amiga->channels[voice->index];
         complete += (1 << voice->index);
 
-        if (m_variant < 3) {
+        if (variant < 3) {
             voice->channel->pointer = 0;
             voice->channel->length = 128;
             voice->channel->setVolume(0);
@@ -131,7 +131,7 @@ void JBPlayer::process() {
                     position++;
                 }
             }
-            if (m_variant > 4) {
+            if (variant > 4) {
                 position = ptrack + voice->slidePointer;
                 value = stream[position] + voice->slidePos;
                 position = pblock + value;
@@ -147,7 +147,7 @@ void JBPlayer::process() {
                     voice->slidePos = (voice->slidePos + 1) & 255;
                 }
 
-                if (m_variant == 5) temp = 0;
+                if (variant == 5) temp = 0;
             } else {
                 value = voice->slidePos + 1;
                 position = pblock + value;
@@ -213,7 +213,7 @@ void JBPlayer::process() {
                     position = voice->patternPos;
 
 
-                    if (m_variant > 4) {
+                    if (variant > 4) {
                         do {
                             value = stream[position];
                             position++;
@@ -378,9 +378,9 @@ void JBPlayer::process() {
                                     temp = voice->slideValue << 1;
                                     voice->slideLimit = temp & 0xff;
 
-                                    if (m_variant == 0) {
+                                    if (variant == 0) {
                                         voice->flags = 0x40;
-                                    } else if (m_variant == 1) {
+                                    } else if (variant == 1) {
                                         voice->flags |= 64;
                                     } else {
                                         voice->flags = (voice->slideLimit < temp) ? 0x50 : 0x40;
@@ -467,7 +467,7 @@ void JBPlayer::process() {
             position += 2;
 
             if (voice->flags & 64) {
-                if (m_variant == 1) {
+                if (variant == 1) {
                     value = voice->slideStep;
                     if (value == 0) value = voice->flags & 1;
 
@@ -482,7 +482,7 @@ void JBPlayer::process() {
                 } else {
                     loop = 0;
 
-                    if (m_variant > 0) {
+                    if (variant > 0) {
                         if (voice->flags & 16) {
                             if (voice->flags & 1) loop = 1;
                         } else {
@@ -636,7 +636,7 @@ int JBPlayer::fx(JBVoice *voice, int value) {
             if (--voice->loopCounter != 0) position = voice->loopPos;
             break;
         case 20:
-            if (m_variant == 7) {
+            if (variant == 7) {
                 speed = stream[position];
                 position++;
                 break;
@@ -681,20 +681,20 @@ int JBPlayer::load(void *_data, unsigned long int _length) {
     value = readEndian(stream[position], stream[position + 1]);
     position += 2;
     if (value == 0xa001) {
-        m_variant = 3;
+        variant = 3;
     } else {
         position = 50;
 
         value = readEndian(stream[position], stream[position + 1]);
         position += 2;
         if (value == 0xa001) {
-            m_variant = 4;
+            variant = 4;
         } else {
             position = 42;
             value = readEndian(stream[position], stream[position + 1]);
             position += 2;
             if (value != 0xa001) return -1;
-            m_variant = 5;
+            variant = 5;
         }
     }
 
@@ -724,7 +724,7 @@ int JBPlayer::load(void *_data, unsigned long int _length) {
                 if (valueTemp == 0x4a28) vblock = value; //tst.b [xx(a0)]
                 break;
             case 0x1031: //move.b [xx(a1,d1.w),d0]
-                if (m_variant == 5) {
+                if (variant == 5) {
                     position -= 10;
 
                     valueTemp = readEndian(stream[position], stream[position + 1]);
@@ -870,7 +870,7 @@ int JBPlayer::load(void *_data, unsigned long int _length) {
                     }
 
                     if (songs.size() < 1) return -1;
-                    m_totalSongs = songs.size();
+                    totalSongs = songs.size();
                     //songs.fixed = true;
                     position = length;
                 }
@@ -912,19 +912,19 @@ int JBPlayer::load(void *_data, unsigned long int _length) {
     }
 
     int tempVal;
-    if (m_variant == 5) {
+    if (variant == 5) {
         position = 0x290;
         tempVal = readEndian(stream[position], stream[position + 1]);
         position += 2;
-        if (tempVal == 0xd028) m_variant++; //add.b [xx(a0),d0]
+        if (tempVal == 0xd028) variant++; //add.b [xx(a0),d0]
         position = 0x4f6;
         tempVal = readEndian(stream[position], stream[position + 1]);
         position += 2;
-        if (tempVal == 0x1759) m_variant++; //move.b [(a1)+,xx(a3)]
+        if (tempVal == 0x1759) variant++; //move.b [(a1)+,xx(a3)]
     }
 
 
-    m_version = 2;
+    version = 2;
     format = "Jason Brooke";
     //printData();
     return 1;
@@ -1045,7 +1045,7 @@ int JBPlayer::oldLoader(void *data, unsigned long int _length) {
                     }
 
                     if (songs.size() < 1) return -1;
-                    m_totalSongs = songs.size();
+                    totalSongs = songs.size();
                     //songs.fixed = true;
                     position = _length;
                 }
@@ -1070,23 +1070,23 @@ int JBPlayer::oldLoader(void *data, unsigned long int _length) {
     amiga->store(stream, (lower - waves), position, _length);
     amiga->loopLen = 0;
 
-    m_variant = 2;
+    variant = 2;
     position = 0xd6;
 
     valueTemp = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
     if (valueTemp == 0x10bc0040) {
         //move.b [#$40,(a0)]
-        m_variant = 0;
+        variant = 0;
     } else {
         position = 0xf4;
         valueTemp = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
         position += 4;
-        if (valueTemp == 0x08d00005) m_variant = 1; //bset [#5,(a0)]
+        if (valueTemp == 0x08d00005) variant = 1; //bset [#5,(a0)]
     }
 
     this->stream = stream;
-    m_version = 1;
+    version = 1;
     oldProcess = true;
     format = "Jason Brooke";
     //printData();

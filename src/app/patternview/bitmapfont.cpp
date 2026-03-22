@@ -1,28 +1,27 @@
-#include "bitmapfont.h"
-#include <QApplication>
 #include <QDir>
-#include <QDebug>
-#include <iostream>
-#include <mainwindow.h>
+#include "bitmapfont.h"
+#include "mainwindow.h"
 
 BitmapFont::BitmapFont()
 {
 }
 
-BitmapFont::BitmapFont(QString filename)
+BitmapFont::BitmapFont(const QString &filename)
 {
-    QString fontDir = dataPath + RESOURCES_DIR + "/trackerview/fonts" + QDir::separator();
+    const QString fontDir = dataPath + RESOURCES_DIR + "/trackerview/fonts" + QDir::separator();
 
     QFile myFile(fontDir + filename + ".inf");
+
     if (myFile.open(QIODevice::ReadOnly))
     {
         bool variableWidth = false;
         QTextStream stream(&myFile);
         QString line = stream.readLine();
         m_fontWidth = line.toInt();
+
         if (m_fontWidth == 0)
         {
-            //we have a variable width font
+            // we have a variable width font
             variableWidth = true;
         }
 
@@ -30,10 +29,12 @@ BitmapFont::BitmapFont(QString filename)
         m_fontHeight = line.toInt();
         line = stream.readLine();
         m_bitmapFontCharset = line;
+
         if (variableWidth)
         {
             int fontWidth = 0;
             int fontPositionX = 0;
+
             for (int i = 0; i < m_bitmapFontCharset.length(); i++)
             {
                 fontWidth = stream.readLine().toInt();
@@ -42,6 +43,7 @@ BitmapFont::BitmapFont(QString filename)
                 fontPositionX += fontWidth;
             }
         }
+
         m_bitmapFontPath = fontDir + filename + ".png";
         //CLogFile::getInstance()->Print(LOGINFO,"Loaded bitmap font:  '%s'",QString(fontDir + filename).toLocal8Bit().constData());
         buildCharacterLookup();
@@ -50,7 +52,7 @@ BitmapFont::BitmapFont(QString filename)
     }
     else
     {
-        qDebug() << "Coul not load font!";
+        qDebug() << "Could not load font!";
         //CLogFile::getInstance()->Print(LOGERROR,"Bitmap font could not be loaded:  '%s'!",QString(fontDir + filename).toLocal8Bit().constData());
         //return false;
     }
@@ -62,14 +64,13 @@ void BitmapFont::buildCharacterLookup()
 
     if (!m_characterMap.isNull() && m_characterWidths.isEmpty())
     {
-        int fontX;
-        int fontY;
         for (int i = 0; i < m_bitmapFontCharset.length(); i++)
         {
-            fontX = (i * m_fontWidth) % m_characterMap.width();
-            fontY = (i * m_fontWidth) / m_characterMap.width() * m_fontHeight;
+            const int fontX = i * m_fontWidth % m_characterMap.width();
+            const int fontY = i * m_fontWidth / m_characterMap.width() * m_fontHeight;
             m_characterPositions[m_bitmapFontCharset[i]] = QPoint(fontX, fontY);
         }
+
         //        QMapIterator<QChar, QPoint> it(m_characterPositions);
         //        while (it.hasNext()) {
         //            it.next();

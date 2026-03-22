@@ -1,6 +1,6 @@
 #include "GenericPatternView.h"
 
-GenericPatternView::GenericPatternView(Tracker* parent, unsigned int channels)
+GenericPatternView::GenericPatternView(Tracker* parent, const unsigned int channels)
     : AbstractPatternView(parent, channels)
 {
     rowNumberOffset = 0;
@@ -23,7 +23,7 @@ GenericPatternView::GenericPatternView(Tracker* parent, unsigned int channels)
     parameterEnabled = false;
     parameter2Enabled = false;
     m_emptyNote = " . ";
-    m_RowLength = 3 + (m_channels * 4);
+    m_RowLength = 3 + m_channels * 4;
     m_xOffsetRow = 8;
 }
 
@@ -37,8 +37,8 @@ void GenericPatternView::paintBelow(QPainter* painter, int height, int currentRo
     QColor colorHilite(138, 219, 243);
     QColor colorShadow(24, 40, 44);
 
-    //main current row
-    painter->fillRect(0, (height / 2) - 9, (52) + (m_channels * 72 * m_fontWidth / 8), 9, colorBase);
+    // main current row
+    painter->fillRect(0, height / 2 - 9, 52 + m_channels * 72 * m_fontWidth / 8, 9, colorBase);
 }
 
 GenericPatternView::~GenericPatternView()

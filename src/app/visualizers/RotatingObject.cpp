@@ -1,11 +1,8 @@
-#include "RotatingModel3D.h"
-#include <cmath>
-#include <algorithm> // for std::clamp
-#include <iostream>
+#include "RotatingObject.h"
 
-static inline double invSqrt(double s) { return 1.0 / std::sqrt(s); }
+static double invSqrt(const double s) { return 1.0 / std::sqrt(s); }
 
-RotatingModel3D::RotatingModel3D() {
+RotatingObject::RotatingObject() {
     m_enabled  = true;
     setLightDir(0.8, 0.8, 1.0);
     m_fillColor = QColor(0, 200, 0);
@@ -22,12 +19,12 @@ RotatingModel3D::RotatingModel3D() {
     initCube(40.0);
 }
 
-void RotatingModel3D::setLightDir(double x,double y,double z) {
+void RotatingObject::setLightDir(const double x, const double y, const double z) {
     m_lightDir = Point3D(x,y,z);
     normalize(m_lightDir);
 }
 
-void RotatingModel3D::initCube(double size) {
+void RotatingObject::initCube(const double size) {
     m_vertices.clear();
     m_quads.clear();
 
@@ -59,15 +56,17 @@ void RotatingModel3D::initCube(double size) {
     // keep hysteresis state sized to face count
     m_faceFront.assign(m_quads.size(), 1);
 }
-void RotatingModel3D::initModels()
+
+void RotatingObject::initModels()
 {
     if(m_model=="cube") {initCube(model_size);}
+
     if(m_model=="sphere") {initSphere(20,40,model_size);}
+
     if(m_model=="pyramid") {initPyramid(model_size);}
 }
 
-
-void RotatingModel3D::initPyramid(double size) {
+void RotatingObject::initPyramid(const double size) {
     m_vertices.clear();
     m_quads.clear();
 
@@ -91,79 +90,80 @@ void RotatingModel3D::initPyramid(double size) {
     m_boundRadius = size * 1.8;
     m_faceFront.assign(m_quads.size(), 1);
 }
-void RotatingModel3D::initSphere(int rings, int segments, double radius)
+
+void RotatingObject::initSphere(int rings, int segments, const double radius)
 {
     // sanity
     if (rings < 2) rings = 2;
+
     if (segments < 3) segments = 3;
 
     m_vertices.clear();
     m_quads.clear();
 
-    const double PI = 3.14159265358979323846;
-
-    // Build interior rings (avoid exact poles: half-step in theta)
-    auto idx = [segments](int i, int j) {
-        return i * segments + (j % segments);
+    // build interior rings (avoid exact poles: half-step in theta)
+    auto idx = [segments](const int i, const int j) {
+        return i * segments + j % segments;
     };
 
     // interior latitude bands
     for (int i = 0; i <= rings; ++i) {
-        double theta = ((i + 0.5) / (rings + 1)) * PI;   // (0, PI)
-        double sinT  = std::sin(theta);
-        double cosT  = std::cos(theta);
+        constexpr double PI = 3.14159265358979323846;
+        const double theta = (i + 0.5) / (rings + 1) * PI;   // (0, PI)
+        const double sinT  = std::sin(theta);
+        const double cosT  = std::cos(theta);
 
         for (int j = 0; j < segments; ++j) {
-            double phi  = (double(j) / segments) * (2.0 * PI);
-            double sinP = std::sin(phi);
-            double cosP = std::cos(phi);
+            const double phi  = static_cast<double>(j) / segments * (2.0 * PI);
+            const double sinP = std::sin(phi);
+            const double cosP = std::cos(phi);
 
-            double x = radius * sinT * cosP;
-            double y = radius * cosT;
-            double z = radius * sinT * sinP;
+            const double x = radius * sinT * cosP;
+            const double y = radius * cosT;
+            const double z = radius * sinT * sinP;
             m_vertices.push_back(Point3D(x, y, z));
         }
     }
 
-    // Quads between interior rings
+    // quads between interior rings
     for (int i = 0; i < rings; ++i) {
         for (int j = 0; j < segments; ++j) {
-            int a = idx(i,     j);
-            int b = idx(i,     j + 1);
-            int c = idx(i + 1, j + 1);
-            int d = idx(i + 1, j);
+            const int a = idx(i,     j);
+            const int b = idx(i,     j + 1);
+            const int c = idx(i + 1, j + 1);
+            const int d = idx(i + 1, j);
             m_quads.push_back({ a, b, c, d });
         }
     }
 
-    // Add poles and cap with triangle fans
-    const int north = (int)m_vertices.size();
+    // add poles and cap with triangle fans
+    const int north = static_cast<int>(m_vertices.size());
     m_vertices.push_back(Point3D(0, +radius, 0));
-    const int south = (int)m_vertices.size();
+    const int south = static_cast<int>(m_vertices.size());
     m_vertices.push_back(Point3D(0, -radius, 0));
 
-    // Top cap (around ring 0)
+    // top cap (around ring 0)
     for (int j = 0; j < segments; ++j) {
-        int a = idx(0, j);
-        int b = idx(0, j + 1);
+        const int a = idx(0, j);
+        const int b = idx(0, j + 1);
         // padded triangle: (north, b, a)
         m_quads.push_back({ north, b, a, a });
     }
 
-    // Bottom cap (around ring 'rings').
+    // bottom cap (around ring 'rings').
     for (int j = 0; j < segments; ++j) {
-        int a = idx(rings, j);
-        int b = idx(rings, j + 1);
+        const int a = idx(rings, j);
+        const int b = idx(rings, j + 1);
         // padded triangle: (south, a, b)
         m_quads.push_back({ south, a, b, b });
     }
 
-    // Bounds & cull hysteresis slots
+    // bounds & cull hysteresis slots
     m_boundRadius = radius * 1.05;
     m_faceFront.assign(m_quads.size(), 1);
 }
 
-void RotatingModel3D::update(double ampScaledRotation) {
+void RotatingObject::update(const double ampScaledRotation) {
     if (!m_enabled) return;
 
     // scale rotation speed by amplitude (caller decides amp)
@@ -177,13 +177,13 @@ void RotatingModel3D::update(double ampScaledRotation) {
     }
 }
 
-void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
+void RotatingObject::paint(QPainter* p, int canvasW, int canvasH) const {
     if (!m_enabled || m_vertices.empty() || m_quads.empty()) return;
 
     const OrbitXform xf = computeTransform();
     if (!xf.visible) return;
 
-    // Project + also keep camera-space rotated verts
+    // project + also keep camera-space rotated verts
     std::vector<Point2D> screenPts;
     std::vector<Point3D> camPts;
     project(m_vertices, m_rotation, xf.tx, xf.ty, xf.tz, screenPts, camPts);
@@ -191,7 +191,7 @@ void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
     const int cx = canvasW  / 2;
     const int cy = canvasH / 2;
 
-    // Unified projector: use floating-point to avoid rounding mismatches
+    // unified projector: use floating-point to avoid rounding mismatches
     auto projF = [&](const Point3D& P) -> QPointF {
         const double s = m_focalLen / (m_focalLen + P.z);
         return QPointF(cx + P.x * s, cy + P.y * s);
@@ -203,11 +203,12 @@ void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
     items.reserve(m_quads.size());
 
 
-    for (int i = 0; i < (int)m_quads.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(m_quads.size()); ++i) {
         const auto& f = m_quads[i];
         double zAvg = (camPts[f[0]].z + camPts[f[1]].z + camPts[f[2]].z + camPts[f[3]].z) * 0.25;
         items.push_back({ i, zAvg });
     }
+
     std::sort(items.begin(), items.end(),
               [](const FaceItem& a, const FaceItem& b){ return a.depth > b.depth; });
 
@@ -220,13 +221,13 @@ void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
     for (const FaceItem& it : items) {
         const auto& f = m_quads[it.idx];
 
-        // Camera-space verts
+        // camera-space verts
         const Point3D& A = camPts[f[0]];
         const Point3D& B = camPts[f[1]];
         const Point3D& C = camPts[f[2]];
         const Point3D& D = camPts[f[3]];
 
-        //3D normal
+        // 3d normal
         Point3D u(B.x - A.x, B.y - A.y, B.z - A.z);
         Point3D v(C.x - A.x, C.y - A.y, C.z - A.z);
         Point3D n( u.y*v.z - u.z*v.y, u.z*v.x - u.x*v.z, u.x*v.y - u.y*v.x );
@@ -239,24 +240,25 @@ void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
         Point3D view(-cent.x, -cent.y, -cent.z);
         normalize(view);
 
-        // conservative 2D orientation (double precision), using unified projector
+        // conservative 2d orientation (double precision), using unified projector
         const QPointF q0 = projF(A);
         const QPointF q1 = projF(B);
         const QPointF q2 = projF(C);
         const double crossZ = (q1.x()-q0.x())*(q2.y()-q0.y()) - (q1.y()-q0.y())*(q2.x()-q0.x());
-        const bool back2D = (crossZ >= 0.0);
+        const bool back2D = crossZ >= 0.0;
 
-        // 3D facing (sign depends on winding
+        // 3d facing (sign depends on winding
         const double ndotv = -(n.x*view.x + n.y*view.y + n.z*view.z);
 
-        // Hysteresis band around 0 to avoid pops (tune 0.015–0.05)
+        // hysteresis band around 0 to avoid pops (tune 0.015–0.05)
         constexpr double HYST = 0.03;
         bool frontNow = m_faceFront[it.idx]; // previous state
+
         if (frontNow) {
-            // only flip to back if we're clearly back-facing AND 2D agrees
+            // only flip to back if we're clearly back-facing AND 2d agrees
             if (ndotv > +HYST && back2D) frontNow = false;
         } else {
-            // only flip to front if we're clearly front-facing OR 2D disagrees
+            // only flip to front if we're clearly front-facing OR 2d disagrees
             if (ndotv < -HYST || !back2D) frontNow = true;
         }
         m_faceFront[it.idx] = frontNow;
@@ -264,6 +266,7 @@ void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
         if (!frontNow) continue; // culled
 
         QColor face = m_fillColor;
+
         if (!(m_shade == ShadeMode::Flat || m_shade == ShadeMode::None)) {
 
             const Point3D& Ld = m_lightDir;
@@ -272,23 +275,24 @@ void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
             normalize(toLight);
 
             double ndotl_raw = n.x*toLight.x + n.y*toLight.y + n.z*toLight.z; // [-1..1]
-            // Half-Lambert in [0..1]
+            // half-lambert in [0..1]
             double diffuse = std::clamp(0.5*ndotl_raw + 0.5, 0.0, 1.0);
 
-            const double ambient = 0.20;                 // tweak to taste
+            constexpr double ambient = 0.20; // tweak to taste
             double intensity = ambient + (1.0 - ambient) * diffuse;
 
             double specAdd = 0.0;
+
             if (m_shade == ShadeMode::LambertSpecular && m_specularStrength > 0.0) {
 
-                // View vector from centroid to camera (camera at origin)
+                // view vector from centroid to camera (camera at origin)
                 Point3D cent( (A.x + B.x + C.x + D.x) * 0.25,
                               (A.y + B.y + C.y + D.y) * 0.25,
                               (A.z + B.z + C.z + D.z) * 0.25 );
                 Point3D V(-cent.x, -cent.y, -cent.z);
                 normalize(V);
 
-                // Phong reflection: R = reflect(-toLight, n) = 2(n·toLight)n - toLight
+                // phong reflection: R = reflect(-toLight, n) = 2(n·toLight)n - toLight
                 double ndotl = std::max(0.0, n.x*toLight.x + n.y*toLight.y + n.z*toLight.z);
                 Point3D R( 2.0*ndotl*n.x - toLight.x,
                            2.0*ndotl*n.y - toLight.y,
@@ -299,10 +303,10 @@ void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
                 specAdd = std::pow(rdotov, m_specularPower) * m_specularStrength;
             }
 
-            auto clamp255 = [](int v){ return std::min(255, std::max(0, v)); };
-            int r = clamp255(int(face.red()   * intensity + 255.0 * specAdd));
-            int g = clamp255(int(face.green() * intensity + 255.0 * specAdd));
-            int b = clamp255(int(face.blue()  * intensity + 255.0 * specAdd));
+            auto clamp255 = [](const int v){ return std::min(255, std::max(0, v)); };
+            int r = clamp255(static_cast<int>(face.red() * intensity + 255.0 * specAdd));
+            int g = clamp255(static_cast<int>(face.green() * intensity + 255.0 * specAdd));
+            int b = clamp255(static_cast<int>(face.blue() * intensity + 255.0 * specAdd));
             face.setRgb(r,g,b);
         }
 
@@ -318,7 +322,7 @@ void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
 
     if (m_wireframeEnabled) {
         QPen pen(m_wireColor);
-        pen.setWidthF(double(m_wireWidth));      // fractional width avoids gaps
+        pen.setWidthF(m_wireWidth); // fractional width avoids gaps
         pen.setCosmetic(true);
         pen.setJoinStyle(Qt::MiterJoin);
         pen.setCapStyle(Qt::SquareCap);
@@ -339,19 +343,18 @@ void RotatingModel3D::paint(QPainter* p, int canvasW, int canvasH) {
         p->setRenderHint(QPainter::Antialiasing, false);
     }
 
-
     p->restore();
 }
 
-inline void RotatingModel3D::normalize(Point3D& v) {
-    double len2 = v.x*v.x + v.y*v.y + v.z*v.z;
-    if (len2 > 0.0) {
-        double inv = invSqrt(len2);
+inline void RotatingObject::normalize(Point3D& v) {
+    if (const double len2 = v.x*v.x + v.y*v.y + v.z*v.z;
+        len2 > 0.0) {
+        const double inv = invSqrt(len2);
         v.x *= inv; v.y *= inv; v.z *= inv;
     }
 }
 
-RotatingModel3D::OrbitXform RotatingModel3D::computeTransform() const {
+RotatingObject::OrbitXform RotatingObject::computeTransform() const {
     OrbitXform xf{0,0,0,true};
 
     double tz, ty, tx;
@@ -368,13 +371,13 @@ RotatingModel3D::OrbitXform RotatingModel3D::computeTransform() const {
 
     // near-plane safety using worst-case vertex tz - bound
     const double minZ = tz - m_boundRadius;
-    const double denomMin = m_focalLen + minZ;
 
-    if (denomMin < m_nearMargin) {
+    if (const double denomMin = m_focalLen + minZ;
+        denomMin < m_nearMargin) {
         if (m_nearPolicy == NearPolicy::HideWhenTooClose) {
             xf.visible = false;
         } else {
-            tz = (m_nearMargin - m_focalLen) + m_boundRadius;
+            tz = m_nearMargin - m_focalLen + m_boundRadius;
         }
     }
 
@@ -382,29 +385,29 @@ RotatingModel3D::OrbitXform RotatingModel3D::computeTransform() const {
     return xf;
 }
 
-void RotatingModel3D::project(const std::vector<Point3D>& verts,
-                              const Point3D& rot, double tx, double ty, double tz,
+void RotatingObject::project(const std::vector<Point3D>& verts,
+                              const Point3D& rot, const double tx, const double ty, const double tz,
                               std::vector<Point2D>& out2D, std::vector<Point3D>& outCam) const
 {
     out2D.clear(); outCam.clear();
     out2D.reserve(verts.size());
     outCam.reserve(verts.size());
 
-    // Precompute sines/cosines once
+    // precompute sines/cosines once
     const double sx = std::sin(rot.x), cx = std::cos(rot.x);
     const double sy = std::sin(rot.y), cy = std::cos(rot.y);
     const double sz = std::sin(rot.z), cz = std::cos(rot.z);
 
     for (size_t i = 0; i < verts.size(); ++i) {
-        double x = verts[i].x;
-        double y = verts[i].y;
-        double z = verts[i].z;
+        const double x = verts[i].x;
+        const double y = verts[i].y;
+        const double z = verts[i].z;
 
         // rotate (same pipeline you used)
-        double xy = cx * y - sx * z;
-        double xz = sx * y + cx * z;
+        const double xy = cx * y - sx * z;
+        const double xz = sx * y + cx * z;
         double yz = cy * xz - sy * x;
-        double yx = sy * xz + cy * x;
+        const double yx = sy * xz + cy * x;
         double zx = cz * yx - sz * xy;
         double zy = sz * yx + cz * xy;
 
@@ -417,11 +420,11 @@ void RotatingModel3D::project(const std::vector<Point3D>& verts,
         outCam.push_back(Point3D(zx, zy, yz));
 
         // perspective
-        double scale = m_focalLen / (m_focalLen + yz);
+        const double scale = m_focalLen / (m_focalLen + yz);
         out2D.push_back(Point2D(
-                (int)(zx * scale),
-                (int)(zy * scale),
-                (int)-yz,
+                static_cast<int>(zx * scale),
+                static_cast<int>(zy * scale),
+                static_cast<int>(-yz),
                 scale
         ));
     }

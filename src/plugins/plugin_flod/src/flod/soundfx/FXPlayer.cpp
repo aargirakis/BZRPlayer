@@ -95,12 +95,12 @@ int FXPlayer::load(void *data, unsigned long int length) {
         if (length < 2350) return -1;
         base = 544;
         len = 32;
-        m_version = SOUNDFX_20;
+        version = SOUNDFX_20;
         format = "SoundFX 2.0";
     } else {
         base = 0;
         len = 16;
-        m_version = SOUNDFX_10;
+        version = SOUNDFX_10;
         format = "SoundFX 1.0";
     }
     samples = vector<BaseSample *>(len);
@@ -177,19 +177,19 @@ int FXPlayer::load(void *data, unsigned long int length) {
         row->effect = value & 0x0f;
         row->sample = value >> 4;
         patterns[i] = row;
-        if (m_version == SOUNDFX_20) {
+        if (version == SOUNDFX_20) {
             if (row->note & 0x1000) {
                 row->sample += 16;
                 if (row->note > 0) row->note &= 0xefff;
             }
         } else {
             if (row->effect == 9 || row->note > 856) {
-                m_version = SOUNDFX_18;
+                version = SOUNDFX_18;
                 format = "SoundFX 1.8";
             }
 
             if (row->note < -3) {
-                m_version = SOUNDFX_19;
+                version = SOUNDFX_19;
                 format = "SoundFX 1.9";
             }
         }
@@ -255,7 +255,7 @@ void FXPlayer::setVersion(int value) {
     if (value < SOUNDFX_10) value = SOUNDFX_10;
     else if (value > SOUNDFX_20) value = SOUNDFX_20;
 
-    m_version = value;
+    version = value;
 }
 
 void FXPlayer::process() {
@@ -341,7 +341,7 @@ void FXPlayer::process() {
         do {
             chan = voice->channel;
 
-            if (m_version == SOUNDFX_18 && voice->period == -3) continue;
+            if (version == SOUNDFX_18 && voice->period == -3) continue;
 
 
             if (voice->stepSpeed) {
@@ -350,16 +350,16 @@ void FXPlayer::process() {
                 if (voice->stepSpeed < 0) {
                     if (voice->stepPeriod < voice->stepWanted) {
                         voice->stepPeriod = voice->stepWanted;
-                        if (m_version > SOUNDFX_18) voice->stepSpeed = 0;
+                        if (version > SOUNDFX_18) voice->stepSpeed = 0;
                     }
                 } else {
                     if (voice->stepPeriod > voice->stepWanted) {
                         voice->stepPeriod = voice->stepWanted;
-                        if (m_version > SOUNDFX_18) voice->stepSpeed = 0;
+                        if (version > SOUNDFX_18) voice->stepSpeed = 0;
                     }
                 }
 
-                if (m_version > SOUNDFX_18) voice->last = voice->stepPeriod;
+                if (version > SOUNDFX_18) voice->last = voice->stepPeriod;
                 chan->setPeriod(voice->stepPeriod);
             } else {
                 if (voice->slideSpeed) {
@@ -422,7 +422,7 @@ void FXPlayer::process() {
                         value = -1;
                     case 7: //step up
                         voice->stepSpeed = voice->param & 0x0f;
-                        voice->stepPeriod = (m_version > SOUNDFX_18) ? voice->last : voice->period;
+                        voice->stepPeriod = (version > SOUNDFX_18) ? voice->last : voice->period;
                         if (value < 0) voice->stepSpeed = -voice->stepSpeed;
                         index = 0;
 

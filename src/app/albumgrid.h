@@ -1,5 +1,6 @@
 #ifndef ALBUMGRID_H
 #define ALBUMGRID_H
+
 #include <QListWidget>
 
 class Album;
@@ -11,7 +12,7 @@ class AlbumGrid : public QListWidget
 public:
     AlbumGrid(QWidget* parent = nullptr);
     void AddAlbum(Album*);
-    void Filter(QString);
+    void Filter(const QString &);
 
 private:
     QHash<QString, Album*> albumsMap;

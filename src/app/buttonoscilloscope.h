@@ -2,7 +2,6 @@
 #define BUTTONOSCILLOSCOPE_H
 
 #include <QOpenGLWidget>
-#include <QWidget>
 
 class Channels;
 
@@ -12,10 +11,10 @@ class ButtonOscilloscope : public QOpenGLWidget
 
 public:
     ButtonOscilloscope(Channels*, int);
-    bool isChecked();
+    bool isChecked() const;
     void setChecked(bool);
-    void drawOscilloVoice(const uint32_t* audio, int count, int indexQ);
-    void drawChannelNumber(QString text);
+    void drawOscilloVoice(const uint32_t* audio, int count, int index);
+    void drawChannelNumber(const QString &text);
     void setEnabledColor(QColor);
     void setDisabledColor(QColor);
     void setTextColor(QColor);
@@ -33,7 +32,7 @@ private:
 
 protected:
     void paintEvent(QPaintEvent* event) override;
-    void mouseReleaseEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* event);
 };
 
 #endif // BUTTONOSCILLOSCOPE_H

@@ -1,21 +1,20 @@
 #ifndef VISUALIZER_H
 #define VISUALIZER_H
 
-#include "mainwindow.h"
 #include <QOpenGLWidget>
-#include <QWidget>
+#include "visualizers/effect.h"
 
 class Visualizer : public QOpenGLWidget
 {
     Q_OBJECT
 
 public:
-    explicit Visualizer(QWidget* parent = 0);
-    Effect* getEffect();
+    explicit Visualizer(QWidget* parent = nullptr);
+    Effect* getEffect() const;
 
     void setBackgroundColor(QColor newColor);
     void init();
-    void stop();
+    static void stop();
 
 protected:
     void paintEvent(QPaintEvent* event) override;

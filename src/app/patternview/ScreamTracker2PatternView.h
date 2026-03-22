@@ -1,5 +1,6 @@
 #ifndef SCREAMTRACKER2PATTERNVIEW_H
 #define SCREAMTRACKER2PATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class ScreamTracker2PatternView : public AbstractPatternView
@@ -12,11 +13,6 @@ public:
     QString effect(BaseRow* row);
     QString note(BaseRow* row);
     QString parameter(BaseRow* row);
-
-private:
-
-
-private slots:
 };
 
 #endif // SCREAMTRACKER2PATTERNVIEW_H

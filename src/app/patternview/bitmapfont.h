@@ -1,14 +1,13 @@
 #ifndef BITMAPFONT_H
 #define BITMAPFONT_H
+
 #include <QBitmap>
-#include <QMap>
-#include <QPoint>
 
 class BitmapFont
 {
 public:
     BitmapFont();
-    BitmapFont(QString);
+    BitmapFont(const QString &);
     void buildCharacterLookup();
 
     int m_fontWidth;
@@ -18,9 +17,6 @@ public:
     QBitmap m_characterMap;
     QMap<QChar, QPoint> m_characterPositions;
     QMap<QChar, int> m_characterWidths;
-
-private:
 };
-
 
 #endif // BITMAPFONT_H

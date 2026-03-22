@@ -1,6 +1,7 @@
 #include <cstring>
 #include <format>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <sstream>
 #include "uade/eagleplayer.h"
@@ -31,19 +32,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_uade_NAME, // Name.
-    0x00012300, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_uade_NAME, // name.
+    0x00012300, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginUade {
@@ -56,7 +56,7 @@ public:
     }
 
     ~pluginUade() {
-        //delete some stuff
+        // delete some stuff
         uade_cleanup_state(uadeState);
     }
 
@@ -89,7 +89,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    if (filesize == 4294967295) //stream
+    if (filesize == 4294967295) // stream
     {
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -116,11 +116,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     bool useDefaults = false;
 
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         useDefaults = true;
     }
 
-    //defaults
+    // defaults
     string frequency = "48000";
     string resampler = "sinc";
     int filter_emu = 1;
@@ -197,8 +197,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     if (plugin->uade_songlengthspath.empty() || plugin->uade_songlengthspath == "/uade.md5") {
         plugin->uade_songlengthspath = plugin->info->dataPath + UADE_DATA_DIR + "/uade.md5";
@@ -290,11 +290,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     if (plugin->uadeSongInfo->formatname[0]) {
         string str(plugin->uadeSongInfo->formatname);
-        plugin->info->fileformat = str.starts_with(TYPE_PREFIX)
+        plugin->info->fileFormat = str.starts_with(TYPE_PREFIX)
                                        ? str.substr(TYPE_PREFIX.length())
                                        : plugin->uadeSongInfo->formatname;
     } else {
-        plugin->info->fileformat = plugin->uadeSongInfo->detectioninfo.ep->playername;
+        plugin->info->fileFormat = plugin->uadeSongInfo->detectioninfo.ep->playername;
     }
 
     if (plugin->uadeSongInfo->modulename[0]) {
@@ -306,19 +306,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->plugin = PLUGIN_uade;
     plugin->info->pluginName = PLUGIN_uade_NAME;
 
-    if (plugin->info->fileformat == "BenDaglish" || plugin->info->fileformat == "DeltaMusic1.3" || plugin->info->
-        fileformat ==
-        "DeltaMusic2.0" || plugin->info->fileformat == "DavidWhittaker"
-        || plugin->info->fileformat == "Fred" || plugin->info->fileformat == "Infogrames" || plugin->info->fileformat ==
-        "JasonBrooke" || plugin->info->fileformat == "JochenHippel"
-        || plugin->info->fileformat == "JochenHippel-CoSo" || plugin->info->fileformat == "Mugician" || plugin->info->
-        fileformat ==
-        "MugicianII"
-        || plugin->info->fileformat == "RobHubbard" || plugin->info->fileformat == "RichardJoseph" || plugin->info->
-        fileformat ==
-        "SIDMon1.0" || plugin->info->fileformat == "SIDMon2.0"
-        || plugin->info->fileformat == "PaulShields") {
-        //read samples
+    if (plugin->info->fileFormat == "BenDaglish" || plugin->info->fileFormat == "DeltaMusic1.3" ||
+        plugin->info->fileFormat == "DeltaMusic2.0" || plugin->info->fileFormat == "DavidWhittaker" ||
+        plugin->info->fileFormat == "Fred" || plugin->info->fileFormat == "Infogrames" ||
+        plugin->info->fileFormat == "JasonBrooke" || plugin->info->fileFormat == "JochenHippel" ||
+        plugin->info->fileFormat == "JochenHippel-CoSo" || plugin->info->fileFormat == "Mugician" ||
+        plugin->info->fileFormat == "MugicianII" || plugin->info->fileFormat == "RobHubbard" ||
+        plugin->info->fileFormat == "RichardJoseph" || plugin->info->fileFormat == "SIDMon1.0" ||
+        plugin->info->fileFormat == "SIDMon2.0" || plugin->info->fileFormat == "PaulShields") {
+        // read samples
         auto d = new uint8_t[filesize];
         FMOD_CODEC_FILE_SEEK(codec, 0, 0);
         FMOD_CODEC_FILE_READ(codec, d, filesize, nullptr);
@@ -366,7 +362,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
-    auto *plugin = static_cast<pluginUade *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginUade *>(codec->plugindata);
 
     const ssize_t renderedBytes = uade_read(
         buffer, plugin->waveformat.pcmblocksize * UADE_BYTES_PER_FRAME, plugin->uadeState);
@@ -390,7 +386,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
             case UADE_NOTIFICATION_SONG_END:
                 cout << (un.song_end.happy ? "" : "bad ") << "song end" << ": " << un.song_end.reason << endl;
 
-                //FMOD_ERR_FILE_EOF is used here in order to let fmod playing the remaining audio bytes
+                // FMOD_ERR_FILE_EOF is used here in order to let fmod playing the remaining audio bytes
                 return FMOD_ERR_FILE_EOF;
 
             default:
@@ -464,7 +460,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
     ifstream ifs(filenameFromDb);
 
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         cout << "Couldn't open UADE songlengths file: " << filenameFromDb << endl;
         return 0;
     }
@@ -472,7 +468,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
     string line;
     while (getline(ifs, line)) {
         if (line.substr(0, 32) == md5) {
-            //we found it
+            // we found it
             int j = line.find_first_of("=");
             if (j == -1) {
                 cout << "Formatting error in uade songlengths file: " << filenameFromDb << endl;
@@ -501,7 +497,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
             int msk = line.find_first_of(".");
 
             int ms = 0;
-            if (msk != -1) //There are milliseconds
+            if (msk != -1) // there are milliseconds
             {
                 ms = atoi(line.substr(msk + 1).c_str());
                 if (string str_ms = line.substr(msk + 1); str_ms.size() == 2) {

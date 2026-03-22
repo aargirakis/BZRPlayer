@@ -1,9 +1,8 @@
 #ifndef MYMODEL_H
 #define MYMODEL_H
 
-#include "mainwindow.h"
-#include <QMimeData>
 #include <QUuid>
+#include "mainwindow.h"
 
 struct Item
 {

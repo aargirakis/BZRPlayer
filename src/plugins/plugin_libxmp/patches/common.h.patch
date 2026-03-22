@@ -15,7 +15,7 @@
 +	Queue patternPosBuffer;
 +	Queue trackPosBuffer;
 +	Queue posBuffer;
-+	Queue vumeterBuffer;
++	Queue vuMeterBuffer;
 +	Queue speedBuffer;
 +	Queue bpmBuffer;
 +

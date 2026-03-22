@@ -1,6 +1,6 @@
 #include "ScreamTracker2PatternView.h"
 
-ScreamTracker2PatternView::ScreamTracker2PatternView(Tracker* parent, unsigned int channels)
+ScreamTracker2PatternView::ScreamTracker2PatternView(Tracker* parent, const unsigned int channels)
     : AbstractPatternView(parent, channels)
 {
     octaveOffset = 48;
@@ -52,29 +52,31 @@ ScreamTracker2PatternView::ScreamTracker2PatternView(Tracker* parent, unsigned i
     m_topHeight = 16;
 }
 
-void ScreamTracker2PatternView::paintAbove(QPainter* painter, int height, int currentRow)
+void ScreamTracker2PatternView::paintAbove(QPainter* painter, const int height, int currentRow)
 {
-    QColor colorBrown(168, 84, 0);
-    QColor colorBlue(0, 0, 168);
+    constexpr QColor colorBrown(168, 84, 0);
+    constexpr QColor colorBlue(0, 0, 168);
 
-    //left
+    // left
     painter->fillRect(0, 0, 8, height, colorBrown);
+
     for (int chan = 0; chan < m_channels; chan++)
     {
-        painter->fillRect((24 + chan * 112), 0, 8, height, colorBrown);
+        painter->fillRect(24 + chan * 112, 0, 8, height, colorBrown);
     }
-    //right
+
+    // right
     painter->fillRect(472, 0, 16, height, colorBrown);
-    //bottom
+    // bottom
     painter->fillRect(0, height - 16, 488, 16, colorBrown);
-    //top
+    // top
     painter->fillRect(0, 0, 488, 16, colorBlue);
 }
 
-void ScreamTracker2PatternView::paintBelow(QPainter* painter, int height, int currentRow)
+void ScreamTracker2PatternView::paintBelow(QPainter* painter, const int height, int currentRow)
 {
-    //main
-    painter->fillRect(30, (height / 2) - 15, 442, 16, m_colorCurrentRowBackground);
+    // main
+    painter->fillRect(30, height / 2 - 15, 442, 16, m_colorCurrentRowBackground);
 }
 
 ScreamTracker2PatternView::~ScreamTracker2PatternView()
@@ -85,71 +87,75 @@ QString ScreamTracker2PatternView::note(BaseRow* row)
 {
     int note = row->note;
     note -= octaveOffset;
+
     if (note >= 109 || note < 0)
     {
         note = 0;
     }
+
     if (note == 0)
     {
         if (row->sample > 0)
         {
             return "C-0";
         }
-        else
-        {
-            return m_emptyNote;
-        }
+
+        return m_emptyNote;
     }
-    else
-    {
-        return NOTES[note];
-    }
+
+    return NOTES[note];
 }
 
 QString ScreamTracker2PatternView::parameter(BaseRow* row)
 {
-    int parameter = row->param;
+    const int parameter = row->param;
+
     if (parameter == 0) return m_emptyParameter;
-    int base = parameterHex ? 16 : 10;
+
+    const int base = parameterHex ? 16 : 10;
 
     QString parameterStr = QString::number(parameter, base).toUpper();
     parameterStr = parameterPad && parameterStr.length() == 1 ? "0" + parameterStr : parameterStr;
-    if (row->effect == 15) //parameter for A-effect is shown as X0 instead of 0X?
+
+    if (row->effect == 15) // parameter for A-effect is shown as X0 instead of 0X?
     {
-        QString first = parameterStr.at(0);
+        const QString first = parameterStr.at(0);
         parameterStr[0] = parameterStr.at(1);
         parameterStr[1] = first.at(0);
     }
+
     return parameterStr;
 }
 
 QString ScreamTracker2PatternView::effect(BaseRow* row)
 {
     QString effectStr;
+
     if (row->effect < 0) return "ERROR";
-    switch (row->effect)
-    {
-    case 15: effectStr = "A";
-        break;
-    case 11: effectStr = "B";
-        break;
-    case 13: effectStr = "C";
-        break;
-    case 10: effectStr = "D";
-        break;
-    case 2: effectStr = "E";
-        break;
-    case 1: effectStr = "F";
-        break;
-    case 3: effectStr = "G";
-        break;
-    case 4: effectStr = "H";
-        break;
-    case 0: if (row->param > 0) { effectStr = "J"; }
-        else { effectStr = m_emptyEffect; };
-        break;
-    default: effectStr = "I";
-        break; //The only missing official effect is I, I don't know the number for it though
+
+    switch (row->effect) {
+        case 15: effectStr = "A";
+            break;
+        case 11: effectStr = "B";
+            break;
+        case 13: effectStr = "C";
+            break;
+        case 10: effectStr = "D";
+            break;
+        case 2: effectStr = "E";
+            break;
+        case 1: effectStr = "F";
+            break;
+        case 3: effectStr = "G";
+            break;
+        case 4: effectStr = "H";
+            break;
+        case 0:
+            if (row->param > 0) { effectStr = "J"; } else { effectStr = m_emptyEffect; }
+            break;
+        default: effectStr = "I";
+            break; // the only missing official effect is I, I don't know the number for it though
     }
+
     return effectStr;
 }

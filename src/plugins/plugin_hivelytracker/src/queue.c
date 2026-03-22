@@ -34,7 +34,7 @@ Queue CreateQueue(int MaxElements) {
         Error("CreateQueue Error: Queue size is too small.");
     }
 
-    Queue Q = malloc(sizeof(struct QueueRecord));
+    const Queue Q = malloc(sizeof(struct QueueRecord));
     if (Q == NULL) {
         FatalError("CreateQueue Error: Unable to allocate more memory.");
     }
@@ -85,9 +85,6 @@ ElementType Front(Queue Q) {
         return Q->Array[Q->Front];
     }
     Error("Front Error: The queue is empty.");
-
-    /* Return value to avoid warnings from the compiler */
-    return 0;
 }
 
 void Dequeue(Queue Q) {

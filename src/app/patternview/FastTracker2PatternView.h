@@ -1,5 +1,6 @@
 #ifndef FASTTRACKER2PATTERNVIEW_H
 #define FASTTRACKER2PATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class FastTracker2PatternView : public AbstractPatternView
@@ -26,12 +27,8 @@ public:
     void paintBelow(QPainter* painter, int height, int currentRow);
     void paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow);
 
-private:
-
 protected:
     static const char* NOTES[121];
-
-private slots:
 };
 
 #endif // FASTTRACKER2PATTERNVIEW_H

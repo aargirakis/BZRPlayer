@@ -21,19 +21,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_sndh_player_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_sndh_player_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginSndhPlayer {
@@ -47,7 +46,7 @@ public:
 
     ~pluginSndhPlayer() {
         delete sndh;
-        //delete some stuff
+        // delete some stuff
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -55,11 +54,11 @@ public:
     SndhFile *sndh;
     queue<uint32_t *> oscBuffer;
     int songLength;
-    uint32_t m_hash = 0;
+    uint32_t hash = 0;
 
     int32_t GetTickCountFromSc68() const {
         dbentry_t e;
-        e.hash = m_hash >> HFIX;
+        e.hash = hash >> HFIX;
         e.track = info->currentSubsong;
         if (auto const *s = static_cast<dbentry_t *>(bsearch(&e, s_db.data(), s_db.size(),
                                                              sizeof(dbentry_t), [](const void *ea, const void *eb) {
@@ -76,7 +75,7 @@ public:
     }
 
     void BuildHash(SndhFile const *_sndh) {
-        // Hash taken from sc68
+        // hash taken from sc68
         uint32_t h = 0;
         int n = 32;
         const auto *k = static_cast<const uint8_t *>(_sndh->GetRawData());
@@ -93,14 +92,14 @@ public:
             h += h << 10;
             h ^= h >> 6;
         } while (--n);
-        m_hash = h;
+        hash = h;
     }
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -118,7 +117,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    if (filesize < 8 || filesize > 1024 * 2048) //(2 mb)biggest sndh on modland is 1150960 bytes, don't know real max
+    if (filesize < 8 || filesize > 1024 * 2048) // 2 mb (biggest sndh on modland is 1150960 bytes, dunno real max)
     {
         return FMOD_ERR_FORMAT;
     }
@@ -151,18 +150,18 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!plugin->sndh->InitSubSong(plugin->info->currentSubsong + 1)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
-    };
+    }
 
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/sndh-player.cfg";
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         useDefaults = true;
     }
 
-    //defaults
+    // defaults
     plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -188,8 +187,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     SndhFile::SubSongInfo subsongInfo{};
 
@@ -225,7 +224,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->numChannels = 4;
     plugin->info->plugin = PLUGIN_sndh_player;
     plugin->info->pluginName = PLUGIN_sndh_player_NAME;
-    plugin->info->fileformat = "SNDH";
+    plugin->info->fileFormat = "SNDH";
     //plugin->info->waveformDisplay = new uint32_t[25600];
     //memset(plugin->info->waveformDisplay, 0, 25600 * sizeof(plugin->info->waveformDisplay));
     return FMOD_OK;
@@ -269,7 +268,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginSndhPlayer *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        *length = plugin->songLength; //TODO use lengthpcm?
+        *length = plugin->songLength; // TODO use lengthpcm?
         return FMOD_OK;
     }
 

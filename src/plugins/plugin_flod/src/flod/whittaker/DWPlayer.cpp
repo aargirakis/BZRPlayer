@@ -255,7 +255,7 @@ void DWPlayer::process() {
                                 }
                                 break;
                             case -127:
-                                if (m_variant > 0) voice->portaDelta = 0;
+                                if (variant > 0) voice->portaDelta = 0;
                                 voice->portaSpeed = (signed char) stream[position];
                                 position++;
                                 voice->portaDelay = stream[position];
@@ -266,7 +266,7 @@ void DWPlayer::process() {
                                 voice->tick = voice->speed;
                                 voice->patternPos = position;
 
-                                if (m_variant == 41) {
+                                if (variant == 41) {
                                     voice->busy = 1;
                                     chan->setEnabled(0);
                                 } else {
@@ -277,7 +277,7 @@ void DWPlayer::process() {
                                 loop = 0;
                                 break;
                             case -125:
-                                if (!m_variant) break;
+                                if (!variant) break;
                                 voice->tick = voice->speed;
                                 voice->patternPos = position;
                                 chan->setEnabled(1);
@@ -287,7 +287,7 @@ void DWPlayer::process() {
                                 amiga->setComplete(1);
                                 break;
                             case -123:
-                                if (m_variant) transpose = (signed char) stream[position];
+                                if (variant) transpose = (signed char) stream[position];
                                 position++;
                                 break;
                             case -122:
@@ -302,9 +302,9 @@ void DWPlayer::process() {
                                 voice->vibrato = 0;
                                 break;
                             case -120:
-                                if (m_variant == 21) {
+                                if (variant == 21) {
                                     voice->halve = 1;
-                                } else if (m_variant == 11) {
+                                } else if (variant == 11) {
                                     fadeSpeed = stream[position];
                                     position++;
                                 } else {
@@ -313,7 +313,7 @@ void DWPlayer::process() {
                                 }
                                 break;
                             case -119:
-                                if (m_variant == 21) {
+                                if (variant == 21) {
                                     voice->halve = 0;
                                 } else {
                                     voice->trackPtr = base + readEndian(stream[position], stream[position + 1]);
@@ -324,7 +324,7 @@ void DWPlayer::process() {
                             case -118:
                                 value = stream[position];
                                 position++;
-                                if (m_variant == 31) {
+                                if (variant == 31) {
                                     delaySpeed = value;
                                 } else {
                                     speed = value;
@@ -338,7 +338,7 @@ void DWPlayer::process() {
                             case -116:
                                 value = stream[position];
                                 position++;
-                                if (m_variant != 32) songVol = value;
+                                if (variant != 32) songVol = value;
                                 break;
                         }
                     }
@@ -348,7 +348,7 @@ void DWPlayer::process() {
                     voice->tick = voice->speed;
                     voice->busy = 0;
 
-                    if (m_variant >= 20) {
+                    if (variant >= 20) {
                         value = (value + transpose + voice->transpose) & 0xff;
                         position = voice->volsPtr;
                         vol = stream[position];
@@ -372,7 +372,7 @@ void DWPlayer::process() {
 
                     value = (readEndian(stream[position], stream[position + 1]) * sample->relative) >> 10;
                     position += 2;
-                    if (m_variant < 10) voice->portaDelta = value;
+                    if (variant < 10) voice->portaDelta = value;
 
                     chan->setPeriod(value);
                     chan->setEnabled(1);
@@ -380,19 +380,19 @@ void DWPlayer::process() {
                 }
             } while (loop);
         } else if (voice->tick == 1) {
-            if (m_variant < 30) {
+            if (variant < 30) {
                 chan->setEnabled(0);
             } else {
                 value = stream[position];
                 position++;
 
                 if (value != 131) {
-                    if (m_variant < 40 || value < 224 || (stream[position++] != 131)) {
+                    if (variant < 40 || value < 224 || (stream[position++] != 131)) {
                         chan->setEnabled(0);
                     }
                 }
             }
-        } else if (m_variant == 0) {
+        } else if (variant == 0) {
             if (voice->flags & 2) {
                 if (voice->portaDelay) {
                     voice->portaDelay--;
@@ -447,7 +447,7 @@ void DWPlayer::process() {
 
             chan->setPeriod(value);
 
-            if (m_variant >= 20) {
+            if (variant >= 20) {
                 if (--voice->volCtr < 0) {
                     position = voice->volsPos;
                     vol = (signed char) stream[position];
@@ -466,7 +466,7 @@ void DWPlayer::process() {
 }
 
 int DWPlayer::load(void *_data, unsigned long int _length) {
-    m_version = 0;
+    version = 0;
     int value = 0;
     int info = 0;
     int size = 10;
@@ -496,7 +496,7 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
 
         position += readEndian(stream[position], stream[position + 1]);
         position += 2;
-        m_variant = 30;
+        variant = 30;
     } else {
         position = 0;
     }
@@ -528,7 +528,7 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
                     readMix = UINT;
                     readLen = 4;
                 } else {
-                    m_variant = 10;
+                    variant = 10;
                 }
 
                 val = readEndian(stream[position], stream[position + 1]);
@@ -614,7 +614,7 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
 
     if (songs.empty()) return 0;
 
-    m_totalSongs = songs.size();
+    totalSongs = songs.size();
 
     position = info;
 
@@ -677,7 +677,7 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
                     position += 4;
                 }
 
-                if (size == 12 && m_variant < 30) m_variant = 20;
+                if (size == 12 && variant < 30) variant = 20;
 
                 pos = position;
                 samples = vector<BaseSample *>(++total);
@@ -699,11 +699,11 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
                                                               stream[position + 3]);
                     position += 4;
 
-                    if (!m_variant) {
+                    if (!variant) {
                         position += 6;
                         sample->volume = readEndian(stream[position], stream[position + 1]);
                         position += 2;
-                    } else if (m_variant == 10) {
+                    } else if (variant == 10) {
                         position += 4;
                         sample->volume = readEndian(stream[position], stream[position + 1]);
                         position += 2;
@@ -852,7 +852,7 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
                 position += 22;
                 val = readEndian(stream[position], stream[position + 1]);
                 position += 2;
-                if (val == 0x0c11) m_variant = 40;
+                if (val == 0x0c11) variant = 40;
                 break;
             case 0x322d: //move.w x(a5),d1
                 pos = position;
@@ -892,7 +892,7 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
                         //lea x,a2
                         vols = position + readEndian(stream[position], stream[position + 1]);
                         position += 2;
-                        if (m_variant < 40) m_variant = 30;
+                        if (variant < 40) variant = 30;
                     }
                 } else if (value == com4) {
                     position += 2;
@@ -916,7 +916,7 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
                 position = base + readEndian(stream[position], stream[position + 1]) + 10;
                 val = readEndian(stream[position], stream[position + 1]);
                 position += 2;
-                if (val == 0x4a14) m_variant = 41; //tst.b (a4)
+                if (val == 0x4a14) variant = 41; //tst.b (a4)
 
                 position = pos + 16; //effect -120
                 value = base + readEndian(stream[position], stream[position + 1]);
@@ -928,10 +928,10 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
 
                     if (value == 0x50e8) {
                         //st x(a0)
-                        m_variant = 21;
+                        variant = 21;
                     } else if (value == 0x1759) {
                         //move.b (a1)+,x(a3)
-                        m_variant = 11;
+                        variant = 11;
                     }
                 }
 
@@ -943,13 +943,13 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
                     position = value + 2;
                     val = readEndian(stream[position], stream[position + 1]);
                     position += 2;
-                    if (val != 0x4880) m_variant = 31; //ext.w d0
+                    if (val != 0x4880) variant = 31; //ext.w d0
                 }
                 position = pos + 26; //effect -115
 
                 value = readEndian(stream[position], stream[position + 1]);
                 position += 2;
-                if (value > lower && value < pos) m_variant = 32;
+                if (value > lower && value < pos) variant = 32;
 
                 if (freqs) position = _length;
                 break;
@@ -961,7 +961,7 @@ int DWPlayer::load(void *_data, unsigned long int _length) {
     com3 -= 256;
     com4 -= 256;
 
-    m_version = 1;
+    version = 1;
     format = "David Whittaker";
 
     return 1;

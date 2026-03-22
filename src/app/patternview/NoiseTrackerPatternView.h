@@ -1,5 +1,6 @@
 #ifndef NOISETRACKERPATTERNVIEW_H
 #define NOISETRACKERPATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class NoiseTrackerPatternView : public AbstractPatternView
@@ -11,10 +12,6 @@ public:
     BitmapFont currentRowBitmapFont();
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);
-
-private:
-
-private slots:
 };
 
 #endif // NOISETRACKERPATTERNVIEW_H

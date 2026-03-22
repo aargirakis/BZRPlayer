@@ -1,23 +1,19 @@
+#include <QDir>
+#include "mainwindow.h"
+#include "plugins.h"
 #include "soundmanager.h"
 
-#include <mainwindow.h>
-
-#include "qdatetime.h"
-#include "qdir.h"
-#include <QFile>
-#include <QDebug>
-#include "plugins.h"
-
-void SoundManager::Init(int device, QString outputfilename)
+void SoundManager::Init(int outputDeviceProvided, const QString &outputFilenameProvided)
 {
     result = FMOD_System_Create(&system, FMOD_VERSION);
-    ERRCHECK(result);
+    checkFmodError(result);
 
     result = FMOD_Debug_Initialize(FMOD_DEBUG_LEVEL_LOG, FMOD_DEBUG_MODE_FILE, nullptr, "fmodlog.txt");
-    ERRCHECK(result);
+    checkFmodError(result);
+
     unsigned int version;
     result = FMOD_System_GetVersion(system, &version, nullptr);
-    ERRCHECK(result);
+    checkFmodError(result);
 
     if (version < FMOD_VERSION)
     {
@@ -25,73 +21,72 @@ void SoundManager::Init(int device, QString outputfilename)
                FMOD_VERSION);
     }
 
-    currentDevice = device;
-    printf("Setting ouput to: %i\n", currentDevice);
-    FMOD_OUTPUTTYPE outputtype = static_cast<FMOD_OUTPUTTYPE>(device);
-    result = FMOD_System_SetOutput(system, outputtype);
-    ERRCHECK(result);
+    currentDevice = outputDeviceProvided;
 
-    if (outputtype != FMOD_OUTPUTTYPE_WAVWRITER)
+    printf("Setting ouput to: %i\n", currentDevice);
+
+    const auto outputType = static_cast<FMOD_OUTPUTTYPE>(outputDeviceProvided);
+    result = FMOD_System_SetOutput(system, outputType);
+    checkFmodError(result);
+
+    if (outputType != FMOD_OUTPUTTYPE_WAVWRITER)
     {
         printf("FMOD_System_Init: %i\n", currentDevice);
         result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, nullptr);
-        ERRCHECK(result);
+        checkFmodError(result);
     }
     else
     {
-        QString outputPath = outputfilename;
+        QString outputPath = outputFilenameProvided;
 
-        QDir pathDir(userPath + "/recordings");
-        if (!pathDir.exists())
+        if (const QDir pathDir(userPath + "/recordings"); !pathDir.exists())
         {
             QDir().mkdir(userPath + "/recordings");
         }
 
-        outputPath = userPath + "/recordings/" + outputfilename;
+        outputPath = userPath + "/recordings/" + outputFilenameProvided;
         cout << "filename: " << outputPath.toStdString().c_str() << "\n";
 
-
-        QDateTime date = QDateTime::currentDateTime();
-        QString formattedTime = date.toString("yyyy.MM.dd - hh.mm.ss.ms");
-        QString outputPathFile = outputPath + " " + formattedTime + ".wav";
+        const QDateTime date = QDateTime::currentDateTime();
+        const QString formattedTime = date.toString("yyyy.MM.dd - hh.mm.ss.ms");
+        const QString outputPathFile = outputPath + " " + formattedTime + ".wav";
 
         printf("FMOD_System_Init: WAVWRITER %i\n", currentDevice);
 
         cout << "filename complete: " << outputPathFile.toStdString().c_str() << "\n";
-        result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, (char*)(outputPathFile.toStdString().c_str()));
-        ERRCHECK(result);
+        result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, outputPathFile.toStdString().data());
+        checkFmodError(result);
         printf("WAVWRITER is set\n");
     }
 
-
-    cout << "FMOD_System_CreateChannelGroup(system,"",&channelgroup)\n";
-    FMOD_System_CreateChannelGroup(system, "", &channelgroup);
-    ERRCHECK(result);
+    cout << "FMOD_System_CreateChannelGroup(system,"",&channelGroup)\n";
+    FMOD_System_CreateChannelGroup(system, "", &channelGroup);
+    checkFmodError(result);
 
     cout << "FMOD_System_CreateDSPByType(system,FMOD_DSP_TYPE_NORMALIZE, &dspNormalizer)\n";
     result = FMOD_System_CreateDSPByType(system, FMOD_DSP_TYPE_NORMALIZE, &dspNormalizer);
-    ERRCHECK(result);
+    checkFmodError(result);
 
     cout << "FMOD_System_CreateDSPByType(system,FMOD.DSP_TYPE.FFT, &dspFFT)\n";
-    result = FMOD_System_CreateDSPByType(system, FMOD_DSP_TYPE_FFT, &dspFFT);
-    ERRCHECK(result);
+    result = FMOD_System_CreateDSPByType(system, FMOD_DSP_TYPE_FFT, &dspFft);
+    checkFmodError(result);
     cout << "FMOD_DSP_SetActive(dspFFT,true)\n";
-    FMOD_DSP_SetActive(dspFFT, true);
-    ERRCHECK(result);
+    FMOD_DSP_SetActive(dspFft, true);
+    checkFmodError(result);
     cout << "FMOD_DSP_SetParameterInt(dspFFT,FMOD_DSP_FFT_WINDOW_HANNING,1024*2\n";
-    result = FMOD_DSP_SetParameterInt(dspFFT, FMOD_DSP_FFT_WINDOW_HANNING, 16 * 2);
-    ERRCHECK(result);
-    cout << "FMOD_ChannelGroup_AddDSP(channelgroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspFFT)\n";
-    FMOD_ChannelGroup_AddDSP(channelgroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspFFT);
-    ERRCHECK(result);
+    result = FMOD_DSP_SetParameterInt(dspFft, FMOD_DSP_FFT_WINDOW_HANNING, 16 * 2);
+    checkFmodError(result);
+    cout << "FMOD_ChannelGroup_AddDSP(channelGroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspFFT)\n";
+    FMOD_ChannelGroup_AddDSP(channelGroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspFft);
+    checkFmodError(result);
 
-    cout << "FMOD_ChannelGroup_AddDSP(channelgroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspNormalizer))\n";
-    FMOD_ChannelGroup_AddDSP(channelgroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspNormalizer);
-    ERRCHECK(result);
+    cout << "FMOD_ChannelGroup_AddDSP(channelGroup,FMOD_CHANNELCONTROL_DSP_HEAD,dspNormalizer))\n";
+    FMOD_ChannelGroup_AddDSP(channelGroup, FMOD_CHANNELCONTROL_DSP_HEAD, dspNormalizer);
+    checkFmodError(result);
 
     cout << "FMOD_DSP_SetActive(dspNormalizer,true)\n";
     FMOD_DSP_SetActive(dspNormalizer, true);
-    ERRCHECK(result);
+    checkFmodError(result);
 }
 
 void SoundManager::loadPluginChain() {
@@ -101,78 +96,91 @@ void SoundManager::loadPluginChain() {
      * and both codecs will have a higher priority than a codec with a priority of 1.
      * You cannot change the priority order of FMOD internal codecs, but here is the priority of each codec as of 2.02.06:
      *
-     * FMOD_SOUND_TYPE_FSB,         // 250
-     * FMOD_SOUND_TYPE_WAV,         // 600
-     * FMOD_SOUND_TYPE_OGGVORBIS,   // 800
-     * FMOD_SOUND_TYPE_AIFF,        // 1000
-     * FMOD_SOUND_TYPE_FLAC,        // 1100
-     * FMOD_SOUND_TYPE_MOD,         // 1200
-     * FMOD_SOUND_TYPE_S3M,         // 1300
-     * FMOD_SOUND_TYPE_XM,          // 1400
-     * FMOD_SOUND_TYPE_IT,          // 1500
-     * FMOD_SOUND_TYPE_MIDI,        // 1600
-     * FMOD_SOUND_TYPE_DLS,         // 1700
-     * FMOD_SOUND_TYPE_ASF,         // 1900
-     * FMOD_SOUND_TYPE_AUDIOQUEUE,  // 2200
-     * FMOD_SOUND_TYPE_MEDIACODEC,  // 2250
-     * FMOD_SOUND_TYPE_MPEG,        // 2400
-     * FMOD_SOUND_TYPE_PLAYLIST,    // 2450
-     * FMOD_SOUND_TYPE_RAW,         // 2500
-     * FMOD_SOUND_TYPE_USER         // 2600
+     * FMOD_SOUND_TYPE_FSB,         250
+     * FMOD_SOUND_TYPE_WAV,         600
+     * FMOD_SOUND_TYPE_OGGVORBIS,   800
+     * FMOD_SOUND_TYPE_AIFF,        1000
+     * FMOD_SOUND_TYPE_FLAC,        1100
+     * FMOD_SOUND_TYPE_MOD,         1200
+     * FMOD_SOUND_TYPE_S3M,         1300
+     * FMOD_SOUND_TYPE_XM,          1400
+     * FMOD_SOUND_TYPE_IT,          1500
+     * FMOD_SOUND_TYPE_MIDI,        1600
+     * FMOD_SOUND_TYPE_DLS,         1700
+     * FMOD_SOUND_TYPE_ASF,         1900
+     * FMOD_SOUND_TYPE_AUDIOQUEUE,  2200
+     * FMOD_SOUND_TYPE_MEDIACODEC,  2250
+     * FMOD_SOUND_TYPE_MPEG,        2400
+     * FMOD_SOUND_TYPE_PLAYLIST,    2450
+     * FMOD_SOUND_TYPE_RAW,         2500
+     * FMOD_SOUND_TYPE_USER         2600
      */
 
     if (PLUGIN_libsidplayfp_LIB != "")
     {
         loadPlugin(PLUGIN_libsidplayfp_LIB, 0);
     }
+
     if (PLUGIN_libopenmpt_LIB != "")
     {
         loadPlugin(PLUGIN_libopenmpt_LIB, 0);
     }
+
     if (PLUGIN_highly_experimental_LIB != "")
     {
         loadPlugin(PLUGIN_highly_experimental_LIB, 1);
     }
+
     if (PLUGIN_highly_theoretical_LIB != "")
     {
         loadPlugin(PLUGIN_highly_theoretical_LIB, 1);
     }
+
     if (PLUGIN_lazyusf2_LIB != "")
     {
         loadPlugin(PLUGIN_lazyusf2_LIB, 1);
     }
+
     if (PLUGIN_highly_quixotic_LIB != "")
     {
         loadPlugin(PLUGIN_highly_quixotic_LIB, 1);
     }
+
     if (PLUGIN_vio2sf_LIB != "")
     {
         loadPlugin(PLUGIN_vio2sf_LIB, 1);
     }
+
     if (PLUGIN_protrekkr_LIB != "")
     {
         loadPlugin(PLUGIN_protrekkr_LIB, 1);
     }
+
     if (PLUGIN_hivelytracker_LIB != "")
     {
         loadPlugin(PLUGIN_hivelytracker_LIB, 1);
     }
+
     if (PLUGIN_libstsound_LIB != "")
     {
         loadPlugin(PLUGIN_libstsound_LIB, 1);
     }
+
     if (PLUGIN_flod_LIB != "")
     {
         loadPlugin(PLUGIN_flod_LIB, 1);
     }
+
     if (PLUGIN_sndh_player_LIB != "")
     {
         loadPlugin(PLUGIN_sndh_player_LIB, 1);
     }
+
     if (PLUGIN_furnace_LIB != "")
     {
         loadPlugin(PLUGIN_furnace_LIB, 1);
     }
+
     if (PLUGIN_uade_LIB != "")
     {
         loadPlugin(PLUGIN_uade_LIB, 1);
@@ -184,103 +192,120 @@ void SoundManager::loadPluginChain() {
     {
         loadPlugin(PLUGIN_adplug_LIB, 599);
     }
+
     if (PLUGIN_vgmstream_LIB != "")
     {
         loadPlugin(PLUGIN_vgmstream_LIB, 599);
     }
+
     if (PLUGIN_klystron_LIB != "")
     {
         loadPlugin(PLUGIN_klystron_LIB, 1701);
     }
+
     if (PLUGIN_asap_LIB != "")
     {
         loadPlugin(PLUGIN_asap_LIB, 1701);
     }
+
     if (PLUGIN_libkss_LIB != "")
     {
         loadPlugin(PLUGIN_libkss_LIB, 1701);
     }
+
     if (PLUGIN_organya_decoder_LIB != "")
     {
         loadPlugin(PLUGIN_organya_decoder_LIB, 1701);
     }
+
     if (PLUGIN_sunvox_lib_LIB != "")
     {
         loadPlugin(PLUGIN_sunvox_lib_LIB, 1701);
     }
+
     if (PLUGIN_sc68_LIB != "")
     {
         loadPlugin(PLUGIN_sc68_LIB, 1701);
     }
+
     if (PLUGIN_kdm_LIB != "")
     {
         loadPlugin(PLUGIN_kdm_LIB, 1701);
     }
+
     if (PLUGIN_libpac_LIB != "")
     {
         loadPlugin(PLUGIN_libpac_LIB, 1701);
     }
+
     if (PLUGIN_libxmp_LIB != "")
     {
         loadPlugin(PLUGIN_libxmp_LIB, 1701);
     }
+
     if (PLUGIN_mdxmini_LIB != "")
     {
         loadPlugin(PLUGIN_mdxmini_LIB, 1701);
     }
+
     if (PLUGIN_libvgm_LIB != "")
     {
         loadPlugin(PLUGIN_libvgm_LIB, 1701);
     }
+
     if (PLUGIN_game_music_emu_LIB != "")
     {
         loadPlugin(PLUGIN_game_music_emu_LIB, 1701);
     }
+
     if (PLUGIN_audiodecoder_wsr_LIB != "")
     {
         loadPlugin(PLUGIN_audiodecoder_wsr_LIB, 1701);
     }
+
     if (PLUGIN_v2m_player_LIB != "")
     {
         loadPlugin(PLUGIN_v2m_player_LIB, 1701);
     }
+
     if (PLUGIN_jaytrax_LIB != "")
     {
         loadPlugin(PLUGIN_jaytrax_LIB, 1701);
     }
+
     if (PLUGIN_audiofile_LIB != "")
     {
         loadPlugin(PLUGIN_audiofile_LIB, 1701);
     }
+
     if (PLUGIN_zxtune_LIB != "")
     {
         loadPlugin(PLUGIN_zxtune_LIB, 1701);
     }
 }
 
-int SoundManager::getSoundData(int channel)
+int SoundManager::getSoundData(const unsigned int channelProvided)
 {
-    FMOD_DSP_PARAMETER_FFT* fft = 0;
+    FMOD_DSP_PARAMETER_FFT* fft = nullptr;
 
-    result = FMOD_DSP_GetParameterData(dspFFT, FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fft, nullptr, nullptr, 0);
+    result = FMOD_DSP_GetParameterData(dspFft, FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fft, nullptr, nullptr, 0);
 
     float val = 0;
-    //for (int channel = 0; channel < fft->numchannels; channel++)
-    {
+    //for (int channelProvided = 0; channelProvided < fft->numchannels; channelProvided++)
+    //{
         for (int bin = 0; bin < fft->length / 2; bin++)
         {
-            val += fft->spectrum[channel][bin];
+            val += fft->spectrum[channelProvided][bin];
         }
-    }
-    //Clipping is probably over 5 (guessing?)
-    //So clamp values over 5 to 5
+    //}
+    // clipping is probably over 5 (guessing?)
+    // so clamp values over 5 to 5
     if (val > 5)
     {
         val = 5;
     }
 
     return val / 5 * 100;
-
 
     //    cout << "numchannels" << data->numchannels << "\n";
     //    flush(cout);
@@ -320,35 +345,21 @@ int SoundManager::getSoundData(int channel)
     //                printf("%.02f %.02f\n", (freq[0]/16384)*100, (freq[1]/16384)*100);
 
     //    //FMOD_DSP *dsp, int index, void **data, unsigned int *length, char *valuestr, int valuestrlen);
-    //return (freq[channel]/16384)*100;
-    return 50;
-    ERRCHECK(result);
+    //return (freq[channelProvided]/16384)*100;
+    //return 50;
+    //ERRCHECK(result);
 }
 
-float SoundManager::getAudibility()
+void SoundManager::setReverbEnabled(const bool enabled)
 {
-    float audibility;
-    FMOD_Channel_GetVolume(channel, &audibility);
-    return audibility;
+    result = FMOD_System_SetReverbProperties(system, 0, enabled ? &currentReverbPreset : nullptr);
+    checkFmodError(result);
 }
 
-void SoundManager::setReverbEnabled(bool enabled)
-{
-    if (enabled)
-    {
-        result = FMOD_System_SetReverbProperties(system, 0, &currentReverbPreset);
-        ERRCHECK(result);
-    }
-    else
-    {
-        result = FMOD_System_SetReverbProperties(system, 0, nullptr);
-        ERRCHECK(result);
-    }
-}
-
-void SoundManager::setReverbPreset(QString preset)
+void SoundManager::setReverbPreset(const QString& preset)
 {
     FMOD_REVERB_PROPERTIES prop;
+
     if (preset == "Generic")
     {
         prop = FMOD_PRESET_GENERIC;
@@ -361,7 +372,6 @@ void SoundManager::setReverbPreset(QString preset)
     {
         prop = FMOD_PRESET_ROOM;
     }
-
     else if (preset == "Bathroom")
     {
         prop = FMOD_PRESET_BATHROOM;
@@ -447,26 +457,22 @@ void SoundManager::setReverbPreset(QString preset)
     //DebugWindow::instance()->addText("Soundmanager, reverb preset: "+ preset);
 }
 
-void SoundManager::setNormalizeFadeTime(int param)
-{
-    FMOD_DSP_SetParameterFloat(dspNormalizer, FMOD_DSP_NORMALIZE_FADETIME, param);
+void SoundManager::setNormalizeFadeTime(const int param) const {
+    FMOD_DSP_SetParameterFloat(dspNormalizer, FMOD_DSP_NORMALIZE_FADETIME, static_cast<float>(param));
 }
 
-void SoundManager::setNormalizeThreshold(int param)
-{
-    float paramF = param / 100.0;
+void SoundManager::setNormalizeThreshold(const int param) const {
+    const float paramF = param / 100.0;
     FMOD_DSP_SetParameterFloat(dspNormalizer, FMOD_DSP_NORMALIZE_THRESHOLD, paramF);
 }
 
-void SoundManager::setNormalizeMaxAmp(int param)
-{
-    FMOD_DSP_SetParameterFloat(dspNormalizer, FMOD_DSP_NORMALIZE_MAXAMP, param);
+void SoundManager::setNormalizeMaxAmp(const int param) const {
+    FMOD_DSP_SetParameterFloat(dspNormalizer, FMOD_DSP_NORMALIZE_MAXAMP, static_cast<float>(param));
 }
 
-void SoundManager::setNormalizeEnabled(bool enabled)
-{
+void SoundManager::setNormalizeEnabled(const bool enabled) const {
     FMOD_DSP *dsp = nullptr;
-    FMOD_ChannelGroup_GetDSP(channelgroup, 0, &dsp);
+    FMOD_ChannelGroup_GetDSP(channelGroup, 0, &dsp);
 
     if (dsp) {
         FMOD_DSP_SetBypass(dspNormalizer, !enabled);
@@ -474,19 +480,17 @@ void SoundManager::setNormalizeEnabled(bool enabled)
     }
 }
 
-FMOD_RESULT SoundManager::getTag(const char* name, int index, FMOD_TAG* tag)
-{
+FMOD_RESULT SoundManager::getTag(const char* name, const int index, FMOD_TAG* tag) const {
     return FMOD_Sound_GetTag(sound, name, index, tag);
 }
 
-int SoundManager::getNumTags()
-{
+int SoundManager::getNumTags() const {
     int numTags;
     FMOD_Sound_GetNumTags(sound, &numTags, nullptr);
     return numTags;
 }
 
-void SoundManager::loadPlugin(string filename, int priority)
+void SoundManager::loadPlugin(const string_view &filename, const int priority)
 {
     string pluginsDir = QString(libPath + PLUGINS_DIR + "/").toStdString();
     const char* pluginPath = (pluginsDir += filename).c_str();
@@ -497,315 +501,267 @@ void SoundManager::loadPlugin(string filename, int priority)
     {
         //DebugWindow::instance()->addText(QString(filename.c_str()));
     }
-    ERRCHECK(result, pluginPath);
+
+    checkFmodError(result, pluginPath);
 
     //DebugWindow::instance()->addText("GetNumPlugins " + QString::number(numplugins));
 }
 
-void SoundManager::ERRCHECK(FMOD_RESULT result)
+void SoundManager::checkFmodError(const FMOD_RESULT result)
 {
-    ERRCHECK(result, "");
+    checkFmodError(result, "");
 }
 
-void SoundManager::ERRCHECK(FMOD_RESULT result, QString extra)
-{
+void SoundManager::checkFmodError(const FMOD_RESULT result, const QString &msg) {
     if (result != FMOD_OK)
     {
         printf("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
-        if (extra == "")
+
+        if (msg == "")
         {
             printf("\n");
         }
-        if (extra != "")
+        if (msg != "")
         {
-            printf(" - %s\n", extra.toStdString().c_str());
+            printf(" - %s\n", msg.toStdString().c_str());
         }
+
         flush(cout);
     }
 }
 
-void SoundManager::Stop()
-{
+void SoundManager::stop() const {
     FMOD_Channel_Stop(channel);
-    //    FMOD_OUTPUTTYPE outputtype = static_cast<FMOD_OUTPUTTYPE>(currentDevice);
-    //    if(outputtype==FMOD_OUTPUTTYPE_WAVWRITER)
+    //    FMOD_OUTPUTTYPE outputType = static_cast<FMOD_OUTPUTTYPE>(currentDevice);
+    //    if(outputType==FMOD_OUTPUTTYPE_WAVWRITER)
     //    {
     //        setOutput(0);
     //    }
 }
 
-bool SoundManager::IsPlaying()
-{
+bool SoundManager::isPlaying() const {
     if (!channel) return false;
+
     FMOD_BOOL playing;
     FMOD_Channel_IsPlaying(channel, &playing);
     return playing;
 }
 
-bool SoundManager::isWavWriterDeviceSelected() {
+bool SoundManager::isWavWriterDeviceSelected() const {
     return static_cast<FMOD_OUTPUTTYPE>(currentDevice) == FMOD_OUTPUTTYPE_WAVWRITER;
 }
 
-void SoundManager::SetPosition(unsigned int positon, FMOD_TIMEUNIT timeunit)
-{
-    FMOD_Channel_SetPosition(channel, positon, timeunit);
+void SoundManager::setPosition(const unsigned int positon, const FMOD_TIMEUNIT timeUnit) const {
+    FMOD_Channel_SetPosition(channel, positon, timeUnit);
 }
 
-void SoundManager::SetVolume(float vol)
-{
-    FMOD_Channel_SetVolume(channel, vol);
+void SoundManager::setVolume(const float volume) const {
+    FMOD_Channel_SetVolume(channel, volume);
 }
 
-float SoundManager::GetNominalFrequency()
-{
-    return m_nominalFrequency;
+float SoundManager::getNominalFrequency() const {
+    return nominalFrequency;
 }
 
-void SoundManager::SetFrequencyByMultiplier(float percent)
-{
-    FMOD_Channel_SetFrequency(channel, percent * m_nominalFrequency);
+void SoundManager::setFrequencyByMultiplier(const float percent) const {
+    FMOD_Channel_SetFrequency(channel, percent * nominalFrequency);
 }
 
-void SoundManager::SetMute(bool mute)
-{
+void SoundManager::setMute(const bool mute) const {
     FMOD_Channel_SetMute(channel, mute);
 }
 
-unsigned int SoundManager::GetPosition(FMOD_TIMEUNIT timeunit)
-{
+unsigned int SoundManager::getPosition(const FMOD_TIMEUNIT timeUnit) const {
     unsigned int currentMs;
-    FMOD_Channel_GetPosition(channel, &currentMs, timeunit);
+    FMOD_Channel_GetPosition(channel, &currentMs, timeUnit);
     return currentMs;
 }
 
-unsigned int SoundManager::GetLength(FMOD_TIMEUNIT timeunit)
-{
-    unsigned int song_length_ms;
-    //DebugWindow::instance()->addText("SoundManager: GetLength, Timeunit: " + QString::number(timeunit));
-    FMOD_Sound_GetLength(sound, &song_length_ms, timeunit);
-    return song_length_ms;
+unsigned int SoundManager::getLength(const FMOD_TIMEUNIT timeUnit) const {
+    unsigned int songLengthMs;
+    //DebugWindow::instance()->addText("SoundManager: getLength, Timeunit: " + QString::number(timeUnit));
+    FMOD_Sound_GetLength(sound, &songLengthMs, timeUnit);
+    return songLengthMs;
 }
 
-void SoundManager::Pause(bool pause)
-{
+void SoundManager::pause(const bool pause) const {
     FMOD_Channel_SetPaused(channel, pause);
 }
 
-bool SoundManager::GetPaused()
-{
+bool SoundManager::isPaused() const {
     FMOD_BOOL pause;
     FMOD_Channel_GetPaused(channel, &pause);
     return pause;
 }
 
-void SoundManager::PlayAudio(bool startPaused)
+void SoundManager::playAudio(const bool startPaused)
 {
-    m_mutedChannelsMask = 0;
-    m_mutedChannelsMaskString = "";
-    FMOD_System_PlaySound(system, sound, channelgroup, startPaused, &channel);
-    FMOD_Channel_GetFrequency(channel, &m_nominalFrequency);
+    mutedChannelsMask = 0;
+    mutedChannelsMaskString = "";
+    FMOD_System_PlaySound(system, sound, channelGroup, startPaused, &channel);
+    FMOD_Channel_GetFrequency(channel, &nominalFrequency);
     //DebugWindow::instance()->addText("SoundManager: PlaySound");
 }
 
-void SoundManager::Release()
-{
+void SoundManager::release() const {
     FMOD_Sound_Release(sound);
 }
 
-void SoundManager::ShutDown()
-{
+void SoundManager::shutdown() const {
     FMOD_Sound_Release(sound);
     FMOD_System_Release(system);
 }
 
-void SoundManager::MuteChannels(unsigned int mask, QString maskStr)
+void SoundManager::muteChannels(const unsigned int mask, const QString &maskStr)
 {
-    m_Info1->mutedChannelsMask = maskStr.toStdString();
+    info->mutedChannelsMask = maskStr.toStdString();
 
     FMOD_Channel_SetPosition(channel, mask, FMOD_TIMEUNIT_MUTE_VOICE);
 
-    m_mutedChannelsMask = mask;
-    m_mutedChannelsMaskString = maskStr;
+    mutedChannelsMask = mask;
+    mutedChannelsMaskString = maskStr;
 }
 
-bool SoundManager::isChannelMuted(unsigned int channel)
-{
+bool SoundManager::isChannelMuted(const unsigned int channelProvided) const {
     bool muted = false;
-    if (m_mutedChannelsMaskString != nullptr &&
-        m_mutedChannelsMaskString.at(channel) == '0')
+
+    if (mutedChannelsMaskString != nullptr && mutedChannelsMaskString.at(channelProvided) == '0')
     {
         muted = true;
     }
+
     return muted;
 }
 
-bool SoundManager::LoadSound(QString filename, Info* info)
+bool SoundManager::loadSound(const QString &filename, Info* infoProvided)
 {
-    Stop();
-    Release();
-    m_mutedChannelsMask = 0;
-    m_mutedChannelsMaskString = "";
+    stop();
+    release();
 
-    m_Info1 = info;
-    m_Info1->tempPath = QDir::tempPath().toStdString();
-    m_Info1->dataPath = dataPath.toStdString();
-    m_Info1->libPath = libPath.toStdString();
-    m_Info1->userPath = userPath.toStdString();
-    m_Info1->filename = filename.toStdString();
+    mutedChannelsMask = 0;
+    mutedChannelsMaskString = "";
 
-    FMOD_CREATESOUNDEXINFO extrainfo1;
-    memset(&extrainfo1, 0, sizeof(FMOD_CREATESOUNDEXINFO));
-    extrainfo1.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-    string dls = dataPath.toStdString() + PLUGINS_FMOD_DIR + "/gm.dls";
-    extrainfo1.dlsname = dls.c_str();
-    extrainfo1.userdata = m_Info1;
+    info = infoProvided;
+    info->tempPath = QDir::tempPath().toStdString();
+    info->dataPath = dataPath.toStdString();
+    info->libPath = libPath.toStdString();
+    info->userPath = userPath.toStdString();
+    info->filename = filename.toStdString();
 
-    cout << "Loading " << m_Info1->filename << " (subsong " << m_Info1->currentSubsong + 1 << ")" << endl;
+    FMOD_CREATESOUNDEXINFO extraInfo = {};
+
+    extraInfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
+    const string dls = dataPath.toStdString() + PLUGINS_FMOD_DIR + "/gm.dls";
+    extraInfo.dlsname = dls.c_str();
+    extraInfo.userdata = info;
+
+    cout << "Loading " << info->filename << " (subsong " << info->currentSubsong + 1 << ")" << endl;
 
     loadPluginChain();
 
     constexpr FMOD_MODE fmodMode = FMOD_ACCURATETIME | FMOD_CREATESTREAM;
 
-    result = FMOD_System_CreateSound(system, filename.toStdString().c_str(), fmodMode | FMOD_LOOP_OFF, &extrainfo1,
+    result = FMOD_System_CreateSound(system, filename.toStdString().c_str(), fmodMode | FMOD_LOOP_OFF, &extraInfo,
                                      &sound);
 
-    if (m_Info1->plugin != PLUGIN_adplug &&
-        m_Info1->plugin != PLUGIN_hivelytracker &&
-        m_Info1->plugin != PLUGIN_libopenmpt &&
-        m_Info1->plugin != PLUGIN_libsidplayfp &&
-        m_Info1->plugin != PLUGIN_libvgm &&
-        m_Info1->plugin != PLUGIN_libxmp &&
-        m_Info1->plugin != PLUGIN_sndh_player &&
-        m_Info1->plugin != PLUGIN_uade &&
-        m_Info1->plugin != PLUGIN_vgmstream
+    if (result != FMOD_OK) {
+        checkFmodError(result);
+        delete info;
+        info = nullptr;
+        return false;
+    }
+
+    FMOD_SOUND_TYPE type;
+    int channels;
+    FMOD_Sound_GetFormat(sound, &type, nullptr, &channels, nullptr);
+
+    info->numChannelsStream = channels;
+
+    if (info->plugin != PLUGIN_adplug &&
+        info->plugin != PLUGIN_hivelytracker &&
+        info->plugin != PLUGIN_libopenmpt &&
+        info->plugin != PLUGIN_libsidplayfp &&
+        info->plugin != PLUGIN_libvgm &&
+        info->plugin != PLUGIN_libxmp &&
+        info->plugin != PLUGIN_sndh_player &&
+        info->plugin != PLUGIN_uade &&
+        info->plugin != PLUGIN_vgmstream
     ) {
-        m_Info1->isContinuousPlaybackActive = false;
+        info->isContinuousPlaybackActive = false;
 
-        if (m_Info1->plugin == PLUGIN_fmod) {
-            m_Info1->pluginName = PLUGIN_fmod_NAME;
+        if (info->plugin == PLUGIN_fmod) {
+            info->pluginName = PLUGIN_fmod_NAME;
+            info->fileFormat = getFmodSoundTypeName(type);
 
-            if (m_Info1->isPlayModeRepeatSongEnabled && m_Info1->isFmodSeamlessLoopEnabled) {
-                m_Info1->isSeamlessLoopActive = true;
+            if (info->isPlayModeRepeatSongEnabled && info->isFmodSeamlessLoopEnabled) {
+                info->isSeamlessLoopActive = true;
                 FMOD_Sound_SetMode(sound, fmodMode | FMOD_LOOP_NORMAL);
             }
         }
     }
 
     cout << "FMOD_System_CreateSound done\n";
-    cout << "plugin: " << m_Info1->pluginName << "\n";
+    cout << "plugin: " << info->pluginName << "\n";
     flush(cout);
 
-    FMOD_SOUND_TYPE type;
-    FMOD_SOUND_FORMAT format;
-    int channels;
-    int bits;
-    FMOD_Sound_GetFormat(sound, &type, &format, &channels, &bits);
-    m_Info1->numChannelsStream = channels;
-    if (result == FMOD_OK)
-    {
-        if (m_Info1->plugin == PLUGIN_fmod)
-        {
-            m_Info1->fileformat = getFMODSoundFormat(sound);
-        }
-        return true;
-    }
-    else
-    {
-        ERRCHECK(result);
-        delete m_Info1;
-        m_Info1 = nullptr;
-        return false;
-    }
+    return true;
 }
 
-const char* SoundManager::getFMODSoundFormat(FMOD_SOUND* sound)
-{
-    FMOD_SOUND_TYPE type;
-    const char* format;
-    FMOD_Sound_GetFormat(sound, &type, nullptr, nullptr, nullptr);
-    if (type != FMOD_SOUND_TYPE_UNKNOWN)
-    {
-        switch (type)
-        {
+const char *SoundManager::getFmodSoundTypeName(const FMOD_SOUND_TYPE type) {
+    if (type == FMOD_SOUND_TYPE_UNKNOWN) {
+        return nullptr; // 3rd party format
+    }
+
+    switch (type) {
         case FMOD_SOUND_TYPE_AIFF:
-            format = "AIFF";
-            break;
+            return "AIFF";
         case FMOD_SOUND_TYPE_ASF:
-            format = "ASF/WMA/WMV";
-            break;
+            return "ASF/WMA/WMV";
         case FMOD_SOUND_TYPE_AT9:
-            format = "Sony ATRAC9 (FSB)";
-            break;
+            return "Sony ATRAC9 (FSB)";
         case FMOD_SOUND_TYPE_AUDIOQUEUE:
-            format = "Apple Audio Queue";
-            break;
+            return "Apple Audio Queue";
         case FMOD_SOUND_TYPE_DLS:
-            format = "Downloadable Sound Bank";
-            break;
+            return "Downloadable Sound Bank";
         case FMOD_SOUND_TYPE_FADPCM:
-            format = "FADPCM (FSB)";
-            break;
+            return "FADPCM (FSB)";
         case FMOD_SOUND_TYPE_FLAC:
-            format = "FLAC";
-            break;
+            return "FLAC";
         case FMOD_SOUND_TYPE_FSB:
-            format = "FMOD Sample Bank";
-            break;
+            return "FMOD Sample Bank";
         case FMOD_SOUND_TYPE_IT:
-            format = "Impulse Tracker";
-            break;
+            return "Impulse Tracker";
         case FMOD_SOUND_TYPE_MEDIA_FOUNDATION:
-            format = "MMF (FSB)";
-            break;
+            return "MMF (FSB)";
         case FMOD_SOUND_TYPE_MEDIACODEC:
-            format = "Google Media Codec";
-            break;
+            return "Google Media Codec";
         case FMOD_SOUND_TYPE_MIDI:
-            format = "MIDI";
-            break;
+            return "MIDI";
         case FMOD_SOUND_TYPE_MOD:
-            format = "Protracker/Fasttracker";
-            break;
+            return "Protracker/Fasttracker";
         case FMOD_SOUND_TYPE_MPEG:
-            format = "MP2/MP3/RIFF";
-            break;
+            return "MP2/MP3/RIFF";
         case FMOD_SOUND_TYPE_OGGVORBIS:
-            format = "Ogg vorbis";
-            break;
+            return "Ogg vorbis";
         case FMOD_SOUND_TYPE_OPUS:
-            format = "Opus (FSB)";
-            break;
+            return "Opus (FSB)";
         case FMOD_SOUND_TYPE_PLAYLIST:
-            format = "ASX/PLS/M3U/WAX playlist";
-            break;
+            return "ASX/PLS/M3U/WAX playlist";
         case FMOD_SOUND_TYPE_RAW:
-            format = "Raw PCM data";
-            break;
+            return "Raw PCM data";
         case FMOD_SOUND_TYPE_S3M:
-            format = "ScreamTracker 3";
-            break;
+            return "ScreamTracker 3";
         case FMOD_SOUND_TYPE_USER:
-            format = "User created sound";
-            break;
+            return "User created sound";
         case FMOD_SOUND_TYPE_VORBIS:
-            format = "Vorbis (FSB)";
-            break;
+            return "Vorbis (FSB)";
         case FMOD_SOUND_TYPE_WAV:
-            format = "Microsoft WAV";
-            break;
+            return "Microsoft WAV";
         case FMOD_SOUND_TYPE_XM:
-            format = "FastTracker 2 XM";
-            break;
+            return "FastTracker 2 XM";
         case FMOD_SOUND_TYPE_XMA:
-            format = "Xbox Media Audio (FSB)";
-            break;
+            return "Xbox Media Audio (FSB)";
         default:
-            format = "Unknown format";
-        }
+            return "Unknown format";
     }
-    else
-    {
-        format = nullptr; //3rd party format
-    }
-    return format;
 }

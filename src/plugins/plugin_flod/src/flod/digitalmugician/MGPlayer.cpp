@@ -157,7 +157,7 @@ MGPlayer::~MGPlayer() {
     }
     patterns.clear();
 
-    subSongsList.clear();
+    subsongsList.clear();
 }
 
 void MGPlayer::tables() {
@@ -197,14 +197,14 @@ void MGPlayer::tables() {
 
 
 unsigned char MGPlayer::getSubsongsCount() {
-    return subSongsList.size();
+    return subsongsList.size();
 }
 
 void MGPlayer::selectSong(unsigned char subsong) {
-    if (subsong >= subSongsList.size()) {
-        subsong = subSongsList.size() - 1;
+    if (subsong >= subsongsList.size()) {
+        subsong = subsongsList.size() - 1;
     }
-    m_songNumber = subSongsList[subsong];
+    m_songNumber = subsongsList[subsong];
 }
 
 void MGPlayer::initialize() {
@@ -241,7 +241,7 @@ void MGPlayer::initialize() {
         }
     } while (voice = voice->next);
 
-    if (m_version == MUGICIAN_V2) {
+    if (version == MUGICIAN_V2) {
         if (m_songNumber & 1) m_songNumber--;
         song2 = songs[int(m_songNumber + 1)];
 
@@ -266,7 +266,7 @@ int MGPlayer::load(void *_data, unsigned long int _length) {
         stream[11] == 'O' && stream[12] == 'F' && stream[13] == 'T' && stream[14] == 'E' && stream[15] == 'Y' && stream[
             16] == 'E' && stream[17] == 'S' && stream[18] == ' ' && stream[19] == '1' && stream[20] == '9' && stream[21]
         == '9' && stream[22] == '0' && stream[23] == ' ') {
-        m_version = MUGICIAN_V1;
+        version = MUGICIAN_V1;
         format = "Digital Mugician 1";
         chans = 4;
         voices[3]->next = 0;
@@ -275,7 +275,7 @@ int MGPlayer::load(void *_data, unsigned long int _length) {
                stream[10] == '/' && stream[11] == 'S' && stream[12] == 'O' && stream[13] == 'F' && stream[14] == 'T' &&
                stream[15] == 'E' && stream[16] == 'Y' && stream[17] == 'E' && stream[18] == 'S' && stream[19] == ' ' &&
                stream[20] == '1' && stream[21] == '9' && stream[22] == '9' && stream[23] == '0') {
-        m_version = MUGICIAN_V2;
+        version = MUGICIAN_V2;
         format = "Digital Mugician 2";
         chans = 7;
         voices[3]->next = voices[4];
@@ -318,8 +318,8 @@ int MGPlayer::load(void *_data, unsigned long int _length) {
     }
 
     position = 204;
-    m_totalSongs = songs.size();
-    subSongsList = vector<unsigned char>();
+    totalSongs = songs.size();
+    subsongsList = vector<unsigned char>();
 
 
     for (int i = 0; i < 8; ++i) {
@@ -337,8 +337,8 @@ int MGPlayer::load(void *_data, unsigned long int _length) {
             patternSize += step->pattern;
         }
         if (patternSize > 0) {
-            if ((m_version == MUGICIAN_V1) || (m_version == MUGICIAN_V2 && (i + 1) % 2 == 1)) {
-                subSongsList.push_back(i);
+            if ((version == MUGICIAN_V1) || (version == MUGICIAN_V2 && (i + 1) % 2 == 1)) {
+                subsongsList.push_back(i);
             }
         }
     }

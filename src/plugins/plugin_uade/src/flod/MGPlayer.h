@@ -29,7 +29,7 @@ private:
     std::vector<BaseRow *> patterns;
     std::vector<MGSample *> samples;
     std::vector<MGVoice *> voices;
-    std::vector<unsigned char> subSongsList;
+    std::vector<unsigned char> subsongsList;
     int buffer1;
     int buffer2;
     MGSong *song1;

@@ -1,7 +1,7 @@
 #include "MultiTrackerPatternView.h"
 #include "visualizers/tracker.h"
 
-MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, unsigned int channels)
+MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, const unsigned int channels)
     : AbstractPatternView(parent, channels)
 {
     m_font = QFont("MultiTracker");
@@ -12,7 +12,6 @@ MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, unsigned int c
     m_bitmapFont = BitmapFont("MultiTracker");
     m_fontWidth = 8;
     m_fontHeight = 8;
-
 
     octaveOffset = 48;
     instrumentPad = false;
@@ -50,7 +49,7 @@ MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, unsigned int c
     m_useInstrumentColorOnEffectAndParameterFrequency = 4;
     m_xOffsetRow = 16;
 
-    m_RowLength = 4 + (m_channels * 9) + 4;
+    m_RowLength = 4 + m_channels * 9 + 4;
     m_xChannelStart = 40;
     m_channelFirstWidth = 67;
     m_channelWidth = 70;
@@ -63,36 +62,37 @@ MultiTrackerPatternView::~MultiTrackerPatternView()
 {
 }
 
-void MultiTrackerPatternView::paintAbove(QPainter* painter, int height, int currentRow)
+void MultiTrackerPatternView::paintAbove(QPainter* painter, const int height, int currentRow)
 {
-    //bottom
-    painter->fillRect(0, height - 16, (40 + m_channels * 72), 16, QColor(0, 0, 85));
+    // bottom
+    painter->fillRect(0, height - 16, 40 + m_channels * 72, 16, QColor(0, 0, 85));
 }
 
-void MultiTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)
+void MultiTrackerPatternView::paintBelow(QPainter* painter, const int height, int currentRow)
 {
-    //left
+    // left
     painter->fillRect(0, 0, 40, height, QColor(0, 0, 85));
-    //right
-    painter->fillRect((40 + m_channels * 72), 0, 24, height, QColor(0, 0, 85));
+    // right
+    painter->fillRect(40 + m_channels * 72, 0, 24, height, QColor(0, 0, 85));
 
-    //main
-    painter->fillRect(16, (height / 2) - 8, 16, 8, QColor(0, 170, 255));
-    painter->fillRect(40, (height / 2) - 8, ((m_channels * 72) - 4), 8, QColor(0, 0, 85));
-    //channel separators
+    // main
+    painter->fillRect(16, height / 2 - 8, 16, 8, QColor(0, 170, 255));
+    painter->fillRect(40, height / 2 - 8, m_channels * 72 - 4, 8, QColor(0, 0, 85));
+
+    // channel separators
     for (unsigned int chan = 0; chan < m_channels; chan++)
     {
-        painter->fillRect((75 + chan * 72), 0, 2, height, QColor(255, 255, 255));
-        painter->fillRect((107 + chan * 72), 0, 2, height, QColor(255, 255, 255));
-        //current row channels separators
-        painter->fillRect((75 + chan * 72), (height / 2) - 8, 2, 8, QColor(0, 170, 255));
-        painter->fillRect((107 + chan * 72), (height / 2) - 8, 2, 8, QColor(0, 170, 255));
+        painter->fillRect(75 + chan * 72, 0, 2, height, QColor(255, 255, 255));
+        painter->fillRect(107 + chan * 72, 0, 2, height, QColor(255, 255, 255));
+        // current row channels separators
+        painter->fillRect(75 + chan * 72, height / 2 - 8, 2, 8, QColor(0, 170, 255));
+        painter->fillRect(107 + chan * 72, height / 2 - 8, 2, 8, QColor(0, 170, 255));
     }
 }
 
-QString MultiTrackerPatternView::rowNumber(int rowNumber)
+QString MultiTrackerPatternView::rowNumber(const int rowNumber)
 {
-    int base = rowNumberHex ? 16 : 10;
+    const int base = rowNumberHex ? 16 : 10;
 
     QString rowNumberStr = QString::number(rowNumber + rowNumberOffset, base).toUpper();
     rowNumberStr = rowNumberPad && rowNumberStr.length() == 1 ? rowNumberStr + "'" : rowNumberStr;
@@ -101,7 +101,7 @@ QString MultiTrackerPatternView::rowNumber(int rowNumber)
 
 QString MultiTrackerPatternView::instrument(BaseRow* row)
 {
-    int instrument = row->sample;
+    const int instrument = row->sample;
     return QString::number(instrument, 32).toUpper();
 }
 
@@ -111,20 +111,23 @@ QString MultiTrackerPatternView::effect(BaseRow* row)
     {
         return "e";
     }
+
     return AbstractPatternView::effect(row).toLower();
 }
 
 QString MultiTrackerPatternView::parameter(BaseRow* row)
 {
-    int parameter = row->param;
+    const int parameter = row->param;
+
     if (row->effect == 0x8)
     {
-        int base = parameterHex ? 16 : 10;
+        const int base = parameterHex ? 16 : 10;
 
         QString parameterStr = QString::number(parameter, base).toLower();
         parameterStr = "8" + parameterStr.left(1);
         return parameterStr;
     }
+
     return AbstractPatternView::parameter(row).toLower();
 }
 
@@ -132,34 +135,35 @@ QString MultiTrackerPatternView::note(BaseRow* row)
 {
     int note = row->note;
     note -= octaveOffset;
+
     if (note >= 109 || note < 0)
     {
         note = 0;
     }
+
     if (note == 0)
     {
         return m_emptyNote;
     }
-    else
-    {
-        return QString(NOTES[note]).replace("-", "'");
-    }
+
+    return QString(NOTES[note]).replace("-", "'");
 }
+
 void::MultiTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
 {
     m_topHeight = 25;
-    QColor colorBase(0, 0, 85);
+    constexpr QColor colorBase(0, 0, 85);
 
-    Tracker* t = (Tracker*)this->parent();
-    int numChannels = t->m_info->numChannels;
-    int top = 16;
-    int left = 0;
-    QRect rectBg(left, 0, (64 + (numChannels * 72)), m_topHeight);
+    const auto t = this->parent();
+    const int numChannels = t->info->numChannels;
+    constexpr int left = 0;
+    const QRect rectBg(left, 0, 64 + numChannels * 72, m_topHeight);
     painter->fillRect(rectBg, colorBase);
 
     painter->setPen(QColor(255, 255, 255));
-    for (int i = 0; i < numChannels; i++)
-    {
-        drawText("Track:" + QString::number(i + 1), painter, left + ((40 + i * 72)), top,infoFont());
+
+    for (int i = 0; i < numChannels; i++) {
+        constexpr int top = 16;
+        drawText("Track:" + QString::number(i + 1), painter, left + (40 + i * 72), top,infoFont());
     }
 }

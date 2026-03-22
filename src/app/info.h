@@ -1,12 +1,11 @@
 #ifndef BZRINFO_H
 #define BZRINFO_H
 
-using namespace std;
-
-#include "BaseRow.h"
-#include <vector>
-#include <iostream>
 #include <cstdint>
+#include <vector>
+#include "BaseRow.h"
+
+using namespace std;
 
 class Info
 {
@@ -26,7 +25,7 @@ public:
         return seekable;
     }
 
-    void setSeekable(bool seekable)
+    void setSeekable(const bool seekable)
     {
         this->seekable = seekable;
     }
@@ -95,9 +94,9 @@ public:
         converter = "";
         ripper = "";
         replay = "";
-        hwname = "";
-        fileformat = "";
-        fileformatSpecific = "";
+        hardware = "";
+        fileFormat = "";
+        fileFormatSpecific = "";
         containerFileformats = "";
         md5 = "";
         rate = 0;
@@ -107,7 +106,6 @@ public:
         clockSpeedStr = "";
         chips = "";
         numPatterns = 0;
-        numTracksteps = 0;
         numMacros = 0;
         numUsedPatterns = 0;
         numSndModSeqs = 0;
@@ -115,12 +113,12 @@ public:
         numOrders = 0;
         numChannels = 0;
         numChannelsStream = 0;
-        defaultSubSong = 0;
+        defaultSubsong = 0;
         numSubsongs = 0;
         currentSubsong = 0;
         modPatternRestart = 0;
         modPatternRows = 0;
-        modVUMeters = nullptr;
+        modVuMeters = nullptr;
         instrumentsFilterType = nullptr;
         instrumentsFlags = nullptr;
         instrumentsCydFlags = nullptr;
@@ -157,18 +155,19 @@ public:
 
     void clearMemory()
     {
-        if (modVUMeters) delete[] modVUMeters;
-        if (samplesSize) delete[] samplesSize;
-        if (samplesLoopStart) delete[] samplesLoopStart;
-        if (samplesLoopEnd) delete[] samplesLoopEnd;
-        if (samplesLoopOffset) delete[] samplesLoopOffset;
-        if (samplesLoopLength) delete[] samplesLoopLength;
-        if (samplesFineTune) delete[] samplesFineTune;
-        if (samples) delete[] samples;
+        delete[] modVuMeters;
+        delete[] samplesSize;
+        delete[] samplesLoopStart;
+        delete[] samplesLoopEnd;
+        delete[] samplesLoopOffset;
+        delete[] samplesLoopLength;
+        delete[] samplesFineTune;
+        delete[] samples;
+
         if (samplesData)
         {
             //TODO
-            //Not sure of this is a memory leak or how to free the memory
+            // not sure of this is a memory leak or how to free the memory
             //            for( int i = 0 ; i < numSamples ; i++ )
             //            {
             //                delete[] samplesData[i];
@@ -176,57 +175,58 @@ public:
             //            delete[] samplesData;
         }
 
-        if (instrumentsBaseNote) delete[] instrumentsBaseNote;
-        if (instrumentsVolume) delete[] instrumentsVolume;
-        if (instrumentsCutoff) delete[] instrumentsCutoff;
-        if (instrumentsResonance) delete[] instrumentsResonance;
-        if (instrumentsPulseWidth) delete[] instrumentsPulseWidth;
-        if (instrumentsEnvAttack) delete[] instrumentsEnvAttack;
-        if (instrumentsEnvDelay) delete[] instrumentsEnvDelay;
-        if (instrumentsEnvSustain) delete[] instrumentsEnvSustain;
-        if (instrumentsEnvRelease) delete[] instrumentsEnvRelease;
-        if (instrumentsFilterType) delete[] instrumentsFilterType;
-        if (instrumentsFlags) delete[] instrumentsFlags;
-        if (instrumentsCydFlags) delete[] instrumentsCydFlags;
-        if (instrumentsRingMod) delete[] instrumentsRingMod;
-        if (instrumentsSyncSource) delete[]instrumentsSyncSource;
+        delete[] instrumentsBaseNote;
+        delete[] instrumentsVolume;
+        delete[] instrumentsCutoff;
+        delete[] instrumentsResonance;
+        delete[] instrumentsPulseWidth;
+        delete[] instrumentsEnvAttack;
+        delete[] instrumentsEnvDelay;
+        delete[] instrumentsEnvSustain;
+        delete[] instrumentsEnvRelease;
+        delete[] instrumentsFilterType;
+        delete[] instrumentsFlags;
+        delete[] instrumentsCydFlags;
+        delete[] instrumentsRingMod;
+        delete[] instrumentsSyncSource;
 
-        if (samples16Bit) delete[]samples16Bit;
-        if (samplesStereo) delete[]samplesStereo;
-        if (instruments) delete[]instruments;
-        if (instrumentsBaseNote) delete[]instrumentsBaseNote;
-        if (instrumentsVolume) delete[]instrumentsVolume;
-        if (instrumentsCutoff) delete[]instrumentsCutoff;
-        if (instrumentsResonance) delete[]instrumentsResonance;
-        if (instrumentsPulseWidth) delete[]instrumentsPulseWidth;
-        if (instrumentsEnvAttack) delete[]instrumentsEnvAttack;
-        if (instrumentsEnvDelay) delete[]instrumentsEnvDelay;
-        if (instrumentsEnvSustain) delete[]instrumentsEnvSustain;
-        if (instrumentsEnvRelease) delete[]instrumentsEnvRelease;
-        if (instrumentsFilterType) delete[]instrumentsFilterType;
-        if (instrumentsFlags) delete[]instrumentsFlags;
-        if (instrumentsCydFlags) delete[]instrumentsCydFlags;
-        if (instrumentsRingMod) delete[]instrumentsRingMod;
-        if (instrumentsSyncSource) delete[]instrumentsSyncSource;
-        if (instrumentsQuantize) delete[] instrumentsQuantize;
-        if (instrumentsVolume1) delete[] instrumentsVolume1;
-        if (instrumentsVolume2) delete[] instrumentsVolume2;
-        if (instrumentsNumber) delete[] instrumentsNumber;
-        if (instrumentsFilterLowerLimit) delete[] instrumentsFilterLowerLimit;
-        if (instrumentsFilterUpperLimit) delete[] instrumentsFilterUpperLimit;
-        if (instrumentsFilterSpeed) delete[] instrumentsFilterSpeed;
-        if (instrumentsWavelen) delete[] instrumentsWavelen;
+        delete[] samples16Bit;
+        delete[] samplesStereo;
+        delete[] instruments;
+        delete[] instrumentsBaseNote;
+        delete[] instrumentsVolume;
+        delete[] instrumentsCutoff;
+        delete[] instrumentsResonance;
+        delete[] instrumentsPulseWidth;
+        delete[] instrumentsEnvAttack;
+        delete[] instrumentsEnvDelay;
+        delete[] instrumentsEnvSustain;
+        delete[] instrumentsEnvRelease;
+        delete[] instrumentsFilterType;
+        delete[] instrumentsFlags;
+        delete[] instrumentsCydFlags;
+        delete[] instrumentsRingMod;
+        delete[] instrumentsSyncSource;
+        delete[] instrumentsQuantize;
+        delete[] instrumentsVolume1;
+        delete[] instrumentsVolume2;
+        delete[] instrumentsNumber;
+        delete[] instrumentsFilterLowerLimit;
+        delete[] instrumentsFilterUpperLimit;
+        delete[] instrumentsFilterSpeed;
+        delete[] instrumentsWavelen;
 
         modTrackPositions.clear();
         modRows.clear();
 
-        for (vector<vector<BaseRow*>>::iterator itr = patterns.begin(); itr != patterns.end(); ++itr)
+        for (auto itr = patterns.begin(); itr != patterns.end(); ++itr)
         {
-            for (vector<BaseRow*>::iterator itr2 = (*itr).begin(); itr2 != (*itr).end(); ++itr2)
+            for (auto itr2 = itr->begin(); itr2 != itr->end(); ++itr2)
             {
-                delete (*itr2);
+                delete *itr2;
             }
-            (*itr).clear();
+
+            itr->clear();
         }
 
         patterns.clear();
@@ -316,9 +316,9 @@ public:
     string author;
     string composer;
     string replay;
-    string hwname;
-    string fileformat;
-    string fileformatSpecific;
+    string hardware;
+    string fileFormat;
+    string fileFormatSpecific;
     string containerFileformats;
     string md5;
     string volumeAmplificationStr;
@@ -330,7 +330,6 @@ public:
     string clockSpeedStr;
     string chips;
     int numPatterns;
-    int numTracksteps;
     int numMacros;
     int numUsedPatterns;
     int numSndModSeqs;
@@ -338,7 +337,7 @@ public:
     int numOrders;
     unsigned int numChannels;
     unsigned int numChannelsStream;
-    int defaultSubSong;
+    int defaultSubsong;
     int numSubsongs;
     int currentSubsong;
 
@@ -357,9 +356,9 @@ public:
     vector<BaseRow*> modRows;
     vector<vector<BaseRow*>> patterns;
 
-    unsigned int modPatternRows; //how many rows modPattern has
+    unsigned int modPatternRows; // how many rows modPattern has
     unsigned int modPatternRestart;
-    unsigned char* modVUMeters;
+    unsigned char* modVuMeters;
 
     bool isPlayModeRepeatSongEnabled;
     bool isContinuousPlaybackActive;

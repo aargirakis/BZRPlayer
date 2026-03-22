@@ -8,14 +8,12 @@ class NoPageSlider : public QSlider
     Q_OBJECT
 
 public:
-    NoPageSlider(QWidget* parent = 0);
+    NoPageSlider(QWidget* parent = nullptr);
 
-
-    void setDefaultValue(int defaultValue) { this->defValue = defaultValue; }
-    int defaultValue() { return defValue; }
-    bool snapToDefault() { return snapDefault; }
-    void setSnapToDefault(bool snap) { this->snapDefault = snap; }
-    void setSnapDistance(int dist) { this->snapDistance = dist; }
+    void setDefaultValue(const int value) { this->defaultValue = value; }
+    int getDefaultValue() const { return defaultValue; }
+    bool snapToDefault() const { return snapDefault; }
+    void setSnapToDefault(const bool snap) { this->snapDefault = snap; }
 
 protected:
     //QValidator::State validate(QString &text, int &pos) const;
@@ -29,9 +27,9 @@ protected:
 
 private:
     //QRegExpValidator *validator;
-    int valueFromPoint(const QPoint& p);
+    int valueFromPoint(const QPoint& p) const;
     QStyleOptionSlider getStyleOption() const;
-    int defValue;
+    int defaultValue;
     bool snapDefault;
     int snapDistance;
 };

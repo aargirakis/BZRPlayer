@@ -96,19 +96,19 @@ void RHPlayer::process() {
                 if (value < 0) {
                     switch (value) {
                         case -121:
-                            if (m_variant == 3) {
+                            if (variant == 3) {
                                 voice->volume = stream[position];
                                 position++;
                             }
                             break;
                         case -122:
-                            if (m_variant == 4) {
+                            if (variant == 4) {
                                 voice->volume = stream[position];
                                 position++;
                             }
                             break;
                         case -123:
-                            if (m_variant > 1) amiga->setComplete(1);
+                            if (variant > 1) amiga->setComplete(1);
                             break;
                         case -124:
                             position = voice->trackPtr + voice->trackPos;
@@ -133,7 +133,7 @@ void RHPlayer::process() {
                             position = value;
                             break;
                         case -125:
-                            if (m_variant == 4) voice->flags |= 4;
+                            if (variant == 4) voice->flags |= 4;
                             break;
                         case -126:
                             value = (signed char) stream[position];
@@ -189,7 +189,7 @@ void RHPlayer::process() {
             } while (loop);
         } else {
             if (voice->tick == 1) {
-                if (m_variant != 4 || !(voice->flags & 4)) {
+                if (variant != 4 || !(voice->flags & 4)) {
                     chan->setEnabled(0);
                 }
             }
@@ -240,7 +240,7 @@ void RHPlayer::process() {
 
 
 int RHPlayer::load(void *_data, unsigned long int _length) {
-    m_version = 0;
+    version = 0;
     stream = static_cast<unsigned char *>(_data);
 
     position = 44;
@@ -395,7 +395,7 @@ int RHPlayer::load(void *_data, unsigned long int _length) {
         position = wavesHeader;
         int i = (wavesHeader - samplesHeader) >> 5;
         int len = i + 3;
-        m_variant = 1;
+        variant = 1;
 
         if (i >= samplesLen) {
             for (int j = samplesLen; j < i; ++j) {
@@ -471,7 +471,7 @@ int RHPlayer::load(void *_data, unsigned long int _length) {
         if ((value - position) < 18) break;
     }
 
-    m_totalSongs = songs.size();
+    totalSongs = songs.size();
 
     position = 0x160;
 
@@ -496,7 +496,7 @@ int RHPlayer::load(void *_data, unsigned long int _length) {
         }
     }
 
-    m_version = 1;
+    version = 1;
     format = "Hubbard";
     //printData();
     return 1;

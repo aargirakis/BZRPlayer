@@ -1,8 +1,5 @@
-#include "album.h"
-#include <QHBoxLayout>
-#include <QApplication>
 #include <QMouseEvent>
-#include <QPainter>
+#include "album.h"
 
 Album::Album(const QString &id, QWidget* parent): QLabel(parent)
 {
@@ -17,9 +14,9 @@ Album::Album(const QString &id, QWidget* parent): QLabel(parent)
     this->labelText->setAlignment(Qt::AlignLeft);
 
     this->playButton = new QPushButton(this);
-    connect(playButton, &QPushButton::clicked, [this]() { emit clickedAddAlbum(this->path); });
+    connect(playButton, &QPushButton::clicked, [this] { emit clickedAddAlbum(this->path); });
 
-    const int size = 175;
+    constexpr int size = 175;
 
     this->installEventFilter(playButton);
 

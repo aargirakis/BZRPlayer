@@ -1,40 +1,25 @@
-#include "mainwindow.h"
+#include <QDesktopServices>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QScreen>
+#include <QSettings>
+#include <QSortFilterProxyModel>
+#include <QStandardPaths>
+#include <QSvgRenderer>
+#include <QTimer>
+#include "about.h"
 #include "dialogdeleteworkspace.h"
 #include "dialognewworkspace.h"
-#include "filedownloader.h"
-#include "myitemdelegate.h"
-#include "playlistmodel.h"
-#include "qdatetime.h"
-#include "qscreen.h"
-#include "qsortfilterproxymodel.h"
-#include "ui_mainwindow.h"
-#include "fmod_errors.h"
-#include "info.h"
-#include "various.h"
-#include <QMimeData>
-#include <QFontDatabase>
-#include <QFont>
-#include <QDragEnterEvent>
-#include <QFileDialog>
-#include <QDebug>
-#include <QMessageBox>
-#include <QSvgRenderer>
-#include <QMenu>
-#include <QInputDialog>
-#include <QSettings>
-#include <QDesktopServices>
-#include <QStandardPaths>
-#include <cmath>
-#include "soundmanager.h"
-#include "settingswindow.h"
-#include "visualizers/visualizerfullscreen.h"
-#include <fstream>
-#include <plugins.h>
-#include <QTcpServer>
-#include <QTcpSocket>
-#include "about.h"
 #include "DraggableTableView.h"
-#include <QHeaderView>
+#include "mainwindow.h"
+#include "playlistmodel.h"
+#include "plugins.h"
+#include "settingswindow.h"
+#include "soundmanager.h"
+#include "ui_mainwindow.h"
+#include "various.h"
 
 #define NEZPLAYLISTSPLITTER "::<>::?<>"
 #define PLAYLISTFIELDSPLITTER "<><>::????"
@@ -47,9 +32,7 @@
 using namespace std;
 const QString MainWindow::VERSION = PROJECT_VERSION;
 
-MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     setlocale(LC_ALL, ".UTF8");
 
@@ -78,18 +61,18 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     bool instanceExists = false;
 
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-    m_bAllowOnlyOneInstanceEnabled = settings.value("allowOnlyOneInstance", true).toBool();
+    allowOnlyOneInstance = settings.value("allowOnlyOneInstance", true).toBool();
 
-    qDebug() << "m_bAllowOnlyOneInstanceEnabled: " << m_bAllowOnlyOneInstanceEnabled;
+    qDebug() << "allowOnlyOneInstance: " << allowOnlyOneInstance;
 
-    if (m_bAllowOnlyOneInstanceEnabled)
+    if (allowOnlyOneInstance)
     {
         instanceExists = initializeSocket();
     }
 
     if (instanceExists) return;
 
-    //Fonts needs to be added before the GUI
+    // fonts needs to be added before the GUI
     QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "Roboto-Medium.ttf");
     QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "Roboto-Regular.ttf");
     QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "RobotoMono-Regular.ttf");
@@ -98,7 +81,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     setWindowTitle(PROJECT_NAME_VERSIONED);
     windowTitle = PROJECT_NAME_VERSIONED;
-    srand(time(NULL));
+    srand(time(nullptr));
 
     setupAdvancedDockingSystem();
 
@@ -106,31 +89,24 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     ui->labelFilename->setText("");
     ui->centralWidget->setStyleSheet("background:#282828/*background*/;color:#ffffff");
 
-
     QFont roboto("Roboto");
-
 
     ui->playlist->setFont(roboto);
     ui->labelFilename->setFont(roboto);
-
 
     currentRow = 0;
     isUpdateCurrentRowToNextEnabled = true;
     ui->visualizer->init();
     ui->trackerView->init();
 
-
     ui->pitchSlider->setSnapToDefault(true);
     ui->pitchSlider->setDefaultValue(100);
 
-
     ui->dockWidgetPlaylist->setFloating(false);
 
-    LoadWorkspaces();
+    loadWorkspaces();
 
     createThePopupMenuPlaylists();
-
-
     createThePopupMenuInstruments();
     createThePopupMenuChannels();
     createThePopupLogWindow();
@@ -143,20 +119,20 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     setMenuBarHiddenChecked(settings.value("menuBarHidden", false).toBool());
 
-    m_outputDevice = settings.value("outputDevice").toInt();
-    m_resetVolume = settings.value("defaultAudioLevel", false).toBool();
-    m_resetVolumeValue = settings.value("defaultAudioLevelValue", 100).toInt();
+    outputDevice = settings.value("outputDevice").toInt();
+    resetVolume = settings.value("defaultAudioLevel", false).toBool();
+    resetVolumeValue = settings.value("defaultAudioLevelValue", 100).toInt();
 
     lastDir = settings.value("Internal/lastOpenedDir", "/").toString();
 
-    m_defaultPlaymode = settings.value("defaultPlayMode", -1).toInt();
-    Playmode = static_cast<playmode>(m_defaultPlaymode == -1
+    defaultPlayMode = settings.value("defaultPlayMode", -1).toInt();
+    playMode = static_cast<PlayMode>(defaultPlayMode == -1
                                          ? settings.value("Internal/playMode", 0).toInt()
-                                         : m_defaultPlaymode);
+                                         : defaultPlayMode);
 
-    if (Playmode == normal) {
+    if (playMode == normal) {
         ui->checkBoxLoop->setCheckState(Qt::Unchecked);
-    } else if (Playmode == repeatPlaylist) {
+    } else if (playMode == repeatPlaylist) {
         ui->checkBoxLoop->setCheckState(Qt::PartiallyChecked);
     } else {
         ui->checkBoxLoop->setCheckState(Qt::Checked);
@@ -173,24 +149,23 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     ui->checkBoxShuffle->setChecked(settings.value("Internal/shuffle", false).toBool());
 
-    m_displayMilliseconds = settings.value("displayMilliseconds", false).toBool();
+    displayMilliseconds = settings.value("displayMilliseconds", false).toBool();
 
-    m_enqueueItems = settings.value("enqueueItems", false).toBool();
+    enqueueItems = settings.value("enqueueItems", false).toBool();
 
     isShownCheckBoxLoopPoints = settings.value("showLoopPoints", false).toBool();
 
-    m_normalizeEnabled = settings.value("normalizer", false).toBool();
-    m_normalizeFadeTime = settings.value("normalizerFadeTime", 5000).toInt();
-    m_normalizeThreshold = settings.value("normalizerThreshold", 10).toInt();
-    m_normalizeMaxAmp = settings.value("normalizerMaxAmp", 20).toInt();
+    normalizeEnabled = settings.value("normalizer", false).toBool();
+    normalizeFadeTime = settings.value("normalizerFadeTime", 5000).toInt();
+    normalizeThreshold = settings.value("normalizerThreshold", 10).toInt();
+    normalizeMaxAmp = settings.value("normalizerMaxAmp", 20).toInt();
     currentPlaylist = settings.value("Internal/currentPlaylist", PLAYLIST_DEFAULT).toString();
     currentRow = settings.value("Internal/currentRow", -1).toInt();
     selectedPlaylist = settings.value("Internal/selectedPlaylist", PLAYLIST_DEFAULT).toString();
-    m_reverbEnabled = settings.value("reverb", false).toBool();
-    m_reverbPreset = settings.value("reverbPreset", "Generic").toString();
-    m_ignoreSuffix = settings.value("ignoreSuffixes", "psflib;psf2lib;dsflib").toString();
-    m_ignorePrefix = settings.value("ignorePrefixes", "").toString();
-
+    reverbEnabled = settings.value("reverb", false).toBool();
+    reverbPreset = settings.value("reverbPreset", "Generic").toString();
+    ignoreSuffix = settings.value("ignoreSuffixes", "psflib;psf2lib;dsflib").toString();
+    ignorePrefix = settings.value("ignorePrefixes", "").toString();
 
     colorMainDefault = "#009379/*main*/";
     colorMainHoverDefault = "#00c09e/*main hover*/";
@@ -237,10 +212,11 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     infoValueWidth = settings.value("Internal/columnInfoValueWidth", 70).toInt();
 
     colorVisualizerPeak = settings.value("Visualizer/vuMeterColorPeak", "#b00e3e").toString();
-    vumeterPeaksEnabled = settings.value("Visualizer/vuMeterPeaks", true).toBool();
-    vumeterPeaksHeight = settings.value("Visualizer/vuMeterPeakHeight", 8).toInt();
-    getEffect()->setVumeterWidth(settings.value("Visualizer/vuMeterWidth", 50.0).toDouble());
-    getEffect()->setVumeterOpacity(settings.value("Visualizer/vuMeterOpacity", 100).toInt());
+    vuMeterPeaksEnabled = settings.value("Visualizer/vuMeterPeaks", true).toBool();
+    vuMeterPeaksHeight = settings.value("Visualizer/vuMeterPeakHeight", 8).toInt();
+    getEffect()->setVuMeterWidth(settings.value("Visualizer/vuMeterWidth", 50.0).toDouble());
+    getEffect()->setVuMeterOpacity(settings.value("Visualizer/vuMeterOpacity", 100).toInt());
+
     getEffect()->setAmplitude(settings.value("Visualizer/scrollerAmplitude", 32).toInt());
     getEffect()->setSinusFrequency(settings.value("Visualizer/scrollerFrequency", 0.0027).toDouble());
     getEffect()->setSinusSpeed(settings.value("Visualizer/scrollerSinusSpeed", 0.1).toDouble());
@@ -259,21 +235,21 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     getEffect()->setStarSpeed(settings.value("Visualizer/starfieldSpeed", 5).toInt());
     getEffect()->setScrollerEnabled(settings.value("Visualizer/scroller", true).toBool());
     getEffect()->setPrinterEnabled(settings.value("Visualizer/printer", true).toBool());
-    getEffect()->setVUMeterEnabled(settings.value("Visualizer/vuMeter", true).toBool());
+    getEffect()->setVuMeterEnabled(settings.value("Visualizer/vuMeter", true).toBool());
     getEffect()->setScrollerReflectionColor(
         QColor(settings.value("Visualizer/reflectionColor", "#00032e").toString()));
     getEffect()->setSinusFontScalingEnabled(settings.value("Visualizer/scrollerSinusFontScaling", false).toBool());
-    getEffect()->set3DCubeEnabled(settings.value("Visualizer/rotatingObject", false).toBool());
-    getEffect()->set3DCubeOrbit(settings.value("Visualizer/rotatingObjectOrbit", true).toBool());
-    getEffect()->set3DCubeColor(settings.value("Visualizer/rotatingObjectMaterialColor", "#009379").toString());
-    getEffect()->set3DCubeSize(settings.value("Visualizer/rotatingObjectModelSize", 21).toInt());
-    getEffect()->set3DCubeFocalLength(settings.value("Visualizer/rotatingObjectFocalLength", 220).toInt());
-    getEffect()->set3DCubeOrbitSize(settings.value("Visualizer/rotatingObjectOrbitSize", 245).toInt());
-    getEffect()->set3DCubeOrbitSpeed(settings.value("Visualizer/rotatingObjectOrbitSpeed", 2).toInt());
-    getEffect()->set3DCubeColorWireframe(settings.value("Visualizer/rotatingObjectWireframeColor", "#ffffff").toString());
-    getEffect()->set3DCubeWireframeEnabled(settings.value("Visualizer/rotatingObjectWireframe", false).toBool());
-    getEffect()->set3dCubeModel(settings.value("Visualizer/rotatingObjectModel", "cube").toString());
-    getEffect()->set3dCubeMaterial(settings.value("Visualizer/rotatingObjectMaterial", "blinn").toString());
+    getEffect()->setRotatingObjectEnabled(settings.value("Visualizer/rotatingObject", false).toBool());
+    getEffect()->setRotatingObjectOrbit(settings.value("Visualizer/rotatingObjectOrbit", true).toBool());
+    getEffect()->setRotatingObjectColor(settings.value("Visualizer/rotatingObjectMaterialColor", "#009379").toString());
+    getEffect()->setRotatingObjectSize(settings.value("Visualizer/rotatingObjectModelSize", 21).toInt());
+    getEffect()->setRotatingObjectFocalLength(settings.value("Visualizer/rotatingObjectFocalLength", 220).toInt());
+    getEffect()->setRotatingObjectOrbitSize(settings.value("Visualizer/rotatingObjectOrbitSize", 245).toInt());
+    getEffect()->setRotatingObjectOrbitSpeed(settings.value("Visualizer/rotatingObjectOrbitSpeed", 2).toInt());
+    getEffect()->setRotatingObjectColorWireframe(settings.value("Visualizer/rotatingObjectWireframeColor", "#ffffff").toString());
+    getEffect()->setRotatingObjectWireframeEnabled(settings.value("Visualizer/rotatingObjectWireframe", false).toBool());
+    getEffect()->setRotatingObjectModel(settings.value("Visualizer/rotatingObjectModel", "cube").toString());
+    getEffect()->setRotatingObjectMaterial(settings.value("Visualizer/rotatingObjectMaterial", "blinn").toString());
     getEffect()->setRasterBarsEnabled(settings.value("Visualizer/rasterBars", false).toBool());
     getEffect()->setNumberOfRasterBars(settings.value("Visualizer/rasterBarsAmount", 8).toInt());
     getEffect()->setRasterBarsSpeed(settings.value("Visualizer/rasterBarsSpeed", 35).toInt());
@@ -291,13 +267,11 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
                                                dataPath + "/resources/visualizer/bitmapfonts/angels_font.png").
         toString());
 
-
     getEffect()->setReflectionOpacity(settings.value("Visualizer/reflectionOpacity", 50).toInt());
 
     playlistRowHeight = settings.value("Appearance/playlistItemRowHeight", "30").toInt();
     playlistsRowHeight = settings.value("Appearance/playlistRowHeight", "30").toInt();
     nowPlayingFontSize = settings.value("Appearance/nowPlayingFontSize", "16").toInt();
-
 
     setColorVisualizerTop(colorVisualizerTop);
     setColorVisualizerBottom(colorVisualizerBottom);
@@ -305,8 +279,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     setColorVisualizerBackground(colorVisualizerBackground);
 
     setColorVisualizerPeakColor(colorVisualizerPeak);
-    setVUMeterPeaksEnabled(vumeterPeaksEnabled);
-    setVUMeterPeaksHeight(vumeterPeaksHeight);
+    setVuMeterPeaksEnabled(vuMeterPeaksEnabled);
+    setVuMeterPeaksHeight(vuMeterPeaksHeight);
 
     colorMainOld = colorMainDefault;
     colorMainHoverOld = colorMainHoverDefault;
@@ -338,13 +312,11 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     ui->tableInfo->setColumnWidth(1, infoValueWidth);
 
     connect(ui->tableInfo->horizontalHeader(), &QHeaderView::sectionResized,
-            [=](int logicalIndex, int oldSize, int newSize) {
-                //with lambda
+            [this](const int logicalIndex, const int newSize) {
 
                 if (ui->tableInfo->horizontalHeaderItem(logicalIndex) != nullptr) {
-                    QString columnText = ui->tableInfo->horizontalHeaderItem(logicalIndex)->text();
-
-                    if (columnText == "Name") {
+                    if (const QString columnText = ui->tableInfo->horizontalHeaderItem(logicalIndex)->text();
+                        columnText == "Name") {
                         infoNameWidth = newSize;
                     } else if (columnText == "Value") {
                         infoValueWidth = newSize;
@@ -352,81 +324,81 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
                 }
             });
 
+    addDebugText("Settings, reverbpreset: " + reverbPreset);
+    addDebugText("Settings, reverbEnabled: " + QString::number(reverbEnabled));
 
-    addDebugText("Settings, reverbpreset: " + m_reverbPreset);
-    addDebugText("Settings, m_reverbEnabled: " + QString::number(m_reverbEnabled));
-
-    addDebugText("m_muteVolume: " + QString::number(m_muteVolume));
-    addDebugText("m_resetVolume: " + QString::number(m_resetVolume));
+    addDebugText("isVolumeMuted: " + QString::number(isVolumeMuted));
+    addDebugText("resetVolume: " + QString::number(resetVolume));
 
     ui->volumeSlider->setDefaultValue(100);
 
     int vol = settings.value("Internal/volume", 100).toInt();
-    if (m_resetVolume) {
-        ui->volumeSlider->setValue(m_resetVolumeValue);
+
+    if (resetVolume) {
+        ui->volumeSlider->setValue(resetVolumeValue);
     } else {
         ui->volumeSlider->setValue(vol);
     }
-    m_muteVolume = settings.value("Internal/mute", false).toBool();
-    if (m_resetVolume) {
-        m_muteVolume = false;
+
+    isVolumeMuted = settings.value("Internal/mute", false).toBool();
+
+    if (resetVolume) {
+        isVolumeMuted = false;
     }
-    addDebugText("m_muteVolume: " + QString::number(m_muteVolume));
-    if (m_muteVolume) {
+
+    addDebugText("isVolumeMuted: " + QString::number(isVolumeMuted));
+
+    if (isVolumeMuted) {
         ui->checkBoxVolumeOn->setCheckState(Qt::Unchecked);
     } else {
         ui->checkBoxVolumeOn->setCheckState(Qt::Checked);
     }
 
-    SoundManager &sm = SoundManager::getInstance();
-    sm.Init(FMOD_OUTPUTTYPE_NOSOUND, ""); //Set sound device to silent
+    auto &sm = SoundManager::getInstance();
+    sm.Init(FMOD_OUTPUTTYPE_NOSOUND, ""); // set sound device to silent
 
-    sm.setNormalizeEnabled(m_normalizeEnabled);
-    sm.setNormalizeFadeTime(m_normalizeFadeTime);
-    sm.setNormalizeMaxAmp(m_normalizeMaxAmp);
-    sm.setNormalizeThreshold(m_normalizeThreshold);
-    sm.setReverbPreset(m_reverbPreset);
-    sm.setReverbEnabled(m_reverbEnabled);
+    sm.setNormalizeEnabled(normalizeEnabled);
+    sm.setNormalizeFadeTime(normalizeFadeTime);
+    sm.setNormalizeMaxAmp(normalizeMaxAmp);
+    sm.setNormalizeThreshold(normalizeThreshold);
+    sm.setReverbPreset(reverbPreset);
+    sm.setReverbEnabled(reverbEnabled);
 
     fileInfoParser = new FileInfoParser();
 
     refreshInfoTimer = 0;
 
-    m_Timer = new QTimer(this);
-    connect(m_Timer, SIGNAL(timeout()), this, SLOT(timerProgress()));
+    Timer = new QTimer(this);
+    connect(Timer, SIGNAL(timeout()), this, SLOT(timerProgress()));
 
-    m_Timer->start(16);
+    Timer->start(16);
 
     qDebug() << "timerProgress started";
     playStarted = false;
     loaded = false;
     buttonNextClicked = true;
 
-
     ui->positionSlider->setMaximum(0);
 
-    QDir pathDir(userPath);
-    if (!pathDir.exists()) {
+    if (!QDir(userPath).exists()) {
         QDir().mkdir(userPath);
     }
 
-    QDir pathDir2(userPath + PLAYLISTS_DIR);
-    if (!pathDir2.exists()) {
+    if (!QDir(userPath + PLAYLISTS_DIR).exists()) {
         QDir().mkdir(userPath + PLAYLISTS_DIR);
     }
-    QDir pathDir3(userPath + PLUGINS_DIR);
-    if (!pathDir3.exists()) {
+
+    if (!QDir(userPath + PLUGINS_DIR).exists()) {
         QDir().mkdir(userPath + PLUGINS_DIR);
     }
-    QDir pathDir4(userPath + PLUGIN_libsidplayfp_DIR);
-    if (!pathDir4.exists()) {
+
+    if (!QDir(userPath + PLUGIN_libsidplayfp_DIR).exists()) {
         QDir().mkdir(userPath + PLUGIN_libsidplayfp_DIR);
     }
-    QDir pathDir5(userPath + PLUGINS_CONFIG_DIR);
-    if (!pathDir5.exists()) {
+
+    if (!QDir(userPath + PLUGINS_CONFIG_DIR).exists()) {
         QDir().mkdir(userPath + PLUGINS_CONFIG_DIR);
     }
-
 
     QDir directory(userPath + PLAYLISTS_DIR);
 
@@ -435,7 +407,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() + PLAYLIST_DEFAULT_FILENAME)) {
         playlists.append(PLAYLIST_DEFAULT_FILENAME);
     }
-    //Remove PLAYLIST_DEFAULT_FILENAME and the put it first in playlists
+
+    // remove PLAYLIST_DEFAULT_FILENAME and the put it first in playlists
     playlists.append(directory.entryList(QStringList() << "*.m3u" << "*.M3U" << "*.m3u8" << "*.M3U8", QDir::Files));
     playlists.removeOne(PLAYLIST_DEFAULT_FILENAME);
     playlists.insert(0, PLAYLIST_DEFAULT_FILENAME);
@@ -444,16 +417,17 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     changeStyleSheetColor();
 
-    //Read all columns orders, size etc. from settings for all playlists
+    // read all columns orders, size etc. from settings for all playlists
     settings.beginGroup("InternalPlaylists");
 
     QStringList playlistsGeometryKeys = settings.childKeys();
     QMap<QString, QByteArray> playlistsGeometryMap;
 
-    for (const QString& key : playlistsGeometryKeys) {
-        QByteArray data = settings.value(key).toByteArray();
-        playlistsGeometryMap.insert(key, data);
+    for (const QString& plsGKey : playlistsGeometryKeys) {
+        QByteArray data = settings.value(plsGKey).toByteArray();
+        playlistsGeometryMap.insert(plsGKey, data);
     }
+
     settings.endGroup();
 
     QStringList previousSortedPlaylists = settings.value("Internal/playlistsOrder").toStringList();
@@ -463,16 +437,15 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
         QFileInfo f(filename);
 
-		DraggableTableView* tv = new DraggableTableView();
+		auto tv = new DraggableTableView();
         tv->setDragBackgroundColor(QColor(colorMain.left(7)));
         tv->setDragTextColor(QColor(colorMainText.left(7)));
         tv->setupDelegate(); // has to be called after colors are set
 
-        PlaylistModel* pm = new PlaylistModel(this);
-		QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
+        auto pm = new PlaylistModel(this);
+		auto proxyModel = new QSortFilterProxyModel(pm); // create proxy
 		proxyModel->setSourceModel(pm);
 		tv->setModel(proxyModel);
-
 
 		tableWidgetPlaylists[f.fileName()] = tv;
 		tableWidgetPlaylists[f.fileName()]->setStyleSheet(
@@ -488,15 +461,13 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QStringList columns;
         columns << tr("TITLE") << tr("FORMAT") << tr("LENGTH") << tr("SUBSONG");
 
-
-        //There was no existing default playlist
+        // there was no existing default playlist
         if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() +
                 PLAYLIST_DEFAULT_FILENAME) && filename == PLAYLIST_DEFAULT_FILENAME) {
             swapColumns(tableWidgetPlaylists[f.fileName()]);
         }
 
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->restoreState(playlistsGeometryMap[f.fileName()]);
-
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSectionsMovable(true);
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSortIndicatorShown(false);
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
@@ -505,9 +476,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         tv->setColumnHidden(6, true);
         tv->setColumnHidden(7, true);
 
-
-        QListWidgetItem *newItem = new QListWidgetItem;
+        auto newItem = new QListWidgetItem;
         newItem->setText(f.fileName());
+
         if (f.fileName() == PLAYLIST_DEFAULT_FILENAME) {
             QFont fontItalic = newItem->font();
             fontItalic.setItalic(true);
@@ -524,7 +495,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         ui->listWidget->insertItem(ui->listWidget->count(), newItem);
         ui->listWidget->setDragBackgroundColor(QColor(colorMain.left(7)));
         ui->listWidget->setDragTextColor(QColor(colorMainText.left(7)));
-        MyItemDelegate* item = new MyItemDelegate(this);
+        auto item = new MyItemDelegate(this);
         item->setMainColor(QColor(colorMain.left(7)));
         ui->listWidget->setItemDelegate(item);
 
@@ -540,9 +511,12 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() + currentPlaylist)) {
         currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
     }
+
     addDebugText("current playlist: " + currentPlaylist);
     QList<QListWidgetItem *> items = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+
     int row = 0;
+
     for (int i = 0; i < items.count(); i++) {
         row = items.at(i)->listWidget()->row(items.at(i));
         break;
@@ -553,7 +527,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     on_listWidget_itemClicked(ui->listWidget->currentItem());
 
-    //First save default layout;
+    // first save default layout;
     this->setHidden(true);
 
     QRect BZRrect = geometry();
@@ -563,42 +537,39 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     defaultGeometry = saveGeometry();
     this->setHidden(false);
     defaultState = saveState();
-    dockingState = m_DockManager->saveState();
-    bool shuffle = settings.value("shuffle", false).toBool();
-    if (shuffle) {
+    dockingState = dockManager->saveState();
+
+    if (settings.value("shuffle", false).toBool()) {
         resetShuffle(currentPlaylist);
     }
-
 
     QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
     filedownloader = new FileDownloader(imageUrl, this);
 
-    qint64 currentSeconds = QDateTime::currentDateTime().toSecsSinceEpoch();
+    qint64 currentSeconds = QDateTime::currentSecsSinceEpoch();
 
     if (PLUGIN_libsidplayfp_LIB != "") {
         if (bundledHvscSonglengthsUpdateFrequency == "Never") {
-            //Do nothing
+            // do nothing
         } else if (bundledHvscSonglengthsUpdateFrequency == "At every start") {
             connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-        } else if (bundledHvscSonglengthsUpdateFrequency == "Daily" && (currentSeconds - bundledHvscSonglengthsDownloadEpoch >= 86400)) {
+        } else if (bundledHvscSonglengthsUpdateFrequency == "Daily" && currentSeconds - bundledHvscSonglengthsDownloadEpoch >= 86400) {
             connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-        } else if (bundledHvscSonglengthsUpdateFrequency == "Weekly" && (currentSeconds - bundledHvscSonglengthsDownloadEpoch >=
-                                                            604800)) {
+        } else if (bundledHvscSonglengthsUpdateFrequency == "Weekly" && currentSeconds - bundledHvscSonglengthsDownloadEpoch >=
+                   604800) {
             connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-        } else if (bundledHvscSonglengthsUpdateFrequency == "Monthly" && (currentSeconds - bundledHvscSonglengthsDownloadEpoch >=
-                                                             2629743)) {
+        } else if (bundledHvscSonglengthsUpdateFrequency == "Monthly" && currentSeconds - bundledHvscSonglengthsDownloadEpoch >=
+                   2629743) {
             connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
         }
     }
 
     connect(ui->samples->horizontalHeader(), &QHeaderView::sectionResized,
-            [=](int logicalIndex, int oldSize, int newSize) {
-                //with lambda
+            [this](const int logicalIndex, const int newSize) {
 
                 if (ui->samples->horizontalHeaderItem(logicalIndex) != nullptr) {
-                    QString columnText = ui->samples->horizontalHeaderItem(logicalIndex)->text();
-
-                    if (columnText == "#") {
+                    if (const QString columnText = ui->samples->horizontalHeaderItem(logicalIndex)->text();
+                        columnText == "#") {
                         sampleColumnNumberWidth = newSize;
                     } else if (columnText == "Name") {
                         sampleColumnNameWidth = newSize;
@@ -619,13 +590,11 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
             });
 
     connect(ui->instruments->horizontalHeader(), &QHeaderView::sectionResized,
-            [=](int logicalIndex, int oldSize, int newSize) {
-                //with lambda
+            [this](const int logicalIndex, const int newSize) {
 
                 if (ui->instruments->horizontalHeaderItem(logicalIndex) != nullptr) {
-                    QString columnText = ui->instruments->horizontalHeaderItem(logicalIndex)->text();
-
-                    if (columnText == "#") {
+                    if (const QString columnText = ui->instruments->horizontalHeaderItem(logicalIndex)->text();
+                        columnText == "#") {
                         instrumentColumnNumberWidth = newSize;
                     } else if (columnText == "Name") {
                         instrumentColumnNameWidth = newSize;
@@ -648,7 +617,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     ui->dockWidgetSamples->hide();
     ui->dockWidgetTrackerView->hide();
     ui->dockWidgetVisualizer->hide();
-    m_DockManager->restoreState(settings.value("Internal/dockingState").toByteArray());
+    dockManager->restoreState(settings.value("Internal/dockingState").toByteArray());
     restoreGeometry(settings.value("Internal/geometry").toByteArray());
     restoreState(settings.value("Internal/windowState").toByteArray());
     visualizerFullScreen = new VisualizerFullScreen(ui->visualizer->getEffect());
@@ -670,9 +639,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     tableWidgetPlaylists[currentPlaylist]->scrollTo(index);
     tableWidgetPlaylists[currentPlaylist]->setCurrentIndex(index);
 
-
-    QList<QListWidgetItem *> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
-    if (l.size() > 0) {
+    if (QList<QListWidgetItem *> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+        !l.isEmpty()) {
         l.at(0)->setForeground(QColor(colorMain.left(7)));
     }
 
@@ -700,7 +668,7 @@ void MainWindow::checkCommandLine(int argc, char* argv[])
 {
     QStringList args = qApp->arguments();
 
-    if (args.count() <= 1) return; //we've got no songs/dirs from command line
+    if (args.count() <= 1) return; // we've got no songs/dirs from command line
 
     args.removeFirst();
     QList<QUrl> urls;
@@ -712,15 +680,14 @@ void MainWindow::checkCommandLine(int argc, char* argv[])
 
     addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
 
-
-    if ((m_bAllowOnlyOneInstanceEnabled && !m_enqueueItems) || !m_bAllowOnlyOneInstanceEnabled) {
+    if ((allowOnlyOneInstance && !enqueueItems) || !allowOnlyOneInstance) {
         on_listWidget_itemClicked(ui->listWidget->item(0));
-        QList<QListWidgetItem *> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+        const QList<QListWidgetItem *> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
         l.at(0)->setForeground(QColor(colorMainText.left(7)));
         currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
         removeHighlight();
         currentRow = rowCountBeforeAddSong;
-        PlaySong(currentRow);
+        playSongAtRow(currentRow);
     }
 }
 
@@ -729,14 +696,15 @@ bool MainWindow::initializeSocket()
     bool instanceExists = false;
 
     tcpServer = new QTcpServer(this);
-    //if we can't listen with server, there is already an instance of the application running
-    //so we don't create a server, we create a client instead
-    //the client will send command line argumens (filepaths) to the server, when the server has got it,
-    //the client will disconnect and close
+    // if we can't listen with server, there is already an instance of the application running
+    // so we don't create a server, we create a client instead
+    // the client will send command line argumens (filepaths) to the server, when the server has got it,
+    // the client will disconnect and close
     if (!tcpServer->listen(QHostAddress::LocalHost, 9860))
     {
         instanceExists = true;
     }
+
     if (!instanceExists)
     {
         connect(tcpServer, SIGNAL(newConnection()), this, SLOT(acceptConnection()));
@@ -759,13 +727,16 @@ bool MainWindow::initializeSocket()
 void MainWindow::createMenuWindowTabs()
 {
     ui->menuWindow->addSeparator();
+
     foreach(ads::CDockWidget* widg, dockWidgets)
     {
-        QAction* action = new QAction(widg->windowTitle());
+        const auto action = new QAction(widg->windowTitle());
+
         if (action->text().toLower().endsWith(".m3u") || action->text().toLower().endsWith(".m3u8"))
         {
             action->setText("Playlist");
         }
+
         action->setCheckable(true);
         action->setChecked(!widg->isClosed());
         connect(action, &QAction::triggered, this, [&, this, widg] { slot_dockWidgetMenuChecked(widg); });
@@ -780,18 +751,19 @@ void MainWindow::dockWindowClosed(bool b)
     {
         foreach(QAction *menuAction, ui->menuWindow->actions())
         {
-            if (menuAction->text() == dock->windowTitle() || ((dock->windowTitle().toLower().endsWith(".m3u") || dock->
-                windowTitle().toLower().endsWith(".m3u8")) && menuAction->text() == "Playlist"))
-            {
+            if (menuAction->text() == dock->windowTitle() || (
+                    (dock->windowTitle().toLower().endsWith(".m3u") || dock->windowTitle().toLower().endsWith(".m3u8"))
+                    && menuAction->text() == "Playlist")) {
                 menuAction->setChecked(!dock->isClosed());
             }
         }
     }
 }
 
-void MainWindow::slot_dockWidgetMenuChecked(ads::CDockWidget* d)
+void MainWindow::slot_dockWidgetMenuChecked(ads::CDockWidget* d) const
 {
     addDebugText("Clicked " + d->windowTitle());
+
     if (d->isClosed())
     {
         d->toggleView(true);
@@ -802,17 +774,16 @@ void MainWindow::slot_dockWidgetMenuChecked(ads::CDockWidget* d)
     }
 }
 
-void MainWindow::on_positionSlider_sliderReleased()
-{
+void MainWindow::on_positionSlider_sliderReleased() const {
     setPosition();
 }
 
-void MainWindow::setPosition(int offset) {
+void MainWindow::setPosition(const int offset) const {
     const int currentPos = ui->positionSlider->value();
     int targetPos = currentPos + offset;
 
     if (loopPointsState == B_SET && targetPos > loopPointB) {
-        targetPos = loopPointA;
+        targetPos = static_cast<int>(loopPointA);
     } else {
         if (const int maxPos = ui->positionSlider->maximum(); targetPos >= maxPos) {
             targetPos--;
@@ -821,7 +792,7 @@ void MainWindow::setPosition(int offset) {
         }
     }
 
-    SoundManager::getInstance().SetPosition(targetPos, FMOD_TIMEUNIT_MS);
+    SoundManager::getInstance().setPosition(targetPos, FMOD_TIMEUNIT_MS);
     addDebugText("Set position to " + QString::number(targetPos));
 }
 
@@ -833,18 +804,19 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
 
     if (event->type() == QEvent::KeyPress)
     {
-        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        QKeyEvent const *keyEvent = static_cast<QKeyEvent *>(event);
+
         if (keyEvent->key() == Qt::Key_F5)
         {
             ui->buttonPlay_2->click();
         }
         else if (keyEvent->key() == Qt::Key_Right)
         {
-            if (QApplication::keyboardModifiers() == (Qt::ShiftModifier))
+            if (QApplication::keyboardModifiers() == Qt::ShiftModifier)
             {
                 setPosition(3000);
             }
-            else if (QApplication::keyboardModifiers() == (Qt::ControlModifier))
+            else if (QApplication::keyboardModifiers() == Qt::ControlModifier)
             {
                 setPosition(60000);
             }
@@ -859,11 +831,11 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (keyEvent->key() == Qt::Key_Left)
         {
-            if (QApplication::keyboardModifiers() == (Qt::ShiftModifier))
+            if (QApplication::keyboardModifiers() == Qt::ShiftModifier)
             {
                 setPosition(-3000);
             }
-            else if (QApplication::keyboardModifiers() == (Qt::ControlModifier))
+            else if (QApplication::keyboardModifiers() == Qt::ControlModifier)
             {
                 setPosition(-60000);
             }
@@ -876,9 +848,11 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
                 setPosition(-10000);
             }
         }
+
         if (obj->parent() != nullptr && obj->parent()->objectName() == "Playlist")
         {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+            keyEvent = static_cast<QKeyEvent*>(event);
+
             if (keyEvent->key() == Qt::Key_Delete)
             {
                 addDebugText("Deleting playlists items");
@@ -895,7 +869,8 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == ui->listWidget)
         {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+            keyEvent = static_cast<QKeyEvent*>(event);
+
             if (keyEvent->key() == Qt::Key_Delete)
             {
                 addDebugText("Deleting playlist");
@@ -904,9 +879,10 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == visualizerFullScreen)
         {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-            if (keyEvent->key() == Qt::Key_Space || keyEvent->key() == Qt::Key_Escape || keyEvent->key() ==
-                Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
+            keyEvent = static_cast<QKeyEvent*>(event);
+
+            if (keyEvent->key() == Qt::Key_Space || keyEvent->key() == Qt::Key_Escape ||
+                keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
             {
                 visualizerFullScreen->hide();
             }
@@ -914,7 +890,8 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
 
         else if (obj == trackerFullScreen)
         {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+            keyEvent = static_cast<QKeyEvent*>(event);
+
             if (keyEvent->key() == Qt::Key_Space || keyEvent->key() == Qt::Key_Escape || keyEvent->key() ==
                 Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
             {
@@ -942,9 +919,9 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == ui->buttonPlay_2)
         {
-            if (SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())
-            {
-                if (!SoundManager::getInstance().isWavWriterDeviceSelected()) {
+            if (const auto &sm = SoundManager::getInstance();
+                sm.isPlaying() && !sm.isPaused()) {
+                if (!sm.isWavWriterDeviceSelected()) {
                     ui->buttonPlay_2->setIcon(icons["pauseHover"]);
                 }
             }
@@ -955,33 +932,19 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == ui->checkBoxShuffle)
         {
-            if (isShuffleEnabled())
-            {
-                ui->checkBoxShuffle->setIcon(icons["shuffle-onHover"]);
-            }
-            else
-            {
-                ui->checkBoxShuffle->setIcon(icons["shuffle-offHover"]);
-            }
+            ui->checkBoxShuffle->setIcon(icons[isShuffleEnabled() ? "shuffle-onHover" : "shuffle-offHover"]);
         }
         else if (obj == ui->checkBoxVolumeOn)
         {
-            if (m_muteVolume)
-            {
-                ui->checkBoxVolumeOn->setIcon(icons["speaker-offHover"]);
-            }
-            else
-            {
-                ui->checkBoxVolumeOn->setIcon(icons["speaker-onHover"]);
-            }
+            ui->checkBoxVolumeOn->setIcon(icons[isVolumeMuted ? "speaker-offHover" : "speaker-onHover"]);
         }
         else if (obj == ui->checkBoxLoop)
         {
-            if (Playmode == normal)
+            if (playMode == normal)
             {
                 ui->checkBoxLoop->setIcon(icons["repeatHover"]);
             }
-            else if (Playmode == repeatPlaylist)
+            else if (playMode == repeatPlaylist)
             {
                 ui->checkBoxLoop->setIcon(icons["repeat-onHover"]);
             }
@@ -1025,9 +988,9 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == ui->buttonPlay_2)
         {
-            if (SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())
-            {
-                if (!SoundManager::getInstance().isWavWriterDeviceSelected()) {
+            if (const auto &sm = SoundManager::getInstance();
+                sm.isPlaying() && !sm.isPaused()) {
+                if (!sm.isWavWriterDeviceSelected()) {
                     ui->buttonPlay_2->setIcon(icons["pause"]);
                 }
             }
@@ -1038,33 +1001,19 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (obj == ui->checkBoxShuffle)
         {
-            if (isShuffleEnabled())
-            {
-                ui->checkBoxShuffle->setIcon(icons["shuffle-on"]);
-            }
-            else
-            {
-                ui->checkBoxShuffle->setIcon(icons["shuffle-off"]);
-            }
+            ui->checkBoxShuffle->setIcon(icons[isShuffleEnabled() ? "shuffle-on" : "shuffle-off"]);
         }
         else if (obj == ui->checkBoxVolumeOn)
         {
-            if (m_muteVolume)
-            {
-                ui->checkBoxVolumeOn->setIcon(icons["speaker-off"]);
-            }
-            else
-            {
-                ui->checkBoxVolumeOn->setIcon(icons["speaker-on"]);
-            }
+            ui->checkBoxVolumeOn->setIcon(icons[isVolumeMuted ? "speaker-off" : "speaker-on"]);
         }
         else if (obj == ui->checkBoxLoop)
         {
-            if (Playmode == normal)
+            if (playMode == normal)
             {
                 ui->checkBoxLoop->setIcon(icons["repeat"]);
             }
-            else if (Playmode == repeatPlaylist)
+            else if (playMode == repeatPlaylist)
             {
                 ui->checkBoxLoop->setIcon(icons["repeat-on"]);
             }
@@ -1087,15 +1036,14 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
                 default: ;
             }
         }
-    }
-
-    else if (event->type() == QEvent::Wheel && obj == ui->labelFilename && QApplication::keyboardModifiers() == (
-        Qt::ControlModifier))
+    } else if (event->type() == QEvent::Wheel && obj == ui->labelFilename &&
+               QApplication::keyboardModifiers() == Qt::ControlModifier)
     {
-        QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(event);
-        QPoint numPixels = wheelEvent->pixelDelta();
-        QPoint numDegrees = wheelEvent->angleDelta() / 8;
-        QFont font = ui->labelFilename->font();
+        const auto wheelEvent = static_cast<QWheelEvent*>(event);
+        const QPoint numPixels = wheelEvent->pixelDelta();
+        const QPoint numDegrees = wheelEvent->angleDelta() / 8;
+        const QFont font = ui->labelFilename->font();
+
         if (!numPixels.isNull() && numPixels.y() != 0)
         {
             if (font.pixelSize() + numPixels.y() <= 100 && font.pixelSize() + numPixels.y() >= 1)
@@ -1105,34 +1053,38 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
         }
         else if (!numDegrees.isNull() && numDegrees.y() != 0)
         {
-            QPoint numSteps = numDegrees / 15;
-            if (font.pixelSize() + (numSteps.y() * 2) <= 100 && font.pixelSize() + (numSteps.y() * 2) >= 1)
+            if (const QPoint numSteps = numDegrees / 15;
+                font.pixelSize() + numSteps.y() * 2 <= 100 && font.pixelSize() + numSteps.y() * 2 >= 1)
             {
-                setNowPlayingFontSize(font.pixelSize() + (numSteps.y() * 2));
+                setNowPlayingFontSize(font.pixelSize() + numSteps.y() * 2);
             }
         }
     }
-    else if (event->type() == QEvent::Wheel && obj == ui->visualizer && QApplication::keyboardModifiers() == (
-        Qt::ControlModifier))
+    else if (event->type() == QEvent::Wheel && obj == ui->visualizer &&
+        QApplication::keyboardModifiers() == Qt::ControlModifier)
     {
-        QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(event);
-        QPoint numPixels = wheelEvent->pixelDelta();
-        QPoint numDegrees = wheelEvent->angleDelta() / 8;
+        const auto wheelEvent = static_cast<QWheelEvent*>(event);
+        const QPoint numPixels = wheelEvent->pixelDelta();
+        const QPoint numDegrees = wheelEvent->angleDelta() / 8;
         float scale = 1;
+
         if (!numPixels.isNull() && numPixels.y() != 0)
         {
             scale = numPixels.y();
         }
         else if (!numDegrees.isNull() && numDegrees.y() != 0)
         {
-            QPoint numSteps = numDegrees / 15;
+            const QPoint numSteps = numDegrees / 15;
             scale = numSteps.y() * 2;
         }
+
         scale = scale / 40;
         scale = 1 - scale;
-        if (scale * getEffect()->getResolutionWidth() >= 80 && scale * getEffect()->getResolutionHeight() >= 80 && scale
-            * getEffect()->getResolutionWidth() <= 4096 && scale * getEffect()->getResolutionHeight() <= 4096)
-        {
+
+        if (scale * getEffect()->getResolutionWidth() >= 80 &&
+            scale * getEffect()->getResolutionHeight() >= 80 &&
+            scale * getEffect()->getResolutionWidth() <= 4096 &&
+            scale * getEffect()->getResolutionHeight() <= 4096) {
             getEffect()->setResolutionWidth(scale * getEffect()->getResolutionWidth());
             getEffect()->setResolutionHeight(scale * getEffect()->getResolutionHeight());
         }
@@ -1205,30 +1157,6 @@ bool MainWindow::handleMenuBarHiddenEvents(QEvent *event) {
     return false;
 }
 
-unsigned MainWindow::getFontSize(QRect rect, QFont font, QString text)
-{
-    int fontSize = 1;
-
-    int i = 0;
-    while (i < 30)
-    {
-        i++;
-        QFont f(font);
-        f.setPixelSize(fontSize);
-
-        QRect r = QFontMetrics(f).boundingRect(text);
-        addDebugText(
-            "r.height(): " + QString::number(r.height()) + " rect.height(): " + QString::number(rect.height()) +
-            " r.width(): " + QString::number(r.width()) + " rect.width():" + QString::number(rect.width()));
-        if (r.height() <= rect.height() && r.width() <= rect.width())
-            fontSize++;
-        else
-            break;
-    }
-    addDebugText("returning fontisize: " + QString::number(fontSize));
-    return fontSize;
-}
-
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
 }
@@ -1240,10 +1168,11 @@ void MainWindow::addDebugText(const QString &debugText) const {
 void MainWindow::refreshInfo() {
     PlaylistItem pi;
     pi.fullPath = currentPlayingFilepath;
-    pi.info = SoundManager::getInstance().m_Info1;
-    fileInfoParser->updateFileInfo(ui->tableInfo, &pi);
+    pi.info = SoundManager::getInstance().info;
+    FileInfoParser::updateFileInfo(ui->tableInfo, &pi);
 
     QString title;
+
     if (!pi.info->title.empty()) {
         title = fromUtf8OrLatin1(pi.info->title);
     } else {
@@ -1262,47 +1191,49 @@ void MainWindow::refreshInfo() {
 void MainWindow::timerProgress()
 {
     unsigned int currentMs = 0;
+    const auto &sm = SoundManager::getInstance();
 
-    if (SoundManager::getInstance().IsPlaying())
+    if (sm.isPlaying())
     {
         refreshInfoTimer++;
+
         if (refreshInfoTimer >= 120)
         {
-            {
-                QFileInfo fileinfo(currentPlayingFilepath);
-                if (fileinfo.size() == 0)
-                {
-                    refreshInfoTimer = 0;
-                    refreshInfo();
-                }
+            if (const QFileInfo fileinfo(currentPlayingFilepath);
+                fileinfo.size() == 0) {
+                refreshInfoTimer = 0;
+                refreshInfo();
             }
         }
+
         if (visualizerFullScreen->isVisible())
         {
             visualizerFullScreen->update();
         }
-        else if (trackerFullScreen->isVisible() && !SoundManager::getInstance().GetPaused())
+        else if (trackerFullScreen->isVisible() && !sm.isPaused())
         {
             trackerFullScreen->update();
         }
         else
         {
             ui->visualizer->update();
-            if (!SoundManager::getInstance().GetPaused())
+
+            if (!sm.isPaused())
             {
                 ui->trackerView->update();
             }
         }
 
-        currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MS_REAL);
+        currentMs = sm.getPosition(FMOD_TIMEUNIT_MS_REAL);
+
         if (currentMs == 0)
         {
-            currentMs = SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MS);
+            currentMs = sm.getPosition(FMOD_TIMEUNIT_MS);
         }
 
         if (!ui->positionSlider->isSliderDown())
         {
-            ui->labelTimer_2->setText(msToNiceStringExact(currentMs, m_displayMilliseconds));
+            ui->labelTimer_2->setText(msToNiceStringExact(currentMs, displayMilliseconds));
             ui->positionSlider->setValue(static_cast<int>(currentMs));
         }
     }
@@ -1313,14 +1244,12 @@ void MainWindow::timerProgress()
             return;
         }
 
-        if (SoundManager::getInstance().m_Info1 != nullptr &&
-            (SoundManager::getInstance().m_Info1->isContinuousPlaybackActive ||
-             SoundManager::getInstance().m_Info1->isSeamlessLoopActive)) {
+        if (const auto &info = sm.info;
+            info != nullptr && (info->isContinuousPlaybackActive || info->isSeamlessLoopActive)) {
             return;
         }
 
-        if (currentMs >= song_length_ms ||
-            (!SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())) {
+        if (currentMs >= songLengthMs || (!sm.isPlaying() && !sm.isPaused())) {
             playNextSong(false);
         }
     }
@@ -1328,8 +1257,10 @@ void MainWindow::timerProgress()
 
 void MainWindow::updateButtons()
 {
-    if (SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused()) {
-        if (SoundManager::getInstance().isWavWriterDeviceSelected()) {
+    const auto &sm = SoundManager::getInstance();
+
+    if (sm.isPlaying() && !sm.isPaused()) {
+        if (sm.isWavWriterDeviceSelected()) {
             ui->buttonPlay_2->setEnabled(false);
             ui->buttonPlay_2->setIcon(icons["pause-disabled"]);
             ui->buttonPlay_2->setToolTip("Pause not available");
@@ -1341,23 +1272,18 @@ void MainWindow::updateButtons()
     }
     else
     {
-            ui->buttonPlay_2->setEnabled(true);
-            ui->buttonPlay_2->setIcon(icons["play"]);
+        ui->buttonPlay_2->setEnabled(true);
+        ui->buttonPlay_2->setIcon(icons["play"]);
         ui->buttonPlay_2->setToolTip("Play");
     }
-    if (isShuffleEnabled())
-    {
-        ui->checkBoxShuffle->setIcon(icons["shuffle-on"]);
-    }
-    else
-    {
-        ui->checkBoxShuffle->setIcon(icons["shuffle-off"]);
-    }
-    if (Playmode == repeatSong)
+
+    ui->checkBoxShuffle->setIcon(icons[isShuffleEnabled() ? "shuffle-on" : "shuffle-off"]);
+
+    if (playMode == repeatSong)
     {
         ui->checkBoxLoop->setIcon(icons["repeat-1"]);
     }
-    else if (Playmode == repeatPlaylist)
+    else if (playMode == repeatPlaylist)
     {
         ui->checkBoxLoop->setIcon(icons["repeat-on"]);
     }
@@ -1365,9 +1291,9 @@ void MainWindow::updateButtons()
     {
         ui->checkBoxLoop->setIcon(icons["repeat"]);
     }
-    if (SoundManager::getInstance().IsPlaying()) {
-        if (SoundManager::getInstance().m_Info1->getSeekable() &&
-            song_length_ms != -1 && !SoundManager::getInstance().m_Info1->isContinuousPlaybackActive) {
+
+    if (sm.isPlaying()) {
+        if (sm.info->getSeekable() && songLengthMs != -1 && !sm.info->isContinuousPlaybackActive) {
             switch (loopPointsState) {
                 case A_SET:
                     ui->checkBoxLoopPoints->setIcon(icons["loop-point-a-on"]);
@@ -1393,50 +1319,44 @@ void MainWindow::updateButtons()
         ui->checkBoxLoopPoints->setIcon(icons["loop-points-off"]);
         ui->checkBoxLoopPoints->setToolTip("");
     }
-    if (m_muteVolume)
-    {
-        ui->checkBoxVolumeOn->setIcon(icons["speaker-off"]);
-    }
-    else
-    {
-        ui->checkBoxVolumeOn->setIcon(icons["speaker-on"]);
-    }
+
+    ui->checkBoxVolumeOn->setIcon(icons[isVolumeMuted ? "speaker-off" : "speaker-on"]);
 }
 
 MainWindow::~MainWindow()
 {
-    SaveSettings();
-    addDebugText("Quitting....");
+    saveSettings();
+    addDebugText("Quitting...");
     delete ui;
 }
 
-void MainWindow::playNextSong(bool forceNext)
+void MainWindow::playNextSong(const bool forceNext)
 {
     addDebugText("Song ended. Time to play next song.");
-    addDebugText("Playmode: " + QString::number(Playmode));
+    addDebugText("PlayMode: " + QString::number(playMode));
 
     if (!tableWidgetPlaylists.contains(currentPlaylist))
     {
-        //This happens if a song is playing and that playlist is deleted while playing
+        // this happens if a song is playing and that playlist is deleted while playing
         on_buttonStop_clicked();
         currentRow = 0;
         currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
         ui->listWidget->setCurrentRow(0);
         on_listWidget_itemClicked(ui->listWidget->currentItem());
     }
-    else if (Playmode == repeatSong && !forceNext)
+    else if (playMode == repeatSong && !forceNext)
     {
         if (tableWidgetPlaylists[currentPlaylist]->model()->rowCount() > 0 &&
             currentRow != tableWidgetPlaylists[currentPlaylist]->model()->rowCount())
         {
-            PlaySong(currentRow);
+            playSongAtRow(currentRow);
         }
         else
         {
             on_buttonStop_clicked();
         }
     }
-    else if (Playmode == normal || Playmode == repeatPlaylist || forceNext)
+    else if (playMode == normal || playMode == repeatPlaylist || forceNext)
     {
         if (tableWidgetPlaylists[currentPlaylist]->model()->rowCount() == 0)
         {
@@ -1447,27 +1367,27 @@ void MainWindow::playNextSong(bool forceNext)
         {
             if (isShuffleEnabled())
             {
-                m_iCurrentShufflePosition[currentPlaylist]++;
+                currentShufflePosition[currentPlaylist]++;
 
-
-                if (m_ShuffleToBePlayed[currentPlaylist].size() > 0)
+                if (!shuffleToBePlayed[currentPlaylist].isEmpty())
                 {
-                    if (m_iCurrentShufflePosition[currentPlaylist] >= m_ShufflePlayed[currentPlaylist].size())
+                    if (currentShufflePosition[currentPlaylist] >= shufflePlayed[currentPlaylist].size())
                     {
-                        unsigned int next = rand() % (m_ShuffleToBePlayed[currentPlaylist].size());
+                        const unsigned int next = rand() % shuffleToBePlayed[currentPlaylist].size();
                         addDebugText("Next position shuffled: " + QString::number(next));
                         removeHighlight();
-                        currentRow = m_ShuffleToBePlayed[currentPlaylist].at(next);
-                        m_ShufflePlayed[currentPlaylist].push_back(currentRow);
-                        m_ShuffleToBePlayed[currentPlaylist].remove(next);
+                        currentRow = shuffleToBePlayed[currentPlaylist].at(next);
+                        shufflePlayed[currentPlaylist].push_back(currentRow);
+                        shuffleToBePlayed[currentPlaylist].remove(next);
                     }
                     else
                     {
                         addDebugText("Previously had this position shuffled.");
                         removeHighlight();
-                        currentRow = m_ShufflePlayed[currentPlaylist].at(m_iCurrentShufflePosition[currentPlaylist]);
+                        currentRow = shufflePlayed[currentPlaylist].at(currentShufflePosition[currentPlaylist]);
                     }
-                    PlaySong(currentRow);
+
+                    playSongAtRow(currentRow);
                 }
                 else
                 {
@@ -1475,7 +1395,7 @@ void MainWindow::playNextSong(bool forceNext)
                     on_buttonStop_clicked();
                 }
             }
-            else //Normal or repeat playlist with no shuffle
+            else // normal or repeat playlist with no shuffle
             {
                 if (currentRow < tableWidgetPlaylists[currentPlaylist]->model()->rowCount() - 1)
                 {
@@ -1484,11 +1404,11 @@ void MainWindow::playNextSong(bool forceNext)
                     {
                         currentRow++;
                     }
-                    PlaySong(currentRow);
+                    playSongAtRow(currentRow);
                 }
                 else
                 {
-                    if (Playmode == normal || Playmode == repeatSong)
+                    if (playMode == normal || playMode == repeatSong)
                     {
                         if (isUpdateCurrentRowToNextEnabled)
                         {
@@ -1497,7 +1417,7 @@ void MainWindow::playNextSong(bool forceNext)
                         }
                         else
                         {
-                            PlaySong(currentRow);
+                            playSongAtRow(currentRow);
                         }
                     }
                     else
@@ -1508,51 +1428,55 @@ void MainWindow::playNextSong(bool forceNext)
                         {
                             currentRow = 0;
                         }
-                        PlaySong(currentRow);
+                        playSongAtRow(currentRow);
                     }
                 }
             }
         }
     }
+
     isUpdateCurrentRowToNextEnabled = true;
 }
 
-void MainWindow::highlightPlaylistItem(QString playlist, int row)
+void MainWindow::highlightPlaylistItem(const QString &playlist, const int row)
 {
-    QModelIndex index = tableWidgetPlaylists[playlist]->model()->index(row, 0, QModelIndex());
+    const QModelIndex index = tableWidgetPlaylists[playlist]->model()->index(row, 0, QModelIndex());
     tableWidgetPlaylists[playlist]->model()->setData(index, row, Qt::ForegroundRole);
     tableWidgetPlaylists[currentPlaylist]->update();
     tableWidgetPlaylists[currentPlaylist]->repaint();
 }
 
-void MainWindow::resetShuffle(QString playlist)
+void MainWindow::resetShuffle(const QString &playlist)
 {
     addDebugText("Reset shuffle for playlist '" + playlist + "'");
-    m_ShuffleToBePlayed[playlist].clear();
-    m_ShufflePlayed[playlist].clear();
+    shuffleToBePlayed[playlist].clear();
+    shufflePlayed[playlist].clear();
 
-    m_iCurrentShufflePosition[playlist] = 0;
+    currentShufflePosition[playlist] = 0;
 
     for (unsigned int e = 0; e < tableWidgetPlaylists[playlist]->model()->rowCount(); e++)
     {
-        m_ShuffleToBePlayed[playlist].push_back(e);
+        shuffleToBePlayed[playlist].push_back(e);
     }
 
     if (tableWidgetPlaylists[playlist]->model()->rowCount() > 0 &&
         currentRow < tableWidgetPlaylists[playlist]->model()->rowCount() - 1)
     {
-        m_ShufflePlayed[playlist].push_back(currentRow);
-        m_ShuffleToBePlayed[playlist].remove(currentRow);
+        shufflePlayed[playlist].push_back(currentRow);
+        shuffleToBePlayed[playlist].remove(currentRow);
     }
 }
+
 QString MainWindow::getCurrentPlaylist() const
 {
     return currentPlaylist;
 }
+
 QString MainWindow::getSelectedPlaylist() const
 {
     return selectedPlaylist;
 }
+
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     quit();
@@ -1562,45 +1486,41 @@ void MainWindow::changeEvent(QEvent* event)
 {
     if (event->type() == QEvent::WindowStateChange)
     {
-        if (isMinimized())
-        {
-            this->setWindowTitle(windowTitle);
-        }
-        else
-        {
-            this->setWindowTitle(PROJECT_NAME_VERSIONED);
-        }
+        this->setWindowTitle(isMinimized() ? windowTitle : PROJECT_NAME_VERSIONED);
+
         if (isMinimized() == true && isSystrayOnMinimizeEnabled && isSystrayOnMinimizeChecked)
         {
-            wasMaxmimized = false;
+            wasMaximized = false;
             hide();
         }
+
         if (isMaximized() == true && isSystrayOnMinimizeEnabled && isSystrayOnMinimizeChecked)
         {
-            wasMaxmimized = true;
+            wasMaximized = true;
         }
     }
 
     return QMainWindow::changeEvent(event);
 }
 
-bool MainWindow::loadSound(QString fullPath, const int subsong)
+bool MainWindow::loadSound(const QString& fullPath, const int subsong)
 {
-    SoundManager& sm = SoundManager::getInstance();
+    auto &sm = SoundManager::getInstance();
+
     addDebugText("Try to load sound (playlistitem): " + fullPath);
     ui->buttonPlay_2->setIcon(icons["pause"]);
-    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0);
+    const QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0);
     tableWidgetPlaylists[currentPlaylist]->scrollTo(index);
     repaint();
 
     auto* info = new Info();
     info->clearMemory();
     info->clear();
-    info->isPlayModeRepeatSongEnabled = Playmode == repeatSong;
+    info->isPlayModeRepeatSongEnabled = playMode == repeatSong;
     info->isFmodSeamlessLoopEnabled = getFmodSeamlessLoopEnabled();
     info->currentSubsong = subsong;
 
-    bool loadOK = sm.LoadSound(fullPath, info);
+    const bool loadOK = sm.loadSound(fullPath, info);
 
     if (loadOK)
     {
@@ -1621,6 +1541,7 @@ bool MainWindow::loadSound(QString fullPath, const int subsong)
         tableWidgetPlaylists[currentPlaylist]->model()->setData(index, true, Qt::EditRole);
         tableWidgetPlaylists[currentPlaylist]->update();
     }
+
     return loadOK;
 }
 
@@ -1639,102 +1560,87 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 
 void MainWindow::dragMoveEvent(QDragMoveEvent* event)
 {
-    if (event->mimeData()->hasFormat("text/uri-list"))
-    {
-        const int UNKNOWN_OFFSET = 64;
+    if (!event->mimeData()->hasFormat("text/uri-list")) {
+        event->ignore();
+        dropWidget = DROP_IGNORE;
+        return;
+    }
 
+    constexpr int UNKNOWN_OFFSET = 64;
 
-        if (DockWidgetPlaylists->isCurrentTab())
-        {
-            QRect dockWidgetPlaylistsRect = DockWidgetPlaylists->geometry();
-            QPoint pointPlaylists = DockWidgetPlaylists->mapTo(this, DockWidgetPlaylists->pos());
+    if (dockWidgetPlaylists->isCurrentTab()) {
+        QRect dockWidgetPlaylistsRect = dockWidgetPlaylists->geometry();
+        const QPoint pointPlaylists = dockWidgetPlaylists->mapTo(this, dockWidgetPlaylists->pos());
+
+        dockWidgetPlaylistsRect.setRight(pointPlaylists.x() + dockWidgetPlaylistsRect.width());
+        dockWidgetPlaylistsRect.setBottom(
+            pointPlaylists.y() + dockWidgetPlaylistsRect.height() - UNKNOWN_OFFSET + 16);
+        dockWidgetPlaylistsRect.setLeft(pointPlaylists.x());
+        dockWidgetPlaylistsRect.setTop(pointPlaylists.y() - UNKNOWN_OFFSET);
+
+        if (dockWidgetPlaylistsRect.contains(event->position().toPoint())) {
+            event->acceptProposedAction();
+            dropWidget = DROP_TO_PLAYLISTS;
+        } else if (dockWidgetPlaylist->isCurrentTab()) {
+            QRect dockWidgetPlaylistRect = dockWidgetPlaylist->geometry();
+            const QPoint pointPlaylist = dockWidgetPlaylist->mapTo(this, dockWidgetPlaylist->pos());
+
+            dockWidgetPlaylistRect.setRight(pointPlaylist.x() + dockWidgetPlaylistRect.width());
+            dockWidgetPlaylistRect.setBottom(
+                pointPlaylist.y() + dockWidgetPlaylistRect.height() - UNKNOWN_OFFSET / 2 + 8);
+            dockWidgetPlaylistRect.setLeft(pointPlaylist.x());
+            dockWidgetPlaylistRect.setTop(pointPlaylist.y() - UNKNOWN_OFFSET);
+
+            if (dockWidgetPlaylistRect.contains(event->position().toPoint())) {
+                event->acceptProposedAction();
+                dropWidget = DROP_TO_PLAYLIST;
+            } else {
+                event->ignore();
+                dropWidget = DROP_IGNORE;
+            }
+        } else {
+            event->ignore();
+            dropWidget = DROP_IGNORE;
+        }
+    } else if (dockWidgetPlaylist->isCurrentTab()) {
+        QRect dockWidgetPlaylistRect = dockWidgetPlaylist->geometry();
+        const QPoint pointPlaylist = dockWidgetPlaylist->mapTo(this, dockWidgetPlaylist->pos());
+
+        dockWidgetPlaylistRect.setRight(pointPlaylist.x() + dockWidgetPlaylistRect.width());
+        dockWidgetPlaylistRect.setBottom(
+            pointPlaylist.y() + dockWidgetPlaylistRect.height() - UNKNOWN_OFFSET / 2 + 8);
+        dockWidgetPlaylistRect.setLeft(pointPlaylist.x());
+        dockWidgetPlaylistRect.setTop(pointPlaylist.y() - UNKNOWN_OFFSET);
+
+        if (dockWidgetPlaylistRect.contains(event->position().toPoint())) {
+            event->acceptProposedAction();
+            dropWidget = DROP_TO_PLAYLIST;
+        } else if (dockWidgetPlaylists->isCurrentTab()) {
+            QRect dockWidgetPlaylistsRect = dockWidgetPlaylists->geometry();
+            const QPoint pointPlaylists = dockWidgetPlaylists->mapTo(this, dockWidgetPlaylists->pos());
+
             dockWidgetPlaylistsRect.setRight(pointPlaylists.x() + dockWidgetPlaylistsRect.width());
             dockWidgetPlaylistsRect.setBottom(
                 pointPlaylists.y() + dockWidgetPlaylistsRect.height() - UNKNOWN_OFFSET + 16);
             dockWidgetPlaylistsRect.setLeft(pointPlaylists.x());
             dockWidgetPlaylistsRect.setTop(pointPlaylists.y() - UNKNOWN_OFFSET);
-            if (dockWidgetPlaylistsRect.contains(event->pos()))
-            {
+
+            if (dockWidgetPlaylistsRect.contains(event->position().toPoint())) {
                 event->acceptProposedAction();
-                DropWidget = DropToPlaylists;
-            }
-            else if (DockWidgetPlaylist->isCurrentTab())
-            {
-                QRect dockWidgetPlaylistRect = DockWidgetPlaylist->geometry();
-                QPoint pointPlaylist = DockWidgetPlaylist->mapTo(this, DockWidgetPlaylist->pos());
-                dockWidgetPlaylistRect.setRight(pointPlaylist.x() + dockWidgetPlaylistRect.width());
-                dockWidgetPlaylistRect.setBottom(
-                    pointPlaylist.y() + dockWidgetPlaylistRect.height() - (UNKNOWN_OFFSET / 2) + 8);
-                dockWidgetPlaylistRect.setLeft(pointPlaylist.x());
-                dockWidgetPlaylistRect.setTop(pointPlaylist.y() - UNKNOWN_OFFSET);
-                if (dockWidgetPlaylistRect.contains(event->pos()))
-                {
-                    event->acceptProposedAction();
-                    DropWidget = DropToPlaylist;
-                }
-                else
-                {
-                    event->ignore();
-                    DropWidget = DropIgnore;
-                }
-            }
-            else
-            {
+                dropWidget = DROP_TO_PLAYLISTS;
+            } else {
                 event->ignore();
-                DropWidget = DropIgnore;
+                dropWidget = DROP_IGNORE;
             }
-        }
-        else if (DockWidgetPlaylist->isCurrentTab())
-        {
-            QRect dockWidgetPlaylistRect = DockWidgetPlaylist->geometry();
-            QPoint pointPlaylist = DockWidgetPlaylist->mapTo(this, DockWidgetPlaylist->pos());
-            dockWidgetPlaylistRect.setRight(pointPlaylist.x() + dockWidgetPlaylistRect.width());
-            dockWidgetPlaylistRect.setBottom(
-                pointPlaylist.y() + dockWidgetPlaylistRect.height() - (UNKNOWN_OFFSET / 2) + 8);
-            dockWidgetPlaylistRect.setLeft(pointPlaylist.x());
-            dockWidgetPlaylistRect.setTop(pointPlaylist.y() - UNKNOWN_OFFSET);
-            if (dockWidgetPlaylistRect.contains(event->pos()))
-            {
-                event->acceptProposedAction();
-                DropWidget = DropToPlaylist;
-            }
-            else if (DockWidgetPlaylists->isCurrentTab())
-            {
-                QRect dockWidgetPlaylistsRect = DockWidgetPlaylists->geometry();
-                QPoint pointPlaylists = DockWidgetPlaylists->mapTo(this, DockWidgetPlaylists->pos());
-                dockWidgetPlaylistsRect.setRight(pointPlaylists.x() + dockWidgetPlaylistsRect.width());
-                dockWidgetPlaylistsRect.setBottom(
-                    pointPlaylists.y() + dockWidgetPlaylistsRect.height() - UNKNOWN_OFFSET + 16);
-                dockWidgetPlaylistsRect.setLeft(pointPlaylists.x());
-                dockWidgetPlaylistsRect.setTop(pointPlaylists.y() - UNKNOWN_OFFSET);
-                if (dockWidgetPlaylistsRect.contains(event->pos()))
-                {
-                    event->acceptProposedAction();
-                    DropWidget = DropToPlaylists;
-                }
-                else
-                {
-                    event->ignore();
-                    DropWidget = DropIgnore;
-                }
-            }
-            else
-            {
-                event->ignore();
-                DropWidget = DropIgnore;
-            }
-        }
-        else
-        {
+        } else {
             event->ignore();
-            DropWidget = DropIgnore;
+            dropWidget = DROP_IGNORE;
         }
-    }
-    else
-    {
+    } else {
         event->ignore();
-        DropWidget = DropIgnore;
+        dropWidget = DROP_IGNORE;
     }
+
 }
 
 void MainWindow::showCheckBoxLoopPoints(const bool show) {
@@ -1744,29 +1650,30 @@ void MainWindow::showCheckBoxLoopPoints(const bool show) {
 
 void MainWindow::dropEvent(QDropEvent* event)
 {
-    if (DropWidget == DropToPlaylist)
+    if (dropWidget == DROP_TO_PLAYLIST)
     {
-        QList<QUrl> list = event->mimeData()->urls();
+        const QList<QUrl> list = event->mimeData()->urls();
         addSong(list, 0, ui->listWidget->currentItem()->text(), false);
     }
-    else if (DropWidget == DropToPlaylists)
+    else if (dropWidget == DROP_TO_PLAYLISTS)
     {
-        QList<QUrl> list = event->mimeData()->urls();
+        const QList<QUrl> list = event->mimeData()->urls();
         addSong(list, 0, ui->listWidget->currentItem()->text(), true);
     }
 }
 
-/*!
- gets all files in the given directory recursively as a QStringList
- */
-QStringList MainWindow::getFilesRecursive(const QString& dirName, const QString& extension, bool clearStaticVar)
+// gets all files in the given directory recursively as a QStringList
+QStringList MainWindow::getFilesRecursive(const QString& dirName, const QString& extension, const bool clearStaticVar)
 {
     static QStringList list;
+
     if (clearStaticVar)
     {
         list.clear();
     }
+
     QDir directory(dirName);
+
     if (extension != "")
     {
         QStringList filters;
@@ -1777,15 +1684,17 @@ QStringList MainWindow::getFilesRecursive(const QString& dirName, const QString&
     {
         directory.setFilter(QDir::AllEntries);
     }
+
     QStringList dirs = directory.entryList(QDir::Dirs | QDir::System | QDir::Hidden);
     QStringList files = directory.entryList(QDir::Files | QDir::System | QDir::Hidden);
-    int i, k = 0;
-    for (i = 0; i < dirs.count(); i++)
+
+    for (int i = 0; i < dirs.count(); i++)
     {
         if (dirs[i] == "." || dirs[i] == "..") continue;
         getFilesRecursive(directory.path() + '/' + dirs[i], extension, false);
     }
-    for (k = 0; k < files.count(); k++)
+
+    for (int k = 0; k < files.count(); k++)
     {
         list.append(directory.path() + '/' + files[k]);
     }
@@ -1793,60 +1702,65 @@ QStringList MainWindow::getFilesRecursive(const QString& dirName, const QString&
     return list;
 }
 
-/*!
- Takes a Qlist of QUrl:s and converts them to a QStringList
- This QStringList is then passed on to addSong(QStringList)
- Returns false if an empty dir was drag'n'dropped, otherwise true
-*/
-bool MainWindow::addSong(const QList<QUrl>& urls, int row, QString playlistName, bool createNewPlaylist)
+/*
+ * Takes a Qlist of QUrl:s and converts them to a QStringList
+ * This QStringList is then passed on to addSong(QStringList)
+ * Returns false if an empty dir was drag'n'dropped, otherwise true
+ */
+bool MainWindow::addSong(const QList<QUrl>& urls, const int row, const QString &playlistName, const bool createNewPlaylist)
 {
-    QListIterator<QUrl> it(urls);
+    QListIterator it(urls);
     QStringList stringList;
+
     while (it.hasNext())
     {
         QUrl url = it.next();
         addDebugText("opening url: " + url.toString());
+
         if (url.isLocalFile())
         {
             QFile file(url.toLocalFile());
-            QFileInfo fileinfo(file);
-            if (!fileinfo.isDir())
+
+            if (QFileInfo fileinfo(file); !fileinfo.isDir())
             {
                 stringList.append(fileinfo.filePath());
             }
             else
             {
-                //it's a dir, get all files recursively
+                // it's a dir, get all files recursively
                 QStringList stringListNew = getFilesRecursive(fileinfo.filePath());
+
                 for (int i = 0; i < stringListNew.size(); i++)
                 {
                     stringList.append(stringListNew.at(i));
                 }
             }
         }
-        else //it's a (one) url
+        else // it's a (one) url
         {
             stringList.append(url.toString());
         }
     }
-    //this may happen if drag'n'drop an empty dir
+    // this may happen if drag'n'drop an empty dir
     if (stringList.size() > 0)
     {
         addSong(stringList, row, playlistName, createNewPlaylist);
         return true;
     }
+
     return false;
 }
 
-/*!
- Takes a QStringList of filenames, rownumber and a playlist as input.
- Adds all filenames to that playlist, inserting it into that row.
- If createNewPlaylist is true, creates a new playlist with that playlist name
- previously specified.
-*/
-void MainWindow::addSong(const QStringList& filenames, int row, QString playlistName, bool createNewPlaylist)
+/*
+ * Takes a QStringList of filenames, rownumber and a playlist as input.
+ * Adds all filenames to that playlist, inserting it into that row.
+ * If createNewPlaylist is true, creates a new playlist with that playlist name
+ * previously specified.
+ */
+void MainWindow::addSong(const QStringList& filenames, int row, QString playlistName, const bool createNewPlaylist)
 {
-    QListIterator<QString> it(filenames);
+    QListIterator it(filenames);
+
     while (it.hasNext())
     {
         QString filenameFullPath = it.next();
@@ -1859,10 +1773,11 @@ void MainWindow::addSong(const QStringList& filenames, int row, QString playlist
         QStringList ignoreSuffixList = getIgnoreSuffix().split(";");
         QStringListIterator itIgnoreSuffixFiles(ignoreSuffixList);
         bool ignoreThisFile = false;
+
         while (itIgnorePrefixFiles.hasNext())
         {
-            QString ignoreFilePrefix = itIgnorePrefixFiles.next() + ".";
-            if (filename.startsWith(ignoreFilePrefix, Qt::CaseInsensitive))
+            if (QString ignoreFilePrefix = itIgnorePrefixFiles.next() + ".";
+                filename.startsWith(ignoreFilePrefix, Qt::CaseInsensitive))
             {
                 ignoreThisFile = true;
             }
@@ -1875,8 +1790,8 @@ void MainWindow::addSong(const QStringList& filenames, int row, QString playlist
 
         while (itIgnoreSuffixFiles.hasNext())
         {
-            QString ignoreFileSuffix = "." + itIgnoreSuffixFiles.next();
-            if (filename.endsWith(ignoreFileSuffix, Qt::CaseInsensitive))
+            if (QString ignoreFileSuffix = "." + itIgnoreSuffixFiles.next();
+                filename.endsWith(ignoreFileSuffix, Qt::CaseInsensitive))
             {
                 ignoreThisFile = true;
             }
@@ -1888,16 +1803,17 @@ void MainWindow::addSong(const QStringList& filenames, int row, QString playlist
         }
 
         addDebugText("Added " + filenameFullPath);
-        if (filenameFullPath.endsWith(".m3u", Qt::CaseInsensitive) || filenameFullPath.endsWith(
-            ".m3u8", Qt::CaseInsensitive))
+
+        if (filenameFullPath.endsWith(".m3u", Qt::CaseInsensitive) ||
+            filenameFullPath.endsWith(".m3u8", Qt::CaseInsensitive))
         {
             if (createNewPlaylist)
             {
-                //Create a new playlist with the filename and add all those files to that playlist
+                // create a new playlist with the filename and add all those files to that playlist
                 playlistName = createPlaylist(filename);
             }
 
-            vector<PlaylistItem*> playlistEntries = getPlayListEntriesM3U(filenameFullPath);
+            vector<PlaylistItem*> playlistEntries = getPlayListEntriesM3u(filenameFullPath);
 
             for (unsigned int e = 0; e < playlistEntries.size(); e++)
             {
@@ -1905,15 +1821,8 @@ void MainWindow::addSong(const QStringList& filenames, int row, QString playlist
 
                 if (playlistEntries.at(e)->length > 0)
                 {
-                    length = msToNiceStringExact(playlistEntries.at(e)->length, m_displayMilliseconds);
+                    length = msToNiceStringExact(playlistEntries.at(e)->length, displayMilliseconds);
                 }
-                QTableWidgetItem* timeItem = new QTableWidgetItem(length);
-                QString subsong = "";
-                if (playlistEntries.at(e)->startSubsongPlayList != -1)
-                {
-                    subsong = QString::number(playlistEntries.at(e)->startSubsongPlayList);
-                }
-                QTableWidgetItem* subsongItem = new QTableWidgetItem(subsong);
 
                 addPlaylistEntry(tableWidgetPlaylists[playlistName],
                                  tableWidgetPlaylists[playlistName]->model()->rowCount(), playlistEntries.at(e)->title,
@@ -1921,9 +1830,7 @@ void MainWindow::addSong(const QStringList& filenames, int row, QString playlist
                                  playlistEntries.at(e)->fullPath, playlistEntries.at(e)->length,
                                  playlistEntries.at(e)->artist);
 
-
                 //playlists[playlistName].append(playlistEntries.at(e));
-
 
                 //addDebugText("Added from m3u: " + QUrl::fromPercentEncoding(playlistEntries[e]->fullPath.toStdString().c_str()));
             }
@@ -1931,24 +1838,25 @@ void MainWindow::addSong(const QStringList& filenames, int row, QString playlist
         else
         {
             addPlaylistEntry(tableWidgetPlaylists[playlistName],
-                             tableWidgetPlaylists[playlistName]->model()->rowCount(), filename, "", 0, 0,
+                             tableWidgetPlaylists[playlistName]->model()->rowCount(), filename, "", nullptr, 0,
                              filenameFullPath, 0, "");
-            //playlists[playlistName].append(new PlaylistItem(SoundManager::getInstance().m_Info1,filenameFullPath,0));
+            //playlists[playlistName].append(new PlaylistItem(SoundManager::getInstance().info,filenameFullPath,0));
         }
     }
 }
 
-void MainWindow::addPlaylistEntry(QTableView* table, int rowPosition, QString filename, QString fileFormat,
-                                  QString length, int subsong, QString fullPath, int lengthInt, QString artist)
+void MainWindow::addPlaylistEntry(const QTableView* table, const int rowPosition, const QString& filename, const QString &fileFormat,
+                                  const QString &length, const int subsong, const QString& fullPath, const int lengthInt, const QString& artist)
 {
     table->model()->insertRows(rowPosition, 1, QModelIndex());
 
-
     QString subsongStr = QString::number(subsong);
+
     if (subsongStr == "0")
     {
         subsongStr = "";
     }
+
     QModelIndex index = table->model()->index(rowPosition, 0, QModelIndex());
     table->model()->setData(index, filename, Qt::EditRole);
     index = table->model()->index(rowPosition, 1, QModelIndex());
@@ -1967,64 +1875,51 @@ void MainWindow::addPlaylistEntry(QTableView* table, int rowPosition, QString fi
 
 void MainWindow::getLength()
 {
-    if (SoundManager::getInstance().IsPlaying())
+    if (const auto &sm = SoundManager::getInstance(); sm.isPlaying())
     {
-        song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS);
-        addDebugText("song_length_ms: " + QString::number(song_length_ms));
-        if (song_length_ms == 0 || song_length_ms == -1)
+        songLengthMs = sm.getLength(FMOD_TIMEUNIT_MS);
+        addDebugText("songLengthMs: " + QString::number(songLengthMs));
+
+        if (songLengthMs == 0 || songLengthMs == -1)
         {
-            song_length_ms = SoundManager::getInstance().GetLength(FMOD_TIMEUNIT_MS_REAL);
-            addDebugText("song_length_ms: " + QString::number(song_length_ms));
+            songLengthMs = sm.getLength(FMOD_TIMEUNIT_MS_REAL);
+            addDebugText("songLengthMs: " + QString::number(songLengthMs));
         }
 
-
-        if (song_length_ms == 0)
+        if (songLengthMs == 0)
         {
-            song_length_ms = -1;
+            songLengthMs = -1;
         }
-        //        if(song_length_ms==-1 && playlists[currentPlaylist].at(currentRow)->length>0)
+        //        if(songLengthMs==-1 && playlists[currentPlaylist].at(currentRow)->length>0)
         //        {
-        //            song_length_ms=playlists[currentPlaylist].at(currentRow)->length;
+        //            songLengthMs=playlists[currentPlaylist].at(currentRow)->length;
         //        }
-        if (song_length_ms == -1)
-        {
-            ui->positionSlider->setMaximum(0);
-        }
-        else
-        {
-            ui->positionSlider->setMaximum(song_length_ms);
-        }
 
-        ui->labelFileLength_2->setText(msToNiceStringExact(song_length_ms, m_displayMilliseconds));
+        ui->positionSlider->setMaximum(songLengthMs == -1 ? 0 : songLengthMs);
+
+        ui->labelFileLength_2->setText(msToNiceStringExact(songLengthMs, displayMilliseconds));
     }
     else
     {
         ui->positionSlider->setMaximum(0);
-        if (m_displayMilliseconds)
-        {
-            ui->labelFileLength_2->setText("0:00.000");
-        }
-        else
-        {
-            ui->labelFileLength_2->setText("0:00");
-        }
+
+        ui->labelFileLength_2->setText(displayMilliseconds ? "0:00.000" : "0:00");
     }
 }
-
 
 void MainWindow::on_buttonPlay_2_clicked()
 {
     if (loaded)
     {
-        if (SoundManager::getInstance().IsPlaying() && !SoundManager::getInstance().GetPaused())
-        {
+        if (const auto &sm = SoundManager::getInstance();
+            sm.isPlaying() && !sm.isPaused()) {
             playAction->setText("Play");
-            SoundManager::getInstance().Pause(true);
+            sm.pause(true);
         }
         else
         {
             playAction->setText("Pause");
-            SoundManager::getInstance().Pause(false);
+            sm.pause(false);
         }
     }
     else
@@ -2036,23 +1931,25 @@ void MainWindow::on_buttonPlay_2_clicked()
                 removeHighlight();
                 currentRow++;
             }
-            PlaySong(currentRow);
+
+            playSongAtRow(currentRow);
             playAction->setText("Pause");
         }
         else
         {
             addFiles();
+
             if (tableWidgetPlaylists[currentPlaylist]->model()->rowCount() > 0)
             {
-                PlaySong(currentRow);
+                playSongAtRow(currentRow);
                 playAction->setText("Pause");
             }
         }
     }
+
     updateButtons();
     isUpdateCurrentRowToNextEnabled = true;
 }
-
 
 void MainWindow::resetToDefaultColors()
 {
@@ -2086,17 +1983,18 @@ void MainWindow::on_playlist_itemDoubleClicked(const QModelIndex& index)
     addDebugText("dbl click! " + index.model()->data(index).toString());
     addDebugText("dbl click! " + QString::number(index.row()));
 
-    //Remove highlighted playlist
-    //There might by a state where no playlist is highlighted if a user
-    //Removed a plying playlist
-    QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
-    if (l.size() > 0)
+    // remove highlighted playlist
+    // there might by a state where no playlist is highlighted if a user
+    // removed a plying playlist
+    if (const QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+        l.size() > 0)
     {
         l.at(0)->setForeground(QColor(colorMainText.left(7)));
     }
 
     removeHighlight();
     currentPlaylist = ui->listWidget->currentItem()->text();
+
     if (isShuffleEnabled())
     {
         resetShuffle(currentPlaylist);
@@ -2105,66 +2003,72 @@ void MainWindow::on_playlist_itemDoubleClicked(const QModelIndex& index)
     removeHighlight();
     currentRow = index.row();
 
-    PlaySong(currentRow);
+    playSongAtRow(currentRow);
     isUpdateCurrentRowToNextEnabled = true;
 }
 
-void MainWindow::updateScrollText()
-{
+void MainWindow::updateScrollText() const {
     if (!loaded) return;
 
     if (ui->visualizer->getEffect()->getCustomScrolltextEnabled()) {
-        //TODO this will only be blank after program start
+        // TODO this will only be blank after program start
         ui->visualizer->getEffect()->setScrollText(ui->visualizer->getEffect()->getCustomScrolltext());
     } else {
+        const auto &info = SoundManager::getInstance().info;
+
         QString visualizerText = "";
-        visualizerText = fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->artist);
+        visualizerText = fromUtf8OrLatin1(info->artist);
+
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->game);
+        visualizerText += fromUtf8OrLatin1(info->game);
+
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->comments);
+        visualizerText += fromUtf8OrLatin1(info->comments);
+
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->copyright);
+        visualizerText += fromUtf8OrLatin1(info->copyright);
+
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        visualizerText += fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->date);
+        visualizerText += fromUtf8OrLatin1(info->date);
+
         if (!visualizerText.isEmpty()) {
             visualizerText += " ";
         }
 
-        if (SoundManager::getInstance().m_Info1->instruments != nullptr) {
-            for (int i = 0; i < SoundManager::getInstance().m_Info1->numInstruments; i++) {
-                visualizerText += fromUtf8OrLatin1(
-                    SoundManager::getInstance().m_Info1->instruments[i]) + QString(" ");
+        if (info->instruments != nullptr) {
+            for (int i = 0; i < info->numInstruments; i++) {
+                visualizerText += fromUtf8OrLatin1(info->instruments[i]) + QString(" ");
             }
         }
-        if (SoundManager::getInstance().m_Info1->samples != nullptr) {
-            for (int i = 0; i < SoundManager::getInstance().m_Info1->numSamples; i++) {
-                visualizerText +=fromUtf8OrLatin1(SoundManager::getInstance().m_Info1->samples[i]) +
-                        QString(" ");
+
+        if (info->samples != nullptr) {
+            for (int i = 0; i < info->numSamples; i++) {
+                visualizerText += fromUtf8OrLatin1(info->samples[i]) + QString(" ");
             }
         }
+
         ui->visualizer->getEffect()->setScrollText(visualizerText);
     }
 }
 
-void MainWindow::PlaySong(int currentRow)
+void MainWindow::playSongAtRow(int rowProvided)
 {
-    QString fullPath = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 4).data().toString();
+    QString fullPath = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 4).data().toString();
     addDebugText("Now playing and loading sound " + fullPath);
 
-    QString subsong = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 3).data().toString();
+    QString subsong = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3).data().toString();
 
     if (subsong != "")
     {
@@ -2172,7 +2076,8 @@ void MainWindow::PlaySong(int currentRow)
     }
 
     // addDebugText("startSubsongPlayList: " + QString::number(playlists[currentPlaylist].at(playlistNumber)->startSubsongPlayList));
-    currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 3).data().toInt();
+    currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3).data().toInt();
+
     if (currentSubsong < 1)
     {
         currentSubsong = 1;
@@ -2182,223 +2087,191 @@ void MainWindow::PlaySong(int currentRow)
     QString suffix(fileInfo.suffix());
     QString baseName(fileInfo.baseName());
 
-
-    setOutputDevice(m_outputDevice, baseName + subsong + "." + suffix);
+    setOutputDevice(outputDevice, baseName + subsong + "." + suffix);
 
     addDebugText("setOutputDevice with extra data: " + fullPath + "/" + baseName + subsong + "." + suffix);
     playStarted = true;
 
-    if (loadSound(fullPath, currentSubsong -1))
-    {
-        addDebugText("Check if we are playing already.");
-        if (SoundManager::getInstance().IsPlaying())
-        {
-            addDebugText("Stopping sound.");
-            playAction->setText("Play");
-            SoundManager::getInstance().Stop();
-        }
-
-        addDebugText("Now playing");
-
-
-        SoundManager::getInstance().PlayAudio(true);
-
-        /*
-         * when playing network streams, this SetPosition invocation
-         * prevents delays in displaying full track metadata
-         */
-        if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod && fileInfo.size() == 0) {
-            SoundManager::getInstance().SetPosition(0, FMOD_TIMEUNIT_MS);
-        }
-
-        int vol = ui->volumeSlider->value();
-        SoundManager::getInstance().SetVolume((float)vol / 100);
-
-        /* TODO:
-         *  this workaround calculates the maximum pitch slider value (see ticket #623)
-         *  seems fmod can play at freqs slightly greater than 749700 (we should find the highest possible one)
-         */
-        float freq = SoundManager::getInstance().GetNominalFrequency();
-        int pitchSliderMaxValue = 749700 / freq * 100;
-        ui->pitchSlider->setMaximum(pitchSliderMaxValue);
-        SoundManager::getInstance().SetFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
-
-        addDebugText("Mute is:" + QString::number(m_muteVolume));
-        SoundManager::getInstance().SetMute(m_muteVolume);
-        SoundManager::getInstance().Pause(false);
-
-
-        channels->updateChannels();
-
-        getLength();
-
-        ui->visualizer->init();
-        ui->trackerView->init();
-
-        PlaylistItem pi;
-        pi.fullPath = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 4).data().toString();
-        pi.info = SoundManager::getInstance().m_Info1;
-
-        fileInfoParser->updateFileInfo(ui->tableInfo, &pi);
-
-
-        QFile file(pi.fullPath);
-        QFileInfo fileInfo(file.fileName());
-        QString title(fileInfo.fileName());
-
-        if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod) {
-            if (!pi.info->title.empty()) {
-                title = pi.info->title.c_str();
-            }
-        } else {
-            if (!pi.info->title.empty()) {
-                title = fromUtf8OrLatin1(pi.info->title);
-            } else if (!pi.info->containerFilenames.empty()){
-                title = fromUtf8OrLatin1(pi.info->containerLastFilename);
-            }
-        }
-
-        QString artist = "";
-
-        if (!pi.info->artist.empty())
-        {
-            if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
-            {
-                artist = pi.info->artist.c_str();
-            }
-            else
-            {
-                artist = fromUtf8OrLatin1(pi.info->artist);
-            }
-        }
-        else if (!pi.info->author.empty())
-        {
-            if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
-            {
-                artist = pi.info->author.c_str();
-            }
-            else
-            {
-                artist = fromUtf8OrLatin1(pi.info->author);
-            }
-        }
-        else if (!pi.info->composer.empty())
-        {
-            if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
-            {
-                artist = pi.info->composer.c_str();
-            }
-            else
-            {
-                artist = fromUtf8OrLatin1(pi.info->composer);
-            }
-        }
-        if (artist != "")
-        {
-            ui->labelFilename->setText(artist + " - " + title);
-            windowTitle = artist + " - " + title + " - " + PROJECT_NAME;
-        }
-        else
-        {
-            ui->labelFilename->setText(title);
-            windowTitle = title + " - " + PROJECT_NAME;
-        }
-
-        if (isMinimized() || !this->isVisible())
-        {
-            this->setWindowTitle(windowTitle);
-        }
-        else
-        {
-            this->setWindowTitle(PROJECT_NAME_VERSIONED);
-        }
-
-        m_Tray->setToolTip(windowTitle);
-
-        QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, title, Qt::EditRole);
-
-        index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 1, QModelIndex());
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(
-            index, SoundManager::getInstance().m_Info1->fileformat.c_str(), Qt::EditRole);
-        index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 2, QModelIndex());
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(
-            index, msToNiceStringExact(song_length_ms, m_displayMilliseconds), Qt::EditRole);
-        index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 5, QModelIndex());
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, song_length_ms, Qt::EditRole);
-        index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 8, QModelIndex());
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, artist, Qt::EditRole);
-
-        index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 6, QModelIndex());
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, false, Qt::EditRole);
-
-        currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 3).data().toInt();
-
-
-        QModelIndex index2 = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0);
-        tableWidgetPlaylists[currentPlaylist]->scrollTo(index2);
-
-        //        //Set text of currently playing sound to main color
-        highlightPlaylistItem(currentPlaylist, currentRow);
-
-        //        //Set text of currently playing playlist to main color
-        QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
-        l.at(0)->setForeground(QColor(colorMain.left(7)));
-
-        ui->positionSlider->setEnabled(SoundManager::getInstance().m_Info1->getSeekable());
-
-        updateInstruments();
-
-
-        //        //OK, now to add all subsongs, one for each row
-
-
-        if (tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 3).data().toInt() < 1 &&
-            SoundManager::getInstance().m_Info1->numSubsongs > 1)
-        {
-            QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 3, QModelIndex());
-            tableWidgetPlaylists[currentPlaylist]->model()->setData(index, 1, Qt::EditRole);
-
-            currentSubsong = 1;
-            QString title = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0).data().toString();
-            QString fileformat = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 1).data().toString();
-            QString fullpath = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 4).data().toString();
-            QString artist = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 8).data().toString();
-            for (int i = 1; i < SoundManager::getInstance().m_Info1->numSubsongs; i++)
-            {
-                addPlaylistEntry(tableWidgetPlaylists[currentPlaylist], currentRow + i, title, fileformat, "", i + 1,
-                                 fullpath, 0, artist);
-            }
-        }
-        QModelIndex index3 = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 7, QModelIndex());
-        tableWidgetPlaylists[currentPlaylist]->model()->setData(index3, true, Qt::EditRole);
-        tableWidgetPlaylists[currentPlaylist]->update();
-
-
-        QString printerText = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0).data().toString();
-        //        if(printerText.isEmpty())
-        //        {
-        //            printerText=SoundManager::getInstance().m_Info1->filename.c_str();
-        //        }
-
-
-        updateScrollText();
-
-
-        ui->visualizer->getEffect()->setPrinterText(printerText);
-    }
-    else
-    {
+    if (!loadSound(fullPath, currentSubsong - 1)) {
         addDebugText("Error loading file.");
+        updateButtons();
+        return;
     }
+
+    addDebugText("Check if we are playing already.");
+
+    auto &sm = SoundManager::getInstance();
+
+    if (sm.isPlaying()) {
+        addDebugText("Stopping sound.");
+        playAction->setText("Play");
+        sm.stop();
+    }
+
+    addDebugText("Now playing");
+
+    sm.playAudio(true);
+
+    /*
+     * when playing network streams, this setPosition invocation
+     * prevents delays in displaying full track metadata
+     */
+    if (sm.info->plugin == PLUGIN_fmod && fileInfo.size() == 0) {
+        sm.setPosition(0, FMOD_TIMEUNIT_MS);
+    }
+
+    int vol = ui->volumeSlider->value();
+    sm.setVolume(static_cast<float>(vol) / 100);
+
+    /* TODO
+     * this workaround calculates the maximum pitch slider value (see ticket #623)
+     * seems fmod can play at freqs slightly greater than 749700 (we should find the highest possible one)
+     */
+    float freq = sm.getNominalFrequency();
+    int pitchSliderMaxValue = 749700 / freq * 100;
+    ui->pitchSlider->setMaximum(pitchSliderMaxValue);
+    sm.setFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
+
+    addDebugText("Mute is:" + QString::number(isVolumeMuted));
+    sm.setMute(isVolumeMuted);
+    sm.pause(false);
+
+    channels->updateChannels();
+
+    getLength();
+
+    ui->visualizer->init();
+    ui->trackerView->init();
+
+    PlaylistItem pi;
+    pi.fullPath = fullPath;
+    pi.info = sm.info;
+
+    fileInfoParser->updateFileInfo(ui->tableInfo, &pi);
+
+    QString title(fileInfo.fileName());
+
+    if (sm.info->plugin == PLUGIN_fmod) {
+        if (!pi.info->title.empty()) {
+            title = pi.info->title.c_str();
+        }
+    } else {
+        if (!pi.info->title.empty()) {
+            title = fromUtf8OrLatin1(pi.info->title);
+        } else if (!pi.info->containerFilenames.empty()) {
+            title = fromUtf8OrLatin1(pi.info->containerLastFilename);
+        }
+    }
+
+    QString artist = "";
+
+    if (!pi.info->artist.empty()) {
+        if (sm.info->plugin == PLUGIN_fmod) {
+            artist = pi.info->artist.c_str();
+        } else {
+            artist = fromUtf8OrLatin1(pi.info->artist);
+        }
+    } else if (!pi.info->author.empty()) {
+        if (sm.info->plugin == PLUGIN_fmod) {
+            artist = pi.info->author.c_str();
+        } else {
+            artist = fromUtf8OrLatin1(pi.info->author);
+        }
+    } else if (!pi.info->composer.empty()) {
+        if (sm.info->plugin == PLUGIN_fmod) {
+            artist = pi.info->composer.c_str();
+        } else {
+            artist = fromUtf8OrLatin1(pi.info->composer);
+        }
+    }
+
+    if (artist != "") {
+        ui->labelFilename->setText(artist + " - " + title);
+        windowTitle = artist + " - " + title + " - " + PROJECT_NAME;
+    } else {
+        ui->labelFilename->setText(title);
+        windowTitle = title + " - " + PROJECT_NAME;
+    }
+
+    if (isMinimized() || !this->isVisible()) {
+        this->setWindowTitle(windowTitle);
+    } else {
+        this->setWindowTitle(PROJECT_NAME_VERSIONED);
+    }
+
+    tray->setToolTip(windowTitle);
+
+    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 0, QModelIndex());
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, title, Qt::EditRole);
+
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 1, QModelIndex());
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(
+        index, sm.info->fileFormat.c_str(), Qt::EditRole);
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 2, QModelIndex());
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(
+        index, msToNiceStringExact(songLengthMs, displayMilliseconds), Qt::EditRole);
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 5, QModelIndex());
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, songLengthMs, Qt::EditRole);
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 8, QModelIndex());
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, artist, Qt::EditRole);
+
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 6, QModelIndex());
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, false, Qt::EditRole);
+
+    currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3).data().toInt();
+
+    QModelIndex index2 = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 0);
+    tableWidgetPlaylists[currentPlaylist]->scrollTo(index2);
+
+    // set text of currently playing sound to main color
+    highlightPlaylistItem(currentPlaylist, rowProvided);
+
+    // set text of currently playing playlist to main color
+    QList<QListWidgetItem *> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+    l.at(0)->setForeground(QColor(colorMain.left(7)));
+
+    ui->positionSlider->setEnabled(sm.info->getSeekable());
+
+    updateSamplesAndInstruments();
+
+    // ok, now to add all subsongs, one for each row
+
+    if (tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3).data().toInt() < 1 &&
+        sm.info->numSubsongs > 1) {
+        QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3, QModelIndex());
+        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, 1, Qt::EditRole);
+
+        currentSubsong = 1;
+
+        QString title = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 0).data().toString();
+        QString fileFormat = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 1).data().toString();
+        QString fullpath = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 4).data().toString();
+        QString artist = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 8).data().toString();
+
+        for (int i = 1; i < sm.info->numSubsongs; i++) {
+            addPlaylistEntry(tableWidgetPlaylists[currentPlaylist], rowProvided + i, title, fileFormat, "", i + 1,
+                             fullpath, 0, artist);
+        }
+    }
+
+    QModelIndex index3 = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 7, QModelIndex());
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(index3, true, Qt::EditRole);
+    tableWidgetPlaylists[currentPlaylist]->update();
+
+    QString printerText = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 0).data().toString();
+    //        if(printerText.isEmpty())
+    //        {
+    //            printerText=sm.info->filename.c_str();
+    //        }
+
+    updateScrollText();
+
+    ui->visualizer->getEffect()->setPrinterText(printerText);
+
     updateButtons();
 }
 
-
-void MainWindow::updateInstruments()
-{
-    int row = 0;
-
+void MainWindow::updateSamplesAndInstruments() const {
     ui->instruments->clear();
     ui->instruments->setColumnCount(0);
     ui->instruments->setRowCount(0);
@@ -2409,471 +2282,454 @@ void MainWindow::updateInstruments()
     ui->samples->setRowCount(0);
     ui->samples->horizontalHeader()->setStretchLastSection(false);
 
-    if (SoundManager::getInstance().m_Info1 != nullptr)
-    {
-        if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libopenmpt)
-        {
-            if (SoundManager::getInstance().m_Info1->numSamples > 0)
-            {
-                QStringList columnLabelsSamples;
-                columnLabelsSamples << tr("#") << tr("Name") << tr("Size") << tr("Loopstart") << tr("Loopend") <<
-                    tr("Volume") << tr("Finetune") /*<< tr("Resolution") << tr("Channels")*/;
+    const auto &info = SoundManager::getInstance().info;
 
-                ui->samples->setColumnCount(columnLabelsSamples.size());
-
-                ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
-                ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
-                ui->samples->setColumnWidth(1, sampleColumnNameWidth);
-                ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
-                ui->samples->setColumnWidth(3, sampleColumnLoopStartWidth);
-                ui->samples->setColumnWidth(4, sampleColumnLoopEndWidth);
-                ui->samples->setColumnWidth(5, sampleColumnVolumeWidth);
-                ui->samples->setColumnWidth(6, sampleColumnFinetuneWidth);
-
-                ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(4)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(5)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(6)->setTextAlignment(Qt::AlignLeft);
-
-                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++)
-                {
-                    ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->samples->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->samples[j].c_str()));
-                    unsigned int size = SoundManager::getInstance().m_Info1->samplesSize[j];
-                    if (size > 0)
-                    {
-                        ui->samples->setItem(
-                            j, 2, new QTableWidgetItem(
-                                QString::number(SoundManager::getInstance().m_Info1->samplesSize[j])));
-                        ui->samples->setItem(j, 3, new QTableWidgetItem(
-                                                 QString::number(
-                                                     SoundManager::getInstance().m_Info1->samplesLoopStart[j])));
-                        ui->samples->setItem(
-                            j, 4, new QTableWidgetItem(
-                                QString::number(SoundManager::getInstance().m_Info1->samplesLoopEnd[j])));
-                        ui->samples->setItem(
-                            j, 5, new QTableWidgetItem(
-                                QString::number(SoundManager::getInstance().m_Info1->samplesVolume[j])));
-                        ui->samples->setItem(
-                            j, 6, new QTableWidgetItem(
-                                QString::number(SoundManager::getInstance().m_Info1->samplesFineTune[j])));
-                    }
-                }
-            }
-            if (SoundManager::getInstance().m_Info1->numInstruments > 0)
-            {
-                QStringList columnLabelsInstruments;
-                columnLabelsInstruments << tr("#") << tr("Name")
-                    /*<< tr("Volume") << tr("Wavelen") << tr("Attack") << tr("Attack Volume") << tr("Decay") << tr("Decay Volume") << tr("Sustain") << tr("Sustain Volume") << tr("Release") << tr("Release Volume") << tr("Delay") << tr("Delay Depth") << tr("Delay Speed") << tr("Filter Lower Limit") << tr("Filter Upper Limit") << tr("Filterspeed") << tr("Filter Lower Limit") << tr("Filter Upper Limit") << tr("Filterspeed")*/
-                    ;
-                ui->instruments->setColumnCount(columnLabelsInstruments.size());
-                ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
-                ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
-                ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
-
-                ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-
-                ui->instruments->setRowCount(SoundManager::getInstance().m_Info1->numInstruments);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numInstruments; j++)
-                {
-                    ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->instruments->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->instruments[j].c_str()));
-                }
-            }
-        }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_uade)
-        {
-            if (SoundManager::getInstance().m_Info1->numSamples > 0)
-            {
-                QStringList columnLabelsSamples;
-                columnLabelsSamples << tr("#") << tr("Name") << tr("Size") << tr("Volume");
-                ui->samples->setColumnCount(columnLabelsSamples.size());
-                ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
-                ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
-                ui->samples->setColumnWidth(1, sampleColumnNameWidth);
-                ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
-                ui->samples->setColumnWidth(3, sampleColumnVolumeWidth);
-
-                ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
-
-                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++)
-                {
-                    ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->samples->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->samples[j].c_str()));
-                    unsigned int size = SoundManager::getInstance().m_Info1->samplesSize[j];
-                    if (size > 0)
-                    {
-                        ui->samples->setItem(
-                            j, 2, new QTableWidgetItem(
-                                QString::number(SoundManager::getInstance().m_Info1->samplesSize[j])));
-                        ui->samples->setItem(
-                            j, 3, new QTableWidgetItem(
-                                QString::number(SoundManager::getInstance().m_Info1->samplesVolume[j])));
-                    }
-                }
-            }
-        }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp)
-        {
-            if (SoundManager::getInstance().m_Info1->numSamples > 0)
-            {
-                QStringList columnLabelsSamples;
-                columnLabelsSamples << tr("#") << tr("Name") << tr("Size") << tr("Loopstart") << tr("Loopend") <<
-                    tr("Volume") << tr("Finetune") /*<< tr("Resolution") << tr("Channels")*/;
-                ui->samples->setColumnCount(columnLabelsSamples.size());
-                ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
-                ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
-                ui->samples->setColumnWidth(1, sampleColumnNameWidth);
-                ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
-                ui->samples->setColumnWidth(3, sampleColumnLoopStartWidth);
-                ui->samples->setColumnWidth(4, sampleColumnLoopEndWidth);
-                ui->samples->setColumnWidth(5, sampleColumnVolumeWidth);
-                ui->samples->setColumnWidth(6, sampleColumnFinetuneWidth);
-
-                ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(4)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(5)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(6)->setTextAlignment(Qt::AlignLeft);
-
-
-                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++)
-                {
-                    ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->samples->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->samples[j].c_str()));
-                    unsigned int size = SoundManager::getInstance().m_Info1->samplesSize[j];
-                    if (size > 0)
-                    {
-                        ui->samples->setItem(
-                            j, 2, new QTableWidgetItem(
-                                QString::number(SoundManager::getInstance().m_Info1->samplesSize[j])));
-                        ui->samples->setItem(j, 3, new QTableWidgetItem(
-                                                 QString::number(
-                                                     SoundManager::getInstance().m_Info1->samplesLoopStart[j])));
-                        ui->samples->setItem(
-                            j, 4, new QTableWidgetItem(
-                                QString::number(SoundManager::getInstance().m_Info1->samplesLoopEnd[j])));
-                        //these two probably should only be divided for mods (not xm etc.)
-                        ui->samples->setItem(j, 5, new QTableWidgetItem(
-                                                 QString::number(
-                                                     SoundManager::getInstance().m_Info1->samplesVolume[j] / 4)));
-                        ui->samples->setItem(j, 6, new QTableWidgetItem(
-                                                 QString::number(
-                                                     SoundManager::getInstance().m_Info1->samplesFineTune[j] / 16)));
-                    }
-                }
-            }
-
-            if (SoundManager::getInstance().m_Info1->numInstruments > 0)
-            {
-                QStringList columnLabelsInstruments;
-                columnLabelsInstruments << tr("#") << tr("Name") << tr("Volume") << tr("Wavelen")
-                    /*<< tr("Attack") << tr("Attack Volume") << tr("Decay") << tr("Decay Volume") << tr("Sustain") << tr("Sustain Volume") << tr("Release") << tr("Release Volume") << tr("Delay") << tr("Delay Depth") << tr("Delay Speed") << tr("Filter Lower Limit") << tr("Filter Upper Limit") << tr("Filterspeed") << tr("Filter Lower Limit") << tr("Filter Upper Limit") << tr("Filterspeed")*/
-                    ;
-                ui->instruments->setColumnCount(columnLabelsInstruments.size());
-                ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
-                ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
-                ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
-                ui->instruments->setColumnWidth(2, instrumentColumnVolumeWidth);
-                ui->instruments->setColumnWidth(3, instrumentColumnWaveLengthWidth);
-
-                ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
-
-                ui->instruments->setRowCount(SoundManager::getInstance().m_Info1->numInstruments);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numInstruments; j++)
-                {
-                    ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->instruments->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->instruments[j].c_str()));
-                }
-            }
-        }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_hivelytracker)
-        {
-            if (SoundManager::getInstance().m_Info1->numInstruments > 0)
-            {
-                QStringList columnLabelsInstruments;
-                columnLabelsInstruments << tr("#") << tr("Name") << tr("Volume") << tr("Wavelen");
-                ui->instruments->setColumnCount(columnLabelsInstruments.size());
-                ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
-                ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
-                ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
-                ui->instruments->setColumnWidth(2, instrumentColumnVolumeWidth);
-                ui->instruments->setColumnWidth(3, instrumentColumnWaveLengthWidth);
-
-                ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
-
-
-                ui->instruments->setRowCount(SoundManager::getInstance().m_Info1->numInstruments);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numInstruments; j++)
-                {
-                    ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->instruments->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->instruments[j].c_str()));
-                    ui->instruments->setItem(
-                        j, 2, new QTableWidgetItem(
-                            QString::number(SoundManager::getInstance().m_Info1->instrumentsVolume[j])));
-                    ui->instruments->setItem(
-                        j, 3, new QTableWidgetItem(
-                            QString::number(SoundManager::getInstance().m_Info1->instrumentsWavelen[j])));
-                }
-            }
-        }
-
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_protrekkr)
-        {
-            if (SoundManager::getInstance().m_Info1->numSamples > 0)
-            {
-                QStringList columnLabelsSamples;
-                columnLabelsSamples << tr("#") << tr("Name");
-                ui->samples->setColumnCount(columnLabelsSamples.size());
-                ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
-                ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
-                ui->samples->setColumnWidth(1, sampleColumnNameWidth);
-
-                ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-
-                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++)
-                {
-                    ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->samples->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->samples[j].c_str()));
-                }
-            }
-            if (SoundManager::getInstance().m_Info1->numInstruments > 0)
-            {
-                QStringList columnLabelsInstruments;
-                columnLabelsInstruments << tr("#") << tr("Name");
-                ui->instruments->setColumnCount(columnLabelsInstruments.size());
-                ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
-                ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
-                ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
-
-                ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-
-                ui->instruments->setRowCount(SoundManager::getInstance().m_Info1->numInstruments);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numInstruments; j++)
-                {
-                    ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->instruments->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->instruments[j].c_str()));
-                }
-            }
-        }
-
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_klystron)
-        {
-            if (SoundManager::getInstance().m_Info1->numInstruments > 0)
-            {
-                QStringList columnLabelsInstruments;
-                columnLabelsInstruments << tr("#") << tr("Name");
-                ui->instruments->setColumnCount(columnLabelsInstruments.size());
-                ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
-                ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
-                ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
-
-                ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-
-                ui->instruments->setRowCount(SoundManager::getInstance().m_Info1->numInstruments);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numInstruments; j++)
-                {
-                    ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->instruments->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->instruments[j].c_str()));
-                }
-            }
-        }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_asap)
-        {
-            if (SoundManager::getInstance().m_Info1->numInstruments > 0)
-            {
-                QStringList columnLabelsInstruments;
-                columnLabelsInstruments << tr("#") << tr("Name");
-                ui->instruments->setColumnCount(columnLabelsInstruments.size());
-                ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
-                ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
-                ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
-
-                ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-
-                ui->instruments->setRowCount(SoundManager::getInstance().m_Info1->numInstruments);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numInstruments; j++)
-                {
-                    ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->instruments->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->instruments[j].c_str()));
-                }
-            }
-        }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libpac)
-        {
-            if (SoundManager::getInstance().m_Info1->numSamples > 0)
-            {
-                QStringList columnLabelsInstruments;
-                columnLabelsInstruments << tr("#") << tr("Name") << tr("Size") << tr("Loopstart") << tr("Loopend") <<
-                    tr("Volume") << tr("Finetune") << tr("Resolution");
-                ui->samples->setColumnCount(columnLabelsInstruments.size());
-                ui->samples->setHorizontalHeaderLabels(columnLabelsInstruments);
-                ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
-                ui->samples->setColumnWidth(1, sampleColumnNameWidth);
-                ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
-                ui->samples->setColumnWidth(3, sampleColumnLoopStartWidth);
-                ui->samples->setColumnWidth(4, sampleColumnLoopEndWidth);
-                ui->samples->setColumnWidth(5, sampleColumnVolumeWidth);
-                ui->samples->setColumnWidth(6, sampleColumnFinetuneWidth);
-                ui->samples->setColumnWidth(7, sampleColumnResolutionWidth);
-
-                ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(4)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(5)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(6)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(7)->setTextAlignment(Qt::AlignLeft);
-
-
-                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++)
-                {
-                    ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->samples->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->samples[j].c_str()));
-                    QString res = "8-bit";
-                    if (SoundManager::getInstance().m_Info1->samples16Bit[j])
-                    {
-                        res = "16-bit";
-                    }
-                    ui->samples->setItem(j, 7, new QTableWidgetItem(res));
-
-                    ui->samples->setItem(
-                        j, 2,
-                        new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->samplesSize[j])));
-                    ui->samples->setItem(
-                        j, 3, new QTableWidgetItem(
-                            QString::number(SoundManager::getInstance().m_Info1->samplesLoopStart[j])));
-                    ui->samples->setItem(
-                        j, 4, new QTableWidgetItem(
-                            QString::number(SoundManager::getInstance().m_Info1->samplesLoopEnd[j])));
-                    ui->samples->setItem(
-                        j, 5, new QTableWidgetItem(
-                            QString::number(SoundManager::getInstance().m_Info1->samplesVolume[j])));
-                    ui->samples->setItem(
-                        j, 6, new QTableWidgetItem(
-                            QString::number(SoundManager::getInstance().m_Info1->samplesFineTune[j])));
-                }
-            }
-        }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_flod)
-        {
-            if (SoundManager::getInstance().m_Info1->numSamples > 0)
-            {
-                QStringList columnLabelsInstruments;
-                columnLabelsInstruments << tr("#") << tr("Name") << tr("Size") << tr("Volume");
-                ui->samples->setColumnCount(columnLabelsInstruments.size());
-                ui->samples->setHorizontalHeaderLabels(columnLabelsInstruments);
-                ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
-                ui->samples->setColumnWidth(1, sampleColumnNameWidth);
-                ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
-                ui->samples->setColumnWidth(3, sampleColumnVolumeWidth);
-
-
-                ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
-
-                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++)
-                {
-                    ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->samples->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->samples[j].c_str()));
-                    ui->samples->setItem(
-                        j, 2,
-                        new QTableWidgetItem(QString::number(SoundManager::getInstance().m_Info1->samplesSize[j])));
-                    ui->samples->setItem(
-                        j, 3, new QTableWidgetItem(
-                            QString::number(SoundManager::getInstance().m_Info1->samplesVolume[j])));
-                }
-            }
-        }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_adplug)
-        {
-            if (SoundManager::getInstance().m_Info1->numInstruments > 0)
-            {
-                QStringList columnLabelsSamples;
-                columnLabelsSamples << tr("#") << tr("Name");
-                ui->instruments->setColumnCount(columnLabelsSamples.size());
-                ui->instruments->setHorizontalHeaderLabels(columnLabelsSamples);
-                ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
-                ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
-
-                ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-
-                ui->instruments->setRowCount(SoundManager::getInstance().m_Info1->numInstruments);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numInstruments; j++)
-                {
-                    ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->instruments->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->instruments[j].c_str()));
-                }
-            }
-        }
-        else if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_zxtune)
-        {
-            if (SoundManager::getInstance().m_Info1->numSamples > 0)
-            {
-                QStringList columnLabelsSamples;
-                columnLabelsSamples << tr("#") << tr("Name");
-                ui->samples->setColumnCount(columnLabelsSamples.size());
-                ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
-                ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
-                ui->samples->setColumnWidth(1, sampleColumnNameWidth);
-
-                ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
-                ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
-
-                ui->samples->setRowCount(SoundManager::getInstance().m_Info1->numSamples);
-                for (int j = 0; j < SoundManager::getInstance().m_Info1->numSamples; j++) {
-                    ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
-                    ui->samples->setItem(
-                        j, 1, new QTableWidgetItem(SoundManager::getInstance().m_Info1->samples[j].c_str()));
-                }
-            }
-        }
+    if (info == nullptr) {
+        return;
     }
-    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
+
+    switch (info->plugin) {
+        case PLUGIN_adplug:
+            updateInstrumentsAdplug(info);
+            break;
+        case PLUGIN_asap:
+            updateInstrumentsAsap(info);
+            break;
+        case PLUGIN_flod:
+            updateSamplesFlod(info);
+            break;
+        case PLUGIN_hivelytracker:
+            updateInstrumentsHivelytracker(info);
+            break;
+        case PLUGIN_klystron:
+            updateInstrumentsKlystron(info);
+            break;
+        case PLUGIN_libopenmpt:
+            updateSamplesLibopenmpt(info);
+            updateInstrumentsLibopenmpt(info);
+            break;
+        case PLUGIN_libpac:
+            updateSamplesLibpac(info);
+            break;
+        case PLUGIN_libxmp:
+            updateSamplesLibxmp(info);
+            updateInstrumentsLibxmp(info);
+            break;
+        case PLUGIN_protrekkr:
+            updateSamplesProtrekkr(info);
+            updateInstrumentsProtrekkr(info);
+            break;
+        case PLUGIN_uade:
+            updateSamplesUade(info);
+            break;
+        case PLUGIN_zxtune:
+            updateSamplesZxtune(info);
+            break;
+        default: ;
+    }
 }
 
+void MainWindow::updateInstrumentsAdplug(const Info *info) const {
+    if (info->numInstruments <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsInstruments;
+    columnLabelsInstruments << tr("#") << tr("Name");
+
+    ui->instruments->setColumnCount(static_cast<int>(columnLabelsInstruments.size()));
+    ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
+    ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
+    ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
+    ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->setRowCount(info->numInstruments);
+
+    for (int j = 0; j < info->numInstruments; j++) {
+        ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->instruments->setItem(j, 1, new QTableWidgetItem(info->instruments[j].c_str()));
+    }
+}
+
+void MainWindow::updateInstrumentsAsap(const Info *info) const {
+    if (info->numInstruments <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsInstruments;
+    columnLabelsInstruments << tr("#") << tr("Name");
+
+    ui->instruments->setColumnCount(static_cast<int>(columnLabelsInstruments.size()));
+    ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
+    ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
+    ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
+    ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->setRowCount(info->numInstruments);
+
+    for (int j = 0; j < info->numInstruments; j++) {
+        ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->instruments->setItem(j, 1, new QTableWidgetItem(info->instruments[j].c_str()));
+    }
+}
+
+void MainWindow::updateSamplesFlod(const Info *info) const {
+    if (info->numSamples <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsSamples;
+    columnLabelsSamples << tr("#") << tr("Name") << tr("Size") << tr("Volume");
+
+    ui->samples->setColumnCount(static_cast<int>(columnLabelsSamples.size()));
+    ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
+    ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
+    ui->samples->setColumnWidth(1, sampleColumnNameWidth);
+    ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
+    ui->samples->setColumnWidth(3, sampleColumnVolumeWidth);
+    ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->setRowCount(info->numSamples);
+
+    for (int j = 0; j < info->numSamples; j++) {
+        ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->samples->setItem(j, 1, new QTableWidgetItem(info->samples[j].c_str()));
+        ui->samples->setItem(j, 2, new QTableWidgetItem(QString::number(info->samplesSize[j])));
+        ui->samples->setItem(j, 3, new QTableWidgetItem(QString::number(info->samplesVolume[j])));
+    }
+}
+
+void MainWindow::updateInstrumentsHivelytracker(const Info *info) const {
+    if (info->numInstruments <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsInstruments;
+    columnLabelsInstruments << tr("#") << tr("Name") << tr("Volume") << tr("Wavelen");
+
+    ui->instruments->setColumnCount(static_cast<int>(columnLabelsInstruments.size()));
+    ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
+    ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
+    ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
+    ui->instruments->setColumnWidth(2, instrumentColumnVolumeWidth);
+    ui->instruments->setColumnWidth(3, instrumentColumnWaveLengthWidth);
+    ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->setRowCount(info->numInstruments);
+
+    for (int j = 0; j < info->numInstruments; j++) {
+        ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->instruments->setItem(j, 1, new QTableWidgetItem(info->instruments[j].c_str()));
+        ui->instruments->setItem(j, 2, new QTableWidgetItem(QString::number(info->instrumentsVolume[j])));
+        ui->instruments->setItem(j, 3, new QTableWidgetItem(QString::number(info->instrumentsWavelen[j])));
+    }
+}
+
+void MainWindow::updateInstrumentsKlystron(const Info *info) const {
+    if (info->numInstruments <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsInstruments;
+    columnLabelsInstruments << tr("#") << tr("Name");
+
+    ui->instruments->setColumnCount(static_cast<int>(columnLabelsInstruments.size()));
+    ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
+    ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
+    ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
+    ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->setRowCount(info->numInstruments);
+
+    for (int j = 0; j < info->numInstruments; j++) {
+        ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->instruments->setItem(j, 1, new QTableWidgetItem(info->instruments[j].c_str()));
+    }
+}
+
+void MainWindow::updateInstrumentsLibopenmpt(const Info *info) const {
+    if (info->numInstruments <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsInstruments;
+    columnLabelsInstruments << tr("#") << tr("Name");
+    //<< tr("Volume") << tr("Wavelen") << tr("Attack") << tr("Attack Volume") << tr("Decay") << tr("Decay Volume")
+    //<< tr("Sustain") << tr("Sustain Volume") << tr("Release") << tr("Release Volume") << tr("Delay")
+    //<< tr("Delay Depth") << tr("Delay Speed") << tr("Filter Lower Limit") << tr("Filter Upper Limit")
+    //<< tr("Filterspeed") << tr("Filter Lower Limit") << tr("Filter Upper Limit") << tr("Filterspeed")
+
+    ui->instruments->setColumnCount(static_cast<int>(columnLabelsInstruments.size()));
+    ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
+    ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
+    ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
+    ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->setRowCount(info->numInstruments);
+
+    for (int j = 0; j < info->numInstruments; j++) {
+        ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->instruments->setItem(j, 1, new QTableWidgetItem(info->instruments[j].c_str()));
+    }
+}
+
+void MainWindow::updateSamplesLibopenmpt(const Info *info) const {
+    if (info->numSamples <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsSamples;
+    columnLabelsSamples << tr("#") << tr("Name") << tr("Size") << tr("Loopstart") << tr("Loopend")
+            << tr("Volume") << tr("Finetune");
+    //<< tr("Resolution") << tr("Channels")
+
+    ui->samples->setColumnCount(static_cast<int>(columnLabelsSamples.size()));
+    ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
+    ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
+    ui->samples->setColumnWidth(1, sampleColumnNameWidth);
+    ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
+    ui->samples->setColumnWidth(3, sampleColumnLoopStartWidth);
+    ui->samples->setColumnWidth(4, sampleColumnLoopEndWidth);
+    ui->samples->setColumnWidth(5, sampleColumnVolumeWidth);
+    ui->samples->setColumnWidth(6, sampleColumnFinetuneWidth);
+    ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(4)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(5)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(6)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->setRowCount(info->numSamples);
+
+    for (int j = 0; j < info->numSamples; j++) {
+        ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->samples->setItem(j, 1, new QTableWidgetItem(info->samples[j].c_str()));
+
+        if (info->samplesSize[j] > 0) {
+            ui->samples->setItem(j, 2, new QTableWidgetItem(QString::number(info->samplesSize[j])));
+            ui->samples->setItem(j, 3, new QTableWidgetItem(QString::number(info->samplesLoopStart[j])));
+            ui->samples->setItem(j, 4, new QTableWidgetItem(QString::number(info->samplesLoopEnd[j])));
+            ui->samples->setItem(j, 5, new QTableWidgetItem(QString::number(info->samplesVolume[j])));
+            ui->samples->setItem(j, 6, new QTableWidgetItem(QString::number(info->samplesFineTune[j])));
+        }
+    }
+}
+
+void MainWindow::updateSamplesLibpac(const Info *info) const {
+    if (info->numSamples <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsSamples;
+    columnLabelsSamples << tr("#") << tr("Name") << tr("Size") << tr("Loopstart") << tr("Loopend")
+            << tr("Volume") << tr("Finetune") << tr("Resolution");
+
+    ui->samples->setColumnCount(static_cast<int>(columnLabelsSamples.size()));
+    ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
+    ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
+    ui->samples->setColumnWidth(1, sampleColumnNameWidth);
+    ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
+    ui->samples->setColumnWidth(3, sampleColumnLoopStartWidth);
+    ui->samples->setColumnWidth(4, sampleColumnLoopEndWidth);
+    ui->samples->setColumnWidth(5, sampleColumnVolumeWidth);
+    ui->samples->setColumnWidth(6, sampleColumnFinetuneWidth);
+    ui->samples->setColumnWidth(7, sampleColumnResolutionWidth);
+    ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(4)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(5)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(6)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(7)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->setRowCount(info->numSamples);
+
+    for (int j = 0; j < info->numSamples; j++) {
+        ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->samples->setItem(j, 1, new QTableWidgetItem(info->samples[j].c_str()));
+        ui->samples->setItem(j, 7, new QTableWidgetItem(info->samples16Bit[j] ? "16-bit" : "8-bit"));
+        ui->samples->setItem(j, 2, new QTableWidgetItem(QString::number(info->samplesSize[j])));
+        ui->samples->setItem(j, 3, new QTableWidgetItem(QString::number(info->samplesLoopStart[j])));
+        ui->samples->setItem(j, 4, new QTableWidgetItem(QString::number(info->samplesLoopEnd[j])));
+        ui->samples->setItem(j, 5, new QTableWidgetItem(QString::number(info->samplesVolume[j])));
+        ui->samples->setItem(j, 6, new QTableWidgetItem(QString::number(info->samplesFineTune[j])));
+    }
+}
+
+void MainWindow::updateInstrumentsLibxmp(const Info *info) const {
+    if (info->numInstruments <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsInstruments;
+    columnLabelsInstruments << tr("#") << tr("Name") << tr("Volume") << tr("Wavelen");
+    //<< tr("Attack") << tr("Attack Volume") << tr("Decay") << tr("Decay Volume") << tr("Sustain")
+    //<< tr("Sustain Volume") << tr("Release") << tr("Release Volume") << tr("Delay") << tr("Delay Depth")
+    //<< tr("Delay Speed") << tr("Filter Lower Limit") << tr("Filter Upper Limit") << tr("Filterspeed")
+    //<< tr("Filter Lower Limit") << tr("Filter Upper Limit") << tr("Filterspeed")
+
+    ui->instruments->setColumnCount(static_cast<int>(columnLabelsInstruments.size()));
+    ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
+    ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
+    ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
+    ui->instruments->setColumnWidth(2, instrumentColumnVolumeWidth);
+    ui->instruments->setColumnWidth(3, instrumentColumnWaveLengthWidth);
+    ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->setRowCount(info->numInstruments);
+
+    for (int j = 0; j < info->numInstruments; j++) {
+        ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->instruments->setItem(j, 1, new QTableWidgetItem(info->instruments[j].c_str()));
+    }
+}
+
+void MainWindow::updateSamplesLibxmp(const Info *info) const {
+    if (info->numSamples <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsSamples;
+    columnLabelsSamples << tr("#") << tr("Name") << tr("Size") << tr("Loopstart") << tr("Loopend")
+            << tr("Volume") << tr("Finetune");
+    //<< tr("Resolution") << tr("Channels")
+
+    ui->samples->setColumnCount(static_cast<int>(columnLabelsSamples.size()));
+    ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
+    ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
+    ui->samples->setColumnWidth(1, sampleColumnNameWidth);
+    ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
+    ui->samples->setColumnWidth(3, sampleColumnLoopStartWidth);
+    ui->samples->setColumnWidth(4, sampleColumnLoopEndWidth);
+    ui->samples->setColumnWidth(5, sampleColumnVolumeWidth);
+    ui->samples->setColumnWidth(6, sampleColumnFinetuneWidth);
+    ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(4)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(5)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(6)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->setRowCount(info->numSamples);
+
+    for (int j = 0; j < info->numSamples; j++) {
+        ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->samples->setItem(j, 1, new QTableWidgetItem(info->samples[j].c_str()));
+
+        if (info->samplesSize[j] > 0) {
+            ui->samples->setItem(j, 2, new QTableWidgetItem(QString::number(info->samplesSize[j])));
+            ui->samples->setItem(j, 3, new QTableWidgetItem(QString::number(info->samplesLoopStart[j])));
+            ui->samples->setItem(j, 4, new QTableWidgetItem(QString::number(info->samplesLoopEnd[j])));
+
+            // TODO these two probably should only be divided for mods (not xm etc.)
+            ui->samples->setItem(j, 5, new QTableWidgetItem(QString::number(info->samplesVolume[j] / 4)));
+            ui->samples->setItem(j, 6, new QTableWidgetItem(QString::number(info->samplesFineTune[j] / 16)));
+        }
+    }
+}
+
+void MainWindow::updateInstrumentsProtrekkr(const Info *info) const {
+    if (info->numInstruments <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsInstruments;
+    columnLabelsInstruments << tr("#") << tr("Name");
+
+    ui->instruments->setColumnCount(static_cast<int>(columnLabelsInstruments.size()));
+    ui->instruments->setHorizontalHeaderLabels(columnLabelsInstruments);
+    ui->instruments->setColumnWidth(0, instrumentColumnNumberWidth);
+    ui->instruments->setColumnWidth(1, instrumentColumnNameWidth);
+    ui->instruments->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->instruments->setRowCount(info->numInstruments);
+
+    for (int j = 0; j < info->numInstruments; j++) {
+        ui->instruments->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->instruments->setItem(j, 1, new QTableWidgetItem(info->instruments[j].c_str()));
+    }
+}
+
+void MainWindow::updateSamplesProtrekkr(const Info *info) const {
+    if (info->numSamples <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsSamples;
+    columnLabelsSamples << tr("#") << tr("Name");
+
+    ui->samples->setColumnCount(static_cast<int>(columnLabelsSamples.size()));
+    ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
+    ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
+    ui->samples->setColumnWidth(1, sampleColumnNameWidth);
+    ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->setRowCount(info->numSamples);
+
+    for (int j = 0; j < info->numSamples; j++) {
+        ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->samples->setItem(j, 1, new QTableWidgetItem(info->samples[j].c_str()));
+    }
+}
+
+void MainWindow::updateSamplesUade(const Info *info) const {
+    if (info->numSamples <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsSamples;
+    columnLabelsSamples << tr("#") << tr("Name") << tr("Size") << tr("Volume");
+
+    ui->samples->setColumnCount(static_cast<int>(columnLabelsSamples.size()));
+    ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
+    ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
+    ui->samples->setColumnWidth(1, sampleColumnNameWidth);
+    ui->samples->setColumnWidth(2, sampleColumnSizeWidth);
+    ui->samples->setColumnWidth(3, sampleColumnVolumeWidth);
+    ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(2)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(3)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->setRowCount(info->numSamples);
+
+    for (int j = 0; j < info->numSamples; j++) {
+        ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->samples->setItem(j, 1, new QTableWidgetItem(info->samples[j].c_str()));
+
+        if (info->samplesSize[j] > 0) {
+            ui->samples->setItem(j, 2, new QTableWidgetItem(QString::number(info->samplesSize[j])));
+            ui->samples->setItem(j, 3, new QTableWidgetItem(QString::number(info->samplesVolume[j])));
+        }
+    }
+}
+
+void MainWindow::updateSamplesZxtune(const Info *info) const {
+    if (info->numSamples <= 0) {
+        return;
+    }
+
+    QStringList columnLabelsSamples;
+    columnLabelsSamples << tr("#") << tr("Name");
+
+    ui->samples->setColumnCount(static_cast<int>(columnLabelsSamples.size()));
+    ui->samples->setHorizontalHeaderLabels(columnLabelsSamples);
+    ui->samples->setColumnWidth(0, sampleColumnNumberWidth);
+    ui->samples->setColumnWidth(1, sampleColumnNameWidth);
+    ui->samples->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->horizontalHeaderItem(1)->setTextAlignment(Qt::AlignLeft);
+    ui->samples->setRowCount(info->numSamples);
+
+    for (int j = 0; j < info->numSamples; j++) {
+        ui->samples->setItem(j, 0, new QTableWidgetItem(QString::number(j + 1)));
+        ui->samples->setItem(j, 1, new QTableWidgetItem(info->samples[j].c_str()));
+    }
+}
 
 void MainWindow::restoreLayout()
 {
@@ -2890,16 +2746,15 @@ void MainWindow::restoreLayout()
     ui->dockWidgetSamples->hide();
     ui->dockWidgetTrackerView->hide();
     ui->dockWidgetVisualizer->hide();
-    m_DockManager->restoreState(dockingState);
+    dockManager->restoreState(dockingState);
 }
 
-void MainWindow::exportInstrumentToWAV()
+void MainWindow::exportInstrumentToWav()
 {
     exportInstrument("WAV");
 }
 
-void MainWindow::muteAllChannels()
-{
+void MainWindow::muteAllChannels() const {
     channels->muteAllChannels();
 }
 
@@ -2908,184 +2763,170 @@ void MainWindow::unmuteAllChannels() const
     channels->unmuteAllChannels();
 }
 
-void MainWindow::exportInstrumentToIFF()
+void MainWindow::exportInstrumentToIff()
 {
     exportInstrument("IFF");
 }
 
-void MainWindow::exportInstrument(QString format)
-{
-    int row = ui->samples->currentRow();
+void MainWindow::exportInstrument(const QString &format) {
+    static auto regex = QRegularExpression(":|;|/|\"");
 
-    if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_libxmp && ui->samples->rowCount() > 0 &&
-        SoundManager::getInstance().m_Info1->samplesSize[row] > 0)
-    {
-        QString defaultFileName = SoundManager::getInstance().m_Info1->samples[row].c_str();
-        defaultFileName.replace(QRegularExpression(":|;|/|\""), "-");
+    const auto &info = SoundManager::getInstance().info;
+    const int row = ui->samples->currentRow();
 
-        unsigned int loopStart = SoundManager::getInstance().m_Info1->samplesLoopStart[row];
-        unsigned int loopLength = SoundManager::getInstance().m_Info1->samplesLoopEnd[row] - SoundManager::getInstance()
-            .m_Info1->samplesLoopStart[row];
+    if (info->plugin != PLUGIN_libxmp || ui->samples->rowCount() <= 0 || info->samplesSize[row] <= 0) {
+        return;
+    }
 
-        if (format == "WAV")
+    QString defaultFileName = info->samples[row].c_str();
+    defaultFileName.replace(regex, "-");
+
+    const unsigned int loopStart = info->samplesLoopStart[row];
+    const unsigned int loopLength = info->samplesLoopEnd[row] - info->samplesLoopStart[row];
+
+    if (format == "WAV") {
+        const QString fileName = QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFileName,
+                                                              "Wave (*.wav)");
+
+        addDebugText(
+            "Saving sample to WAV, no. " + QString::number(row) + ", filesize: " + QString::number(
+                info->samplesSize[row]));
+
+        typedef struct wavHeader_t {
+            uint32_t chunkID, chunkSize, format, subchunk1ID, subchunk1Size;
+            uint16_t audioFormat, numChannels;
+            uint32_t sampleRate, byteRate;
+            uint16_t blockAlign, bitsPerSample;
+            uint32_t subchunk2ID, subchunk2Size;
+        } wavHeader_t;
+
+        typedef struct sampleLoop_t {
+            uint32_t dwIdentifier, dwType, dwStart;
+            uint32_t dwEnd, dwFraction, dwPlayCount;
+        } sampleLoop_t;
+
+        typedef struct samplerChunk_t {
+            uint32_t chunkID, chunkSize, dwManufacturer, dwProduct;
+            uint32_t dwSamplePeriod, dwMIDIUnityNote, wMIDIPitchFraction;
+            uint32_t dwSMPTEFormat, dwSMPTEOffset, cSampleLoops, cbSamplerData;
+            sampleLoop_t loop;
+        } samplerChunk_t;
+
+        wavHeader_t wavHeader;
+        samplerChunk_t samplerChunk;
+
+        wavHeader.format = 0x45564157; // "WAVE"
+        wavHeader.chunkID = 0x46464952; // "RIFF"
+        wavHeader.subchunk1ID = 0x20746D66; // "fmt "
+        wavHeader.subchunk2ID = 0x61746164; // "data"
+        wavHeader.subchunk1Size = 16;
+        wavHeader.subchunk2Size = info->samplesSize[row];
+        wavHeader.chunkSize = 36 + wavHeader.subchunk2Size;
+        wavHeader.audioFormat = 1;
+        wavHeader.numChannels = 1;
+        wavHeader.bitsPerSample = 8;
+        wavHeader.sampleRate = 16574;
+        wavHeader.byteRate = wavHeader.sampleRate * wavHeader.numChannels * wavHeader.bitsPerSample / 8;
+        wavHeader.blockAlign = wavHeader.numChannels * wavHeader.bitsPerSample / 8;
+
+        // set "sampler" chunk if loop is enabled
+        if (loopStart + loopLength > 2) // loop enabled?
         {
-            QString fileName = QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFileName,
-                                                            "Wave (*.wav)");
-
-
-            addDebugText(
-                "Saving sample to WAV, no. " + QString::number(row) + ", filesize: " + QString::number(
-                    SoundManager::getInstance().m_Info1->samplesSize[row]));
-
-            typedef struct wavHeader_t
-            {
-                uint32_t chunkID, chunkSize, format, subchunk1ID, subchunk1Size;
-                uint16_t audioFormat, numChannels;
-                uint32_t sampleRate, byteRate;
-                uint16_t blockAlign, bitsPerSample;
-                uint32_t subchunk2ID, subchunk2Size;
-            } wavHeader_t;
-
-            typedef struct sampleLoop_t
-            {
-                uint32_t dwIdentifier, dwType, dwStart;
-                uint32_t dwEnd, dwFraction, dwPlayCount;
-            } sampleLoop_t;
-
-            typedef struct samplerChunk_t
-            {
-                uint32_t chunkID, chunkSize, dwManufacturer, dwProduct;
-                uint32_t dwSamplePeriod, dwMIDIUnityNote, wMIDIPitchFraction;
-                uint32_t dwSMPTEFormat, dwSMPTEOffset, cSampleLoops, cbSamplerData;
-                sampleLoop_t loop;
-            } samplerChunk_t;
-
-            wavHeader_t wavHeader;
-            samplerChunk_t samplerChunk;
-
-            wavHeader.format = 0x45564157; // "WAVE"
-            wavHeader.chunkID = 0x46464952; // "RIFF"
-            wavHeader.subchunk1ID = 0x20746D66; // "fmt "
-            wavHeader.subchunk2ID = 0x61746164; // "data"
-            wavHeader.subchunk1Size = 16;
-            wavHeader.subchunk2Size = SoundManager::getInstance().m_Info1->samplesSize[row];
-            wavHeader.chunkSize = 36 + wavHeader.subchunk2Size;
-            wavHeader.audioFormat = 1;
-            wavHeader.numChannels = 1;
-            wavHeader.bitsPerSample = 8;
-            wavHeader.sampleRate = 16574;
-            wavHeader.byteRate = wavHeader.sampleRate * wavHeader.numChannels * wavHeader.bitsPerSample / 8;
-            wavHeader.blockAlign = wavHeader.numChannels * wavHeader.bitsPerSample / 8;
-
-            // set "sampler" chunk if loop is enabled
-            if (loopStart + loopLength > 2) // loop enabled?
-            {
-                addDebugText("Loop is enabled.");
-                wavHeader.chunkSize += sizeof(samplerChunk_t);
-                memset(&samplerChunk, 0, sizeof(samplerChunk_t));
-                samplerChunk.chunkID = 0x6C706D73; // "smpl"
-                samplerChunk.chunkSize = 60;
-                samplerChunk.dwSamplePeriod = 1000000000 / 16574;
-                samplerChunk.dwMIDIUnityNote = 60; // 60 = MIDI middle-C
-                samplerChunk.cSampleLoops = 1;
-                samplerChunk.loop.dwStart = loopStart;
-                samplerChunk.loop.dwEnd = (loopStart + loopLength) - 1;
-            }
-
-
-            FILE* pFile;
-            pFile = fopen(fileName.toStdString().c_str(), "wb");
-            fwrite((char*)&wavHeader, sizeof(char), sizeof wavHeader, pFile);
-            for (int i = 0; i < SoundManager::getInstance().m_Info1->samplesSize[row]; i++)
-                fputc((uint8_t)(SoundManager::getInstance().m_Info1->samplesData[row][i] + 128), pFile);
-
-            if (SoundManager::getInstance().m_Info1->samplesSize[row] & 1)
-                fputc(0, pFile); // pad align byte
-
-            if (loopStart + loopLength > 2) // loop enabled?
-                fwrite(&samplerChunk, sizeof (samplerChunk), 1, pFile);
-
-            fclose(pFile);
+            addDebugText("Loop is enabled.");
+            wavHeader.chunkSize += sizeof(samplerChunk_t);
+            memset(&samplerChunk, 0, sizeof(samplerChunk_t));
+            samplerChunk.chunkID = 0x6C706D73; // "smpl"
+            samplerChunk.chunkSize = 60;
+            samplerChunk.dwSamplePeriod = 1000000000 / 16574;
+            samplerChunk.dwMIDIUnityNote = 60; // 60 = MIDI middle-C
+            samplerChunk.cSampleLoops = 1;
+            samplerChunk.loop.dwStart = loopStart;
+            samplerChunk.loop.dwEnd = loopStart + loopLength - 1;
         }
-        else if (format == "IFF")
-        {
-            addDebugText(
-                "Saving sample to IFF, no. " + QString::number(row) + ", filesize: " + QString::number(
-                    SoundManager::getInstance().m_Info1->samplesSize[row]));
 
-            QString fileName =
+        FILE *pFile = fopen(fileName.toStdString().c_str(), "wb");
+        fwrite(&wavHeader, sizeof(char), sizeof wavHeader, pFile);
+
+        for (int i = 0; i < info->samplesSize[row]; i++)
+            fputc(static_cast<uint8_t>(info->samplesData[row][i] + 128), pFile);
+
+        if (info->samplesSize[row] & 1)
+            fputc(0, pFile); // pad align byte
+
+        if (loopStart + loopLength > 2) // loop enabled?
+            fwrite(&samplerChunk, sizeof (samplerChunk), 1, pFile);
+
+        fclose(pFile);
+    } else if (format == "IFF") {
+        addDebugText(
+            "Saving sample to IFF, no. " + QString::number(row) + ", filesize: " + QString::number(
+                info->samplesSize[row]));
+
+        const QString fileName =
                 QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFileName, "IFF (*.iff)");
 
-            FILE* f;
-            f = fopen(fileName.toStdString().c_str(), "wb");
+        FILE *f = fopen(fileName.toStdString().c_str(), "wb");
 
-            // "FORM" chunk
-            iffWriteChunkHeader(f, "FORM", 0); // "FORM" chunk size is overwritten later
-            iffWriteUint32(f, 0x38535658); // "8SVX"
+        // "FORM" chunk
+        iffWriteChunkHeader(f, "FORM", 0); // "FORM" chunk size is overwritten later
+        iffWriteUint32(f, 0x38535658); // "8SVX"
 
-            // "VHDR" chunk
-            iffWriteChunkHeader(f, "VHDR", 20);
+        // "VHDR" chunk
+        iffWriteChunkHeader(f, "VHDR", 20);
 
-            if (loopStart + loopLength > 2) // loop enabled?
-            {
-                iffWriteUint32(f, loopStart); // oneShotHiSamples
-                iffWriteUint32(f, loopLength); // repeatHiSamples
-            }
-            else
-            {
-                iffWriteUint32(f, 0); // oneShotHiSamples
-                iffWriteUint32(f, 0); // repeatHiSamples
-            }
-
-            iffWriteUint32(f, 0); // samplesPerHiCycle
-            iffWriteUint16(f, 16574); // samplesPerSec
-            iffWriteUint8(f, 1); // ctOctave (number of samples)
-            iffWriteUint8(f, 0); // sCompression
-            //iffWriteUint32(f, s->volume * 1024); // volume (max: 65536/0x10000)
-            iffWriteUint32(f, 1 * 1024); // volume (max: 65536/0x10000)
-
-            uint32_t chunkLen;
-            // "NAME" chunk
-            chunkLen = (uint32_t)strlen(SoundManager::getInstance().m_Info1->samples[row].c_str());
-            if (chunkLen > 0)
-            {
-                iffWriteChunkHeader(f, "NAME", chunkLen);
-                iffWriteChunkData(f, SoundManager::getInstance().m_Info1->samples[row].c_str(), chunkLen);
-            }
-
-            // "ANNO" chunk (we put the program name here)
-            const char annoStr[] = PROJECT_NAME;
-            chunkLen = sizeof (annoStr) - 1;
-            iffWriteChunkHeader(f, "ANNO", chunkLen);
-            iffWriteChunkData(f, annoStr, chunkLen);
-
-            // "BODY" chunk
-            chunkLen = SoundManager::getInstance().m_Info1->samplesSize[row];
-            iffWriteChunkHeader(f, "BODY", chunkLen);
-            iffWriteChunkData(f, SoundManager::getInstance().m_Info1->samplesData[row], chunkLen);
-
-            // go back and fill in "FORM" chunk size
-            chunkLen = ftell(f) - 8;
-            fseek(f, 4, SEEK_SET);
-            iffWriteUint32(f, chunkLen);
-
-            fclose(f);
+        if (loopStart + loopLength > 2) // loop enabled?
+        {
+            iffWriteUint32(f, loopStart); // oneShotHiSamples
+            iffWriteUint32(f, loopLength); // repeatHiSamples
+        } else {
+            iffWriteUint32(f, 0); // oneShotHiSamples
+            iffWriteUint32(f, 0); // repeatHiSamples
         }
+
+        iffWriteUint32(f, 0); // samplesPerHiCycle
+        iffWriteUint16(f, 16574); // samplesPerSec
+        iffWriteUint8(f, 1); // ctOctave (number of samples)
+        iffWriteUint8(f, 0); // sCompression
+        //iffWriteUint32(f, s->volume * 1024); // volume (max: 65536/0x10000)
+        iffWriteUint32(f, 1 * 1024); // volume (max: 65536/0x10000)
+
+        // "NAME" chunk
+        auto chunkLen = static_cast<uint32_t>(strlen(info->samples[row].c_str()));
+
+        if (chunkLen > 0) {
+            iffWriteChunkHeader(f, "NAME", chunkLen);
+            iffWriteChunkData(f, info->samples[row].c_str(), chunkLen);
+        }
+
+        // "ANNO" chunk (we put the program name here)
+        constexpr char annoStr[] = PROJECT_NAME;
+        chunkLen = sizeof (annoStr) - 1;
+        iffWriteChunkHeader(f, "ANNO", chunkLen);
+        iffWriteChunkData(f, annoStr, chunkLen);
+
+        // "BODY" chunk
+        chunkLen = info->samplesSize[row];
+        iffWriteChunkHeader(f, "BODY", chunkLen);
+        iffWriteChunkData(f, info->samplesData[row], chunkLen);
+
+        // go back and fill in "FORM" chunk size
+        chunkLen = ftell(f) - 8;
+        fseek(f, 4, SEEK_SET);
+        iffWriteUint32(f, chunkLen);
+
+        fclose(f);
     }
 }
 
-void MainWindow::fullscreenVisualizer()
-{
+void MainWindow::fullscreenVisualizer() const {
     visualizerFullScreen->showFullScreen();
 }
 
-void MainWindow::showNextVisualizer()
-{
+void MainWindow::showNextVisualizer() const {
     visualizerFullScreen->showFullScreen();
 }
 
-void MainWindow::fullscreenTracker()
-{
+void MainWindow::fullscreenTracker() const {
     trackerFullScreen->showFullScreen();
 }
 
@@ -3109,43 +2950,48 @@ void MainWindow::renamePlaylist()
     if (ui->listWidget->currentItem()->text() == PLAYLIST_DEFAULT_FILENAME) return;
 
     bool ok;
-    QString oldName = ui->listWidget->currentItem()->text();
-    QString newName = QInputDialog::getText(this, "Rename Playlist",
-                                            "New name:", QLineEdit::Normal,
-                                            oldName, &ok);
+    const QString oldName = ui->listWidget->currentItem()->text();
 
-    if ((oldName != newName) && ok && !newName.isEmpty()) {
+    if (QString newName = QInputDialog::getText(this, "Rename Playlist", "New name:", QLineEdit::Normal, oldName, &ok);
+        oldName != newName && ok && !newName.isEmpty()) {
+
         if (!newName.endsWith(PLAYLIST_DEFAULT_EXTENSION)) {
             newName = newName + PLAYLIST_DEFAULT_EXTENSION;
         }
-        QString newOrgFilename = newName;
+
+        const QString newOrgFilename = newName;
         int suffix = 0;
+
         while (tableWidgetPlaylists.contains(newName)) {
             suffix++;
             newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
         }
-        QDir directory(userPath + PLAYLISTS_DIR);
-        QString playlistNewName = userPath + PLAYLISTS_DIR + QDir::separator() + newName;
-        QString playlistOldName = userPath + PLAYLISTS_DIR + QDir::separator() + oldName;
+
+        const QString playlistNewName = userPath + PLAYLISTS_DIR + QDir::separator() + newName;
+        const QString playlistOldName = userPath + PLAYLISTS_DIR + QDir::separator() + oldName;
         QFile oldFile(playlistOldName);
         oldFile.rename(playlistNewName);
+
         addDebugText("Renaming playlist " + playlistOldName + " to " + playlistNewName);
+
         ui->listWidget->currentItem()->setText(newName);
 
         if (oldName == currentPlaylist) {
             currentPlaylist = newName;
         }
+
         QTableView *newTableWidget = tableWidgetPlaylists[oldName];
         tableWidgetPlaylists.remove(oldName);
         tableWidgetPlaylists.insert(newName, newTableWidget);
-        DockWidgetPlaylist->setWindowTitle(newName);
+        dockWidgetPlaylist->setWindowTitle(newName);
     }
 }
 
 void MainWindow::savePlaylistAs()
 {
     bool ok;
-    QString oldName = ui->listWidget->currentItem()->text();
+    const QString oldName = ui->listWidget->currentItem()->text();
+
     QString newName = QInputDialog::getText(this, "Save Playlist As",
                                             "New name:", QLineEdit::Normal,
                                             oldName, &ok);
@@ -3155,15 +3001,17 @@ void MainWindow::savePlaylistAs()
     if (!newName.endsWith(PLAYLIST_DEFAULT_EXTENSION)) {
         newName = newName + PLAYLIST_DEFAULT_EXTENSION;
     }
-    QString newOrgFilename = newName;
+
+    const QString newOrgFilename = newName;
     int suffix = 0;
+
     while (tableWidgetPlaylists.contains(newName)) {
         suffix++;
         newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
     }
-    QDir directory(userPath + PLAYLISTS_DIR);
-    QString playlistNewName = userPath + PLAYLISTS_DIR + QDir::separator() + newName;
-    QString playlistOldName = userPath + PLAYLISTS_DIR + QDir::separator() + oldName;
+
+    const QString playlistNewName = userPath + PLAYLISTS_DIR + QDir::separator() + newName;
+    const QString playlistOldName = userPath + PLAYLISTS_DIR + QDir::separator() + oldName;
 
     savePlayList(playlistOldName, playlistNewName);
 
@@ -3173,16 +3021,21 @@ void MainWindow::savePlaylistAs()
     newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
 
     ui->listWidget->addItem(newItem);
-    MyItemDelegate* item = new MyItemDelegate(this);
+
+    const auto item = new MyItemDelegate(this);
+
     item->setMainColor(QColor(colorMain.left(7)));
     ui->listWidget->setItemDelegate(item);
 
-    DraggableTableView *tv = new DraggableTableView();
+    const auto tv = new DraggableTableView();
+
     tv->setDragBackgroundColor(QColor(colorMain.left(7)));
     tv->setDragTextColor(QColor(colorMainText.left(7)));
     tv->setupDelegate(); // has to be called after colors are set
-    PlaylistModel* pm = new PlaylistModel(this);
-    QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
+
+    const auto pm = new PlaylistModel(this);
+    const auto proxyModel = new QSortFilterProxyModel(pm); // create proxy
+
     proxyModel->setSourceModel(pm);
     tv->setModel(proxyModel);
 
@@ -3193,8 +3046,7 @@ void MainWindow::savePlaylistAs()
 
     tableWidgetPlaylists[newName] = tv;
 
-    QFont roboto("Roboto");
-
+    const QFont roboto("Roboto");
 
     tableWidgetPlaylists[newName]->setStyleSheet(
         ui->dockWidgetContents_4->styleSheet() +
@@ -3205,12 +3057,10 @@ void MainWindow::savePlaylistAs()
 
     swapColumns(tableWidgetPlaylists[newName]);
 
-
     connect(tableWidgetPlaylists[newName], SIGNAL(doubleClicked(const QModelIndex &)),
             SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
 
-    QUrl u = QUrl::fromLocalFile(
-        QDir::separator() + userPath + PLAYLISTS_DIR + "/" + newName);
+    const QUrl u = QUrl::fromLocalFile(QDir::separator() + userPath + PLAYLISTS_DIR + "/" + newName);
     QList<QUrl> ql;
     ql.append(u);
 
@@ -3221,12 +3071,12 @@ void MainWindow::savePlaylistAs()
 
 void MainWindow::savePlayList(QString path, QString newPath)
 {
-    QFileInfo fileInfoOld(path);
-    QFileInfo fileInfoNew(newPath);
+    const QFileInfo fileInfoOld(path);
     QFile file(newPath);
-    QDir dir(newPath);
+
     if (!file.open(QIODevice::WriteOnly))
         return;
+
     QTextStream out(&file);
 
     out.setEncoding(QStringConverter::Utf8);
@@ -3249,6 +3099,7 @@ void MainWindow::savePlayList(QString path, QString newPath)
             PLAYLISTFIELDSPLITTER << "[fade(h:m:s)]" << PLAYLISTFIELDSPLITTER << "[loopcount]" << PLAYLISTFIELDSPLITTER
             << tableWidgetPlaylists[playlistKey]->model()->index(i, 8).data().toString() << "\n";
     }
+
     file.close();
 }
 
@@ -3263,6 +3114,7 @@ void MainWindow::deleteAllPlaylists()
     for (int rowNumber = ui->listWidget->count() - 1; rowNumber >= 0; rowNumber--)
     {
         ui->listWidget->setCurrentRow(rowNumber);
+
         if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME)
         {
             QString playlistToDelete = userPath + PLAYLISTS_DIR + QDir::separator() + ui->listWidget->currentItem()
@@ -3273,6 +3125,7 @@ void MainWindow::deleteAllPlaylists()
             delete ui->listWidget->takeItem(ui->listWidget->currentRow());
         }
     }
+
     ui->listWidget->setCurrentRow(0);
     on_listWidget_itemClicked(ui->listWidget->item(0));
 }
@@ -3284,7 +3137,7 @@ void MainWindow::deletePlaylist()
     int rowNumber = ui->listWidget->currentRow();
     rowNumber--;
 
-    QString playlistToDelete = userPath + PLAYLISTS_DIR + QDir::separator() + ui->listWidget->currentItem()->text();
+    const QString playlistToDelete = userPath + PLAYLISTS_DIR + QDir::separator() + ui->listWidget->currentItem()->text();
     addDebugText("Deleting playlist " + playlistToDelete);
     QFile::remove(playlistToDelete);
     //playlists.remove(ui->listWidget->currentItem()->text());
@@ -3316,8 +3169,9 @@ void MainWindow::showContainingFolder()
     foreach(QModelIndex idx, tableWidgetPlaylists[selectedPlaylist]->selectionModel()->selectedRows())
     {
         QFile file(tableWidgetPlaylists[selectedPlaylist]->model()->index(idx.row(), 4).data().toString());
-        QFileInfo fileinfo(file);
-        if (!fileinfo.path().startsWith("http://", Qt::CaseInsensitive) && !fileinfo.path().startsWith("https://"))
+
+        if (QFileInfo fileinfo(file);
+            !fileinfo.path().startsWith("http://", Qt::CaseInsensitive) && !fileinfo.path().startsWith("https://"))
         {
             QDesktopServices::openUrl(QUrl::fromLocalFile(fileinfo.path()));
         }
@@ -3330,15 +3184,16 @@ void MainWindow::deleteFilesInPlaylist()
     QVector<int> selectedRowsIdx;
 
     addDebugText("Removing items from playlist: " + selectedPlaylist);
+
     foreach(QModelIndex idx, tableWidgetPlaylists[selectedPlaylist]->selectionModel()->selectedRows())
     {
         selectedRowsIdx.append(idx.row());
         addDebugText("Removing items from playlist: " + QString::number(idx.row()));
     }
 
-    std::sort(selectedRowsIdx.begin(), selectedRowsIdx.end());
+    ranges::sort(selectedRowsIdx);
 
-    int currentRowPreDelete = currentRow;
+    const int currentRowPreDelete = currentRow;
 
     for (int idx = selectedRowsIdx.size() - 1; idx >= 0; idx--)
     {
@@ -3349,6 +3204,7 @@ void MainWindow::deleteFilesInPlaylist()
         {
             currentRow--;
         }
+
         addDebugText("Removing row: " + QString::number(selectedRowsIdx.at(idx)));
     }
 
@@ -3387,15 +3243,17 @@ void MainWindow::deleteFilesInvertedInPlaylist()
 
     addDebugText("Removing items from playlist: " + selectedPlaylist);
 
-    //get all selected rows
+    // get all selected rows
     QVector<int> selectedRowsIdx;
+
     foreach(QModelIndex idx, tableWidgetPlaylists[selectedPlaylist]->selectionModel()->selectedRows())
     {
         selectedRowsIdx.append(idx.row());
     }
 
-    //get all NOT selected rows
+    // get all NOT selected rows
     QVector<int> notSelectedRowsIdx;
+
     for (int i = 0; i < tableWidgetPlaylists[selectedPlaylist]->model()->rowCount(); i++)
     {
         if (!selectedRowsIdx.contains(i))
@@ -3404,11 +3262,11 @@ void MainWindow::deleteFilesInvertedInPlaylist()
         }
     }
 
-
     for (int idx = notSelectedRowsIdx.size() - 1; idx >= 0; idx--)
     {
         tableWidgetPlaylists[selectedPlaylist]->model()->removeRow(notSelectedRowsIdx.at(idx));
         rowDeleted = true;
+
         if (currentRow >= notSelectedRowsIdx.at(idx) && currentRow != 0)
         {
             currentRow--;
@@ -3426,7 +3284,6 @@ void MainWindow::deleteFilesInvertedInPlaylist()
     }
 }
 
-
 void MainWindow::openSettings()
 {
     settingsWindow settingsWindow(this);
@@ -3435,9 +3292,10 @@ void MainWindow::openSettings()
 
 void MainWindow::addFolder()
 {
-    QUrl root = QUrl(lastDir);
-    QUrl u = QFileDialog::getExistingDirectoryUrl(this, "Add folder", root);
-    if (!u.isEmpty())
+    const auto root = QUrl(lastDir);
+
+    if (const QUrl u = QFileDialog::getExistingDirectoryUrl(this, "Add folder", root);
+        !u.isEmpty())
     {
         QList<QUrl> ql;
         ql.append(u);
@@ -3448,23 +3306,21 @@ void MainWindow::addFolder()
 
 void MainWindow::addFiles()
 {
-    QString root = lastDir;
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, "Add files", root, tr("All files (*.*)"));
-    if (fileNames.size() > 0)
+    const QString root = lastDir;
+
+    if (QStringList fileNames = QFileDialog::getOpenFileNames(this, "Add files", root, tr("All files (*.*)"));
+        !fileNames.empty())
     {
         addSong(fileNames, 0, selectedPlaylist, true);
-        QFileInfo a(fileNames.last());
-        lastDir = a.absolutePath();
+        lastDir = QFileInfo(fileNames.last()).absolutePath();
     }
 }
 
-void MainWindow::setChannelEnabled(int index, bool enable)
-{
+void MainWindow::setChannelEnabled(const int index, const bool enable) const {
     channels->setChannelEnabled(index, enable);
 }
 
-bool MainWindow::getChannelEnabled(int index)
-{
+bool MainWindow::isChannelEnabled(const int index) const {
     return channels->getChannelEnabled(index);
 }
 
@@ -3485,9 +3341,7 @@ void MainWindow::createThePopupLogWindow()
     ui->Debug->addActions({selectAllLogWindowAction});
 }
 
-/*!
- Creates the popup menu for playlists window
-*/
+// creates the popup menu for playlists window
 void MainWindow::createThePopupMenuPlaylists()
 {
     renamePlaylistAction = new QAction(tr("&Rename"), this);
@@ -3506,9 +3360,9 @@ void MainWindow::createThePopupMenuPlaylists()
 
     ui->listWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     QListWidget* list = ui->listWidget;
-    QObject::connect(list, &QListWidget::customContextMenuRequested, [list, this](const QPoint& pos)
+    connect(list, &QListWidget::customContextMenuRequested, [list, this](const QPoint& pos)
     {
-        QModelIndex index = list->indexAt(pos);
+        const QModelIndex index = list->indexAt(pos);
 
         if (list->itemAt(pos) != nullptr)
         {
@@ -3548,7 +3402,6 @@ void MainWindow::createThePopupMenuVisualizer()
     connect(fullscreenVisualizerAction, SIGNAL(triggered()), this, SLOT(fullscreenVisualizer()));
     connect(showNextVisualizerAction, SIGNAL(triggered()), this, SLOT(showNextVisualizer()));
 
-
     ui->visualizer->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->visualizer->addActions({fullscreenVisualizerAction});
 }
@@ -3563,10 +3416,8 @@ void MainWindow::createThePopupMenuTracker()
     ui->trackerView->addActions({fullscreenTrackerAction});
 }
 
-/*!
- Creates the popup menu for current playlist window
-*/
-void MainWindow::createThePopupMenuCurrentPlaylist(QString playlist)
+// creates the popup menu for current playlist window
+void MainWindow::createThePopupMenuCurrentPlaylist(const QString &playlist)
 {
     deleteFilesInPlaylistAction = new QAction(tr("&Remove selected"), this);
     deleteFilesInPlaylistInvertedAction = new QAction(tr("&Remove all not selected"), this);
@@ -3587,15 +3438,15 @@ void MainWindow::createThePopupMenuCurrentPlaylist(QString playlist)
 
 void MainWindow::createThePopupMenuInstruments()
 {
-    exportInstrumentWAVAction = new QAction(tr("&Export to .wav"), this);
-    exportInstrumentIFFAction = new QAction(tr("&Export to .iff"), this);
+    exportInstrumentWavAction = new QAction(tr("&Export to .wav"), this);
+    exportInstrumentIffAction = new QAction(tr("&Export to .iff"), this);
 
-    connect(exportInstrumentWAVAction, SIGNAL(triggered()), this, SLOT(exportInstrumentToWAV()));
-    connect(exportInstrumentIFFAction, SIGNAL(triggered()), this, SLOT(exportInstrumentToIFF()));
+    connect(exportInstrumentWavAction, SIGNAL(triggered()), this, SLOT(exportInstrumentToWav()));
+    connect(exportInstrumentIffAction, SIGNAL(triggered()), this, SLOT(exportInstrumentToIff()));
 
     ui->samples->setContextMenuPolicy(Qt::ActionsContextMenu);
-    ui->samples->addActions({exportInstrumentWAVAction});
-    ui->samples->addActions({exportInstrumentIFFAction});
+    ui->samples->addActions({exportInstrumentWavAction});
+    ui->samples->addActions({exportInstrumentIffAction});
 }
 
 void MainWindow::createThePopupMenuChannels()
@@ -3615,21 +3466,24 @@ int MainWindow::getCurrentRow() const
 {
     return currentRow;
 }
-void MainWindow::setCurrentRow(int row)
+
+void MainWindow::setCurrentRow(const int row)
 {
     currentRow=row;
 }
+
 void MainWindow::playPrevSong()
 {
     addDebugText("Play previous song.");
-    if ((currentRow != 0 && !isShuffleEnabled()) || (isShuffleEnabled() && m_iCurrentShufflePosition[currentPlaylist] > 0) ||
+
+    if ((currentRow != 0 && !isShuffleEnabled()) || (isShuffleEnabled() && currentShufflePosition[currentPlaylist] > 0) ||
     (ui->checkBoxLoop->checkState() == Qt::PartiallyChecked && !isShuffleEnabled()))
     {
         if (isShuffleEnabled())
         {
-            m_iCurrentShufflePosition[currentPlaylist]--;
+            currentShufflePosition[currentPlaylist]--;
             removeHighlight();
-            currentRow = m_ShufflePlayed[currentPlaylist].at(m_iCurrentShufflePosition[currentPlaylist]);
+            currentRow = shufflePlayed[currentPlaylist].at(currentShufflePosition[currentPlaylist]);
         }
         else if (ui->checkBoxLoop->checkState() == Qt::PartiallyChecked && currentRow == 0)
         {
@@ -3642,8 +3496,7 @@ void MainWindow::playPrevSong()
             currentRow--;
         }
 
-
-        PlaySong(currentRow);
+        playSongAtRow(currentRow);
         isUpdateCurrentRowToNextEnabled = true;
     }
 }
@@ -3660,115 +3513,116 @@ void MainWindow::on_buttonPrev_clicked()
     playPrevSong();
 }
 
-void MainWindow::setOutputDeviceSetting(int outputDevice)
+void MainWindow::setOutputDeviceSetting(const int outputDeviceProvided)
 {
-    m_outputDevice = outputDevice;
+    outputDevice = outputDeviceProvided;
 }
 
-void MainWindow::setOutputDevice(int outputDevice, QString fullPath)
+void MainWindow::setOutputDevice(const int outputDeviceProvided, const QString &fullPath)
 {
-    SoundManager::getInstance().ShutDown();
-    SoundManager::getInstance().Init(outputDevice, fullPath);
+    auto &sm = SoundManager::getInstance();
 
-    SoundManager::getInstance().setNormalizeEnabled(m_normalizeEnabled);
-    SoundManager::getInstance().setNormalizeFadeTime(m_normalizeFadeTime);
-    SoundManager::getInstance().setNormalizeMaxAmp(m_normalizeMaxAmp);
-    SoundManager::getInstance().setNormalizeThreshold(m_normalizeThreshold);
-    SoundManager::getInstance().setReverbPreset(m_reverbPreset);
-    SoundManager::getInstance().setReverbEnabled(m_reverbEnabled);
+    sm.shutdown();
+    sm.Init(outputDeviceProvided, fullPath);
+
+    sm.setNormalizeEnabled(normalizeEnabled);
+    sm.setNormalizeFadeTime(normalizeFadeTime);
+    sm.setNormalizeMaxAmp(normalizeMaxAmp);
+    sm.setNormalizeThreshold(normalizeThreshold);
+    sm.setReverbPreset(reverbPreset);
+    sm.setReverbEnabled(reverbEnabled);
 
     resetAll();
 
-    m_outputDevice = outputDevice;
+    outputDevice = outputDeviceProvided;
 }
 
 int MainWindow::getOutputDevice() const
 {
-    return m_outputDevice;
+    return outputDevice;
 }
 
-void MainWindow::setResetVolume(bool resetVolume)
+void MainWindow::setResetVolume(const bool resetVolumeProvided)
 {
-    m_resetVolume = resetVolume;
+    resetVolume = resetVolumeProvided;
 }
 
 bool MainWindow::getResetVolume() const
 {
-    return m_resetVolume;
+    return resetVolume;
 }
 
-void MainWindow::setDefaultPlaymode(int defaultPlaymode)
+void MainWindow::setDefaultPlayMode(const int defaultPlayModeProvided)
 {
-    m_defaultPlaymode = defaultPlaymode;
+    defaultPlayMode = defaultPlayModeProvided;
 }
 
-int MainWindow::getDefaultPlaymode() const
+int MainWindow::getDefaultPlayMode() const
 {
-    return m_defaultPlaymode;
+    return defaultPlayMode;
 }
 
 void MainWindow::setReverbPreset(const QString& name)
 {
     SoundManager::getInstance().setReverbPreset(name);
-    m_reverbPreset = name;
+    reverbPreset = name;
 }
 
-void MainWindow::setIgnoreSuffix(QString suffix)
+void MainWindow::setIgnoreSuffix(const QString &suffix)
 {
-    m_ignoreSuffix = suffix;
+    ignoreSuffix = suffix;
 }
 
-void MainWindow::setIgnorePrefix(QString prefix)
+void MainWindow::setIgnorePrefix(const QString &prefix)
 {
-    m_ignorePrefix = prefix;
+    ignorePrefix = prefix;
 }
 
-QString MainWindow::getReverbPreset()
+QString MainWindow::getReverbPreset() const
 {
-    return m_reverbPreset;
+    return reverbPreset;
 }
 
-QString MainWindow::getIgnorePrefix()
+QString MainWindow::getIgnorePrefix() const
 {
-    return m_ignorePrefix;
+    return ignorePrefix;
 }
 
-QString MainWindow::getIgnoreSuffix()
+QString MainWindow::getIgnoreSuffix() const
 {
-    return m_ignoreSuffix;
+    return ignoreSuffix;
 }
 
-void MainWindow::setReverbEnabled(bool reverb)
+void MainWindow::setReverbEnabled(const bool reverb)
 {
-    m_reverbEnabled = reverb;
+    reverbEnabled = reverb;
     SoundManager::getInstance().setReverbEnabled(reverb);
 }
 
-bool MainWindow::getReverbEnabled() const
+bool MainWindow::isReverbEnabled() const
 {
-    return m_reverbEnabled;
+    return reverbEnabled;
 }
 
-void MainWindow::setNormalizeEnabled(bool normalize)
+void MainWindow::setNormalizeEnabled(const bool normalize)
 {
-    m_normalizeEnabled = normalize;
+    normalizeEnabled = normalize;
     SoundManager::getInstance().setNormalizeEnabled(normalize);
 }
 
-
-bool MainWindow::getNormalizeEnabled() const
+bool MainWindow::isNormalizeEnabled() const
 {
-    return m_normalizeEnabled;
+    return normalizeEnabled;
 }
 
 bool MainWindow::getDisplayMilliseconds() const
 {
-    return m_displayMilliseconds;
+    return displayMilliseconds;
 }
 
 bool MainWindow::getEnqueueItems() const
 {
-    return m_enqueueItems;
+    return enqueueItems;
 }
 
 bool MainWindow::getShowCheckBoxLoopPoints() const {
@@ -3790,42 +3644,42 @@ bool MainWindow::getMenuBarHiddenChecked() const
     return isMenuBarHiddenChecked;
 }
 
-void MainWindow::setNormalizeFadeTime(int fadeTime)
+void MainWindow::setNormalizeFadeTime(const int fadeTime)
 {
-    m_normalizeFadeTime = fadeTime;
+    normalizeFadeTime = fadeTime;
     SoundManager::getInstance().setNormalizeFadeTime(fadeTime);
 }
 
 int MainWindow::getNormalizeFadeTime() const
 {
-    return m_normalizeFadeTime;
+    return normalizeFadeTime;
 }
 
-void MainWindow::setNormalizeThreshold(int threshold)
+void MainWindow::setNormalizeThreshold(const int threshold)
 {
     SoundManager::getInstance().setNormalizeThreshold(threshold);
-    m_normalizeThreshold = threshold;
+    normalizeThreshold = threshold;
 }
 
 int MainWindow::getNormalizeThreshold() const
 {
-    return m_normalizeThreshold;
+    return normalizeThreshold;
 }
 
-void MainWindow::setNormalizeMaxAmp(int maxAmp)
+void MainWindow::setNormalizeMaxAmp(const int maxAmp)
 {
     SoundManager::getInstance().setNormalizeMaxAmp(maxAmp);
-    m_normalizeMaxAmp = maxAmp;
+    normalizeMaxAmp = maxAmp;
 }
 
 int MainWindow::getNormalizeMaxAmp() const
 {
-    return m_normalizeMaxAmp;
+    return normalizeMaxAmp;
 }
 
 int MainWindow::getResetVolumeValue() const
 {
-    return m_resetVolumeValue;
+    return resetVolumeValue;
 }
 
 int MainWindow::getPlaylistRowHeight() const
@@ -3833,11 +3687,11 @@ int MainWindow::getPlaylistRowHeight() const
     return playlistRowHeight;
 }
 
-QString MainWindow::getHvscSonglengthsPath() {
+QString MainWindow::getHvscSonglengthsPath() const {
     return hvscSonglengthsPath;
 }
 
-void MainWindow::setHvscSonglengthsPath(QString path) {
+void MainWindow::setHvscSonglengthsPath(const QString &path) {
     hvscSonglengthsPath = path;
 }
 
@@ -3846,17 +3700,17 @@ qint64 MainWindow::getBundledHvscSonglengthsDownloadEpoch() const
     return bundledHvscSonglengthsDownloadEpoch;
 }
 
-QString MainWindow::getBundledHvscSonglengthsUpdateFrequency()
+QString MainWindow::getBundledHvscSonglengthsUpdateFrequency() const
 {
     return bundledHvscSonglengthsUpdateFrequency;
 }
 
-QString MainWindow::getBundledHvscSonglengthsPath()
+QString MainWindow::getBundledHvscSonglengthsPath() const
 {
     return bundledHvscSonglengthsPath;
 }
 
-void MainWindow::setBundledHvscSonglengthsPath(QString path)
+void MainWindow::setBundledHvscSonglengthsPath(const QString &path)
 {
     bundledHvscSonglengthsPath = path;
 }
@@ -3871,15 +3725,15 @@ int MainWindow::getNowPlayingFontSize() const
     return nowPlayingFontSize;
 }
 
-void MainWindow::setResetVolumeValue(int value)
+void MainWindow::setResetVolumeValue(const int value)
 {
-    m_resetVolumeValue = value;
+    resetVolumeValue = value;
 }
 
 void MainWindow::setSystrayChecked(const bool isChecked)
 {
     isSystrayChecked = isChecked;
-    m_Tray->setVisible(isChecked);
+    tray->setVisible(isChecked);
 }
 
 void MainWindow::setSystrayOnMinimizeChecked(const bool isChecked)
@@ -3897,47 +3751,33 @@ void MainWindow::setMenuBarHiddenChecked(const bool isChecked)
     menuBar()->setHidden(isChecked);
 }
 
-void MainWindow::SaveSettings()
-{
+void MainWindow::saveSettings() const {
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-    settings.setValue("outputDevice", m_outputDevice);
+    settings.setValue("outputDevice", outputDevice);
     settings.setValue("Internal/volume", ui->volumeSlider->value());
     settings.setValue("Internal/shuffle", ui->checkBoxShuffle->isChecked());
-
-    settings.setValue("defaultPlayMode", m_defaultPlaymode);
-    settings.setValue("Internal/playMode", m_defaultPlaymode == -1 ? Playmode : m_defaultPlaymode);
-
-    settings.setValue("defaultAudioLevel", m_resetVolume);
-    settings.setValue("defaultAudioLevelValue", m_resetVolumeValue);
+    settings.setValue("defaultPlayMode", defaultPlayMode);
+    settings.setValue("Internal/playMode", defaultPlayMode == -1 ? playMode : defaultPlayMode);
+    settings.setValue("defaultAudioLevel", resetVolume);
+    settings.setValue("defaultAudioLevelValue", resetVolumeValue);
     settings.setValue("Internal/mute", ui->checkBoxVolumeOn->checkState() != Qt::Checked);
-
-
-    settings.setValue("displayMilliseconds", m_displayMilliseconds);
-
-    settings.setValue("enqueueItems", m_enqueueItems);
-
+    settings.setValue("displayMilliseconds", displayMilliseconds);
+    settings.setValue("enqueueItems", enqueueItems);
     settings.setValue("showLoopPoints", isShownCheckBoxLoopPoints);
-
-    settings.setValue("normalizer", m_normalizeEnabled);
-    settings.setValue("normalizerFadeTime", m_normalizeFadeTime);
-    settings.setValue("normalizerThreshold", m_normalizeThreshold);
-    settings.setValue("normalizerMaxAmp", m_normalizeMaxAmp);
-
-    settings.setValue("reverb", m_reverbEnabled);
-    settings.setValue("reverbPreset", m_reverbPreset);
-
+    settings.setValue("normalizer", normalizeEnabled);
+    settings.setValue("normalizerFadeTime", normalizeFadeTime);
+    settings.setValue("normalizerThreshold", normalizeThreshold);
+    settings.setValue("normalizerMaxAmp", normalizeMaxAmp);
+    settings.setValue("reverb", reverbEnabled);
+    settings.setValue("reverbPreset", reverbPreset);
     settings.setValue("systray", isSystrayChecked);
     settings.setValue("minimizeToSystray", isSystrayOnMinimizeChecked);
-
     settings.setValue("menuBarHidden", isMenuBarHiddenChecked);
-
     settings.setValue("Internal/selectedPlaylist", selectedPlaylist);
     settings.setValue("Internal/currentPlaylist", currentPlaylist);
     settings.setValue("Internal/currentRow", currentRow);
-
-    settings.setValue("ignoreSuffixes", m_ignoreSuffix);
-    settings.setValue("ignorePrefixes", m_ignorePrefix);
-
+    settings.setValue("ignoreSuffixes", ignoreSuffix);
+    settings.setValue("ignorePrefixes", ignorePrefix);
     settings.setValue("Appearance/colorMain", colorMain);
     settings.setValue("Appearance/colorMainHover", colorMainHover);
     settings.setValue("Appearance/colorMedium", colorMedium);
@@ -3948,25 +3788,18 @@ void MainWindow::SaveSettings()
     settings.setValue("Appearance/colorButton", colorButton);
     settings.setValue("Appearance/colorButtonHover", colorButtonHover);
     settings.setValue("Appearance/colorDimmedText", colorDimmedText);
-
     settings.setValue("Visualizer/vuMeterColorTop", colorVisualizerTop);
     settings.setValue("Visualizer/vuMeterColorBottom", colorVisualizerBottom);
     settings.setValue("Visualizer/vuMeterColorMiddle", colorVisualizerMiddle);
-
     settings.setValue("Visualizer/colorBackground", colorVisualizerBackground);
-
     settings.setValue("Visualizer/vuMeterColorPeak", colorVisualizerPeak);
-    settings.setValue("Visualizer/vuMeterPeaks", vumeterPeaksEnabled);
-    settings.setValue("Visualizer/vuMeterPeakHeight", vumeterPeaksHeight);
-
+    settings.setValue("Visualizer/vuMeterPeaks", vuMeterPeaksEnabled);
+    settings.setValue("Visualizer/vuMeterPeakHeight", vuMeterPeaksHeight);
     settings.setValue("Appearance/playlistItemRowHeight", playlistRowHeight);
     settings.setValue("Appearance/playlistRowHeight", playlistsRowHeight);
     settings.setValue("Appearance/nowPlayingFontSize", nowPlayingFontSize);
-
-    settings.setValue("Visualizer/vuMeterWidth", getEffect()->getVumeterWidth());
-    settings.setValue("Visualizer/vuMeterOpacity", getEffect()->getVumeterOpacity());
-
-
+    settings.setValue("Visualizer/vuMeterWidth", getEffect()->getVuMeterWidth());
+    settings.setValue("Visualizer/vuMeterOpacity", getEffect()->getVuMeterOpacity());
     settings.setValue("Visualizer/scrollerAmplitude", getEffect()->getAmplitude());
     settings.setValue("Visualizer/scrollerFrequency", getEffect()->getFrequency());
     settings.setValue("Visualizer/scrollerSinusSpeed", getEffect()->getSinusSpeed());
@@ -3979,17 +3812,17 @@ void MainWindow::SaveSettings()
     settings.setValue("Visualizer/scrollerCustomTextContent", getEffect()->getCustomScrolltext());
     settings.setValue("Visualizer/starfield", getEffect()->getStarsEnabled());
     settings.setValue("Visualizer/rasterBars", getEffect()->getRasterBarsEnabled());
-    settings.setValue("Visualizer/rotatingObject", getEffect()->get3DCubeEnabled());
-    settings.setValue("Visualizer/rotatingObjectWireframe", getEffect()->get3DCubeWireframeEnabled());
-    settings.setValue("Visualizer/rotatingObjectModel", getEffect()->get3dCubeModel());
-    settings.setValue("Visualizer/rotatingObjectOrbit", getEffect()->get3DCubeOrbit());
-    settings.setValue("Visualizer/rotatingObjectMaterialColor", getEffect()->get3DCubeColor());
-    settings.setValue("Visualizer/rotatingObjectModelSize", getEffect()->get3DCubeSize());
-    settings.setValue("Visualizer/rotatingObjectFocalLength", getEffect()->get3DCubeFocalLength());
-    settings.setValue("Visualizer/rotatingObjectOrbitSize", getEffect()->get3DCubeOrbitSize());
-    settings.setValue("Visualizer/rotatingObjectOrbitSpeed", getEffect()->get3DCubeOrbitSpeed());
-    settings.setValue("Visualizer/rotatingObjectWireframeColor", getEffect()->get3DCubeColorWireframe());
-    settings.setValue("Visualizer/rotatingObjectMaterial", getEffect()->get3dCubeMaterial());
+    settings.setValue("Visualizer/rotatingObject", getEffect()->getRotatingObjectEnabled());
+    settings.setValue("Visualizer/rotatingObjectWireframe", getEffect()->getRotatingObjectWireframeEnabled());
+    settings.setValue("Visualizer/rotatingObjectModel", getEffect()->getRotatingObjectModel());
+    settings.setValue("Visualizer/rotatingObjectOrbit", getEffect()->getRotatingObjectOrbit());
+    settings.setValue("Visualizer/rotatingObjectMaterialColor", getEffect()->getRotatingObjectColor());
+    settings.setValue("Visualizer/rotatingObjectModelSize", getEffect()->getRotatingObjectSize());
+    settings.setValue("Visualizer/rotatingObjectFocalLength", getEffect()->getRotatingObjectFocalLength());
+    settings.setValue("Visualizer/rotatingObjectOrbitSize", getEffect()->getRotatingObjectOrbitSize());
+    settings.setValue("Visualizer/rotatingObjectOrbitSpeed", getEffect()->getRotatingObjectOrbitSpeed());
+    settings.setValue("Visualizer/rotatingObjectWireframeColor", getEffect()->getRotatingObjectColorWireframe());
+    settings.setValue("Visualizer/rotatingObjectMaterial", getEffect()->getRotatingObjectMaterial());
     settings.setValue("Visualizer/rasterBarsAmount", getEffect()->getNumberOfRasterBars());
     settings.setValue("Visualizer/rasterBarsSpeed", getEffect()->getRasterBarsSpeed());
     settings.setValue("Visualizer/rasterBarsHeight", getEffect()->getRasterBarsHeight());
@@ -4000,21 +3833,17 @@ void MainWindow::SaveSettings()
     settings.setValue("Visualizer/starfieldSpeed", getEffect()->getStarSpeed());
     settings.setValue("Visualizer/scroller", getEffect()->getScrollerEnabled());
     settings.setValue("Visualizer/printer", getEffect()->getPrinterEnabled());
-    settings.setValue("Visualizer/vuMeter", getEffect()->getVUMeterEnabled());
+    settings.setValue("Visualizer/vuMeter", getEffect()->isVuMeterEnabled());
     settings.setValue("Visualizer/reflectionColor", getEffect()->getReflectionColor());
     settings.setValue("Visualizer/scrollerFontImage", getEffect()->getFont());
     settings.setValue("Visualizer/reflectionOpacity", getEffect()->getReflectionOpacity());
     settings.setValue("Visualizer/scrollerSinusFontScaling", getEffect()->getSinusFontScalingEnabled());
-
     settings.setValue("Visualizer/maintainAspectRatio", getEffect()->getKeepAspectRatio());
     settings.setValue("Visualizer/resolutionWidth", getEffect()->getResolutionWidth());
     settings.setValue("Visualizer/resolutionHeight", getEffect()->getResolutionHeight());
-
-
     settings.setValue("Visualizer/printerFontImage", getEffect()->getPrinterFont());
     settings.setValue("Visualizer/printerFontXScale", getEffect()->getPrinterFontScaleX());
     settings.setValue("Visualizer/printerFontYScale", getEffect()->getPrinterFontScaleY());
-
     settings.setValue("Internal/columnSamplesNumberWidth", sampleColumnNumberWidth);
     settings.setValue("Internal/columnSamplesNameWidth", sampleColumnNameWidth);
     settings.setValue("Internal/columnSamplesSizeWidth", sampleColumnSizeWidth);
@@ -4023,18 +3852,13 @@ void MainWindow::SaveSettings()
     settings.setValue("Internal/columnSamplesVolumeWidth", sampleColumnVolumeWidth);
     settings.setValue("Internal/columnSamplesFineTuneWidth", sampleColumnFinetuneWidth);
     settings.setValue("Internal/columnSamplesResolutionWidth", sampleColumnResolutionWidth);
-
     settings.setValue("Internal/columnInstrumentsNumberWidth", instrumentColumnNumberWidth);
     settings.setValue("Internal/columnInstrumentsNameWidth", instrumentColumnNameWidth);
     settings.setValue("Internal/columnInstrumentsVolumeWidth", instrumentColumnVolumeWidth);
     settings.setValue("Internal/columnInstrumentsWaveLengthWidth", instrumentColumnWaveLengthWidth);
-
     settings.setValue("Internal/columnInfoNameWidth", infoNameWidth);
     settings.setValue("Internal/columnInfoValueWidth", infoValueWidth);
-
-
     settings.setValue("allowOnlyOneInstance", isOnlyOneInstanceEnabled());
-
     settings.setValue("Internal/lastOpenedDir", lastDir);
 
     savePlayListSettings();
@@ -4045,32 +3869,30 @@ void MainWindow::SaveSettings()
     }
 }
 
-void MainWindow::savePlayListSettings()
-{
+void MainWindow::savePlayListSettings() const {
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-    //Clear old playlist settings
+    // clear old playlist settings
     settings.remove("InternalPlaylists");
 
-    //Iterate all current playlists and save the order and the column settings
+    // iterate all current playlists and save the order and the column settings
     QStringList orderedKeys;
     settings.beginGroup("InternalPlaylists");
+
     for (int i = 0; i < ui->listWidget->count(); ++i) {
         orderedKeys << ui->listWidget->item(i)->text();
-        QListWidgetItem* item = ui->listWidget->item(i);
-        QString key = item->text();
-        if (tableWidgetPlaylists.contains(key)) {
-            QTableView* view = tableWidgetPlaylists.value(key);
+        const QListWidgetItem* item = ui->listWidget->item(i);
+        if (QString key = item->text(); tableWidgetPlaylists.contains(key)) {
+            const QTableView* view = tableWidgetPlaylists.value(key);
             settings.setValue(key, view->horizontalHeader()->saveState());
         }
     }
+
     settings.endGroup();
     settings.setValue("Internal/playlistsOrder", orderedKeys);
-
 }
 
-vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
-{
-    std::vector<PlaylistItem*> entries;
+vector<PlaylistItem*> MainWindow::getPlayListEntriesM3u(QString filename) const {
+    vector<PlaylistItem*> entries;
     QFile file(filename);
     //    Song song;
     //    song.startTime = 0;
@@ -4082,256 +3904,228 @@ vector<PlaylistItem*> MainWindow::getPlayListEntriesM3U(QString filename)
     QString extInfoTitle = "";
     QString extInfoLength = "";
 
-    if (file.open(QIODevice::ReadOnly))
-    {
-        QTextStream in(&file);
-        in.setEncoding(QStringConverter::Utf8);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return entries;
+    }
 
-        QString line = "";
-        while (!line.isNull())
-        {
-            PlaylistItem* playlistItem = new PlaylistItem();
+    QTextStream in(&file);
+    in.setEncoding(QStringConverter::Utf8);
 
-            line = in.readLine();
-            if (line.startsWith("#EXTINF", Qt::CaseInsensitive))
+    QString line = "";
+
+    while (!line.isNull()) {
+        auto playlistItem = new PlaylistItem();
+
+        line = in.readLine();
+
+        if (line.startsWith("#EXTINF", Qt::CaseInsensitive)) {
+            // we got some extrainfo (a title), we save it for the next file
+            int i = line.indexOf(',');
+
+            if (i == -1) // invalid format, but we show everything except "#EXTINF"
             {
-                //we got some extrainfo (a title), we save it for the next file
-                int i = line.indexOf(',');
-                if (i == -1) //invalid format, but we show everything except "#EXTINF"
-                {
-                    i = 7;
-                }
-                extInfoTitle = line.mid(i + 1).trimmed();
-                extInfoLength = line.mid(8, i - 8).trimmed();
-                //addDebugText("title from m3u: "+ extInfoTitle);
+                i = 7;
             }
-            else if (!line.startsWith("#EXTM3U", Qt::CaseInsensitive) && !line.startsWith(
-                "#EXTINF", Qt::CaseInsensitive))
-            {
-                QStringList NEZlist = line.split(NEZPLAYLISTSPLITTER);
 
-                QStringList NEZParameterList;
-                if (NEZlist.size() > 1)
-                {
-                    //Has extended NEZ info
-                    line = NEZlist.at(0);
-                    NEZParameterList = NEZlist.at(1).split(PLAYLISTFIELDSPLITTER);
-                }
-                QDir fileInPlayList(line);
-                if (fileInPlayList.isAbsolute())
-                {
-                    //replace all \ with /
-                    line = line.replace('\\', '/');
-                    int i = line.lastIndexOf('/');
-                    QString onlyFilename = line.mid(i + 1);
-                    playlistItem->filename = onlyFilename.trimmed();
-                    playlistItem->fullPath = QString(line).trimmed();
+            extInfoTitle = line.mid(i + 1).trimmed();
+            extInfoLength = line.mid(8, i - 8).trimmed();
+            //addDebugText("title from m3u: "+ extInfoTitle);
+        } else if (!line.startsWith("#EXTM3U", Qt::CaseInsensitive) && !line.startsWith(
+                       "#EXTINF", Qt::CaseInsensitive)) {
+            QStringList NEZlist = line.split(NEZPLAYLISTSPLITTER);
+
+            QStringList NEZParameterList;
+
+            if (NEZlist.size() > 1) {
+                // has extended NEZ info
+                line = NEZlist.at(0);
+                NEZParameterList = NEZlist.at(1).split(PLAYLISTFIELDSPLITTER);
+            }
+
+            if (QDir fileInPlayList(line);
+                fileInPlayList.isAbsolute()) {
+                // replace all \ with /
+                line = line.replace('\\', '/');
+                int i = line.lastIndexOf('/');
+                QString onlyFilename = line.mid(i + 1);
+                playlistItem->filename = onlyFilename.trimmed();
+                playlistItem->fullPath = QString(line).trimmed();
+                playlistItem->title = playlistItem->filename;
+            } else // it's a relative path
+            {
+                // url?
+                if (line.startsWith("file:///", Qt::CaseInsensitive)) {
+                    QUrl url(line);
+                    line = url.toLocalFile();
+                    //addDebugText("url: " + line);
+                    playlistItem->filename = line.trimmed();
+                    playlistItem->fullPath = line.trimmed();
+                    playlistItem->title = playlistItem->filename;
+                } else if (line.startsWith("file://", Qt::CaseInsensitive)) {
+                    QUrl url(line);
+                    line = url.toLocalFile();
+                    addDebugText("url: " + line);
+                    playlistItem->filename = line.trimmed();
+                    playlistItem->fullPath = line.trimmed();
                     playlistItem->title = playlistItem->filename;
                 }
-                else //it's a relative path
-                {
-                    //url?
-                    if (line.startsWith("file:///", Qt::CaseInsensitive))
-                    {
-                        QUrl url(line);
-                        line = url.toLocalFile();
-                        //addDebugText("url: " + line);
-                        playlistItem->filename = line.trimmed();
-                        playlistItem->fullPath = line.trimmed();
-                        playlistItem->title = playlistItem->filename;
-                    }
-                    else if (line.startsWith("file://", Qt::CaseInsensitive))
-                    {
-                        QUrl url(line);
-                        line = url.toLocalFile();
-                        addDebugText("url: " + line);
-                        playlistItem->filename = line.trimmed();
-                        playlistItem->fullPath = line.trimmed();
-                        playlistItem->title = playlistItem->filename;
-                    }
-                    //if it's a web location, don't add the playlist path
-                    else if (!line.startsWith("http://", Qt::CaseInsensitive) && !line.startsWith(
-                        "https://", Qt::CaseInsensitive))
-                    {
-                        //get the path of the playlist file
-                        int i = filename.lastIndexOf('/');
-                        QString playlistpath = filename.left(i);
-                        QString completepath = playlistpath + "/" + line;
-                        completepath = completepath.replace('\\', '/');
-                        i = completepath.lastIndexOf('/');
-                        QString onlyFilename = completepath.mid(i + 1);
-                        playlistItem->filename = onlyFilename.trimmed();
-                        playlistItem->title = playlistItem->filename;
-                        playlistItem->fullPath = QString(completepath).trimmed();
-                    }
-                    else
-                    {
-                        playlistItem->filename = line.trimmed();
-                        playlistItem->fullPath = line.trimmed();
-                        playlistItem->title = playlistItem->filename;
-                    }
+                // if it's a web location, don't add the playlist path
+                else if (!line.startsWith("http://", Qt::CaseInsensitive) && !line.startsWith(
+                             "https://", Qt::CaseInsensitive)) {
+                    // get the path of the playlist file
+                    int i = filename.lastIndexOf('/');
+                    QString playlistpath = filename.left(i);
+                    QString completepath = playlistpath + "/" + line;
+                    completepath = completepath.replace('\\', '/');
+                    i = completepath.lastIndexOf('/');
+                    QString onlyFilename = completepath.mid(i + 1);
+                    playlistItem->filename = onlyFilename.trimmed();
+                    playlistItem->title = playlistItem->filename;
+                    playlistItem->fullPath = QString(completepath).trimmed();
+                } else {
+                    playlistItem->filename = line.trimmed();
+                    playlistItem->fullPath = line.trimmed();
+                    playlistItem->title = playlistItem->filename;
                 }
-                playlistItem->fullPath = QUrl::fromPercentEncoding(playlistItem->fullPath.toStdString().c_str());
-                playlistItem->subsongs = 1;
-                //check if we have extrainfo
-                if (extInfoTitle != "")
-                {
-                    playlistItem->title = extInfoTitle;
-                    extInfoTitle = "";
+            }
+
+            playlistItem->fullPath = QUrl::fromPercentEncoding(playlistItem->fullPath.toStdString().c_str());
+            playlistItem->subsongs = 1;
+
+            // check if we have extrainfo
+            if (extInfoTitle != "") {
+                playlistItem->title = extInfoTitle;
+                extInfoTitle = "";
+            }
+
+            playlistItem->length = -1;
+
+            if (extInfoLength != "") {
+                if (extInfoLength != "-1" && extInfoLength != "0") {
+                    playlistItem->length = extInfoLength.toInt() * 1000;
+                } else {
+                    playlistItem->length = -1;
                 }
 
-                playlistItem->length = -1;
-                if (extInfoLength != "")
-                {
-                    if (extInfoLength != "-1" && extInfoLength != "0")
-                    {
-                        playlistItem->length = (extInfoLength.toInt()) * 1000;
-                    }
-                    else
-                    {
-                        playlistItem->length = -1;
-                    }
-                    extInfoLength = "";
+                extInfoLength = "";
+            }
+
+            // check if we have NEZ extrainfo
+            if (NEZParameterList.size() > 3) {
+                if (!NEZParameterList.at(2).isEmpty()) {
+                    playlistItem->title = NEZParameterList.at(2);
                 }
 
-
-                //check if we have NEZ extrainfo
-                if (NEZParameterList.size() > (3))
-                {
-                    if (!NEZParameterList.at(2).isEmpty())
-                    {
-                        playlistItem->title = NEZParameterList.at(2);
-                    }
-
-                    QStringList timelist = NEZParameterList.at(3).split(":");
+                QStringList timelist = NEZParameterList.at(3).split(":");
 
 
-                    float seconds = 0;
-                    int minutes = 0;
-                    int hours = 0;
-                    if (timelist.size() == 3)
-                    {
-                        hours = timelist.at(0).toInt() * 3600;
-                        minutes = timelist.at(1).toInt() * 60;
-                        seconds = timelist.at(2).toFloat();
-                    }
-                    if (timelist.size() == 2)
-                    {
-                        minutes = timelist.at(0).toInt() * 60;
-                        seconds = timelist.at(1).toFloat();
-                    }
-                    if (timelist.size() == 1)
-                    {
-                        seconds = timelist.at(0).toFloat();
-                    }
+                float seconds = 0;
+                int minutes = 0;
+                int hours = 0;
 
-                    if (hours + minutes + seconds > 0)
-                    {
-                        playlistItem->length = (hours + minutes + seconds) * 1000;
-                    }
-                    bool subsongOK = false;
-                    if (NEZParameterList.at(1).startsWith("$"))
-                    {
-                        QString strStartSubsong = NEZParameterList.at(1).mid(1);
-                        playlistItem->startSubsongPlayList = strStartSubsong.toInt(&subsongOK, 16);
-                    }
-                    else
-                    {
-                        playlistItem->startSubsongPlayList = NEZParameterList.at(1).toInt(&subsongOK);
-                    }
+                if (timelist.size() == 3) {
+                    hours = timelist.at(0).toInt() * 3600;
+                    minutes = timelist.at(1).toInt() * 60;
+                    seconds = timelist.at(2).toFloat();
+                }
 
-                    if (!subsongOK)
-                    {
-                        playlistItem->startSubsongPlayList = -1;
-                    }
+                if (timelist.size() == 2) {
+                    minutes = timelist.at(0).toInt() * 60;
+                    seconds = timelist.at(1).toFloat();
+                }
 
-                    playlistItem->fileFormat = NEZParameterList.at(0);
+                if (timelist.size() == 1) {
+                    seconds = timelist.at(0).toFloat();
+                }
 
-                    if (NEZParameterList.size() > (7))
-                    {
-                        playlistItem->artist = NEZParameterList.at(7);
+                if (hours + minutes + seconds > 0) {
+                    playlistItem->length = (hours + minutes + seconds) * 1000;
+                }
+
+                bool subsongOK = false;
+
+                if (NEZParameterList.at(1).startsWith("$")) {
+                    QString strStartSubsong = NEZParameterList.at(1).mid(1);
+                    playlistItem->startSubsongPlayList = strStartSubsong.toInt(&subsongOK, 16);
+                } else {
+                    playlistItem->startSubsongPlayList = NEZParameterList.at(1).toInt(&subsongOK);
+                }
+
+                if (!subsongOK) {
+                    playlistItem->startSubsongPlayList = -1;
+                }
+
+                playlistItem->fileFormat = NEZParameterList.at(0);
+
+                if (NEZParameterList.size() > 7) {
+                    playlistItem->artist = NEZParameterList.at(7);
+                }
+            }
+
+            if (!playlistItem->filename.isEmpty()) {
+                QFile file(playlistItem->filename);
+                QFileInfo fileInfo(file.fileName());
+                QString filename(fileInfo.fileName());
+
+                QStringList ignorePrefixList = getIgnorePrefix().split(";");
+                QStringListIterator itIgnorePrefixFiles(ignorePrefixList);
+                QStringList ignoreSuffixList = getIgnoreSuffix().split(";");
+                QStringListIterator itIgnoreSuffixFiles(ignoreSuffixList);
+                bool ignoreThisFile = false;
+
+                while (itIgnorePrefixFiles.hasNext()) {
+                    if (QString ignoreFilePrefix = itIgnorePrefixFiles.next() + ".";
+                        filename.startsWith(ignoreFilePrefix, Qt::CaseInsensitive)) {
+                        ignoreThisFile = true;
                     }
                 }
 
-                if (!playlistItem->filename.isEmpty())
-                {
-                    QFile file(playlistItem->filename);
-                    QFileInfo fileInfo(file.fileName());
-                    QString filename(fileInfo.fileName());
-
-                    QStringList ignorePrefixList = getIgnorePrefix().split(";");
-                    QStringListIterator itIgnorePrefixFiles(ignorePrefixList);
-                    QStringList ignoreSuffixList = getIgnoreSuffix().split(";");
-                    QStringListIterator itIgnoreSuffixFiles(ignoreSuffixList);
-                    bool ignoreThisFile = false;
-                    while (itIgnorePrefixFiles.hasNext())
-                    {
-                        QString ignoreFilePrefix = itIgnorePrefixFiles.next() + ".";
-                        if (filename.startsWith(ignoreFilePrefix, Qt::CaseInsensitive))
-                        {
-                            ignoreThisFile = true;
-                        }
+                while (itIgnoreSuffixFiles.hasNext()) {
+                    if (QString ignoreFileSuffix = "." + itIgnoreSuffixFiles.next();
+                        filename.endsWith(ignoreFileSuffix, Qt::CaseInsensitive)) {
+                        ignoreThisFile = true;
                     }
+                }
 
-
-                    while (itIgnoreSuffixFiles.hasNext())
-                    {
-                        QString ignoreFileSuffix = "." + itIgnoreSuffixFiles.next();
-                        if (filename.endsWith(ignoreFileSuffix, Qt::CaseInsensitive))
-                        {
-                            ignoreThisFile = true;
-                        }
-                    }
-
-                    if (!ignoreThisFile)
-                    {
-                        entries.push_back(playlistItem);
-                    }
+                if (!ignoreThisFile) {
+                    entries.push_back(playlistItem);
                 }
             }
         }
     }
+
     return entries;
 }
 
-QString MainWindow::createPlaylist(QString name)
+QString MainWindow::createPlaylist(const QString &name)
 {
-    QString newFilename;
-    QString newOrgFilename;
-    newOrgFilename = name;
-    QListWidgetItem* newItem = new QListWidgetItem;
+    const auto newItem = new QListWidgetItem;
 
-
-    newFilename = newOrgFilename;
+    QString newFilename = name;
     int suffix = 0;
-
 
     while (tableWidgetPlaylists.contains(newFilename))
     {
         suffix++;
-        newFilename = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
+        newFilename = name + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
     }
 
     newItem->setText(newFilename);
     newItem->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
     ui->listWidget->insertItem(ui->listWidget->count(), newItem);
-    MyItemDelegate* item = new MyItemDelegate(this);
+    const auto item = new MyItemDelegate(this);
     item->setMainColor(QColor(colorMain.left(7)));
     ui->listWidget->setItemDelegate(item);
 
+    const QFont roboto("Roboto");
 
-
-
-    QFont roboto("Roboto");
-
-
-    DraggableTableView* tv = new DraggableTableView();
+    const auto tv = new DraggableTableView();
     tv->setDragBackgroundColor(QColor(colorMain.left(7)));
     tv->setDragTextColor(QColor(colorMainText.left(7)));
     tv->setupDelegate(); // has to be called after colors are set
 
-    PlaylistModel* pm = new PlaylistModel(this);
-    QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(pm); // create proxy
+    const auto pm = new PlaylistModel(this);
+    const auto proxyModel = new QSortFilterProxyModel(pm); // create proxy
     proxyModel->setSourceModel(pm);
     tv->setModel(proxyModel);
     tv->setColumnHidden(4, true);
@@ -4362,46 +4156,49 @@ void MainWindow::on_pushButtonNewPlaylist_clicked()
 void MainWindow::on_listWidget_itemClicked(QListWidgetItem* item)
 {
     selectedPlaylist = item->text();
-    DockWidgetPlaylist->setWindowTitle(item->text());
-    DockWidgetPlaylist->setWidget(tableWidgetPlaylists[item->text()]);
+    dockWidgetPlaylist->setWindowTitle(item->text());
+    dockWidgetPlaylist->setWidget(tableWidgetPlaylists[item->text()]);
 }
 
 void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem* item)
 {
-    //change playlist
-    //play first song
+    // change playlist
+    // play first song
 
-    //Remove highlighted playlist
-    //There might by a state where no playlist is highlighted if a user
-    //Removed a playing playlist
-    QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
-    if (l.size() > 0)
+    // remove highlighted playlist
+    // there might be a state where no playlist is highlighted if a user
+    // removed a playing playlist
+    if (const QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+        !l.isEmpty())
     {
         l.at(0)->setForeground(QColor(colorMainText.left(7)));
     }
 
     removeHighlight();
     currentPlaylist = ui->listWidget->currentItem()->text();
+
     if (isShuffleEnabled())
     {
         resetShuffle(currentPlaylist);
     }
+
     removeHighlight();
     currentRow = 0;
 
-    PlaySong(currentRow);
+    playSongAtRow(currentRow);
 }
+
 bool MainWindow::isShuffleEnabled() const
 {
     return ui->checkBoxShuffle->checkState() == Qt::Checked;
 }
-void MainWindow::iffWriteChunkHeader(FILE* f, char* chunkName, uint32_t chunkLen)
+
+void MainWindow::iffWriteChunkHeader(FILE* f, const char* chunkName, uint32_t chunkLen)
 {
     fwrite(chunkName, sizeof(int32_t), 1, f);
     chunkLen = SWAP32(chunkLen);
     fwrite(&chunkLen, sizeof(int32_t), 1, f);
 }
-
 
 void MainWindow::iffWriteUint32(FILE* f, uint32_t value)
 {
@@ -4420,24 +4217,24 @@ void MainWindow::iffWriteUint8(FILE* f, const uint8_t value)
     fwrite(&value, sizeof(int8_t), 1, f);
 }
 
-void MainWindow::iffWriteChunkData(FILE* f, const void* data, size_t length)
+void MainWindow::iffWriteChunkData(FILE* f, const void* data, const size_t length)
 {
     fwrite(data, sizeof(int8_t), length, f);
     if (length & 1) fputc(0, f); // write pad byte if chunk size is uneven
 }
-
 
 void MainWindow::on_checkBoxShuffle_clicked()
 {
     if (isShuffleEnabled())
     {
         resetShuffle(currentPlaylist);
-        ui->checkBoxShuffle->setToolTip(("Disable shuffle"));
+        ui->checkBoxShuffle->setToolTip("Disable shuffle");
     }
     else
     {
-        ui->checkBoxShuffle->setToolTip(("Enable shuffle"));
+        ui->checkBoxShuffle->setToolTip("Enable shuffle");
     }
+
     updateButtons();
 }
 
@@ -4445,19 +4242,20 @@ void MainWindow::on_checkBoxLoop_clicked()
 {
     if (ui->checkBoxLoop->checkState() == Qt::Unchecked)
     {
-        Playmode = normal;
+        playMode = normal;
         ui->checkBoxLoop->setToolTip("Enable repeat");
     }
     else if (ui->checkBoxLoop->checkState() == Qt::PartiallyChecked)
     {
-        Playmode = repeatPlaylist;
+        playMode = repeatPlaylist;
         ui->checkBoxLoop->setToolTip("Enable repeat one");
     }
     else
     {
         ui->checkBoxLoop->setToolTip("Disable repeat");
-        Playmode = repeatSong;
+        playMode = repeatSong;
     }
+
     updateButtons();
 }
 
@@ -4475,6 +4273,7 @@ void MainWindow::on_checkBoxLoopPoints_clicked() {
                 loopPointB = loopPointA;
                 loopPointA = ui->positionSlider->value();
             }
+
             loopPointsState = B_SET;
             ui->checkBoxLoopPoints->setToolTip("Disable loop points");
             break;
@@ -4489,7 +4288,7 @@ void MainWindow::on_checkBoxLoopPoints_clicked() {
     updateButtons();
 }
 
-void MainWindow::clickSysTrayIcon(QSystemTrayIcon::ActivationReason reason)
+void MainWindow::clickSysTrayIcon(const QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::Trigger)
     {
@@ -4499,10 +4298,10 @@ void MainWindow::clickSysTrayIcon(QSystemTrayIcon::ActivationReason reason)
 
 void MainWindow::restoreFromTray()
 {
-    //Restore from system tray
+    // restore from system tray
     if (this->isMinimized())
     {
-        if (wasMaxmimized)
+        if (wasMaximized)
         {
             showMaximized();
         }
@@ -4512,64 +4311,47 @@ void MainWindow::restoreFromTray()
         }
 
         activateWindow();
-        if (!this->isVisible())
-        {
-            this->setWindowTitle(windowTitle);
-        }
-        else
-        {
-            this->setWindowTitle(PROJECT_NAME_VERSIONED);
-        }
+
+        this->setWindowTitle(this->isVisible() ? PROJECT_NAME_VERSIONED : windowTitle);
     }
-    //minimize to system tray (user clicked on system tray)
+
+    // minimize to system tray (user clicked on system tray)
     else if (this->isVisible())
     {
-        if (isMaximized())
-        {
-            wasMaxmimized = true;
-        }
-        else
-        {
-            wasMaxmimized = false;
-        }
+        wasMaximized = isMaximized();
+
         hide();
 
-        m_Tray->setToolTip(windowTitle);
+        tray->setToolTip(windowTitle);
     }
-    //Restore from system tray but when we clicked system tray (and not minimized window)
+
+    // restore from system tray but when we clicked system tray (and not minimized window)
     else
     {
         show();
         activateWindow();
-        if (!this->isVisible())
-        {
-            this->setWindowTitle(windowTitle);
-        }
-        else
-        {
-            this->setWindowTitle(PROJECT_NAME_VERSIONED);
-        }
+
+        this->setWindowTitle(this->isVisible() ? PROJECT_NAME_VERSIONED : windowTitle);
     }
 }
 
 void MainWindow::quit()
 {
     playStarted = false;
-    SoundManager::getInstance().Stop();
-    SoundManager::getInstance().ShutDown();
 
+    const auto &sm = SoundManager::getInstance();
 
-    QMap<QString, QList<PlaylistItem*>>::iterator i;
+    sm.stop();
+    sm.shutdown();
 
-    for (auto e: tableWidgetPlaylists.keys()) {
-        savePlayList(userPath + PLAYLISTS_DIR + "/" + e,
-                     userPath + PLAYLISTS_DIR + "/" + e);
+    for (auto const& e: tableWidgetPlaylists.keys()) {
+        savePlayList(userPath + PLAYLISTS_DIR + "/" + e, userPath + PLAYLISTS_DIR + "/" + e);
     }
 
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
     settings.setValue("Internal/geometry", saveGeometry());
     settings.setValue("Internal/windowState", saveState());
-    settings.setValue("Internal/dockingState", m_DockManager->saveState());
+    settings.setValue("Internal/dockingState", dockManager->saveState());
     QApplication::quit();
 }
 
@@ -4671,15 +4453,15 @@ void MainWindow::setColorVisualizerPeakColor(const QString& newColor)
     ui->visualizer->getEffect()->setColorVisualizerPeakColor(newColor);
 }
 
-void MainWindow::setVUMeterPeaksEnabled(bool enabled)
+void MainWindow::setVuMeterPeaksEnabled(const bool enabled)
 {
-    this->vumeterPeaksEnabled = enabled;
-    ui->visualizer->getEffect()->setVUMeterPeaksEnabled(enabled);
+    this->vuMeterPeaksEnabled = enabled;
+    ui->visualizer->getEffect()->setVuMeterPeaksEnabled(enabled);
 }
 
-void MainWindow::setVUMeterPeaksHeight(int height)
+void MainWindow::setVuMeterPeaksHeight(const int height)
 {
-    this->vumeterPeaksHeight = height;
+    this->vuMeterPeaksHeight = height;
     ui->visualizer->getEffect()->setHeightVisualizerPeak(height);
 }
 
@@ -4700,7 +4482,7 @@ Effect* MainWindow::getEffect() const
     return ui->visualizer->getEffect();
 }
 
-void MainWindow::setNowPlayingFontSize(int fontSize)
+void MainWindow::setNowPlayingFontSize(const int fontSize)
 {
     nowPlayingFontSize = fontSize;
     QFont font = ui->labelFilename->font();
@@ -4708,11 +4490,11 @@ void MainWindow::setNowPlayingFontSize(int fontSize)
     ui->labelFilename->setFont(font);
 }
 
-void MainWindow::setPlaylistRowHeight(int newRowHeight)
+void MainWindow::setPlaylistRowHeight(const int newRowHeight)
 {
     playlistRowHeight = newRowHeight;
 
-    QMapIterator<QString, QTableView*> i(tableWidgetPlaylists);
+    QMapIterator i(tableWidgetPlaylists);
 
     while (i.hasNext())
     {
@@ -4721,7 +4503,7 @@ void MainWindow::setPlaylistRowHeight(int newRowHeight)
     }
 }
 
-void MainWindow::setPlaylistsRowHeight(int newRowHeight)
+void MainWindow::setPlaylistsRowHeight(const int newRowHeight)
 {
     playlistsRowHeight = newRowHeight;
 
@@ -4734,16 +4516,14 @@ void MainWindow::setPlaylistsRowHeight(int newRowHeight)
 
 void MainWindow::createTrayMenu()
 {
-    //trayicon----------------------------------------
+    tray = new QSystemTrayIcon(this);
 
-    m_Tray = new QSystemTrayIcon(this);
-    QIcon trayIcon;
+    const auto trayIcon = QIcon(":/static/data/resources/icon.png");
 
-    trayIcon = QIcon(":/static/data/resources/icon.png");
-    m_Tray->setIcon(trayIcon);
-    m_Tray->setToolTip(PROJECT_NAME);
+    tray->setIcon(trayIcon);
+    tray->setToolTip(PROJECT_NAME);
 
-    connect(m_Tray,SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
+    connect(tray,SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
             SLOT(clickSysTrayIcon(QSystemTrayIcon::ActivationReason)));
 
     addFilesAction = new QAction("Add File(s)", this);
@@ -4776,60 +4556,50 @@ void MainWindow::createTrayMenu()
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
 
-    m_Tray->setContextMenu(trayIconMenu);
+    tray->setContextMenu(trayIconMenu);
 }
 
 void MainWindow::on_checkBoxVolumeOn_clicked()
 {
-    bool mute = ui->checkBoxVolumeOn->checkState() != Qt::Checked;
-    QString strMute = mute ? "true" : "false";
-    SoundManager::getInstance().SetMute(mute);
-    m_muteVolume = mute;
-    if (m_muteVolume)
-    {
-        muteAction->setText("Unmute");
-    }
-    else
-    {
-        muteAction->setText("Mute");
-    }
+    const bool mute = ui->checkBoxVolumeOn->checkState() != Qt::Checked;
+    const QString strMute = mute ? "true" : "false";
+
+    SoundManager::getInstance().setMute(mute);
+    isVolumeMuted = mute;
+
+    muteAction->setText(isVolumeMuted ? "Unmute" : "Mute");
+
     addDebugText("Mute volume: " + strMute);
     updateButtons();
 }
 
 void MainWindow::muteVolume()
 {
-    m_muteVolume = !m_muteVolume;
-    ui->checkBoxVolumeOn->setChecked(!m_muteVolume);
+    isVolumeMuted = !isVolumeMuted;
+    ui->checkBoxVolumeOn->setChecked(!isVolumeMuted);
 
-    QString strMute = m_muteVolume ? "true" : "false";
     muteAction->setText("Unmute");
-    if (m_muteVolume)
-    {
-        muteAction->setText("Unmute");
-    }
-    else
-    {
-        muteAction->setText("Mute");
-    }
-    SoundManager::getInstance().SetMute(m_muteVolume);
+
+    muteAction->setText(isVolumeMuted ? "Unmute" : "Mute");
+
+    SoundManager::getInstance().setMute(isVolumeMuted);
     updateButtons();
 }
 
-void MainWindow::on_volumeSlider_valueChanged(int value)
+void MainWindow::on_volumeSlider_valueChanged(const int value)
 {
-    int vol = value;
-    SoundManager::getInstance().SetVolume((float)vol / 100);
+    const int vol = value;
+    const auto &sm = SoundManager::getInstance();
+
+    sm.setVolume(static_cast<float>(vol) / 100);
     ui->checkBoxVolumeOn->setCheckState(Qt::Checked);
-    SoundManager::getInstance().SetMute(false);
-    m_muteVolume = false;
+    sm.setMute(false);
+    isVolumeMuted = false;
 }
 
-void MainWindow::on_playlist_doubleClicked(const QModelIndex& index)
-{
+void MainWindow::on_playlist_doubleClicked(const QModelIndex& index) const {
     addDebugText(" dbl clicked");
 }
-
 
 void MainWindow::on_actionRestore_Default_triggered()
 {
@@ -4853,12 +4623,10 @@ void MainWindow::on_actionPreferences_triggered()
     openSettings();
 }
 
-
 void MainWindow::on_actionAdd_folder_triggered()
 {
     addFolder();
 }
-
 
 void MainWindow::on_actionAdd_file_s_triggered()
 {
@@ -4868,10 +4636,11 @@ void MainWindow::on_actionAdd_file_s_triggered()
 void MainWindow::on_actionAdd_network_stream_triggered()
 {
     bool ok;
-    QString url = QInputDialog::getText(this, tr("Add URL"),
-                                        tr("Enter URL to open:\nFor example: http://www.myfavradio.com:80/stream/1234"),
-                                        QLineEdit::Normal,
-                                        0, &ok);
+    const QString url = QInputDialog::getText(this, tr("Add URL"),
+                                              tr(
+                                                  "Enter URL to open:\nFor example: http://www.myfavradio.com:80/stream/1234"),
+                                              QLineEdit::Normal, nullptr, &ok);
+
     if (ok && !url.isEmpty())
     {
         QList<QUrl> list;
@@ -4891,24 +4660,21 @@ void MainWindow::on_actionAbout_BZR_Player_triggered()
     about.exec();
 }
 
-void MainWindow::on_pitchSlider_valueChanged(int value)
-{
-    SoundManager::getInstance().SetFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
+void MainWindow::on_pitchSlider_valueChanged(int value) const {
+    SoundManager::getInstance().setFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
     ui->labelPitchValue->setText(QString::number(ui->pitchSlider->value()) + " %");
 }
 
-
-void MainWindow::on_positionSlider_valueChanged(int value)
-{
-    QString timeToShow = QString(msToNiceStringExact(value, m_displayMilliseconds));
+void MainWindow::on_positionSlider_valueChanged(const int value) const {
+    const auto timeToShow = QString(msToNiceStringExact(value, displayMilliseconds));
     ui->labelTimer_2->setText(timeToShow);
 }
 
-void MainWindow::setFmodSeamlessLoopEnabled(bool seamlessLoop) {
+void MainWindow::setFmodSeamlessLoopEnabled(const bool seamlessLoop) {
     isFmodSeamlessLoopEnabled = seamlessLoop;
 }
 
-bool MainWindow::getFmodSeamlessLoopEnabled() {
+bool MainWindow::getFmodSeamlessLoopEnabled() const {
     return isFmodSeamlessLoopEnabled;
 }
 
@@ -4987,14 +4753,13 @@ const QString& MainWindow::getColorVisualizerPeakColor() const
     return colorVisualizerPeak;
 }
 
-
 void MainWindow::changeStyleSheetColor()
 {
     ui->visualizer->setBackgroundColor(colorBackground.left(7));
     ui->trackerView->setBackgroundColor(colorBackground.left(7));
     QString stylesheet;
 
-    QMapIterator<QString, QTableView*> i(tableWidgetPlaylists);
+    QMapIterator i(tableWidgetPlaylists);
 
     while (i.hasNext())
     {
@@ -5011,7 +4776,6 @@ void MainWindow::changeStyleSheetColor()
         stylesheet.replace(colorDimmedTextOld, colorDimmedText);
         i.value()->setStyleSheet(stylesheet);
     }
-
 
     stylesheet = ui->positionSlider->styleSheet();
     stylesheet.replace(colorMainOld, colorMain);
@@ -5032,7 +4796,6 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorMainOld, colorMain);
     stylesheet.replace(colorMainHoverOld, colorMainHover);
     ui->dockWidgetContents_7->setStyleSheet(stylesheet);
-
 
     stylesheet = ui->checkBoxShuffle->styleSheet();
     stylesheet.replace(colorMainOld, colorMain);
@@ -5141,7 +4904,6 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorBackgroundOld, colorBackground);
     ui->dockWidgetTrackerView->setStyleSheet(stylesheet);
 
-
     stylesheet = this->styleSheet();
     stylesheet.replace(colorBackgroundOld, colorBackground);
     this->setStyleSheet(stylesheet);
@@ -5202,7 +4964,6 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorMediumOld, colorMedium);
     ui->dockWidgetContents_10->setStyleSheet(stylesheet);
 
-
     stylesheet = ui->dockWidgetContents_3->styleSheet();
     stylesheet.replace(colorMediumOld, colorMedium);
     ui->dockWidgetContents_3->setStyleSheet(stylesheet);
@@ -5258,7 +5019,6 @@ void MainWindow::changeStyleSheetColor()
     stylesheet = ui->labelFilename->styleSheet();
     stylesheet.replace(colorMainTextOld, colorMainText);
     ui->labelFilename->setStyleSheet(stylesheet);
-
 
     stylesheet = ui->dockWidgetContents_2->styleSheet();
     stylesheet.replace(colorSelectionOld, colorSelection);
@@ -5321,7 +5081,6 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorButtonHoverOld, colorButtonHover);
     ui->buttonStop->setStyleSheet(stylesheet);
 
-
     stylesheet = ui->checkBoxShuffle->styleSheet();
     stylesheet.replace(colorButtonOld, colorButton);
     stylesheet.replace(colorButtonHoverOld, colorButtonHover);
@@ -5375,7 +5134,6 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorDimmedTextOld, colorDimmedText);
     ui->dockWidgetVisualizer->setStyleSheet(stylesheet);
 
-
     stylesheet = ui->dockWidgetInfo->styleSheet();
     stylesheet.replace(colorDimmedTextOld, colorDimmedText);
     ui->dockWidgetInfo->setStyleSheet(stylesheet);
@@ -5387,7 +5145,6 @@ void MainWindow::changeStyleSheetColor()
     stylesheet = ui->dockWidgetInstruments->styleSheet();
     stylesheet.replace(colorDimmedTextOld, colorDimmedText);
     ui->dockWidgetInstruments->setStyleSheet(stylesheet);
-
 
     stylesheet = ui->dockWidgetLogger->styleSheet();
     stylesheet.replace(colorDimmedTextOld, colorDimmedText);
@@ -5413,29 +5170,29 @@ void MainWindow::changeStyleSheetColor()
     stylesheet.replace(colorBackgroundOld, colorBackground);
     ui->menuBar->setStyleSheet(stylesheet);
 
-    stylesheet = m_DockManager->styleSheet();
+    stylesheet = dockManager->styleSheet();
     stylesheet.replace(colorBackgroundOld, colorBackground);
-    m_DockManager->setStyleSheet(stylesheet);
+    dockManager->setStyleSheet(stylesheet);
 
-    stylesheet = m_DockManager->styleSheet();
+    stylesheet = dockManager->styleSheet();
     stylesheet.replace(colorBehindBackgroundOld, colorBehindBackground);
-    m_DockManager->setStyleSheet(stylesheet);
+    dockManager->setStyleSheet(stylesheet);
 
-    stylesheet = m_DockManager->styleSheet();
+    stylesheet = dockManager->styleSheet();
     stylesheet.replace(colorMediumOld, colorMedium);
-    m_DockManager->setStyleSheet(stylesheet);
+    dockManager->setStyleSheet(stylesheet);
 
-    stylesheet = m_DockManager->styleSheet();
+    stylesheet = dockManager->styleSheet();
     stylesheet.replace(colorMainTextOld, colorMainText);
-    m_DockManager->setStyleSheet(stylesheet);
+    dockManager->setStyleSheet(stylesheet);
 
-    stylesheet = m_DockManager->styleSheet();
+    stylesheet = dockManager->styleSheet();
     stylesheet.replace(colorSelectionOld, colorSelection);
-    m_DockManager->setStyleSheet(stylesheet);
+    dockManager->setStyleSheet(stylesheet);
 
-    stylesheet = m_DockManager->styleSheet();
+    stylesheet = dockManager->styleSheet();
     stylesheet.replace(colorDimmedTextOld, colorDimmedText);
-    m_DockManager->setStyleSheet(stylesheet);
+    dockManager->setStyleSheet(stylesheet);
 
     stylesheet = ui->listWidget->styleSheet();
     stylesheet.replace(colorSelectionOld, colorSelection);
@@ -5447,42 +5204,43 @@ void MainWindow::changeStyleSheetColor()
 
 void MainWindow::on_buttonStop_clicked() {
     resetAll();
-    SoundManager::getInstance().ShutDown();
 
-    if (SoundManager::getInstance().isWavWriterDeviceSelected()) {
-        SoundManager::getInstance().Init(FMOD_OUTPUTTYPE_NOSOUND, ""); //Set sound device to silent
+    auto &sm = SoundManager::getInstance();
+
+    sm.shutdown();
+
+    if (sm.isWavWriterDeviceSelected()) {
+        sm.Init(FMOD_OUTPUTTYPE_NOSOUND, ""); // set sound device to silent
     }
 }
 
 void MainWindow::resetAll()
 {
-    SoundManager::getInstance().Stop();
+    const auto &sm = SoundManager::getInstance();
+
+    sm.stop();
     //ui->visualizer->stop();
     playAction->setText("Play");
-    SoundManager::getInstance().Release();
-    if (SoundManager::getInstance().m_Info1 != nullptr)
+    sm.release();
+
+    if (sm.info != nullptr)
     {
-        SoundManager::getInstance().m_Info1->clear();
+        sm.info->clear();
     }
+
     playStarted = false;
     loaded = false;
-    //Clear all windows/text etc.
 
-    updateInstruments();
+    // clear all windows/text etc.
+
+    updateSamplesAndInstruments();
     ui->tableInfo->clearContents();
     ui->tableInfo->setRowCount(0);
 
-
     getLength();
     ui->positionSlider->setValue(0);
-    if (m_displayMilliseconds)
-    {
-        ui->labelTimer_2->setText("0:00.000");
-    }
-    else
-    {
-        ui->labelTimer_2->setText("0:00");
-    }
+
+    ui->labelTimer_2->setText(displayMilliseconds ? "0:00.000" : "0:00");
 
     ui->labelFilename->clear();
     this->setWindowTitle(PROJECT_NAME_VERSIONED);
@@ -5496,40 +5254,38 @@ void MainWindow::removeHighlight()
 {
     if (tableWidgetPlaylists.contains(currentPlaylist))
     {
-        QModelIndex index3 = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 7, QModelIndex());
+        const QModelIndex index3 = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 7, QModelIndex());
         tableWidgetPlaylists[currentPlaylist]->model()->setData(index3, false, Qt::EditRole);
         tableWidgetPlaylists[currentPlaylist]->update();
     }
 }
 
-bool MainWindow::getVUMeterPeaksEnabled()
-{
-    return vumeterPeaksEnabled;
+bool MainWindow::isVuMeterPeaksEnabled() const {
+    return vuMeterPeaksEnabled;
 }
 
-int MainWindow::getVUMeterPeaksHeight()
-{
-    return vumeterPeaksHeight;
+int MainWindow::isVuMeterPeaksHeight() const {
+    return vuMeterPeaksHeight;
 }
 
 bool MainWindow::isOnlyOneInstanceEnabled() const
 {
-    return m_bAllowOnlyOneInstanceEnabled;
+    return allowOnlyOneInstance;
 }
 
-void MainWindow::setAllowOnlyOneInstanceEnabled(bool enabled)
+void MainWindow::setAllowOnlyOneInstanceEnabled(const bool enabled)
 {
-    m_bAllowOnlyOneInstanceEnabled = enabled;
+    allowOnlyOneInstance = enabled;
 }
 
-void MainWindow::setDisplayMilliseconds(bool enabled)
+void MainWindow::setDisplayMilliseconds(const bool enabled)
 {
-    m_displayMilliseconds = enabled;
+    displayMilliseconds = enabled;
 }
 
-void MainWindow::setEnqueueItems(bool enabled)
+void MainWindow::setEnqueueItems(const bool enabled)
 {
-    m_enqueueItems = enabled;
+    enqueueItems = enabled;
 }
 
 QString MainWindow::getVersion()
@@ -5537,10 +5293,9 @@ QString MainWindow::getVersion()
     return VERSION;
 }
 
-void MainWindow::sendSocketMsg()
-{
+void MainWindow::sendSocketMsg() const {
     QStringList args = qApp->arguments();
-    args.removeFirst(); //Remove first argument from commandline since it's always "BZRPlayer.exe"
+    args.removeFirst(); // remove first argument from commandline since it's always "BZRPlayer.exe"
     //addDebugText("Send socket message, count( " + QString::number(args.count()) + ")");
     QByteArray data;
     //    for(int j = 1; j<args.count(); j++)
@@ -5551,7 +5306,6 @@ void MainWindow::sendSocketMsg()
 
     QDataStream dataStreamWrite(&data, QIODevice::WriteOnly);
     dataStreamWrite << args;
-
 
     tcpClient->write(data);
     tcpClient->disconnectFromHost();
@@ -5568,130 +5322,114 @@ void MainWindow::displayError(QAbstractSocket::SocketError socketError)
     //if (socketError == QTcpSocket::RemoteHostClosedError)
     //    return;
 
-    QMessageBox::information(this, "Network error", "The following error occurred: " + tcpClient->errorString() + ".");
+    QMessageBox::information(this, "Network error", "The following error occurred: " + tcpClient->errorString());
     tcpClient->close();
     tcpServer->close();
 }
 
 /*
-* Reads all the data from the socket
-* the data read is what the instance got from the command line
-* if m_bEnqueueFileEnabled is true then we add all sounds to the playlist
-* if it is false, we play them directly (only the last one)
-*/
-void MainWindow::getSocketData()
-{
-    QByteArray bytes = tcpClient->readAll();
+ * Reads all the data from the socket
+ * the data read is what the instance got from the command line
+ * if m_bEnqueueFileEnabled is true then we add all sounds to the playlist
+ * if it is false, we play them directly (only the last one)
+ */
+void MainWindow::getSocketData() {
+    const QByteArray bytes = tcpClient->readAll();
 
     QDataStream dataStreamRead(bytes);
 
-
     QStringList list;
     dataStreamRead >> list;
-    //QMessageBox::information(this, "list","count: " + QString::number(list.count()) + ".");
+    //QMessageBox::information(this, "list","count: " + QString::number(list.count()));
+
     QList<QUrl> urls;
-    for (const auto& item : list)
-    {
+
+    for (const auto &item: list) {
         urls.append(QUrl().fromLocalFile(item));
     }
 
+    if (list.count() <= 0) {
+        return;
+    }
 
-    if (list.count() > 0)
+    const QString &command = list.last();
+
+    if (command.isEmpty()) {
+        return;
+    }
+
+    if (command.toLower() == "-play") {
+        //on_buttonPlay_clicked(false,true);
+    } else if (command.toLower() == "-pause") {
+        //on_buttonPause_clicked();
+    } else if (command.toLower() == "-next") {
+        //on_buttonNext_clicked();
+    } else if (command.toLower() == "-prev") {
+        //on_buttonPrev_clicked();
+    } else if (command.toLower() == "-stop") {
+        //on_buttonStop_clicked();
+    } else if (command.toLower() == "-nextsubsound") {
+        //on_buttonNextSub_clicked();
+    } else if (command.toLower() == "-prevsubsound") {
+        //on_buttonPrevSub_clicked();
+    } else if (command.toLower() == "-clear") {
+        //m_playListWindow->clear(true);
+    } else if (command.toLower() == "-quit") {
+        //close();
+    } else if (command.toLower().startsWith("-volume[") && command.endsWith("]")) {
+        //            bool ok = false;
+        //            int volume = QString(command.mid(8,command.length()-9)).toInt(&ok);
+        //            if(ok)
+        //            {
+        //                ui.sliderVolume->setValue(volume);
+        //            }
+    } else // no command, just add/play the file
     {
-        QString command = list.last();
-        if (!command.isEmpty())
-        {
-            if (command.toLower() == "-play")
-            {
-                //on_buttonPlay_clicked(false,true);
-            }
-            else if (command.toLower() == "-pause")
-            {
-                //on_buttonPause_clicked();
-            }
-            else if (command.toLower() == "-next")
-            {
-                //on_buttonNext_clicked();
-            }
-            else if (command.toLower() == "-prev")
-            {
-                //on_buttonPrev_clicked();
-            }
-            else if (command.toLower() == "-stop")
-            {
-                //on_buttonStop_clicked();
-            }
-            else if (command.toLower() == "-nextsubsound")
-            {
-                //on_buttonNextSub_clicked();
-            }
-            else if (command.toLower() == "-prevsubsound")
-            {
-                //on_buttonPrevSub_clicked();
-            }
-            else if (command.toLower() == "-clear")
-            {
-                //m_playListWindow->clear(true);
-            }
-            else if (command.toLower() == "-quit")
-            {
-                //close();
-            }
-            else if (command.toLower().startsWith("-volume[") && command.endsWith("]"))
-            {
-                //            bool ok = false;
-                //            int volume = QString(command.mid(8,command.length()-9)).toInt(&ok);
-                //            if(ok)
-                //            {
-                //                ui.sliderVolume->setValue(volume);
-                //            }
-            }
-            else //no command, just add/play the file
-            {
-                //            if(m_bEnqueueFileEnabled)
-                //            {
-                //                m_playListWindow->addSong(QStringList(QStringList(bytes).last()),-1);
-                //            }
-                //            else
-                {
-                    //                m_playListWindow->clear(true);
-                    //                m_iCurrentSong=0;
-                    //                m_playListWindow->addSong(QStringList(QStringList(bytes).last()),-1);
-                    //                //play first
-                    //                m_bIsStopped = false;
-                    //                setPaused(false);
-                    //                QFont font = m_playListWindow->ui.tableWidget->item(m_iCurrentSong,0)->font();
-                    //                font.setBold(true);
-                    //                m_playListWindow->ui.tableWidget->item(m_iCurrentSong,0)->setFont(font);
-                    //                m_playListWindow->ui.tableWidget->item(m_iCurrentSong,0)->setTextColor(QColor(25,130,115));
-                    //                m_iCurrentSong = 0;
-                    //                m_icurrentSubsong = 0;
-                    //                ui.sliderProgress->setEnabled(true);
-                    //                playSong();
+        //            if(m_bEnqueueFileEnabled)
+        //            {
+        //                m_playListWindow->addSong(QStringList(QStringList(bytes).last()),-1);
+        //            }
+        //            else
+        //{
+        //                m_playListWindow->clear(true);
+        //                m_iCurrentSong=0;
+        //                m_playListWindow->addSong(QStringList(QStringList(bytes).last()),-1);
+        //                // play first
+        //                m_bIsStopped = false;
+        //                setPaused(false);
+        //                QFont font = m_playListWindow->ui.tableWidget->item(m_iCurrentSong,0)->font();
+        //                font.setBold(true);
+        //                m_playListWindow->ui.tableWidget->item(m_iCurrentSong,0)->setFont(font);
+        //                m_playListWindow->ui.tableWidget->item(m_iCurrentSong,0)->setTextColor(QColor(25,130,115));
+        //                m_iCurrentSong = 0;
+        //                m_icurrentSubsong = 0;
+        //                ui.sliderProgress->setEnabled(true);
+        //                playSong();
 
-                    const int rowCountBeforeAddSong = tableWidgetPlaylists[currentPlaylist]->model()->rowCount();
+        const int rowCountBeforeAddSong = tableWidgetPlaylists[currentPlaylist]->model()->rowCount();
 
-                    addDebugText("count: " + QString::number(list.count()));
-                    //addSong(list,0,PLAYLIST_DEFAULT_FILENAME,false);
-                    addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
+        addDebugText("count: " + QString::number(list.count()));
+        //addSong(list,0,PLAYLIST_DEFAULT_FILENAME,false);
+        addSong(urls, 0, PLAYLIST_DEFAULT_FILENAME, false);
 
-                    if ((m_bAllowOnlyOneInstanceEnabled && !m_enqueueItems) || !m_bAllowOnlyOneInstanceEnabled)
-                    {
-                        QList<QListWidgetItem*> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
-                        l.at(0)->setForeground(QColor(colorMainText.left(7)));
-                        currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
-                        on_listWidget_itemClicked(ui->listWidget->item(0));
-                        removeHighlight();
-                        currentRow = rowCountBeforeAddSong;
-                        PlaySong(currentRow);
-                    }
-                }
-            }
+        if ((allowOnlyOneInstance && !enqueueItems) || !allowOnlyOneInstance) {
+            const QList<QListWidgetItem *> l = ui->listWidget->findItems(currentPlaylist, Qt::MatchExactly);
+
+            l.at(0)->setForeground(QColor(colorMainText.left(7)));
+            currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
+
+            on_listWidget_itemClicked(ui->listWidget->item(0));
+            removeHighlight();
+
+            currentRow = rowCountBeforeAddSong;
+
+            playSongAtRow(currentRow);
         }
+        //}
     }
 }
 
-QPixmap MainWindow::ChangeSVGColor(const QString &svgPath, const QColor &color, const QRectF *region,
+QPixmap MainWindow::changeSvgColor(const QString &svgPath, const QColor &color, const QRectF *region,
                                    const QColor &color2) {
     QSvgRenderer renderer(svgPath);
     const QSize size = renderer.defaultSize();
@@ -5721,45 +5459,26 @@ QPixmap MainWindow::ChangeSVGColor(const QString &svgPath, const QColor &color, 
     return pixmap;
 }
 
-void MainWindow::SetAttrRecur(QDomElement elem, QString strtagname, QString strtagname2, QString strattr,
-                              QString strattrval)
-{
-    // if it has the tagname then overwritte desired attribute
-    if (elem.tagName().compare(strtagname) == 0 || elem.tagName().compare(strtagname2) == 0)
-    {
-        elem.setAttribute(strattr, strattrval);
-    }
-
-    // loop all children
-    for (int i = 0; i < elem.childNodes().count(); i++)
-    {
-        if (!elem.childNodes().at(i).isElement())
-        {
-            continue;
-        }
-        SetAttrRecur(elem.childNodes().at(i).toElement(), strtagname, strtagname2, strattr, strattrval);
-    }
-}
-
-void MainWindow::LoadWorkspaces()
+void MainWindow::loadWorkspaces()
 {
     QAction* restore = ui->menuRestore_Layout->actions().first();
     workspaceSeparator = ui->menuRestore_Layout->insertSeparator(restore);
 
-    QDir directory(userPath + LAYOUTS_DIR);
+    const QDir directory(userPath + LAYOUTS_DIR);
     QStringList workspaces = directory.entryList(QStringList() << "*.ini", QDir::Files);
-    QAction* action;
+
     foreach(QString filename, workspaces)
     {
         QFileInfo fileInfo(filename);
         QString basename = fileInfo.baseName();
-        action = new QAction(basename);
+        const auto action = new QAction(basename);
+
         ui->menuRestore_Layout->insertAction(workspaceSeparator, action);
         connect(action, &QAction::triggered, this, [&, this, filename] { slot_LoadWorkspace(filename); });
     }
 }
 
-void MainWindow::DeleteWorkspace(QString workspace) const
+void MainWindow::deleteWorkspace(const QString &workspace) const
 {
     foreach(QAction *action, ui->menuRestore_Layout->actions())
     {
@@ -5779,74 +5498,73 @@ void MainWindow::DeleteWorkspace(QString workspace) const
     }
 }
 
-void MainWindow::slot_LoadWorkspace(const QString& filename)
-{
-    QSettings settings(userPath + LAYOUTS_DIR + "/" + filename, QSettings::IniFormat);
-    if (!m_DockManager->restoreState(settings.value("Internal/dockingState").toByteArray()))
-    {
-        QMessageBox::critical(this, "Error", "Couldn't load layout.");
+void MainWindow::slot_LoadWorkspace(const QString &filename) {
+    if (const QSettings settings(userPath + LAYOUTS_DIR + "/" + filename, QSettings::IniFormat);
+        !dockManager->restoreState(settings.value("Internal/dockingState").toByteArray())) {
+        QMessageBox::critical(this, "Error", "Couldn't load layout");
     }
 }
 
-void MainWindow::CreateNewWorkspace(const QString& filename)
+void MainWindow::createNewWorkspace(const QString& filename)
 {
     QString fileNameAndExtension = filename + ".ini";
     QSettings settings(userPath + LAYOUTS_DIR + "/" + fileNameAndExtension, QSettings::IniFormat);
-    settings.setValue("Internal/dockingState", m_DockManager->saveState());
-    QAction* action = new QAction(filename);
+
+    settings.setValue("Internal/dockingState", dockManager->saveState());
+
+    const auto action = new QAction(filename);
+
     ui->menuRestore_Layout->insertAction(workspaceSeparator, action);
+
     connect(action, &QAction::triggered, this, [&, this, fileNameAndExtension]
     {
         slot_LoadWorkspace(fileNameAndExtension);
     });
 }
 
-void MainWindow::downloadHvscSonglengthsComplete()
-{
-    if (filedownloader->downloadedData().size() > 0)
-    {
-        QString hvscSonglengthsDownloadPath = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
-
-        QFile file(hvscSonglengthsDownloadPath);
-        if (file.open(QIODevice::ReadWrite))
-        {
-            QTextStream stream(&file);
-            stream << filedownloader->downloadedData();
-            file.close();
-
-            bundledHvscSonglengthsDownloadEpoch = QDateTime::currentDateTime().toSecsSinceEpoch();
-            bundledHvscSonglengthsPath = hvscSonglengthsDownloadPath;
-
-            settingsWindow settingsWindow(this);
-
-            if (hvscSonglengthsPath.compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
-                hvscSonglengthsPath = hvscSonglengthsDownloadPath;
-
-                settingsWindow.setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsDownloadPath);
-                settingsWindow.saveSidplaySettings();
-            }
-
-            QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-            settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsPath", hvscSonglengthsDownloadPath);
-            settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch", bundledHvscSonglengthsDownloadEpoch);
-        }
-        else
-        {
-            addDebugText("Couldn't write to file " + file.fileName());
-        }
-    }
-    else
-    {
+void MainWindow::downloadHvscSonglengthsComplete() {
+    if (filedownloader->downloadedData().isEmpty()) {
         addDebugText("Failed to download " + filedownloader->getUrl().toString());
+        return;
     }
+
+    const QString hvscSonglengthsDownloadPath = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
+
+    QFile file(hvscSonglengthsDownloadPath);
+
+    if (!file.open(QIODevice::ReadWrite)) {
+        addDebugText("Couldn't write to file " + file.fileName());
+        return;
+    }
+
+    QTextStream stream(&file);
+    stream << filedownloader->downloadedData();
+    file.close();
+
+    bundledHvscSonglengthsDownloadEpoch = QDateTime::currentSecsSinceEpoch();
+    bundledHvscSonglengthsPath = hvscSonglengthsDownloadPath;
+
+    const settingsWindow settingsWindow(this);
+
+    if (hvscSonglengthsPath.compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
+        hvscSonglengthsPath = hvscSonglengthsDownloadPath;
+
+        settingsWindow.setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsDownloadPath);
+        settingsWindow.saveSettingsLibsidplayfp();
+    }
+
+    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
+    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsPath", hvscSonglengthsDownloadPath);
+    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch",
+                      bundledHvscSonglengthsDownloadEpoch);
 }
 
-void MainWindow::setBundledHvscSonglengthsUpdateFrequency(QString freq)
+void MainWindow::setBundledHvscSonglengthsUpdateFrequency(const QString &freq)
 {
     bundledHvscSonglengthsUpdateFrequency = freq;
 }
 
-//Swaps columns so that artist column is first for default and new playlists
+// swaps columns so that artist column is first for default and new playlists
 void MainWindow::swapColumns(QTableView* tableview)
 {
     tableview->setColumnWidth(0, 200);
@@ -5856,61 +5574,58 @@ void MainWindow::swapColumns(QTableView* tableview)
     tableview->setColumnWidth(8, 175);
 
     tableview->horizontalHeader()->swapSections(1, 8);
-
 }
 
 void MainWindow::setupIcons()
 {
-    QPixmap shuffleOn = ChangeSVGColor(":/resources/shuffle.svg", colorMain.left(7));
-    QPixmap shuffleOnHover = ChangeSVGColor(":/resources/shuffle.svg", colorMainHover.left(7));
-    QPixmap shuffleOff = ChangeSVGColor(":/resources/shuffle.svg", colorButton.left(7));
-    QPixmap shuffleOffHover = ChangeSVGColor(":/resources/shuffle.svg", colorButtonHover.left(7));
+    QPixmap shuffleOn = changeSvgColor(":/resources/shuffle.svg", colorMain.left(7));
+    QPixmap shuffleOnHover = changeSvgColor(":/resources/shuffle.svg", colorMainHover.left(7));
+    QPixmap shuffleOff = changeSvgColor(":/resources/shuffle.svg", colorButton.left(7));
+    QPixmap shuffleOffHover = changeSvgColor(":/resources/shuffle.svg", colorButtonHover.left(7));
 
-    QPixmap speakerOn = ChangeSVGColor(":/resources/speaker.svg", colorButton.left(7));
-    QPixmap speakerOnHover = ChangeSVGColor(":/resources/speaker.svg", colorButtonHover.left(7));
-    QPixmap speakerOff = ChangeSVGColor(":/resources/speaker-off.svg", colorButton.left(7));
-    QPixmap speakerOffHover = ChangeSVGColor(":/resources/speaker-off.svg", colorButtonHover.left(7));
+    QPixmap speakerOn = changeSvgColor(":/resources/speaker.svg", colorButton.left(7));
+    QPixmap speakerOnHover = changeSvgColor(":/resources/speaker.svg", colorButtonHover.left(7));
+    QPixmap speakerOff = changeSvgColor(":/resources/speaker-off.svg", colorButton.left(7));
+    QPixmap speakerOffHover = changeSvgColor(":/resources/speaker-off.svg", colorButtonHover.left(7));
 
+    QPixmap play = changeSvgColor(":/resources/play.svg", colorButton.left(7));
+    QPixmap playHover = changeSvgColor(":/resources/play.svg", colorButtonHover.left(7));
+    QPixmap pause = changeSvgColor(":/resources/pause.svg", colorButton.left(7));
+    QPixmap pauseHover = changeSvgColor(":/resources/pause.svg", colorButtonHover.left(7));
+    QPixmap pauseDisabled = changeSvgColor(":/resources/pause.svg", colorMain.left(7));
 
-    QPixmap play = ChangeSVGColor(":/resources/play.svg", colorButton.left(7));
-    QPixmap playHover = ChangeSVGColor(":/resources/play.svg", colorButtonHover.left(7));
-    QPixmap pause = ChangeSVGColor(":/resources/pause.svg", colorButton.left(7));
-    QPixmap pauseHover = ChangeSVGColor(":/resources/pause.svg", colorButtonHover.left(7));
-    QPixmap pauseDisabled = ChangeSVGColor(":/resources/pause.svg", colorMain.left(7));
+    QPixmap stop = changeSvgColor(":/resources/stop.svg", colorButton.left(7));
+    QPixmap stopHover = changeSvgColor(":/resources/stop.svg", colorButtonHover.left(7));
 
-    QPixmap stop = ChangeSVGColor(":/resources/stop.svg", colorButton.left(7));
-    QPixmap stopHover = ChangeSVGColor(":/resources/stop.svg", colorButtonHover.left(7));
+    QPixmap prev = changeSvgColor(":/resources/prev.svg", colorButton.left(7));
+    QPixmap prevHover = changeSvgColor(":/resources/prev.svg", colorButtonHover.left(7));
+    QPixmap next = changeSvgColor(":/resources/next.svg", colorButton.left(7));
+    QPixmap nextHover = changeSvgColor(":/resources/next.svg", colorButtonHover.left(7));
 
-    QPixmap prev = ChangeSVGColor(":/resources/prev.svg", colorButton.left(7));
-    QPixmap prevHover = ChangeSVGColor(":/resources/prev.svg", colorButtonHover.left(7));
-    QPixmap next = ChangeSVGColor(":/resources/next.svg", colorButton.left(7));
-    QPixmap nextHover = ChangeSVGColor(":/resources/next.svg", colorButtonHover.left(7));
+    QPixmap repeat = changeSvgColor(":/resources/repeat.svg", colorButton.left(7));
+    QPixmap repeatHover = changeSvgColor(":/resources/repeat.svg", colorButtonHover.left(7));
+    QPixmap repeat1 = changeSvgColor(":/resources/repeat-1.svg", colorMain.left(7));
+    QPixmap repeat1Hover = changeSvgColor(":/resources/repeat-1.svg", colorMainHover.left(7));
+    QPixmap repeatOn = changeSvgColor(":/resources/repeat.svg", colorMain.left(7));
+    QPixmap repeatOnHover = changeSvgColor(":/resources/repeat.svg", colorMainHover.left(7));
 
-    QPixmap repeat = ChangeSVGColor(":/resources/repeat.svg", colorButton.left(7));
-    QPixmap repeatHover = ChangeSVGColor(":/resources/repeat.svg", colorButtonHover.left(7));
-    QPixmap repeat1 = ChangeSVGColor(":/resources/repeat-1.svg", colorMain.left(7));
-    QPixmap repeat1Hover = ChangeSVGColor(":/resources/repeat-1.svg", colorMainHover.left(7));
-    QPixmap repeatOn = ChangeSVGColor(":/resources/repeat.svg", colorMain.left(7));
-    QPixmap repeatOnHover = ChangeSVGColor(":/resources/repeat.svg", colorMainHover.left(7));
-
-    QPixmap loopPointsOffDisabled = ChangeSVGColor(":/resources/loop-points.svg", colorMedium.left(7));
-    QPixmap loopPointsOff = ChangeSVGColor(":/resources/loop-points.svg", colorButton.left(7));
-    QPixmap loopPointsOffHover = ChangeSVGColor(":/resources/loop-points.svg", colorButtonHover.left(7));
-    QPixmap loopPointAOn = ChangeSVGColor(":/resources/loop-points.svg", colorMain.left(7),
+    QPixmap loopPointsOffDisabled = changeSvgColor(":/resources/loop-points.svg", colorMedium.left(7));
+    QPixmap loopPointsOff = changeSvgColor(":/resources/loop-points.svg", colorButton.left(7));
+    QPixmap loopPointsOffHover = changeSvgColor(":/resources/loop-points.svg", colorButtonHover.left(7));
+    QPixmap loopPointAOn = changeSvgColor(":/resources/loop-points.svg", colorMain.left(7),
                                           new QRectF(0.35, 0, 1, 1), colorButton.left(7));
-    QPixmap loopPointsOn = ChangeSVGColor(":/resources/loop-points.svg", colorMain.left(7));
-    QPixmap loopPointAOnHover = ChangeSVGColor(":/resources/loop-points.svg", colorMainHover.left(7),
+    QPixmap loopPointsOn = changeSvgColor(":/resources/loop-points.svg", colorMain.left(7));
+    QPixmap loopPointAOnHover = changeSvgColor(":/resources/loop-points.svg", colorMainHover.left(7),
                                                new QRectF(0.35, 0, 1, 1), colorButtonHover.left(7));
-    QPixmap loopPointsOnHover = ChangeSVGColor(":/resources/loop-points.svg", colorMainHover.left(7));
+    QPixmap loopPointsOnHover = changeSvgColor(":/resources/loop-points.svg", colorMainHover.left(7));
 
-    QPixmap add = ChangeSVGColor(":/resources/add.svg", colorButton.left(7));
-    QPixmap addHover = ChangeSVGColor(":/resources/add.svg", colorButtonHover.left(7));
+    QPixmap add = changeSvgColor(":/resources/add.svg", colorButton.left(7));
+    QPixmap addHover = changeSvgColor(":/resources/add.svg", colorButtonHover.left(7));
 
-    QPixmap checkBoxOn = ChangeSVGColor(":/resources/checkbox-on.svg", colorMain.left(7));
-    QPixmap checkBoxOff = ChangeSVGColor(":/resources/checkbox-off.svg", colorBehindBackground.left(7));
-    QPixmap checkBoxOnDisabled = ChangeSVGColor(":/resources/checkbox-on-disabled.svg", colorMedium.left(7));
-    QPixmap checkBoxOffDisabled = ChangeSVGColor(":/resources/checkbox-off-disabled.svg", colorMedium.left(7));
-
+    QPixmap checkBoxOn = changeSvgColor(":/resources/checkbox-on.svg", colorMain.left(7));
+    QPixmap checkBoxOff = changeSvgColor(":/resources/checkbox-off.svg", colorBehindBackground.left(7));
+    QPixmap checkBoxOnDisabled = changeSvgColor(":/resources/checkbox-on-disabled.svg", colorMedium.left(7));
+    QPixmap checkBoxOffDisabled = changeSvgColor(":/resources/checkbox-off-disabled.svg", colorMedium.left(7));
 
     icons["speaker-on"] = speakerOn;
     icons["speaker-off"] = speakerOff;
@@ -5954,6 +5669,7 @@ void MainWindow::setupIcons()
     ui->buttonPrev->setIcon(prev);
     ui->buttonNext->setIcon(next);
     ui->buttonStop->setIcon(stop);
+
     ui->pushButtonNewPlaylist->setIcon(add);
 }
 
@@ -5963,71 +5679,66 @@ void MainWindow::setupAdvancedDockingSystem()
     ads::CDockManager::setConfigFlag(ads::CDockManager::DockAreaHasTabsMenuButton, false);
     ads::CDockManager::setConfigFlag(ads::CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
 
-    m_DockManager = new ads::CDockManager(this);
+    dockManager = new ads::CDockManager(this);
 
-    m_DockManager->setStyleSheet(
+    dockManager->setStyleSheet(
             "QScrollBar:vertical {background-color: #282828/*background*/;     width: 15px;     margin: 0 3px 0 3px;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:vertical {     background-color: #404040/*medium*/;     min-height: 25px;     border-radius: 4px; } QScrollBar:horizontal {     background-color: #282828/*background*/;     height: 15px;     margin: 3px 0 3px 0;     border: 1px transparent #282828/*background*/;     border-radius: 4px; } QScrollBar::handle:horizontal {     background-color: #404040/*medium*/;     min-width: 5px;     border-radius: 4px; } QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {     background: none; } QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {     background: none; } QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal {     background: none; } QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {     background: none; } QScrollBar::sub-line:vertical {     height: 0;     width: 0; } QScrollBar::add-line:vertical {     height: 0;     width: 0; } QScrollBar::sub-line:horizontal {     height: 0;     width: 0; } QScrollBar::add-line:horizontal {     height: 0;     width: 0; }QScrollArea#dockWidgetScrollArea {	background: #282828/*background*/;padding: 0px;	border: none;} ads--CDockWidgetTab QLabel {font-family:Roboto;font-size:14px;color:#b1b1b1/*dimmed text*/;}ads--CDockWidgetTab[activeTab=\"true\"] QLabel {color:#ffffff/*main text*/;}#tabCloseButton {margin-top: 0;background: none;border: none;}ads--CDockContainerWidget ads--CDockSplitter::handle {background: #161616/*behind-background*/;}ads--CDockAreaTitleBar { background: #282828/*background*/;}ads--CDockWidgetTab {background: #282828/*background*/}");
 
+    dockWidgetLogMessages = new ads::CDockWidget(dockManager, "Log Messages");
+    dockWidgetLogMessages->setWidget(ui->dockWidgetContents_9, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::BottomDockWidgetArea, dockWidgetLogMessages);
+    dockWidgets.append(dockWidgetLogMessages);
 
-    DockWidgetLogMessages = new ads::CDockWidget("Log Messages");
-    DockWidgetLogMessages->setWidget(ui->dockWidgetContents_9, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetLogMessages);
-    dockWidgets.append(DockWidgetLogMessages);
+    dockWidgetTitle = new ads::CDockWidget(dockManager, "Now Playing");
+    dockWidgetTitle->setWidget(ui->dockWidgetContents_5, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::BottomDockWidgetArea, dockWidgetTitle);
+    dockWidgets.append(dockWidgetTitle);
 
-    DockWidgetTitle = new ads::CDockWidget("Now Playing");
-    DockWidgetTitle->setWidget(ui->dockWidgetContents_5, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTitle);
-    dockWidgets.append(DockWidgetTitle);
+    dockWidgetChannels = new ads::CDockWidget(dockManager, "Channels");
+    dockWidgetChannels->setWidget(ui->dockWidgetContents_7);
+    dockManager->addDockWidget(ads::BottomDockWidgetArea, dockWidgetChannels);
+    dockWidgets.append(dockWidgetChannels);
 
+    dockWidgetTrackerView = new ads::CDockWidget(dockManager, "Tracker View");
+    dockWidgetTrackerView->setWidget(ui->dockWidgetContents_6, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::BottomDockWidgetArea, dockWidgetTrackerView);
+    dockWidgets.append(dockWidgetTrackerView);
 
-    DockWidgetChannels = new ads::CDockWidget("Channels");
-    DockWidgetChannels->setWidget(ui->dockWidgetContents_7);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetChannels);
-    dockWidgets.append(DockWidgetChannels);
+    dockWidgetInfo = new ads::CDockWidget(dockManager, "Info");
+    dockWidgetInfo->setWidget(ui->dockWidgetContents_3, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::BottomDockWidgetArea, dockWidgetInfo);
+    dockWidgets.append(dockWidgetInfo);
 
-    DockWidgetTrackerView = new ads::CDockWidget("Tracker View");
-    DockWidgetTrackerView->setWidget(ui->dockWidgetContents_6, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetTrackerView);
-    dockWidgets.append(DockWidgetTrackerView);
+    dockWidgetVisualizer = new ads::CDockWidget(dockManager, "Visualizer");
+    dockWidgetVisualizer->setWidget(ui->dockWidgetContents_11, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::BottomDockWidgetArea, dockWidgetVisualizer);
+    dockWidgets.append(dockWidgetVisualizer);
 
-    DockWidgetInfo = new ads::CDockWidget("Info");
-    DockWidgetInfo->setWidget(ui->dockWidgetContents_3, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetInfo);
-    dockWidgets.append(DockWidgetInfo);
+    dockWidgetPlaylists = new ads::CDockWidget(dockManager, "Playlists");
+    dockWidgetPlaylists->setWidget(ui->dockWidgetContents_8, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::LeftDockWidgetArea, dockWidgetPlaylists);
+    dockWidgets.append(dockWidgetPlaylists);
 
+    dockWidgetPlaylist = new ads::CDockWidget(dockManager, "Playlist");
+    dockWidgetPlaylist->setWidget(ui->dockWidgetContents_4, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::LeftDockWidgetArea, dockWidgetPlaylist);
+    dockWidgets.append(dockWidgetPlaylist);
 
-    DockWidgetVisualizer = new ads::CDockWidget("Visualizer");
-    DockWidgetVisualizer->setWidget(ui->dockWidgetContents_11, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetVisualizer);
-    dockWidgets.append(DockWidgetVisualizer);
+    dockWidgetInstruments = new ads::CDockWidget(dockManager, "Instruments");
+    dockWidgetInstruments->setWidget(ui->dockWidgetContents_10, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::RightDockWidgetArea, dockWidgetInstruments);
+    dockWidgets.append(dockWidgetInstruments);
 
+    dockWidgetSamples = new ads::CDockWidget(dockManager, "Samples");
+    dockWidgetSamples->setWidget(ui->dockWidgetContents_2, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::RightDockWidgetArea, dockWidgetSamples);
+    dockWidgets.append(dockWidgetSamples);
 
-    DockWidgetPlaylists = new ads::CDockWidget("Playlists");
-    DockWidgetPlaylists->setWidget(ui->dockWidgetContents_8, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylists);
-    dockWidgets.append(DockWidgetPlaylists);
-
-    DockWidgetPlaylist = new ads::CDockWidget("Playlist");
-    DockWidgetPlaylist->setWidget(ui->dockWidgetContents_4, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidgetPlaylist);
-    dockWidgets.append(DockWidgetPlaylist);
-
-    DockWidgetInstruments = new ads::CDockWidget("Instruments");
-    DockWidgetInstruments->setWidget(ui->dockWidgetContents_10, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetInstruments);
-    dockWidgets.append(DockWidgetInstruments);
-
-    DockWidgetSamples = new ads::CDockWidget("Samples");
-    DockWidgetSamples->setWidget(ui->dockWidgetContents_2, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidgetSamples);
-    dockWidgets.append(DockWidgetSamples);
-
-    DockWidgetPlayControl = new ads::CDockWidget("Play Control");
-    DockWidgetPlayControl->setMinimumSizeHintMode(ads::CDockWidget::MinimumSizeHintFromContent);
-    DockWidgetPlayControl->setWidget(ui->dockWidgetContents, ads::CDockWidget::ForceNoScrollArea);
-    m_DockManager->addDockWidget(ads::BottomDockWidgetArea, DockWidgetPlayControl);
-    dockWidgets.append(DockWidgetPlayControl);
-
+    dockWidgetPlayControl = new ads::CDockWidget(dockManager, "Play Control");
+    dockWidgetPlayControl->setMinimumSizeHintMode(ads::CDockWidget::MinimumSizeHintFromContent);
+    dockWidgetPlayControl->setWidget(ui->dockWidgetContents, ads::CDockWidget::ForceNoScrollArea);
+    dockManager->addDockWidget(ads::BottomDockWidgetArea, dockWidgetPlayControl);
+    dockWidgets.append(dockWidgetPlayControl);
 }
 
 QStringList MainWindow::sortPreservingOrder(const QStringList& folderPlaylists, const QStringList& sortedPlaylistOrder)
@@ -6047,5 +5758,6 @@ QStringList MainWindow::sortPreservingOrder(const QStringList& folderPlaylists, 
             result.append(item);
         }
     }
+
     return result;
 }

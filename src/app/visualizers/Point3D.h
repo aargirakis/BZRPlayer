@@ -4,7 +4,7 @@
 class Point3D
 {
 public:
-    Point3D(double x, double y, double z)
+    Point3D(const double x, const double y, const double z)
     {
         this->x = x;
         this->y = y;
@@ -12,11 +12,6 @@ public:
     }
 
     double x, y, z;
-
-protected:
-
-
-private:
 };
 
 #endif

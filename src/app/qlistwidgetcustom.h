@@ -2,16 +2,16 @@
 #define QLISTWIDGETCUSTOM_H
 
 #include <QListWidget>
-#include <QWidget>
 
 class QListWidgetCustom : public QListWidget
 {
 public:
-    explicit QListWidgetCustom(QWidget* parent = 0);
+    explicit QListWidgetCustom(QWidget* parent = nullptr);
 
     ~QListWidgetCustom()
     {
     }
+
     void setDragBackgroundColor(QColor);
     void setDragTextColor(QColor );
 

@@ -1,11 +1,11 @@
-#include "visualizerfullscreen.h"
+#include <QPainter>
 #include "soundmanager.h"
-#include <QtOpenGL>
+#include "visualizerfullscreen.h"
 
 VisualizerFullScreen::VisualizerFullScreen(Effect* effect, QWidget* parent): QOpenGLWidget(parent)
 {
     this->effect = effect;
-    //Antialiasing, for example if we draw circles
+    // antialiasing, for example if we draw circles
     //    QSurfaceFormat format;
     //    format.setSamples(4);
     //    setFormat(format);
@@ -13,9 +13,9 @@ VisualizerFullScreen::VisualizerFullScreen(Effect* effect, QWidget* parent): QOp
 
 void VisualizerFullScreen::paintEvent(QPaintEvent* event)
 {
-    if (isFullScreen() && SoundManager::getInstance().IsPlaying())
-    {
-        SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
+    if (const auto &sm = SoundManager::getInstance();
+        isFullScreen() && sm.isPlaying()) {
+        sm.getPosition(FMOD_TIMEUNIT_MODVUMETER);
         QPainter painter;
         painter.begin(this);
         //painter.setRenderHint(QPainter::Antialiasing);

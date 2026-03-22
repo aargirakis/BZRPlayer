@@ -1,6 +1,6 @@
 #include "playlistitem.h"
 
-PlaylistItem::PlaylistItem(Info* i, QString fullpath, int subsong)
+PlaylistItem::PlaylistItem(Info* i, const QString &fullpath, const int subsong)
 {
     info = i;
     this->fullPath = fullpath;

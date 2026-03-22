@@ -1,5 +1,6 @@
 #ifndef GENERICPATTERNVIEW_H
 #define GENERICPATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class GenericPatternView : public AbstractPatternView
@@ -10,10 +11,6 @@ public:
 
     void paintAbove(QPainter* painter, int height, int currentRow);
     void paintBelow(QPainter* painter, int height, int currentRow);
-
-private:
-
-private slots:
 };
 
 #endif // GENERICPATTERNVIEW_H

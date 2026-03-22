@@ -1,5 +1,6 @@
 #ifndef IMPULSETRACKERPATTERNVIEW_H
 #define IMPULSETRACKERPATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class ImpulseTrackerPatternView : public AbstractPatternView
@@ -13,10 +14,6 @@ public:
     QString note(BaseRow* row);
     QString rowNumber(int rowNumber);
     QString volume(BaseRow* row);
-
-private:
-
-private slots:
 };
 
 #endif // IMPULSETRACKERPATTERNVIEW_H

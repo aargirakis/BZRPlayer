@@ -21,13 +21,13 @@ void DialogNewWorkspace::on_buttonCancel_clicked()
     close();
 }
 
-
 void DialogNewWorkspace::on_buttonSave_clicked()
 {
-    MainWindow* mw = static_cast<MainWindow*>(this->parent());
+    const auto mw = static_cast<MainWindow*>(this->parent());
+
     if (!ui->lineEditNewWorkspace->text().isEmpty())
     {
-        mw->CreateNewWorkspace(ui->lineEditNewWorkspace->text());
+        mw->createNewWorkspace(ui->lineEditNewWorkspace->text());
         close();
     }
 }

@@ -1,5 +1,6 @@
 #ifndef SCREAMTRACKER3PATTERNVIEW_H
 #define SCREAMTRACKER3PATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class ScreamTracker3PatternView : public AbstractPatternView
@@ -11,10 +12,6 @@ public:
     void paintBelow(QPainter* painter, int height, int currentRow);
     QString effect(BaseRow* row);
     QString note(BaseRow* row);
-
-private:
-
-private slots:
 };
 
 #endif // SCREAMTRACKER3PATTERNVIEW_H

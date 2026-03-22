@@ -1,8 +1,6 @@
 #ifndef FILEDOWNLOADER_H
 #define FILEDOWNLOADER_H
 
-#include <QObject>
-#include <QByteArray>
 #include <QNetworkReply>
 
 class FileDownloader : public QObject
@@ -10,7 +8,7 @@ class FileDownloader : public QObject
     Q_OBJECT
 
 public:
-    explicit FileDownloader(QUrl url, QObject* parent = 0);
+    explicit FileDownloader(const QUrl &url, QObject* parent = nullptr);
     virtual ~FileDownloader();
     QByteArray downloadedData() const;
     QUrl getUrl() const;
@@ -21,7 +19,7 @@ signals:
 
 private slots:
     void fileDownloaded(QNetworkReply* pReply);
-    void errorOccured(QNetworkReply::NetworkError);
+    static void errorOccured(QNetworkReply::NetworkError);
 
 private:
     QNetworkAccessManager m_WebCtrl;

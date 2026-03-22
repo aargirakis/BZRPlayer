@@ -27,19 +27,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_vgmstream_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    0, // Don't force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_vgmstream_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    0, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginVgmstream {
@@ -52,7 +51,7 @@ public:
     }
 
     ~pluginVgmstream() {
-        //delete some stuff
+        // delete some stuff
         libvgmstream_free(libvgmstream);
         libvgmstream = nullptr;
     }
@@ -65,9 +64,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -228,11 +227,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     bool useDefaults = false;
 
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         useDefaults = true;
     }
 
-    //defaults
+    // defaults
     plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -298,8 +297,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     plugin->info->samplerate = plugin->waveformat.frequency;
     plugin->info->bitRate = plugin->libvgmstream->format->stream_bitrate;
@@ -317,13 +316,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     if (const auto priv = static_cast<libvgmstream_priv_t *>(plugin->libvgmstream->priv);
         priv->vgmstream->coding_type != coding_FFmpeg) {
-        plugin->info->fileformat = plugin->libvgmstream->format->meta_name;
+        plugin->info->fileFormat = plugin->libvgmstream->format->meta_name;
     } else {
         if (priv->vgmstream->meta_type == meta_FFMPEG || priv->vgmstream->meta_type == meta_FFMPEG_faulty) {
-            plugin->info->fileformat = ffmpeg_get_format_name(
+            plugin->info->fileFormat = ffmpeg_get_format_name(
                 static_cast<ffmpeg_codec_data *>(priv->vgmstream->codec_data));
         } else {
-            plugin->info->fileformat = plugin->libvgmstream->format->meta_name;
+            plugin->info->fileFormat = plugin->libvgmstream->format->meta_name;
         }
 
         const AVDictionaryEntry *tags = ffmpeg_get_all_metadata(
@@ -357,7 +356,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->metadata.emplace_back(metadataCueCdRemDate);
     plugin->info->metadata.emplace_back(metadataCueCdRemComment);
 
-    plugin->info->fileformatSpecific = plugin->libvgmstream->format->codec_name;
+    plugin->info->fileFormatSpecific = plugin->libvgmstream->format->codec_name;
     plugin->info->plugin = PLUGIN_vgmstream;
     plugin->info->pluginName = PLUGIN_vgmstream_NAME;
     plugin->info->setSeekable(true);

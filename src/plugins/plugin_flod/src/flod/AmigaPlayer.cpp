@@ -20,10 +20,10 @@ AmigaPlayer::AmigaPlayer(Amiga *amiga) {
     m_channels = 4;
     m_flags = 0;
     m_mute = 0;
-    m_version = 0;
-    m_variant = 0;
+    version = 0;
+    variant = 0;
     m_songNumber = 0;
-    m_totalSongs = 0;
+    totalSongs = 0;
     speed = 0;
 }
 
@@ -92,8 +92,8 @@ int AmigaPlayer::getChannels() {
 
 int AmigaPlayer::load(void *data, unsigned int length, const char *filename) {
     amiga->reset();
-    m_version = 0;
-    m_variant = 0;
+    version = 0;
+    variant = 0;
 
     //stream.endian = "bigEndian";
     //stream.position = 0;
@@ -102,15 +102,15 @@ int AmigaPlayer::load(void *data, unsigned int length, const char *filename) {
 
 int AmigaPlayer::load(void *data, unsigned int length) {
     amiga->reset();
-    m_version = 0;
-    m_variant = 0;
+    version = 0;
+    variant = 0;
     //stream.endian = "bigEndian";
     //stream.position = 0;
     return 0;
 }
 
 int AmigaPlayer::getVersion() {
-    return m_version;
+    return version;
 }
 
 int AmigaPlayer::play() {

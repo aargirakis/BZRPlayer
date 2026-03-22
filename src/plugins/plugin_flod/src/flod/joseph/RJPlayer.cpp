@@ -410,7 +410,7 @@ int RJPlayer::load(void *_data, unsigned long int length, const char *filename) 
     len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);
     position += 4;
     songs = vector<int>(len);
-    m_totalSongs = (len >> 2);
+    totalSongs = (len >> 2);
 
     int flag = 0;
     for (int i = 0; i < len; ++i) {
@@ -460,14 +460,14 @@ int RJPlayer::load(void *_data, unsigned long int length, const char *filename) 
     }
 
 
-    m_version = 1;
+    version = 1;
     format = "Richard Joseph";
     //printData();
     return 1;
 }
 
 unsigned char RJPlayer::getSubsongsCount() {
-    return m_totalSongs;
+    return totalSongs;
 }
 
 void RJPlayer::selectSong(unsigned char subsong) {

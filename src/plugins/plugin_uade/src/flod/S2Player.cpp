@@ -171,7 +171,6 @@ int S2Player::load(void *data, unsigned long int _length) {
             position++;
         }
 
-
         pos = position;
         position = 34;
         len = readEndian(stream[position], stream[position + 1], stream[position + 2], stream[position + 3]);

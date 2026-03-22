@@ -16,19 +16,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_mdxmini_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    0, // Don't force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    nullptr,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_mdxmini_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    0, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    nullptr, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginMdxmini {
@@ -41,7 +40,7 @@ public:
     }
 
     ~pluginMdxmini() {
-        //delete some stuff
+        // delete some stuff
     }
 
     t_mdxmini data;
@@ -51,9 +50,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -71,15 +70,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int filesize;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    if (filesize == 4294967295) //stream
+    if (filesize == 4294967295) // stream
     {
         return FMOD_ERR_FORMAT;
     }
 
-    //I don't know if there are some kind of magic bytes to be sure it is an mdx file
-    //And since it sometimes tries to play m4a-files, I return false if the size seems too big
-    //Biggest mdx file on modland is 85kb
-    if (filesize > 102400) //100kb
+    // dunno if there are some kind of magic bytes to be sure it is an mdx file
+    // and since it sometimes tries to play m4a-files, I return false if the size seems too big
+    if (filesize > 102400) // 100kb (biggest mdx file on modland is 85kb)
     {
         return FMOD_ERR_FORMAT;
     }
@@ -102,8 +100,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     plugin->info->numChannels = mdx_get_tracks(&plugin->data);
     mdx_set_rate(plugin->waveformat.frequency);
@@ -111,7 +109,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     mdx_get_title(&plugin->data, title);
     plugin->info->title = title;
-    plugin->info->fileformat = "MDX";
+    plugin->info->fileFormat = "MDX";
     plugin->info->plugin = PLUGIN_mdxmini;
     plugin->info->pluginName = PLUGIN_mdxmini_NAME;
     plugin->info->setSeekable(false);

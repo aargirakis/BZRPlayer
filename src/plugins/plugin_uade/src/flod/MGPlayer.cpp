@@ -155,7 +155,7 @@ MGPlayer::~MGPlayer() {
     }
     patterns.clear();
 
-    subSongsList.clear();
+    subsongsList.clear();
 }
 
 void MGPlayer::tables() {
@@ -254,7 +254,7 @@ int MGPlayer::load(void *_data, unsigned long int _length) {
 
     position = 204;
     m_totalSongs = songs.size();
-    subSongsList = std::vector<unsigned char>();
+    subsongsList = std::vector<unsigned char>();
 
 
     for (int i = 0; i < 8; ++i) {
@@ -273,7 +273,7 @@ int MGPlayer::load(void *_data, unsigned long int _length) {
         }
         if (patternSize > 0) {
             if ((m_version == MUGICIAN_V1) || (m_version == MUGICIAN_V2 && (i + 1) % 2 == 1)) {
-                subSongsList.push_back(i);
+                subsongsList.push_back(i);
             }
         }
     }

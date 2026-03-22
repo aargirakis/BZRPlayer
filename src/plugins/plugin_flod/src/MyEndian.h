@@ -62,15 +62,15 @@ union cpuLBword {
 
 // Convert high-byte and low-byte to 16-bit word.
 // Used to read 16-bit words in little-endian order.
-inline uword readEndian(ubyte hi, ubyte lo) {
-    return ((static_cast<uword>(hi) << 8) + static_cast<uword>(lo));
+inline uword readEndian(const ubyte hi, const ubyte lo) {
+    return (static_cast<uword>(hi) << 8) + static_cast<uword>(lo);
 }
 
 // Convert high bytes and low bytes of MSW and LSW to 32-bit word.
 // Used to read 32-bit words in little-endian order.
-inline udword readEndian(ubyte hihi, ubyte hilo, ubyte hi, ubyte lo) {
-    return ((static_cast<udword>(hihi) << 24) + (static_cast<udword>(hilo) << 16) +
-            (static_cast<udword>(hi) << 8) + static_cast<udword>(lo));
+inline udword readEndian(const ubyte hihi, const ubyte hilo, const ubyte hi, const ubyte lo) {
+    return (static_cast<udword>(hihi) << 24) + (static_cast<udword>(hilo) << 16) +
+           (static_cast<udword>(hi) << 8) + static_cast<udword>(lo);
 }
 
 // Read a little-endian 16-bit word from two bytes in memory.
@@ -83,22 +83,21 @@ inline uword readLEword(const ubyte ptr[2]) {
 }
 
 // Write a big-endian 16-bit word to two bytes in memory.
-inline void writeLEword(ubyte ptr[2], uword someWord) {
+inline void writeLEword(ubyte ptr[2], const uword someWord) {
 #if defined(WORDS_LITTLEENDIAN) && defined(OPTIMIZE_ENDIAN_ACCESS)
     *((uword *) ptr) = someWord;
 #else
-    ptr[0] = (someWord & 0xFF);
-    ptr[1] = (someWord >> 8);
+    ptr[0] = someWord & 0xFF;
+    ptr[1] = someWord >> 8;
 #endif
 }
-
 
 // Read a big-endian 16-bit word from two bytes in memory.
 inline uword readBEword(const ubyte ptr[2]) {
 #if defined(WORDS_BIGENDIAN) && defined(OPTIMIZE_ENDIAN_ACCESS)
     return *((uword *) ptr);
 #else
-    return ((static_cast<uword>(ptr[0]) << 8) + static_cast<uword>(ptr[1]));
+    return (static_cast<uword>(ptr[0]) << 8) + static_cast<uword>(ptr[1]);
 #endif
 }
 
@@ -107,13 +106,13 @@ inline udword readBEdword(const ubyte ptr[4]) {
 #if defined(WORDS_BIGENDIAN) && defined(OPTIMIZE_ENDIAN_ACCESS)
     return *((udword *) ptr);
 #else
-    return ((static_cast<udword>(ptr[0]) << 24) + (static_cast<udword>(ptr[1]) << 16)
-            + (static_cast<udword>(ptr[2]) << 8) + static_cast<udword>(ptr[3]));
+    return (static_cast<udword>(ptr[0]) << 24) + (static_cast<udword>(ptr[1]) << 16)
+           + (static_cast<udword>(ptr[2]) << 8) + static_cast<udword>(ptr[3]);
 #endif
 }
 
 // Write a big-endian 16-bit word to two bytes in memory.
-inline void writeBEword(ubyte ptr[2], uword someWord) {
+inline void writeBEword(ubyte ptr[2], const uword someWord) {
 #if defined(WORDS_BIGENDIAN) && defined(OPTIMIZE_ENDIAN_ACCESS)
     *((uword *) ptr) = someWord;
 #else
@@ -123,32 +122,31 @@ inline void writeBEword(ubyte ptr[2], uword someWord) {
 }
 
 // Write a big-endian 32-bit word to four bytes in memory.
-inline void writeBEdword(ubyte ptr[4], udword someDword) {
+inline void writeBEdword(ubyte ptr[4], const udword someDword) {
 #if defined(WORDS_BIGENDIAN) && defined(OPTIMIZE_ENDIAN_ACCESS)
     *((udword *) ptr) = someDword;
 #else
     ptr[0] = someDword >> 24;
-    ptr[1] = (someDword >> 16) & 0xFF;
-    ptr[2] = (someDword >> 8) & 0xFF;
+    ptr[1] = someDword >> 16 & 0xFF;
+    ptr[2] = someDword >> 8 & 0xFF;
     ptr[3] = someDword & 0xFF;
 #endif
 }
 
-
 // Convert 16-bit little-endian word to big-endian order or vice versa.
-inline uword convertEndianess(uword intelword) {
-    uword hi = intelword >> 8;
-    uword lo = intelword & 255;
-    return ((lo << 8) + hi);
+inline uword convertEndianess(const uword intelword) {
+    const uword hi = intelword >> 8;
+    const uword lo = intelword & 255;
+    return (lo << 8) + hi;
 }
 
 // Convert 32-bit little-endian word to big-endian order or vice versa.
-inline udword convertEndianess(udword inteldword) {
-    udword hihi = inteldword >> 24;
-    udword hilo = (inteldword >> 16) & 0xFF;
-    udword hi = (inteldword >> 8) & 0xFF;
-    udword lo = inteldword & 0xFF;
-    return ((lo << 24) + (hi << 16) + (hilo << 8) + hihi);
+inline udword convertEndianess(const udword inteldword) {
+    const udword hihi = inteldword >> 24;
+    const udword hilo = inteldword >> 16 & 0xFF;
+    const udword hi = inteldword >> 8 & 0xFF;
+    const udword lo = inteldword & 0xFF;
+    return (lo << 24) + (hi << 16) + (hilo << 8) + hihi;
 }
 
 #endif  // MYENDIAN_H

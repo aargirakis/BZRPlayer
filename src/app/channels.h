@@ -2,7 +2,6 @@
 #define CHANNELS_H
 
 #include "buttonoscilloscope.h"
-#include <QWidget>
 
 class MainWindow;
 
@@ -12,13 +11,13 @@ class Channels : public QWidget
 
 public:
     Channels(MainWindow* mw, QWidget* parent);
-    void updateChannels();
-    void updateChannelColors();
-    void setChannelEnabled(int index, bool enable);
-    bool getChannelEnabled(int index);
-    void muteAllChannels();
-    void unmuteAllChannels();
-    void muteChannels();
+    void updateChannels() const;
+    void updateChannelColors() const;
+    void setChannelEnabled(int index, bool enable) const;
+    bool getChannelEnabled(int index) const;
+    void muteAllChannels() const;
+    void unmuteAllChannels() const;
+    void muteChannels() const;
 
 private:
     QVector<ButtonOscilloscope*> channels;

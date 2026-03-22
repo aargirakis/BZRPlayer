@@ -1,13 +1,15 @@
 #ifndef PLAYLISTITEM_H
 #define PLAYLISTITEM_H
+
 #include <QString>
+
 #include "info.h"
 
 class PlaylistItem
 {
 public:
     PlaylistItem();
-    PlaylistItem(Info*, QString, int);
+    PlaylistItem(Info*, const QString &, int);
     QString fullPath;
     QString artist;
     QString filename;

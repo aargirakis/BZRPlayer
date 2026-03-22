@@ -585,7 +585,7 @@ namespace core {
     void Array<ItemType>::RemoveAtFast(size_t index, size_t numItemsToRemove) {
         auto numItems = m_numItems;
         auto newNumItems = numItems - numItemsToRemove;
-        assert(newNumItems <= numItems && (index + numItemsToRemove <= numItems));
+        assert(newNumItems <= numItems && index + numItemsToRemove <= numItems);
         auto *items = m_items;
         auto *dstItems = items + index;
         auto *movedItems = items + numItems - numItemsToRemove;
@@ -607,7 +607,7 @@ namespace core {
     void Array<ItemType>::RemoveAt(size_t index, size_t numItemsToRemove) {
         auto numItems = m_numItems;
         auto newNumItems = numItems - numItemsToRemove;
-        assert(newNumItems <= numItems && (index + numItemsToRemove <= numItems));
+        assert(newNumItems <= numItems && index + numItemsToRemove <= numItems);
         auto items = m_items + index;
         auto movedItems = items + numItemsToRemove;
         auto numItemsToMove = newNumItems - index;
@@ -620,7 +620,7 @@ namespace core {
         }
         if constexpr (!is_trivially_destructible<ItemType>::value) {
             while (numItemsToRemove--)
-                (items++)->~ItemType();
+                items++->~ItemType();
         }
         m_numItems = uint32_t(newNumItems);
     }
@@ -662,7 +662,7 @@ namespace core {
                 auto numRemovedItems = uint32_t(items - movedItems);
                 if constexpr (!is_trivially_destructible<ItemType>::value) {
                     while (movedItems != items)
-                        (movedItems++)->~ItemType();
+                        movedItems++->~ItemType();
                 }
                 m_numItems = numItems - numRemovedItems;
                 return numRemovedItems;
@@ -811,7 +811,7 @@ namespace core {
     template<typename ItemType>
     uint32_t operator-(const ItemType *const item, const Array<ItemType> &array) {
         auto *items = array.Items();
-        assert((item == nullptr && items == nullptr) || (item >= items) && (item <= items + array.NumItems()));
+        assert(item == nullptr && items == nullptr || item >= items && item <= items + array.NumItems());
         return uint32_t(item - items); // returns the index of element
     }
 }

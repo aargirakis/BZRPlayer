@@ -67,19 +67,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_highly_quixotic_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_highly_quixotic_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginHighlyQ {
@@ -93,8 +92,8 @@ public:
     }
 
     ~pluginHighlyQ() {
-        //delete some stuff
-        delete[] m_qsoundState;
+        // delete some stuff
+        delete[] qsoundState;
     }
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
@@ -150,15 +149,15 @@ public:
                     length *= 1000;
 
                 if (length > 0)
-                    plugin->m_length = length;
+                    plugin->length = length;
             }
         } else if (!strcasecmp(name, "fade")) {
         } else if (!strcasecmp(name, "utf8")) {
         } else if (!strcasecmp(name, "_lib")) {
-            //plugin->m_hasLib = true;
+            //plugin->hasLib = true;
         } else if (name[0] == '_') {
         } else {
-            plugin->m_tags[name] = value;
+            plugin->tags[name] = value;
         }
         return 0;
     }
@@ -200,8 +199,8 @@ public:
         return ftell(static_cast<FILE *>(handle));
     }
 
-    static int QsoundLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t * /*reserved*/,
-                          size_t /*reserved_size*/) {
+    static int QsoundLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t * /* reserved */,
+                          size_t /* reserved_size */) {
         auto *plugin = static_cast<pluginHighlyQ *>(context);
         for (;;) {
             char s[4];
@@ -210,7 +209,7 @@ public:
             exe += 3;
             exe_size -= 3;
             s[3] = 0;
-            uint32_t dataofs = *(uint32_t *) exe;
+            const uint32_t dataofs = *(uint32_t *) exe;
             exe += 4;
             exe_size -= 4;
             const uint32_t datasize = *(uint32_t *) exe;
@@ -228,15 +227,15 @@ public:
                 uint32_t maxsize = 0x7FFFFFFF;
 
                 if (!strcmp(section, "KEY")) {
-                    pArray = &plugin->m_aKey;
-                    pArrayValid = &plugin->m_aKeyValid;
+                    pArray = &plugin->aKey;
+                    pArrayValid = &plugin->aKeyValid;
                     maxsize = 11;
                 } else if (!strcmp(section, "Z80")) {
-                    pArray = &plugin->m_aZ80ROM;
-                    pArrayValid = &plugin->m_aZ80ROMValid;
+                    pArray = &plugin->aZ80ROM;
+                    pArrayValid = &plugin->aZ80ROMValid;
                 } else if (!strcmp(section, "SMP")) {
-                    pArray = &plugin->m_aSampleROM;
-                    pArrayValid = &plugin->m_aSampleROMValid;
+                    pArray = &plugin->aSampleROM;
+                    pArrayValid = &plugin->aSampleROMValid;
                 } else {
                     return -1;
                 }
@@ -260,7 +259,7 @@ public:
 
                 oldsize = pArrayValid->NumItems();
                 pArrayValid->Resize(oldsize + 1);
-                valid_range &range = (pArrayValid->Items())[oldsize];
+                valid_range &range = pArrayValid->Items()[oldsize];
                 range.start = start;
                 range.size = size;
             }
@@ -274,26 +273,17 @@ public:
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
-    unordered_map<string, string> m_tags;
-    uint8_t *m_qsoundState = nullptr;
-    unsigned int m_length = -1;
-    core::Array<uint8_t> m_aKey;
-    core::Array<valid_range> m_aKeyValid;
-    core::Array<uint8_t> m_aZ80ROM;
-    core::Array<valid_range> m_aZ80ROMValid;
-    core::Array<uint8_t> m_aSampleROM;
-    core::Array<valid_range> m_aSampleROMValid;
+    unordered_map<string, string> tags;
+    uint8_t *qsoundState = nullptr;
+    unsigned int length = -1;
+    core::Array<uint8_t> aKey;
+    core::Array<valid_range> aKeyValid;
+    core::Array<uint8_t> aZ80ROM;
+    core::Array<valid_range> aZ80ROMValid;
+    core::Array<uint8_t> aSampleROM;
+    core::Array<valid_range> aSampleROMValid;
 
-    struct LoaderState {
-        uint8_t *data = nullptr;
-        size_t data_size = 0;
-
-        void Clear() { new(this) LoaderState(); }
-
-        ~LoaderState() { Clear(); }
-    } m_loaderState = {};
-
-    const psf_file_callbacks m_psfFileSystem = {
+    const psf_file_callbacks psfFileSystem = {
         "\\/|:",
         this,
         OpenPSF,
@@ -305,9 +295,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -339,63 +329,63 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginHighlyQ(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    if (!psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x41, nullptr, nullptr,
+    if (!psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0x41, nullptr, nullptr,
                   pluginHighlyQ::InfoMetaPSF, plugin, 0, nullptr, nullptr)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    if (psf_load(plugin->info->filename.c_str(), &plugin->m_psfFileSystem, 0x41, pluginHighlyQ::QsoundLoad, plugin,
+    if (psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0x41, pluginHighlyQ::QsoundLoad, plugin,
                  nullptr,
                  nullptr, 0, nullptr, nullptr) < 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->m_qsoundState = new uint8_t[qsound_get_state_size()];
+    plugin->qsoundState = new uint8_t[qsound_get_state_size()];
     qsound_init();
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = 24038; //TODO
+    plugin->waveformat.frequency = 24038; // TODO
     plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
-    plugin->info->fileformat = "Capcom Q-Sound (QSF)";
+    plugin->info->fileFormat = "Capcom Q-Sound (QSF)";
     plugin->info->plugin = PLUGIN_highly_quixotic;
     plugin->info->pluginName = PLUGIN_highly_quixotic_NAME;
 
-    if (keyExists(plugin->m_tags, "title")) {
-        plugin->info->title = plugin->m_tags["title"];
+    if (keyExists(plugin->tags, "title")) {
+        plugin->info->title = plugin->tags["title"];
     }
-    if (keyExists(plugin->m_tags, "artist")) {
-        plugin->info->artist = plugin->m_tags["artist"];
+    if (keyExists(plugin->tags, "artist")) {
+        plugin->info->artist = plugin->tags["artist"];
     }
-    if (keyExists(plugin->m_tags, "game")) {
-        plugin->info->game = plugin->m_tags["game"];
+    if (keyExists(plugin->tags, "game")) {
+        plugin->info->game = plugin->tags["game"];
     }
-    if (keyExists(plugin->m_tags, "copyright")) {
-        plugin->info->copyright = plugin->m_tags["copyright"];
+    if (keyExists(plugin->tags, "copyright")) {
+        plugin->info->copyright = plugin->tags["copyright"];
     }
-    if (keyExists(plugin->m_tags, "qsfby")) {
-        plugin->info->ripper = plugin->m_tags["qsfby"];
+    if (keyExists(plugin->tags, "qsfby")) {
+        plugin->info->ripper = plugin->tags["qsfby"];
     }
-    if (keyExists(plugin->m_tags, "year")) {
-        plugin->info->date = plugin->m_tags["year"];
+    if (keyExists(plugin->tags, "year")) {
+        plugin->info->date = plugin->tags["year"];
     }
-    if (keyExists(plugin->m_tags, "volume")) {
-        plugin->info->volumeAmplificationStr = plugin->m_tags["volume"];
+    if (keyExists(plugin->tags, "volume")) {
+        plugin->info->volumeAmplificationStr = plugin->tags["volume"];
     }
-    if (keyExists(plugin->m_tags, "genre")) {
-        plugin->info->genre = plugin->m_tags["genre"];
+    if (keyExists(plugin->tags, "genre")) {
+        plugin->info->genre = plugin->tags["genre"];
     }
-    if (keyExists(plugin->m_tags, "comment")) {
-        plugin->info->comments = plugin->m_tags["comment"];
+    if (keyExists(plugin->tags, "comment")) {
+        plugin->info->comments = plugin->tags["comment"];
     }
     return FMOD_OK;
 }
@@ -406,7 +396,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
-    if (const auto *plugin = static_cast<pluginHighlyQ *>(codec->plugindata); qsound_execute(plugin->m_qsoundState,
+    if (const auto *plugin = static_cast<pluginHighlyQ *>(codec->plugindata); qsound_execute(plugin->qsoundState,
                                                                                   0x7fffffff,
                                                                                   static_cast<short *>(buffer),
                                                                                   &size) <= 0) {
@@ -421,21 +411,21 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     const auto *plugin = static_cast<pluginHighlyQ *>(codec->plugindata);
-    qsound_clear_state(plugin->m_qsoundState);
+    qsound_clear_state(plugin->qsoundState);
 
-    if (plugin->m_aKey.NumItems() == 11) {
-        uint8_t *ptr = plugin->m_aKey.Items();
+    if (plugin->aKey.NumItems() == 11) {
+        uint8_t *ptr = plugin->aKey.Items();
         const uint32_t swap_key1 = *reinterpret_cast<uint32_t *>(ptr + 0);
         const uint32_t swap_key2 = *reinterpret_cast<uint32_t *>(ptr + 4);
         const uint32_t addr_key = *reinterpret_cast<uint32_t *>(ptr + 8);
         const uint8_t xor_key = *(ptr + 10);
-        qsound_set_kabuki_key(plugin->m_qsoundState, swap_key1, swap_key2, static_cast<uint16_t>(addr_key), xor_key);
+        qsound_set_kabuki_key(plugin->qsoundState, swap_key1, swap_key2, static_cast<uint16_t>(addr_key), xor_key);
     } else {
-        qsound_set_kabuki_key(plugin->m_qsoundState, 0, 0, 0, 0);
+        qsound_set_kabuki_key(plugin->qsoundState, 0, 0, 0, 0);
     }
 
-    qsound_set_z80_rom(plugin->m_qsoundState, plugin->m_aZ80ROM.Items(), plugin->m_aZ80ROM.NumItems());
-    qsound_set_sample_rom(plugin->m_qsoundState, plugin->m_aSampleROM.Items(), plugin->m_aSampleROM.NumItems());
+    qsound_set_z80_rom(plugin->qsoundState, plugin->aZ80ROM.Items(), plugin->aZ80ROM.NumItems());
+    qsound_set_sample_rom(plugin->qsoundState, plugin->aSampleROM.Items(), plugin->aSampleROM.NumItems());
 
     return FMOD_OK;
 }
@@ -444,8 +434,8 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginHighlyQ *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        if (plugin->m_length > 0) {
-            *length = plugin->m_length;
+        if (plugin->length > 0) {
+            *length = plugin->length;
         } else {
             *length = -1;
         }

@@ -1,12 +1,10 @@
-#include "visualizer.h"
 #include "soundmanager.h"
+#include "visualizer.h"
 #include "visualizers/scroller.h"
-#include <QtOpenGL>
 
-Visualizer::Visualizer(QWidget* parent)
-    : QOpenGLWidget(parent)
+Visualizer::Visualizer(QWidget *parent) : QOpenGLWidget(parent)
 {
-    //Antialiasing, for example if we draw circles
+    // antialiasing, for example if we draw circles
     QSurfaceFormat format;
     format.setSamples(4);
     setFormat(format);
@@ -30,13 +28,13 @@ void Visualizer::stop()
 
 void Visualizer::paintEvent(QPaintEvent* event)
 {
-    if (SoundManager::getInstance().IsPlaying())
-    {
-        SoundManager::getInstance().GetPosition(FMOD_TIMEUNIT_MODVUMETER);
+    if (const auto &sm = SoundManager::getInstance();
+        sm.isPlaying()) {
+        sm.getPosition(FMOD_TIMEUNIT_MODVUMETER);
         QPainter painter;
         painter.begin(this);
 
-        QRect rect(0, 0, width(), height());
+        const QRect rect(0, 0, width(), height());
         painter.fillRect(rect, effects.at(currentEffect)->getColorVisualizerBackground());
 
         effects.at(currentEffect)->paint(&painter, event);
@@ -48,16 +46,18 @@ void Visualizer::paintEvent(QPaintEvent* event)
 
         QPainter painter;
         painter.begin(this);
-        painter.setOpacity(float(stoppingCounter / 300.0));
+        painter.setOpacity(static_cast<float>(stoppingCounter / 300.0));
         //painter.setRenderHint(QPainter::Antialiasing);
         //painter.setRenderHint(QPainter::SmoothPixmapTransform);
         painter.fillRect(event->rect(), backgroundColor);
 
         painter.end();
+
         if (stoppingCounter == 300)
         {
             isStopping = false;
         }
+
         stoppingCounter++;
     }
     else
@@ -69,14 +69,11 @@ void Visualizer::paintEvent(QPaintEvent* event)
     }
 }
 
-
-Effect* Visualizer::getEffect()
-{
+Effect* Visualizer::getEffect() const {
     return effects.at(currentEffect);
 }
 
-
-void Visualizer::setBackgroundColor(QColor newColor)
+void Visualizer::setBackgroundColor(const QColor newColor)
 {
     backgroundColor = newColor;
 }

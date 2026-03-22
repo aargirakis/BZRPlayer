@@ -1,9 +1,7 @@
 #ifndef BZR2_STARFIELD_H
 #define BZR2_STARFIELD_H
 
-#include <QVector>
 #include <QPen>
-#include <QString>
 
 class QPainter;
 
@@ -16,16 +14,16 @@ public:
     void setCanvasSize(int w, int h);
     void ensureInited();
 
-    //settings
-    void setEnabled(bool e) { m_enabled = e; }
+    // settings
+    void setEnabled(const bool e) { m_enabled = e; }
     bool enabled() const { return m_enabled; }
     void setCount(int n);
     int count() const { return m_count; }
-    void setSpeed(int s) { m_starSpeed = std::max(0, s); }
+    void setSpeed(const int s) { m_starSpeed = std::max(0, s); }
     int speed() const { return m_starSpeed; }
     void setModeFromString(const QString& dir);
     QString modeToString() const;
-    //end settings
+    // end settings
 
     void paint(QPainter* painter);
 
@@ -43,12 +41,12 @@ private:
     void reinitLinearStar(int i);
     void reinitZoomStar(int i, bool farAway);
 
-    //settings
+    // settings
     bool m_enabled;
     int m_count;
     int m_starSpeed;
     Mode m_mode;
-    //end settings
+    // end settings
 
     bool m_inited = false;
     static constexpr int kBuckets = 16;

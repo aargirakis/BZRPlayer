@@ -1,5 +1,4 @@
 #include <fstream>
-#include <cstring>
 #include <adplug.h>
 #include <emuopl.h>
 #include <kemuopl.h>
@@ -26,20 +25,18 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_adplug_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS,
-    // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    nullptr,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_adplug_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 class pluginAdplug {
@@ -52,7 +49,7 @@ public:
     }
 
     ~pluginAdplug() {
-        //delete some stuff
+        // delete some stuff
         delete player;
         delete opl;
     }
@@ -67,9 +64,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -104,13 +101,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     bool useDefaults = false;
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         useDefaults = true;
     }
 
     int emulator = 2;
     int freq = 44100;
-    int bits = 16; //TODO didn't added to preferences yet since 8bit still sounds too loud (distorted)
+    int bits = 16; // TODO didn't added to preferences yet since 8bit still sounds too loud (distorted)
     plugin->waveformat.channels = 2;
     bool harmonic = true;
     plugin->info->isContinuousPlaybackActive = false;
@@ -118,9 +115,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!useDefaults) {
         string line;
         while (getline(ifs, line)) {
-            int i = line.find_first_of('=');
-
-            if (i != -1) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
                 if (word == "emulator") {
@@ -128,8 +123,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                 } else if (word == "frequency") {
                     freq = atoi(value.c_str());
                 } else if (word == "playback") {
-                    int playback = atoi(value.c_str());
-                    if (playback == 0) // mono
+                    if (int playback = atoi(value.c_str()); playback == 0) // mono
                     {
                         plugin->waveformat.channels = 1;
                         harmonic = false;
@@ -218,13 +212,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds.
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
     codec->plugindata = plugin; // user data value
 
     plugin->songLength = plugin->player->songlength(plugin->info->currentSubsong);
 
     plugin->info->numSubsongs = plugin->player->getsubsongs();
-    plugin->info->fileformat = plugin->player->gettype();
+    plugin->info->fileFormat = plugin->player->gettype();
     plugin->info->artist = plugin->player->getauthor();
     plugin->info->title = plugin->player->gettitle();
     plugin->info->comments = plugin->player->getdesc();

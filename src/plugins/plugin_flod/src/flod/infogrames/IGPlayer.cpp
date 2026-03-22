@@ -363,7 +363,7 @@ int IGPlayer::load(void *_data, unsigned long int length, const char *filename) 
         }
     }
 
-    m_version = 1;
+    version = 1;
     format = "Infogrames";
     //printData();
     return 1;

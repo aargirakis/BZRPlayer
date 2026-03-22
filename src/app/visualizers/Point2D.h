@@ -4,7 +4,7 @@
 class Point2D
 {
 public:
-    Point2D(int x, int y, int depth, double scaleRatio)
+    Point2D(const int x, const int y, const int depth, double scaleRatio)
     {
         this->x = x;
         this->y = y;
@@ -12,11 +12,6 @@ public:
     }
 
     int x, y, depth;
-
-protected:
-
-
-private:
 };
 
 #endif

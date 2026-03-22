@@ -20,20 +20,18 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_furnace_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    1, // Force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODVUMETER,
-    // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    &getPosition,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    PLUGIN_furnace_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    1, // whether or not force everything using this codec to be a stream
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODVUMETER, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    &getPosition, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 static constexpr uint32_t maxSamples = 2048;
@@ -48,26 +46,26 @@ public:
     }
 
     ~pluginFurnace() {
-        //delete some stuff
-        if (m_engine != nullptr) {
-            m_engine->quit(false);
+        // delete some stuff
+        if (engine != nullptr) {
+            engine->quit(false);
         }
-        delete m_engine;
+        delete engine;
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
-    DivEngine *m_engine = nullptr;
-    float m_samples[2][maxSamples];
-    int32_t m_lastLoopPos = -1;
-    uint32_t m_numRemainingSamples = 0;
-    queue<unsigned char *> vumeterBuffer;
+    DivEngine *engine = nullptr;
+    float samples[2][maxSamples];
+    int32_t lastLoopPos = -1;
+    uint32_t numRemainingSamples = 0;
+    queue<unsigned char *> vuMeterBuffer;
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -86,7 +84,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int bytesread;
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
 
-    if (filesize == 4294967295) //stream
+    if (filesize == 4294967295) // stream
     {
         return FMOD_ERR_FORMAT;
     }
@@ -112,45 +110,45 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     const auto plugin = new pluginFurnace(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->m_engine = new DivEngine;
-    plugin->m_engine->preInit();
-    if (!plugin->m_engine->load(buffer, filesize) || !plugin->m_engine->init()) {
+    plugin->engine = new DivEngine;
+    plugin->engine->preInit();
+    if (!plugin->engine->load(buffer, filesize) || !plugin->engine->init()) {
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->m_engine->initDispatch();
-    plugin->m_engine->renderSamplesP();
-    plugin->m_engine->changeSongP(plugin->info->currentSubsong);
-    plugin->m_engine->play();
+    plugin->engine->initDispatch();
+    plugin->engine->renderSamplesP();
+    plugin->engine->changeSongP(plugin->info->currentSubsong);
+    plugin->engine->play();
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
     plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = static_cast<int>(plugin->m_engine->getAudioDescGot().rate);
+    plugin->waveformat.frequency = static_cast<int>(plugin->engine->getAudioDescGot().rate);
     plugin->waveformat.pcmblocksize = maxSamples;
     plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
-    const DivSong song = plugin->m_engine->song;
+    const DivSong song = plugin->engine->song;
     char ver[16];
 
     string format;
     if (song.version == DIV_VERSION_FTM) {
         format = "Famitracker";
-        plugin->info->fileformat = format;
+        plugin->info->fileFormat = format;
     } else {
         format = song.isDMF ? "DefleMask v" : "Furnace v";
         sprintf(ver, "%d", song.version);
-        plugin->info->fileformat = format + string(ver);
+        plugin->info->fileFormat = format + string(ver);
     }
 
     plugin->info->artist = song.author;
     plugin->info->title = song.name;
     plugin->info->system = song.systemName;
-    plugin->info->numChannels = plugin->m_engine->getTotalChannelCount();
+    plugin->info->numChannels = plugin->engine->getTotalChannelCount();
     plugin->info->plugin = PLUGIN_furnace;
     plugin->info->pluginName = PLUGIN_furnace_NAME;
 
@@ -165,31 +163,33 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto plugin = static_cast<pluginFurnace *>(codec->plugindata);
 
-    auto bufferPtr = static_cast<float *>(buffer); // Pointer to the buffer
+    auto bufferPtr = static_cast<float *>(buffer); // pointer to the buffer
     unsigned int numSamples = size;
 
-    float *samples[] = {plugin->m_samples[0], plugin->m_samples[1]};
+    float *samples[] = {plugin->samples[0], plugin->samples[1]};
     uint32_t numSamplesRendered = 0;
-    uint32_t numRemainingSamples = plugin->m_numRemainingSamples;
+    uint32_t numRemainingSamples = plugin->numRemainingSamples;
     while (numSamples) {
         if (numRemainingSamples == 0) {
-            plugin->m_engine->nextBuf(nullptr, samples, 0, 2, maxSamples);
+            plugin->engine->nextBuf(nullptr, samples, 0, 2, maxSamples);
             numRemainingSamples = maxSamples;
-            plugin->m_lastLoopPos = plugin->m_engine->lastLoopPos;
+            plugin->lastLoopPos = plugin->engine->lastLoopPos;
         }
         auto numSamplesAvailable = numRemainingSamples;
-        if (plugin->m_lastLoopPos > -1) {
-            numSamplesAvailable = plugin->m_lastLoopPos - (maxSamples - numRemainingSamples);
+        if (plugin->lastLoopPos > -1) {
+            numSamplesAvailable = plugin->lastLoopPos - (maxSamples - numRemainingSamples);
             if (numSamplesAvailable == 0) {
                 if (numSamplesRendered == 0) {
-                    plugin->m_lastLoopPos = -1;
+                    plugin->lastLoopPos = -1;
                 }
                 break;
             }
         }
-        auto numSamplesToCopy = min(numSamples, numSamplesAvailable);
+
+        const auto numSamplesToCopy = min(numSamples, numSamplesAvailable);
+
         for (uint32_t i = 0; i < numSamplesToCopy; i++) {
-            // Copy the samples to buffer
+            // copy the samples to buffer
             *bufferPtr++ = samples[0][i];
             *bufferPtr++ = samples[1][i];
         }
@@ -197,9 +197,9 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
         numRemainingSamples -= numSamplesToCopy;
         numSamplesRendered += numSamplesToCopy;
 
-        auto *vumeters = new unsigned char[plugin->m_engine->getTotalChannelCount()];
-        for (int i = 0; i < plugin->m_engine->getTotalChannelCount(); i++) {
-            const auto *divDispatchOscBuffer = plugin->m_engine->getOscBuffer(i);
+        auto *vuMeters = new unsigned char[plugin->engine->getTotalChannelCount()];
+        for (int i = 0; i < plugin->engine->getTotalChannelCount(); i++) {
+            const auto *divDispatchOscBuffer = plugin->engine->getOscBuffer(i);
             int displaySize = 0;
             if (divDispatchOscBuffer != nullptr) {
                 displaySize = static_cast<float>(divDispatchOscBuffer->rate) * 0.03f;
@@ -214,12 +214,12 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
             needlePos -= displaySize;
 
-            int bufsize = 64;
+            constexpr int bufsize = 64;
 
             for (unsigned short j = 0; j < bufsize; j++) {
                 short y = 0;
                 if (divDispatchOscBuffer != nullptr) {
-                    y = plugin->m_engine->getOscBuffer(i)->data[static_cast<unsigned short>(
+                    y = plugin->engine->getOscBuffer(i)->data[static_cast<unsigned short>(
                         needlePos + (j * displaySize / bufsize))];
                 }
                 if (minLevel > y) minLevel = y;
@@ -230,22 +230,22 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
             if (estimate > 1.0f) estimate = 1.0f;
             estimate = estimate * 100;
 
-            if (!plugin->vumeterBuffer.empty()) {
-                vumeters[i] = (MAX(plugin->vumeterBuffer.back()[i] * 0.87f, estimate));
+            if (!plugin->vuMeterBuffer.empty()) {
+                vuMeters[i] = (MAX(plugin->vuMeterBuffer.back()[i] * 0.87f, estimate));
             } else {
-                vumeters[i] = estimate;
+                vuMeters[i] = estimate;
             }
         }
 
-        plugin->vumeterBuffer.push(vumeters);
-        if (plugin->vumeterBuffer.size() >= 10) {
-            plugin->vumeterBuffer.pop();
+        plugin->vuMeterBuffer.push(vuMeters);
+        if (plugin->vuMeterBuffer.size() >= 10) {
+            plugin->vuMeterBuffer.pop();
         }
     }
 
-    plugin->m_numRemainingSamples = numRemainingSamples;
+    plugin->numRemainingSamples = numRemainingSamples;
     *read = numSamplesRendered;
-    if (plugin->m_engine->endOfSong) {
+    if (plugin->engine->endOfSong) {
         return FMOD_ERR_FILE_ENDOFDATA;
     }
 
@@ -259,11 +259,11 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        //position is a mask
-        for (int i = 0; i < plugin->m_engine->getTotalChannelCount(); i++) {
-            int m = position >> i & 1;
-            bool mute = m == 1 ? true : false;
-            plugin->m_engine->muteChannel(i, mute);
+        // position is a mask
+        for (int i = 0; i < plugin->engine->getTotalChannelCount(); i++) {
+            const int m = position >> i & 1;
+            const bool mute = m == 1;
+            plugin->engine->muteChannel(i, mute);
         }
         return FMOD_OK;
     }
@@ -288,7 +288,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
     const auto plugin = static_cast<pluginFurnace *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MODVUMETER) {
-        plugin->info->modVUMeters = plugin->vumeterBuffer.front();
+        plugin->info->modVuMeters = plugin->vuMeterBuffer.front();
         return FMOD_OK;
     }
 

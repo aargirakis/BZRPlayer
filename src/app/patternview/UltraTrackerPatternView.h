@@ -1,5 +1,6 @@
 #ifndef ULTRATRACKERPATTERNVIEW_H
 #define ULTRATRACKERPATTERNVIEW_H
+
 #include "AbstractPatternView.h"
 
 class UltraTrackerPatternView : public AbstractPatternView
@@ -12,11 +13,6 @@ public:
     QString parameter(BaseRow* row);
     QString parameter2(BaseRow* row);
     QString note(BaseRow* row);
-
-private:
-
-
-private slots:
 };
 
 #endif // ULTRATRACKERPATTERNVIEW_H

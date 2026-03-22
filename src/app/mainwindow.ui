@@ -58,7 +58,6 @@ QMenu {
  	color:#b1b1b1/*dimmed text*/;
  }
 
-
 QMenu::item:selected {
 	background: #333333/*selection*/;
 	color:#ffffff/*main text*/;
@@ -142,7 +141,6 @@ font-family:Roboto;
 background-color:#282828/*background*/;
 color:#ffffff/*main text*/;
 }
-
 
 QPlainTextEdit{
 border-color:#ff2828;
@@ -372,7 +370,6 @@ font-family:Roboto;
 background-color:#282828/*background*/;
 color:#ffffff/*main text*/;
 }
-
 
 QHeaderView::section 
 {
@@ -783,7 +780,6 @@ color:#ffffff/*main text*/;
 border:none;
 
 }
-
 
  QScrollBar:vertical
  {
@@ -1252,7 +1248,6 @@ QSlider::handle:horizontal:hover {
 	border: 2px solid #00c09e/*main hover*/; 
 }
 
-
 QSlider::sub-page:horizontal {
 background-color:#009379/*main*/; 
 
@@ -1361,7 +1356,6 @@ QSlider::handle:horizontal:hover {
 	background-color: #00c09e/*main hover*/; 
 	border: 2px solid #00c09e/*main hover*/; 
 }
-
 
 QSlider::sub-page:horizontal {
 background-color:#009379/*main*/; 
@@ -2105,7 +2099,6 @@ QSlider::handle:horizontal:hover {
 	border: 2px solid #00c09e/*main hover*/; 
 }
 
-
 QSlider::sub-page:horizontal {
 background-color:#009379/*main*/; 
 
@@ -2291,8 +2284,6 @@ background-color:#282828/*background*/;
 color:#ffffff/*main text*/;
 
 }
-
-
 
 QHeaderView::section 
 {
@@ -2567,10 +2558,6 @@ color:#ffffff/*main text*/;
 border:none;
 }
 
-
-
-
-
  QScrollBar:vertical
  {
      background-color: #282828/*background*/;
@@ -2709,9 +2696,7 @@ background-color:#282828/*background*/;
 color:#ffffff/*main text*/;
 }
 
-
-
-QHeaderView::section 
+QHeaderView::section
 {
     background-color: #282828/*background*/;
     color: #b3b3b3;

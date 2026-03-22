@@ -2,44 +2,43 @@
 #define BZR2_PRINTEREFFECT_H
 
 #include <QPainter>
-#include <QtCore/QVector>
 
 class PrinterEffect {
 public:
     PrinterEffect() = default;
 
-    void setCanvasSize(int w, int h) { m_w = w; m_h = h; relayoutRows(); }
+    void setCanvasSize(const int w, const int h) { m_w = w; m_h = h; relayoutRows(); }
     void setText(const QString& t);
-    void setScale(qreal sx, qreal sy) { m_scaleX = sx; m_scaleY = sy; }
+    void setScale(const qreal sx, const qreal sy) { m_scaleX = sx; m_scaleY = sy; }
 
-    //settings
-    void setEnabled(bool on) { m_enabled = on; }
+    // settings
+    void setEnabled(const bool on) { m_enabled = on; }
     bool enabled() const { return m_enabled; }
     void setFont(const QString& pngPath);
     QString getFont() const { return m_fontPngPath; }
     void setFontScaleX(int v);
     void setFontScaleY(int v);
-    int getFontScaleX() {return m_scaleXInt;}
-    int getFontScaleY() {return m_scaleYInt;}
-    //end settings
+    int getFontScaleX() const {return m_scaleXInt;}
+    int getFontScaleY() const {return m_scaleYInt;}
+    // end settings
 
-    void setVerticalScrollPosition(int v) { m_verticalScroll = v; }
-    void setBottomYFromScroller(int v) { m_bottomY = v; }
+    void setVerticalScrollPosition(const int v) { m_verticalScroll = v; }
+    void setBottomYFromScroller(const int v) { m_bottomY = v; }
 
     // reflection
-    void setReflectionEnabled(bool on) { m_reflectionEnabled = on; }
-    void setReflectionOpacity(double o01) { m_reflectionOpacity = o01; }
+    void setReflectionEnabled(const bool on) { m_reflectionEnabled = on; }
+    void setReflectionOpacity(const double o01) { m_reflectionOpacity = o01; }
     void setReflectionColor(const QColor& c) { m_reflectionColor = c; }
 
     void paint(QPainter* p);
 
 private:
-    //settings
+    // settings
     bool m_enabled = false;
     QString m_fontPngPath;
     int m_scaleXInt = 1;
     int m_scaleYInt = 1;
-    //endsettings
+    // end settings
 
     int m_w = 320, m_h = 256;
     qreal m_scaleX = 1.0, m_scaleY = 1.0;

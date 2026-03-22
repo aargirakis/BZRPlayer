@@ -52,7 +52,7 @@ namespace core {
 
     template<typename T1, typename T2>
     constexpr T1 AlignUp(T1 size, T2 alignment) {
-        return T1((size + alignment - 1) & ~(alignment - 1));
+        return T1(size + alignment - 1 & ~(alignment - 1));
     }
 
     /**

@@ -118,7 +118,6 @@ QSlider::handle:horizontal:hover {
 	border: 2px solid #00c09e; 
 }
 
-
 QSlider::sub-page:horizontal {
 background-color:#009379/*main*/; 
 }

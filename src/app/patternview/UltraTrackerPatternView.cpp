@@ -1,6 +1,6 @@
 #include "UltraTrackerPatternView.h"
 
-UltraTrackerPatternView::UltraTrackerPatternView(Tracker* parent, unsigned int channels)
+UltraTrackerPatternView::UltraTrackerPatternView(Tracker* parent, const unsigned int channels)
     : AbstractPatternView(parent, channels)
 {
     octaveOffset = 48;
@@ -23,7 +23,6 @@ UltraTrackerPatternView::UltraTrackerPatternView(Tracker* parent, unsigned int c
     m_CurrentRowHighlightForegroundFrequency = 16;
     m_effectsThenParametersEnabled = true;
 
-
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
         m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(0, 170, 0);
 
@@ -40,7 +39,7 @@ UltraTrackerPatternView::UltraTrackerPatternView(Tracker* parent, unsigned int c
     m_emptyInstrument = "--";
     m_emptyParameter = "--";
 
-    m_RowLength = (5 + m_channels * 15);
+    m_RowLength = 5 + m_channels * 15;
     m_xOffsetRow = 16;
 
     m_xChannelStart = 37;
@@ -54,35 +53,35 @@ UltraTrackerPatternView::~UltraTrackerPatternView()
 {
 }
 
-void UltraTrackerPatternView::paintAbove(QPainter* painter, int height, int currentRow)
+void UltraTrackerPatternView::paintAbove(QPainter* painter, const int height, int currentRow)
 {
-    QColor colorGrey(170, 170, 170);
+    constexpr QColor colorGrey(170, 170, 170);
 
-    //left
-    painter->fillRect(3, 0, 2, height - (3), colorGrey);
+    // left
+    painter->fillRect(3, 0, 2, height - 3, colorGrey);
 
-    //channel separators
+    // channel separators
     for (unsigned int chan = 0; chan < m_channels + 1; chan++)
     {
-        painter->fillRect((35 + chan * 120), 0, 2, height - (3), colorGrey);
+        painter->fillRect(35 + chan * 120, 0, 2, height - 3, colorGrey);
     }
-    //top
-    painter->fillRect(3, 3, (34 + m_channels * 120), 1, colorGrey);
-    painter->fillRect(3, 0, (34 + m_channels * 120), 3, QColor(0, 0, 0));
-    //bottom
-    painter->fillRect(3, (height) - 3, (34 + m_channels * 120), 1, colorGrey);
-    painter->fillRect(3, (height) - 2, (34 + m_channels * 120), 3, QColor(0, 0, 0));
+
+    // top
+    painter->fillRect(3, 3, 34 + m_channels * 120, 1, colorGrey);
+    painter->fillRect(3, 0, 34 + m_channels * 120, 3, QColor(0, 0, 0));
+    // bottom
+    painter->fillRect(3, height - 3, 34 + m_channels * 120, 1, colorGrey);
+    painter->fillRect(3, height - 2, 34 + m_channels * 120, 3, QColor(0, 0, 0));
 }
 
-void UltraTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)
+void UltraTrackerPatternView::paintBelow(QPainter* painter, const int height, int currentRow)
 {
-    painter->fillRect(0, (height / 2) - 8, (42 + m_channels * 120), 8, m_colorCurrentRowBackground);
+    painter->fillRect(0, height / 2 - 8, 42 + m_channels * 120, 8, m_colorCurrentRowBackground);
 }
 
 QString UltraTrackerPatternView::note(BaseRow* row)
 {
-    int note = row->note;
-    switch (note)
+    switch (row->note)
     {
     case 37: return "C--";
     case 38: return "C#-";
@@ -96,6 +95,7 @@ QString UltraTrackerPatternView::note(BaseRow* row)
     case 46: return "A--";
     case 47: return "A#-";
     }
+
     return AbstractPatternView::note(row);
 }
 

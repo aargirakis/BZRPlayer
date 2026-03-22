@@ -21,22 +21,21 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
-    PLUGIN_libxmp_NAME, // Name.
-    0x00010000, // Version 0xAAAABBBB   A = major, B = minor.
-    0, // Don't force everything using this codec to be a stream
+    PLUGIN_libxmp_NAME, // name.
+    0x00010000, // version 0xAAAABBBB   A = major, B = minor.
+    0, // whether or not force everything using this codec to be a stream
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN |
     FMOD_TIMEUNIT_MODPATTERN_INFO | FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS | FMOD_TIMEUNIT_MODVUMETER |
     FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_SPEED |
-    FMOD_TIMEUNIT_BPM, // The time format we would like to accept into setposition/getposition.
-    &open, // Open callback.
-    &close, // Close callback.
-    &read, // Read callback.
-    &getLength,
-    // Getlength callback.  (If not specified FMOD return the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure).
-    &setPosition, // Setposition callback.
-    &getPosition,
-    // Getposition callback. (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES).
-    nullptr // Sound create callback (don't need it)
+    FMOD_TIMEUNIT_BPM, // the time format we would like to accept into setposition/getposition
+    &open, // open callback
+    &close, // close callback.
+    &read, // read callback
+    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &setPosition, // setposition callback
+    &getPosition, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr, // sound create callback (don't need it)
+    nullptr // getwaveformat
 };
 
 const char *NOTES[109] =
@@ -62,11 +61,11 @@ public:
     }
 
     ~pluginLibxmp() {
-        //delete some stuff
+        // delete some stuff
 
         //xmp_end_player(xmp);
-        xmp_release_module(xmp); /* unload module */
-        xmp_free_context(xmp); /* destroy the player context */
+        xmp_release_module(xmp); // unload module
+        xmp_free_context(xmp); // destroy the player context
         delete[] myBuffer;
         myBuffer = nullptr;
     }
@@ -81,9 +80,9 @@ public:
 };
 
 /*
-    FMODGetCodecDescription is mandatory for every fmod plugin.  This is the symbol the registerplugin function searches for.
+    FMODGetCodecDescription is mandatory for every fmod plugin. This is the symbol the registerplugin function searches for.
     Must be declared with F_API to make it export as stdcall.
-    MUST BE EXTERN'ED AS C!  C++ functions will be mangled incorrectly and not load in fmod.
+    MUST BE EXTERN'ED AS C! C++ functions will be mangled incorrectly and not load in fmod.
 */
 #ifdef __cplusplus
 extern "C" {
@@ -102,7 +101,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     unsigned int filesize;
 
     FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    if (filesize == 4294967295) //stream
+    if (filesize == 4294967295) // stream
     {
         return FMOD_ERR_FORMAT;
     }
@@ -128,9 +127,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
     plugin->xmp = xmp_create_context();
 
-    /* Load our module */
+    // load our module
     if (xmp_load_module_from_memory(plugin->xmp, plugin->myBuffer, bytesread) != 0)
-    //Doesn't work with prowizard songs
+    // doesn't work with prowizard songs
     //if (xmp_load_module(plugin->xmp, const_cast<char*>(plugin->info->filename.c_str())) != 0)
     {
         delete plugin;
@@ -143,11 +142,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
     if (ifs.fail()) {
-        //The file could not be opened
+        // the file could not be opened
         useDefaults = true;
     }
 
-    //defaults
+    // defaults
     int freq = 44100;
     int channels = 2;
     int interpolation = XMP_INTERP_LINEAR;
@@ -195,8 +194,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
-    /* number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds. */
-    codec->plugindata = plugin; /* user data value */
+    // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
+    codec->plugindata = plugin; // user data value
 
     xmp_set_player(plugin->xmp,XMP_PLAYER_INTERP, interpolation);
     xmp_set_player(plugin->xmp,XMP_PLAYER_DSP,XMP_DSP_LOWPASS);
@@ -227,7 +226,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->numOrders = plugin->mi.mod->len;
     plugin->info->restart = plugin->mi.mod->rst;
 
-    plugin->info->modVUMeters = new unsigned char[plugin->info->numChannels];
+    plugin->info->modVuMeters = new unsigned char[plugin->info->numChannels];
 
     int numSamples = plugin->mi.mod->ins;
 
@@ -294,7 +293,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     //    }
 
     plugin->info->numSubsongs = plugin->mi.num_sequences;
-    plugin->info->fileformat = plugin->mi.mod->type;
+    plugin->info->fileFormat = plugin->mi.mod->type;
     plugin->info->plugin = PLUGIN_libxmp;
     plugin->info->pluginName = PLUGIN_libxmp_NAME;
     plugin->info->setSeekable(true);
@@ -325,7 +324,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
-        //position is a mask
+        // position is a mask
         for (int i = 0; i < plugin->info->numChannels; i++) {
             bool mute = false;
             if (plugin->info->mutedChannelsMask.at(i) == '0') {
@@ -383,20 +382,20 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
         *position = plugin->fi.bpm;
         return FMOD_OK;
     }
-    //this will return value too early because of no queue
+    // this will return value too early because of no queue
     if (postype == FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS) {
         xmp_get_frame_info(plugin->xmp, &plugin->fi);
         *position = plugin->fi.num_rows;
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MODVUMETER) {
-        auto *vumeters = new unsigned char[plugin->info->numChannels];
-        xmp_get_channel_volumes(plugin->xmp, vumeters);
-        plugin->info->modVUMeters = vumeters;
+        auto *vuMeters = new unsigned char[plugin->info->numChannels];
+        xmp_get_channel_volumes(plugin->xmp, vuMeters);
+        plugin->info->modVuMeters = vuMeters;
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MODPATTERN_INFO) {
-        //set the mod pattern (notes etc.) in the info struct and just return 0
+        // set the mod pattern (notes etc.) in the info struct and just return 0
 
         plugin->info->modRows.clear();
 
@@ -428,7 +427,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
                     row->param2 = plugin->mi.mod->xxt[trackidx]->event[j].f2p;
                     row->vol = plugin->mi.mod->xxt[trackidx]->event[j].vol - 1;
 
-                    if (plugin->info->fileformat == "Composer 669") {
+                    if (plugin->info->fileFormat == "Composer 669") {
                         row->vol /= 4;
                     }
                     modRows[counter] = row;

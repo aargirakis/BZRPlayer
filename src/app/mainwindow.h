@@ -1,19 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QTimer>
+#include <DockManager.h>
 #include <QListWidgetItem>
+#include <QMainWindow>
 #include <QSystemTrayIcon>
-#include <QDomElement>
-#include <string>
-#include "DockManager.h"
+#include <QTcpServer>
+
+#include "channels.h"
 #include "filedownloader.h"
 #include "fileinfoparser.h"
-#include "fmod.hpp"
-#include "info.h"
-#include "playlistitem.h"
-#include "channels.h"
-#include "qtcpserver.h"
 #include "visualizers/trackerfullscreen.h"
 #include "visualizers/visualizerfullscreen.h"
 
@@ -47,14 +43,14 @@ class MainWindow : public QMainWindow
 
 public:
 
-    enum playmode
+    enum PlayMode
     {
         normal = 0,
         repeatPlaylist = 1,
         repeatSong = 2
     };
 
-    enum loopPointsState {
+    enum LoopPointsState {
         INACTIVE = 0,
         DISABLED = 1,
         UNSET = 2,
@@ -62,22 +58,22 @@ public:
         B_SET = 4
     };
 
-    enum dropWidget
+    enum DropWidget
     {
-        DropIgnore = 0,
-        DropToPlaylist = 1,
-        DropToPlaylists = 2
+        DROP_IGNORE = 0,
+        DROP_TO_PLAYLIST = 1,
+        DROP_TO_PLAYLISTS = 2
     };
 
     bool eventFilter(QObject* obj, QEvent* event);
     explicit MainWindow(int argc, char* argv[], QWidget* parent = nullptr);
     ~MainWindow();
-    bool getChannelEnabled(int index);
-    void setChannelEnabled(int index, bool enable);
-    QString getVersion();
+    bool isChannelEnabled(int index) const;
+    void setChannelEnabled(int index, bool enable) const;
+
+    static QString getVersion();
 
     Ui::MainWindow* ui;
-
 
     QByteArray defaultGeometry;
     QByteArray defaultState;
@@ -90,48 +86,49 @@ public:
     int getCurrentRow() const;
     QString getCurrentPlaylist() const;
     QString getSelectedPlaylist() const;
-    void resetShuffle(QString);
+    void resetShuffle(const QString &);
     bool isShuffleEnabled() const;
-    void swapColumns(QTableView* tableview);
-    QStringList sortPreservingOrder(const QStringList&, const QStringList&);
-    void setHvscSonglengthsPath(QString);
-    QString getHvscSonglengthsPath();
-    void setBundledHvscSonglengthsUpdateFrequency(QString);
-    void setBundledHvscSonglengthsPath(QString);
-    QString getBundledHvscSonglengthsUpdateFrequency();
-    QString getBundledHvscSonglengthsPath();
+
+    static void swapColumns(QTableView* tableview);
+
+    static QStringList sortPreservingOrder(const QStringList&, const QStringList&);
+    void setHvscSonglengthsPath(const QString &);
+    QString getHvscSonglengthsPath() const;
+    void setBundledHvscSonglengthsUpdateFrequency(const QString &);
+    void setBundledHvscSonglengthsPath(const QString &);
+    QString getBundledHvscSonglengthsUpdateFrequency() const;
+    QString getBundledHvscSonglengthsPath() const;
     qint64 getBundledHvscSonglengthsDownloadEpoch() const;
-    void DeleteWorkspace(QString workspace) const;
-    void CreateNewWorkspace(const QString& filename);
-    void DownloadFile();
-    void setPosition(int offset = 0);
+    void deleteWorkspace(const QString &workspace) const;
+    void createNewWorkspace(const QString& filename);
+    void setPosition(int offset = 0) const;
     Effect* getEffect() const;
     void resetAll();
     void resetToDefaultColors();
     void changeStyleSheetColor();
     void addDebugText(const QString &) const;
     void restoreFromTray();
-    void SaveSettings();
-    void setOutputDevice(int outputDevice, QString);
-    void setOutputDeviceSetting(int outputDevice);
+    void saveSettings() const;
+    void setOutputDevice(int outputDeviceProvided, const QString &);
+    void setOutputDeviceSetting(int outputDeviceProvided);
     int getOutputDevice() const;
-    void setResetVolume(bool resetVolume);
+    void setResetVolume(bool resetVolumeProvided);
     bool getResetVolume() const;
     int getResetVolumeValue() const;
-    void setDefaultPlaymode(int defaultPlaymode);
-    int getDefaultPlaymode() const;
+    void setDefaultPlayMode(int defaultPlayModeProvided);
+    int getDefaultPlayMode() const;
     int getPlaylistRowHeight() const;
     int getPlaylistsRowHeight() const;
     int getNowPlayingFontSize() const;
-    bool getReverbEnabled() const;
+    bool isReverbEnabled() const;
     void setReverbPreset(const QString&);
-    QString getReverbPreset();
-    QString getIgnorePrefix();
-    QString getIgnoreSuffix();
-    void setIgnorePrefix(QString);
-    void setIgnoreSuffix(QString);
+    QString getReverbPreset() const;
+    QString getIgnorePrefix() const;
+    QString getIgnoreSuffix() const;
+    void setIgnorePrefix(const QString &);
+    void setIgnoreSuffix(const QString &);
     void setReverbEnabled(bool);
-    bool getNormalizeEnabled() const;
+    bool isNormalizeEnabled() const;
     bool getDisplayMilliseconds() const;
     bool getEnqueueItems() const;
     bool getShowCheckBoxLoopPoints() const;
@@ -151,8 +148,7 @@ public:
     void setSystrayOnMinimizeEnabled(bool isEnabled);
     void setMenuBarHiddenChecked(bool isChecked);
     void createTrayMenu();
-    void setScrolltext(QString text);
-    void updateScrollText();
+    void updateScrollText() const;
 
     void setAllowOnlyOneInstanceEnabled(bool enabled);
 
@@ -178,23 +174,20 @@ public:
     void setColorVisualizerMiddle(const QString&);
     void setColorVisualizerPeakColor(const QString&);
     void setColorVisualizerBackground(const QString&);
-    void setScrollerReflectionColor(QString);
-    void setVUMeterPeaksEnabled(bool);
-    void setVUMeterPeaksHeight(int);
+    void setVuMeterPeaksEnabled(bool);
+    void setVuMeterPeaksHeight(int);
 
-    bool getVUMeterPeaksEnabled();
-    int getVUMeterPeaksHeight();
+    bool isVuMeterPeaksEnabled() const;
+    int isVuMeterPeaksHeight() const;
 
     void setPlaylistRowHeight(int);
     void setPlaylistsRowHeight(int);
     void setNowPlayingFontSize(int);
 
-    QString createPlaylist(QString);
-
-    unsigned int getFontSize(QRect, QFont, QString);
+    QString createPlaylist(const QString &);
 
     void setFmodSeamlessLoopEnabled(bool seamlessLoop);
-    bool getFmodSeamlessLoopEnabled();
+    bool getFmodSeamlessLoopEnabled() const;
 
     const QString& getColorMain() const;
     const QString& getColorMainHover() const;
@@ -212,14 +205,12 @@ public:
     const QString& getColorVisualizerMiddle() const;
     const QString& getColorVisualizerPeakColor() const;
     const QString& getColorVisualizerBackground() const;
-    const QString& getScrollerReflectionColor() const;
 
     bool isOnlyOneInstanceEnabled() const;
     FileDownloader* filedownloader;
     qint64 bundledHvscSonglengthsDownloadEpoch;
 
     QMap<QString, QPixmap> icons;
-
 
     QString colorMain;
     QString colorMainOld;
@@ -248,12 +239,12 @@ protected:
 
 private slots:
     void downloadHvscSonglengthsComplete();
-    void sendSocketMsg();
+    void sendSocketMsg() const;
     void getSocketData();
     void acceptConnection();
     void displayError(QAbstractSocket::SocketError socketError);
     void dockWindowClosed(bool);
-    void slot_dockWidgetMenuChecked(ads::CDockWidget*);
+    void slot_dockWidgetMenuChecked(ads::CDockWidget*) const;
     void slot_LoadWorkspace(const QString&);
     void quit();
     void muteVolume();
@@ -270,9 +261,9 @@ private slots:
     void addFolder();
     void addFiles();
 
-    void fullscreenVisualizer();
-    void showNextVisualizer();
-    void fullscreenTracker();
+    void fullscreenVisualizer() const;
+    void showNextVisualizer() const;
+    void fullscreenTracker() const;
     void renamePlaylist();
     void deletePlaylist();
     void deleteAllPlaylists();
@@ -282,30 +273,27 @@ private slots:
     void deleteFilesInvertedInPlaylist();
     void showContainingFolder();
     void clearPlaylist();
-    void exportInstrumentToWAV();
-    void exportInstrumentToIFF();
-    void muteAllChannels();
+    void exportInstrumentToWav();
+    void exportInstrumentToIff();
+    void muteAllChannels() const;
     void unmuteAllChannels() const;
 
     void selectAllLogWindow() const;
     void copyLogWindow() const;
     void clearLogWindow() const;
 
-    //drag'n'drop
+    // drag'n'drop
     void dragEnterEvent(QDragEnterEvent* event);
     void dropEvent(QDropEvent* event);
     void dragMoveEvent(QDragMoveEvent* event);
 
-    void on_positionSlider_sliderReleased();
-
+    void on_positionSlider_sliderReleased() const;
 
     void on_playlist_itemDoubleClicked(const QModelIndex&);
-
 
     void on_buttonNext_clicked();
 
     void on_buttonPrev_clicked();
-
 
     void on_pushButtonNewPlaylist_clicked();
 
@@ -321,7 +309,7 @@ private slots:
 
     void on_checkBoxVolumeOn_clicked();
 
-    void on_playlist_doubleClicked(const QModelIndex& index);
+    void on_playlist_doubleClicked(const QModelIndex& index) const;
 
     void on_volumeSlider_valueChanged(int value);
 
@@ -343,28 +331,26 @@ private slots:
 
     void on_actionAbout_BZR_Player_triggered();
 
-    void on_pitchSlider_valueChanged(int value);
+    void on_pitchSlider_valueChanged(int value) const;
 
-    void on_positionSlider_valueChanged(int value);
+    void on_positionSlider_valueChanged(int value) const;
 
     void on_buttonStop_clicked();
-
 
 private:
     QString hvscSonglengthsPath;
     QString bundledHvscSonglengthsPath;
     QString bundledHvscSonglengthsUpdateFrequency;
     FileInfoParser* fileInfoParser;
-    void LoadWorkspaces();
+    void loadWorkspaces();
     void updateButtons();
-    static QPixmap ChangeSVGColor(const QString &svgPath, const QColor &color, const QRectF *region = nullptr,
+    static QPixmap changeSvgColor(const QString &svgPath, const QColor &color, const QRectF *region = nullptr,
                                   const QColor &color2 = nullptr);
-    void SetAttrRecur(QDomElement elem, QString strtagname, QString strtagname2, QString strattr, QString strattrval);
 
     bool handleMenuBarHiddenEvents(QEvent *event);
     bool altKeyPressCaught = false;
 
-    dropWidget DropWidget;
+    DropWidget dropWidget;
     static const QString VERSION;
     QTcpServer* tcpServer;
     QTcpSocket* tcpClient;
@@ -372,22 +358,21 @@ private:
 
     int refreshInfoTimer;
 
-
-    bool m_bAllowOnlyOneInstanceEnabled;
+    bool allowOnlyOneInstance;
 
     QList<ads::CDockWidget*> dockWidgets;
-    ads::CDockManager* m_DockManager;
-    ads::CDockWidget* DockWidgetPlayControl;
-    ads::CDockWidget* DockWidgetPlaylists;
-    ads::CDockWidget* DockWidgetLogMessages;
-    ads::CDockWidget* DockWidgetTitle;
-    ads::CDockWidget* DockWidgetSamples;
-    ads::CDockWidget* DockWidgetChannels;
-    ads::CDockWidget* DockWidgetTrackerView;
-    ads::CDockWidget* DockWidgetInfo;
-    ads::CDockWidget* DockWidgetPlaylist;
-    ads::CDockWidget* DockWidgetVisualizer;
-    ads::CDockWidget* DockWidgetInstruments;
+    ads::CDockManager* dockManager;
+    ads::CDockWidget* dockWidgetPlayControl;
+    ads::CDockWidget* dockWidgetPlaylists;
+    ads::CDockWidget* dockWidgetLogMessages;
+    ads::CDockWidget* dockWidgetTitle;
+    ads::CDockWidget* dockWidgetSamples;
+    ads::CDockWidget* dockWidgetChannels;
+    ads::CDockWidget* dockWidgetTrackerView;
+    ads::CDockWidget* dockWidgetInfo;
+    ads::CDockWidget* dockWidgetPlaylist;
+    ads::CDockWidget* dockWidgetVisualizer;
+    ads::CDockWidget* dockWidgetInstruments;
 
     VisualizerFullScreen* visualizerFullScreen;
     TrackerFullScreen* trackerFullScreen;
@@ -396,9 +381,9 @@ private:
     QString windowTitle;
     QString currentPlaylist;
     QString selectedPlaylist;
-    QSystemTrayIcon* m_Tray;
+    QSystemTrayIcon* tray;
 
-    //tray actions
+    // tray actions
     QAction* nextAction;
     QAction* prevAction;
     QAction* pauseAction;
@@ -409,16 +394,15 @@ private:
 
     QMenu* trayIconMenu;
 
-
     QString colorVisualizerTop;
     QString colorVisualizerBottom;
     QString colorVisualizerMiddle;
     QString colorVisualizerPeak;
     QString colorVisualizerBackground;
 
-    bool wasMaxmimized;
-    bool vumeterPeaksEnabled;
-    int vumeterPeaksHeight;
+    bool wasMaximized;
+    bool vuMeterPeaksEnabled;
+    int vuMeterPeaksHeight;
 
     int playlistRowHeight;
     int playlistsRowHeight;
@@ -452,64 +436,78 @@ private:
     int infoNameWidth;
     int infoValueWidth;
 
-    void highlightPlaylistItem(QString playlist, int currentRow);
+    void highlightPlaylistItem(const QString &playlist, int row);
     bool initializeSocket();
     void createMenuWindowTabs();
-    void savePlayListSettings();
+    void savePlayListSettings() const;
     void checkCommandLine(int argc, char* argv[]);
     void setupIcons();
     void setupAdvancedDockingSystem();
     void savePlayList(QString filename, QString newFilename);
-    vector<PlaylistItem*> getPlayListEntriesM3U(QString filename);
-    void updateInstruments();
-    QStringList getFilesRecursive(const QString&, const QString& = "", bool = true);
-    bool addSong(const QList<QUrl>& urls, int, QString, bool);
+    vector<PlaylistItem*> getPlayListEntriesM3u(QString filename) const;
+
+    void updateSamplesAndInstruments() const;
+    void updateInstrumentsAdplug(const Info* info) const;
+    void updateInstrumentsAsap(const Info* info) const;
+    void updateSamplesFlod(const Info* info) const;
+    void updateInstrumentsHivelytracker(const Info* info) const;
+    void updateInstrumentsKlystron(const Info* info) const;
+    void updateSamplesLibopenmpt(const Info* info) const;
+    void updateInstrumentsLibopenmpt(const Info* info) const;
+    void updateSamplesLibpac(const Info* info) const;
+    void updateSamplesLibxmp(const Info* info) const;
+    void updateInstrumentsLibxmp(const Info* info) const;
+    void updateSamplesProtrekkr(const Info* info) const;
+    void updateInstrumentsProtrekkr(const Info* info) const;
+    void updateSamplesUade(const Info* info) const;
+    void updateSamplesZxtune(const Info* info) const;
+
+    static QStringList getFilesRecursive(const QString&, const QString& = "", bool = true);
+    bool addSong(const QList<QUrl>& urls, int, const QString &, bool);
     void addSong(const QStringList& filenames, int, QString, bool);
 
-    void addPlaylistEntry(QTableView* table, int rowPosition, QString filename, QString fileFormat, QString length,
-                          int subsong, QString fullPath, int lengthInt, QString artist);
+    static void addPlaylistEntry(const QTableView* table, int rowPosition, const QString& filename, const QString &fileFormat, const QString &length,
+                          int subsong, const QString& fullPath, int lengthInt, const QString& artist);
     void getLength();
-    void loadPlugin(string filename);
-    bool loadSound(QString fullPath, int subsong);
 
-    void PlaySong(int);
+    bool loadSound(const QString& fullPath, int subsong);
 
+    void playSongAtRow(int);
 
     void removeHighlight();
     void createThePopupMenuVisualizer();
     void createThePopupMenuTracker();
     void createThePopupMenuPlaylists();
     void createThePopupLogWindow();
-    void createThePopupMenuCurrentPlaylist(QString);
+    void createThePopupMenuCurrentPlaylist(const QString &);
     void createThePopupMenuInstruments();
     void createThePopupMenuChannels();
-    void exportInstrument(QString);
-    void iffWriteChunkHeader(FILE* f, char* chunkName, uint32_t chunkLen);
-    void iffWriteUint32(FILE* f, uint32_t value);
-    void iffWriteUint16(FILE* f, uint16_t value);
-    void iffWriteUint8(FILE* f, const uint8_t value);
-    void iffWriteChunkData(FILE* f, const void* data, size_t length);
-    unsigned int getLengthFromSIDDatabase(QString sidfilename, int subsong);
+    void exportInstrument(const QString&);
+    static void iffWriteChunkHeader(FILE* f, const char* chunkName, uint32_t chunkLen);
+    static void iffWriteUint32(FILE* f, uint32_t value);
+    static void iffWriteUint16(FILE* f, uint16_t value);
+    static void iffWriteUint8(FILE* f, uint8_t value);
+    static void iffWriteChunkData(FILE* f, const void* data, size_t length);
 
     int currentSubsong;
-    playmode Playmode;
+    PlayMode playMode;
     bool buttonNextClicked;
 
-    unsigned int song_length_ms;
+    unsigned int songLengthMs;
 
-    loopPointsState loopPointsState;
+    LoopPointsState loopPointsState;
     unsigned int loopPointA;
     unsigned int loopPointB;
 
-    QMap<QString, QVector<unsigned int>> m_ShufflePlayed;
-    QMap<QString, QVector<unsigned int>> m_ShuffleToBePlayed;
-    QMap<QString, int> m_iCurrentShufflePosition;
+    QMap<QString, QVector<unsigned int>> shufflePlayed;
+    QMap<QString, QVector<unsigned int>> shuffleToBePlayed;
+    QMap<QString, int> currentShufflePosition;
 
     QString currentPlayingFilepath;
     int currentRow;
     bool isUpdateCurrentRowToNextEnabled;
-    QTimer* m_Timer;
-    QTimer* m_TimerRefreshInfo;
+    QTimer* Timer;
+    QTimer* TimerRefreshInfo;
 
     bool playStarted;
     bool loaded;
@@ -522,7 +520,6 @@ private:
     QAction* fullscreenVisualizerAction;
     QAction* showNextVisualizerAction;
     QAction* fullscreenTrackerAction;
-
 
     QAction* clearPlaylistAction;
     QAction* renamePlaylistAction;
@@ -538,43 +535,38 @@ private:
     QAction* copyLogWindowAction;
     QAction* clearLogWindowAction;
 
-
-    QAction* exportInstrumentWAVAction;
-    QAction* exportInstrumentIFFAction;
+    QAction* exportInstrumentWavAction;
+    QAction* exportInstrumentIffAction;
     QAction* muteAllChannelsAction;
     QAction* unmuteAllChannelsAction;
 
     QString lastDir;
-    int m_outputDevice;
-    bool m_resetVolume;
-    bool m_muteVolume;
-    int m_resetVolumeValue;
-    int m_defaultPlaymode;
+    int outputDevice;
+    bool resetVolume;
+    bool isVolumeMuted;
+    int resetVolumeValue;
+    int defaultPlayMode;
 
     bool isSystrayChecked;
     bool isSystrayOnMinimizeChecked;
     bool isSystrayOnMinimizeEnabled;
     bool isMenuBarHiddenChecked;
-    bool m_reverbEnabled;
-    QString m_reverbPreset;
-    QString m_ignoreSuffix;
-    QString m_ignorePrefix;
-    bool m_normalizeEnabled;
-    bool m_displayMilliseconds;
-    int m_normalizeFadeTime;
-    int m_normalizeThreshold;
-    int m_normalizeMaxAmp;
+    bool reverbEnabled;
+    QString reverbPreset;
+    QString ignoreSuffix;
+    QString ignorePrefix;
+    bool normalizeEnabled;
+    bool displayMilliseconds;
+    int normalizeFadeTime;
+    int normalizeThreshold;
+    int normalizeMaxAmp;
 
-    bool m_enqueueItems;
+    bool enqueueItems;
     bool isShownCheckBoxLoopPoints;
 
     bool isFmodSeamlessLoopEnabled;
 
-    void ERRCHECK(FMOD_RESULT);
-
-
     int key;
-    unsigned int version;
 };
 
 #endif // MAINWINDOW_H

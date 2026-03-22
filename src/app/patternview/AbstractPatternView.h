@@ -1,7 +1,8 @@
 #ifndef ABSTRACTPATTERNVIEW_H
 #define ABSTRACTPATTERNVIEW_H
+
 #include <QPainter>
-#include "BaseRow.h"
+#include <QPaintEvent>
 #include "bitmapfont.h"
 #include "info.h"
 
@@ -9,13 +10,10 @@ class Tracker;
 class AbstractPatternView
 {
 
-
 public:
     AbstractPatternView(Tracker *parent, unsigned int channels);
 
-
-
-    void setupVUMeters();
+    void setupVuMeters();
     virtual QString effect(BaseRow* row);
     virtual QString parameter(BaseRow* row);
     virtual QString effect2(BaseRow* row);
@@ -33,17 +31,17 @@ public:
     virtual BitmapFont bitmapFontEffects();
     virtual BitmapFont bitmapFontInstrument();
     virtual BitmapFont bitmapFontParameters();
-    virtual BitmapFont bitmapFontRownumber();
+    virtual BitmapFont bitmapFontRowNumber();
 
     virtual QFont fontEffects();
     virtual QFont fontInstrument();
     virtual QFont fontParameters();
-    virtual QFont fontRownumber();
+    virtual QFont fontRowNumber();
 
     virtual void paintAbove(QPainter* painter, int height, int currentRow);
     virtual void paintBelow(QPainter* painter, int height, int currentRow);
     virtual void paintTop(QPainter* painter, Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow);
-    virtual void drawVUMeters(QPainter* painter);
+    virtual void drawVuMeters(QPainter* painter);
     virtual void drawText(QString text, QPainter* painter, int numPixels, int yPixelPosition, BitmapFont font, int letterSpacing=0);
     virtual void drawVerticalEmboss(int xPos, int yPos, int height, QColor hilite, QColor shadow, QColor base,
                                          QPainter* painter, bool left = true, bool right = true);
@@ -111,7 +109,7 @@ public:
     virtual int fontWidth(){return m_fontWidth;}
     virtual int fontWidthEffects(){return m_fontWidth;}
     virtual int fontWidthInstrument(){return m_fontWidth;}
-    virtual int fontWidthRownumber(){return m_fontWidth;}
+    virtual int fontWidthRowNumber(){return m_fontWidth;}
     virtual int fontWidthParameters(){return m_fontWidth;}
     virtual int fontWidthSeparatorNote(){return m_fontWidth;}
     virtual int rowLength(){return m_RowLength;}
@@ -138,7 +136,7 @@ public:
     virtual int channelxSpace(){return m_channelxSpace;}
     virtual QColor colorBackground(){return m_colorBackground;}
     virtual unsigned int getCurrentSample(){return m_iCurrentSample;}
-    virtual void setCurrentSample(unsigned int sample){m_iCurrentSample = sample;}
+    virtual void setCurrentSample(const unsigned int sample){m_iCurrentSample = sample;}
     virtual unsigned int getbuttonPrevSampleWidth(){return m_ibuttonPrevSampleWidth;}
     virtual unsigned int getbuttonPrevSampleHeight(){return m_ibuttonPrevSampleHeight;}
     virtual unsigned int getbuttonPrevSampleX(){return m_ibuttonPrevSampleX;}
@@ -151,8 +149,6 @@ public:
     virtual unsigned int bottomFrameHeight(){return m_bottomFrameHeight;}
     virtual unsigned int topHeight(){return m_topHeight;}
 
-
-
     virtual ~AbstractPatternView();
 
     QString emptyNote(){return m_emptyNote;}
@@ -160,7 +156,7 @@ public:
     QString emptyEffect(){return m_emptyEffect;}
     QString emptyParameter(){return m_emptyParameter;}
     QString emptyVolume(){return m_emptyVolume;}
-    Tracker* parent(){return m_trackerWindow;}
+    Tracker* parent() const {return m_trackerWindow;}
 
     BitmapFont m_bitmapFont;
     BitmapFont m_bitmapFont2;
@@ -170,18 +166,18 @@ public:
     BitmapFont m_bitmapFontInstrument;
     BitmapFont m_bitmapFontEffects;
     BitmapFont m_bitmapFontParameters;
-    BitmapFont m_bitmapFontRownumber;
+    BitmapFont m_bitmapFontRowNumber;
 
     bool m_renderTop;
-    bool m_renderVUMeter;
+    bool m_renderVuMeter;
 
-    //VU-meters
-    int m_vumeterHeight;
-    int m_vumeterWidth;
-    int m_vumeterLeftOffset;
-    int m_vumeterOffset;
-    int m_vumeterHilightWidth;
-    int m_vumeterTopOffset;
+    // vu-meters
+    int m_vuMeterHeight;
+    int m_vuMeterWidth;
+    int m_vuMeterLeftOffset;
+    int m_vuMeterOffset;
+    int m_vuMeterHilightWidth;
+    int m_vuMeterTopOffset;
 
     QLinearGradient m_linearGrad;
     QLinearGradient m_linearGradHiLite;
@@ -189,9 +185,6 @@ public:
 
 protected:
     Tracker* m_trackerWindow;
-
-
-
 
     unsigned int m_width;
     unsigned int m_height;
@@ -203,7 +196,7 @@ protected:
     int m_fontWidth;
     int m_fontHeight;
     int m_fontWidthEffects;
-    int m_fontWidthRownumber;
+    int m_fontWidthRowNumber;
     int m_fontWidthParameters;
     int m_fontWidthSeparatorNote;
     int m_fontWidthInstrument;
@@ -233,7 +226,6 @@ protected:
     bool m_effectsThenParametersEnabled;
     bool m_patternNumberAtStartEnabled;
     bool m_linesBetweenRows;
-
 
     QColor m_ColorRowNumber;
     QColor m_ColorRowNumberHighLight;
@@ -293,7 +285,7 @@ protected:
     QString m_emptyVolume;
     QString m_empty;
 
-    //if true, do not use special empty color
+    // if true, do not use special empty color
     bool m_noEmptyInstrumentColor;
     bool m_noEmptyEffectColor;
     bool m_noEmptyParameterColor;
@@ -308,7 +300,7 @@ protected:
     QFont m_fontInstrument;
     QFont m_fontEffects;
     QFont m_fontParameters;
-    QFont m_fontRownumber;
+    QFont m_fontRowNumber;
 
     int m_xOffsetRow;
     int m_yOffsetCurrentRowAfter;
@@ -322,7 +314,7 @@ protected:
     QRect m_rectLHiLite;
     QRect m_rectLDark;
 
-    //used for enabling/disabling channels using the mouse
+    // used for enabling/disabling channels using the mouse
     int m_xChannelStart;
     int m_channelWidth;
     int m_channelFirstWidth;
@@ -330,7 +322,7 @@ protected:
     int m_channelxSpace;
     QColor m_colorBackground;
 
-    //used for browsing samples
+    // used for browsing samples
     unsigned int m_iCurrentSample;
     unsigned int m_ibuttonPrevSampleWidth;
     unsigned int m_ibuttonPrevSampleHeight;
@@ -340,9 +332,6 @@ protected:
     unsigned int m_ibuttonNextSampleHeight;
     unsigned int m_ibuttonNextSampleX;
     unsigned int m_ibuttonNextSampleY;
-
-
-
 
     static const char* NOTES[109];
 };

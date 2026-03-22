@@ -89,21 +89,21 @@ int BPPlayer::load(void *data, unsigned long int _length) {
         if (!stream[position + j]) {
             break;
         }
-        m_title += stream[position + j];
+        title += stream[position + j];
     }
     position += STRING_LENGTH;
 
 
     if (stream[26] == 'B' && stream[27] == 'P' && stream[28] == 'S' && stream[29] == 'M') {
-        m_version = BPSOUNDMON_V1;
+        version = BPSOUNDMON_V1;
         format = "SoundMon1.0";
         position = 30;
     } else {
         if (stream[26] == 'V' && stream[27] == '.' && stream[28] == '2') {
-            m_version = BPSOUNDMON_V2;
+            version = BPSOUNDMON_V2;
             format = "Soundmon 2";
         } else if (stream[26] == 'V' && stream[27] == '.' && stream[28] == '3') {
-            m_version = BPSOUNDMON_V3;
+            version = BPSOUNDMON_V3;
             format = "Soundmon 3";
         } else {
             return -1;
@@ -145,7 +145,7 @@ int BPPlayer::load(void *data, unsigned long int _length) {
             sample->lfoLen = readEndian(stream[position], stream[position + 1]);
             position += 2;
 
-            if (m_version < BPSOUNDMON_V3) {
+            if (version < BPSOUNDMON_V3) {
                 position++;
                 sample->lfoDelay = stream[position];
                 position++;
@@ -513,7 +513,7 @@ void BPPlayer::process() {
                     voice->volume = data;
                     voice->volumeDef = 0;
 
-                    if (m_version < BPSOUNDMON_V3 || !voice->synth) {
+                    if (version < BPSOUNDMON_V3 || !voice->synth) {
                         chan->setVolume(voice->volume);
                     }
                     break;
@@ -532,11 +532,11 @@ void BPPlayer::process() {
                     voice->arpeggio = 0;
                     break;
                 case 6: //set vibrato
-                    if (m_version == BPSOUNDMON_V3) voice->vibrato = data;
+                    if (version == BPSOUNDMON_V3) voice->vibrato = data;
                     else repeatCtr = data;
                     break;
                 case 7: //step jump
-                    if (m_version == BPSOUNDMON_V3) {
+                    if (version == BPSOUNDMON_V3) {
                         nextPos = data;
                         jumpFlag = 1;
                     } else if (repeatCtr == 0) {
@@ -548,7 +548,7 @@ void BPPlayer::process() {
                     break;
                 case 9: //set auto arpeggio
                     voice->autoArpeggio = data;
-                    if (m_version == BPSOUNDMON_V3) {
+                    if (version == BPSOUNDMON_V3) {
                         voice->adsrPtr = 0;
                         if (voice->adsrControl == 0) voice->adsrControl = 1;
                     }
@@ -717,7 +717,7 @@ vector<BaseSample *> BPPlayer::getSamples() {
 }
 
 bool BPPlayer::getTitle(string &title) {
-    title = this->m_title;
+    title = this->title;
     return true;
 }
 
