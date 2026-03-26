@@ -1237,14 +1237,21 @@ void MainWindow::addDebugText(const QString &debugText) const {
     ui->Debug->appendPlainText(debugText);
 }
 
-void MainWindow::refreshInfo()
-{
+void MainWindow::refreshInfo() {
     PlaylistItem pi;
     pi.fullPath = currentPlayingFilepath;
     pi.info = SoundManager::getInstance().m_Info1;
     fileInfoParser->updateFileInfo(ui->tableInfo, &pi);
 
-    const QString title = fromUtf8OrLatin1(pi.info->title.empty() ? pi.info->filename : pi.info->title);
+    QString title;
+    if (!pi.info->title.empty()) {
+        title = fromUtf8OrLatin1(pi.info->title);
+    } else {
+        title = fromUtf8OrLatin1(!pi.info->containerFilenames.empty()
+                                     ? pi.info->containerLastFilename
+                                     : pi.info->filename);
+    }
+
     QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index, title, Qt::EditRole);
 
@@ -2237,20 +2244,22 @@ void MainWindow::PlaySong(int currentRow)
 
         QFile file(pi.fullPath);
         QFileInfo fileInfo(file.fileName());
-        QString filename(fileInfo.fileName());
-        QString artist = "";
+        QString title(fileInfo.fileName());
 
-        if (!pi.info->title.empty())
-        {
-            if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
-            {
-                filename = pi.info->title.c_str();
+        if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod) {
+            if (!pi.info->title.empty()) {
+                title = pi.info->title.c_str();
             }
-            else
-            {
-                filename = fromUtf8OrLatin1(pi.info->title);
+        } else {
+            if (!pi.info->title.empty()) {
+                title = fromUtf8OrLatin1(pi.info->title);
+            } else if (!pi.info->containerFilenames.empty()){
+                title = fromUtf8OrLatin1(pi.info->containerLastFilename);
             }
         }
+
+        QString artist = "";
+
         if (!pi.info->artist.empty())
         {
             if (SoundManager::getInstance().m_Info1->plugin == PLUGIN_fmod)
@@ -2286,13 +2295,13 @@ void MainWindow::PlaySong(int currentRow)
         }
         if (artist != "")
         {
-            ui->labelFilename->setText(artist + " - " + filename);
-            windowTitle = artist + " - " + filename + " - " + PROJECT_NAME;
+            ui->labelFilename->setText(artist + " - " + title);
+            windowTitle = artist + " - " + title + " - " + PROJECT_NAME;
         }
         else
         {
-            ui->labelFilename->setText(filename);
-            windowTitle = filename + " - " + PROJECT_NAME;
+            ui->labelFilename->setText(title);
+            windowTitle = title + " - " + PROJECT_NAME;
         }
 
         if (isMinimized() || !this->isVisible())
@@ -2307,11 +2316,7 @@ void MainWindow::PlaySong(int currentRow)
         m_Tray->setToolTip(windowTitle);
 
         QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
-        if (!pi.info->title.empty())
-        {
-            tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->title), Qt::EditRole);
-        }
-
+        tableWidgetPlaylists[currentPlaylist]->model()->setData(index, title, Qt::EditRole);
 
         index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 1, QModelIndex());
         tableWidgetPlaylists[currentPlaylist]->model()->setData(

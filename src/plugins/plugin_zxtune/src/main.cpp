@@ -62,6 +62,7 @@ public:
         int currentModuleNum = 0;
         Module::Holder::Ptr currentModule;
         string containerFilenames;
+        string containerLastFilename;
         bool isContainer = false;
 
         Parameters::Container::Ptr CreateInitialProperties(const StringView subpath) const override {
@@ -80,11 +81,8 @@ public:
                 isContainer = true;
                 for (const auto &element: path->Elements()) {
                     if (!element.starts_with("+")) {
-                        if (!element.empty()) {
-                            containerFilenames += " > ";
-                        }
-
-                        containerFilenames += element;
+                        containerFilenames += " > " + element;
+                        containerLastFilename = element;
                     }
                 }
             }
@@ -109,6 +107,10 @@ public:
 
         auto getContainerFilenames() const {
             return containerFilenames;
+        }
+
+        auto getContainerLastFilename() const {
+            return containerLastFilename;
         }
 
         auto getNumModules() const {
@@ -220,6 +222,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
         if (plugin->modulesDetector.isInContainer()) {
             info->containerFilenames = plugin->modulesDetector.getContainerFilenames();
+            info->containerLastFilename = plugin->modulesDetector.getContainerLastFilename();
         }
 
         if (const auto *trackInfo = dynamic_cast<const Module::TrackInformation *>(plugin->moduleInfo.get())) {
@@ -237,7 +240,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         info->author = moduleProperties->FindString(Module::ATTR_AUTHOR).value_or("");
         info->comments = moduleProperties->FindString(Module::ATTR_COMMENT).value_or("");
         info->date = moduleProperties->FindString(Module::ATTR_DATE).value_or("");
-        info->title = moduleProperties->FindString(Module::ATTR_TITLE).value_or(info->containerFilenames);
+        info->title = moduleProperties->FindString(Module::ATTR_TITLE).value_or("");
 
         if (const auto type = moduleProperties->FindString(Module::ATTR_TYPE).value_or("");
             type == "MTC") {
