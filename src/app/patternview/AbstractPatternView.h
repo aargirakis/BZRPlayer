@@ -7,156 +7,190 @@
 #include "info.h"
 
 class Tracker;
-class AbstractPatternView
-{
 
+class AbstractPatternView {
 public:
     AbstractPatternView(Tracker *parent, unsigned int channels);
 
     void setupVuMeters();
-    virtual QString effect(BaseRow* row);
-    virtual QString parameter(BaseRow* row);
-    virtual QString effect2(BaseRow* row);
-    virtual QString parameter2(BaseRow* row);
-    virtual QString instrument(BaseRow* row);
-    virtual QString volume(BaseRow* row);
+
+    virtual QString effect(BaseRow *row);
+
+    virtual QString parameter(BaseRow *row);
+
+    virtual QString effect2(BaseRow *row);
+
+    virtual QString parameter2(BaseRow *row);
+
+    virtual QString instrument(BaseRow *row);
+
+    virtual QString volume(BaseRow *row);
+
     virtual QString rowNumber(int rowNumber);
-    virtual QString note(BaseRow* row);
+
+    virtual QString note(BaseRow *row);
+
     virtual QFont font();
+
     virtual BitmapFont bitmapFont();
+
     virtual QFont currentRowFont();
+
     virtual BitmapFont currentRowBitmapFont();
+
     virtual BitmapFont infoFont();
+
     virtual BitmapFont infoFont2();
+
     virtual BitmapFont bitmapFontEffects();
+
     virtual BitmapFont bitmapFontInstrument();
+
     virtual BitmapFont bitmapFontParameters();
+
     virtual BitmapFont bitmapFontRowNumber();
 
     virtual QFont fontEffects();
+
     virtual QFont fontInstrument();
+
     virtual QFont fontParameters();
+
     virtual QFont fontRowNumber();
 
-    virtual void paintAbove(QPainter* painter, int height, int currentRow);
-    virtual void paintBelow(QPainter* painter, int height, int currentRow);
-    virtual void paintTop(QPainter* painter, Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow);
-    virtual void drawVuMeters(QPainter* painter);
-    virtual void drawText(QString text, QPainter* painter, int numPixels, int yPixelPosition, BitmapFont font, int letterSpacing=0);
-    virtual void drawVerticalEmboss(int xPos, int yPos, int height, QColor hilite, QColor shadow, QColor base,
-                                         QPainter* painter, bool left = true, bool right = true);
+    virtual void paintAbove(QPainter *painter, int height, int currentRow);
 
-    virtual void updateEnabledChannels(QPainter* painter);
+    virtual void paintBelow(QPainter *painter, int height, int currentRow);
+
+    virtual void paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern, unsigned int m_currentPosition,
+                          unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow);
+
+    virtual void drawVuMeters(QPainter *painter);
+
+    virtual void drawText(QString text, QPainter *painter, int numPixels, int yPixelPosition, BitmapFont font,
+                          int letterSpacing = 0);
+
+    virtual void drawVerticalEmboss(int xPos, int yPos, int height, QColor hilite, QColor shadow, QColor base,
+                                    QPainter *painter, bool left = true, bool right = true);
+
+    virtual void updateEnabledChannels(QPainter *painter);
+
     virtual std::vector<bool> getChannelMuteMask();
 
-    virtual unsigned int height(){return m_height;}
-    virtual unsigned int width(){return m_width;}
-    virtual QColor colorEmpty(){return m_colorEmpty;}
-    virtual QColor colorDefault(){return m_colorDefault;}
-    virtual QColor colorInstrument(){return m_ColorInstrument;}
-    virtual QColor colorEffect(){return m_ColorEffect;}
-    virtual QColor colorEffect2(){return m_ColorEffect2;}
-    virtual QColor colorParameter(){return m_ColorParameter;}
-    virtual QColor colorParameter2(){return m_ColorParameter2;}
-    virtual QColor colorVolume(){return m_ColorVolume;}
+    virtual unsigned int height() { return m_height; }
+    virtual unsigned int width() { return m_width; }
+    virtual QColor colorEmpty() { return m_colorEmpty; }
+    virtual QColor colorDefault() { return m_colorDefault; }
+    virtual QColor colorInstrument() { return m_ColorInstrument; }
+    virtual QColor colorEffect() { return m_ColorEffect; }
+    virtual QColor colorEffect2() { return m_ColorEffect2; }
+    virtual QColor colorParameter() { return m_ColorParameter; }
+    virtual QColor colorParameter2() { return m_ColorParameter2; }
+    virtual QColor colorVolume() { return m_ColorVolume; }
 
-    virtual QColor colorEmptyAlternate(){return m_colorEmptyAlternate;}
-    virtual QColor colorDefaultAlternate(){return m_colorDefaultAlternate;}
-    virtual QColor colorInstrumentAlternate(){return m_ColorInstrumentAlternate;}
-    virtual QColor colorEffectAlternate(){return m_ColorEffectAlternate;}
-    virtual QColor colorEffect2Alternate(){return m_ColorEffect2Alternate;}
-    virtual QColor colorParameterAlternate(){return m_ColorParameterAlternate;}
-    virtual QColor colorParameter2Alternate(){return m_ColorParameter2Alternate;}
-    virtual QColor colorVolumeAlternate(){return m_ColorVolumeAlternate;}
-    virtual int alternateChannelColorsFrequency(){return m_alternateChannelColorsFrequency;}
+    virtual QColor colorEmptyAlternate() { return m_colorEmptyAlternate; }
+    virtual QColor colorDefaultAlternate() { return m_colorDefaultAlternate; }
+    virtual QColor colorInstrumentAlternate() { return m_ColorInstrumentAlternate; }
+    virtual QColor colorEffectAlternate() { return m_ColorEffectAlternate; }
+    virtual QColor colorEffect2Alternate() { return m_ColorEffect2Alternate; }
+    virtual QColor colorParameterAlternate() { return m_ColorParameterAlternate; }
+    virtual QColor colorParameter2Alternate() { return m_ColorParameter2Alternate; }
+    virtual QColor colorVolumeAlternate() { return m_ColorVolumeAlternate; }
+    virtual int alternateChannelColorsFrequency() { return m_alternateChannelColorsFrequency; }
 
-    virtual QColor colorRowNumber(){return m_ColorRowNumber;}
-    virtual QColor colorRowNumberBackground(){return m_ColorRowNumberBackground;}
-    virtual QColor colorRowHighlightBackground(){return m_ColorRowHighlightBackground;}
-    virtual int highlightBackgroundOffset(){return m_highlightBackgroundOffset;}
-    virtual int rowHighlightBackgroundFrequency(){return m_RowHighlightBackgroundFrequency;}
-    virtual QColor colorRowHighlightForeground(){return m_colorRowHighlightForeground;}
-    virtual QColor colorCurrentRowHighlightForeground(){return m_colorCurrentRowHighlightForeground;}
-    virtual int rowHighlightForegroundFrequency(){return m_RowHighlightForegroundFrequency;}
-    virtual QColor colorRowHighlightBackground2(){return m_ColorRowHighlightBackground2;}
-    virtual int rowHighlightBackgroundFrequency2(){return m_RowHighlightBackgroundFrequency2;}
-    virtual int colorRowNumberHighLightFrequency(){return m_ColorRowNumberHighLightFrequency;}
-    virtual int xOffsetRow(){return m_xOffsetRow;}
-    virtual int yOffsetCurrentRowAfter(){return m_yOffsetCurrentRowAfter;}
-    virtual int yOffsetCurrentRowBefore(){return m_yOffsetCurrentRowBefore;}
-    virtual int yOffsetRowAfter(){return m_yOffsetRowAfter;}
-    virtual int xOffsetSeparatorRowNumber(){return m_xOffsetSeparatorRowNumber;}
-    virtual QColor colorRowNumberHighLight(){return m_ColorRowNumberHighLight;}
-    virtual QColor colorCurrentRowForeground(){return m_colorCurrentRowForeground;}
-    virtual QColor colorCurrentRowBackground(){return m_colorCurrentRowBackground;}
-    virtual QColor colorCurrentRowHighlightBackground(){return m_colorCurrentRowHighlightBackground;}
-    virtual int currentRowHighlightBackgroundFrequency(){return m_CurrentRowHighlightBackgroundFrequency;}
-    virtual int currentRowHighlightForegroundFrequency(){return m_CurrentRowHighlightForegroundFrequency;}
-    virtual QString separatorInstrument(){return m_SeparatorInstrument;}
-    virtual QString separatorVolume(){return m_SeparatorVolume;}
-    virtual QString separatorChannel(){return m_SeparatorChannel;}
-    virtual QString separatorRowNumber(){return m_SeparatorRowNumber;}
-    virtual QString separatorRowNumberLast(){return m_SeparatorRowNumberLast;}
-    virtual QString separatorNote(){return m_SeparatorNote;}
-    virtual QString separatorEffect(){return m_SeparatorEffect;}
-    virtual QString separatorEffect2(){return m_SeparatorEffect2;}
-    virtual QString separatorParameter(){return m_SeparatorParameter;}
-    virtual QString separatorParameter2(){return m_SeparatorParameter2;}
-    virtual QString rowStart(){return m_RowStart;}
-    virtual QString rowEnd(){return m_RowEnd;}
-    virtual QString empty(){return m_empty;}
-    virtual int fontHeight(){return m_fontHeight;}
-    virtual int fontWidth(){return m_fontWidth;}
-    virtual int fontWidthEffects(){return m_fontWidth;}
-    virtual int fontWidthInstrument(){return m_fontWidth;}
-    virtual int fontWidthRowNumber(){return m_fontWidth;}
-    virtual int fontWidthParameters(){return m_fontWidth;}
-    virtual int fontWidthSeparatorNote(){return m_fontWidth;}
-    virtual int rowLength(){return m_RowLength;}
-    virtual QString colorWindowBackground() {return m_ColorWindowBackground;}
-    virtual bool rowNumbersLastChannelEnabled(){return m_rowNumbersLastChannelEnabled;}
-    virtual bool rowNumbersEveryChannelEnabled(){return m_RowNumbersEveryChannelEnabled;}
-    virtual bool effectsThenParametersEnabled(){return m_effectsThenParametersEnabled;}
-    virtual bool patternNumberAtStart(){return m_patternNumberAtStartEnabled;}
-    virtual QColor colorRowNumberCurrentRow(){return m_ColorRowNumberCurrentRow;}
-    virtual bool colorRowNumberCurrentRowEnabled(){return m_ColorRowNumberCurrentRowEnabled;}
-    virtual int yOffsetRowHighlight() {return m_yOffsetRowHighlight;}
-    virtual bool linesBetweenRows(){return m_linesBetweenRows;}
-    virtual bool noEmptyInstrumentColor(){return m_noEmptyInstrumentColor;}
-    virtual bool noEmptyVolumeColor(){return m_noEmptyVolumeColor;}
-    virtual bool noEmptyEffectColor(){return m_noEmptyEffectColor;}
-    virtual bool noEmptyEffect2Color(){return m_noEmptyEffect2Color;}
-    virtual bool noEmptyParameterColor(){return m_noEmptyParameterColor;}
-    virtual bool noEmptyParameter2Color(){return m_noEmptyParameter2Color;}
-    virtual int useInstrumentColorOnEffectAndParameterFrequency(){return m_useInstrumentColorOnEffectAndParameterFrequency;}
-    virtual int channelStart(){return m_xChannelStart;}
-    virtual int channelWidth(){return m_channelWidth;}
-    virtual int channelLastWidth(){return m_channelLastWidth==-1 ? m_channelWidth : m_channelLastWidth;}
-    virtual int channelFirstWidth(){return m_channelFirstWidth==-1 ? m_channelWidth : m_channelFirstWidth;}
-    virtual int channelxSpace(){return m_channelxSpace;}
-    virtual QColor colorBackground(){return m_colorBackground;}
-    virtual unsigned int getCurrentSample(){return m_iCurrentSample;}
-    virtual void setCurrentSample(const unsigned int sample){m_iCurrentSample = sample;}
-    virtual unsigned int getbuttonPrevSampleWidth(){return m_ibuttonPrevSampleWidth;}
-    virtual unsigned int getbuttonPrevSampleHeight(){return m_ibuttonPrevSampleHeight;}
-    virtual unsigned int getbuttonPrevSampleX(){return m_ibuttonPrevSampleX;}
-    virtual unsigned int getbuttonPrevSampleY(){return m_ibuttonPrevSampleY;}
-    virtual unsigned int getbuttonNextSampleWidth(){return m_ibuttonNextSampleWidth;}
-    virtual unsigned int getbuttonNextSampleHeight(){return m_ibuttonNextSampleHeight;}
-    virtual unsigned int getbuttonNextSampleX(){return m_ibuttonNextSampleX;}
-    virtual unsigned int getbuttonNextSampleY(){return m_ibuttonNextSampleY;}
+    virtual QColor colorRowNumber() { return m_ColorRowNumber; }
+    virtual QColor colorRowNumberBackground() { return m_ColorRowNumberBackground; }
+    virtual QColor colorRowHighlightBackground() { return m_ColorRowHighlightBackground; }
+    virtual int highlightBackgroundOffset() { return m_highlightBackgroundOffset; }
+    virtual int rowHighlightBackgroundFrequency() { return m_RowHighlightBackgroundFrequency; }
+    virtual QColor colorRowHighlightForeground() { return m_colorRowHighlightForeground; }
+    virtual QColor colorCurrentRowHighlightForeground() { return m_colorCurrentRowHighlightForeground; }
+    virtual int rowHighlightForegroundFrequency() { return m_RowHighlightForegroundFrequency; }
+    virtual QColor colorRowHighlightBackground2() { return m_ColorRowHighlightBackground2; }
+    virtual int rowHighlightBackgroundFrequency2() { return m_RowHighlightBackgroundFrequency2; }
+    virtual int colorRowNumberHighLightFrequency() { return m_ColorRowNumberHighLightFrequency; }
+    virtual int xOffsetRow() { return m_xOffsetRow; }
+    virtual int yOffsetCurrentRowAfter() { return m_yOffsetCurrentRowAfter; }
+    virtual int yOffsetCurrentRowBefore() { return m_yOffsetCurrentRowBefore; }
+    virtual int yOffsetRowAfter() { return m_yOffsetRowAfter; }
+    virtual int xOffsetSeparatorRowNumber() { return m_xOffsetSeparatorRowNumber; }
+    virtual QColor colorRowNumberHighLight() { return m_ColorRowNumberHighLight; }
+    virtual QColor colorCurrentRowForeground() { return m_colorCurrentRowForeground; }
+    virtual QColor colorCurrentRowBackground() { return m_colorCurrentRowBackground; }
+    virtual QColor colorCurrentRowHighlightBackground() { return m_colorCurrentRowHighlightBackground; }
+    virtual int currentRowHighlightBackgroundFrequency() { return m_CurrentRowHighlightBackgroundFrequency; }
+    virtual int currentRowHighlightForegroundFrequency() { return m_CurrentRowHighlightForegroundFrequency; }
+    virtual QString separatorInstrument() { return m_SeparatorInstrument; }
+    virtual QString separatorVolume() { return m_SeparatorVolume; }
+    virtual QString separatorChannel() { return m_SeparatorChannel; }
+    virtual QString separatorRowNumber() { return m_SeparatorRowNumber; }
+    virtual QString separatorRowNumberLast() { return m_SeparatorRowNumberLast; }
+    virtual QString separatorNote() { return m_SeparatorNote; }
+    virtual QString separatorEffect() { return m_SeparatorEffect; }
+    virtual QString separatorEffect2() { return m_SeparatorEffect2; }
+    virtual QString separatorParameter() { return m_SeparatorParameter; }
+    virtual QString separatorParameter2() { return m_SeparatorParameter2; }
+    virtual QString rowStart() { return m_RowStart; }
+    virtual QString rowEnd() { return m_RowEnd; }
+    virtual QString empty() { return m_empty; }
+    virtual int fontHeight() { return m_fontHeight; }
+    virtual int fontWidth() { return m_fontWidth; }
+    virtual int fontWidthEffects() { return m_fontWidth; }
+    virtual int fontWidthInstrument() { return m_fontWidth; }
+    virtual int fontWidthRowNumber() { return m_fontWidth; }
+    virtual int fontWidthParameters() { return m_fontWidth; }
+    virtual int fontWidthSeparatorNote() { return m_fontWidth; }
+    virtual int rowLength() { return m_RowLength; }
+    virtual QString colorWindowBackground() { return m_ColorWindowBackground; }
+    virtual bool rowNumbersLastChannelEnabled() { return m_rowNumbersLastChannelEnabled; }
+    virtual bool rowNumbersEveryChannelEnabled() { return m_RowNumbersEveryChannelEnabled; }
+    virtual bool effectsThenParametersEnabled() { return m_effectsThenParametersEnabled; }
+    virtual bool patternNumberAtStart() { return m_patternNumberAtStartEnabled; }
+    virtual QColor colorRowNumberCurrentRow() { return m_ColorRowNumberCurrentRow; }
+    virtual bool colorRowNumberCurrentRowEnabled() { return m_ColorRowNumberCurrentRowEnabled; }
+    virtual int yOffsetRowHighlight() { return m_yOffsetRowHighlight; }
+    virtual bool linesBetweenRows() { return m_linesBetweenRows; }
+    virtual bool noEmptyInstrumentColor() { return m_noEmptyInstrumentColor; }
+    virtual bool noEmptyVolumeColor() { return m_noEmptyVolumeColor; }
+    virtual bool noEmptyEffectColor() { return m_noEmptyEffectColor; }
+    virtual bool noEmptyEffect2Color() { return m_noEmptyEffect2Color; }
+    virtual bool noEmptyParameterColor() { return m_noEmptyParameterColor; }
+    virtual bool noEmptyParameter2Color() { return m_noEmptyParameter2Color; }
+
+    virtual int useInstrumentColorOnEffectAndParameterFrequency() {
+        return m_useInstrumentColorOnEffectAndParameterFrequency;
+    }
+
+    virtual int channelStart() { return m_xChannelStart; }
+    virtual int channelWidth() { return m_channelWidth; }
+    virtual int channelLastWidth() { return m_channelLastWidth == -1 ? m_channelWidth : m_channelLastWidth; }
+    virtual int channelFirstWidth() { return m_channelFirstWidth == -1 ? m_channelWidth : m_channelFirstWidth; }
+    virtual int channelxSpace() { return m_channelxSpace; }
+    virtual QColor colorBackground() { return m_colorBackground; }
+    virtual unsigned int getCurrentSample() { return m_iCurrentSample; }
+    virtual void setCurrentSample(const unsigned int sample) { m_iCurrentSample = sample; }
+    virtual unsigned int getbuttonPrevSampleWidth() { return m_ibuttonPrevSampleWidth; }
+    virtual unsigned int getbuttonPrevSampleHeight() { return m_ibuttonPrevSampleHeight; }
+    virtual unsigned int getbuttonPrevSampleX() { return m_ibuttonPrevSampleX; }
+    virtual unsigned int getbuttonPrevSampleY() { return m_ibuttonPrevSampleY; }
+    virtual unsigned int getbuttonNextSampleWidth() { return m_ibuttonNextSampleWidth; }
+    virtual unsigned int getbuttonNextSampleHeight() { return m_ibuttonNextSampleHeight; }
+    virtual unsigned int getbuttonNextSampleX() { return m_ibuttonNextSampleX; }
+    virtual unsigned int getbuttonNextSampleY() { return m_ibuttonNextSampleY; }
+
     virtual int getChannelClicked(int x, int y);
-    virtual unsigned int bottomFrameHeight(){return m_bottomFrameHeight;}
-    virtual unsigned int topHeight(){return m_topHeight;}
+
+    virtual unsigned int bottomFrameHeight() { return m_bottomFrameHeight; }
+    virtual unsigned int topHeight() { return m_topHeight; }
 
     virtual ~AbstractPatternView();
 
-    QString emptyNote(){return m_emptyNote;}
-    QString emptyInstrument(){return m_emptyInstrument;}
-    QString emptyEffect(){return m_emptyEffect;}
-    QString emptyParameter(){return m_emptyParameter;}
-    QString emptyVolume(){return m_emptyVolume;}
-    Tracker* parent() const {return m_trackerWindow;}
+    QString emptyNote() { return m_emptyNote; }
+    QString emptyInstrument() { return m_emptyInstrument; }
+    QString emptyEffect() { return m_emptyEffect; }
+    QString emptyParameter() { return m_emptyParameter; }
+    QString emptyVolume() { return m_emptyVolume; }
+    Tracker *parent() const { return m_trackerWindow; }
 
     BitmapFont m_bitmapFont;
     BitmapFont m_bitmapFont2;
@@ -184,7 +218,7 @@ public:
     QLinearGradient m_linearGradDark;
 
 protected:
-    Tracker* m_trackerWindow;
+    Tracker *m_trackerWindow;
 
     unsigned int m_width;
     unsigned int m_height;
@@ -293,7 +327,8 @@ protected:
     bool m_noEmptyParameter2Color;
     bool m_noEmptyVolumeColor;
 
-    int m_useInstrumentColorOnEffectAndParameterFrequency; // every n:th row effect and parameter have instrument color, only used in MultiTracker for now
+    int m_useInstrumentColorOnEffectAndParameterFrequency;
+    // every n:th row effect and parameter have instrument color, only used in MultiTracker for now
 
     QFont m_font;
     QFont m_font2;
@@ -333,7 +368,7 @@ protected:
     unsigned int m_ibuttonNextSampleX;
     unsigned int m_ibuttonNextSampleY;
 
-    static const char* NOTES[109];
+    static const char *NOTES[109];
 };
 
 #endif // ABSTRACTPATTERNVIEW_H

@@ -12,20 +12,26 @@ public:
     StarField();
 
     void setCanvasSize(int w, int h);
+
     void ensureInited();
 
     // settings
     void setEnabled(const bool e) { m_enabled = e; }
     bool enabled() const { return m_enabled; }
+
     void setCount(int n);
+
     int count() const { return m_count; }
     void setSpeed(const int s) { m_starSpeed = std::max(0, s); }
     int speed() const { return m_starSpeed; }
-    void setModeFromString(const QString& dir);
+
+    void setModeFromString(const QString &dir);
+
     QString modeToString() const;
+
     // end settings
 
-    void paint(QPainter* painter);
+    void paint(QPainter *painter);
 
 private:
     struct Star {
@@ -37,8 +43,11 @@ private:
     };
 
     void buildPensAndBuckets();
+
     void reinitAllStars();
+
     void reinitLinearStar(int i);
+
     void reinitZoomStar(int i, bool farAway);
 
     // settings

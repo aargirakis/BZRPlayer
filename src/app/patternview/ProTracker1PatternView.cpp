@@ -2,9 +2,8 @@
 #include "ProTracker1PatternView.h"
 #include "mainwindow.h"
 
-ProTracker1PatternView::ProTracker1PatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+ProTracker1PatternView::ProTracker1PatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     rowNumberOffset = 0;
     octaveOffset = 48;
     m_font2 = QFont("Protracker 1.0 Double Height");
@@ -21,7 +20,9 @@ ProTracker1PatternView::ProTracker1PatternView(Tracker* parent, const unsigned i
     m_renderVuMeter = true;
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(50, 50, 255);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        50, 50, 255);
 
 
     m_RowEnd = m_SeparatorRowNumber = m_SeparatorChannel = " ";
@@ -65,28 +66,23 @@ ProTracker1PatternView::ProTracker1PatternView(Tracker* parent, const unsigned i
     m_linearGradDark.setColorAt(1, QColor(0, 187, 0).rgb()); // green
 }
 
-BitmapFont ProTracker1PatternView::currentRowBitmapFont()
-{
+BitmapFont ProTracker1PatternView::currentRowBitmapFont() {
     return m_bitmapFont2;
 }
 
-QFont ProTracker1PatternView::currentRowFont()
-{
+QFont ProTracker1PatternView::currentRowFont() {
     return m_font2;
 }
 
-void ProTracker1PatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void ProTracker1PatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(136, 136, 136);
     QColor colorHilite(187, 187, 187);
     QColor colorShadow(85, 85, 85);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
 
@@ -105,8 +101,7 @@ void ProTracker1PatternView::paintAbove(QPainter* painter, int height, int curre
     painter->fillRect(45, 32, 1, 1, colorBase);
 }
 
-void ProTracker1PatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void ProTracker1PatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     int left = 4;
 
     QColor colorBase(136, 136, 136);
@@ -120,7 +115,7 @@ void ProTracker1PatternView::paintBelow(QPainter* painter, int height, int curre
     // left border
     pen.setColor(colorHilite);
     painter->setPen(pen);
-    painter->drawLine(left - 3, 0, left - 3, height-1);
+    painter->drawLine(left - 3, 0, left - 3, height - 1);
     pen.setColor(colorBase);
     painter->setPen(pen);
     painter->drawLine(left - 2, 0, left - 2, height);
@@ -154,18 +149,17 @@ void ProTracker1PatternView::paintBelow(QPainter* painter, int height, int curre
     painter->fillRect(left + 1, height / 2 - 4, 20, 10, colorBase);
 
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
-        painter->drawLine(left + 24 + chan * 72, 0, left + 24 + chan * 72, height-1);
+        painter->drawLine(left + 24 + chan * 72, 0, left + 24 + chan * 72, height - 1);
         pen.setColor(colorBase);
         painter->setPen(pen);
-        painter->drawLine(left + 25 + chan * 72, 0, left + 25 + chan * 72, height-1);
+        painter->drawLine(left + 25 + chan * 72, 0, left + 25 + chan * 72, height - 1);
         pen.setColor(colorShadow);
         painter->setPen(pen);
-        painter->drawLine(left + 26 + chan * 72, 0, left + 26 + chan * 72, height-1);
+        painter->drawLine(left + 26 + chan * 72, 0, left + 26 + chan * 72, height - 1);
         // 1 pixel top antialiasing
         painter->fillRect(left + 23 + chan * 72, 32, 1, 1, colorBase);
         painter->fillRect(left + 25 + chan * 72, height - 3, 1, 1, colorBase);
@@ -174,8 +168,7 @@ void ProTracker1PatternView::paintBelow(QPainter* painter, int height, int curre
 
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
 
@@ -214,8 +207,9 @@ void ProTracker1PatternView::paintBelow(QPainter* painter, int height, int curre
     painter->fillRect(317, 32, 1, 1, colorBase);
 }
 
-void::ProTracker1PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::ProTracker1PatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                        unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                        unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 32;
     QColor colorBase(136, 136, 136);
     QColor colorHilite(187, 187, 187);
@@ -256,7 +250,7 @@ void::ProTracker1PatternView::paintTop(QPainter* painter,Info* info, unsigned in
     painter->setPen(QColor(0, 0, 0));
 
     drawText(QString("%1").arg(info->title.c_str(), -20, QChar('_')).toUpper(), painter, left + 141,
-             top + 11,infoFont());
+             top + 11, infoFont());
 
     QRectF sourcePrev(0, 0, 6, 7);
     QRectF sourceNext(6, 0, 6, 7);
@@ -276,10 +270,10 @@ void::ProTracker1PatternView::paintTop(QPainter* painter,Info* info, unsigned in
 
     const auto t = this->parent();
     drawText(QString("%1").arg(getCurrentSample() + 1, 2, 10, QChar('0')), painter,
-             left + 24, top + 22,infoFont());
+             left + 24, top + 22, infoFont());
     drawText(
-            QString("%1").arg(t->info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
-                    toUpper(), painter, left + 141, top + 22,infoFont());
+        QString("%1").arg(t->info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
+        toUpper(), painter, left + 141, top + 22, infoFont());
     m_pen.setWidth(1);
 
     m_pen.setColor(colorHilite);
@@ -324,6 +318,6 @@ void::ProTracker1PatternView::paintTop(QPainter* painter,Info* info, unsigned in
     drawVerticalEmboss(left + 319, 11, 10, colorHilite, colorShadow, colorBase, painter, true, false);
     drawVerticalEmboss(left + 319, 22, 10, colorHilite, colorShadow, colorBase, painter, true, false);
 }
-ProTracker1PatternView::~ProTracker1PatternView()
-{
+
+ProTracker1PatternView::~ProTracker1PatternView() {
 }

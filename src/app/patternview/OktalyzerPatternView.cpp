@@ -1,8 +1,7 @@
 #include "OktalyzerPatternView.h"
 
-OktalyzerPatternView::OktalyzerPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+OktalyzerPatternView::OktalyzerPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     m_font = QFont("Oktalyzer");
     m_font.setPixelSize(16);
     m_fontWidth = 8;
@@ -19,7 +18,11 @@ OktalyzerPatternView::OktalyzerPatternView(Tracker* parent, const unsigned int c
     m_ColorWindowBackground = "000044";
     m_ColorRowNumberBackground = m_ColorWindowBackground;
     m_colorCurrentRowForeground = m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect =
-        m_ColorParameter = m_ColorEffect2 = m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(17, 153, 238);
+                                                                          m_ColorParameter =
+                                                                          m_ColorEffect2 =
+                                                                          m_ColorParameter2 =
+                                                                          m_ColorVolume = m_colorEmpty = QColor(
+                                                                                  17, 153, 238);
     m_colorCurrentRowBackground = QColor(17, 153, 238);
 
     m_RowEnd = "'";
@@ -44,8 +47,7 @@ OktalyzerPatternView::OktalyzerPatternView(Tracker* parent, const unsigned int c
     m_bottomFrameHeight = 0;
 }
 
-void OktalyzerPatternView::paintBelow(QPainter* painter, const int height, int currentRow)
-{
+void OktalyzerPatternView::paintBelow(QPainter *painter, const int height, int currentRow) {
     // background
     painter->fillRect(0, 0, 41 + m_channels * 72, height, QColor(0, 0, 66));
     // main
@@ -55,60 +57,56 @@ void OktalyzerPatternView::paintBelow(QPainter* painter, const int height, int c
     painter->fillRect(0, height / 2 - 17, 1, 18, m_colorCurrentRowBackground);
 }
 
-QString OktalyzerPatternView::effect(BaseRow* row)
-{
+QString OktalyzerPatternView::effect(BaseRow *row) {
     QString effectStr;
 
-    if (row->effect < 10)
-    {
+    if (row->effect < 10) {
         return QString::number(row->effect);
     }
 
-    switch (row->effect)
-    {
-    case 112: effectStr = "A";
-        break;
-    case 113: effectStr = "B";
-        break;
-    case 114: effectStr = "C";
-        break;
-    case 38:
-    case 156: effectStr = "D";
-        break;
-    case 157:
-    case 37:
-        effectStr = "H";
-        break;
-    case 117: effectStr = "L";
-        break; // 117 for Z also?
-    case 11: effectStr = "P";
-        break;
-    case 15: effectStr = "S";
-        break;
-    case 118: effectStr = "U";
-        break;
-    case 12:
-    case 174:
-    case 10:
-    case 20:
-        effectStr = "V";
-        break;
-    case 69: effectStr = "W";
-        break;
-    case 110: effectStr = "X";
-        break;
-    case 32: effectStr = "Y";
-        break;
+    switch (row->effect) {
+        case 112: effectStr = "A";
+            break;
+        case 113: effectStr = "B";
+            break;
+        case 114: effectStr = "C";
+            break;
+        case 38:
+        case 156: effectStr = "D";
+            break;
+        case 157:
+        case 37:
+            effectStr = "H";
+            break;
+        case 117: effectStr = "L";
+            break; // 117 for Z also?
+        case 11: effectStr = "P";
+            break;
+        case 15: effectStr = "S";
+            break;
+        case 118: effectStr = "U";
+            break;
+        case 12:
+        case 174:
+        case 10:
+        case 20:
+            effectStr = "V";
+            break;
+        case 69: effectStr = "W";
+            break;
+        case 110: effectStr = "X";
+            break;
+        case 32: effectStr = "Y";
+            break;
 
-    default: effectStr = QString::number(row->effect);
-        break;
+        default: effectStr = QString::number(row->effect);
+            break;
     }
 
     return effectStr;
 }
 
-QString OktalyzerPatternView::instrument(BaseRow* row)
-{
+QString OktalyzerPatternView::instrument(BaseRow *row) {
     const int instrument = row->sample;
 
     if (instrument == 0) return m_emptyInstrument;
@@ -116,6 +114,5 @@ QString OktalyzerPatternView::instrument(BaseRow* row)
     return QString::number(instrument - 1, 36).toUpper();
 }
 
-OktalyzerPatternView::~OktalyzerPatternView()
-{
+OktalyzerPatternView::~OktalyzerPatternView() {
 }

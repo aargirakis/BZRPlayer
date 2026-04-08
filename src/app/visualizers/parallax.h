@@ -5,11 +5,11 @@
 
 #include "effect.h"
 
-class Parallax : public Effect
-{
+class Parallax : public Effect {
 public:
     Parallax();
-    void paint(QPainter* painter, QPaintEvent* event);
+
+    void paint(QPainter *painter, QPaintEvent *event);
 
 private:
     bool inited;

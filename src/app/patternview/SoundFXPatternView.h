@@ -3,14 +3,17 @@
 
 #include "AbstractPatternView.h"
 
-class SoundFXPatternView : public AbstractPatternView
-{
+class SoundFXPatternView : public AbstractPatternView {
 public:
-    SoundFXPatternView(Tracker* parent, unsigned int channels);
+    SoundFXPatternView(Tracker *parent, unsigned int channels);
+
     ~SoundFXPatternView();
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
-    QString note(BaseRow* row);
+
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
+
+    QString note(BaseRow *row);
 };
 
 #endif // SOUNDFXPATTERNVIEW_H

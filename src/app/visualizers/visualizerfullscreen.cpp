@@ -2,8 +2,7 @@
 #include "soundmanager.h"
 #include "visualizerfullscreen.h"
 
-VisualizerFullScreen::VisualizerFullScreen(Effect* effect, QWidget* parent): QOpenGLWidget(parent)
-{
+VisualizerFullScreen::VisualizerFullScreen(Effect *effect, QWidget *parent) : QOpenGLWidget(parent) {
     this->effect = effect;
     // antialiasing, for example if we draw circles
     //    QSurfaceFormat format;
@@ -11,8 +10,7 @@ VisualizerFullScreen::VisualizerFullScreen(Effect* effect, QWidget* parent): QOp
     //    setFormat(format);
 }
 
-void VisualizerFullScreen::paintEvent(QPaintEvent* event)
-{
+void VisualizerFullScreen::paintEvent(QPaintEvent *event) {
     if (const auto &sm = SoundManager::getInstance();
         isFullScreen() && sm.isPlaying()) {
         sm.getPosition(FMOD_TIMEUNIT_MODVUMETER);

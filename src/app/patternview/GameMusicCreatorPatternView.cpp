@@ -2,9 +2,8 @@
 #include "mainwindow.h"
 #include "GameMusicCreatorPatternView.h"
 
-GameMusicCreatorPatternView::GameMusicCreatorPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+GameMusicCreatorPatternView::GameMusicCreatorPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     octaveOffset = 48;
     m_font = QFont("Game Music Creator");
     m_bitmapFont = BitmapFont("Game Music Creator");
@@ -19,7 +18,7 @@ GameMusicCreatorPatternView::GameMusicCreatorPatternView(Tracker* parent, const 
     m_colorCurrentRowForeground = QColor(189, 170, 0);
     m_colorDefault = QColor(0, 101, 239);
     m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorVolume = m_colorEmpty =
-        QColor(0, 16, 189);
+                                                                                  QColor(0, 16, 189);
     m_SeparatorRowNumber = m_SeparatorChannel = " ";
     m_RowLength = 40;
     m_xOffsetRow = 8;
@@ -35,10 +34,9 @@ GameMusicCreatorPatternView::GameMusicCreatorPatternView(Tracker* parent, const 
     m_renderVuMeter = false;
 }
 
-void GameMusicCreatorPatternView::paintAbove(QPainter* painter, const int height, int currentRow)
-{
+void GameMusicCreatorPatternView::paintAbove(QPainter *painter, const int height, int currentRow) {
     const QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-        "trackerview" + QDir::separator() + "gmc_top.png";
+                              "trackerview" + QDir::separator() + "gmc_top.png";
     const QImage spriteSheet(imagepath);
 
     // bottom border
@@ -47,8 +45,7 @@ void GameMusicCreatorPatternView::paintAbove(QPainter* painter, const int height
     painter->drawImage(targetBottomBar, spriteSheet, sourceBottomBar);
 }
 
-void GameMusicCreatorPatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void GameMusicCreatorPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     // left, right and channel borders below
     QColor colorBrown(99, 85, 66);
     QPen pen(colorBrown);
@@ -59,8 +56,7 @@ void GameMusicCreatorPatternView::paintBelow(QPainter* painter, int height, int 
     painter->drawLine(314, 0, 314, height);
     painter->drawLine(320, 0, 320, height);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         painter->drawLine(26 + chan * 64, 0, 25 + chan * 64, height);
         painter->drawLine(31 + chan * 64, 0, 30 + chan * 64, height);
     }
@@ -75,7 +71,7 @@ void GameMusicCreatorPatternView::paintBelow(QPainter* painter, int height, int 
 
     // left border
     QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-        "trackerview" + QDir::separator() + "gmc_top.png";
+                        "trackerview" + QDir::separator() + "gmc_top.png";
     QImage spriteSheet(imagepath);
     QRectF sourceLeftBar(1, 26, 5, 1);
     QRectF sourceRightBar(314, 26, 5, 1);
@@ -88,15 +84,15 @@ void GameMusicCreatorPatternView::paintBelow(QPainter* painter, int height, int 
     // channel borders
     QRectF sourceChannelBar(26, 26, 4, 1);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         QRectF targetChannelBar(26 + chan * 64, 0, 4, height);
         painter->drawImage(targetChannelBar, spriteSheet, sourceChannelBar);
     }
 }
 
-void::GameMusicCreatorPatternView::paintTop(QPainter* painter,Info* info, const unsigned int m_currentPattern, const unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::GameMusicCreatorPatternView::paintTop(QPainter *painter, Info *info, const unsigned int m_currentPattern,
+                                             const unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                             unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_height = 27;
     constexpr int left = 0;
 
@@ -104,7 +100,7 @@ void::GameMusicCreatorPatternView::paintTop(QPainter* painter,Info* info, const 
     constexpr QRectF target(left, 0, 320, 27);
 
     const QString imagepath = dataPath + RESOURCES_DIR +
-                        QDir::separator() + "trackerview" + QDir::separator() + "gmc_top.png";
+                              QDir::separator() + "trackerview" + QDir::separator() + "gmc_top.png";
     const QImage imageTop(imagepath);
     painter->drawImage(target, imageTop, source);
 
@@ -113,6 +109,6 @@ void::GameMusicCreatorPatternView::paintTop(QPainter* painter,Info* info, const 
     drawText(QString("%1").arg(m_currentPattern, 2, 10, QChar('0')), painter, left + 194, 14, infoFont());
     drawText(QString("%1").arg(info->numOrders, 2, 10, QChar('0')), painter, left + 300, 14, infoFont());
 }
-GameMusicCreatorPatternView::~GameMusicCreatorPatternView()
-{
+
+GameMusicCreatorPatternView::~GameMusicCreatorPatternView() {
 }

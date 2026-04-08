@@ -40,13 +40,16 @@ FMOD_CODEC_DESCRIPTION codec =
     PLUGIN_asap_NAME, // name.
     0x00012300, // version 0xAAAABBBB   A = major, B = minor.
     1, // whether or not force everything using this codec to be a stream
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE, // the time format we would like to accept into setposition/getposition
+    // the time formats we would like to accept into setposition/getposition
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE,
     &open, // open callback
     &close, // close callback.
     &read, // read callback
-    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &getLength,
     &setPosition, // setposition callback
-    nullptr, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    nullptr,
     nullptr, // sound create callback (don't need it)
     nullptr // getwaveformat
 };

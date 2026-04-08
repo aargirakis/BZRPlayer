@@ -5,9 +5,8 @@
 #include "DraggableTableView.h"
 #include "playlistmodel.h"
 
-DraggableTableView::DraggableTableView(QWidget* parent)
-        : QTableView(parent)
-{
+DraggableTableView::DraggableTableView(QWidget *parent)
+    : QTableView(parent) {
     setStyleSheet("QTableView::item:focus { outline: none; border: none; }");
     setWordWrap(false);
     setShowGrid(false);
@@ -28,8 +27,7 @@ DraggableTableView::DraggableTableView(QWidget* parent)
     setDefaultDropAction(Qt::MoveAction);
 }
 
-void DraggableTableView::dragMoveEvent(QDragMoveEvent* event)
-{
+void DraggableTableView::dragMoveEvent(QDragMoveEvent *event) {
     const QModelIndex index = indexAt(event->position().toPoint());
     int newDropRow;
 
@@ -46,8 +44,8 @@ void DraggableTableView::dragMoveEvent(QDragMoveEvent* event)
         viewport()->update();
     }
 
-    const auto* proxy = qobject_cast<QSortFilterProxyModel*>(model());
-    auto* playlistModel = qobject_cast<PlaylistModel*>(proxy->sourceModel());
+    const auto *proxy = qobject_cast<QSortFilterProxyModel *>(model());
+    auto *playlistModel = qobject_cast<PlaylistModel *>(proxy->sourceModel());
     playlistModel->setDropTargetRow(m_dropLineRow);
     QTableView::dragMoveEvent(event);
 }
@@ -56,7 +54,7 @@ void DraggableTableView::dropEvent(QDropEvent *event) {
     setCurrentIndex(QModelIndex());
     m_Delegate->setDragActive(false);
     m_dropLineRow = -1;
-    viewport()->update();  // erase drop line
+    viewport()->update(); // erase drop line
     QTableView::dropEvent(event);
 }
 
@@ -64,7 +62,7 @@ void DraggableTableView::dragLeaveEvent(QDragLeaveEvent *event) {
     setCurrentIndex(QModelIndex());
     m_Delegate->setDragActive(false);
     m_dropLineRow = -1;
-    viewport()->update();  // erase drop line
+    viewport()->update(); // erase drop line
     QTableView::dragLeaveEvent(event);
 }
 
@@ -76,7 +74,7 @@ void DraggableTableView::startDrag(Qt::DropActions supportedActions) {
 
     QSet<int> selectedRows;
 
-    for (const QModelIndex& index : indexes)
+    for (const QModelIndex &index: indexes)
         selectedRows.insert(index.row());
 
     // we need to sort the rows, otherwise it will be the picking order
@@ -86,10 +84,10 @@ void DraggableTableView::startDrag(Qt::DropActions supportedActions) {
     // serialize the row numbers into MIME data
     QByteArray encoded;
     QDataStream stream(&encoded, QIODevice::WriteOnly);
-    for (const int row : sortedRows)
+    for (const int row: sortedRows)
         stream << row;
 
-    auto* mimeData = new QMimeData();
+    auto *mimeData = new QMimeData();
     mimeData->setData("application/vnd.text.list", encoded);
 
     // create a drag pixmap showing the dragged rows
@@ -112,12 +110,12 @@ void DraggableTableView::setupDelegate() {
     m_Delegate = delegate;
 }
 
-QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) const {
+QPixmap DraggableTableView::createDragPixmap(const QList<int> &rows) const {
     if (rows.isEmpty())
         return QPixmap();
 
     const QFont font = this->font();
-    const int rowHeight = sizeHintForRow(rows.first())*2;
+    const int rowHeight = sizeHintForRow(rows.first()) * 2;
     const int width = viewport()->width();
     const int height = rowHeight * static_cast<int>(rows.count());
 
@@ -130,9 +128,9 @@ QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) const {
 
     int y = 0;
 
-    for (const int row : rows) {
+    for (const int row: rows) {
         QRect rect(0, y, width, rowHeight);
-        QModelIndex index = model()->index(row, 0);  // show first column
+        QModelIndex index = model()->index(row, 0); // show first column
         QString text = model()->data(index).toString();
 
         QColor bg = dragBackgroundColor;
@@ -147,7 +145,7 @@ QPixmap DraggableTableView::createDragPixmap(const QList<int>& rows) const {
     return pixmap;
 }
 
-void DraggableTableView::paintEvent(QPaintEvent* event) {
+void DraggableTableView::paintEvent(QPaintEvent *event) {
     QTableView::paintEvent(event);
 
     if (m_dropLineRow < 0 || m_dropLineRow > model()->rowCount())
@@ -175,12 +173,10 @@ void DraggableTableView::paintEvent(QPaintEvent* event) {
     painter.drawLine(0, y, viewport()->width(), y);
 }
 
-void DraggableTableView::setDragBackgroundColor(const QColor c)
-{
-    dragBackgroundColor=c;
+void DraggableTableView::setDragBackgroundColor(const QColor c) {
+    dragBackgroundColor = c;
 }
 
-void DraggableTableView::setDragTextColor(const QColor c)
-{
-    dragTextColor=c;
+void DraggableTableView::setDragTextColor(const QColor c) {
+    dragTextColor = c;
 }

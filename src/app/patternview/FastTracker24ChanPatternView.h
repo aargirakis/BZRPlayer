@@ -3,13 +3,16 @@
 
 #include "FastTracker2PatternView.h"
 
-class FastTracker24ChanPatternView : public FastTracker2PatternView
-{
+class FastTracker24ChanPatternView : public FastTracker2PatternView {
 public:
-    FastTracker24ChanPatternView(Tracker* parent, unsigned int channels);
+    FastTracker24ChanPatternView(Tracker *parent, unsigned int channels);
+
     ~FastTracker24ChanPatternView();
+
     int fontWidthRowNumber();
+
     QFont fontRowNumber();
+
     BitmapFont bitmapFontRowNumber();
 };
 

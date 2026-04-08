@@ -4,27 +4,27 @@
 #include <QDialog>
 #include "mainwindow.h"
 
-namespace Ui
-{
+namespace Ui {
     class MainWindow;
     class about;
 }
 
-class about : public QDialog
-{
+class about : public QDialog {
     Q_OBJECT
 
 public:
-    explicit about(QWidget* parent = nullptr);
+    explicit about(QWidget *parent = nullptr);
+
     ~about();
+
     void setVersion(const QString &) const;
 
 private slots:
     void on_pushButton_clicked();
 
 private:
-    MainWindow* mainWindow;
-    Ui::about* ui;
+    MainWindow *mainWindow;
+    Ui::about *ui;
 };
 
 #endif // ABOUT_H

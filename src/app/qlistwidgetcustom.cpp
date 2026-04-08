@@ -4,8 +4,7 @@
 #include <QPainter>
 #include "qlistwidgetcustom.h"
 
-QListWidgetCustom::QListWidgetCustom(QWidget *parent) : QListWidget(parent)
-{
+QListWidgetCustom::QListWidgetCustom(QWidget *parent) : QListWidget(parent) {
     setAcceptDrops(true);
     setDragEnabled(true);
     setDropIndicatorShown(false); // we'll draw manually
@@ -13,14 +12,13 @@ QListWidgetCustom::QListWidgetCustom(QWidget *parent) : QListWidget(parent)
     setDefaultDropAction(Qt::MoveAction);
 }
 
-void QListWidgetCustom::startDrag(Qt::DropActions supportedActions)
-{
+void QListWidgetCustom::startDrag(Qt::DropActions supportedActions) {
     if (currentRow() == 0) {
         qDebug() << "Top row is locked. Not draggable.";
         return; // don't start drag
     }
 
-    const QListWidgetItem* item = currentItem();
+    const QListWidgetItem *item = currentItem();
 
     if (!item) return;
 
@@ -53,8 +51,7 @@ void QListWidgetCustom::startDrag(Qt::DropActions supportedActions)
     drag->exec(Qt::MoveAction);
 }
 
-void QListWidgetCustom::dragMoveEvent(QDragMoveEvent* event)
-{
+void QListWidgetCustom::dragMoveEvent(QDragMoveEvent *event) {
     const QModelIndex index = indexAt(event->position().toPoint());
     int newDropRow;
 
@@ -78,8 +75,7 @@ void QListWidgetCustom::dragMoveEvent(QDragMoveEvent* event)
     event->acceptProposedAction();
 }
 
-void QListWidgetCustom::dropEvent(QDropEvent* event)
-{
+void QListWidgetCustom::dropEvent(QDropEvent *event) {
     QByteArray encoded = event->mimeData()->data("application/playlist.text.list");
     QDataStream stream(&encoded, QIODevice::ReadOnly);
     int sourceRow;
@@ -103,7 +99,7 @@ void QListWidgetCustom::dropEvent(QDropEvent* event)
     }
 
     // take and reinsert item
-    QListWidgetItem* item = takeItem(sourceRow);
+    QListWidgetItem *item = takeItem(sourceRow);
     insertItem(targetRow, item);
     setCurrentRow(targetRow);
 
@@ -113,15 +109,13 @@ void QListWidgetCustom::dropEvent(QDropEvent* event)
     viewport()->update();
 }
 
-void QListWidgetCustom::dragLeaveEvent(QDragLeaveEvent* event)
-{
+void QListWidgetCustom::dragLeaveEvent(QDragLeaveEvent *event) {
     QListWidget::dragLeaveEvent(event);
     m_dropLineRow = -1;
     viewport()->update();
 }
 
-void QListWidgetCustom::dragEnterEvent(QDragEnterEvent* event)
-{
+void QListWidgetCustom::dragEnterEvent(QDragEnterEvent *event) {
     if (event->mimeData()->hasFormat("application/playlist.text.list")) {
         event->acceptProposedAction();
     } else {
@@ -129,8 +123,7 @@ void QListWidgetCustom::dragEnterEvent(QDragEnterEvent* event)
     }
 }
 
-void QListWidgetCustom::paintEvent(QPaintEvent* event)
-{
+void QListWidgetCustom::paintEvent(QPaintEvent *event) {
     QListWidget::paintEvent(event);
 
     if (m_dropLineRow < 0 || m_dropLineRow > count())
@@ -156,12 +149,10 @@ void QListWidgetCustom::paintEvent(QPaintEvent* event)
     painter.drawLine(0, y, viewport()->width(), y);
 }
 
-void QListWidgetCustom::setDragBackgroundColor(const QColor c)
-{
-    dragBackgroundColor=c;
+void QListWidgetCustom::setDragBackgroundColor(const QColor c) {
+    dragBackgroundColor = c;
 }
 
-void QListWidgetCustom::setDragTextColor(const QColor c)
-{
-    dragTextColor=c;
+void QListWidgetCustom::setDragTextColor(const QColor c) {
+    dragTextColor = c;
 }

@@ -27,16 +27,18 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     PLUGIN_libopenmpt_NAME, // name.
     0x00010000, // version 0xAAAABBBB   A = major, B = minor.
     1, // whether or not force everything using this codec to be a stream
+    // the time formats we would like to accept into setposition/getposition
     FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE | FMOD_TIMEUNIT_MODROW | FMOD_TIMEUNIT_MODPATTERN |
     FMOD_TIMEUNIT_MODPATTERN_INFO | FMOD_TIMEUNIT_CURRENT_PATTERN_ROWS | FMOD_TIMEUNIT_MODVUMETER |
-    FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_SPEED |
-    FMOD_TIMEUNIT_BPM, // the time format we would like to accept into setposition/getposition
+    FMOD_TIMEUNIT_MODORDER | FMOD_TIMEUNIT_SPEED | FMOD_TIMEUNIT_BPM,
     &open, // open callback
     &close, // close callback.
     &read, // read callback
-    &getLength, // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
+    &getLength,
     &setPosition, // setposition callback
-    &getPosition, // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
+    &getPosition,
     nullptr, // sound create callback (don't need it)
     nullptr // getwaveformat
 };

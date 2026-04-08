@@ -1,9 +1,8 @@
 #include "OctaMED5ChanPatternView.h"
 #include "various.h"
 
-OctaMED5ChanPatternView::OctaMED5ChanPatternView(Tracker* parent, const unsigned int channels)
-    : MEDPatternView(parent, channels)
-{
+OctaMED5ChanPatternView::OctaMED5ChanPatternView(Tracker *parent, const unsigned int channels)
+    : MEDPatternView(parent, channels) {
     octaveOffset = 12;
     m_font = QFont("OctaMED Pro 4");
     m_font.setPixelSize(16);
@@ -21,7 +20,7 @@ OctaMED5ChanPatternView::OctaMED5ChanPatternView(Tracker* parent, const unsigned
     m_xOffsetRow = 0;
     m_SeparatorRowNumber = " ";
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorVolume =
-        m_colorEmpty = QColor(0, 0, 0);
+                                                                                m_colorEmpty = QColor(0, 0, 0);
     m_colorCurrentRowBackground = QColor(255, 255, 255);
     m_colorCurrentRowForeground = QColor(82, 121, 165);
     m_RowLength = 80;
@@ -35,8 +34,7 @@ OctaMED5ChanPatternView::OctaMED5ChanPatternView(Tracker* parent, const unsigned
     m_bottomFrameHeight = 3;
 }
 
-QString OctaMED5ChanPatternView::effect(BaseRow* row)
-{
+QString OctaMED5ChanPatternView::effect(BaseRow *row) {
     if (row->effect < 9 || row->effect == 0xC || row->effect == 0xB) return AbstractPatternView::effect(row);
 
     if (row->effect == 0x9) return "19";
@@ -68,8 +66,7 @@ QString OctaMED5ChanPatternView::effect(BaseRow* row)
     return "#" + AbstractPatternView::effect(row) + "#";
 }
 
-void OctaMED5ChanPatternView::paintAbove(QPainter* painter, const int height, int currentRow)
-{
+void OctaMED5ChanPatternView::paintAbove(QPainter *painter, const int height, int currentRow) {
     constexpr QColor colorWhite(255, 255, 255);
     constexpr QColor colorGrey(156, 154, 156);
 
@@ -80,18 +77,16 @@ void OctaMED5ChanPatternView::paintAbove(QPainter* painter, const int height, in
     painter->setFont(font);
 
     // channel numbers
-    for (int i = 0; i < 8; i++)
-    {
-        drawText(QString::number(i), painter, 56 + i * 72, 70,infoFont());
+    for (int i = 0; i < 8; i++) {
+        drawText(QString::number(i), painter, 56 + i * 72, 70, infoFont());
     }
 
-    drawText(QString::number(m_channels), painter, 24, 86,infoFont());
+    drawText(QString::number(m_channels), painter, 24, 86, infoFont());
 
     // channel separators
-    for (int chan = 0; chan < 7; chan++)
-    {
-        painter->fillRect(103 + chan * 72, 54, 1, height-54, colorWhite);
-        painter->fillRect(103 + chan * 72, height-20, 1, 18, colorGrey);
+    for (int chan = 0; chan < 7; chan++) {
+        painter->fillRect(103 + chan * 72, 54, 1, height - 54, colorWhite);
+        painter->fillRect(103 + chan * 72, height - 20, 1, 18, colorGrey);
     }
 
     painter->fillRect(0, height - 6, 640, 6, QColor(0, 0, 0));
@@ -101,8 +96,7 @@ void OctaMED5ChanPatternView::paintAbove(QPainter* painter, const int height, in
     painter->fillRect(1, height - 2, 1, 2, QColor(0, 0, 0));
 }
 
-void OctaMED5ChanPatternView::paintBelow(QPainter* painter, const int height, int currentRow)
-{
+void OctaMED5ChanPatternView::paintBelow(QPainter *painter, const int height, int currentRow) {
     constexpr auto colorGrey = QColor(156, 154, 156);
     // background
     painter->fillRect(0, 0, 640, height, colorGrey);
@@ -110,8 +104,9 @@ void OctaMED5ChanPatternView::paintBelow(QPainter* painter, const int height, in
     painter->fillRect(0, height / 2 - 18, 640, 18, m_colorCurrentRowBackground);
 }
 
-void::OctaMED5ChanPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::OctaMED5ChanPatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                         unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                         unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 54;
     QColor colorBase(156, 154, 156);
     QColor colorHilite(255, 255, 255);
@@ -169,12 +164,12 @@ void::OctaMED5ChanPatternView::paintTop(QPainter* painter,Info* info, unsigned i
     drawText("Sc", painter, left + 77, 44, infoFont());
     drawText("Sq", painter, left + 166, 44, infoFont());
     drawText(
-            QString("%1").arg(m_currentPosition + 1, 3, 10, QChar('0')) + "/" + QString("%1").arg(
-                    info->numOrders, 3, 10, QChar('0')), painter, left + 191, 44,infoFont());
+        QString("%1").arg(m_currentPosition + 1, 3, 10, QChar('0')) + "/" + QString("%1").arg(
+            info->numOrders, 3, 10, QChar('0')), painter, left + 191, 44, infoFont());
     drawText("B", painter, left + 255, 44, infoFont());
     drawText(
-            QString("%1").arg(m_currentPattern, 3, 10, QChar('0')) + "/" + QString("%1").arg(
-                    info->numPatterns - 1, 3, 10, QChar('0')) + ":", painter, left + 272, 44,infoFont());
+        QString("%1").arg(m_currentPattern, 3, 10, QChar('0')) + "/" + QString("%1").arg(
+            info->numPatterns - 1, 3, 10, QChar('0')) + ":", painter, left + 272, 44, infoFont());
 
     // underline
     painter->fillRect(left + 12, 42, 1, 2, colorShadow);
@@ -185,6 +180,6 @@ void::OctaMED5ChanPatternView::paintTop(QPainter* painter,Info* info, unsigned i
 
     drawText("Song: " + fromUtf8OrLatin1(info->title), painter, left + 5, 18, infoFont());
 }
-OctaMED5ChanPatternView::~OctaMED5ChanPatternView()
-{
+
+OctaMED5ChanPatternView::~OctaMED5ChanPatternView() {
 }

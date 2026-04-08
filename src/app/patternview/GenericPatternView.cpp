@@ -1,8 +1,7 @@
 #include "GenericPatternView.h"
 
-GenericPatternView::GenericPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+GenericPatternView::GenericPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     rowNumberOffset = 0;
     octaveOffset = 48;
 
@@ -12,7 +11,9 @@ GenericPatternView::GenericPatternView(Tracker* parent, const unsigned int chann
     m_font.setStyleStrategy(QFont::NoAntialias);
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(255, 255, 255);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        255, 255, 255);
     m_colorCurrentRowForeground = QColor(255, 255, 0);
     m_RowEnd = m_SeparatorRowNumber = m_SeparatorChannel = " ";
 
@@ -27,12 +28,10 @@ GenericPatternView::GenericPatternView(Tracker* parent, const unsigned int chann
     m_xOffsetRow = 8;
 }
 
-void GenericPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void GenericPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
 }
 
-void GenericPatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void GenericPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     QColor colorBase(73, 117, 130);
     QColor colorHilite(138, 219, 243);
     QColor colorShadow(24, 40, 44);
@@ -41,6 +40,5 @@ void GenericPatternView::paintBelow(QPainter* painter, int height, int currentRo
     painter->fillRect(0, height / 2 - 9, 52 + m_channels * 72 * m_fontWidth / 8, 9, colorBase);
 }
 
-GenericPatternView::~GenericPatternView()
-{
+GenericPatternView::~GenericPatternView() {
 }

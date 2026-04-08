@@ -11,7 +11,8 @@ void StarField::setCanvasSize(const int w, const int h) {
 
     if (W == m_w && H == m_h) return;
 
-    m_w = W; m_h = H;
+    m_w = W;
+    m_h = H;
 
     // if already initialized, respray current stars into the new bounds
     for (int i = 0; i < static_cast<int>(m_stars.size()); ++i) {
@@ -31,26 +32,26 @@ void StarField::setCount(int n) {
     reinitAllStars();
 }
 
-void StarField::setModeFromString(const QString& dir) {
+void StarField::setModeFromString(const QString &dir) {
     const QString d = dir.toLower();
 
-    if      (d == "right") m_mode = Mode::Right;
-    else if (d == "left")  m_mode = Mode::Left;
-    else if (d == "up")    m_mode = Mode::Up;
-    else if (d == "down")  m_mode = Mode::Down;
-    else if (d == "in")    m_mode = Mode::In;
-    else if (d == "out")   m_mode = Mode::Out;
-    else                   m_mode = Mode::Right;
+    if (d == "right") m_mode = Mode::Right;
+    else if (d == "left") m_mode = Mode::Left;
+    else if (d == "up") m_mode = Mode::Up;
+    else if (d == "down") m_mode = Mode::Down;
+    else if (d == "in") m_mode = Mode::In;
+    else if (d == "out") m_mode = Mode::Out;
+    else m_mode = Mode::Right;
 }
 
 QString StarField::modeToString() const {
     switch (m_mode) {
         case Mode::Right: return "right";
-        case Mode::Left:  return "left";
-        case Mode::Up:    return "up";
-        case Mode::Down:  return "down";
-        case Mode::In:    return "in";
-        case Mode::Out:   return "out";
+        case Mode::Left: return "left";
+        case Mode::Up: return "up";
+        case Mode::Down: return "down";
+        case Mode::In: return "in";
+        case Mode::Out: return "out";
     }
 
     return "right";
@@ -83,15 +84,15 @@ void StarField::buildPensAndBuckets() {
 
 void StarField::reinitAllStars() {
     for (int i = 0; i < m_count; ++i) {
-        if (m_mode == Mode::In)  reinitZoomStar(i, true);
+        if (m_mode == Mode::In) reinitZoomStar(i, true);
         else if (m_mode == Mode::Out) reinitZoomStar(i, false);
         else reinitLinearStar(i);
     }
 }
 
 void StarField::reinitLinearStar(const int i) {
-    Star& s = m_stars[i];
-    auto& rng = *QRandomGenerator::global();
+    Star &s = m_stars[i];
+    auto &rng = *QRandomGenerator::global();
 
     const int W = std::max(1, m_w);
     const int H = std::max(1, m_h);
@@ -110,12 +111,12 @@ void StarField::reinitLinearStar(const int i) {
 
     constexpr float J = 0.10f; // ±10% brightness variance
     const auto randVal = static_cast<float>(rng.generateDouble()); // [0,1)
-    s.jitter = 1.0f + J * (2.0f * randVal - 1.0f);     // 1 ± J
+    s.jitter = 1.0f + J * (2.0f * randVal - 1.0f); // 1 ± J
 }
 
 void StarField::reinitZoomStar(const int i, const bool farAway) {
-    Star& s = m_stars[i];
-    auto& rng = *QRandomGenerator::global();
+    Star &s = m_stars[i];
+    auto &rng = *QRandomGenerator::global();
 
     constexpr float R = 35.0f;
     const auto u = static_cast<float>(rng.generateDouble());
@@ -127,8 +128,8 @@ void StarField::reinitZoomStar(const int i, const bool farAway) {
     s.y = r * std::sin(theta);
 
     s.z = farAway
-          ? 60.0f + static_cast<float>(rng.generateDouble()) * 40.0f
-          : 1.0f  + static_cast<float>(rng.generateDouble()) * 19.0f;
+              ? 60.0f + static_cast<float>(rng.generateDouble()) * 40.0f
+              : 1.0f + static_cast<float>(rng.generateDouble()) * 19.0f;
 
     const float base = m_starSpeed ? static_cast<float>(m_starSpeed) : 1.0f;
     s.speed = base * (0.4f + 0.8f * static_cast<float>(rng.generateDouble()));
@@ -139,7 +140,7 @@ void StarField::reinitZoomStar(const int i, const bool farAway) {
     s.jitter = 1.0f + J * (2.0f * randVal - 1.0f);
 }
 
-void StarField::paint(QPainter* painter) {
+void StarField::paint(QPainter *painter) {
     if (!m_enabled) return;
 
     ensureInited();
@@ -186,12 +187,12 @@ void StarField::paint(QPainter* painter) {
                 break;
             case Mode::In:
             case Mode::Out: {
-
                 const float dz = s.speed * 0.35f; // per-star depth speed
                 if (m_mode == Mode::In) {
                     s.z -= dz;
                     if (s.z <= 1.0f) { reinitZoomStar(i, true); }
-                } else { // out
+                } else {
+                    // out
                     s.z += dz;
                     if (s.z >= 100.0f) { reinitZoomStar(i, false); }
                 }
@@ -203,7 +204,7 @@ void StarField::paint(QPainter* painter) {
                     static_cast<unsigned>(sx) < static_cast<unsigned>(W) &&
                     static_cast<unsigned>(sy) < static_cast<unsigned>(H)) {
                     constexpr float zRef = 12.0f; // distance at which stars are fully bright
-                    constexpr float pwr  = 1.4f;
+                    constexpr float pwr = 1.4f;
 
                     float lum = std::min(zRef / s.z, 1.0f);
                     lum = std::pow(lum, pwr);
@@ -220,11 +221,9 @@ void StarField::paint(QPainter* painter) {
         }
 
         if (m_mode == Mode::Left || m_mode == Mode::Right ||
-            m_mode == Mode::Up   || m_mode == Mode::Down) {
-
+            m_mode == Mode::Up || m_mode == Mode::Down) {
             if (static_cast<unsigned>(s.x) < static_cast<unsigned>(W) &&
                 static_cast<unsigned>(s.y) < static_cast<unsigned>(H)) {
-
                 const float base = m_starSpeed ? static_cast<float>(m_starSpeed) : 1.0f;
                 const float sMin = 0.4f * base;
                 const float sMax = 1.2f * base;

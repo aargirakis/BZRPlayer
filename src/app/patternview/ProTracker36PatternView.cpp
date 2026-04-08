@@ -2,9 +2,8 @@
 #include "mainwindow.h"
 #include "ProTracker36PatternView.h"
 
-ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+ProTracker36PatternView::ProTracker36PatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     rowNumberOffset = 0;
     octaveOffset = 48;
     m_font = QFont("Protracker 3.61");
@@ -21,7 +20,9 @@ ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, const unsigned
     m_bitmapFont4 = BitmapFont("Protracker 3.61 GUI");
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(51, 221, 255);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        51, 221, 255);
     m_colorCurrentRowForeground = QColor(0, 0, 187);
     m_emptyNote = " - ";
     m_RowEnd = m_SeparatorRowNumber = m_SeparatorChannel = " ";
@@ -84,18 +85,15 @@ ProTracker36PatternView::ProTracker36PatternView(Tracker* parent, const unsigned
     m_linearGradDark.setColorAt(1, QColor(0, 34, 0).rgb()); // green
 }
 
-BitmapFont ProTracker36PatternView::infoFont()
-{
+BitmapFont ProTracker36PatternView::infoFont() {
     return m_bitmapFont3;
 }
 
-BitmapFont ProTracker36PatternView::infoFont2()
-{
+BitmapFont ProTracker36PatternView::infoFont2() {
     return m_bitmapFont4;
 }
 
-void ProTracker36PatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void ProTracker36PatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(170, 170, 170);
     QColor colorHilite(255, 255, 255);
     QColor colorShadow(51, 0, 0);
@@ -103,24 +101,23 @@ void ProTracker36PatternView::paintAbove(QPainter* painter, int height, int curr
     // scrollbar
 
     QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-        "trackerview" + QDir::separator() + "protracker361_top.png";
+                        "trackerview" + QDir::separator() + "protracker361_top.png";
     QImage spriteSheet(imagepath);
 
     QRectF sourceScrollBarBg(0, 0, 13, 4);
 
-    int numberOfScrollBarBgPieces = (this->height()-topHeight())/4-1;
+    int numberOfScrollBarBgPieces = (this->height() - topHeight()) / 4 - 1;
 
-    for (int i = 0; i < numberOfScrollBarBgPieces; i++)
-    {
+    for (int i = 0; i < numberOfScrollBarBgPieces; i++) {
         QRectF targetLeftBar(520, 46 + i * 4, 13, 4);
         painter->drawImage(targetLeftBar, spriteSheet, sourceScrollBarBg);
     }
 
-    painter->fillRect(518, 42, 1, height-topHeight()-1, colorHilite);
-    painter->fillRect(519, 42, 1, height-topHeight()-1, colorShadow);
-    painter->fillRect(533, 42, 1, height-topHeight()-1, colorHilite);
-    painter->fillRect(534, 42, 1, height-topHeight()-1, colorShadow);
-    painter->fillRect(535, 42, 1, height-topHeight()-1, colorHilite);
+    painter->fillRect(518, 42, 1, height - topHeight() - 1, colorHilite);
+    painter->fillRect(519, 42, 1, height - topHeight() - 1, colorShadow);
+    painter->fillRect(533, 42, 1, height - topHeight() - 1, colorHilite);
+    painter->fillRect(534, 42, 1, height - topHeight() - 1, colorShadow);
+    painter->fillRect(535, 42, 1, height - topHeight() - 1, colorHilite);
 
     cout << "height: " << height << "\n";
     fflush(stdout);
@@ -134,20 +131,17 @@ void ProTracker36PatternView::paintAbove(QPainter* painter, int height, int curr
     // bottom
     painter->fillRect(8, height - 4, 535, 4, colorBase);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         int last = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             last = 17;
         }
 
         // top shadow
         painter->fillRect(43 + chan * 120, 40, 115 + last, 2, colorShadow);
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             last = 16;
         }
 
@@ -182,8 +176,7 @@ void ProTracker36PatternView::paintAbove(QPainter* painter, int height, int curr
     painter->fillRect(518, height - 6, 1, 2, colorBase);
 }
 
-void ProTracker36PatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void ProTracker36PatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     QColor colorBase(170, 170, 170);
     QColor colorHilite(255, 255, 255);
     QColor colorShadow(51, 0, 0);
@@ -200,8 +193,7 @@ void ProTracker36PatternView::paintBelow(QPainter* painter, int height, int curr
     painter->fillRect(535, 0, 8, height, colorBase);
     painter->fillRect(543, 0, 1, height, colorShadow);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // channel dividers
         painter->fillRect(38 + chan * 120, 0, 5, height, colorBase);
         painter->fillRect(38 + chan * 120, 0, 2, height, colorHilite);
@@ -234,8 +226,9 @@ void ProTracker36PatternView::paintBelow(QPainter* painter, int height, int curr
     painter->fillRect(8, height / 2 - 16, 509, 14, colorBase);
 }
 
-void::ProTracker36PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::ProTracker36PatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                         unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                         unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 41;
     QColor colorBase(170, 170, 170);
     QColor colorHilite(255, 255, 255);
@@ -288,8 +281,7 @@ void::ProTracker36PatternView::paintTop(QPainter* painter,Info* info, unsigned i
     painter->setPen(colorHilite);
     drawText("POS", painter, left + 12, top + 36, infoFont());
 
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
         painter->setPen(QColor(colorShadow));
         drawText("TRACK #" + QString::number(i + 1), painter, left + (69 + 120 * i), top + 38, infoFont(), 1);
         painter->setPen(colorHilite);
@@ -321,6 +313,6 @@ void::ProTracker36PatternView::paintTop(QPainter* painter,Info* info, unsigned i
     painter->fillRect(left + 543, 0, 1, 2, colorBase);
     painter->fillRect(left + 543, 22, 1, 2, colorBase);
 }
-ProTracker36PatternView::~ProTracker36PatternView()
-{
+
+ProTracker36PatternView::~ProTracker36PatternView() {
 }

@@ -1,7 +1,6 @@
 #include "BaseRow.h"
 
-BaseRow::BaseRow()
-{
+BaseRow::BaseRow() {
     step = 0;
     speed = 0;
     note = 0;

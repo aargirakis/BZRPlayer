@@ -1,20 +1,17 @@
 #include <sstream>
 #include "various.h"
 
-QString groupDigits(const int64_t number)
-{
+QString groupDigits(const int64_t number) {
     QString num = QString::number(number);
 
-    for (int i = num.length(); i > 0; i -= 3)
-    {
+    for (int i = num.length(); i > 0; i -= 3) {
         num.insert(i, " ");
     }
 
     return num.left(num.length() - 1);
 }
 
-QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds)
-{
+QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds) {
     string songLength;
 
     int ms;
@@ -27,8 +24,7 @@ QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds)
 
     unsigned int length = lenMs / 1000;
 
-    if (displayMilliseconds)
-    {
+    if (displayMilliseconds) {
         ms = lenMs % 1000;
     }
 
@@ -39,33 +35,23 @@ QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds)
     stringstream ss3;
     stringstream ss4;
 
-    if (displayMilliseconds)
-    {
-        if (ms < 10)
-        {
+    if (displayMilliseconds) {
+        if (ms < 10) {
             ss2 << "00" << ms;
-        }
-        else if (ms < 100)
-        {
+        } else if (ms < 100) {
             ss2 << "0" << ms;
-        }
-        else
-        {
+        } else {
             ss2 << ms;
         }
     }
 
-    if (sec < 10)
-    {
+    if (sec < 10) {
         ss3 << "0" << sec;
-    }
-    else
-    {
+    } else {
         ss3 << sec;
     }
 
-    if (displayMilliseconds)
-    {
+    if (displayMilliseconds) {
         ss2 >> strMs;
         strMs = "." + strMs;
     }
@@ -73,18 +59,14 @@ QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds)
     ss3 >> strSec;
 
 
-    if (hour > 0)
-    {
+    if (hour > 0) {
         stringstream ss5;
         string strHour;
 
-        if (min < 10)
-        {
+        if (min < 10) {
             ss4 << "0" << min;
             ss4 >> strMin;
-        }
-        else
-        {
+        } else {
             ss4 << min;
             ss4 >> strMin;
         }
@@ -92,22 +74,16 @@ QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds)
         ss5 << hour;
         ss5 >> strHour;
         songLength = strHour + ":" + strMin + ":" + strSec + strMs;
-    }
-    else
-    {
+    } else {
         ss4 << min;
         ss4 >> strMin;
         songLength = strMin + ":" + strSec + strMs;
     }
 
-    if (lenMs == -1)
-    {
-        if (displayMilliseconds)
-        {
+    if (lenMs == -1) {
+        if (displayMilliseconds) {
             songLength = "??:??.???";
-        }
-        else
-        {
+        } else {
             songLength = "??:??";
         }
     }

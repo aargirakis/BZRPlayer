@@ -3,20 +3,25 @@
 
 #include "patternview/AbstractPatternView.h"
 
-class Tracker
-{
+class Tracker {
 public:
     Tracker();
 
-    void paint(QPainter* painter, QPaintEvent* event);
-    void drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw=false);
-    void drawVuMeters(QPainter* painter) const;
-    void drawTop(QPainter* painter) const;
+    void paint(QPainter *painter, QPaintEvent *event);
+
+    void drawPattern(QPainter *painter, int visibleWidth, bool forceRedraw = false);
+
+    void drawVuMeters(QPainter *painter) const;
+
+    void drawTop(QPainter *painter) const;
+
     float scale;
     int m_visibleWidth;
+
     void init();
-    Info* info;
-    AbstractPatternView* trackerView;
+
+    Info *info;
+    AbstractPatternView *trackerView;
     unsigned int m_currentPattern;
     unsigned int m_currentPosition;
     unsigned int m_currentSpeed;
@@ -40,7 +45,7 @@ private:
     QSize m_lastMuteSize;
     std::vector<bool> m_prevMuteState;
 
-    unsigned  int m_currentSample;
+    unsigned int m_currentSample;
 
     QPen m_pen;
 

@@ -2,7 +2,7 @@
 #include <QtCore/QRegularExpression>
 #include "ScrollerEffect.h"
 
-bool ScrollerEffect::setFont(const QString& pngPath) {
+bool ScrollerEffect::setFont(const QString &pngPath) {
     if (!loadBitmapFont(pngPath)) return false;
 
     m_fontPathPng = pngPath;
@@ -29,11 +29,11 @@ void ScrollerEffect::setFontScaleY(int v) {
     recomputeBottomYMax();
 }
 
-void ScrollerEffect::setText(const QString& t) {
+void ScrollerEffect::setText(const QString &t) {
     m_srcText = t;
 
     const int pixelsPerChar = m_fontWidth > 0 ? m_fontWidth : 1;
-    const int spacesNeeded  = m_w / pixelsPerChar + 3;
+    const int spacesNeeded = m_w / pixelsPerChar + 3;
 
     const QString spaces(spacesNeeded, QChar(' '));
 
@@ -49,7 +49,7 @@ void ScrollerEffect::reinitForCanvas() {
     if (m_fontWidth <= 0) return;
 
     const int spacesNeeded = m_w / m_fontWidth + 3;
-    m_letters  = spacesNeeded;
+    m_letters = spacesNeeded;
     m_position = m_letters;
     m_sineAngle = 0.0;
 
@@ -64,11 +64,11 @@ void ScrollerEffect::rebuildAtlas() {
 
     if (raw.isNull()) return;
 
-    m_atlas = raw.scaled(raw.width()  * m_scaleXInt,
+    m_atlas = raw.scaled(raw.width() * m_scaleXInt,
                          raw.height() * m_scaleYInt,
                          Qt::IgnoreAspectRatio,
                          Qt::FastTransformation);
-    m_fontWidth  = m_fontWOrig * m_scaleXInt;
+    m_fontWidth = m_fontWOrig * m_scaleXInt;
     m_fontHeight = m_fontHOrig * m_scaleYInt;
 }
 
@@ -80,7 +80,7 @@ void ScrollerEffect::rebuildSlots() {
     for (int n = 0; n < m_letters; ++n) {
         const QChar ch = n < m_workText.size() ? m_workText.at(n) : QChar(' ');
         m_chars[n] = m_charset.indexOf(ch);
-        m_x[n]     = n * m_fontWidth;
+        m_x[n] = n * m_fontWidth;
     }
 }
 
@@ -117,25 +117,25 @@ QString ScrollerEffect::normalizeText(QString text) {
     static const QString eq2 = "=";
     static const QString qt1 = "`´‘’“”";
     static const QString qt2 = "\"";
-    static const QString one1="¹";
-    static const QString one2="1";
-    static const QString two1="²";
-    static const QString two2="2";
-    static const QString three1="³";
-    static const QString three2="3";
-    static const QString half1="½";
-    static const QString half2="1/2";
-    static const QString quarter1="¼";
-    static const QString quarter2="1/4";
-    static const QString threeq1="¾";
-    static const QString threeq2="3/4";
-    static const QString arrow1="→";
-    static const QString arrow2="->";
+    static const QString one1 = "¹";
+    static const QString one2 = "1";
+    static const QString two1 = "²";
+    static const QString two2 = "2";
+    static const QString three1 = "³";
+    static const QString three2 = "3";
+    static const QString half1 = "½";
+    static const QString half2 = "1/2";
+    static const QString quarter1 = "¼";
+    static const QString quarter2 = "1/4";
+    static const QString threeq1 = "¾";
+    static const QString threeq2 = "3/4";
+    static const QString arrow1 = "→";
+    static const QString arrow2 = "->";
 
     if (text.contains(QRegularExpression("[" + QRegularExpression::escape(
-            "$/:" + a1 + b1 + c1 + e1 + f1 + i1 + n1 + o1 + u1 + x1 + y1 + q1 + e3 + h1 + eq1 + qt1
-            + one1 + two1 + three1 + arrow1 + half1 + quarter1 + threeq1) + "]")))
-    {
+                                             "$/:" + a1 + b1 + c1 + e1 + f1 + i1 + n1 + o1 + u1 + x1 + y1 + q1 + e3 + h1
+                                             + eq1 + qt1
+                                             + one1 + two1 + three1 + arrow1 + half1 + quarter1 + threeq1) + "]"))) {
         static auto regex = QRegularExpression("[ëêéè]");
         text.replace(regex, "e");
     }
@@ -167,7 +167,7 @@ QString ScrollerEffect::normalizeText(QString text) {
     return text;
 }
 
-bool ScrollerEffect::loadBitmapFont(const QString& pngPath) {
+bool ScrollerEffect::loadBitmapFont(const QString &pngPath) {
     const int dot = pngPath.lastIndexOf('.');
 
     if (dot == -1) return false;
@@ -193,7 +193,7 @@ auto overlaps1D = [](const int a0, const int a1, const int b0, const int b1) {
     return a0 <= b1 && b0 <= a1;
 };
 
-void ScrollerEffect::paint(QPainter* p, const bool paused) {
+void ScrollerEffect::paint(QPainter *p, const bool paused) {
     if (!m_enabled) return;
 
     if (m_atlas.isNull() || m_charset.isEmpty() || m_letters <= 0) return;
@@ -211,7 +211,7 @@ void ScrollerEffect::paint(QPainter* p, const bool paused) {
                 y = y * m_scaleYInt;
             }
 
-            const int colW = m_scaleXInt;           // one column width (logical)
+            const int colW = m_scaleXInt; // one column width (logical)
             const int xPix = m_x[n] + xC;
 
             constexpr int tol = 1; // 1px padding on both sides
@@ -243,16 +243,17 @@ void ScrollerEffect::paint(QPainter* p, const bool paused) {
 
                     // draw with a flipped Y transform, cull using the unflipped top/bottom
                     const bool refVisible = xVisible &&
-                                            overlaps1D(refDrawY, refDrawY + m_fontHeight/2 - 1,
-                                                       -(m_h - 1), 0); // safe, but you can simply skip Y-cull for reflection if you want
+                                            overlaps1D(refDrawY, refDrawY + m_fontHeight / 2 - 1,
+                                                       -(m_h - 1), 0);
+                    // safe, but you can simply skip Y-cull for reflection if you want
 
                     if (refVisible) {
                         p->setOpacity(m_reflectionOpacity);
                         p->setTransform(QTransform().scale(m_scaleX, -1 * m_scaleY));
                         p->drawPixmap(xPix, refDrawY,
-                                            colW, m_fontHeight / 2,
-                                            m_atlas, glyph * m_fontWidth + xC, 0,
-                                            colW, m_fontHeight);
+                                      colW, m_fontHeight / 2,
+                                      m_atlas, glyph * m_fontWidth + xC, 0,
+                                      colW, m_fontHeight);
                     }
                 }
             }
@@ -271,7 +272,6 @@ void ScrollerEffect::paint(QPainter* p, const bool paused) {
                 ++m_position;
 
                 if (m_position >= m_workText.size()) m_position = 0;
-
             }
         }
     }

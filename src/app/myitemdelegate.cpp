@@ -1,27 +1,20 @@
 #include "myitemdelegate.h"
 
-MyItemDelegate::MyItemDelegate(QObject* parent)
-
-{
+MyItemDelegate::MyItemDelegate(QObject *parent) {
 }
 
-void MyItemDelegate::paint(QPainter* pPainter, const QStyleOptionViewItem& rOption, const QModelIndex& rIndex) const
-{
+void MyItemDelegate::paint(QPainter *pPainter, const QStyleOptionViewItem &rOption, const QModelIndex &rIndex) const {
     QStyleOptionViewItem ViewOption(rOption);
 
 
     if (const auto ItemForegroundColor = rIndex.data(Qt::ForegroundRole).value<QColor>();
-        ItemForegroundColor.isValid() && ItemForegroundColor != rOption.palette.color(QPalette::WindowText))
-    {
+        ItemForegroundColor.isValid() && ItemForegroundColor != rOption.palette.color(QPalette::WindowText)) {
         QColor mainTextColorDimmed = mainTextColor;
         mainTextColorDimmed.setAlpha(128);
 
-        if (ItemForegroundColor == mainColor)
-        {
+        if (ItemForegroundColor == mainColor) {
             ViewOption.palette.setColor(QPalette::HighlightedText, mainColor);
-        }
-        else
-        {
+        } else {
             ViewOption.palette.setColor(QPalette::HighlightedText, mainTextColorDimmed);
         }
     }
@@ -38,20 +31,17 @@ void MyItemDelegate::paint(QPainter* pPainter, const QStyleOptionViewItem& rOpti
     QStyledItemDelegate::paint(pPainter, ViewOption, rIndex);
 }
 
-void MyItemDelegate::setDragActive(const bool active)
-{
+void MyItemDelegate::setDragActive(const bool active) {
     if (m_dragActive != active) {
         m_dragActive = active;
-        emit repaintRequested();  // request repaint
+        emit repaintRequested(); // request repaint
     }
 }
 
-void MyItemDelegate::setMainColor(const QColor c)
-{
+void MyItemDelegate::setMainColor(const QColor c) {
     mainColor = c;
 }
 
-void MyItemDelegate::setMainTextColor(const QColor c)
-{
+void MyItemDelegate::setMainTextColor(const QColor c) {
     mainTextColor = c;
 }

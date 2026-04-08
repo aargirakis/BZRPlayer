@@ -15,8 +15,7 @@ Channels::Channels(MainWindow *mw, QWidget *parent) : QWidget(parent) {
     int row = 0;
     int col = 0;
 
-    for (int i = 0; i < maxChannels; i++)
-    {
+    for (int i = 0; i < maxChannels; i++) {
         channels.append(new ButtonOscilloscope(this, i));
 
         channels.at(i)->setVisible(false);
@@ -35,8 +34,7 @@ Channels::Channels(MainWindow *mw, QWidget *parent) : QWidget(parent) {
         gridlayout->addWidget(channels.at(i), row, col);
         col++;
 
-        if (col == 4)
-        {
+        if (col == 4) {
             col = 0;
             row++;
         }
@@ -48,8 +46,7 @@ Channels::Channels(MainWindow *mw, QWidget *parent) : QWidget(parent) {
 }
 
 void Channels::updateChannelColors() const {
-    for (int i = 0; i < maxChannels; i++)
-    {
+    for (int i = 0; i < maxChannels; i++) {
         channels.at(i)->setEnabledColor(QColor(m_root->colorMain.left(7)));
         channels.at(i)->setDisabledColor(QColor(m_root->colorMedium.left(7)));
         channels.at(i)->setTextColor(QColor(m_root->colorMainText.left(7)));
@@ -60,10 +57,8 @@ void Channels::updateChannelColors() const {
 void Channels::updateChannels() const {
     const auto &info = SoundManager::getInstance().info;
 
-    if (info == nullptr)
-    {
-        for (unsigned int i = 0; i < maxChannels; i++)
-        {
+    if (info == nullptr) {
+        for (unsigned int i = 0; i < maxChannels; i++) {
             channels.at(i)->setVisible(false);
             channels.at(i)->update();
         }
@@ -71,8 +66,7 @@ void Channels::updateChannels() const {
         return;
     }
 
-    for (unsigned int i = 0; i < maxChannels; i++)
-    {
+    for (unsigned int i = 0; i < maxChannels; i++) {
         channels.at(i)->setChecked(true);
 
         if (i < info->numChannels &&
@@ -87,9 +81,7 @@ void Channels::updateChannels() const {
              info->plugin == PLUGIN_libxmp)) {
             channels.at(i)->setVisible(true);
             channels.at(i)->update();
-        }
-        else
-        {
+        } else {
             channels.at(i)->setVisible(false);
             channels.at(i)->update();
         }
@@ -112,8 +104,7 @@ void Channels::muteAllChannels() const {
     uint128_t mask = 0;
     QString maskStr = "";
 
-    for (int i = 0; i < numChannels; i++)
-    {
+    for (int i = 0; i < numChannels; i++) {
         mask |= 1 << i;
         maskStr += "0";
         channels.at(i)->setChecked(false);
@@ -121,8 +112,7 @@ void Channels::muteAllChannels() const {
 
     if (info->plugin == PLUGIN_libopenmpt ||
         info->plugin == PLUGIN_libvgm ||
-        info->plugin == PLUGIN_libxmp)
-    {
+        info->plugin == PLUGIN_libxmp) {
         mask = 0;
     }
 
@@ -135,8 +125,7 @@ void Channels::unmuteAllChannels() const {
     const unsigned int numChannels = info->numChannels;
     QString maskStr = "";
 
-    for (int i = 0; i < numChannels; i++)
-    {
+    for (int i = 0; i < numChannels; i++) {
         maskStr += "1";
         channels.at(i)->setChecked(true);
     }
@@ -152,25 +141,20 @@ void Channels::muteChannels() const {
     uint128_t mask = 0;
     QString maskStr = "";
 
-    for (int i = 0; i < numChannels; i++)
-    {
-        if (!channels.at(i)->isChecked())
-        {
+    for (int i = 0; i < numChannels; i++) {
+        if (!channels.at(i)->isChecked()) {
             mask |= 1 << i;
             maskStr += "0";
-        }
-        else
-        {
+        } else {
             maskStr += "1";
         }
     }
 
     if (info->plugin == PLUGIN_libopenmpt ||
         info->plugin == PLUGIN_libvgm ||
-        info->plugin == PLUGIN_libxmp)
-    {
+        info->plugin == PLUGIN_libxmp) {
         mask = 0;
     }
 
-   sm.muteChannels(mask, maskStr);
+    sm.muteChannels(mask, maskStr);
 }

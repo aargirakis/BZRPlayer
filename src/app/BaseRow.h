@@ -3,10 +3,10 @@
 
 #include <string>
 
-class BaseRow
-{
+class BaseRow {
 public:
     BaseRow();
+
     int effect;
     int effect2; // for ahx/hively pattern view
     int note;

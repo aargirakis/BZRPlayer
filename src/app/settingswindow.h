@@ -3,24 +3,26 @@
 
 #include "mainwindow.h"
 
-namespace Ui
-{
+namespace Ui {
     class MainWindow;
     class settingsWindow;
 }
 
-class settingsWindow : public QDialog
-{
+class settingsWindow : public QDialog {
     Q_OBJECT
 
 public:
-    explicit settingsWindow(QWidget* parent = nullptr);
+    explicit settingsWindow(QWidget *parent = nullptr);
+
     ~settingsWindow();
 
-    bool eventFilter(QObject* obj, QEvent* event);
+    bool eventFilter(QObject *obj, QEvent *event);
+
     void changeStyleSheetColor();
+
     void saveSettingsLibsidplayfp() const;
-    void setUiLineEditLibsidplayfpHvscSonglengthsPath(const QString& text) const;
+
+    void setUiLineEditLibsidplayfpHvscSonglengthsPath(const QString &text) const;
 
 private slots:
     void updateScrollText() const;
@@ -45,14 +47,15 @@ private slots:
 
     void on_buttonOK_clicked();
 
-    void on_comboBoxReverb_textActivated(const QString& arg1) const;
+    void on_comboBoxReverb_textActivated(const QString &arg1) const;
 
     void on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked();
+
     void on_buttonGeneral_clicked() const;
 
     void on_buttonPlugins_clicked() const;
 
-    void on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) const;
+    void on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) const;
 
     void on_buttonAppearanceMainColor_clicked();
 
@@ -104,9 +107,9 @@ private slots:
 
     void on_sliderRotatingObjectModelSize_valueChanged(int value) const;
 
-    void on_comboBoxRotatingObjectModel_textActivated(const QString& arg1) const;
+    void on_comboBoxRotatingObjectModel_textActivated(const QString &arg1) const;
 
-    void on_comboBoxRotatingObjectMaterial_textActivated(const QString& arg1) const;
+    void on_comboBoxRotatingObjectMaterial_textActivated(const QString &arg1) const;
 
     void on_buttonVuMeterPeakColor_clicked();
 
@@ -153,6 +156,7 @@ private slots:
     void on_buttonAppearanceSelectionColor_clicked();
 
     void loadBitmapFont(const QString &) const;
+
     void loadBitmapFontPrinter(const QString &) const;
 
     void on_checkBoxMilliseconds_toggled(bool isChecked) const;
@@ -187,7 +191,7 @@ private slots:
 
     void on_sliderStarfieldSpeed_valueChanged(int value) const;
 
-    void on_comboBoxStarfieldDirection_textActivated(const QString& arg1) const;
+    void on_comboBoxStarfieldDirection_textActivated(const QString &arg1) const;
 
     void on_checkBoxScrollerSinusFontScaling_toggled(bool isChecked) const;
 
@@ -203,7 +207,7 @@ private slots:
 
     void on_checkBoxVisualizerMaintainAspectRatio_toggled(bool isChecked) const;
 
-    void on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString& arg1) const;
+    void on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString &arg1) const;
 
     void on_buttonLibsidplayfpHvscSonglengthsDownload_clicked();
 
@@ -253,31 +257,51 @@ private slots:
 
 private:
     void updateColorButtons() const;
+
     void forceUpdateToSliders() const;
+
     void updateCheckBoxes() const;
 
     void loadSettingsAdplug() const;
+
     void loadSettingsFmod() const;
+
     void loadSettingsHivelytracker() const;
+
     void loadSettingsLibopenmpt() const;
+
     void loadSettingsLibsidplayfp() const;
+
     void loadSettingsLibvgm() const;
+
     void loadSettingsLibxmp() const;
+
     void loadSettingsSndhPlayer() const;
+
     void loadSettingsUade() const;
+
     void loadSettingsVgmstream() const;
+
     void saveSettingsAdplug() const;
+
     void saveSettingsFmod() const;
+
     void saveSettingsHivelytracker() const;
+
     void saveSettingsLibopenmpt() const;
+
     void saveSettingsLibvgm() const;
+
     void saveSettingsLibxmp() const;
+
     void saveSettingsSndhPlayer() const;
+
     void saveSettingsUade() const;
+
     void saveSettingsVgmstream() const;
 
-    MainWindow* mainWindow;
-    Ui::settingsWindow* ui;
+    MainWindow *mainWindow;
+    Ui::settingsWindow *ui;
 };
 
 #endif // SETTINGSWINDOW_H

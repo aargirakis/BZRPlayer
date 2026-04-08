@@ -7,31 +7,25 @@
 
 using namespace std;
 
-class Info
-{
+class Info {
 public:
-    Info()
-    {
+    Info() {
         clear();
     }
 
-    ~Info()
-    {
+    ~Info() {
     }
 
-    bool getSeekable() const
-    {
+    bool getSeekable() const {
         if (plugin == 0) return true;
         return seekable;
     }
 
-    void setSeekable(const bool seekable)
-    {
+    void setSeekable(const bool seekable) {
         this->seekable = seekable;
     }
 
-    void clear()
-    {
+    void clear() {
         tempPath = "";
         dataPath = "";
         libPath = "";
@@ -153,8 +147,7 @@ public:
         isSeamlessLoopActive = false;
     }
 
-    void clearMemory()
-    {
+    void clearMemory() {
         delete[] modVuMeters;
         delete[] samplesSize;
         delete[] samplesLoopStart;
@@ -164,8 +157,7 @@ public:
         delete[] samplesFineTune;
         delete[] samples;
 
-        if (samplesData)
-        {
+        if (samplesData) {
             //TODO
             // not sure of this is a memory leak or how to free the memory
             //            for( int i = 0 ; i < numSamples ; i++ )
@@ -219,10 +211,8 @@ public:
         modTrackPositions.clear();
         modRows.clear();
 
-        for (auto itr = patterns.begin(); itr != patterns.end(); ++itr)
-        {
-            for (auto itr2 = itr->begin(); itr2 != itr->end(); ++itr2)
-            {
+        for (auto itr = patterns.begin(); itr != patterns.end(); ++itr) {
+            for (auto itr2 = itr->begin(); itr2 != itr->end(); ++itr2) {
                 delete *itr2;
             }
 
@@ -252,41 +242,41 @@ public:
     string comments;
     string date;
     string fade;
-    string* samples;
-    unsigned char** samplesData;
-    unsigned int* samplesSize;
-    unsigned int* samplesLoopStart;
-    unsigned int* samplesLoopEnd;
-    unsigned int* samplesLoopOffset;
-    unsigned int* samplesLoopLength;
-    int* samplesFineTune;
-    unsigned short* samplesVolume;
-    bool* samples16Bit;
-    bool* samplesStereo;
+    string *samples;
+    unsigned char **samplesData;
+    unsigned int *samplesSize;
+    unsigned int *samplesLoopStart;
+    unsigned int *samplesLoopEnd;
+    unsigned int *samplesLoopOffset;
+    unsigned int *samplesLoopLength;
+    int *samplesFineTune;
+    unsigned short *samplesVolume;
+    bool *samples16Bit;
+    bool *samplesStereo;
     int numInstruments;
-    string* instruments;
-    unsigned char* instrumentsBaseNote;
-    unsigned char* instrumentsVolume;
-    unsigned short* instrumentsCutoff;
-    unsigned char* instrumentsResonance;
-    unsigned short* instrumentsPulseWidth;
-    unsigned char* instrumentsEnvAttack;
-    unsigned char* instrumentsEnvDelay;
-    unsigned char* instrumentsEnvSustain;
-    unsigned char* instrumentsEnvRelease;
-    unsigned char* instrumentsFilterType;
-    unsigned long* instrumentsFlags;
-    unsigned long* instrumentsCydFlags;
-    unsigned char* instrumentsRingMod;
-    unsigned char* instrumentsSyncSource;
-    unsigned char* instrumentsFilterLowerLimit;
-    unsigned char* instrumentsFilterUpperLimit;
-    unsigned char* instrumentsFilterSpeed;
-    unsigned char* instrumentsWavelen;
-    char* instrumentsQuantize;
-    unsigned char* instrumentsVolume1;
-    unsigned char* instrumentsVolume2;
-    char* instrumentsNumber;
+    string *instruments;
+    unsigned char *instrumentsBaseNote;
+    unsigned char *instrumentsVolume;
+    unsigned short *instrumentsCutoff;
+    unsigned char *instrumentsResonance;
+    unsigned short *instrumentsPulseWidth;
+    unsigned char *instrumentsEnvAttack;
+    unsigned char *instrumentsEnvDelay;
+    unsigned char *instrumentsEnvSustain;
+    unsigned char *instrumentsEnvRelease;
+    unsigned char *instrumentsFilterType;
+    unsigned long *instrumentsFlags;
+    unsigned long *instrumentsCydFlags;
+    unsigned char *instrumentsRingMod;
+    unsigned char *instrumentsSyncSource;
+    unsigned char *instrumentsFilterLowerLimit;
+    unsigned char *instrumentsFilterUpperLimit;
+    unsigned char *instrumentsFilterSpeed;
+    unsigned char *instrumentsWavelen;
+    char *instrumentsQuantize;
+    unsigned char *instrumentsVolume1;
+    unsigned char *instrumentsVolume2;
+    char *instrumentsNumber;
     float playerFrequency;
     float chipFrequency;
     int stereoType;
@@ -297,7 +287,7 @@ public:
     string method;
     unsigned int samplerate;
     string sampleType;
-    uint32_t* waveformDisplay;
+    uint32_t *waveformDisplay;
 
     float volumeAmplification;
 
@@ -353,12 +343,12 @@ public:
     string compatibility;
 
     vector<unsigned char> modTrackPositions;
-    vector<BaseRow*> modRows;
-    vector<vector<BaseRow*>> patterns;
+    vector<BaseRow *> modRows;
+    vector<vector<BaseRow *> > patterns;
 
     unsigned int modPatternRows; // how many rows modPattern has
     unsigned int modPatternRestart;
-    unsigned char* modVuMeters;
+    unsigned char *modVuMeters;
 
     bool isPlayModeRepeatSongEnabled;
     bool isContinuousPlaybackActive;

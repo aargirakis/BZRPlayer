@@ -2,12 +2,12 @@
 #include <QtCore/QRegularExpression>
 #include "PrinterEffect.h"
 
-void PrinterEffect::setText(const QString& t) {
+void PrinterEffect::setText(const QString &t) {
     m_text = t.toUpper().trimmed();
     relayoutRows();
 }
 
-void PrinterEffect::setFont(const QString& pngPath) {
+void PrinterEffect::setFont(const QString &pngPath) {
     if (!loadBitmapFont(pngPath)) return;
 
     m_fontPngPath = pngPath;
@@ -31,7 +31,7 @@ void PrinterEffect::setFontScaleY(int v) {
     relayoutRows();
 }
 
-void PrinterEffect::paint(QPainter* p) {
+void PrinterEffect::paint(QPainter *p) {
     if (!m_enabled) return;
 
     if (m_rows.isEmpty() || m_atlas.isNull() || m_charset.isEmpty()) return;
@@ -50,7 +50,7 @@ void PrinterEffect::paint(QPainter* p) {
     int pos = 0;
 
     for (int r = 0; r < m_rows.size(); ++r) {
-        const QString& row = m_rows[r];
+        const QString &row = m_rows[r];
         const int rowWidthPx = row.size() * m_fontWidth;
         const int finalX = m_w / 2 - rowWidthPx / 2;
 
@@ -71,10 +71,10 @@ void PrinterEffect::paint(QPainter* p) {
                 p->setOpacity(m_fadeOpacity * m_reflectionOpacity);
                 p->setTransform(QTransform().scale(m_scaleX, -1 * m_scaleY));
                 p->drawPixmap(
-                        x,
-                        (reflectionY + (m_rows.size() - r * (m_fontHeight + m_verticalRowSpace) / 2)) * -1,
-                        m_fontWidth, m_fontHeight / 2,
-                        m_atlas, g * m_fontWidth, 0, m_fontWidth, m_fontHeight
+                    x,
+                    (reflectionY + (m_rows.size() - r * (m_fontHeight + m_verticalRowSpace) / 2)) * -1,
+                    m_fontWidth, m_fontHeight / 2,
+                    m_atlas, g * m_fontWidth, 0, m_fontWidth, m_fontHeight
                 );
             }
         }
@@ -85,7 +85,7 @@ void PrinterEffect::paint(QPainter* p) {
     p->setTransform(QTransform()); // reset
 }
 
-bool PrinterEffect::loadBitmapFont(const QString& pngPath) {
+bool PrinterEffect::loadBitmapFont(const QString &pngPath) {
     const int dot = pngPath.lastIndexOf('.');
 
     if (dot == -1) return false;
@@ -118,7 +118,7 @@ void PrinterEffect::rebuildAtlas() {
                          raw.height() * m_scaleYInt,
                          Qt::IgnoreAspectRatio,
                          Qt::FastTransformation);
-    m_fontWidth  = m_fontWOrig * m_scaleXInt;
+    m_fontWidth = m_fontWOrig * m_scaleXInt;
     m_fontHeight = m_fontHOrig * m_scaleYInt;
 }
 
@@ -149,7 +149,7 @@ void PrinterEffect::relayoutRows() {
 
     for (int i = 0; i < m_rows.size(); ++i) {
         if (i < m_rows.size() - 1 && m_rows[i].size() + m_rows[i + 1].size() <= maxCharsPerRow) {
-            merged.append(QString(m_rows[i] + m_rows[i+1]).trimmed());
+            merged.append(QString(m_rows[i] + m_rows[i + 1]).trimmed());
             ++i;
         } else {
             merged.append(m_rows[i].trimmed());
@@ -165,11 +165,11 @@ void PrinterEffect::rebuildGlyphs() {
     m_glyphs.clear();
     int total = 0;
 
-    for (const auto& r : m_rows) total += r.size();
+    for (const auto &r: m_rows) total += r.size();
 
     m_glyphs.reserve(total);
 
-    for (const auto& r : m_rows) {
+    for (const auto &r: m_rows) {
         for (int i = 0; i < r.size(); ++i) {
             const int idx = m_charset.indexOf(r.at(i));
             m_glyphs.push_back(idx); // -1 if not found -> skip at draw time

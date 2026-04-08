@@ -2,9 +2,8 @@
 #include "mainwindow.h"
 #include "UltimateSoundTrackerPatternView.h"
 
-UltimateSoundTrackerPatternView::UltimateSoundTrackerPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+UltimateSoundTrackerPatternView::UltimateSoundTrackerPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     rowNumberOffset = 0;
     octaveOffset = 48;
     m_font2 = QFont("UST Double Height");
@@ -23,7 +22,7 @@ UltimateSoundTrackerPatternView::UltimateSoundTrackerPatternView(Tracker* parent
     instrumentPad = false;
     m_colorCurrentRowBackground = QColor(156, 117, 82);
     m_colorDefault = m_ColorEffect = m_ColorRowNumber = m_ColorInstrument = m_ColorParameter = m_ColorVolume =
-        m_colorEmpty = QColor(0, 101, 156);
+                                                                                m_colorEmpty = QColor(0, 101, 156);
     m_RowEnd = m_SeparatorRowNumber = m_SeparatorChannel = "'";
     m_RowLength = 40;
     m_xOffsetRow = 9;
@@ -70,30 +69,25 @@ UltimateSoundTrackerPatternView::UltimateSoundTrackerPatternView(Tracker* parent
     m_linearGradDark.setColorAt(1, QColor(0, 99, 0).rgb()); // green
 }
 
-QFont UltimateSoundTrackerPatternView::currentRowFont()
-{
+QFont UltimateSoundTrackerPatternView::currentRowFont() {
     return m_font2;
 }
 
-BitmapFont UltimateSoundTrackerPatternView::currentRowBitmapFont()
-{
+BitmapFont UltimateSoundTrackerPatternView::currentRowBitmapFont() {
     return m_bitmapFont2;
 }
 
-void UltimateSoundTrackerPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void UltimateSoundTrackerPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     // bottom
 
     QColor colorBase(156, 117, 82);
     QColor colorHilite(173, 138, 99);
     QColor colorShadow(82, 48, 16);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
 
@@ -107,8 +101,7 @@ void UltimateSoundTrackerPatternView::paintAbove(QPainter* painter, int height, 
     painter->fillRect(0, height - 1, 319, 1, colorShadow);
 }
 
-void UltimateSoundTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void UltimateSoundTrackerPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     int left = 3;
 
     QColor colorBase(156, 117, 82);
@@ -133,8 +126,7 @@ void UltimateSoundTrackerPatternView::paintBelow(QPainter* painter, int height, 
     painter->setPen(pen);
     painter->drawLine(left - 1, 0, left - 1, height);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
@@ -150,8 +142,7 @@ void UltimateSoundTrackerPatternView::paintBelow(QPainter* painter, int height, 
 
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
 
@@ -176,8 +167,7 @@ void UltimateSoundTrackerPatternView::paintBelow(QPainter* painter, int height, 
     painter->fillRect(left - 2, height / 2 - 2 + topOffset, 317, 10, colorBase);
 
     // vu-meters base
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         painter->fillRect(left + 31 + chan * 72 + 22, height / 2 - 4 + topOffset, 2, 1, colorGreenHiliteColor);
         painter->fillRect(left + 33 + chan * 72 + 22, height / 2 - 4 + topOffset, 4, 1, colorGreenBaseColor);
         painter->fillRect(left + 37 + chan * 72 + 22, height / 2 - 4 + topOffset, 2, 1, colorGreenShadowColor);
@@ -190,8 +180,9 @@ void UltimateSoundTrackerPatternView::paintBelow(QPainter* painter, int height, 
     painter->fillRect(left - 1, height / 2 + 10 + topOffset, 25, 2, colorShadow);
 }
 
-void::UltimateSoundTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::UltimateSoundTrackerPatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                                 unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                                 unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 32;
     QColor colorBase(156, 117, 82);
     QColor colorHilite(173, 138, 99);
@@ -235,8 +226,8 @@ void::UltimateSoundTrackerPatternView::paintTop(QPainter* painter,Info* info, un
     drawText(QString("%1").arg(getCurrentSample() + 1, 2, 16, QChar('0')).toUpper(), painter,
              left + 26, top + 22, infoFont());
     drawText(
-            QString("%1").arg(info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
-                    toUpper(), painter, left + 143, top + 22, infoFont());
+        QString("%1").arg(info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
+        toUpper(), painter, left + 143, top + 22, infoFont());
     m_pen.setWidth(1);
 
     m_pen.setColor(colorHilite);
@@ -272,6 +263,5 @@ void::UltimateSoundTrackerPatternView::paintTop(QPainter* painter,Info* info, un
     painter->drawLine(left + 320, 0, left + 320, 32);
 }
 
-UltimateSoundTrackerPatternView::~UltimateSoundTrackerPatternView()
-{
+UltimateSoundTrackerPatternView::~UltimateSoundTrackerPatternView() {
 }

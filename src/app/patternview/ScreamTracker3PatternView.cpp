@@ -2,9 +2,8 @@
 #include "mainwindow.h"
 #include "ScreamTracker3PatternView.h"
 
-ScreamTracker3PatternView::ScreamTracker3PatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+ScreamTracker3PatternView::ScreamTracker3PatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     octaveOffset = 24;
     volumeEnabled = true;
     rowNumberOffset = 0;
@@ -14,7 +13,7 @@ ScreamTracker3PatternView::ScreamTracker3PatternView(Tracker* parent, const unsi
     m_colorCurrentRowForeground = QColor(0, 0, 0);
 
     m_colorDefault = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorVolume = m_colorEmpty =
-        QColor(152, 148, 144);
+                                                                                QColor(152, 148, 144);
 
     m_ColorRowNumber = QColor(80, 68, 40);
     //m_ColorRowNumberBackground ="a49054";
@@ -51,15 +50,13 @@ ScreamTracker3PatternView::ScreamTracker3PatternView(Tracker* parent, const unsi
     m_topHeight = 16;
 }
 
-void ScreamTracker3PatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void ScreamTracker3PatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(164, 144, 84);
     QColor colorHilite(252, 220, 132);
     QColor colorShadow(80, 68, 40);
 
     // channel separators
-    for (unsigned int chan = 1; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 1; chan < m_channels; chan++) {
         painter->fillRect(32 + chan * 112, 0, 2, height, QColor(0, 0, 0));
         painter->fillRect(34 + chan * 112, 0, 4, height, colorBase);
         painter->fillRect(38 + chan * 112, 0, 2, height, QColor(0, 0, 0));
@@ -87,7 +84,7 @@ void ScreamTracker3PatternView::paintAbove(QPainter* painter, int height, int cu
 
     // corners
     QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-        "trackerview" + QDir::separator() + "s3m_top.png";
+                        "trackerview" + QDir::separator() + "s3m_top.png";
     QImage spriteSheet(imagepath);
 
     QRectF sourceLeftCorner(0, 0, 8, 8);
@@ -98,8 +95,7 @@ void ScreamTracker3PatternView::paintAbove(QPainter* painter, int height, int cu
     painter->drawImage(targetRightCorner, spriteSheet, sourceRightCorner);
 }
 
-void ScreamTracker3PatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void ScreamTracker3PatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     QColor colorBase(164, 144, 84);
     QColor colorHilite(252, 220, 132);
     QColor colorShadow(80, 68, 40);
@@ -110,19 +106,16 @@ void ScreamTracker3PatternView::paintBelow(QPainter* painter, int height, int cu
     painter->fillRect(2, 0, 38, height - 7, colorBase);
 }
 
-ScreamTracker3PatternView::~ScreamTracker3PatternView()
-{
+ScreamTracker3PatternView::~ScreamTracker3PatternView() {
 }
 
-QString ScreamTracker3PatternView::note(BaseRow* row)
-{
+QString ScreamTracker3PatternView::note(BaseRow *row) {
     if (row->note == 129) return "$$\"";
 
     return AbstractPatternView::note(row);
 }
 
-QString ScreamTracker3PatternView::effect(BaseRow* row)
-{
+QString ScreamTracker3PatternView::effect(BaseRow *row) {
     QString effectStr;
 
     if (row->effect < 1) return m_emptyEffect;

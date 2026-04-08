@@ -1,8 +1,7 @@
 #include "FastTracker1PatternView.h"
 
-FastTracker1PatternView::FastTracker1PatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+FastTracker1PatternView::FastTracker1PatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     octaveOffset = 48;
     rowNumberOffset = 0;
     m_font = QFont("FastTracker 1.0");
@@ -25,15 +24,14 @@ FastTracker1PatternView::FastTracker1PatternView(Tracker* parent, const unsigned
     m_colorCurrentRowForeground = QColor(239, 239, 243);
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorVolume =
-        m_colorEmpty = QColor(80, 138, 255);
+                                                                                m_colorEmpty = QColor(80, 138, 255);
     m_xOffsetRow = 8;
     m_xChannelStart = 32;
     m_channelWidth = 80;
     m_channelxSpace = 0;
 }
 
-void FastTracker1PatternView::paintBelow(QPainter* painter, const int height, int currentRow)
-{
+void FastTracker1PatternView::paintBelow(QPainter *painter, const int height, int currentRow) {
     constexpr QColor colorBase(146, 146, 162);
     constexpr QColor colorHilite(255, 255, 255);
     painter->fillRect(1, height / 2 - 15, 80 * m_channels + 79, 14, colorBase);
@@ -46,8 +44,9 @@ void FastTracker1PatternView::paintBelow(QPainter* painter, const int height, in
     painter->drawLine(80 * m_channels + 79, height / 2 - 16, 80 * m_channels + 79, height / 2 - 1);
 }
 
-void::FastTracker1PatternView::paintTop(QPainter* painter,Info* info, const unsigned int m_currentPattern, const unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::FastTracker1PatternView::paintTop(QPainter *painter, Info *info, const unsigned int m_currentPattern,
+                                         const unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                         unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 31;
     constexpr QColor colorBase(146, 146, 162);
     constexpr QColor colorHilite(255, 255, 255);
@@ -109,6 +108,5 @@ void::FastTracker1PatternView::paintTop(QPainter* painter,Info* info, const unsi
     painter->drawLine(left + 409, 0, left + 409, m_topHeight - 1);
 }
 
-FastTracker1PatternView::~FastTracker1PatternView()
-{
+FastTracker1PatternView::~FastTracker1PatternView() {
 }

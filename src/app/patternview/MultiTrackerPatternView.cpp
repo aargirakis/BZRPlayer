@@ -1,9 +1,8 @@
 #include "MultiTrackerPatternView.h"
 #include "visualizers/tracker.h"
 
-MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+MultiTrackerPatternView::MultiTrackerPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     m_font = QFont("MultiTracker");
     m_font.setPixelSize(8);
     m_fontWidth = 8;
@@ -19,7 +18,9 @@ MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, const unsigned
     volumeHex = true;
     rowNumberPad = true;
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(0, 85, 170);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        0, 85, 170);
     m_ColorRowNumber = QColor(255, 255, 255);
     m_ColorRowNumberCurrentRowEnabled = true;
     m_ColorRowNumberCurrentRow = QColor(255, 255, 255);
@@ -58,18 +59,15 @@ MultiTrackerPatternView::MultiTrackerPatternView(Tracker* parent, const unsigned
     m_topHeight = 25;
 }
 
-MultiTrackerPatternView::~MultiTrackerPatternView()
-{
+MultiTrackerPatternView::~MultiTrackerPatternView() {
 }
 
-void MultiTrackerPatternView::paintAbove(QPainter* painter, const int height, int currentRow)
-{
+void MultiTrackerPatternView::paintAbove(QPainter *painter, const int height, int currentRow) {
     // bottom
     painter->fillRect(0, height - 16, 40 + m_channels * 72, 16, QColor(0, 0, 85));
 }
 
-void MultiTrackerPatternView::paintBelow(QPainter* painter, const int height, int currentRow)
-{
+void MultiTrackerPatternView::paintBelow(QPainter *painter, const int height, int currentRow) {
     // left
     painter->fillRect(0, 0, 40, height, QColor(0, 0, 85));
     // right
@@ -80,8 +78,7 @@ void MultiTrackerPatternView::paintBelow(QPainter* painter, const int height, in
     painter->fillRect(40, height / 2 - 8, m_channels * 72 - 4, 8, QColor(0, 0, 85));
 
     // channel separators
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         painter->fillRect(75 + chan * 72, 0, 2, height, QColor(255, 255, 255));
         painter->fillRect(107 + chan * 72, 0, 2, height, QColor(255, 255, 255));
         // current row channels separators
@@ -90,8 +87,7 @@ void MultiTrackerPatternView::paintBelow(QPainter* painter, const int height, in
     }
 }
 
-QString MultiTrackerPatternView::rowNumber(const int rowNumber)
-{
+QString MultiTrackerPatternView::rowNumber(const int rowNumber) {
     const int base = rowNumberHex ? 16 : 10;
 
     QString rowNumberStr = QString::number(rowNumber + rowNumberOffset, base).toUpper();
@@ -99,28 +95,23 @@ QString MultiTrackerPatternView::rowNumber(const int rowNumber)
     return rowNumberStr;
 }
 
-QString MultiTrackerPatternView::instrument(BaseRow* row)
-{
+QString MultiTrackerPatternView::instrument(BaseRow *row) {
     const int instrument = row->sample;
     return QString::number(instrument, 32).toUpper();
 }
 
-QString MultiTrackerPatternView::effect(BaseRow* row)
-{
-    if (row->effect == 0x8)
-    {
+QString MultiTrackerPatternView::effect(BaseRow *row) {
+    if (row->effect == 0x8) {
         return "e";
     }
 
     return AbstractPatternView::effect(row).toLower();
 }
 
-QString MultiTrackerPatternView::parameter(BaseRow* row)
-{
+QString MultiTrackerPatternView::parameter(BaseRow *row) {
     const int parameter = row->param;
 
-    if (row->effect == 0x8)
-    {
+    if (row->effect == 0x8) {
         const int base = parameterHex ? 16 : 10;
 
         QString parameterStr = QString::number(parameter, base).toLower();
@@ -131,26 +122,24 @@ QString MultiTrackerPatternView::parameter(BaseRow* row)
     return AbstractPatternView::parameter(row).toLower();
 }
 
-QString MultiTrackerPatternView::note(BaseRow* row)
-{
+QString MultiTrackerPatternView::note(BaseRow *row) {
     int note = row->note;
     note -= octaveOffset;
 
-    if (note >= 109 || note < 0)
-    {
+    if (note >= 109 || note < 0) {
         note = 0;
     }
 
-    if (note == 0)
-    {
+    if (note == 0) {
         return m_emptyNote;
     }
 
     return QString(NOTES[note]).replace("-", "'");
 }
 
-void::MultiTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::MultiTrackerPatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                         unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                         unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 25;
     constexpr QColor colorBase(0, 0, 85);
 
@@ -164,6 +153,6 @@ void::MultiTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned i
 
     for (int i = 0; i < numChannels; i++) {
         constexpr int top = 16;
-        drawText("Track:" + QString::number(i + 1), painter, left + (40 + i * 72), top,infoFont());
+        drawText("Track:" + QString::number(i + 1), painter, left + (40 + i * 72), top, infoFont());
     }
 }

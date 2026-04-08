@@ -3,16 +3,21 @@
 
 #include "AbstractPatternView.h"
 
-class UltraTrackerPatternView : public AbstractPatternView
-{
+class UltraTrackerPatternView : public AbstractPatternView {
 public:
-    UltraTrackerPatternView(Tracker* parent, unsigned int channels);
+    UltraTrackerPatternView(Tracker *parent, unsigned int channels);
+
     ~UltraTrackerPatternView();
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
-    QString parameter(BaseRow* row);
-    QString parameter2(BaseRow* row);
-    QString note(BaseRow* row);
+
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
+
+    QString parameter(BaseRow *row);
+
+    QString parameter2(BaseRow *row);
+
+    QString note(BaseRow *row);
 };
 
 #endif // ULTRATRACKERPATTERNVIEW_H

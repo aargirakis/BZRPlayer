@@ -11,23 +11,20 @@ TrackerView::TrackerView(QWidget *parent) : QOpenGLWidget(parent) {
     this->installEventFilter(this);
 }
 
-void TrackerView::init()
-{
+void TrackerView::init() {
     inited = true;
     tracker->init();
 }
 
-Tracker* TrackerView::getTracker() const {
+Tracker *TrackerView::getTracker() const {
     return tracker;
 }
 
-void TrackerView::paintEvent(QPaintEvent* event)
-{
+void TrackerView::paintEvent(QPaintEvent *event) {
     const auto &sm = SoundManager::getInstance();
     const auto &info = sm.info;
 
-    if (tracker == nullptr || !inited || tracker->trackerView == nullptr || !sm.isPlaying() || sm.info == nullptr)
-    {
+    if (tracker == nullptr || !inited || tracker->trackerView == nullptr || !sm.isPlaying() || sm.info == nullptr) {
         QPainter painter;
         painter.begin(this);
         painter.fillRect(event->rect(), backgroundColor);
@@ -37,8 +34,7 @@ void TrackerView::paintEvent(QPaintEvent* event)
 
     if (tracker && inited && tracker->trackerView != nullptr && sm.isPlaying() &&
         (info->plugin == PLUGIN_libopenmpt || info->plugin == PLUGIN_libxmp ||
-         info->plugin == PLUGIN_hivelytracker || info->plugin == PLUGIN_sunvox_lib))
-    {
+         info->plugin == PLUGIN_hivelytracker || info->plugin == PLUGIN_sunvox_lib)) {
         QPainter painter;
         painter.begin(this);
         painter.setRenderHint(QPainter::Antialiasing);
@@ -67,7 +63,6 @@ bool TrackerView::eventFilter(QObject *obj, QEvent *event) {
                 x <= trackerView->getbuttonNextSampleX() + trackerView->getbuttonNextSampleWidth() &&
                 y >= trackerView->getbuttonNextSampleY() &&
                 y <= trackerView->getbuttonNextSampleY() + trackerView->getbuttonNextSampleHeight()) {
-
                 if (trackerView->getCurrentSample() < tracker->info->numSamples - 1) {
                     trackerView->setCurrentSample(trackerView->getCurrentSample() + 1);
                 }
@@ -86,7 +81,6 @@ bool TrackerView::eventFilter(QObject *obj, QEvent *event) {
     return false;
 }
 
-void TrackerView::setBackgroundColor(const QColor newColor)
-{
+void TrackerView::setBackgroundColor(const QColor newColor) {
     backgroundColor = newColor;
 }

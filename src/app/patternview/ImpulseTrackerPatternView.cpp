@@ -1,8 +1,7 @@
 #include "ImpulseTrackerPatternView.h"
 
-ImpulseTrackerPatternView::ImpulseTrackerPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+ImpulseTrackerPatternView::ImpulseTrackerPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     octaveOffset = 12;
     volumeEnabled = true;
     instrumentHex = false;
@@ -13,7 +12,7 @@ ImpulseTrackerPatternView::ImpulseTrackerPatternView(Tracker* parent, const unsi
     m_colorCurrentRowForeground = QColor(0, 0, 0);
 
     m_colorDefault = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorVolume = m_colorEmpty =
-        QColor(69, 154, 73);
+                                                                                QColor(69, 154, 73);
     m_ColorRowNumber = QColor(0, 0, 0);
     //m_ColorRowNumberBackground ="b69679";
 
@@ -50,16 +49,14 @@ ImpulseTrackerPatternView::ImpulseTrackerPatternView(Tracker* parent, const unsi
     m_topHeight = 16;
 }
 
-void ImpulseTrackerPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void ImpulseTrackerPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(180, 148, 120);
     QColor colorHilite(232, 232, 200);
     QColor colorShadow(124, 88, 68);
     QColor colorRed(255, 38, 38);
 
     // channel separators
-    for (unsigned int chan = 1; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 1; chan < m_channels; chan++) {
         painter->fillRect(33 + chan * 112, 0, 6, height, colorBase);
     }
 
@@ -81,8 +78,7 @@ void ImpulseTrackerPatternView::paintAbove(QPainter* painter, int height, int cu
     painter->fillRect(0, 0, 80 + m_channels * 112, 1, colorHilite);
 }
 
-void ImpulseTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void ImpulseTrackerPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     QColor colorBase(180, 148, 120);
     QColor colorHilite(232, 232, 200);
     QColor colorShadow(124, 88, 68);
@@ -93,12 +89,10 @@ void ImpulseTrackerPatternView::paintBelow(QPainter* painter, int height, int cu
     painter->fillRect(1, 0, 39, height, colorBase);
 }
 
-ImpulseTrackerPatternView::~ImpulseTrackerPatternView()
-{
+ImpulseTrackerPatternView::~ImpulseTrackerPatternView() {
 }
 
-QString ImpulseTrackerPatternView::volume(BaseRow* row)
-{
+QString ImpulseTrackerPatternView::volume(BaseRow *row) {
     if (!volumeEnabled) return "";
 
     int volume = row->vol;
@@ -114,8 +108,7 @@ QString ImpulseTrackerPatternView::volume(BaseRow* row)
     return volumeStr;
 }
 
-QString ImpulseTrackerPatternView::rowNumber(const int rowNumber)
-{
+QString ImpulseTrackerPatternView::rowNumber(const int rowNumber) {
     const int base = rowNumberHex ? 16 : 10;
 
     QString rowNumberStr = QString::number(rowNumber + rowNumberOffset, base).toUpper();
@@ -124,94 +117,91 @@ QString ImpulseTrackerPatternView::rowNumber(const int rowNumber)
     return rowNumberStr;
 }
 
-QString ImpulseTrackerPatternView::note(BaseRow* row)
-{
+QString ImpulseTrackerPatternView::note(BaseRow *row) {
     if (row->note == 130) return "$$$";
 
     return AbstractPatternView::note(row);
 }
 
-QString ImpulseTrackerPatternView::effect(BaseRow* row)
-{
+QString ImpulseTrackerPatternView::effect(BaseRow *row) {
     QString effectStr;
     //std::cout << QString::number(row->effect+1).toStdString() << std::endl;
 
     if (row->effect < 1) return m_emptyEffect;
 
-    switch (row->effect + 1)
-    {
-    case 2: effectStr = "F";
-        break;
-    case 3: effectStr = "E";
-        break;
-    case 4: effectStr = "G";
-        break;
-    case 5: effectStr = "H";
-        break;
-    case 6: effectStr = "L";
-        break;
-    case 7: effectStr = "K";
-        break;
-    case 8: effectStr = "R";
-        break;
-    case 9: effectStr = "X";
-        break;
-    case 10: effectStr = "O";
-        break;
-    case 11: effectStr = "D";
-        break;
-    case 12: effectStr = "B";
-        break;
+    switch (row->effect + 1) {
+        case 2: effectStr = "F";
+            break;
+        case 3: effectStr = "E";
+            break;
+        case 4: effectStr = "G";
+            break;
+        case 5: effectStr = "H";
+            break;
+        case 6: effectStr = "L";
+            break;
+        case 7: effectStr = "K";
+            break;
+        case 8: effectStr = "R";
+            break;
+        case 9: effectStr = "X";
+            break;
+        case 10: effectStr = "O";
+            break;
+        case 11: effectStr = "D";
+            break;
+        case 12: effectStr = "B";
+            break;
 
-    case 14: effectStr = "C";
-        break;
-    case 15: effectStr = "S";
-        break;
-    case 16: effectStr = "A";
-        break;
-    case 17: effectStr = "V";
-        break;
+        case 14: effectStr = "C";
+            break;
+        case 15: effectStr = "S";
+            break;
+        case 16: effectStr = "A";
+            break;
+        case 17: effectStr = "V";
+            break;
 
-    case 20: effectStr = "S";
-        break;
-    case 21: effectStr = "M";
-        break;
-    case 22: effectStr = "N";
-        break;
-    case 23: effectStr = "X";
-        break;
-    case 24: effectStr = "W";
-        break;
+        case 20: effectStr = "S";
+            break;
+        case 21: effectStr = "M";
+            break;
+        case 22: effectStr = "N";
+            break;
+        case 23: effectStr = "X";
+            break;
+        case 24: effectStr = "W";
+            break;
 
-    case 26: effectStr = "U";
-        break;
-    case 27: effectStr = "X";
-        break;
-    case 28: effectStr = "Q";
-        break;
-    case 29: effectStr = "P";
-        break;
-    case 30: effectStr = "I";
-        break;
-    case 31: effectStr = "Y";
-        break;
+        case 26: effectStr = "U";
+            break;
+        case 27: effectStr = "X";
+            break;
+        case 28: effectStr = "Q";
+            break;
+        case 29: effectStr = "P";
+            break;
+        case 30: effectStr = "I";
+            break;
+        case 31: effectStr = "Y";
+            break;
 
-    case 37: effectStr = m_emptyEffect;
-        break;
+        case 37: effectStr = m_emptyEffect;
+            break;
 
-    case 133: effectStr = "Z";
-        break;
+        case 133: effectStr = "Z";
+            break;
 
-    case 136: effectStr = "T";
-        break;
+        case 136: effectStr = "T";
+            break;
 
-    case 172: effectStr = "T";
-        break;
+        case 172: effectStr = "T";
+            break;
 
-    case 181: effectStr = "J";
-        break;
-    default: effectStr = "???";
-        break;
+        case 181: effectStr = "J";
+            break;
+        default: effectStr = "???";
+            break;
     }
 
     return effectStr;

@@ -3,13 +3,12 @@
 
 #include "playlistitem.h"
 
-class Playlist
-{
+class Playlist {
 public:
     Playlist();
 
 private:
-    vector<PlaylistItem*> playListitems;
+    vector<PlaylistItem *> playListitems;
     QString name;
     QString fullpath;
 };

@@ -1,8 +1,7 @@
 #include <QMouseEvent>
 #include "album.h"
 
-Album::Album(const QString &id, QWidget* parent): QLabel(parent)
-{
+Album::Album(const QString &id, QWidget *parent) : QLabel(parent) {
     this->id = id;
 
     this->setGeometry(0, 0, 175, 230);
@@ -29,7 +28,7 @@ Album::Album(const QString &id, QWidget* parent): QLabel(parent)
     this->labelText->setGeometry(2, size - 50, size, 60);
 }
 
-void Album::putPixmap(const QString& path) const {
+void Album::putPixmap(const QString &path) const {
     this->labelText->setText(
         "<span style=\"font-size:9pt;color:#fff;font-weight:bold;\">" + title +
         "</span><br><span style=\" font-size:9pt;color:#999;\"></span>");
@@ -39,14 +38,12 @@ void Album::putPixmap(const QString& path) const {
     labelAlbum->setPixmap(pix);
 }
 
-void Album::enterEvent(QEnterEvent* event)
-{
+void Album::enterEvent(QEnterEvent *event) {
     event->accept();
     playButton->setVisible(true);
 }
 
-void Album::leaveEvent(QEvent* event)
-{
+void Album::leaveEvent(QEvent *event) {
     event->accept();
     playButton->setVisible(false);
 }

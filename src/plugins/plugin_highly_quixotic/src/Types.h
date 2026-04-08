@@ -7,19 +7,17 @@
 #   define WIN32_LEAN_AND_MEAN
 #endif
 
-namespace core
-{
+namespace core {
     // basic enum to force definition of some functions (see SmartPtr(AutoAllocate...))
-    enum AutoAllocate
-    {
+    enum AutoAllocate {
         kAllocate
     };
 
     // return codes (< kOk as error, > kOk as warning)
-    enum class Status
-    {
+    enum class Status {
         kFail = -1,
         kOk = 0
     };
 }
+
 // namespace core

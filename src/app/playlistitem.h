@@ -5,18 +5,19 @@
 
 #include "info.h"
 
-class PlaylistItem
-{
+class PlaylistItem {
 public:
     PlaylistItem();
-    PlaylistItem(Info*, const QString &, int);
+
+    PlaylistItem(Info *, const QString &, int);
+
     QString fullPath;
     QString artist;
     QString filename;
     QString fileFormat;
     QString path;
     QString title;
-    Info* info;
+    Info *info;
     int subsong;
     int subsongs;
     unsigned int startTime;

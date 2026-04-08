@@ -4,16 +4,16 @@
 #include <QOpenGLWidget>
 #include "visualizers/tracker.h"
 
-class TrackerFullScreen : public QOpenGLWidget
-{
+class TrackerFullScreen : public QOpenGLWidget {
     Q_OBJECT
 
 public:
-    explicit TrackerFullScreen(Tracker* tracker, QWidget* parent = nullptr);
-    void paintEvent(QPaintEvent* event);
+    explicit TrackerFullScreen(Tracker *tracker, QWidget *parent = nullptr);
+
+    void paintEvent(QPaintEvent *event);
 
 private:
-    Tracker* tracker;
+    Tracker *tracker;
 };
 
 #endif // TRACKERFULLSCREEN_H

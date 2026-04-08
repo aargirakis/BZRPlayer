@@ -2,8 +2,7 @@
 #include "visualizer.h"
 #include "visualizers/scroller.h"
 
-Visualizer::Visualizer(QWidget *parent) : QOpenGLWidget(parent)
-{
+Visualizer::Visualizer(QWidget *parent) : QOpenGLWidget(parent) {
     // antialiasing, for example if we draw circles
     QSurfaceFormat format;
     format.setSamples(4);
@@ -14,20 +13,17 @@ Visualizer::Visualizer(QWidget *parent) : QOpenGLWidget(parent)
     effects.append(new Scroller(parent));
 }
 
-void Visualizer::init()
-{
+void Visualizer::init() {
     isStopping = false;
 }
 
-void Visualizer::stop()
-{
+void Visualizer::stop() {
     //    isStopping=true;
     //    stoppingCounter = 0;
     //    effects.at(currentEffect)->stop();
 }
 
-void Visualizer::paintEvent(QPaintEvent* event)
-{
+void Visualizer::paintEvent(QPaintEvent *event) {
     if (const auto &sm = SoundManager::getInstance();
         sm.isPlaying()) {
         sm.getPosition(FMOD_TIMEUNIT_MODVUMETER);
@@ -39,9 +35,7 @@ void Visualizer::paintEvent(QPaintEvent* event)
 
         effects.at(currentEffect)->paint(&painter, event);
         painter.end();
-    }
-    else if (isStopping)
-    {
+    } else if (isStopping) {
         update();
 
         QPainter painter;
@@ -53,15 +47,12 @@ void Visualizer::paintEvent(QPaintEvent* event)
 
         painter.end();
 
-        if (stoppingCounter == 300)
-        {
+        if (stoppingCounter == 300) {
             isStopping = false;
         }
 
         stoppingCounter++;
-    }
-    else
-    {
+    } else {
         QPainter painter;
         painter.begin(this);
         painter.fillRect(event->rect(), backgroundColor);
@@ -69,11 +60,10 @@ void Visualizer::paintEvent(QPaintEvent* event)
     }
 }
 
-Effect* Visualizer::getEffect() const {
+Effect *Visualizer::getEffect() const {
     return effects.at(currentEffect);
 }
 
-void Visualizer::setBackgroundColor(const QColor newColor)
-{
+void Visualizer::setBackgroundColor(const QColor newColor) {
     backgroundColor = newColor;
 }

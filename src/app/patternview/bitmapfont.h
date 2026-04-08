@@ -3,11 +3,12 @@
 
 #include <QBitmap>
 
-class BitmapFont
-{
+class BitmapFont {
 public:
     BitmapFont();
+
     BitmapFont(const QString &);
+
     void buildCharacterLookup();
 
     int m_fontWidth;

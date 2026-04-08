@@ -5,18 +5,19 @@
 
 class Album;
 
-class AlbumGrid : public QListWidget
-{
+class AlbumGrid : public QListWidget {
     Q_OBJECT
 
 public:
-    AlbumGrid(QWidget* parent = nullptr);
-    void AddAlbum(Album*);
+    AlbumGrid(QWidget *parent = nullptr);
+
+    void AddAlbum(Album *);
+
     void Filter(const QString &);
 
 private:
-    QHash<QString, Album*> albumsMap;
-    QList<QListWidgetItem*> itemsList;
+    QHash<QString, Album *> albumsMap;
+    QList<QListWidgetItem *> itemsList;
 };
 
 #endif // ALBUMGRID_H

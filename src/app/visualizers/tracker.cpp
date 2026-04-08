@@ -36,180 +36,108 @@
 #include "soundmanager.h"
 #include "tracker.h"
 
-Tracker::Tracker()
-{
+Tracker::Tracker() {
     const QString fontDir = dataPath + RESOURCES_DIR + "/trackerview/fonts" +
-        QDir::separator();
+                            QDir::separator();
     QFontDatabase::addApplicationFont(fontDir + "DejaVuSansMono.ttf");
 }
 
-void Tracker::init()
-{
+void Tracker::init() {
     const auto &sm = SoundManager::getInstance();
     info = sm.info;
 
-    if (info == nullptr)
-    {
+    if (info == nullptr) {
         trackerView = nullptr;
         return;
     }
 
     if (info->plugin != PLUGIN_libxmp && info->plugin != PLUGIN_hivelytracker &&
-        info->plugin != PLUGIN_libopenmpt && info->plugin != PLUGIN_sunvox_lib)
-    {
+        info->plugin != PLUGIN_libopenmpt && info->plugin != PLUGIN_sunvox_lib) {
         trackerView = nullptr;
         return;
     }
 
     if (const QString fileFormat = QString::fromStdString(info->fileFormat).toLower();
-        fileFormat.startsWith("SunVox"))
-    {
+        fileFormat.startsWith("SunVox")) {
         trackerView = new SoundFXPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("protracker mod (6chn") ||
-            fileFormat.startsWith("protracker mod (8chn") ||
-            fileFormat.startsWith("protracker mod (16ch"))
-    {
+    } else if (fileFormat.startsWith("protracker mod (6chn") ||
+               fileFormat.startsWith("protracker mod (8chn") ||
+               fileFormat.startsWith("protracker mod (16ch")) {
         trackerView = new FastTracker1PatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("soundfx"))
-    {
+    } else if (fileFormat.startsWith("soundfx")) {
         trackerView = new SoundFXPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("ice tracker"))
-    {
+    } else if (fileFormat.startsWith("ice tracker")) {
         trackerView = new IceTrackerPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("protracker mod (patt"))
-    {
+    } else if (fileFormat.startsWith("protracker mod (patt")) {
         trackerView = new ProTracker36PatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("protracker mod (flt4"))
-    {
+    } else if (fileFormat.startsWith("protracker mod (flt4")) {
         trackerView = new StarTrekker13PatternView(this, info->numChannels);
-    }
-    else if ((fileFormat.startsWith("protracker") && !fileFormat.startsWith("protracker xm")) ||
-            fileFormat.startsWith("probably converted (m.k") ||
-            fileFormat.startsWith("unknown/converted (m.k") ||
-            fileFormat.startsWith("converted 15 ins") || fileFormat.startsWith("unknown or converted (M"))
-    {
+    } else if ((fileFormat.startsWith("protracker") && !fileFormat.startsWith("protracker xm")) ||
+               fileFormat.startsWith("probably converted (m.k") ||
+               fileFormat.startsWith("unknown/converted (m.k") ||
+               fileFormat.startsWith("converted 15 ins") || fileFormat.startsWith("unknown or converted (M")) {
         trackerView = new ProTracker1PatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("noise") || QString(info->fileFormat.c_str()).
-        toLower().startsWith("his master"))
-    {
+    } else if (fileFormat.startsWith("noise") || QString(info->fileFormat.c_str()).
+               toLower().startsWith("his master")) {
         trackerView = new NoiseTrackerPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("mnemotron"))
-    {
+    } else if (fileFormat.startsWith("mnemotron")) {
         trackerView = new SoundTracker26PatternView(this, info->numChannels);
-    }
-    else if (fileFormat == "soundtracker")
-    {
+    } else if (fileFormat == "soundtracker") {
         trackerView = new UltimateSoundTrackerPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("game music creator"))
-    {
+    } else if (fileFormat.startsWith("game music creator")) {
         trackerView = new GameMusicCreatorPatternView(this, info->numChannels);
-    }
-    else if (QString(info->fileFormat.c_str()) == "AHX")
-    {
+    } else if (QString(info->fileFormat.c_str()) == "AHX") {
         trackerView = new AHXPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("chiptracker"))
-    {
+    } else if (fileFormat.startsWith("chiptracker")) {
         trackerView = new ChipTrackerPatternView(this, info->numChannels);
-    }
-    else if (QString(info->fileFormat.c_str()) == "HivelyTracker")
-    {
+    } else if (QString(info->fileFormat.c_str()) == "HivelyTracker") {
         trackerView = new HivelyTrackerPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("scream tracker 3"))
-    {
+    } else if (fileFormat.startsWith("scream tracker 3")) {
         trackerView = new ScreamTracker3PatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("scream tracker 2"))
-    {
+    } else if (fileFormat.startsWith("scream tracker 2")) {
         trackerView = new ScreamTracker2PatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("fasttracker 2") ||
-            fileFormat.startsWith("skale tracker xm") ||
-            fileFormat.startsWith("madtracker 2.0 xm") ||
-            fileFormat.endsWith("xm 1.04"))
-    {
-        if (info->numChannels > 6)
-        {
+    } else if (fileFormat.startsWith("fasttracker 2") ||
+               fileFormat.startsWith("skale tracker xm") ||
+               fileFormat.startsWith("madtracker 2.0 xm") ||
+               fileFormat.endsWith("xm 1.04")) {
+        if (info->numChannels > 6) {
             trackerView = new FastTracker2PatternView(this, info->numChannels);
-        }
-        else if (info->numChannels > 4)
-        {
+        } else if (info->numChannels > 4) {
             trackerView = new FastTracker26ChanPatternView(this, info->numChannels);
-        }
-        else
-        {
+        } else {
             trackerView = new FastTracker24ChanPatternView(this, info->numChannels);
         }
-    }
-    else if (fileFormat.startsWith("octamed (mmd0"))
-    {
+    } else if (fileFormat.startsWith("octamed (mmd0")) {
         trackerView = new MEDPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("impulse"))
-    {
+    } else if (fileFormat.startsWith("impulse")) {
         trackerView = new ImpulseTrackerPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("composer 669"))
-    {
+    } else if (fileFormat.startsWith("composer 669")) {
         trackerView = new Composer669PatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("ultratracker"))
-    {
+    } else if (fileFormat.startsWith("ultratracker")) {
         trackerView = new UltraTrackerPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("digibooster pro"))
-    {
+    } else if (fileFormat.startsWith("digibooster pro")) {
         trackerView = new DigiBoosterProPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("digibooster"))
-    {
+    } else if (fileFormat.startsWith("digibooster")) {
         trackerView = new DigiBooster17PatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("oktalyzer"))
-    {
+    } else if (fileFormat.startsWith("oktalyzer")) {
         trackerView = new OktalyzerPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("octamed (mmd1"))
-    {
-        if (info->numChannels > 4)
-        {
+    } else if (fileFormat.startsWith("octamed (mmd1")) {
+        if (info->numChannels > 4) {
             trackerView = new OctaMEDPatternView(this, info->numChannels);
-        }
-        else
-        {
+        } else {
             trackerView = new OctaMED44ChanPatternView(this, info->numChannels);
         }
-    }
-    else if (fileFormat.startsWith("octamed (mmd2"))
-    {
-        if (info->numChannels > 4)
-        {
+    } else if (fileFormat.startsWith("octamed (mmd2")) {
+        if (info->numChannels > 4) {
             trackerView = new OctaMED5ChanPatternView(this, info->numChannels);
-        }
-        else
-        {
+        } else {
             trackerView = new OctaMED54ChanPatternView(this, info->numChannels);
         }
-    }
-    else if (fileFormat.startsWith("octamed (mmd3"))
-    {
+    } else if (fileFormat.startsWith("octamed (mmd3")) {
         trackerView = new OctaMEDSoundstudioPatternView(this, info->numChannels);
-    }
-    else if (fileFormat.startsWith("multitracker") || fileFormat.startsWith("mdx"))
-    {
+    } else if (fileFormat.startsWith("multitracker") || fileFormat.startsWith("mdx")) {
         trackerView = new MultiTrackerPatternView(this, info->numChannels);
-    }
-    else
-    {
+    } else {
         trackerView = nullptr;
         return;
     }
@@ -228,10 +156,8 @@ void Tracker::init()
     }
 }
 
-void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
-{
-    if (trackerView==nullptr)
-    {
+void Tracker::drawPattern(QPainter *painter, int visibleWidth, bool forceRedraw) {
+    if (trackerView == nullptr) {
         return;
     }
 
@@ -252,26 +178,21 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
 
     bool updateHivelytracker = false;
 
-    if (isHivelytracker)
-    {
-        for (unsigned int v = 0; v < info->modTrackPositions.size(); v++)
-        {
-            if (m_currentTrackPositions.empty() || m_currentTrackPositions.size() != info->modTrackPositions.size())
-            {
+    if (isHivelytracker) {
+        for (unsigned int v = 0; v < info->modTrackPositions.size(); v++) {
+            if (m_currentTrackPositions.empty() || m_currentTrackPositions.size() != info->modTrackPositions.size()) {
                 updateHivelytracker = true;
                 break;
             }
 
-            if (m_currentTrackPositions[v] != info->modTrackPositions[v])
-            {
+            if (m_currentTrackPositions[v] != info->modTrackPositions[v]) {
                 updateHivelytracker = true;
                 break;
             }
         }
     }
 
-    if(currentRow!=m_currentRow || trackerView->m_renderVuMeter || updateHivelytracker || forceRedraw)
-    {
+    if (currentRow != m_currentRow || trackerView->m_renderVuMeter || updateHivelytracker || forceRedraw) {
         // revert painter scaling and fill background rect
         QRect rect(0, 0, painter->window().width() / scale, painter->window().height() / scale);
         painter->fillRect(rect, QColor(0, 0, 0));
@@ -282,13 +203,11 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
         m_currentSpeed = currentSpeed;
         m_currentBPM = currentBPM;
 
-        if (islibopenmpt || isLibxmp)
-        {
+        if (islibopenmpt || isLibxmp) {
             info->modPatternRows = info->patterns[m_currentPattern].size() / info->numChannels;
         }
 
-        if (isHivelytracker)
-        {
+        if (isHivelytracker) {
             m_currentTrackPositions = std::vector<unsigned char>(info->modTrackPositions.size());
             copy(info->modTrackPositions.begin(), info->modTrackPositions.end(), m_currentTrackPositions.begin());
             // used where multiple patterns positions per position (ahx)
@@ -298,13 +217,9 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
         unsigned int i = 0;
         unsigned int outerLoopBreakValue = 0;
 
-        if (isHivelytracker)
-        {
+        if (isHivelytracker) {
             outerLoopBreakValue = info->modPatternRows;
-        }
-
-        else if (islibopenmpt || isLibxmp)
-        {
+        } else if (islibopenmpt || isLibxmp) {
             i = 0;
             outerLoopBreakValue = info->patterns[m_currentPattern].size();
         }
@@ -313,11 +228,10 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
 
         int yPixelPosition = 0;
         const int yOffset = height / 2;
-        const QFont& currentRowFont = trackerView->currentRowFont();
-        const QFont& normalFont = trackerView->font();
+        const QFont &currentRowFont = trackerView->currentRowFont();
+        const QFont &normalFont = trackerView->font();
 
-        while (i < outerLoopBreakValue)
-        {
+        while (i < outerLoopBreakValue) {
             QString row = trackerView->rowNumber(j);
 
             QString strNote;
@@ -340,10 +254,8 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
             QColor colorDefaultAlt;
             QColor colorEmptyAlt;
 
-            if (trackerView->rowHighlightForegroundFrequency())
-            {
-                if (!(j % trackerView->rowHighlightForegroundFrequency()))
-                {
+            if (trackerView->rowHighlightForegroundFrequency()) {
+                if (!(j % trackerView->rowHighlightForegroundFrequency())) {
                     colorRowNumber = trackerView->colorRowHighlightForeground();
                     colorInstrument = trackerView->colorRowHighlightForeground();
                     colorEffect = trackerView->colorRowHighlightForeground();
@@ -355,35 +267,28 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 }
             }
 
-            if (trackerView->colorRowNumberHighLightFrequency())
-            {
-                if (!(j % trackerView->colorRowNumberHighLightFrequency()))
-                {
+            if (trackerView->colorRowNumberHighLightFrequency()) {
+                if (!(j % trackerView->colorRowNumberHighLightFrequency())) {
                     colorRowNumber = trackerView->colorRowNumberHighLight();
                 }
             }
 
             strRowNumber = row + trackerView->separatorRowNumber();
 
-            if (j == currentRow)
-            {
+            if (j == currentRow) {
                 yPixelPosition += currentRowFont.pixelSize() + trackerView->yOffsetRowAfter();
                 yPixelPosition -= trackerView->yOffsetCurrentRowBefore();
 
-                if (currentRow == 0)
-                {
+                if (currentRow == 0) {
                     yPixelPosition += trackerView->yOffsetCurrentRowBefore();
                     yPixelPosition -= trackerView->fontHeight() + trackerView->yOffsetRowAfter();
                 }
 
                 painter->setPen(trackerView->colorCurrentRowForeground());
 
-                if (!trackerView->colorRowNumberCurrentRowEnabled())
-                {
+                if (!trackerView->colorRowNumberCurrentRowEnabled()) {
                     colorRowNumber = trackerView->colorCurrentRowForeground();
-                }
-                else
-                {
+                } else {
                     colorRowNumber = trackerView->colorRowNumberCurrentRow();
                 }
 
@@ -403,10 +308,8 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 colorParameter2Alt = trackerView->colorCurrentRowForeground();
                 colorDefaultAlt = trackerView->colorCurrentRowForeground();
 
-                if (trackerView->currentRowHighlightForegroundFrequency())
-                {
-                    if (!(j % trackerView->currentRowHighlightForegroundFrequency()))
-                    {
+                if (trackerView->currentRowHighlightForegroundFrequency()) {
+                    if (!(j % trackerView->currentRowHighlightForegroundFrequency())) {
                         colorRowNumber = trackerView->colorCurrentRowHighlightForeground();
                         colorInstrument = trackerView->colorCurrentRowHighlightForeground();
                         colorEffect = trackerView->colorCurrentRowHighlightForeground();
@@ -417,24 +320,19 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                         colorDefault = trackerView->colorCurrentRowHighlightForeground();
                     }
                 }
-            }
-            else
-            {
+            } else {
                 yPixelPosition = (trackerView->fontHeight() + trackerView->yOffsetRowAfter()) * j
                                  - currentRow * (normalFont.pixelSize() + trackerView->yOffsetRowAfter());
 
-                if (j > currentRow && currentRowFont.pixelSize() > normalFont.pixelSize())
-                {
+                if (j > currentRow && currentRowFont.pixelSize() > normalFont.pixelSize()) {
                     yPixelPosition += trackerView->fontHeight() + trackerView->yOffsetRowAfter();
                 }
 
-                if (j > currentRow)
-                {
+                if (j > currentRow) {
                     yPixelPosition += trackerView->yOffsetCurrentRowAfter();
                 }
 
-                if (j < currentRow)
-                {
+                if (j < currentRow) {
                     yPixelPosition += trackerView->yOffsetCurrentRowBefore();
                 }
 
@@ -444,11 +342,10 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
             int fontWidth = trackerView->fontWidth();
             int numPixels = 0;
 
-            if (!trackerView->rowStart().isEmpty())
-            {
+            if (!trackerView->rowStart().isEmpty()) {
                 painter->setPen(colorRowNumber);
                 trackerView->drawText(trackerView->rowStart(), painter, trackerView->xOffsetRow() + numPixels,
-                         yOffset + yPixelPosition,trackerView->bitmapFont());
+                                      yOffset + yPixelPosition, trackerView->bitmapFont());
             }
 
             numPixels += trackerView->rowStart().length() * fontWidth;
@@ -456,30 +353,31 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
             if (trackerView->patternNumberAtStart()) // only used for Oktalyzer
             {
                 painter->setPen(colorRowNumber);
-                trackerView->drawText(QString::asprintf("%02X", m_currentPattern) + "'", painter, trackerView->xOffsetRow() + numPixels,
-                                        yOffset + yPixelPosition,trackerView->bitmapFont());
+                trackerView->drawText(QString::asprintf("%02X", m_currentPattern) + "'", painter,
+                                      trackerView->xOffsetRow() + numPixels,
+                                      yOffset + yPixelPosition, trackerView->bitmapFont());
                 numPixels += 3 * fontWidth;
             }
 
             painter->setPen(colorRowNumber);
 
             if (j == currentRow && trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontRowNumber().
-                    m_bitmapFontPath)
-            {
+                m_bitmapFontPath) {
                 fontWidth = trackerView->fontWidth();
-                trackerView->drawText(strRowNumber, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,trackerView->currentRowBitmapFont());
-            }
-            else
-            {
+                trackerView->drawText(strRowNumber, painter, trackerView->xOffsetRow() + numPixels,
+                                      yOffset + yPixelPosition, trackerView->currentRowBitmapFont());
+            } else {
                 fontWidth = trackerView->fontWidthRowNumber();
-                trackerView->drawText(strRowNumber, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,trackerView->bitmapFontRowNumber());
+                trackerView->drawText(strRowNumber, painter, trackerView->xOffsetRow() + numPixels,
+                                      yOffset + yPixelPosition, trackerView->bitmapFontRowNumber());
             }
 
             numPixels += strRowNumber.length() * fontWidth + trackerView->xOffsetSeparatorRowNumber();
 
             const int viewRight = visibleWidth;
 
-            const int channelWidth = trackerView->channelWidth() + trackerView->channelxSpace(); // total pixel width per channel
+            const int channelWidth = trackerView->channelWidth() + trackerView->channelxSpace();
+            // total pixel width per channel
             const int firstChannelWidth = trackerView->channelFirstWidth();
             const int lastChannelWidth = trackerView->channelLastWidth();
 
@@ -510,9 +408,11 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
             x = contentX0;
 
             for (int i = 0; i < info->numChannels; ++i) {
-                int chanWidth = i == 0 ? firstChannelWidth : i == info->numChannels - 1
-                                                                 ? lastChannelWidth
-                                                                 : channelWidth;
+                int chanWidth = i == 0
+                                    ? firstChannelWidth
+                                    : i == info->numChannels - 1
+                                          ? lastChannelWidth
+                                          : channelWidth;
 
                 int xEnd = x + chanWidth;
 
@@ -525,14 +425,11 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 x = xEnd;
             }
 
-            for (int chan = firstVisibleChannel; chan <= lastVisibleChannel; chan++)
-            {
+            for (int chan = firstVisibleChannel; chan <= lastVisibleChannel; chan++) {
                 bool alternateChannelColors = false;
 
-                if (trackerView->alternateChannelColorsFrequency())
-                {
-                    if (!(chan % trackerView->alternateChannelColorsFrequency()) && j != currentRow)
-                    {
+                if (trackerView->alternateChannelColorsFrequency()) {
+                    if (!(chan % trackerView->alternateChannelColorsFrequency()) && j != currentRow) {
                         alternateChannelColors = true;
                         colorInstrumentAlt = trackerView->colorInstrumentAlternate();
                         colorEffectAlt = trackerView->colorEffectAlternate();
@@ -548,16 +445,13 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 fontWidth = trackerView->fontWidth();
                 int k = 0;
 
-                if (isHivelytracker)
-                {
+                if (isHivelytracker) {
                     k = info->modTrackPositions.at(chan) * info->modPatternRows;
-                }
-                else if (islibopenmpt || isLibxmp || isSunvox)
-                {
+                } else if (islibopenmpt || isLibxmp || isSunvox) {
                     k = chan;
                 }
 
-                BaseRow* row;
+                BaseRow *row;
 
                 if (islibopenmpt || isLibxmp || isSunvox) {
                     const int rowIndex = j * info->numChannels + chan;
@@ -577,29 +471,24 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 QString volume = trackerView->volume(row);
                 QString channelSeparator = trackerView->separatorChannel();
 
-                if (chan == 0)
-                {
+                if (chan == 0) {
                     channelSeparator = "";
                 }
 
                 QString strRowNumberMultiple = strRowNumber;
 
-                if (!trackerView->rowNumbersEveryChannelEnabled() || chan == 0)
-                {
+                if (!trackerView->rowNumbersEveryChannelEnabled() || chan == 0) {
                     strRowNumberMultiple = "";
                 }
 
                 if (j == currentRow &&
-                    trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontRowNumber().m_bitmapFontPath)
-                {
+                    trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontRowNumber().m_bitmapFontPath) {
                     trackerView->drawText(channelSeparator, painter, trackerView->xOffsetRow() + numPixels,
-                     yOffset + yPixelPosition,trackerView->currentRowBitmapFont());
+                                          yOffset + yPixelPosition, trackerView->currentRowBitmapFont());
                     fontWidth = trackerView->fontWidth();
-                }
-                else
-                {
+                } else {
                     trackerView->drawText(channelSeparator, painter, trackerView->xOffsetRow() + numPixels,
-                     yOffset + yPixelPosition,trackerView->bitmapFontRowNumber());
+                                          yOffset + yPixelPosition, trackerView->bitmapFontRowNumber());
                     fontWidth = trackerView->fontWidthRowNumber();
                 }
 
@@ -607,36 +496,24 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 numPixels += strRowNumberMultiple.length() * fontWidth;
                 fontWidth = trackerView->fontWidth();
 
-                if (strNote == trackerView->emptyNote() && j != currentRow)
-                {
-                    if (!alternateChannelColors)
-                    {
+                if (strNote == trackerView->emptyNote() && j != currentRow) {
+                    if (!alternateChannelColors) {
                         painter->setPen(trackerView->colorEmpty());
-                    }
-                    else
-                    {
+                    } else {
                         painter->setPen(colorEmptyAlt);
                     }
-                }
-                else
-                {
-                    if (!alternateChannelColors)
-                    {
+                } else {
+                    if (!alternateChannelColors) {
                         painter->setPen(colorDefault);
-                    }
-                    else
-                    {
+                    } else {
                         painter->setPen(colorDefaultAlt);
                     }
                 }
 
-                if (j == currentRow)
-                {
+                if (j == currentRow) {
                     trackerView->drawText(strNote, painter, trackerView->xOffsetRow() + numPixels,
                                           yOffset + yPixelPosition, trackerView->currentRowBitmapFont());
-                }
-                else
-                {
+                } else {
                     trackerView->drawText(strNote, painter, trackerView->xOffsetRow() + numPixels,
                                           yOffset + yPixelPosition, trackerView->bitmapFont());
                 }
@@ -644,29 +521,21 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 numPixels += strNote.length() * fontWidth;
                 fontWidth = trackerView->fontWidthSeparatorNote();
                 trackerView->drawText(trackerView->separatorNote(), painter, trackerView->xOffsetRow() + numPixels,
-                         yOffset + yPixelPosition, trackerView->bitmapFont());
+                                      yOffset + yPixelPosition, trackerView->bitmapFont());
 
                 numPixels += trackerView->separatorNote().length() * fontWidth;
 
                 if (instrument == trackerView->emptyInstrument() &&
                     !trackerView->noEmptyInstrumentColor() && j != currentRow) {
-                    if (!alternateChannelColors)
-                    {
+                    if (!alternateChannelColors) {
                         painter->setPen(trackerView->colorEmpty());
-                    }
-                    else
-                    {
+                    } else {
                         painter->setPen(colorEmptyAlt);
                     }
-                }
-                else
-                {
-                    if (!alternateChannelColors)
-                    {
+                } else {
+                    if (!alternateChannelColors) {
                         painter->setPen(colorInstrument);
-                    }
-                    else
-                    {
+                    } else {
                         painter->setPen(colorInstrumentAlt);
                     }
                 }
@@ -674,89 +543,65 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                 BitmapFont font;
 
                 if (j == currentRow &&
-                    trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontInstrument().m_bitmapFontPath)
-                {
+                    trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontInstrument().
+                    m_bitmapFontPath) {
                     font = trackerView->currentRowBitmapFont();
                     fontWidth = trackerView->fontWidth();
-                }
-                else
-                {
+                } else {
                     font = trackerView->bitmapFontInstrument();
                     fontWidth = trackerView->fontWidthInstrument();
                 }
 
-                trackerView->drawText(instrument, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font);
+                trackerView->drawText(instrument, painter, trackerView->xOffsetRow() + numPixels,
+                                      yOffset + yPixelPosition, font);
                 numPixels += instrument.length() * fontWidth;
-                trackerView->drawText(trackerView->separatorInstrument(), painter, trackerView->xOffsetRow() + numPixels,
-                         yOffset + yPixelPosition,font);
+                trackerView->drawText(trackerView->separatorInstrument(), painter,
+                                      trackerView->xOffsetRow() + numPixels,
+                                      yOffset + yPixelPosition, font);
                 numPixels += trackerView->separatorInstrument().length() * fontWidth;
 
-                if (volume == trackerView->emptyVolume() && !trackerView->noEmptyVolumeColor() && j != currentRow)
-                {
-                    if (!alternateChannelColors)
-                    {
+                if (volume == trackerView->emptyVolume() && !trackerView->noEmptyVolumeColor() && j != currentRow) {
+                    if (!alternateChannelColors) {
                         painter->setPen(trackerView->colorEmpty());
-                    }
-                    else
-                    {
+                    } else {
                         painter->setPen(colorEmptyAlt);
                     }
-                }
-                else
-                {
-                    if (!alternateChannelColors)
-                    {
+                } else {
+                    if (!alternateChannelColors) {
                         painter->setPen(colorVolume);
-                    }
-                    else
-                    {
+                    } else {
                         painter->setPen(colorEmptyAlt);
                     }
                 }
 
-                trackerView->drawText(volume, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font);
+                trackerView->drawText(volume, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,
+                                      font);
                 numPixels += volume.length() * fontWidth;
                 trackerView->drawText(trackerView->separatorVolume(), painter, trackerView->xOffsetRow() + numPixels,
-                         yOffset + yPixelPosition,font);
+                                      yOffset + yPixelPosition, font);
                 numPixels += trackerView->separatorVolume().length() * fontWidth;
 
-                if (!trackerView->effectsThenParametersEnabled())
-                {
+                if (!trackerView->effectsThenParametersEnabled()) {
                     if (effect == trackerView->emptyEffect() &&
-                        !trackerView->noEmptyEffectColor() && j != currentRow)
-                    {
-                        if (!alternateChannelColors)
-                        {
+                        !trackerView->noEmptyEffectColor() && j != currentRow) {
+                        if (!alternateChannelColors) {
                             painter->setPen(trackerView->colorEmpty());
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEmptyAlt);
                         }
-                    }
-                    else
-                    {
-                        if (!alternateChannelColors)
-                        {
+                    } else {
+                        if (!alternateChannelColors) {
                             if (trackerView->useInstrumentColorOnEffectAndParameterFrequency() &&
-                                j % trackerView->useInstrumentColorOnEffectAndParameterFrequency() == 0)
-                            {
+                                j % trackerView->useInstrumentColorOnEffectAndParameterFrequency() == 0) {
                                 painter->setPen(colorInstrument);
-                            }
-                            else
-                            {
+                            } else {
                                 painter->setPen(colorEffect);
                             }
-                        }
-                        else
-                        {
+                        } else {
                             if (trackerView->useInstrumentColorOnEffectAndParameterFrequency() &&
-                                j % trackerView->useInstrumentColorOnEffectAndParameterFrequency() == 0)
-                            {
+                                j % trackerView->useInstrumentColorOnEffectAndParameterFrequency() == 0) {
                                 painter->setPen(colorInstrumentAlt);
-                            }
-                            else
-                            {
+                            } else {
                                 painter->setPen(colorEffectAlt);
                             }
                         }
@@ -765,58 +610,43 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                     BitmapFont font;
 
                     if (j == currentRow &&
-                        trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontEffects().m_bitmapFontPath)
-                    {
+                        trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontEffects().
+                        m_bitmapFontPath) {
                         font = trackerView->currentRowBitmapFont();
                         fontWidth = trackerView->fontWidth();
-                    }
-                    else
-                    {
+                    } else {
                         font = trackerView->bitmapFontEffects();
                         fontWidth = trackerView->fontWidthEffects();
                     }
 
-                    trackerView->drawText(effect, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font);
+                    trackerView->drawText(effect, painter, trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font);
                     numPixels += effect.length() * fontWidth;
-                    trackerView->drawText(trackerView->separatorEffect(), painter, trackerView->xOffsetRow() + numPixels,
-                             yOffset + yPixelPosition,font);
+                    trackerView->drawText(trackerView->separatorEffect(), painter,
+                                          trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font);
                     numPixels += trackerView->separatorEffect().length() * fontWidth;
 
                     if (parameter == trackerView->emptyParameter() &&
-                        !trackerView->noEmptyParameterColor() && j != currentRow)
-                    {
-                        if (!alternateChannelColors)
-                        {
+                        !trackerView->noEmptyParameterColor() && j != currentRow) {
+                        if (!alternateChannelColors) {
                             painter->setPen(trackerView->colorEmpty());
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEmptyAlt);
                         }
-                    }
-                    else
-                    {
-                        if (!alternateChannelColors)
-                        {
+                    } else {
+                        if (!alternateChannelColors) {
                             if (trackerView->useInstrumentColorOnEffectAndParameterFrequency() &&
-                                j % trackerView->useInstrumentColorOnEffectAndParameterFrequency() == 0)
-                            {
+                                j % trackerView->useInstrumentColorOnEffectAndParameterFrequency() == 0) {
                                 painter->setPen(colorInstrument);
-                            }
-                            else
-                            {
+                            } else {
                                 painter->setPen(colorParameter);
                             }
-                        }
-                        else
-                        {
+                        } else {
                             if (trackerView->useInstrumentColorOnEffectAndParameterFrequency() &&
-                                j % trackerView->useInstrumentColorOnEffectAndParameterFrequency() == 0)
-                            {
+                                j % trackerView->useInstrumentColorOnEffectAndParameterFrequency() == 0) {
                                 painter->setPen(colorInstrumentAlt);
-                            }
-                            else
-                            {
+                            } else {
                                 painter->setPen(colorParameterAlt);
                             }
                         }
@@ -824,85 +654,67 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
 
                     if (j == currentRow &&
                         trackerView->bitmapFont().m_bitmapFontPath ==
-                        trackerView->bitmapFontParameters().m_bitmapFontPath)
-                    {
+                        trackerView->bitmapFontParameters().m_bitmapFontPath) {
                         font = trackerView->currentRowBitmapFont();
-                        trackerView->drawText(parameter, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font);
+                        trackerView->drawText(parameter, painter, trackerView->xOffsetRow() + numPixels,
+                                              yOffset + yPixelPosition, font);
                         fontWidth = trackerView->fontWidth();
-                    }
-                    else
-                    {
+                    } else {
                         font = trackerView->bitmapFontParameters();
-                        trackerView->drawText(parameter, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font);
+                        trackerView->drawText(parameter, painter, trackerView->xOffsetRow() + numPixels,
+                                              yOffset + yPixelPosition, font);
                         fontWidth = trackerView->fontWidthParameters();
                     }
 
                     numPixels += parameter.length() * fontWidth;
-                    trackerView->drawText(trackerView->separatorParameter(), painter, trackerView->xOffsetRow() + numPixels,
-                             yOffset + yPixelPosition,font);
+                    trackerView->drawText(trackerView->separatorParameter(), painter,
+                                          trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font);
                     numPixels += trackerView->separatorParameter().length() * fontWidth;
 
-                    if (effect2 == trackerView->emptyEffect() && j != currentRow)
-                    {
-                        if (!alternateChannelColors)
-                        {
+                    if (effect2 == trackerView->emptyEffect() && j != currentRow) {
+                        if (!alternateChannelColors) {
                             painter->setPen(trackerView->colorEmpty());
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEmptyAlt);
                         }
-                    }
-                    else
-                    {
-                        if (!alternateChannelColors)
-                        {
+                    } else {
+                        if (!alternateChannelColors) {
                             painter->setPen(colorEffect2);
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEffect2Alt);
                         }
                     }
 
                     if (j == currentRow &&
-                        trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontEffects().m_bitmapFontPath)
-                    {
+                        trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontEffects().
+                        m_bitmapFontPath) {
                         font = trackerView->currentRowBitmapFont();
                         fontWidth = trackerView->fontWidth();
-                    }
-                    else
-                    {
+                    } else {
                         font = trackerView->bitmapFontEffects();
                         fontWidth = trackerView->fontWidthEffects();
                     }
 
-                    trackerView->drawText(effect2, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font);
+                    trackerView->drawText(effect2, painter, trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font);
                     numPixels += effect2.length() * fontWidth, font;
-                    trackerView->drawText(trackerView->separatorEffect2(), painter, trackerView->xOffsetRow() + numPixels,
-                             yOffset + yPixelPosition,font);
+                    trackerView->drawText(trackerView->separatorEffect2(), painter,
+                                          trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font);
                     numPixels += trackerView->separatorEffect2().length() * fontWidth;
 
                     if (parameter2 == trackerView->emptyParameter() &&
-                        !trackerView->noEmptyParameter2Color() && j != currentRow)
-                    {
-                        if (!alternateChannelColors)
-                        {
+                        !trackerView->noEmptyParameter2Color() && j != currentRow) {
+                        if (!alternateChannelColors) {
                             painter->setPen(trackerView->colorEmpty());
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEmptyAlt);
                         }
-                    }
-                    else
-                    {
-                        if (!alternateChannelColors)
-                        {
+                    } else {
+                        if (!alternateChannelColors) {
                             painter->setPen(colorParameter2);
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorParameter2Alt);
                         }
                     }
@@ -911,45 +723,33 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
 
                     if (j == currentRow &&
                         trackerView->bitmapFont().m_bitmapFontPath ==
-                        trackerView->bitmapFontParameters().m_bitmapFontPath)
-                    {
+                        trackerView->bitmapFontParameters().m_bitmapFontPath) {
                         font0 = trackerView->currentRowBitmapFont();
                         fontWidth = trackerView->fontWidth();
-                    }
-                    else
-                    {
+                    } else {
                         font0 = trackerView->bitmapFontParameters();
                         fontWidth = trackerView->fontWidthParameters();
                     }
 
-                    trackerView->drawText(parameter2, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font0);
+                    trackerView->drawText(parameter2, painter, trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font0);
                     numPixels += parameter2.length() * fontWidth, font0;
-                    trackerView->drawText(trackerView->separatorParameter2(), painter, trackerView->xOffsetRow() + numPixels,
-                             yOffset + yPixelPosition,font0);
+                    trackerView->drawText(trackerView->separatorParameter2(), painter,
+                                          trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font0);
                     numPixels += trackerView->separatorParameter2().length() * fontWidth;
-                }
-                else
-                {
+                } else {
                     if (effect == trackerView->emptyEffect() &&
-                        !trackerView->noEmptyEffectColor() && j != currentRow)
-                    {
-                        if (!alternateChannelColors)
-                        {
+                        !trackerView->noEmptyEffectColor() && j != currentRow) {
+                        if (!alternateChannelColors) {
                             painter->setPen(trackerView->colorEmpty());
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEmptyAlt);
                         }
-                    }
-                    else
-                    {
-                        if (!alternateChannelColors)
-                        {
+                    } else {
+                        if (!alternateChannelColors) {
                             painter->setPen(colorEffect);
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEffectAlt);
                         }
                     }
@@ -957,73 +757,57 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
                     BitmapFont font00;
 
                     if (j == currentRow &&
-                        trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontEffects().m_bitmapFontPath)
-                    {
+                        trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontEffects().
+                        m_bitmapFontPath) {
                         font00 = trackerView->currentRowBitmapFont();
                         fontWidth = trackerView->fontWidth();
-                    }
-                    else
-                    {
+                    } else {
                         font00 = trackerView->bitmapFontEffects();
                         fontWidth = trackerView->fontWidthEffects();
                     }
 
-                    trackerView->drawText(effect, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font00);
+                    trackerView->drawText(effect, painter, trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font00);
                     numPixels += effect.length() * fontWidth;
-                    trackerView->drawText(trackerView->separatorEffect(), painter, trackerView->xOffsetRow() + numPixels,
-                             yOffset + yPixelPosition,font00);
+                    trackerView->drawText(trackerView->separatorEffect(), painter,
+                                          trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font00);
                     numPixels += trackerView->separatorEffect().length() * fontWidth;
 
                     if (effect2 == trackerView->emptyEffect() &&
-                        !trackerView->noEmptyEffect2Color() && j != currentRow)
-                    {
-                        if (!alternateChannelColors)
-                        {
+                        !trackerView->noEmptyEffect2Color() && j != currentRow) {
+                        if (!alternateChannelColors) {
                             painter->setPen(trackerView->colorEmpty());
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEmptyAlt);
                         }
-                    }
-                    else
-                    {
-                        if (!alternateChannelColors)
-                        {
+                    } else {
+                        if (!alternateChannelColors) {
                             painter->setPen(colorEffect2);
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEffect2Alt);
                         }
                     }
 
-                    trackerView->drawText(effect2, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font00);
+                    trackerView->drawText(effect2, painter, trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font00);
                     numPixels += effect2.length() * fontWidth;
-                    trackerView->drawText(trackerView->separatorEffect2(), painter, trackerView->xOffsetRow() + numPixels,
-                             yOffset + yPixelPosition,font00);
+                    trackerView->drawText(trackerView->separatorEffect2(), painter,
+                                          trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font00);
                     numPixels += trackerView->separatorEffect2().length() * fontWidth;
 
                     if (parameter == trackerView->emptyParameter() &&
-                        !trackerView->noEmptyParameterColor() && j != currentRow)
-                    {
-                        if (!alternateChannelColors)
-                        {
+                        !trackerView->noEmptyParameterColor() && j != currentRow) {
+                        if (!alternateChannelColors) {
                             painter->setPen(trackerView->colorEmpty());
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEmptyAlt);
                         }
-                    }
-                    else
-                    {
-                        if (!alternateChannelColors)
-                        {
+                    } else {
+                        if (!alternateChannelColors) {
                             painter->setPen(colorParameter);
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorParameterAlt);
                         }
                     }
@@ -1032,70 +816,60 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
 
                     if (j == currentRow &&
                         trackerView->bitmapFont().m_bitmapFontPath ==
-                        trackerView->bitmapFontParameters().m_bitmapFontPath)
-                    {
+                        trackerView->bitmapFontParameters().m_bitmapFontPath) {
                         font4 = trackerView->currentRowBitmapFont();
                         fontWidth = trackerView->fontWidth();
-                    }
-                    else
-                    {
+                    } else {
                         font4 = trackerView->bitmapFontParameters();
                         fontWidth = trackerView->fontWidthParameters();
                     }
 
-                    trackerView->drawText(parameter, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font4);
+                    trackerView->drawText(parameter, painter, trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font4);
                     numPixels += parameter.length() * fontWidth;
-                    trackerView->drawText(trackerView->separatorParameter(), painter, trackerView->xOffsetRow() + numPixels,
-                             yOffset + yPixelPosition,font4);
+                    trackerView->drawText(trackerView->separatorParameter(), painter,
+                                          trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font4);
                     numPixels += trackerView->separatorParameter().length() * fontWidth;
 
                     if (parameter2 == trackerView->emptyParameter() &&
-                        !trackerView->noEmptyParameterColor() && j != currentRow)
-                    {
-                        if (!alternateChannelColors)
-                        {
+                        !trackerView->noEmptyParameterColor() && j != currentRow) {
+                        if (!alternateChannelColors) {
                             painter->setPen(trackerView->colorEmpty());
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorEmptyAlt);
                         }
-                    }
-                    else
-                    {
-                        if (!alternateChannelColors)
-                        {
+                    } else {
+                        if (!alternateChannelColors) {
                             painter->setPen(colorParameter2);
-                        }
-                        else
-                        {
+                        } else {
                             painter->setPen(colorParameter2Alt);
                         }
                     }
 
-                    trackerView->drawText(parameter2, painter, trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,font4);
+                    trackerView->drawText(parameter2, painter, trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font4);
                     numPixels += parameter2.length() * fontWidth;
-                    trackerView->drawText(trackerView->separatorParameter2(), painter, trackerView->xOffsetRow() + numPixels,
-                             yOffset + yPixelPosition,font4);
+                    trackerView->drawText(trackerView->separatorParameter2(), painter,
+                                          trackerView->xOffsetRow() + numPixels,
+                                          yOffset + yPixelPosition, font4);
                     numPixels += trackerView->separatorParameter2().length() * fontWidth;
                 }
             }
 
-            if (trackerView->rowNumbersLastChannelEnabled())
-            {
+            if (trackerView->rowNumbersLastChannelEnabled()) {
                 painter->setPen(trackerView->colorDefault());
 
                 if (j == currentRow &&
-                    trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontRowNumber().m_bitmapFontPath)
-                {
+                    trackerView->bitmapFont().m_bitmapFontPath == trackerView->bitmapFontRowNumber().m_bitmapFontPath) {
                     trackerView->drawText(trackerView->separatorRowNumberLast() + row, painter,
-                             trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,trackerView->currentRowBitmapFont());
+                                          trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,
+                                          trackerView->currentRowBitmapFont());
                     fontWidth = trackerView->fontWidth();
-                }
-                else
-                {
+                } else {
                     trackerView->drawText(trackerView->separatorRowNumberLast() + row, painter,
-                             trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,trackerView->bitmapFontRowNumber());
+                                          trackerView->xOffsetRow() + numPixels, yOffset + yPixelPosition,
+                                          trackerView->bitmapFontRowNumber());
                     fontWidth = trackerView->fontWidthRowNumber();
                 }
 
@@ -1119,8 +893,7 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
             //                }
             //            }
 
-            if (trackerView->linesBetweenRows() && j != currentRow && j != currentRow - 1)
-            {
+            if (trackerView->linesBetweenRows() && j != currentRow && j != currentRow - 1) {
                 painter->fillRect(trackerView->xOffsetRow(),
                                   yOffset + yPixelPosition + trackerView->yOffsetRowHighlight(),
                                   trackerView->xOffsetRow() + numPixels - trackerView->
@@ -1129,32 +902,28 @@ void Tracker::drawPattern(QPainter* painter, int visibleWidth, bool forceRedraw)
 
             j++;
 
-            if (islibopenmpt || isLibxmp || isSunvox)
-            {
+            if (islibopenmpt || isLibxmp || isSunvox) {
                 i += info->numChannels;
-            }
-            else if (isHivelytracker)
-            {
+            } else if (isHivelytracker) {
                 i++;
             }
         }
-
     }
 
     trackerView->paintAbove(painter, height, currentRow);
 }
 
-void Tracker::drawTop(QPainter* painter) const {
-    trackerView->paintTop(painter,info,m_currentPattern, m_currentPosition, m_currentSpeed,m_currentBPM, m_currentRow);
+void Tracker::drawTop(QPainter *painter) const {
+    trackerView->paintTop(painter, info, m_currentPattern, m_currentPosition, m_currentSpeed, m_currentBPM,
+                          m_currentRow);
 }
 
-void Tracker::drawVuMeters(QPainter* painter) const {
+void Tracker::drawVuMeters(QPainter *painter) const {
     trackerView->drawVuMeters(painter);
 }
 
-void Tracker::paint(QPainter* painter, QPaintEvent* event)
-{
-    if (trackerView==nullptr)
+void Tracker::paint(QPainter *painter, QPaintEvent *event) {
+    if (trackerView == nullptr)
         return;
 
     const QSize renderSize = painter->viewport().size();
@@ -1166,12 +935,11 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     unsigned int currentSpeed = 0;
     unsigned int currentBPM = 0;
     const unsigned int previousOldSample = trackerView->getCurrentSample();
-    bool updateSample= false;
+    bool updateSample = false;
 
-    if(m_currentSample != previousOldSample)
-    {
-        m_currentSample=trackerView->getCurrentSample();
-        updateSample=true;
+    if (m_currentSample != previousOldSample) {
+        m_currentSample = trackerView->getCurrentSample();
+        updateSample = true;
     }
 
     const auto &sm = SoundManager::getInstance();
@@ -1188,12 +956,11 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
 
 
     const bool topToUpdate = currentPosition != m_currentPositionBuffer ||
-                       m_currentPattern != m_currentPatternBuffer ||
-                       m_currentSpeed != m_currentSpeedBuffer ||
-                       m_currentBPM != m_currentBPMBuffer || updateSample;
+                             m_currentPattern != m_currentPatternBuffer ||
+                             m_currentSpeed != m_currentSpeedBuffer ||
+                             m_currentBPM != m_currentBPMBuffer || updateSample;
 
-    if (sizeChanged || trackerToUpdate)
-    {
+    if (sizeChanged || trackerToUpdate) {
         m_currentPositionBuffer = currentPosition;
         m_currentRowBuffer = currentRow;
         m_currentPatternBuffer = currentPattern;
@@ -1204,7 +971,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
 
         QPainter bufferPainter(&m_backBuffer);
 
-        const float scaleX = static_cast<float>(renderSize.width())  / static_cast<float>(trackerView->width());
+        const float scaleX = static_cast<float>(renderSize.width()) / static_cast<float>(trackerView->width());
         const float scaleY = static_cast<float>(renderSize.height()) / static_cast<float>(trackerView->height());
         scale = std::min(scaleX, scaleY);
         m_visibleWidth = renderSize.width() / scale;
@@ -1215,8 +982,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         drawPattern(&bufferPainter, m_visibleWidth, true);
     }
 
-    if (m_lastVuSize != renderSize || trackerView->m_renderVuMeter)
-    {
+    if (m_lastVuSize != renderSize || trackerView->m_renderVuMeter) {
         m_lastVuSize = renderSize;
         m_vuBuffer = QPixmap(renderSize);
         m_vuBuffer.fill(Qt::transparent);
@@ -1229,8 +995,7 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
     }
 
     // repaint top bar layer
-    if ((renderSize != m_lastTopBarSize || topToUpdate) && trackerView->m_renderTop)
-    {
+    if ((renderSize != m_lastTopBarSize || topToUpdate) && trackerView->m_renderTop) {
         m_currentPositionBuffer = currentPosition;
         m_currentPatternBuffer = currentPattern;
         m_currentSpeedBuffer = currentSpeed;
@@ -1276,5 +1041,4 @@ void Tracker::paint(QPainter* painter, QPaintEvent* event)
         painter->drawPixmap(0, 0, m_topBarBuffer);
 
     painter->drawPixmap(0, 0, m_muteBuffer);
-
 }

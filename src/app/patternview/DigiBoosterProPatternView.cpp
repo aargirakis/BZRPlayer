@@ -2,9 +2,8 @@
 #include "DigiBoosterProPatternView.h"
 #include "mainwindow.h"
 
-DigiBoosterProPatternView::DigiBoosterProPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+DigiBoosterProPatternView::DigiBoosterProPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     octaveOffset = 24;
     m_font = QFont("DigiBoosterPro2");
     m_font.setPixelSize(7);
@@ -31,7 +30,9 @@ DigiBoosterProPatternView::DigiBoosterProPatternView(Tracker* parent, const unsi
     m_linesBetweenRows = true;
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(173, 170, 189);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        173, 170, 189);
     m_RowEnd = m_SeparatorRowNumber = m_SeparatorChannel = "'";
     m_xOffsetRow = 8;
     m_yOffsetCurrentRowBefore = -3;
@@ -47,22 +48,18 @@ DigiBoosterProPatternView::DigiBoosterProPatternView(Tracker* parent, const unsi
     m_bottomFrameHeight = 2;
 }
 
-QFont DigiBoosterProPatternView::currentRowFont()
-{
+QFont DigiBoosterProPatternView::currentRowFont() {
     return m_font2;
 }
 
-BitmapFont DigiBoosterProPatternView::currentRowBitmapFont()
-{
+BitmapFont DigiBoosterProPatternView::currentRowBitmapFont() {
     return m_bitmapFont2;
 }
 
-DigiBoosterProPatternView::~DigiBoosterProPatternView()
-{
+DigiBoosterProPatternView::~DigiBoosterProPatternView() {
 }
 
-void DigiBoosterProPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void DigiBoosterProPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(156, 154, 173);
     QColor colorHilite(239, 255, 255);
     QColor colorShadow(99, 101, 115);
@@ -71,7 +68,7 @@ void DigiBoosterProPatternView::paintAbove(QPainter* painter, int height, int cu
     painter->setPen(pen);
 
     QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-        "trackerview" + QDir::separator() + "digiboosterpro2_top.png";
+                        "trackerview" + QDir::separator() + "digiboosterpro2_top.png";
     QImage spriteSheet(imagepath);
 
     // scrollbar
@@ -80,8 +77,7 @@ void DigiBoosterProPatternView::paintAbove(QPainter* painter, int height, int cu
 
     int numberOfScrollBarBgPieces = (height - 4) / 2 + 1;
 
-    for (int i = 0; i < numberOfScrollBarBgPieces; i++)
-    {
+    for (int i = 0; i < numberOfScrollBarBgPieces; i++) {
         QRectF targetLeftBar(29 + m_channels * 90, 2 + i * 2, 17, 2);
         painter->drawImage(targetLeftBar, spriteSheet, sourceScrollBarBg);
     }
@@ -103,8 +99,7 @@ void DigiBoosterProPatternView::paintAbove(QPainter* painter, int height, int cu
 
     int numberOfLeftBarPieces = (height - 3) / 128 + 1;
 
-    for (int i = 0; i < numberOfLeftBarPieces; i++)
-    {
+    for (int i = 0; i < numberOfLeftBarPieces; i++) {
         QRectF targetLeftBar(1, 1 + i * 128, 5, 128);
         painter->drawImage(targetLeftBar, spriteSheet, sourceLeftBar);
     }
@@ -114,8 +109,7 @@ void DigiBoosterProPatternView::paintAbove(QPainter* painter, int height, int cu
     painter->fillRect(30 + m_channels * 90, height - 3, 17, 1, QColor(255, 255, 255));
     painter->fillRect(30 + m_channels * 90, height - 4, 16, 1, QColor(0, 0, 0));
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // bottom black border
         painter->fillRect(30 + chan * 90, height - 2, 87, 1, QColor(0, 0, 0));
 
@@ -144,8 +138,7 @@ void DigiBoosterProPatternView::paintAbove(QPainter* painter, int height, int cu
     painter->fillRect(6, 0, 21 + m_channels * 90, 1, QColor(0, 0, 0));
 }
 
-void DigiBoosterProPatternView::paintBelow(QPainter* painter, int height, __attribute__((unused)) int currentRow)
-{
+void DigiBoosterProPatternView::paintBelow(QPainter *painter, int height, __attribute__((unused)) int currentRow) {
     QColor colorBase(156, 154, 173);
     QColor colorHilite(239, 255, 255);
     QColor colorShadow(99, 101, 115);
@@ -165,15 +158,14 @@ void DigiBoosterProPatternView::paintBelow(QPainter* painter, int height, __attr
     painter->fillRect(8, height / 2 + 3, 18 + m_channels * 90, 1, QColor(0, 0, 0));
 
     QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-        "trackerview" + QDir::separator() + "digiboosterpro2_top.png";
+                        "trackerview" + QDir::separator() + "digiboosterpro2_top.png";
     QImage spriteSheet(imagepath);
     QRectF sourceTop(0, 0, 128, 2);
     QRectF sourceBottom(0, 2, 128, 2);
 
     int numberOfTopPieces = m_channels * 90 / 128 + 1;
 
-    for (int i = 0; i < numberOfTopPieces; i++)
-    {
+    for (int i = 0; i < numberOfTopPieces; i++) {
         QRectF targetTop(8 + i * 128, height / 2 - 9, 128, 2);
         QRectF targetBottom(8 + i * 128, height / 2 + 1, 128, 2);
         painter->drawImage(targetTop, spriteSheet, sourceTop);
@@ -188,8 +180,7 @@ void DigiBoosterProPatternView::paintBelow(QPainter* painter, int height, __attr
     painter->fillRect(7, height / 2 - 10, 19 + m_channels * 90, 1, QColor(255, 255, 255));
 }
 
-QString DigiBoosterProPatternView::rowNumber(const int rowNumber)
-{
+QString DigiBoosterProPatternView::rowNumber(const int rowNumber) {
     const int base = rowNumberHex ? 16 : 10;
 
     QString rowNumberStr = QString::number(rowNumber + rowNumberOffset, base).toUpper();
@@ -198,12 +189,10 @@ QString DigiBoosterProPatternView::rowNumber(const int rowNumber)
     return rowNumberStr;
 }
 
-QString DigiBoosterProPatternView::effect2(BaseRow* row)
-{
+QString DigiBoosterProPatternView::effect2(BaseRow *row) {
     return QString::number(row->effect2, 36).toUpper();
 }
 
-QString DigiBoosterProPatternView::effect(BaseRow* row)
-{
+QString DigiBoosterProPatternView::effect(BaseRow *row) {
     return QString::number(row->effect, 36).toUpper();
 }

@@ -1,41 +1,34 @@
 #include <QMimeData>
 #include "playlistmodel.h"
 
-PlaylistModel::PlaylistModel(QObject *parent) : QAbstractTableModel(parent)
-{
-    m_root = static_cast<MainWindow*>(parent);
+PlaylistModel::PlaylistModel(QObject *parent) : QAbstractTableModel(parent) {
+    m_root = static_cast<MainWindow *>(parent);
     //currentRowPlaying = 0;
 }
 
-int PlaylistModel::rowCount(const QModelIndex& /* parent */) const
-{
+int PlaylistModel::rowCount(const QModelIndex & /* parent */) const {
     return items.size();
 }
 
-int PlaylistModel::columnCount(const QModelIndex& /* parent */) const
-{
+int PlaylistModel::columnCount(const QModelIndex & /* parent */) const {
     return 9;
 }
 
-Qt::DropActions PlaylistModel::supportedDropActions() const
-{
+Qt::DropActions PlaylistModel::supportedDropActions() const {
     return Qt::MoveAction;
 }
 
-QVariant PlaylistModel::data(const QModelIndex& index, const int role) const
-{
-    if (!index.isValid())
-    {
+QVariant PlaylistModel::data(const QModelIndex &index, const int role) const {
+    if (!index.isValid()) {
         return QVariant();
     }
 
-    const auto& contact = items.at(index.row());
+    const auto &contact = items.at(index.row());
 
     if (index.row() >= items.size() || index.row() < 0)
         return QVariant();
 
-    if (role == Qt::DisplayRole)
-    {
+    if (role == Qt::DisplayRole) {
         if (index.column() == 0)
             return contact.title;
         if (index.column() == 1)
@@ -54,14 +47,11 @@ QVariant PlaylistModel::data(const QModelIndex& index, const int role) const
             return contact.isPlaying;
         if (index.column() == 8)
             return contact.artist;
-    }
-    else if (role == Qt::ForegroundRole && contact.isPlaying)
+    } else if (role == Qt::ForegroundRole && contact.isPlaying)
     //else if (role == Qt::ForegroundRole && index.row() == currentRowPlaying)
     {
         return QColor(m_root->getColorMain().left(7));
-    }
-    else if (role == Qt::ForegroundRole && contact.playable)
-    {
+    } else if (role == Qt::ForegroundRole && contact.playable) {
         QColor maintext(m_root->getColorMainText().left(7));
         maintext.setAlpha(128);
         return maintext;
@@ -70,27 +60,24 @@ QVariant PlaylistModel::data(const QModelIndex& index, const int role) const
     return QVariant();
 }
 
-QVariant PlaylistModel::headerData(const int section, const Qt::Orientation orientation, const int role) const
-{
+QVariant PlaylistModel::headerData(const int section, const Qt::Orientation orientation, const int role) const {
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
 
-    switch (section)
-    {
-    case 0: return "TITLE";
-    case 1: return "FORMAT";
-    case 2: return "LENGTH";
-    case 3: return "SUBSONG";
-    case 4: return "FULLPATH";
-    case 5: return "LENGTH int";
-    case 6: return "PLAYABLE";
-    case 7: return "IS PLAYING";
-    case 8: return "ARTIST";
-    default: return {};
+    switch (section) {
+        case 0: return "TITLE";
+        case 1: return "FORMAT";
+        case 2: return "LENGTH";
+        case 3: return "SUBSONG";
+        case 4: return "FULLPATH";
+        case 5: return "LENGTH int";
+        case 6: return "PLAYABLE";
+        case 7: return "IS PLAYING";
+        case 8: return "ARTIST";
+        default: return {};
     }
 }
 
-Qt::ItemFlags PlaylistModel::flags(const QModelIndex& index) const
-{
+Qt::ItemFlags PlaylistModel::flags(const QModelIndex &index) const {
     const Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
 
     if (index.isValid())
@@ -99,13 +86,11 @@ Qt::ItemFlags PlaylistModel::flags(const QModelIndex& index) const
     return defaultFlags | Qt::ItemIsDropEnabled;
 }
 
-bool PlaylistModel::insertRows(const int position, const int rows, const QModelIndex& index)
-{
+bool PlaylistModel::insertRows(const int position, const int rows, const QModelIndex &index) {
     Q_UNUSED(index);
     beginInsertRows(QModelIndex(), position, position + rows - 1);
 
-    for (int row = 0; row < rows; ++row)
-    {
+    for (int row = 0; row < rows; ++row) {
         items.insert(position, {});
     }
 
@@ -113,13 +98,11 @@ bool PlaylistModel::insertRows(const int position, const int rows, const QModelI
     return true;
 }
 
-bool PlaylistModel::removeRows(const int position, const int rows, const QModelIndex& index)
-{
+bool PlaylistModel::removeRows(const int position, const int rows, const QModelIndex &index) {
     Q_UNUSED(index);
     beginRemoveRows(QModelIndex(), position, position + rows - 1);
 
-    for (int row = 0; row < rows; ++row)
-    {
+    for (int row = 0; row < rows; ++row) {
         items.removeAt(position);
     }
 
@@ -127,8 +110,7 @@ bool PlaylistModel::removeRows(const int position, const int rows, const QModelI
     return true;
 }
 
-bool PlaylistModel::setData(const QModelIndex& index, const QVariant& value, const int role)
-{
+bool PlaylistModel::setData(const QModelIndex &index, const QVariant &value, const int role) {
     //    if(role==Qt::ForegroundRole && index.column()==0)
     //    {
     //        currentRowPlaying=value.toInt();
@@ -137,8 +119,7 @@ bool PlaylistModel::setData(const QModelIndex& index, const QVariant& value, con
 
     //cout << "setData row " << row << "\n";
 
-    if (role == Qt::EditRole || Qt::DisplayRole)
-    {
+    if (role == Qt::EditRole || Qt::DisplayRole) {
         auto contact = items.value(row);
 
         if (index.column() == 0)
@@ -149,30 +130,21 @@ bool PlaylistModel::setData(const QModelIndex& index, const QVariant& value, con
             contact.fileFormat = value.toString();
         else if (index.column() == 2)
             contact.length = value.toString();
-        else if (index.column() == 3)
-        {
-            if (value == -1)
-            {
+        else if (index.column() == 3) {
+            if (value == -1) {
                 contact.subsong = "";
-            }
-            else
-            {
+            } else {
                 contact.subsong = value.toString();
             }
-        }
-        else if (index.column() == 4)
+        } else if (index.column() == 4)
             contact.fullPath = value.toString();
         else if (index.column() == 5)
             contact.lengthInt = value.toInt() / 1000;
-        else if (index.column() == 6)
-        {
+        else if (index.column() == 6) {
             contact.playable = value.toBool();
-        }
-        else if (index.column() == 7)
-        {
+        } else if (index.column() == 7) {
             contact.isPlaying = value.toBool();
-        }
-        else
+        } else
             return false;
 
         items.replace(row, contact);
@@ -180,38 +152,37 @@ bool PlaylistModel::setData(const QModelIndex& index, const QVariant& value, con
         return true;
     }
 
-    if (role == Qt::ForegroundRole)
-    {
+    if (role == Qt::ForegroundRole) {
         return true;
     }
 }
 
 QStringList PlaylistModel::mimeTypes() const {
-    return { "application/vnd.text.list" };  // use any string, just keep it consistent
+    return {"application/vnd.text.list"}; // use any string, just keep it consistent
 }
 
-QMimeData* PlaylistModel::mimeData(const QModelIndexList &indexes) const {
+QMimeData *PlaylistModel::mimeData(const QModelIndexList &indexes) const {
     const auto mimeData = new QMimeData();
     QByteArray encoded;
     QDataStream stream(&encoded, QIODevice::WriteOnly);
 
     QSet<int> rows;
 
-    for (const QModelIndex& index : indexes)
+    for (const QModelIndex &index: indexes)
         rows.insert(index.row());
 
     QList<int> sortedRows = rows.values();
     std::sort(sortedRows.begin(), sortedRows.end());
 
-    for (const int row : sortedRows)
+    for (const int row: sortedRows)
         stream << row;
 
     mimeData->setData("application/vnd.text.list", encoded);
     return mimeData;
 }
-bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
-                                 int row, int column, const QModelIndex& parent)
-{
+
+bool PlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
+                                 int row, int column, const QModelIndex &parent) {
     if (action != Qt::MoveAction || !data->hasFormat("application/vnd.text.list"))
         return false;
 
@@ -219,8 +190,7 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     Item trackedItem;
     int currentRow = m_root->getCurrentRow();
 
-    if(currentRow>=0)
-    {
+    if (currentRow >= 0) {
         trackedItem = items[currentRow];
     }
 
@@ -243,11 +213,11 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
 
     // use the drop row passed from the view (via setDropTargetRow)
     int destinationRow = m_pendingDropRow != -1 ? m_pendingDropRow : row;
-    m_pendingDropRow = -1;  // reset after using
+    m_pendingDropRow = -1; // reset after using
 
     int movedBeforeTarget = 0;
 
-    for (int r : sourceRows) {
+    for (int r: sourceRows) {
         if (r < destinationRow)
             ++movedBeforeTarget;
     }
@@ -272,17 +242,14 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     endResetModel();
 
     // reset shuffle if shuffle is enabled
-    if(m_root->isShuffleEnabled())
-    {
-        if (m_root->getSelectedPlaylist() == m_root->getCurrentPlaylist())
-        {
+    if (m_root->isShuffleEnabled()) {
+        if (m_root->getSelectedPlaylist() == m_root->getCurrentPlaylist()) {
             m_root->resetShuffle(m_root->getCurrentPlaylist());
         }
     }
 
     // set new currentRow
-    if(currentRow>=0)
-    {
+    if (currentRow >= 0) {
         int newRow = findRowByUuid(trackedItem.uuid);
         m_root->setCurrentRow(newRow);
     }
@@ -290,12 +257,11 @@ bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     return true;
 }
 
-void PlaylistModel::setDropTargetRow(const int row)
-{
+void PlaylistModel::setDropTargetRow(const int row) {
     m_pendingDropRow = row;
 }
 
-int PlaylistModel::findRowByUuid(const QUuid& uuid) const {
+int PlaylistModel::findRowByUuid(const QUuid &uuid) const {
     for (int i = 0; i < items.size(); ++i) {
         if (items[i].uuid == uuid)
             return i;

@@ -3,14 +3,15 @@
 #include "mainwindow.h"
 
 ChipTrackerPatternView::ChipTrackerPatternView(Tracker *parent, const unsigned int channels) : AbstractPatternView(
-    parent, channels)
-{
+    parent, channels) {
     rowNumberOffset = 0;
     octaveOffset = 12;
     m_font2 = QFont("Chiptracker Double Height");
     m_font2.setPixelSize(14);
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(33, 32, 255);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        33, 32, 255);
     m_font = QFont("Chiptracker");
     m_font.setPixelSize(7);
     m_fontWidth = 8;
@@ -69,31 +70,25 @@ ChipTrackerPatternView::ChipTrackerPatternView(Tracker *parent, const unsigned i
     m_linearGradDark.setColorAt(1, QColor(0, 96, 0).rgb()); // dark green
 }
 
-QFont ChipTrackerPatternView::currentRowFont()
-{
+QFont ChipTrackerPatternView::currentRowFont() {
     return m_font2;
 }
 
-BitmapFont ChipTrackerPatternView::currentRowBitmapFont()
-{
+BitmapFont ChipTrackerPatternView::currentRowBitmapFont() {
     return m_bitmapFont2;
 }
 
-ChipTrackerPatternView::~ChipTrackerPatternView()
-{
+ChipTrackerPatternView::~ChipTrackerPatternView() {
 }
 
-void ChipTrackerPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void ChipTrackerPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(115, 117, 115);
     QColor colorHilite(170, 173, 170);
     QColor colorShadow(66, 69, 66);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         int extra = 0;
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
         painter->fillRect(30 + chan * 72, height - 3, 70 + extra, 1, colorHilite);
@@ -113,8 +108,7 @@ void ChipTrackerPatternView::paintAbove(QPainter* painter, int height, int curre
     painter->fillRect(59, 32, 1, 1, colorBase);
 }
 
-void ChipTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void ChipTrackerPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     int left = 3;
 
     QColor colorBase(115, 117, 115);
@@ -141,8 +135,7 @@ void ChipTrackerPatternView::paintBelow(QPainter* painter, int height, int curre
     // 1 pixel bottom antialiasing
     painter->fillRect(left - 3, height - 1, 1, 1, colorBase);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         QColor colorRed(255, 0, 0);
         // channel dividers
         pen.setColor(colorHilite);
@@ -174,13 +167,11 @@ void ChipTrackerPatternView::paintBelow(QPainter* painter, int height, int curre
     painter->fillRect(317, 0, 1, 1, colorBase);
     painter->fillRect(317, 32, 1, 1, colorBase);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // current row per channel
 
         int extra = 0;
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 1;
         }
 
@@ -207,16 +198,16 @@ void ChipTrackerPatternView::paintBelow(QPainter* painter, int height, int curre
     QColor colorGreenShadowColor(0, 101, 0);
 
     // vu-meters base
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         painter->fillRect(left + 30 + chan * 72 + 22, height / 2 - 2 + topOffset, 2, 1, colorGreenHiliteColor);
         painter->fillRect(left + 32 + chan * 72 + 22, height / 2 - 2 + topOffset, 6, 1, colorGreenBaseColor);
         painter->fillRect(left + 38 + chan * 72 + 22, height / 2 - 2 + topOffset, 2, 1, colorGreenShadowColor);
     }
 }
 
-void::ChipTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::ChipTrackerPatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                        unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                        unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 32;
     QColor colorBase(115, 117, 115);
     QColor colorHilite(173, 170, 173);

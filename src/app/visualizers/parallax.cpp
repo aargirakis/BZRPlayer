@@ -1,15 +1,12 @@
 #include "parallax.h"
 #include "mainwindow.h"
 
-Parallax::Parallax()
-{
+Parallax::Parallax() {
     inited = false;
 }
 
-void Parallax::paint(QPainter* painter, QPaintEvent* event)
-{
-    if (!inited)
-    {
+void Parallax::paint(QPainter *painter, QPaintEvent *event) {
+    if (!inited) {
         // TODO missing files (from bzr1 SOTB visualizer)
         tile1 = QPixmap(dataPath + "/resources/visualizer/parallax1.png");
         tile2 = QPixmap(dataPath + "/resources/visualizer/parallax2.png");

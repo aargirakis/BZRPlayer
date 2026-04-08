@@ -9,13 +9,11 @@
 #include "settingswindow.h"
 #include "ui_settingswindow.h"
 
-settingsWindow::settingsWindow(QWidget* parent) :
-    QDialog(parent),
-    ui(new Ui::settingsWindow)
-{
+settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
+                                                  ui(new Ui::settingsWindow) {
     setWindowFlags(windowFlags().setFlag(Qt::WindowContextHelpButtonHint, false));
     ui->setupUi(this);
-    mainWindow = static_cast<MainWindow*>(this->parent());
+    mainWindow = static_cast<MainWindow *>(this->parent());
     connect(ui->textEditScrollerCustomText, SIGNAL(textChanged()), this, SLOT(updateScrollText()));
 
     ui->sliderVuMeterWidth->installEventFilter(this);
@@ -188,7 +186,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
 
     ui->checkBoxNormalizer->setChecked(mainWindow->isNormalizeEnabled());
     mainWindow->
-        addDebugText("mainWindow->getNormalizeEnabled(): " + QString::number(mainWindow->isNormalizeEnabled()));
+            addDebugText("mainWindow->getNormalizeEnabled(): " + QString::number(mainWindow->isNormalizeEnabled()));
 
     ui->checkBoxReverb->setChecked(mainWindow->isReverbEnabled());
     mainWindow->addDebugText("mainWindow->getReverbEnabled(): " + QString::number(mainWindow->isReverbEnabled()));
@@ -232,7 +230,8 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->checkBoxStarsEnabled->setChecked(mainWindow->getEffect()->getStarsEnabled());
 
     ui->checkBoxRotatingObjectOrbit->setChecked(mainWindow->getEffect()->getRotatingObjectOrbit());
-    ui->checkBoxRotatingObjectWireframeEnabled->setChecked(mainWindow->getEffect()->getRotatingObjectWireframeEnabled());
+    ui->checkBoxRotatingObjectWireframeEnabled->
+            setChecked(mainWindow->getEffect()->getRotatingObjectWireframeEnabled());
     ui->comboBoxRotatingObjectModel->installEventFilter(this);
     ui->comboBoxRotatingObjectModel->addItem("Cube", "cube");
     ui->comboBoxRotatingObjectModel->addItem("Sphere", "sphere");
@@ -245,14 +244,16 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->comboBoxRotatingObjectMaterial->addItem("Flat", "flat");
     ui->comboBoxRotatingObjectMaterial->addItem("Lambert", "lambert");
     ui->comboBoxRotatingObjectMaterial->addItem("Blinn", "blinn");
-    const int materialindex = ui->comboBoxRotatingObjectMaterial->findData(mainWindow->getEffect()->getRotatingObjectMaterial());
+    const int materialindex = ui->comboBoxRotatingObjectMaterial->findData(
+        mainWindow->getEffect()->getRotatingObjectMaterial());
     ui->comboBoxRotatingObjectMaterial->setCurrentIndex(materialindex);
 
     ui->sliderRotatingObjectFocalLength->setValue(mainWindow->getEffect()->getRotatingObjectFocalLength());
     ui->sliderRotatingObjectModelSize->setValue(mainWindow->getEffect()->getRotatingObjectSize());
     ui->sliderRotatingObjectOrbitSize->setValue(mainWindow->getEffect()->getRotatingObjectOrbitSize());
     ui->sliderRotatingObjectOrbitSpeed->setValue(mainWindow->getEffect()->getRotatingObjectOrbitSpeed());
-    ui->checkBoxRotatingObjectEnabled->setChecked(mainWindow->getEffect()->getRotatingObjectEnabled()); // don't understand why it's not triggered, hence the following row
+    ui->checkBoxRotatingObjectEnabled->setChecked(mainWindow->getEffect()->getRotatingObjectEnabled());
+    // don't understand why it's not triggered, hence the following row
     on_checkBoxRotatingObjectEnabled_toggled(mainWindow->getEffect()->getRotatingObjectEnabled());
 
     ui->checkBoxScrollerEnabled->setChecked(mainWindow->getEffect()->getScrollerEnabled());
@@ -281,8 +282,7 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->sliderRasterBarsOpacity->setValue(mainWindow->getEffect()->getRasterbarsOpacity());
     forceUpdateToSliders();
 
-    if (PLUGIN_libsidplayfp_LIB != "")
-    {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->installEventFilter(this);
         ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("At every start", "At every start");
         ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Daily", "Daily");
@@ -290,7 +290,8 @@ settingsWindow::settingsWindow(QWidget* parent) :
         ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Monthly", "Monthly");
         ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Never", "Never");
 
-        index = ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->findData(mainWindow->getBundledHvscSonglengthsUpdateFrequency());
+        index = ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->findData(
+            mainWindow->getBundledHvscSonglengthsUpdateFrequency());
         ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->setCurrentIndex(index);
     }
 
@@ -303,38 +304,31 @@ settingsWindow::settingsWindow(QWidget* parent) :
 
     loadSettingsFmod();
 
-    if (PLUGIN_adplug_LIB != "")
-    {
+    if (PLUGIN_adplug_LIB != "") {
         loadSettingsAdplug();
     }
 
-    if (PLUGIN_hivelytracker_LIB != "")
-    {
+    if (PLUGIN_hivelytracker_LIB != "") {
         loadSettingsHivelytracker();
     }
 
-    if (PLUGIN_libsidplayfp_LIB != "")
-    {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         loadSettingsLibsidplayfp();
     }
 
-    if (PLUGIN_libvgm_LIB != "")
-    {
+    if (PLUGIN_libvgm_LIB != "") {
         loadSettingsLibvgm();
     }
 
-    if (PLUGIN_libxmp_LIB != "")
-    {
+    if (PLUGIN_libxmp_LIB != "") {
         loadSettingsLibxmp();
     }
 
-    if (PLUGIN_sndh_player_LIB != "")
-    {
+    if (PLUGIN_sndh_player_LIB != "") {
         loadSettingsSndhPlayer();
     }
 
-    if (PLUGIN_vgmstream_LIB != "")
-    {
+    if (PLUGIN_vgmstream_LIB != "") {
         loadSettingsVgmstream();
     }
 
@@ -374,215 +368,178 @@ settingsWindow::settingsWindow(QWidget* parent) :
     ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_fmod_VERSION));
     ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_fmod_NAME));
 
-    if (PLUGIN_adplug_LIB != "")
-    {
+    if (PLUGIN_adplug_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_adplug_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_adplug_NAME));
     }
 
-    if (PLUGIN_asap_LIB != "")
-    {
+    if (PLUGIN_asap_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_asap_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_asap_NAME));
     }
 
-    if (PLUGIN_audiodecoder_wsr_LIB != "")
-    {
+    if (PLUGIN_audiodecoder_wsr_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_audiodecoder_wsr_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_audiodecoder_wsr_NAME));
     }
 
-    if (PLUGIN_audiofile_LIB != "")
-    {
+    if (PLUGIN_audiofile_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_audiofile_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_audiofile_NAME));
     }
 
-    if (PLUGIN_flod_LIB != "")
-    {
+    if (PLUGIN_flod_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_flod_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_flod_NAME));
     }
 
-    if (PLUGIN_furnace_LIB != "")
-    {
+    if (PLUGIN_furnace_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_furnace_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_furnace_NAME));
     }
 
-    if (PLUGIN_game_music_emu_LIB != "")
-    {
+    if (PLUGIN_game_music_emu_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_game_music_emu_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_game_music_emu_NAME));
     }
 
-    if (PLUGIN_highly_experimental_LIB != "")
-    {
+    if (PLUGIN_highly_experimental_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_highly_experimental_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_highly_experimental_NAME));
     }
 
-    if (PLUGIN_highly_quixotic_LIB != "")
-    {
+    if (PLUGIN_highly_quixotic_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_highly_quixotic_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_highly_quixotic_NAME));
     }
 
-    if (PLUGIN_highly_theoretical_LIB != "")
-    {
+    if (PLUGIN_highly_theoretical_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_highly_theoretical_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_highly_theoretical_NAME));
     }
 
-    if (PLUGIN_hivelytracker_LIB != "")
-    {
+    if (PLUGIN_hivelytracker_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_hivelytracker_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_hivelytracker_NAME));
     }
 
-    if (PLUGIN_jaytrax_LIB != "")
-    {
+    if (PLUGIN_jaytrax_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_jaytrax_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_jaytrax_NAME));
     }
 
-    if (PLUGIN_kdm_LIB != "")
-    {
+    if (PLUGIN_kdm_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_kdm_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_kdm_NAME));
     }
 
-    if (PLUGIN_klystron_LIB != "")
-    {
+    if (PLUGIN_klystron_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_klystron_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_klystron_NAME));
     }
 
-    if (PLUGIN_lazyusf2_LIB != "")
-    {
+    if (PLUGIN_lazyusf2_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_lazyusf2_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_lazyusf2_NAME));
     }
 
-    if (PLUGIN_libkss_LIB != "")
-    {
+    if (PLUGIN_libkss_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libkss_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libkss_NAME));
     }
 
-    if (PLUGIN_libopenmpt_LIB != "")
-    {
+    if (PLUGIN_libopenmpt_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libopenmpt_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libopenmpt_NAME));
     }
 
-    if (PLUGIN_libpac_LIB != "")
-    {
+    if (PLUGIN_libpac_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libpac_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libpac_NAME));
     }
 
-    if (PLUGIN_libsidplayfp_LIB != "")
-    {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libsidplayfp_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libsidplayfp_NAME));
     }
 
-    if (PLUGIN_libstsound_LIB != "")
-    {
+    if (PLUGIN_libstsound_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libstsound_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libstsound_NAME));
     }
 
-    if (PLUGIN_libxmp_LIB != "")
-    {
+    if (PLUGIN_libxmp_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libxmp_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libxmp_NAME));
     }
 
-    if (PLUGIN_mdxmini_LIB != "")
-    {
+    if (PLUGIN_mdxmini_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_mdxmini_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_mdxmini_NAME));
     }
 
-    if (PLUGIN_organya_decoder_LIB != "")
-    {
+    if (PLUGIN_organya_decoder_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_organya_decoder_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_organya_decoder_NAME));
     }
 
-    if (PLUGIN_protrekkr_LIB != "")
-    {
+    if (PLUGIN_protrekkr_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_protrekkr_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_protrekkr_NAME));
     }
 
-    if (PLUGIN_sc68_LIB != "")
-    {
+    if (PLUGIN_sc68_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_sc68_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_sc68_NAME));
     }
 
-    if (PLUGIN_sndh_player_LIB != "")
-    {
+    if (PLUGIN_sndh_player_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_sndh_player_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_sndh_player_NAME));
     }
 
-    if (PLUGIN_sunvox_lib_LIB != "")
-    {
+    if (PLUGIN_sunvox_lib_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_sunvox_lib_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_sunvox_lib_NAME));
     }
 
-    if (PLUGIN_v2m_player_LIB != "")
-    {
+    if (PLUGIN_v2m_player_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_v2m_player_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_v2m_player_NAME));
     }
 
-    if (PLUGIN_libvgm_LIB != "")
-    {
+    if (PLUGIN_libvgm_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libvgm_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libvgm_NAME));
     }
 
-    if (PLUGIN_vgmstream_LIB != "")
-    {
+    if (PLUGIN_vgmstream_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vgmstream_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vgmstream_NAME));
     }
 
-    if (PLUGIN_vio2sf_LIB != "")
-    {
+    if (PLUGIN_vio2sf_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_vio2sf_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_vio2sf_NAME));
     }
 
-    if (PLUGIN_uade_LIB != "")
-    {
+    if (PLUGIN_uade_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_uade_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_uade_NAME));
     }
 
-    if (PLUGIN_zxtune_LIB != "")
-    {
+    if (PLUGIN_zxtune_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_zxtune_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_zxtune_NAME));
     }
 
-    if (PLUGIN_libsidplayfp_LIB != "")
-    {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         const QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscSonglengthsDownloadEpoch());
-        if (mainWindow->getBundledHvscSonglengthsDownloadEpoch() > 0)
-        {
+        if (mainWindow->getBundledHvscSonglengthsDownloadEpoch() > 0) {
             ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText(
                 "Downloaded to " + mainWindow->getBundledHvscSonglengthsPath() + " at " + qdt.toString(
                     "yyyy-MM-dd hh:mm:ss"));
-        }
-        else
-        {
+        } else {
             ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText("Never downloaded");
         }
     }
@@ -595,10 +552,9 @@ settingsWindow::settingsWindow(QWidget* parent) :
     const QDir directory(dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts");
     QStringList images = directory.entryList(QStringList() << "*.thumb.png", QDir::Files);
 
-    foreach(QString filename, images)
-    {
-        QString fullfilename = dataPath + RESOURCES_DIR  + "/visualizer/bitmapfonts/" +
-            filename;
+    foreach(QString filename, images) {
+        QString fullfilename = dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts/" +
+                               filename;
         const auto album = new Album(filename);
         album->artwork = fullfilename;
         album->title = filename.replace(".thumb.png", "");
@@ -622,13 +578,11 @@ settingsWindow::settingsWindow(QWidget* parent) :
     changeStyleSheetColor();
 }
 
-settingsWindow::~settingsWindow()
-{
+settingsWindow::~settingsWindow() {
     delete ui;
 }
 
-void settingsWindow::on_sliderDefaultAudioLevel_sliderMoved(int position)
-{
+void settingsWindow::on_sliderDefaultAudioLevel_sliderMoved(int position) {
 }
 
 void settingsWindow::on_checkBoxDefaultAudioLevel_toggled(const bool isChecked) const {
@@ -677,8 +631,7 @@ void settingsWindow::on_checkBoxReverb_toggled(const bool isChecked) const {
     ui->checkBoxReverb->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
-bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
-{
+bool settingsWindow::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::Wheel &&
         (obj == ui->sliderVuMeterWidth ||
          obj == ui->sliderVuMeterOpacity ||
@@ -740,11 +693,11 @@ bool settingsWindow::eventFilter(QObject* obj, QEvent* event)
     return QWidget::eventFilter(obj, event);
 }
 
-void settingsWindow::on_buttonOK_clicked()
-{
-    if (ui->comboBoxOutputDevice->itemData(ui->comboBoxOutputDevice->currentIndex()).toInt() != mainWindow->getOutputDevice())
-    {
-        mainWindow->setOutputDeviceSetting(ui->comboBoxOutputDevice->itemData(ui->comboBoxOutputDevice->currentIndex()).toInt());
+void settingsWindow::on_buttonOK_clicked() {
+    if (ui->comboBoxOutputDevice->itemData(ui->comboBoxOutputDevice->currentIndex()).toInt() !=
+        mainWindow->getOutputDevice()) {
+        mainWindow->setOutputDeviceSetting(
+            ui->comboBoxOutputDevice->itemData(ui->comboBoxOutputDevice->currentIndex()).toInt());
     }
 
     mainWindow->setResetVolume(ui->checkBoxDefaultAudioLevel->checkState() == Qt::Checked);
@@ -759,38 +712,31 @@ void settingsWindow::on_buttonOK_clicked()
 
     saveSettingsFmod();
 
-    if (PLUGIN_adplug_LIB != "")
-    {
+    if (PLUGIN_adplug_LIB != "") {
         saveSettingsAdplug();
     }
 
-    if (PLUGIN_hivelytracker_LIB != "")
-    {
+    if (PLUGIN_hivelytracker_LIB != "") {
         saveSettingsHivelytracker();
     }
 
-    if (PLUGIN_libsidplayfp_LIB != "")
-    {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         saveSettingsLibsidplayfp();
     }
 
-    if (PLUGIN_libvgm_LIB != "")
-    {
+    if (PLUGIN_libvgm_LIB != "") {
         saveSettingsLibvgm();
     }
 
-    if (PLUGIN_libxmp_LIB != "")
-    {
+    if (PLUGIN_libxmp_LIB != "") {
         saveSettingsLibxmp();
     }
 
-    if (PLUGIN_sndh_player_LIB != "")
-    {
+    if (PLUGIN_sndh_player_LIB != "") {
         saveSettingsSndhPlayer();
     }
 
-    if (PLUGIN_vgmstream_LIB != "")
-    {
+    if (PLUGIN_vgmstream_LIB != "") {
         saveSettingsVgmstream();
     }
 
@@ -802,19 +748,17 @@ void settingsWindow::on_buttonOK_clicked()
     close();
 }
 
-void settingsWindow::on_comboBoxReverb_textActivated(const QString& arg1) const {
+void settingsWindow::on_comboBoxReverb_textActivated(const QString &arg1) const {
     mainWindow->setReverbPreset(arg1);
     const bool checkedReverb = ui->checkBoxReverb->checkState() == Qt::Checked;
     mainWindow->setReverbEnabled(checkedReverb);
 }
 
-void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked()
-{
+void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked() {
     const QString startFolder = ui->lineEditLibsidplayfpHvscSonglengthsPath->text();
 
     if (const QString file = QFileDialog::getOpenFileName(this, "Choose your Songlengths.md5", startFolder, "*.md5");
-        !file.isEmpty())
-    {
+        !file.isEmpty()) {
         setUiLineEditLibsidplayfpHvscSonglengthsPath(file);
         mainWindow->setHvscSonglengthsPath(file);
     }
@@ -826,8 +770,7 @@ void settingsWindow::loadSettingsAdplug() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -838,34 +781,24 @@ void settingsWindow::loadSettingsAdplug() const {
     ui->comboBoxAdPlugPlayback->setCurrentIndex(ui->comboBoxAdPlugPlayback->findData("2"));
     ui->checkBoxAdPlugContinuousPlayback->setChecked(false);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("emulator") == 0)
-                {
+                if (word.compare("emulator") == 0) {
                     int index = ui->comboBoxAdPlugEmulator->findData(value.c_str());
                     ui->comboBoxAdPlugEmulator->setCurrentIndex(index);
-                }
-                else if (word.compare("frequency") == 0)
-                {
+                } else if (word.compare("frequency") == 0) {
                     int index = ui->comboBoxAdPlugFreq->findData(value.c_str());
                     ui->comboBoxAdPlugFreq->setCurrentIndex(index);
-                }
-                else if (word.compare("playback") == 0)
-                {
+                } else if (word.compare("playback") == 0) {
                     int index = ui->comboBoxAdPlugPlayback->findData(value.c_str());
                     ui->comboBoxAdPlugPlayback->setCurrentIndex(index);
-                }
-                else if (word.compare("continuousPlayback") == 0)
-                {
+                } else if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxAdPlugContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
@@ -881,8 +814,7 @@ void settingsWindow::loadSettingsFmod() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -890,19 +822,15 @@ void settingsWindow::loadSettingsFmod() const {
     // defaults
     ui->checkBoxFmodSeamlessLoop->setChecked(false);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("seamlessLoop") == 0)
-                {
+                if (word.compare("seamlessLoop") == 0) {
                     ui->checkBoxFmodSeamlessLoop->setChecked(value.compare("true") == 0);
                 }
             }
@@ -920,8 +848,7 @@ void settingsWindow::loadSettingsHivelytracker() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -931,24 +858,18 @@ void settingsWindow::loadSettingsHivelytracker() const {
     ui->comboBoxHivelyTrackerStereoSeparation->setCurrentIndex(index);
     ui->checkBoxHivelyTrackerContinuousPlayback->setChecked(false);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("stereoSeparation") == 0)
-                {
+                if (word.compare("stereoSeparation") == 0) {
                     int index = ui->comboBoxHivelyTrackerStereoSeparation->findData(value.c_str());
                     ui->comboBoxHivelyTrackerStereoSeparation->setCurrentIndex(index);
-                }
-                else if (word.compare("continuousPlayback") == 0)
-                {
+                } else if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxHivelyTrackerContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
@@ -964,8 +885,7 @@ void settingsWindow::loadSettingsLibopenmpt() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -981,46 +901,31 @@ void settingsWindow::loadSettingsLibopenmpt() const {
     int index3 = ui->comboBoxLibopenmptDither->findData("1");
     ui->comboBoxLibopenmptDither->setCurrentIndex(index3);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("stereoSeparation") == 0)
-                {
+                if (word.compare("stereoSeparation") == 0) {
                     ui->sliderLibopenmptStereoSeparation->setValue(atoi(value.c_str()));
                 } else if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxLibopenmptContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
-                else if (word.compare("emulateAmigaFilter") == 0)
-                {
-                    if (value.compare("true") == 0)
-                    {
+                } else if (word.compare("emulateAmigaFilter") == 0) {
+                    if (value.compare("true") == 0) {
                         ui->checkBoxLibopenmptAmigaResampler->setChecked(true);
-                    }
-                    else
-                    {
+                    } else {
                         ui->checkBoxLibopenmptAmigaResampler->setChecked(false);
                     }
-                }
-                else if (word.compare("interpolationFilter") == 0)
-                {
+                } else if (word.compare("interpolationFilter") == 0) {
                     int index = ui->comboBoxLibopenmptResampling->findData(value.c_str());
                     ui->comboBoxLibopenmptResampling->setCurrentIndex(index);
-                }
-                else if (word.compare("amigaFilter") == 0)
-                {
+                } else if (word.compare("amigaFilter") == 0) {
                     int index = ui->comboBoxLibopenmptFilter->findData(value.c_str());
                     ui->comboBoxLibopenmptFilter->setCurrentIndex(index);
-                }
-                else if (word.compare("dither") == 0)
-                {
+                } else if (word.compare("dither") == 0) {
                     int index = ui->comboBoxLibopenmptDither->findData(value.c_str());
                     ui->comboBoxLibopenmptDither->setCurrentIndex(index);
                 }
@@ -1037,8 +942,7 @@ void settingsWindow::loadSettingsLibsidplayfp() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -1051,14 +955,11 @@ void settingsWindow::loadSettingsLibsidplayfp() const {
 
     ui->checkBoxLibsidplayfpContinuousPlayback->setChecked(false);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
@@ -1071,16 +972,10 @@ void settingsWindow::loadSettingsLibsidplayfp() const {
 
                     mainWindow->setHvscSonglengthsPath(hvscSonglengthsPathToLoad);
                     setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsPathToLoad);
-
-                }
-                else if (word.compare("hvscSonglengthsEnabled") == 0)
-                {
-                    if (value.compare("true") == 0)
-                    {
+                } else if (word.compare("hvscSonglengthsEnabled") == 0) {
+                    if (value.compare("true") == 0) {
                         ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(true);
-                    }
-                    else
-                    {
+                    } else {
                         ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(false);
                     }
                 } else if (word.compare("continuousPlayback") == 0) {
@@ -1090,9 +985,7 @@ void settingsWindow::loadSettingsLibsidplayfp() const {
         }
 
         ifs.close();
-    }
-    else
-    {
+    } else {
         ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(false);
         ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(true);
         mainWindow->setHvscSonglengthsPath(mainWindow->getBundledHvscSonglengthsPath());
@@ -1106,8 +999,7 @@ void settingsWindow::loadSettingsLibvgm() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -1115,19 +1007,15 @@ void settingsWindow::loadSettingsLibvgm() const {
     // defaults
     ui->checkBoxLibvgmContinuousPlayback->setChecked(false);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("continuousPlayback") == 0)
-                {
+                if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxLibvgmContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
@@ -1143,8 +1031,7 @@ void settingsWindow::loadSettingsLibxmp() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -1152,19 +1039,15 @@ void settingsWindow::loadSettingsLibxmp() const {
     // defaults
     ui->checkBoxLibxmpContinuousPlayback->setChecked(false);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("continuousPlayback") == 0)
-                {
+                if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxLibxmpContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
@@ -1180,8 +1063,7 @@ void settingsWindow::loadSettingsSndhPlayer() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -1189,19 +1071,15 @@ void settingsWindow::loadSettingsSndhPlayer() const {
     // defaults
     ui->checkBoxSndhPlayerContinuousPlayback->setChecked(false);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("continuousPlayback") == 0)
-                {
+                if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxSndhPlayerContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
@@ -1217,8 +1095,7 @@ void settingsWindow::loadSettingsUade() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -1236,104 +1113,62 @@ void settingsWindow::loadSettingsUade() const {
     ui->checkBoxUadeSongLengths->setChecked(true);
     ui->checkBoxUadeContinuousPlayback->setChecked(false);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("frequency") == 0)
-                {
+                if (word.compare("frequency") == 0) {
                     int index = ui->comboBoxUadeFreq->findData(value.c_str());
                     ui->comboBoxUadeFreq->setCurrentIndex(index);
-                }
-                else if (word.compare("resampler") == 0)
-                {
+                } else if (word.compare("resampler") == 0) {
                     int index = ui->comboBoxUadeResampler->findData(value.c_str());
                     ui->comboBoxUadeResampler->setCurrentIndex(index);
-                }
-                else if (word.compare("filterEmu") == 0) {
-                    if (value.compare("true") == 0)
-                    {
+                } else if (word.compare("filterEmu") == 0) {
+                    if (value.compare("true") == 0) {
                         ui->checkBoxUadeFilterEmu->setChecked(true);
-                    }
-                    else
-                    {
+                    } else {
                         ui->checkBoxUadeFilterEmu->setChecked(false);
                     }
-                }
-                else if (word.compare("filterMode") == 0) {
-                    if (value.compare("a500") == 0)
-                    {
+                } else if (word.compare("filterMode") == 0) {
+                    if (value.compare("a500") == 0) {
                         ui->comboBoxUadeFilterEmuMode->setCurrentIndex(0);
-                    }
-                    else
-                    {
+                    } else {
                         ui->comboBoxUadeFilterEmuMode->setCurrentIndex(1);
                     }
-                }
-                else if (word.compare("ledForced") == 0)
-                {
-                    if (value.compare("auto") == 0)
-                    {
+                } else if (word.compare("ledForced") == 0) {
+                    if (value.compare("auto") == 0) {
                         ui->comboBoxUadeLedFilter->setCurrentIndex(0);
-                    }
-                    else if (value.compare("on") == 0)
-                    {
+                    } else if (value.compare("on") == 0) {
                         ui->comboBoxUadeLedFilter->setCurrentIndex(1);
-                    }
-                    else
-                    {
+                    } else {
                         ui->comboBoxUadeLedFilter->setCurrentIndex(2);
                     }
-                }
-                else if (word.compare("panning") == 0)
-                {
+                } else if (word.compare("panning") == 0) {
                     ui->sliderUadePanning->setValue(stoi(value));
-                }
-                else if (word.compare("silenceTimeoutEnabled") == 0)
-                {
-                    if (value.compare("true") == 0)
-                    {
+                } else if (word.compare("silenceTimeoutEnabled") == 0) {
+                    if (value.compare("true") == 0) {
                         ui->checkBoxUadeSilenceTimeout->setChecked(true);
-                    }
-                    else
-                    {
+                    } else {
                         ui->checkBoxUadeSilenceTimeout->setChecked(false);
                     }
-                }
-                else if (word.compare("silenceTimeout") == 0)
-                {
+                } else if (word.compare("silenceTimeout") == 0) {
                     ui->sliderUadeSilenceTimeOut->setValue(atoi(value.c_str()));
-                }
-                else if (word.compare("continuousPlayback") == 0)
-                {
+                } else if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxUadeContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
-                else if (word.compare("uadeSonglengthsEnabled") == 0)
-                {
-                    if (value.compare("true") == 0)
-                    {
+                } else if (word.compare("uadeSonglengthsEnabled") == 0) {
+                    if (value.compare("true") == 0) {
                         ui->checkBoxUadeSongLengths->setChecked(true);
-                    }
-                    else
-                    {
+                    } else {
                         ui->checkBoxUadeSongLengths->setChecked(false);
                     }
-                }
-                else if (word.compare("uadeSonglengthsPath") == 0)
-                {
-                    if (value == "")
-                    {
+                } else if (word.compare("uadeSonglengthsPath") == 0) {
+                    if (value == "") {
                         ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
-                    }
-                    else
-                    {
+                    } else {
                         ui->lineEditUadeSonglengthsPath->setText(value.c_str());
                     }
                 }
@@ -1350,8 +1185,7 @@ void settingsWindow::loadSettingsVgmstream() const {
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
-    if (ifs.fail())
-    {
+    if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
     }
@@ -1359,19 +1193,15 @@ void settingsWindow::loadSettingsVgmstream() const {
     // defaults
     ui->checkBoxVgmstreamContinuousPlayback->setChecked(false);
 
-    if (!useDefaults)
-    {
+    if (!useDefaults) {
         string line;
 
-        while (getline(ifs, line))
-        {
-            if (int i = line.find_first_of("="); i != -1)
-            {
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("continuousPlayback") == 0)
-                {
+                if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxVgmstreamContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
@@ -1386,8 +1216,7 @@ void settingsWindow::saveSettingsAdplug() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/adplug.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
@@ -1404,8 +1233,7 @@ void settingsWindow::saveSettingsFmod() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/fmod.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
@@ -1423,14 +1251,15 @@ void settingsWindow::saveSettingsHivelytracker() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
 
-    ofs << "stereoSeparation=" << ui->comboBoxHivelyTrackerStereoSeparation->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "continuousPlayback=" << (ui->checkBoxHivelyTrackerContinuousPlayback->isChecked()?"true":"false") << "\n";
+    ofs << "stereoSeparation=" << ui->comboBoxHivelyTrackerStereoSeparation->currentData().toString().toStdString().
+            c_str() << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxHivelyTrackerContinuousPlayback->isChecked() ? "true" : "false") <<
+            "\n";
     ofs.close();
 }
 
@@ -1439,19 +1268,18 @@ void settingsWindow::saveSettingsLibopenmpt() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
 
     ofs << "stereoSeparation=" << ui->sliderLibopenmptStereoSeparation->value() << "\n";
-    ofs << "continuousPlayback=" << (ui->checkBoxLibopenmptContinuousPlayback->isChecked()?"true":"false") << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxLibopenmptContinuousPlayback->isChecked() ? "true" : "false") << "\n";
     ofs << "interpolationFilter=" << ui->comboBoxLibopenmptResampling->currentData().toString().toStdString().c_str() <<
-        "\n";
+            "\n";
     ofs << "amigaFilter=" << ui->comboBoxLibopenmptFilter->currentData().toString().toStdString().c_str() << "\n";
     ofs << "dither=" << ui->comboBoxLibopenmptDither->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "emulateAmigaFilter=" << (ui->checkBoxLibopenmptAmigaResampler->isChecked()?"true":"false") << "\n";
+    ofs << "emulateAmigaFilter=" << (ui->checkBoxLibopenmptAmigaResampler->isChecked() ? "true" : "false") << "\n";
     ofs.close();
 }
 
@@ -1460,14 +1288,15 @@ void settingsWindow::saveSettingsLibsidplayfp() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
 
-    ofs << "continuousPlayback=" << (ui->checkBoxLibsidplayfpContinuousPlayback->isChecked() ? "true" : "false") << "\n";
-    ofs << "hvscSonglengthsEnabled=" << (ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->isChecked()?"true":"false") << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxLibsidplayfpContinuousPlayback->isChecked() ? "true" : "false") <<
+            "\n";
+    ofs << "hvscSonglengthsEnabled=" << (ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->isChecked() ? "true" : "false")
+            << "\n";
 
     QString hvscSonglengthsPathToSave = ui->lineEditLibsidplayfpHvscSonglengthsPath->text();
 
@@ -1486,8 +1315,7 @@ void settingsWindow::saveSettingsLibvgm() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libvgm.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
@@ -1501,8 +1329,7 @@ void settingsWindow::saveSettingsLibxmp() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libxmp.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
@@ -1516,8 +1343,7 @@ void settingsWindow::saveSettingsSndhPlayer() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/sndh-player.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
@@ -1531,48 +1357,39 @@ void settingsWindow::saveSettingsUade() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/uade.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
 
     QString filterMode;
 
-    if (ui->comboBoxUadeFilterEmuMode->currentIndex() == 0)
-    {
+    if (ui->comboBoxUadeFilterEmuMode->currentIndex() == 0) {
         filterMode = "a500";
-    }
-    else
-    {
+    } else {
         filterMode = "a1200";
     }
 
     QString ledFilter;
 
-    if (ui->comboBoxUadeLedFilter->currentIndex() == 0)
-    {
+    if (ui->comboBoxUadeLedFilter->currentIndex() == 0) {
         ledFilter = "auto";
-    }
-    else if (ui->comboBoxUadeLedFilter->currentIndex() == 1)
-    {
+    } else if (ui->comboBoxUadeLedFilter->currentIndex() == 1) {
         ledFilter = "on";
-    }
-    else
-    {
+    } else {
         ledFilter = "off";
     }
 
     ofs << "frequency=" << ui->comboBoxUadeFreq->currentData().toString().toStdString().c_str() << "\n";
     ofs << "resampler=" << ui->comboBoxUadeResampler->currentData().toString().toStdString().c_str() << "\n";
-    ofs << "filterEmu=" << (ui->checkBoxUadeFilterEmu->isChecked()?"true":"false") << "\n";
+    ofs << "filterEmu=" << (ui->checkBoxUadeFilterEmu->isChecked() ? "true" : "false") << "\n";
     ofs << "filterMode=" << filterMode.toStdString().c_str() << "\n";
     ofs << "ledForced=" << ledFilter.toStdString().c_str() << "\n";
     ofs << "panning=" << ui->sliderUadePanning->value() << "\n";
     ofs << "silenceTimeout=" << ui->sliderUadeSilenceTimeOut->value() << "\n";
-    ofs << "silenceTimeoutEnabled=" << (ui->checkBoxUadeSilenceTimeout->isChecked()?"true":"false") << "\n";
-    ofs << "continuousPlayback=" << (ui->checkBoxUadeContinuousPlayback->isChecked()?"true":"false") << "\n";
-    ofs << "uadeSonglengthsEnabled=" << (ui->checkBoxUadeSongLengths->isChecked()?"true":"false") << "\n";
+    ofs << "silenceTimeoutEnabled=" << (ui->checkBoxUadeSilenceTimeout->isChecked() ? "true" : "false") << "\n";
+    ofs << "continuousPlayback=" << (ui->checkBoxUadeContinuousPlayback->isChecked() ? "true" : "false") << "\n";
+    ofs << "uadeSonglengthsEnabled=" << (ui->checkBoxUadeSongLengths->isChecked() ? "true" : "false") << "\n";
     ofs << "uadeSonglengthsPath=" << ui->lineEditUadeSonglengthsPath->text().toStdString().c_str() << "\n";
     ofs.close();
 }
@@ -1582,8 +1399,7 @@ void settingsWindow::saveSettingsVgmstream() const {
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/vgmstream.cfg";
     ofstream ofs(filename.c_str());
 
-    if (ofs.fail())
-    {
+    if (ofs.fail()) {
         // the file could not be opened
         return;
     }
@@ -1592,9 +1408,8 @@ void settingsWindow::saveSettingsVgmstream() const {
     ofs.close();
 }
 
-void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) const {
-    if (const int row = item->row(); ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_adplug_NAME)
-    {
+void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) const {
+    if (const int row = item->row(); ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_adplug_NAME) {
         ui->groupBoxAdplug->setHidden(false);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1605,9 +1420,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_fmod_NAME)
-    {
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_fmod_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(false);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1618,9 +1431,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME)
-    {
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(false);
@@ -1631,9 +1442,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME)
-    {
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1644,9 +1453,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME)
-    {
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1657,9 +1464,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libvgm_NAME)
-    {
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libvgm_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1670,9 +1475,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME)
-    {
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1683,9 +1486,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_sndh_player_NAME)
-    {
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_sndh_player_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1696,9 +1497,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(false);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_uade_NAME)
-    {
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_uade_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1709,9 +1508,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(false);
         ui->groupBoxVgmstream->setHidden(true);
-    }
-    else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_vgmstream_NAME)
-    {
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_vgmstream_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1722,9 +1519,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(false);
-    }
-    else
-    {
+    } else {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -1738,8 +1533,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem* item) c
     }
 }
 
-void settingsWindow::changeStyleSheetColor()
-{
+void settingsWindow::changeStyleSheetColor() {
     QString stylesheet = this->styleSheet();
 
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -1936,17 +1730,15 @@ void settingsWindow::changeStyleSheetColor()
     ui->groupBoxVgmstream->setStyleSheet(stylesheet);
 }
 
-void settingsWindow::setUiLineEditLibsidplayfpHvscSonglengthsPath(const QString& text) const {
-        ui->lineEditLibsidplayfpHvscSonglengthsPath->setText(text);
+void settingsWindow::setUiLineEditLibsidplayfpHvscSonglengthsPath(const QString &text) const {
+    ui->lineEditLibsidplayfpHvscSonglengthsPath->setText(text);
 }
 
-void settingsWindow::on_buttonAppearanceMainColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceMainColor_clicked() {
     const QColor oldColor(mainWindow->getColorMain().left(7));
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
-        newColor.isValid())
-    {
+        newColor.isValid()) {
         mainWindow->setColorMain(newColor.name());
         mainWindow->channels->updateChannelColors();
 
@@ -1955,13 +1747,11 @@ void settingsWindow::on_buttonAppearanceMainColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonAppearanceMediumColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceMediumColor_clicked() {
     const QColor oldColor(mainWindow->getColorMedium().left(7));
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
-        newColor.isValid())
-    {
+        newColor.isValid()) {
         mainWindow->setColorMedium(newColor.name());
         mainWindow->channels->updateChannelColors();
 
@@ -1970,12 +1760,10 @@ void settingsWindow::on_buttonAppearanceMediumColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonAppearanceBackgroundColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceBackgroundColor_clicked() {
     const QColor oldColor(mainWindow->getColorBackground().left(7));
 
-    if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color"); newColor.isValid())
-    {
+    if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color"); newColor.isValid()) {
         mainWindow->setColorBackground(newColor.name());
 
         const QString qss = QString("background-color: %1").arg(newColor.name());
@@ -1983,13 +1771,11 @@ void settingsWindow::on_buttonAppearanceBackgroundColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonAppearanceBehindBackgroundColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceBehindBackgroundColor_clicked() {
     const QColor oldColor(mainWindow->getColorBehindBackground().left(7));
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
-        newColor.isValid())
-    {
+        newColor.isValid()) {
         mainWindow->setColorBehindBackground(newColor.name());
         mainWindow->channels->updateChannelColors();
 
@@ -1998,13 +1784,11 @@ void settingsWindow::on_buttonAppearanceBehindBackgroundColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonAppearanceMainTextColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceMainTextColor_clicked() {
     const QColor oldColor(mainWindow->getColorMainText().left(7));
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
-        newColor.isValid())
-    {
+        newColor.isValid()) {
         mainWindow->setColorMainText(newColor.name());
         mainWindow->channels->updateChannelColors();
 
@@ -2013,13 +1797,11 @@ void settingsWindow::on_buttonAppearanceMainTextColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonAppearanceButtonColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceButtonColor_clicked() {
     const QColor oldColor(mainWindow->getColorButton().left(7));
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
-        newColor.isValid())
-    {
+        newColor.isValid()) {
         mainWindow->setColorButton(newColor.name());
 
         const auto qss = QString("background-color: %1").arg(newColor.name());
@@ -2027,13 +1809,11 @@ void settingsWindow::on_buttonAppearanceButtonColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonAppearanceDimmedTextColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceDimmedTextColor_clicked() {
     const QColor oldColor(mainWindow->getColorDimmedText().left(7));
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
-        newColor.isValid())
-    {
+        newColor.isValid()) {
         mainWindow->setColorDimmedText(newColor.name());
 
         const auto qss = QString("background-color: %1").arg(newColor.name());
@@ -2041,13 +1821,11 @@ void settingsWindow::on_buttonAppearanceDimmedTextColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonAppearanceMainHoverColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceMainHoverColor_clicked() {
     const QColor oldColor(mainWindow->getColorMainHover().left(7));
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
-        newColor.isValid())
-    {
+        newColor.isValid()) {
         mainWindow->setColorMainHover(newColor.name());
 
         const auto qss = QString("background-color: %1").arg(newColor.name());
@@ -2055,13 +1833,11 @@ void settingsWindow::on_buttonAppearanceMainHoverColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonAppearanceButtonHoverColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceButtonHoverColor_clicked() {
     const QColor oldColor(mainWindow->getColorButtonHover().left(7));
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
-        newColor.isValid())
-    {
+        newColor.isValid()) {
         mainWindow->setColorButtonHover(newColor.name());
 
         const QString qss = QString("background-color: %1").arg(newColor.name());
@@ -2132,8 +1908,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->groupBoxVgmstream->setHidden(true);
 }
 
-void settingsWindow::on_buttonVuMeterTopColor_clicked()
-{
+void settingsWindow::on_buttonVuMeterTopColor_clicked() {
     const QColor oldColor(mainWindow->getColorVisualizerTop());
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2145,8 +1920,7 @@ void settingsWindow::on_buttonVuMeterTopColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonVuMeterBottomColor_clicked()
-{
+void settingsWindow::on_buttonVuMeterBottomColor_clicked() {
     const QColor oldColor(mainWindow->getColorVisualizerBottom());
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2158,8 +1932,7 @@ void settingsWindow::on_buttonVuMeterBottomColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonVuMeterMiddleColor_clicked()
-{
+void settingsWindow::on_buttonVuMeterMiddleColor_clicked() {
     const QColor oldColor(mainWindow->getColorVisualizerMiddle());
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2171,8 +1944,7 @@ void settingsWindow::on_buttonVuMeterMiddleColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonVisualizerBackgroundColor_clicked()
-{
+void settingsWindow::on_buttonVisualizerBackgroundColor_clicked() {
     const QColor oldColor(mainWindow->getColorVisualizerBackground());
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2300,13 +2072,11 @@ void settingsWindow::on_sliderScrollerFontYScale_valueChanged(const int value) c
     ui->labelScrollerFontYScaleValue->setText(QString::number(value));
 }
 
-void settingsWindow::on_buttonVuMeterPeakColor_clicked()
-{
+void settingsWindow::on_buttonVuMeterPeakColor_clicked() {
     const QColor oldColor(mainWindow->getColorVisualizerPeakColor());
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
-        newColor.isValid())
-    {
+        newColor.isValid()) {
         mainWindow->setColorVisualizerPeakColor(newColor.name());
 
         const QString qss = QString("background-color: %1").arg(newColor.name());
@@ -2341,20 +2111,16 @@ void settingsWindow::on_sliderScrollerVerticalPosition_valueChanged(const int va
 }
 
 void settingsWindow::on_checkBoxReflectionEnabled_toggled(const bool isChecked) const {
-
     mainWindow->getEffect()->setReflectionEnabled(isChecked);
 
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxReflectionEnabled->setIcon(mainWindow->icons["checkbox-on"]);
         ui->labelReflectionColor->setEnabled(true);
         ui->buttonReflectionColor->setEnabled(true);
         ui->labelReflectionOpacity->setEnabled(true);
         ui->sliderReflectionOpacity->setEnabled(true);
         ui->labelReflectionOpacityValue->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxReflectionEnabled->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelReflectionColor->setEnabled(false);
         ui->buttonReflectionColor->setEnabled(false);
@@ -2367,8 +2133,7 @@ void settingsWindow::on_checkBoxReflectionEnabled_toggled(const bool isChecked) 
 void settingsWindow::on_checkBoxStarsEnabled_toggled(const bool isChecked) const {
     mainWindow->getEffect()->setStarsEnabled(isChecked);
 
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxStarsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
         ui->labelStarfieldAmount->setEnabled(true);
         ui->sliderStarfieldAmount->setEnabled(true);
@@ -2378,9 +2143,7 @@ void settingsWindow::on_checkBoxStarsEnabled_toggled(const bool isChecked) const
         ui->labelStarfieldSpeedValue->setEnabled(true);
         ui->comboBoxStarfieldDirection->setEnabled(true);
         ui->labelStarfieldDirection->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxStarsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelStarfieldAmount->setEnabled(false);
         ui->sliderStarfieldAmount->setEnabled(false);
@@ -2393,8 +2156,7 @@ void settingsWindow::on_checkBoxStarsEnabled_toggled(const bool isChecked) const
     }
 }
 
-void settingsWindow::on_buttonReflectionColor_clicked()
-{
+void settingsWindow::on_buttonReflectionColor_clicked() {
     const QColor oldColor(mainWindow->getEffect()->getReflectionColor());
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2406,8 +2168,7 @@ void settingsWindow::on_buttonReflectionColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonRotatingObjectMaterialColor_clicked()
-{
+void settingsWindow::on_buttonRotatingObjectMaterialColor_clicked() {
     const QColor oldColor(mainWindow->getEffect()->getRotatingObjectColor());
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2419,15 +2180,15 @@ void settingsWindow::on_buttonRotatingObjectMaterialColor_clicked()
     }
 }
 
-void settingsWindow::on_buttonRotatingObjectWireframeColor_clicked()
-{
+void settingsWindow::on_buttonRotatingObjectWireframeColor_clicked() {
     const QColor oldColor(mainWindow->getEffect()->getRotatingObjectColorWireframe());
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
         newColor.isValid()) {
         mainWindow->getEffect()->setRotatingObjectColorWireframe(newColor.name());
 
-        const QString qss = QString("background-color: %1").arg(mainWindow->getEffect()->getRotatingObjectColorWireframe());
+        const QString qss = QString("background-color: %1").arg(
+            mainWindow->getEffect()->getRotatingObjectColorWireframe());
         ui->buttonRotatingObjectWireframeColor->setStyleSheet(qss);
     }
 }
@@ -2474,20 +2235,16 @@ void settingsWindow::on_checkBoxOnlyOneInstance_toggled(const bool isChecked) co
     mainWindow->setAllowOnlyOneInstanceEnabled(isChecked);
     ui->checkBoxEnqueueItems->setEnabled(isChecked);
 
-    if (ui->checkBoxOnlyOneInstance->isChecked())
-    {
+    if (ui->checkBoxOnlyOneInstance->isChecked()) {
         ui->checkBoxOnlyOneInstance->setIcon(mainWindow->icons["checkbox-on"]);
         ui->checkBoxEnqueueItems->setIcon(
             mainWindow->icons[ui->checkBoxEnqueueItems->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    }
-    else
-    {
+    } else {
         ui->checkBoxOnlyOneInstance->setIcon(mainWindow->icons["checkbox-off"]);
         ui->checkBoxEnqueueItems->setIcon(
             mainWindow->icons[ui->checkBoxEnqueueItems->isChecked()
                                   ? "checkbox-on-disabled"
                                   : "checkbox-off-disabled"]);
-
     }
 }
 
@@ -2500,44 +2257,35 @@ void settingsWindow::on_sliderUadeSilenceTimeOut_valueChanged(const int value) c
 }
 
 void settingsWindow::on_checkBoxUadeSilenceTimeout_toggled(const bool isChecked) const {
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-on"]);
         ui->labelUadeSilenceTimeOutValue->setEnabled(true);
         ui->sliderUadeSilenceTimeOut->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelUadeSilenceTimeOutValue->setEnabled(false);
         ui->sliderUadeSilenceTimeOut->setEnabled(false);
     }
 }
 
-void settingsWindow::on_buttonUadeSonglengthsBrowse_clicked()
-{
+void settingsWindow::on_buttonUadeSonglengthsBrowse_clicked() {
     QString startFolder = ui->lineEditUadeSonglengthsPath->text();
 
-    if (startFolder.compare("/uade.md5") == 0)
-    {
+    if (startFolder.compare("/uade.md5") == 0) {
         startFolder = dataPath + PLUGIN_uade_DIR + "/uade.md5";
     }
 
     if (const QString file = QFileDialog::getOpenFileName(this, "Choose your uade.md5", startFolder, "*.md5");
         !file.isEmpty()) {
-        if (file.compare(dataPath + PLUGIN_uade_DIR + "/uade.md5") == 0)
-        {
+        if (file.compare(dataPath + PLUGIN_uade_DIR + "/uade.md5") == 0) {
             ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
-        }
-        else
-        {
+        } else {
             ui->lineEditUadeSonglengthsPath->setText(file);
         }
     }
 }
 
-void settingsWindow::on_buttonAppearanceSelectionColor_clicked()
-{
+void settingsWindow::on_buttonAppearanceSelectionColor_clicked() {
     const QColor oldColor(mainWindow->getColorSelection().left(7));
 
     if (const QColor newColor = QColorDialog::getColor(oldColor, this, "Select color");
@@ -2575,8 +2323,7 @@ void settingsWindow::on_checkBoxShowLoopPoints_toggled(const bool isChecked) con
 void settingsWindow::on_checkBoxVuMeterEnabled_toggled(const bool isChecked) const {
     mainWindow->getEffect()->setVuMeterEnabled(isChecked);
 
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxVuMeterEnabled->setIcon(mainWindow->icons["checkbox-on"]);
         ui->labelVuMeterBottomColor->setEnabled(true);
         ui->labelVuMeterTopColor->setEnabled(true);
@@ -2592,17 +2339,14 @@ void settingsWindow::on_checkBoxVuMeterEnabled_toggled(const bool isChecked) con
         ui->labelVuMeterOpacityValue->setEnabled(true);
         ui->checkBoxVuMeterPeaks->setEnabled(true);
 
-        if (ui->checkBoxVuMeterPeaks->checkState() == Qt::Checked)
-        {
+        if (ui->checkBoxVuMeterPeaks->checkState() == Qt::Checked) {
             ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-on"]);
             ui->labelVuMeterPeakColor->setEnabled(true);
             ui->labelVuMeterPeakHeight->setEnabled(true);
             ui->buttonVuMeterPeakColor->setEnabled(true);
             ui->sliderVuMeterPeakHeight->setEnabled(true);
             ui->labelVuMeterPeakHeightValue->setEnabled(true);
-        }
-        else
-        {
+        } else {
             ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-off"]);
             ui->labelVuMeterPeakColor->setEnabled(false);
             ui->labelVuMeterPeakHeight->setEnabled(false);
@@ -2610,9 +2354,7 @@ void settingsWindow::on_checkBoxVuMeterEnabled_toggled(const bool isChecked) con
             ui->sliderVuMeterPeakHeight->setEnabled(false);
             ui->labelVuMeterPeakHeightValue->setEnabled(false);
         }
-    }
-    else
-    {
+    } else {
         ui->checkBoxVuMeterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelVuMeterBottomColor->setEnabled(false);
         ui->labelVuMeterTopColor->setEnabled(false);
@@ -2642,8 +2384,7 @@ void settingsWindow::on_checkBoxVuMeterEnabled_toggled(const bool isChecked) con
 void settingsWindow::on_checkBoxScrollerEnabled_toggled(const bool isChecked) const {
     mainWindow->getEffect()->setScrollerEnabled(isChecked);
 
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxScrollerEnabled->setIcon(mainWindow->icons["checkbox-on"]);
         ui->labelScrollerAmplitude->setEnabled(true);
         ui->sliderScrollerAmplitude->setEnabled(true);
@@ -2669,9 +2410,7 @@ void settingsWindow::on_checkBoxScrollerEnabled_toggled(const bool isChecked) co
         ui->checkBoxScrollerSinusFontScaling->setEnabled(true);
         ui->checkBoxScrollerCustomTextEnabled->setEnabled(true);
         ui->textEditScrollerCustomText->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxScrollerEnabled->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelScrollerAmplitude->setEnabled(false);
         ui->sliderScrollerAmplitude->setEnabled(false);
@@ -2703,8 +2442,7 @@ void settingsWindow::on_checkBoxScrollerEnabled_toggled(const bool isChecked) co
 void settingsWindow::on_checkBoxPrinterEnabled_toggled(const bool isChecked) const {
     mainWindow->getEffect()->setPrinterEnabled(isChecked);
 
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxPrinterEnabled->setIcon(mainWindow->icons["checkbox-on"]);
         ui->sliderPrinterFontXScale->setEnabled(true);
         ui->sliderPrinterFontYScale->setEnabled(true);
@@ -2712,9 +2450,7 @@ void settingsWindow::on_checkBoxPrinterEnabled_toggled(const bool isChecked) con
         ui->labelPrinterFontYScale->setEnabled(true);
         ui->labelPrinterFontXScaleValue->setEnabled(true);
         ui->labelPrinterFontYScaleValue->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxPrinterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
         ui->sliderPrinterFontXScale->setEnabled(false);
         ui->sliderPrinterFontYScale->setEnabled(false);
@@ -2735,18 +2471,21 @@ void settingsWindow::on_sliderStarfieldSpeed_valueChanged(const int value) const
     ui->labelStarfieldSpeedValue->setText(QString::number(value));
 }
 
-void settingsWindow::on_comboBoxStarfieldDirection_textActivated(const QString& arg1) const {
-    const QString selected = ui->comboBoxStarfieldDirection->itemData(ui->comboBoxStarfieldDirection->currentIndex()).toString();
+void settingsWindow::on_comboBoxStarfieldDirection_textActivated(const QString &arg1) const {
+    const QString selected = ui->comboBoxStarfieldDirection->itemData(ui->comboBoxStarfieldDirection->currentIndex()).
+            toString();
     mainWindow->getEffect()->setStarsDirection(selected);
 }
 
-void settingsWindow::on_comboBoxRotatingObjectModel_textActivated(const QString& arg1) const {
-    const QString selected = ui->comboBoxRotatingObjectModel->itemData(ui->comboBoxRotatingObjectModel->currentIndex()).toString();
+void settingsWindow::on_comboBoxRotatingObjectModel_textActivated(const QString &arg1) const {
+    const QString selected = ui->comboBoxRotatingObjectModel->itemData(ui->comboBoxRotatingObjectModel->currentIndex()).
+            toString();
     mainWindow->getEffect()->setRotatingObjectModel(selected);
 }
 
-void settingsWindow::on_comboBoxRotatingObjectMaterial_textActivated(const QString& arg1) const {
-    const QString selected = ui->comboBoxRotatingObjectMaterial->itemData(ui->comboBoxRotatingObjectMaterial->currentIndex()).toString();
+void settingsWindow::on_comboBoxRotatingObjectMaterial_textActivated(const QString &arg1) const {
+    const QString selected = ui->comboBoxRotatingObjectMaterial->itemData(
+        ui->comboBoxRotatingObjectMaterial->currentIndex()).toString();
     mainWindow->getEffect()->setRotatingObjectMaterial(selected);
 }
 
@@ -2756,23 +2495,17 @@ void settingsWindow::on_checkBoxScrollerSinusFontScaling_toggled(const bool isCh
 }
 
 void settingsWindow::on_buttonScrollerFontImage_clicked() const {
-    if (ui->albumGridScrollerFont->isHidden())
-    {
+    if (ui->albumGridScrollerFont->isHidden()) {
         ui->albumGridScrollerFont->setVisible(true);
-    }
-    else
-    {
+    } else {
         ui->albumGridScrollerFont->setVisible(false);
     }
 }
 
 void settingsWindow::on_buttonPrinterFontImage_clicked() const {
-    if (ui->albumGridPrinterFont->isHidden())
-    {
+    if (ui->albumGridPrinterFont->isHidden()) {
         ui->albumGridPrinterFont->setVisible(true);
-    }
-    else
-    {
+    } else {
         ui->albumGridPrinterFont->setVisible(false);
     }
 }
@@ -2792,14 +2525,13 @@ void settingsWindow::on_checkBoxVisualizerMaintainAspectRatio_toggled(const bool
     mainWindow->getEffect()->setKeepAspectRatio(isChecked);
 }
 
-void settingsWindow::on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString& arg1) const {
+void settingsWindow::on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString &arg1) const {
     const QString selected = ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->itemData(
         ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->currentIndex()).toString();
     mainWindow->setBundledHvscSonglengthsUpdateFrequency(selected);
 }
 
-void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsDownload_clicked()
-{
+void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsDownload_clicked() {
     const QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
     mainWindow->filedownloader = new FileDownloader(imageUrl, this);
     ui->buttonLibsidplayfpHvscSonglengthsDownload->setEnabled(true);
@@ -2876,8 +2608,7 @@ void settingsWindow::on_sliderRasterBarsOpacity_valueChanged(const int value) co
 void settingsWindow::on_checkBoxRotatingObjectEnabled_toggled(const bool isChecked) const {
     mainWindow->getEffect()->setRotatingObjectEnabled(isChecked);
 
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxRotatingObjectEnabled->setIcon(mainWindow->icons["checkbox-on"]);
         ui->sliderRotatingObjectOrbitSize->setEnabled(true);
         ui->labelRotatingObjectOrbitSize->setEnabled(true);
@@ -2901,9 +2632,7 @@ void settingsWindow::on_checkBoxRotatingObjectEnabled_toggled(const bool isCheck
         ui->comboBoxRotatingObjectModel->setEnabled(true);
         ui->buttonRotatingObjectMaterialColor->setEnabled(true);
         ui->labelRotatingObjectModelSizeValue->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxRotatingObjectEnabled->setIcon(mainWindow->icons["checkbox-off"]);
         ui->sliderRotatingObjectOrbitSize->setEnabled(false);
         ui->labelRotatingObjectOrbitSize->setEnabled(false);
@@ -2933,8 +2662,7 @@ void settingsWindow::on_checkBoxRotatingObjectEnabled_toggled(const bool isCheck
 void settingsWindow::on_checkBoxRotatingObjectOrbit_toggled(const bool isChecked) const {
     mainWindow->getEffect()->setRotatingObjectOrbit(isChecked);
 
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxRotatingObjectOrbit->setIcon(mainWindow->icons["checkbox-on"]);
         ui->sliderRotatingObjectOrbitSize->setEnabled(true);
         ui->labelRotatingObjectOrbitSize->setEnabled(true);
@@ -2942,9 +2670,7 @@ void settingsWindow::on_checkBoxRotatingObjectOrbit_toggled(const bool isChecked
         ui->sliderRotatingObjectOrbitSpeed->setEnabled(true);
         ui->labelRotatingObjectOrbitSpeed->setEnabled(true);
         ui->labelRotatingObjectOrbitSpeedValue->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxRotatingObjectOrbit->setIcon(mainWindow->icons["checkbox-off"]);
         ui->sliderRotatingObjectOrbitSize->setEnabled(false);
         ui->labelRotatingObjectOrbitSize->setEnabled(false);
@@ -2963,8 +2689,7 @@ void settingsWindow::on_checkBoxRotatingObjectWireframeEnabled_toggled(const boo
 void settingsWindow::on_checkBoxRasterBarsEnabled_toggled(const bool isChecked) const {
     mainWindow->getEffect()->setRasterBarsEnabled(isChecked);
 
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxRasterBarsEnabled->setIcon(mainWindow->icons["checkbox-on"]);
         ui->labelRasterBarsAmount->setEnabled(true);
         ui->sliderRasterBarsAmount->setEnabled(true);
@@ -2981,9 +2706,7 @@ void settingsWindow::on_checkBoxRasterBarsEnabled_toggled(const bool isChecked) 
         ui->labelRasterBarsOpacity->setEnabled(true);
         ui->sliderRasterBarsOpacity->setEnabled(true);
         ui->labelRasterBarsOpacityValue->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxRasterBarsEnabled->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelRasterBarsAmount->setEnabled(false);
         ui->sliderRasterBarsAmount->setEnabled(false);
@@ -3094,12 +2817,13 @@ void settingsWindow::updateCheckBoxes() const {
     if (ui->checkBoxSystray->isChecked()) {
         ui->checkBoxSystray->setIcon(mainWindow->icons["checkbox-on"]);
         ui->checkBoxMinimizeToSystray->setIcon(
-        mainWindow->icons[ui->checkBoxMinimizeToSystray->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    }
-    else {
-        ui->checkBoxSystray->setIcon(mainWindow->icons[ "checkbox-off"]);
+            mainWindow->icons[ui->checkBoxMinimizeToSystray->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    } else {
+        ui->checkBoxSystray->setIcon(mainWindow->icons["checkbox-off"]);
         ui->checkBoxMinimizeToSystray->setIcon(
-        mainWindow->icons[ui->checkBoxMinimizeToSystray->isChecked() ? "checkbox-on-disabled" : "checkbox-off-disabled"]);
+            mainWindow->icons[ui->checkBoxMinimizeToSystray->isChecked()
+                                  ? "checkbox-on-disabled"
+                                  : "checkbox-off-disabled"]);
     }
 
     ui->checkBoxMenuBarHidden->setIcon(
@@ -3177,14 +2901,11 @@ void settingsWindow::on_checkBoxFmodSeamlessLoop_toggled(const bool isChecked) c
 }
 
 void settingsWindow::on_checkBoxUadeSongLengths_toggled(const bool isChecked) const {
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-on"]);
         ui->lineEditUadeSonglengthsPath->setEnabled(true);
         ui->buttonUadeSonglengthsBrowse->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-off"]);
         ui->lineEditUadeSonglengthsPath->setEnabled(false);
         ui->buttonUadeSonglengthsBrowse->setEnabled(false);
@@ -3203,14 +2924,11 @@ void settingsWindow::on_checkBoxLibsidplayfpContinuousPlayback_toggled(const boo
 }
 
 void settingsWindow::on_checkBoxLibopenmptAmigaResampler_toggled(const bool isChecked) const {
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-on"]);
         ui->labelLibopenmptFilter->setEnabled(true);
         ui->comboBoxLibopenmptFilter->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelLibopenmptFilter->setEnabled(false);
         ui->comboBoxLibopenmptFilter->setEnabled(false);
@@ -3221,24 +2939,20 @@ void settingsWindow::on_checkBoxLibxmpContinuousPlayback_toggled(const bool isCh
     ui->checkBoxLibxmpContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
-void settingsWindow::on_checkBoxOnlyOneInstance_clicked()
-{
+void settingsWindow::on_checkBoxOnlyOneInstance_clicked() {
     QMessageBox msgBox;
     msgBox.setText("You need to close all instances of BZR Player for this setting to have effect");
     msgBox.exec();
 }
 
 void settingsWindow::on_checkBoxUadeFilterEmu_toggled(const bool isChecked) const {
-    if (isChecked)
-    {
+    if (isChecked) {
         ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-on"]);
         ui->labelUadeFilterEmuMode->setEnabled(true);
         ui->comboBoxUadeFilterEmuMode->setEnabled(true);
         ui->labelUadeLedFilter->setEnabled(true);
         ui->comboBoxUadeLedFilter->setEnabled(true);
-    }
-    else
-    {
+    } else {
         ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelUadeFilterEmuMode->setEnabled(false);
         ui->comboBoxUadeFilterEmuMode->setEnabled(false);

@@ -3,15 +3,19 @@
 
 #include "AbstractPatternView.h"
 
-class NoiseTrackerPatternView : public AbstractPatternView
-{
+class NoiseTrackerPatternView : public AbstractPatternView {
 public:
-    NoiseTrackerPatternView(Tracker* parent, unsigned int channels);
+    NoiseTrackerPatternView(Tracker *parent, unsigned int channels);
+
     ~NoiseTrackerPatternView();
+
     QFont currentRowFont();
+
     BitmapFont currentRowBitmapFont();
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
+
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
 };
 
 #endif // NOISETRACKERPATTERNVIEW_H

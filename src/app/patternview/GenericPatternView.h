@@ -3,14 +3,15 @@
 
 #include "AbstractPatternView.h"
 
-class GenericPatternView : public AbstractPatternView
-{
+class GenericPatternView : public AbstractPatternView {
 public:
-    GenericPatternView(Tracker* parent, unsigned int channels);
+    GenericPatternView(Tracker *parent, unsigned int channels);
+
     ~GenericPatternView();
 
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
 };
 
 #endif // GENERICPATTERNVIEW_H

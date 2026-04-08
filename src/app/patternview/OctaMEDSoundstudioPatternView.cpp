@@ -1,9 +1,8 @@
 #include "OctaMEDSoundstudioPatternView.h"
 #include "visualizers/tracker.h"
 
-OctaMEDSoundstudioPatternView::OctaMEDSoundstudioPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+OctaMEDSoundstudioPatternView::OctaMEDSoundstudioPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     octaveOffset = -12;
     m_font = QFont("AHX Thin");
     m_font.setPixelSize(8);
@@ -23,7 +22,7 @@ OctaMEDSoundstudioPatternView::OctaMEDSoundstudioPatternView(Tracker* parent, co
     m_colorCurrentRowBackground = QColor(255, 255, 255);
     m_colorCurrentRowForeground = QColor(82, 121, 165);
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorVolume =
-        m_colorEmpty = QColor(0, 0, 0);
+                                                                                m_colorEmpty = QColor(0, 0, 0);
     m_xOffsetRow = 4;
 
     m_SeparatorRowNumber = m_SeparatorChannel = " ";
@@ -39,13 +38,11 @@ OctaMEDSoundstudioPatternView::OctaMEDSoundstudioPatternView(Tracker* parent, co
     m_bottomFrameHeight = 34;
 }
 
-BitmapFont OctaMEDSoundstudioPatternView::infoFont()
-{
+BitmapFont OctaMEDSoundstudioPatternView::infoFont() {
     return m_bitmapFont2;
 }
 
-QString OctaMEDSoundstudioPatternView::rowNumber(const int rowNumber)
-{
+QString OctaMEDSoundstudioPatternView::rowNumber(const int rowNumber) {
     const int base = rowNumberHex ? 16 : 10;
 
     QString rowNumberStr = QString::number(rowNumber + rowNumberOffset, base).toUpper();
@@ -54,24 +51,19 @@ QString OctaMEDSoundstudioPatternView::rowNumber(const int rowNumber)
     return rowNumberStr;
 }
 
-QString OctaMEDSoundstudioPatternView::parameter(BaseRow* row)
-{
-    if (row->effect == 0x8 && row->param == 0x80)
-    {
+QString OctaMEDSoundstudioPatternView::parameter(BaseRow *row) {
+    if (row->effect == 0x8 && row->param == 0x80) {
         return "00";
     }
 
     return AbstractPatternView::parameter(row);
 }
 
-QString OctaMEDSoundstudioPatternView::effect(BaseRow* row)
-{
+QString OctaMEDSoundstudioPatternView::effect(BaseRow *row) {
     if (row->effect < 8 || row->effect == 0xC || row->effect == 0xB) return AbstractPatternView::effect(row);
 
-    if (row->effect == 0x8)
-    {
-        if (row->param == 0x80)
-        {
+    if (row->effect == 0x8) {
+        if (row->param == 0x80) {
             return "2E";
         }
 
@@ -105,21 +97,18 @@ QString OctaMEDSoundstudioPatternView::effect(BaseRow* row)
     return "#" + AbstractPatternView::effect(row) + "#";
 }
 
-QString OctaMEDSoundstudioPatternView::instrument(BaseRow* row)
-{
+QString OctaMEDSoundstudioPatternView::instrument(BaseRow *row) {
     const int instrument = row->sample;
     QString padding = m_SeparatorRowNumber;
 
-    if (instrument >= 32)
-    {
+    if (instrument >= 32) {
         padding = "";
     }
 
     return padding + QString::number(instrument, 32).toUpper();
 }
 
-void OctaMEDSoundstudioPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void OctaMEDSoundstudioPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(156, 154, 156);
     QColor colorHilite(255, 255, 255);
     QColor colorShadow(0, 0, 0);
@@ -154,12 +143,10 @@ void OctaMEDSoundstudioPatternView::paintAbove(QPainter* painter, int height, in
         painter, 30, height - 20, infoFont());
 
     // buttons
-    for (int i = 0; i < 3; i++)
-    {
+    for (int i = 0; i < 3; i++) {
         painter->fillRect(6 + (i + 1) * 112, height - 16, 4, 13, colorHilite);
 
-        if (i < 2)
-        {
+        if (i < 2) {
             painter->fillRect(43 + (i + 1) * 112, height - 16, 4, 13, colorShadow);
         }
         painter->fillRect(8 + i * 112, height - 16, 36, 1, colorHilite);
@@ -183,14 +170,14 @@ void OctaMEDSoundstudioPatternView::paintAbove(QPainter* painter, int height, in
 
     painter->setFont(font);
 
-    drawText("Sg", painter, 21, height - 5,bitmapFont());
-    drawText("Sc", painter, 133, height - 5,bitmapFont());
-    drawText("Sq", painter, 245, height - 5,bitmapFont());
+    drawText("Sg", painter, 21, height - 5, bitmapFont());
+    drawText("Sc", painter, 133, height - 5, bitmapFont());
+    drawText("Sq", painter, 245, height - 5, bitmapFont());
     drawText(QString::number(t->m_currentPosition + 1) + "/" + QString::number(t->info->numOrders), painter, 290,
-                height - 5,bitmapFont());
-    drawText("B", painter, 355, height - 5,bitmapFont());
+             height - 5, bitmapFont());
+    drawText("B", painter, 355, height - 5, bitmapFont());
     drawText(QString::number(t->m_currentPattern) + "/" + QString::number(t->info->numPatterns - 1) + ": ",
-                painter, 376, height - 5,bitmapFont());
+             painter, 376, height - 5, bitmapFont());
 
     // underline
     painter->fillRect(32, height - 6, 1, 1, colorShadow);
@@ -199,8 +186,7 @@ void OctaMEDSoundstudioPatternView::paintAbove(QPainter* painter, int height, in
     painter->fillRect(355, height - 6, 6, 1, colorShadow);
 }
 
-void OctaMEDSoundstudioPatternView::paintBelow(QPainter* painter, const int height, int currentRow)
-{
+void OctaMEDSoundstudioPatternView::paintBelow(QPainter *painter, const int height, int currentRow) {
     const int minChannels = m_channels < 11 ? 11 : m_channels;
     constexpr auto colorGrey = QColor(156, 154, 156);
     // background
@@ -214,14 +200,14 @@ void OctaMEDSoundstudioPatternView::paintBelow(QPainter* painter, const int heig
     // channel separators
     painter->fillRect(25, 0, 2, height, QColor(255, 255, 255));
 
-    for (int chan = 1; chan < minChannels; chan++)
-    {
+    for (int chan = 1; chan < minChannels; chan++) {
         painter->fillRect(24 + chan * 60, 0, 2, height, QColor(255, 255, 255));
     }
 }
 
-void::OctaMEDSoundstudioPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::OctaMEDSoundstudioPatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                               unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                               unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 32;
     QColor colorBase(156, 154, 156);
     QColor colorHilite(255, 255, 255);
@@ -253,10 +239,10 @@ void::OctaMEDSoundstudioPatternView::paintTop(QPainter* painter,Info* info, unsi
 
     painter->setPen(QColor(0, 0, 0));
     drawText(
-            QString("Block ") + QString::number(m_currentPattern) + "/" + QString::number(
-                    info->numPatterns - 1), painter, left + 30, 30,infoFont());
-    drawText("Song: " + QString(info->title.c_str()), painter, left + 6, 14,infoFont());
+        QString("Block ") + QString::number(m_currentPattern) + "/" + QString::number(
+            info->numPatterns - 1), painter, left + 30, 30, infoFont());
+    drawText("Song: " + QString(info->title.c_str()), painter, left + 6, 14, infoFont());
 }
-OctaMEDSoundstudioPatternView::~OctaMEDSoundstudioPatternView()
-{
+
+OctaMEDSoundstudioPatternView::~OctaMEDSoundstudioPatternView() {
 }

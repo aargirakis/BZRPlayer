@@ -3,14 +3,17 @@
 
 #include "MEDPatternView.h"
 
-class OctaMED54ChanPatternView : public MEDPatternView
-{
+class OctaMED54ChanPatternView : public MEDPatternView {
 public:
-    OctaMED54ChanPatternView(Tracker* parent, unsigned int channels);
+    OctaMED54ChanPatternView(Tracker *parent, unsigned int channels);
+
     ~OctaMED54ChanPatternView();
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
-    QString effect(BaseRow* row);
+
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
+
+    QString effect(BaseRow *row);
 };
 
 #endif // OCTAMED54CHANPATTERNVIEW_H

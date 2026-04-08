@@ -3,18 +3,25 @@
 
 #include "AbstractPatternView.h"
 
-class DigiBoosterProPatternView : public AbstractPatternView
-{
+class DigiBoosterProPatternView : public AbstractPatternView {
 public:
-    DigiBoosterProPatternView(Tracker* parent, unsigned int channels);
+    DigiBoosterProPatternView(Tracker *parent, unsigned int channels);
+
     ~DigiBoosterProPatternView();
+
     QFont currentRowFont();
+
     BitmapFont currentRowBitmapFont();
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
+
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
+
     QString rowNumber(int rowNumber);
-    QString effect(BaseRow* row);
-    QString effect2(BaseRow* row);
+
+    QString effect(BaseRow *row);
+
+    QString effect2(BaseRow *row);
 };
 
 #endif // DIGIBOOSTERPROPATTERNVIEW_H

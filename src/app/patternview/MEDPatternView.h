@@ -3,19 +3,28 @@
 
 #include "AbstractPatternView.h"
 
-class MEDPatternView : public AbstractPatternView
-{
+class MEDPatternView : public AbstractPatternView {
 public:
-    MEDPatternView(Tracker* parent, unsigned int channels);
+    MEDPatternView(Tracker *parent, unsigned int channels);
+
     ~MEDPatternView();
+
     BitmapFont infoFont();
-    QString effect(BaseRow* row);
-    QString note(BaseRow* row);
-    QString instrument(BaseRow* row);
+
+    QString effect(BaseRow *row);
+
+    QString note(BaseRow *row);
+
+    QString instrument(BaseRow *row);
+
     QString rowNumber(int rowNumber);
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
-    void paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow);
+
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
+
+    void paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern, unsigned int m_currentPosition,
+                  unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow);
 };
 
 #endif // MEDPATTERNVIEW_H

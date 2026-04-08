@@ -1,9 +1,8 @@
 #include "FastTracker2PatternView.h"
 #include "visualizers/tracker.h"
 
-FastTracker2PatternView::FastTracker2PatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+FastTracker2PatternView::FastTracker2PatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     instrumentPad = true;
 
     rowNumberHex = true;
@@ -51,7 +50,9 @@ FastTracker2PatternView::FastTracker2PatternView(Tracker* parent, const unsigned
     m_colorCurrentRowBackground = QColor(73, 117, 130);
     m_colorCurrentRowForeground = QColor(255, 255, 255);
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(255, 255, 130);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        255, 255, 130);
 
     m_SeparatorNote = "'";
 
@@ -70,67 +71,55 @@ FastTracker2PatternView::FastTracker2PatternView(Tracker* parent, const unsigned
     m_height = 480;
 }
 
-BitmapFont FastTracker2PatternView::infoFont()
-{
+BitmapFont FastTracker2PatternView::infoFont() {
     return m_bitmapFont2;
 }
 
-BitmapFont FastTracker2PatternView::infoFont2()
-{
+BitmapFont FastTracker2PatternView::infoFont2() {
     return m_bitmapFont3;
 }
 
-int FastTracker2PatternView::fontWidthEffects()
-{
+int FastTracker2PatternView::fontWidthEffects() {
     return m_fontWidthEffects;
 }
 
-QFont FastTracker2PatternView::fontEffects()
-{
+QFont FastTracker2PatternView::fontEffects() {
     return m_fontEffects;
 }
 
-BitmapFont FastTracker2PatternView::bitmapFontEffects()
-{
+BitmapFont FastTracker2PatternView::bitmapFontEffects() {
     return m_bitmapFontEffects;
 }
 
-int FastTracker2PatternView::fontWidthParameters()
-{
+int FastTracker2PatternView::fontWidthParameters() {
     return m_fontWidthParameters;
 }
 
-int FastTracker2PatternView::fontWidthSeparatorNote()
-{
+int FastTracker2PatternView::fontWidthSeparatorNote() {
     return m_fontWidthSeparatorNote;
 }
 
-int FastTracker2PatternView::fontWidthInstrument()
-{
+int FastTracker2PatternView::fontWidthInstrument() {
     return m_fontWidthInstrument;
 }
 
-BitmapFont FastTracker2PatternView::bitmapFontParameters()
-{
+BitmapFont FastTracker2PatternView::bitmapFontParameters() {
     return m_bitmapFontParameters;
 }
 
-QFont FastTracker2PatternView::fontParameters()
-{
+QFont FastTracker2PatternView::fontParameters() {
     return m_fontParameters;
 }
 
-BitmapFont FastTracker2PatternView::bitmapFontInstrument()
-{
+BitmapFont FastTracker2PatternView::bitmapFontInstrument() {
     return m_bitmapFontInstrument;
 }
 
-QFont FastTracker2PatternView::fontInstrument()
-{
+QFont FastTracker2PatternView::fontInstrument() {
     return m_fontEffects;
 }
 
-const char* FastTracker2PatternView::NOTES[121] =
+const char *FastTracker2PatternView::NOTES[121] =
 {
     "",
     "C-0", "C#0", "D-0", "D#0", "E-0", "F-0", "F#0", "G-0", "G#0", "A-0", "A#0", "B-0",
@@ -145,8 +134,7 @@ const char* FastTracker2PatternView::NOTES[121] =
     "C-9", "C#9", "D-9", "D#9", "E-9", "F-9", "F#9", "G-9", "G#9", "A-9", "A#9", "B-9"
 };
 
-QString FastTracker2PatternView::note(BaseRow* row)
-{
+QString FastTracker2PatternView::note(BaseRow *row) {
     if (row->note == 255) return "()*";
 
     if (row->note == 0) return "$%&";
@@ -154,39 +142,32 @@ QString FastTracker2PatternView::note(BaseRow* row)
     int note = row->note;
     note -= octaveOffset;
 
-    if (note >= 109 || note < 0)
-    {
+    if (note >= 109 || note < 0) {
         note = 0;
     }
 
-    if (note == 0)
-    {
+    if (note == 0) {
         return m_emptyNote;
     }
 
     return NOTES[note];
 }
 
-QString FastTracker2PatternView::effect(BaseRow* row)
-{
-    if (row->effect <= 15)
-    {
+QString FastTracker2PatternView::effect(BaseRow *row) {
+    if (row->effect <= 15) {
         return AbstractPatternView::effect(row);
     }
 
-    if (row->effect == 36)
-    {
+    if (row->effect == 36) {
         return "-";
     }
 
     return QString(QChar(row->effect + 55));
 }
 
-QString FastTracker2PatternView::volume(BaseRow* row)
-{
+QString FastTracker2PatternView::volume(BaseRow *row) {
     // special
-    if (row->effect2 == 2)
-    {
+    if (row->effect2 == 2) {
         return "P" + QString::number((row->param2 - 24) / 16 + 1, 16).toUpper();
     }
 
@@ -203,12 +184,10 @@ QString FastTracker2PatternView::volume(BaseRow* row)
     return volumeStr;
 }
 
-FastTracker2PatternView::~FastTracker2PatternView()
-{
+FastTracker2PatternView::~FastTracker2PatternView() {
 }
 
-void FastTracker2PatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void FastTracker2PatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(73, 117, 130);
     QColor colorHilite(138, 219, 243);
     QColor colorShadow(24, 40, 44);
@@ -216,11 +195,9 @@ void FastTracker2PatternView::paintAbove(QPainter* painter, int height, int curr
     painter->setPen(QColor(255, 255, 255));
 
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         int extra = 2;
-        if (m_channels > 4)
-        {
+        if (m_channels > 4) {
             extra = 0;
         }
         // bottom channels
@@ -252,8 +229,7 @@ void FastTracker2PatternView::paintAbove(QPainter* painter, int height, int curr
     painter->fillRect(29 + m_channels * 72 * m_fontWidth / 8, 31, 25, 1, colorShadow);
 }
 
-void FastTracker2PatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void FastTracker2PatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     int left = 3;
 
     QColor colorBase(73, 117, 130);
@@ -273,46 +249,43 @@ void FastTracker2PatternView::paintBelow(QPainter* painter, int height, int curr
     painter->drawLine(left - 2, 29, left - 2, height - 3);
     pen.setColor(colorShadow);
     painter->setPen(pen);
-    painter->drawLine(left-1, 29, left-1, height - 4);
+    painter->drawLine(left - 1, 29, left - 1, height - 4);
 
-    for (unsigned int chan = 0; chan <= m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan <= m_channels; chan++) {
         // channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
         painter->drawLine(left + 23 + chan * 72 * m_fontWidth / 8, 29, left + 23 + chan * 72 * m_fontWidth / 8,
-                          height-2);
+                          height - 2);
         pen.setColor(colorBase);
         painter->setPen(pen);
         painter->drawLine(left + 24 + chan * 72 * m_fontWidth / 8, 29, left + 24 + chan * 72 * m_fontWidth / 8,
-                          height-2);
+                          height - 2);
         pen.setColor(colorShadow);
         painter->setPen(pen);
         painter->drawLine(left + 25 + chan * 72 * m_fontWidth / 8, 29, left + 25 + chan * 72 * m_fontWidth / 8,
-                          height-2);
+                          height - 2);
     }
 
     // right border
     pen.setColor(colorHilite);
     painter->setPen(pen);
     painter->drawLine(53 + m_channels * 72 * m_fontWidth / 8, 29, 53 + m_channels * 72 * m_fontWidth / 8,
-                      height-3);
+                      height - 3);
     pen.setColor(colorBase);
     painter->setPen(pen);
     painter->drawLine(54 + m_channels * 72 * m_fontWidth / 8, 29, 54 + m_channels * 72 * m_fontWidth / 8,
-                      height-2);
+                      height - 2);
     pen.setColor(colorShadow);
     painter->setPen(pen);
     painter->drawLine(55 + m_channels * 72 * m_fontWidth / 8, 29, 55 + m_channels * 72 * m_fontWidth / 8,
-                      height-1);
+                      height - 1);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // top hilite
         int extra = 2;
 
-        if (m_channels > 4)
-        {
+        if (m_channels > 4) {
             extra = 0;
         }
         painter->fillRect(left + 26 + chan * 72 * m_fontWidth / 8, height / 2 - 6 + topOffset,
@@ -340,8 +313,9 @@ void FastTracker2PatternView::paintBelow(QPainter* painter, int height, int curr
     painter->fillRect(left - 1, height / 2 - 9, 52 + m_channels * 72 * m_fontWidth / 8, 9, colorBase);
 }
 
-void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::FastTracker2PatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                         unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                         unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 29;
     QColor colorBase(73, 117, 130);
     QColor colorHilite(138, 219, 243);
@@ -351,13 +325,10 @@ void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned i
 
     const auto t = this->parent();
     // background
-    if (t->info->numChannels > 4 && t->info->numChannels < 7)
-    {
+    if (t->info->numChannels > 4 && t->info->numChannels < 7) {
         painter->fillRect(left, 0, 55 + t->info->numChannels * 96 * fontWidth() / 8,
                           m_topHeight, colorBase);
-    }
-    else
-    {
+    } else {
         painter->fillRect(left, 0, 55 + t->info->numChannels * 72 * fontWidth() / 8,
                           m_topHeight, colorBase);
     }
@@ -366,88 +337,79 @@ void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned i
     painter->fillRect(left, 0, 1, m_topHeight - 1, colorHilite);
 
     // right
-    if (t->info->numChannels > 4 && t->info->numChannels < 7)
-    {
+    if (t->info->numChannels > 4 && t->info->numChannels < 7) {
         painter->fillRect(left + 55 + t->info->numChannels * 96 * fontWidth() / 8, 0, 1,
                           m_topHeight, colorShadow);
-    }
-    else
-    {
+    } else {
         painter->fillRect(left + 55 + t->info->numChannels * 72 * fontWidth() / 8, 0, 1,
                           m_topHeight, colorShadow);
     }
 
     // top
-    if (t->info->numChannels > 4 && t->info->numChannels < 7)
-    {
+    if (t->info->numChannels > 4 && t->info->numChannels < 7) {
         painter->fillRect(left, 0, 55 + t->info->numChannels * 96 * fontWidth() / 8, 1,
                           colorHilite);
-    }
-    else
-    {
+    } else {
         painter->fillRect(left, 0, 55 + t->info->numChannels * 72 * fontWidth() / 8, 1,
                           colorHilite);
     }
 
     // bottom
-    if (t->info->numChannels > 4 && t->info->numChannels < 7)
-    {
+    if (t->info->numChannels > 4 && t->info->numChannels < 7) {
         painter->fillRect(left, m_topHeight - 1,
                           55 + t->info->numChannels * 96 * fontWidth() / 8, 1, colorShadow);
-    }
-    else
-    {
+    } else {
         painter->fillRect(left, m_topHeight - 1,
                           55 + t->info->numChannels * 72 * fontWidth() / 8, 1, colorShadow);
     }
 
     painter->setPen(colorShadow);
-    drawText("Songlen.", painter, left + 4, 15,infoFont2());
+    drawText("Songlen.", painter, left + 4, 15, infoFont2());
     painter->setPen(colorWhite);
-    drawText("Songlen.", painter, left + 3, 14,infoFont2());
-    drawText(QString("%1").arg(t->info->numOrders, 2, 16, QChar('0')).toUpper(), painter, left + 58, 14,infoFont());
+    drawText("Songlen.", painter, left + 3, 14, infoFont2());
+    drawText(QString("%1").arg(t->info->numOrders, 2, 16, QChar('0')).toUpper(), painter, left + 58, 14, infoFont());
 
     painter->setPen(colorShadow);
-    drawText("Repstart", painter, left + 4, 27,infoFont2());
+    drawText("Repstart", painter, left + 4, 27, infoFont2());
     painter->setPen(colorWhite);
-    drawText("Repstart", painter, left + 3, 26,infoFont2());
+    drawText("Repstart", painter, left + 3, 26, infoFont2());
 
-    drawText(QString("%1").arg(t->info->restart, 2, 16, QChar('0')).toUpper(), painter, left + 58, 26,infoFont2());
+    drawText(QString("%1").arg(t->info->restart, 2, 16, QChar('0')).toUpper(), painter, left + 58, 26, infoFont2());
     // bevel
     painter->fillRect(left + 75, 1, 1, m_topHeight - 2, colorShadow);
     painter->fillRect(left + 76, 1, 1, m_topHeight - 2, colorHilite);
 
     painter->setPen(colorShadow);
-    drawText("BPM", painter, left + 80, 15,infoFont2());
+    drawText("BPM", painter, left + 80, 15, infoFont2());
     painter->setPen(colorWhite);
-    drawText("BPM", painter, left + 79, 14,infoFont2());
+    drawText("BPM", painter, left + 79, 14, infoFont2());
 
-    drawText(QString("%1").arg(m_currentBPM, 3, 10, QChar('0')), painter, left + 108, 14,infoFont());
+    drawText(QString("%1").arg(m_currentBPM, 3, 10, QChar('0')), painter, left + 108, 14, infoFont());
 
     painter->setPen(colorShadow);
-    drawText("Spd.", painter, left + 80, 27,infoFont2());
+    drawText("Spd.", painter, left + 80, 27, infoFont2());
     painter->setPen(colorWhite);
-    drawText("Spd.", painter, left + 79, 26,infoFont2());
+    drawText("Spd.", painter, left + 79, 26, infoFont2());
 
-    drawText(QString("%1").arg(m_currentSpeed, 2, 16, QChar('0')).toUpper(), painter, left + 115, 26,infoFont());
+    drawText(QString("%1").arg(m_currentSpeed, 2, 16, QChar('0')).toUpper(), painter, left + 115, 26, infoFont());
     // bevel
     painter->fillRect(left + 132, 1, 1, m_topHeight - 2, colorShadow);
     painter->fillRect(left + 133, 1, 1, m_topHeight - 2, colorHilite);
 
 
     painter->setPen(colorShadow);
-    drawText("Ptn.", painter, left + 137, 15,infoFont2());
+    drawText("Ptn.", painter, left + 137, 15, infoFont2());
     painter->setPen(colorWhite);
-    drawText("Ptn.", painter, left + 136, 14,infoFont2());
-    drawText(QString("%1").arg(m_currentPattern, 2, 16, QChar('0')).toUpper(), painter, left + 163, 14,infoFont());
+    drawText("Ptn.", painter, left + 136, 14, infoFont2());
+    drawText(QString("%1").arg(m_currentPattern, 2, 16, QChar('0')).toUpper(), painter, left + 163, 14, infoFont());
 
     painter->setPen(colorShadow);
-    drawText("Ln.", painter, left + 137, 27,infoFont2());
+    drawText("Ln.", painter, left + 137, 27, infoFont2());
     painter->setPen(colorWhite);
-    drawText("Ln.", painter, left + 136, 26,infoFont2());
+    drawText("Ln.", painter, left + 136, 26, infoFont2());
 
     drawText(QString("%1").arg(t->info->modPatternRows, 3, 16, QChar('0')).toUpper(), painter, left + 156,
-             26,infoFont());
+             26, infoFont());
     // title frame
 
     int frameOffsetX = 181;
@@ -466,5 +428,5 @@ void::FastTracker2PatternView::paintTop(QPainter* painter,Info* info, unsigned i
 
     painter->setPen(colorWhite);
 
-    drawText(QString(t->info->title.c_str()), painter, left + (frameOffsetX + 4), frameOffsetY + 14,infoFont2());
+    drawText(QString(t->info->title.c_str()), painter, left + (frameOffsetX + 4), frameOffsetY + 14, infoFont2());
 }

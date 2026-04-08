@@ -53,8 +53,7 @@ void normalizeText(string &str) {
 
 FileInfoParser::FileInfoParser() = default;
 
-void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, const PlaylistItem* playlistItem)
-{
+void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem *playlistItem) {
     tableInfo->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     tableInfo->clearContents();
     tableInfo->setRowCount(999);
@@ -82,8 +81,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, const PlaylistItem*
             addInfo(tableInfo, &row, "Patterns", QString::number(info->numPatterns));
             addInfo(tableInfo, &row, "Orders", QString::number(info->numOrders));
             break;
-        case PLUGIN_asap:
-        {
+        case PLUGIN_asap: {
             const int defaultSubsong = info->defaultSubsong;
             addInfo(tableInfo, &row, "Default Subsong", defaultSubsong == -1 ? "-" : QString::number(defaultSubsong));
         }
@@ -345,8 +343,7 @@ void FileInfoParser::updateFileInfo(QTableWidget* tableInfo, const PlaylistItem*
 
     tableInfo->setRowCount(row);
 
-    for (int i = 0; i < tableInfo->rowCount(); i++)
-    {
+    for (int i = 0; i < tableInfo->rowCount(); i++) {
         tableInfo->item(i, 0)->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
         tableInfo->item(i, 1)->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     }
@@ -404,40 +401,40 @@ void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
 }
 
 void FileInfoParser::showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {
-        FMOD_TAG tag;
-        const auto &sm = SoundManager::getInstance();
-        const int numTags = sm.getNumTags();
+    FMOD_TAG tag;
+    const auto &sm = SoundManager::getInstance();
+    const int numTags = sm.getNumTags();
 
-        for (int i = 0; i < numTags; i++) {
-            if (const FMOD_RESULT res = sm.getTag(nullptr, i, &tag);
-                res != FMOD_OK || tag.type != FMOD_TAGTYPE_SHOUTCAST || tag.datatype != FMOD_TAGDATATYPE_STRING) {
-                continue;
-            }
-
-            auto tagName = QString(tag.name);
-            QString tagData = static_cast<char *>(tag.data);
-
-            if (tagName == "ARTIST") {
-                tagName = "Artist";
-                playlistItem->info->artist = tagData.toStdString();
-            } else if (tagName == "TITLE") {
-                tagName = "Title";
-                playlistItem->info->title = tagData.toStdString();
-            } else if (tagName == "icy-genre") {
-                tagName = "Genre";
-            } else if (tagName == "icy-name") {
-                tagName = "Name";
-            } else if (tagName == "icy-url") {
-                tagName = "URL";
-            } else if (tagName == "icy-br") {
-                tagName = "Bitrate";
-            } else if (tagName == "icy-pub") {
-                tagName = "Published";
-                tagData = tagData == "1" ? "Yes" : "No";
-            }
-
-            if (!tagName.isEmpty()) {
-                addInfo(tableInfo, row, tagName, tagData);
-            }
+    for (int i = 0; i < numTags; i++) {
+        if (const FMOD_RESULT res = sm.getTag(nullptr, i, &tag);
+            res != FMOD_OK || tag.type != FMOD_TAGTYPE_SHOUTCAST || tag.datatype != FMOD_TAGDATATYPE_STRING) {
+            continue;
         }
+
+        auto tagName = QString(tag.name);
+        QString tagData = static_cast<char *>(tag.data);
+
+        if (tagName == "ARTIST") {
+            tagName = "Artist";
+            playlistItem->info->artist = tagData.toStdString();
+        } else if (tagName == "TITLE") {
+            tagName = "Title";
+            playlistItem->info->title = tagData.toStdString();
+        } else if (tagName == "icy-genre") {
+            tagName = "Genre";
+        } else if (tagName == "icy-name") {
+            tagName = "Name";
+        } else if (tagName == "icy-url") {
+            tagName = "URL";
+        } else if (tagName == "icy-br") {
+            tagName = "Bitrate";
+        } else if (tagName == "icy-pub") {
+            tagName = "Published";
+            tagData = tagData == "1" ? "Yes" : "No";
+        }
+
+        if (!tagName.isEmpty()) {
+            addInfo(tableInfo, row, tagName, tagData);
+        }
+    }
 }

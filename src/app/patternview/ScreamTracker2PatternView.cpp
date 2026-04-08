@@ -1,8 +1,7 @@
 #include "ScreamTracker2PatternView.h"
 
-ScreamTracker2PatternView::ScreamTracker2PatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+ScreamTracker2PatternView::ScreamTracker2PatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     octaveOffset = 48;
     rowNumberOffset = 0;
     instrumentHex = false;
@@ -20,7 +19,9 @@ ScreamTracker2PatternView::ScreamTracker2PatternView(Tracker* parent, const unsi
     m_colorCurrentRowForeground = QColor(0, 0, 0);
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(168, 168, 168);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        168, 168, 168);
 
     m_SeparatorInstrument = "'";
     m_SeparatorVolume = "'";
@@ -52,16 +53,14 @@ ScreamTracker2PatternView::ScreamTracker2PatternView(Tracker* parent, const unsi
     m_topHeight = 16;
 }
 
-void ScreamTracker2PatternView::paintAbove(QPainter* painter, const int height, int currentRow)
-{
+void ScreamTracker2PatternView::paintAbove(QPainter *painter, const int height, int currentRow) {
     constexpr QColor colorBrown(168, 84, 0);
     constexpr QColor colorBlue(0, 0, 168);
 
     // left
     painter->fillRect(0, 0, 8, height, colorBrown);
 
-    for (int chan = 0; chan < m_channels; chan++)
-    {
+    for (int chan = 0; chan < m_channels; chan++) {
         painter->fillRect(24 + chan * 112, 0, 8, height, colorBrown);
     }
 
@@ -73,30 +72,24 @@ void ScreamTracker2PatternView::paintAbove(QPainter* painter, const int height, 
     painter->fillRect(0, 0, 488, 16, colorBlue);
 }
 
-void ScreamTracker2PatternView::paintBelow(QPainter* painter, const int height, int currentRow)
-{
+void ScreamTracker2PatternView::paintBelow(QPainter *painter, const int height, int currentRow) {
     // main
     painter->fillRect(30, height / 2 - 15, 442, 16, m_colorCurrentRowBackground);
 }
 
-ScreamTracker2PatternView::~ScreamTracker2PatternView()
-{
+ScreamTracker2PatternView::~ScreamTracker2PatternView() {
 }
 
-QString ScreamTracker2PatternView::note(BaseRow* row)
-{
+QString ScreamTracker2PatternView::note(BaseRow *row) {
     int note = row->note;
     note -= octaveOffset;
 
-    if (note >= 109 || note < 0)
-    {
+    if (note >= 109 || note < 0) {
         note = 0;
     }
 
-    if (note == 0)
-    {
-        if (row->sample > 0)
-        {
+    if (note == 0) {
+        if (row->sample > 0) {
             return "C-0";
         }
 
@@ -106,8 +99,7 @@ QString ScreamTracker2PatternView::note(BaseRow* row)
     return NOTES[note];
 }
 
-QString ScreamTracker2PatternView::parameter(BaseRow* row)
-{
+QString ScreamTracker2PatternView::parameter(BaseRow *row) {
     const int parameter = row->param;
 
     if (parameter == 0) return m_emptyParameter;
@@ -127,8 +119,7 @@ QString ScreamTracker2PatternView::parameter(BaseRow* row)
     return parameterStr;
 }
 
-QString ScreamTracker2PatternView::effect(BaseRow* row)
-{
+QString ScreamTracker2PatternView::effect(BaseRow *row) {
     QString effectStr;
 
     if (row->effect < 0) return "ERROR";

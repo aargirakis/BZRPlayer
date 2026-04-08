@@ -2,9 +2,8 @@
 #include "mainwindow.h"
 #include "SoundTracker26PatternView.h"
 
-SoundTracker26PatternView::SoundTracker26PatternView(Tracker* parent, const unsigned int channels)
-    : NoiseTrackerPatternView(parent, channels)
-{
+SoundTracker26PatternView::SoundTracker26PatternView(Tracker *parent, const unsigned int channels)
+    : NoiseTrackerPatternView(parent, channels) {
     m_ibuttonPrevSampleWidth = 11;
     m_ibuttonPrevSampleHeight = 11;
     m_ibuttonPrevSampleX = 11;
@@ -41,19 +40,18 @@ SoundTracker26PatternView::SoundTracker26PatternView(Tracker* parent, const unsi
     m_linearGradDark.setColorAt(1, QColor(0, 96, 0).rgb()); // dark green
 }
 
-SoundTracker26PatternView::~SoundTracker26PatternView()
-{
+SoundTracker26PatternView::~SoundTracker26PatternView() {
 }
 
-void SoundTracker26PatternView::paintBelow(QPainter* painter, const int height, const int currentRow)
-{
+void SoundTracker26PatternView::paintBelow(QPainter *painter, const int height, const int currentRow) {
     constexpr QColor colorHilite(173, 170, 173);
     NoiseTrackerPatternView::paintBelow(painter, height, currentRow);
     painter->fillRect(2, height / 2 - 6, 1, 2, colorHilite);
 }
 
-void::SoundTracker26PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::SoundTracker26PatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                           unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                           unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 32;
     QColor colorBase(115, 117, 115);
     QColor colorHilite(173, 170, 173);
@@ -69,19 +67,19 @@ void::SoundTracker26PatternView::paintTop(QPainter* painter,Info* info, unsigned
 
     drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + 71, top + 0, infoFont());
     painter->setPen(colorHilite);
-    drawText("POSITION", painter, left + 3, top + 0, infoFont(),-1);
+    drawText("POSITION", painter, left + 3, top + 0, infoFont(), -1);
     painter->setPen(colorShadow);
-    drawText("LENGTH", painter, left + 111, top + 1, infoFont(),-1);
+    drawText("LENGTH", painter, left + 111, top + 1, infoFont(), -1);
     painter->setPen(colorHilite);
-    drawText("LENGTH", painter, left + 110, top + 0, infoFont(),-1);
+    drawText("LENGTH", painter, left + 110, top + 0, infoFont(), -1);
     painter->setPen(QColor(0, 0, 0));
 
     const auto t = this->parent();
     drawText(QString("%1").arg(t->info->numOrders, 4, 10, QChar('0')), painter, left + 178, top + 0, infoFont());
     painter->setPen(colorShadow);
-    drawText("SONGNAME:", painter, left + 73, top + 11 + 1, infoFont(),-1);
+    drawText("SONGNAME:", painter, left + 73, top + 11 + 1, infoFont(), -1);
     painter->setPen(colorHilite);
-    drawText("SONGNAME:", painter, left + 72, top + 11, infoFont(),-1);
+    drawText("SONGNAME:", painter, left + 72, top + 11, infoFont(), -1);
     painter->setPen(QColor(0, 0, 0));
 
     drawText(QString("%1").arg(t->info->title.c_str(), -20, QChar('_')).toUpper(), painter, left + 141,
@@ -135,8 +133,8 @@ void::SoundTracker26PatternView::paintTop(QPainter* painter,Info* info, unsigned
     drawText(QString("%1").arg(getCurrentSample() + 1, 2, 10, QChar('0')), painter,
              left + 24, top + 22, infoFont());
     drawText(
-            QString("%1").arg(t->info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
-                    toUpper(), painter, left + 141, top + 22, infoFont());
+        QString("%1").arg(t->info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
+        toUpper(), painter, left + 141, top + 22, infoFont());
     QRectF sourcePrev(0, 0, 6, 7);
     QRectF sourceNext(6, 0, 6, 7);
     QRectF targetPrev(left + 3, 24, 6, 7);

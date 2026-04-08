@@ -2,8 +2,7 @@
 #include "scroller.h"
 #include "soundmanager.h"
 
-Scroller::Scroller(QWidget* parent)
-{
+Scroller::Scroller(QWidget *parent) {
     this->parent = parent;
 
     backbuf = QImage(originalWidth, originalHeight, QImage::Format_ARGB32_Premultiplied);
@@ -23,8 +22,7 @@ Scroller::Scroller(QWidget* parent)
     m_vuMeters = std::make_unique<VuMetersEffect>();
 }
 
-void Scroller::paint(QPainter* painter, QPaintEvent* event)
-{
+void Scroller::paint(QPainter *painter, QPaintEvent *event) {
     if (backbuf.isNull() || backbuf.size() != QSize(originalWidth, originalHeight)) {
         backbuf = QImage(originalWidth, originalHeight, QImage::Format_ARGB32_Premultiplied);
     }
@@ -47,7 +45,7 @@ void Scroller::paint(QPainter* painter, QPaintEvent* event)
         if (m_printer) m_printer->setCanvasSize(originalWidth, originalHeight);
 
         previousHeight = originalHeight;
-        previousWidth  = originalWidth;
+        previousWidth = originalWidth;
     }
 
     if (m_starField && m_starField->enabled())
@@ -70,11 +68,12 @@ void Scroller::paint(QPainter* painter, QPaintEvent* event)
 
     if (reflectionEnabled) {
         buf.fillRect(
-                0,
-                scrollerY + m_scroller->getVerticalScrollPosition() + scrollerBottomY + scrollerFontH / 2,
-                originalWidth,
-                originalHeight - (scrollerY + m_scroller->getVerticalScrollPosition() + scrollerBottomY + scrollerFontH / 2),
-                reflectionColor
+            0,
+            scrollerY + m_scroller->getVerticalScrollPosition() + scrollerBottomY + scrollerFontH / 2,
+            originalWidth,
+            originalHeight - (scrollerY + m_scroller->getVerticalScrollPosition() + scrollerBottomY + scrollerFontH /
+                              2),
+            reflectionColor
         );
     }
 
@@ -83,10 +82,10 @@ void Scroller::paint(QPainter* painter, QPaintEvent* event)
     const auto &info = sm.info;
 
     const bool stereoEnabled = !(
-            info->plugin == PLUGIN_furnace ||
-            info->plugin == PLUGIN_libopenmpt ||
-            info->plugin == PLUGIN_libxmp ||
-            info->plugin == PLUGIN_hivelytracker
+        info->plugin == PLUGIN_furnace ||
+        info->plugin == PLUGIN_libopenmpt ||
+        info->plugin == PLUGIN_libxmp ||
+        info->plugin == PLUGIN_hivelytracker
     );
 
     const int maxH = reflectionEnabled
@@ -125,7 +124,7 @@ void Scroller::paint(QPainter* painter, QPaintEvent* event)
 
     if (keepAspectRatio) {
         const QSize dst = QSize(originalWidth, originalHeight).scaled(vp.size(), Qt::KeepAspectRatio);
-        target = QRect(QPoint(0,0), dst);
+        target = QRect(QPoint(0, 0), dst);
         target.moveCenter(vp.center());
     } else {
         target = vp;
@@ -135,67 +134,55 @@ void Scroller::paint(QPainter* painter, QPaintEvent* event)
     painter->restore();
 }
 
-QColor Scroller::getColorVisualizerBackground() const
-{
+QColor Scroller::getColorVisualizerBackground() const {
     return colorVisualizerBackground;
 }
 
-int Scroller::getResolutionWidth() const
-{
+int Scroller::getResolutionWidth() const {
     return originalWidth;
 }
 
-int Scroller::getResolutionHeight() const
-{
+int Scroller::getResolutionHeight() const {
     return originalHeight;
 }
 
-bool Scroller::getKeepAspectRatio() const
-{
+bool Scroller::getKeepAspectRatio() const {
     return keepAspectRatio;
 }
 
-void Scroller::stop()
-{
+void Scroller::stop() {
     isStopping = true;
 }
 
-QString Scroller::getCustomScrolltext() const
-{
+QString Scroller::getCustomScrolltext() const {
     return customScrolltext;
 }
 
-void Scroller::reset()
-{
+void Scroller::reset() {
     setScrollerFont(m_bitmapFont);
     setPrinterFont(m_bitmapFontPrinter);
 }
 
-void Scroller::setKeepAspectRatio(const bool enabled)
-{
+void Scroller::setKeepAspectRatio(const bool enabled) {
     keepAspectRatio = enabled;
 }
 
-void Scroller::setResolutionWidth(const int width)
-{
+void Scroller::setResolutionWidth(const int width) {
     originalWidth = width;
     if (m_rasterBars) m_rasterBars->setCanvasSize(originalWidth, originalHeight);
     reset();
 }
 
-void Scroller::setResolutionHeight(const int height)
-{
+void Scroller::setResolutionHeight(const int height) {
     originalHeight = height;
 
     if (m_rasterBars) m_rasterBars->setCanvasSize(originalWidth, originalHeight);
 }
 
-void Scroller::setCustomScrolltextEnabled(const bool enabled)
-{
+void Scroller::setCustomScrolltextEnabled(const bool enabled) {
     customScrolltextEnabled = enabled;
 }
 
-void Scroller::setCustomScrolltext(const QString text)
-{
+void Scroller::setCustomScrolltext(const QString text) {
     customScrolltext = text;
 }

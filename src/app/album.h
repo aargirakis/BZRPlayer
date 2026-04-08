@@ -4,26 +4,29 @@
 #include <QLabel>
 #include <QPushButton>
 
-class Album : public QLabel
-{
+class Album : public QLabel {
     Q_OBJECT
 
 public:
-    Album(const QString &, QWidget* parent = nullptr);
-    QLabel* labelAlbum;
-    QLabel* labelText;
-    void putPixmap(const QString&) const;
+    Album(const QString &, QWidget *parent = nullptr);
+
+    QLabel *labelAlbum;
+    QLabel *labelText;
+
+    void putPixmap(const QString &) const;
+
     QString artwork;
     QString title;
     QString path;
     QString id;
 
 private:
-    QPushButton* playButton;
+    QPushButton *playButton;
 
 protected:
-    void enterEvent(QEnterEvent* event) override;
-    void leaveEvent(QEvent* event) override;
+    void enterEvent(QEnterEvent *event) override;
+
+    void leaveEvent(QEvent *event) override;
 
 
 signals:

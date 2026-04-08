@@ -1,9 +1,8 @@
 #include "FastTracker26ChanPatternView.h"
 #include "visualizers/tracker.h"
 
-FastTracker26ChanPatternView::FastTracker26ChanPatternView(Tracker* parent, const unsigned int channels)
-    : FastTracker2PatternView(parent, channels)
-{
+FastTracker26ChanPatternView::FastTracker26ChanPatternView(Tracker *parent, const unsigned int channels)
+    : FastTracker2PatternView(parent, channels) {
     m_font = QFont("Fasttracker 2");
     m_bitmapFont = BitmapFont("Fasttracker 2");
     m_font.setPixelSize(8);
@@ -29,20 +28,17 @@ FastTracker26ChanPatternView::FastTracker26ChanPatternView(Tracker* parent, cons
     m_channelxSpace = 2;
 }
 
-FastTracker26ChanPatternView::~FastTracker26ChanPatternView()
-{
+FastTracker26ChanPatternView::~FastTracker26ChanPatternView() {
 }
 
-void FastTracker26ChanPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void FastTracker26ChanPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(73, 117, 130);
     QColor colorHilite(138, 219, 243);
     QColor colorShadow(24, 40, 44);
 
     painter->setPen(QColor(255, 255, 255));
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // bottom channels
         painter->fillRect(29 + chan * 96, height - 3, 94, 1, colorHilite);
         // top channels
@@ -72,8 +68,7 @@ void FastTracker26ChanPatternView::paintAbove(QPainter* painter, int height, int
     painter->fillRect(29 + m_channels * 96, 31, 25, 1, colorShadow);
 }
 
-void FastTracker26ChanPatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void FastTracker26ChanPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     int left = 3;
 
     QColor colorBase(73, 117, 130);
@@ -95,8 +90,7 @@ void FastTracker26ChanPatternView::paintBelow(QPainter* painter, int height, int
     painter->setPen(pen);
     painter->drawLine(left, 29, left, height - 4);
 
-    for (unsigned int chan = 0; chan <= m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan <= m_channels; chan++) {
         // channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
@@ -120,8 +114,7 @@ void FastTracker26ChanPatternView::paintBelow(QPainter* painter, int height, int
     painter->setPen(pen);
     painter->drawLine(56 + m_channels * 96, 29, 56 + m_channels * 96, height);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // top hilite
         painter->fillRect(left + 26 + chan * 96, height / 2 - 6 + topOffset, 94, 1, colorHilite);
         // bottom shadow

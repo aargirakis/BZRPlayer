@@ -2,9 +2,8 @@
 #include "IceTrackerPatternView.h"
 #include "mainwindow.h"
 
-IceTrackerPatternView::IceTrackerPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+IceTrackerPatternView::IceTrackerPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     rowNumberOffset = 0;
     octaveOffset = 48;
     m_font2 = QFont("Protracker 1.0 Double Height");
@@ -24,7 +23,9 @@ IceTrackerPatternView::IceTrackerPatternView(Tracker* parent, const unsigned int
     m_ColorRowNumberBackground = m_ColorWindowBackground = "738a9c";
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(66, 85, 99);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        66, 85, 99);
     m_colorCurrentRowBackground = QColor(115, 138, 156);
     m_RowEnd = m_SeparatorRowNumber = m_SeparatorChannel = " ";
     m_RowLength = 40;
@@ -69,28 +70,23 @@ IceTrackerPatternView::IceTrackerPatternView(Tracker* parent, const unsigned int
     m_linearGradDark.setColorAt(1, QColor(0, 96, 0).rgb()); // dark green
 }
 
-QFont IceTrackerPatternView::currentRowFont()
-{
+QFont IceTrackerPatternView::currentRowFont() {
     return m_font2;
 }
 
-BitmapFont IceTrackerPatternView::currentRowBitmapFont()
-{
+BitmapFont IceTrackerPatternView::currentRowBitmapFont() {
     return m_bitmapFont2;
 }
 
-void IceTrackerPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void IceTrackerPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(115, 138, 156);
     QColor colorHilite(173, 186, 206);
     QColor colorShadow(66, 85, 115);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
         painter->fillRect(30 + chan * 72, height - 3, 70 + extra, 1, colorHilite);
@@ -133,8 +129,7 @@ void IceTrackerPatternView::paintAbove(QPainter* painter, int height, int curren
     painter->fillRect(0, 32, 1, 1, colorHilite);
 }
 
-void IceTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void IceTrackerPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     int left = 4;
 
     QColor colorBase(115, 138, 156);
@@ -182,8 +177,7 @@ void IceTrackerPatternView::paintBelow(QPainter* painter, int height, int curren
     // main
     painter->fillRect(left + 4, height / 2 - 4, 17, 10, colorBase);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
@@ -203,8 +197,7 @@ void IceTrackerPatternView::paintBelow(QPainter* painter, int height, int curren
 
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
 
@@ -242,16 +235,16 @@ void IceTrackerPatternView::paintBelow(QPainter* painter, int height, int curren
     QColor colorGreenShadowColor(0, 101, 0);
 
     // vu-meters base
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         painter->fillRect(left + 29 + chan * 72 + 22, height / 2 - 2 + topOffset, 2, 1, colorGreenHiliteColor);
         painter->fillRect(left + 31 + chan * 72 + 22, height / 2 - 2 + topOffset, 6, 1, colorGreenBaseColor);
         painter->fillRect(left + 37 + chan * 72 + 22, height / 2 - 2 + topOffset, 2, 1, colorGreenShadowColor);
     }
 }
 
-void::IceTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::IceTrackerPatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                       unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                       unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 32;
     QColor colorBase(115, 138, 156);
     QColor colorHilite(173, 186, 206);
@@ -333,8 +326,8 @@ void::IceTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int
     drawText(QString("%1").arg(getCurrentSample() + 1, 2, 10, QChar('0')), painter,
              left + 24, top + 22, infoFont());
     drawText(
-            QString("%1").arg(t->info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
-                    toUpper(), painter, left + 141, top + 22, infoFont());
+        QString("%1").arg(t->info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
+        toUpper(), painter, left + 141, top + 22, infoFont());
 
     QRectF sourcePrev(0, 0, 6, 7);
     QRectF sourceNext(6, 0, 6, 7);
@@ -347,6 +340,5 @@ void::IceTrackerPatternView::paintTop(QPainter* painter,Info* info, unsigned int
     painter->drawImage(targetNext, imageTop, sourceNext);
 }
 
-IceTrackerPatternView::~IceTrackerPatternView()
-{
+IceTrackerPatternView::~IceTrackerPatternView() {
 }

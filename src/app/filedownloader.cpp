@@ -1,8 +1,6 @@
 #include "filedownloader.h"
 
-FileDownloader::FileDownloader(const QUrl &url, QObject* parent) :
-    QObject(parent)
-{
+FileDownloader::FileDownloader(const QUrl &url, QObject *parent) : QObject(parent) {
     connect(
         &m_WebCtrl, SIGNAL(finished(QNetworkReply*)),
         this, SLOT(fileDownloaded(QNetworkReply*))
@@ -18,12 +16,10 @@ FileDownloader::FileDownloader(const QUrl &url, QObject* parent) :
     m_WebCtrl.get(request);
 }
 
-FileDownloader::~FileDownloader()
-{
+FileDownloader::~FileDownloader() {
 }
 
-void FileDownloader::fileDownloaded(QNetworkReply* pReply)
-{
+void FileDownloader::fileDownloaded(QNetworkReply *pReply) {
     m_DownloadedData = pReply->readAll();
     //qDebug() << "downloaded!";
     // emit a signal
@@ -32,18 +28,15 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply)
     emit downloaded();
 }
 
-void FileDownloader::errorOccured(QNetworkReply::NetworkError code)
-{
+void FileDownloader::errorOccured(QNetworkReply::NetworkError code) {
     qDebug() << "error!!";
     // emit a signal
 }
 
-QByteArray FileDownloader::downloadedData() const
-{
+QByteArray FileDownloader::downloadedData() const {
     return m_DownloadedData;
 }
 
-QUrl FileDownloader::getUrl() const
-{
+QUrl FileDownloader::getUrl() const {
     return url;
 }

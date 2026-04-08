@@ -6,15 +6,14 @@
 
 using namespace std;
 
-typedef struct
-{
+typedef struct {
     QString year;
     QString filename;
     QString path;
     QString title;
     QString extension;
     QString id;
-    Info* info;
+    Info *info;
     unsigned int startTime;
     unsigned int startSubsong;
     signed int startSubsongPlayList;
@@ -24,8 +23,7 @@ typedef struct
     bool seekable;
 } Song;
 
-struct Equalizer
-{
+struct Equalizer {
     QString name;
     float eq32;
     float eq64;
@@ -40,6 +38,8 @@ struct Equalizer
 };
 
 QString groupDigits(int64_t number);
+
 QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds);
+
 QString fromUtf8OrLatin1(const std::string &str);
 #endif // VARIOUS_H

@@ -6,7 +6,7 @@ RasterBarsEffect::RasterBarsEffect() {
 }
 
 void RasterBarsEffect::setOpacity(int percent) {
-    if (percent < 0)  percent = 0;
+    if (percent < 0) percent = 0;
 
     if (percent > 100) percent = 100;
 
@@ -42,12 +42,14 @@ void RasterBarsEffect::rebuildColors() {
     m_barBrushes.reserve(m_count);
 
     auto hsv = [](const double h, const double s, const double v) {
-        QColor c; c.setHsvF(h, s, v); return c;
+        QColor c;
+        c.setHsvF(h, s, v);
+        return c;
     };
 
     for (int n = 0; n < m_count; ++n) {
-        const double hue = QRandomGenerator::global()->generateDouble();  // [0..1)
-        const double sat = QRandomGenerator::global()->generateDouble();  // [0..1)
+        const double hue = QRandomGenerator::global()->generateDouble(); // [0..1)
+        const double sat = QRandomGenerator::global()->generateDouble(); // [0..1)
 
         QLinearGradient g(QPointF(0, 0), QPointF(0, 1)); // vertical
         g.setCoordinateMode(QGradient::ObjectBoundingMode); // scale with rect
@@ -59,7 +61,7 @@ void RasterBarsEffect::rebuildColors() {
     }
 }
 
-void RasterBarsEffect::paint(QPainter* painter) {
+void RasterBarsEffect::paint(QPainter *painter) {
     if (!m_enabled || m_width <= 0 || m_height <= 0) return;
 
     m_counter += 0.001 * m_speed;
@@ -75,8 +77,8 @@ void RasterBarsEffect::paint(QPainter* painter) {
     painter->restore();
 }
 
-void RasterBarsEffect::drawOneBar(QPainter* painter, const int offset) const {
-    const double amp   = m_height / 2.0 - m_barHeight / 2.0;
+void RasterBarsEffect::drawOneBar(QPainter *painter, const int offset) const {
+    const double amp = m_height / 2.0 - m_barHeight / 2.0;
     const double phase = m_counter + offset / (m_count * m_verticalSpacing * 0.05) + m_sineAngle;
 
     double y = m_height / 2.0 - m_count + qSin(phase) * amp;
@@ -84,12 +86,11 @@ void RasterBarsEffect::drawOneBar(QPainter* painter, const int offset) const {
 
     const auto iy = static_cast<int>(y);
 
-    const QBrush& brush = m_barBrushes[
-            qBound(0, offset, static_cast<int>(m_barBrushes.size()) - 1)
+    const QBrush &brush = m_barBrushes[
+        qBound(0, offset, static_cast<int>(m_barBrushes.size()) - 1)
     ];
 
     painter->setPen(Qt::NoPen);
     painter->setBrush(brush);
     painter->drawRect(0, iy, m_width, m_barHeight);
 }
-

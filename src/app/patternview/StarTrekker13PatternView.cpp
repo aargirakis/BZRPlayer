@@ -2,9 +2,8 @@
 #include "mainwindow.h"
 #include "StarTrekker13PatternView.h"
 
-StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+StarTrekker13PatternView::StarTrekker13PatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     rowNumberOffset = 0;
     octaveOffset = 48;
     m_font2 = QFont("Startrekker 1.3 Double Height");
@@ -24,7 +23,9 @@ StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, const unsign
     m_font.setStyleStrategy(QFont::NoAntialias);
     m_colorCurrentRowBackground = QColor(189, 138, 99);
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-    m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(156, 170, 33);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        156, 170, 33);
 
     m_fontWidth = 8;
     m_font.setStyleStrategy(QFont::NoAntialias);
@@ -63,34 +64,28 @@ StarTrekker13PatternView::StarTrekker13PatternView(Tracker* parent, const unsign
     m_linearGradDark.setColorAt(1, QColor(16, 189, 189).rgb());
 }
 
-QFont StarTrekker13PatternView::currentRowFont()
-{
+QFont StarTrekker13PatternView::currentRowFont() {
     return m_font2;
 }
 
-BitmapFont StarTrekker13PatternView::currentRowBitmapFont()
-{
+BitmapFont StarTrekker13PatternView::currentRowBitmapFont() {
     return m_bitmapFont2;
 }
 
-StarTrekker13PatternView::~StarTrekker13PatternView()
-{
+StarTrekker13PatternView::~StarTrekker13PatternView() {
 }
 
-void StarTrekker13PatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void StarTrekker13PatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(189, 138, 99);
     QColor colorHilite(222, 186, 156);
     QColor colorShadow(140, 85, 49);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // current row per channel
 
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
         // bottom hilight
@@ -103,8 +98,7 @@ void StarTrekker13PatternView::paintAbove(QPainter* painter, int height, int cur
     painter->fillRect(1, height - 1, 319, 1, colorShadow);
 }
 
-void StarTrekker13PatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void StarTrekker13PatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     int left = 3;
 
     QColor colorBase(189, 138, 99);
@@ -127,8 +121,7 @@ void StarTrekker13PatternView::paintBelow(QPainter* painter, int height, int cur
     painter->setPen(pen);
     painter->drawLine(left, 45, left, height);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
@@ -144,8 +137,7 @@ void StarTrekker13PatternView::paintBelow(QPainter* painter, int height, int cur
 
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
 
@@ -181,8 +173,9 @@ void StarTrekker13PatternView::paintBelow(QPainter* painter, int height, int cur
     painter->fillRect(left - 1, height / 2 - 2 + topOffset, 1, 2, colorBase);
 }
 
-void::StarTrekker13PatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::StarTrekker13PatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                          unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                          unsigned int m_currentBPM, unsigned int m_currentRow) {
     m_topHeight = 44;
     QColor colorBase(189, 138, 99);
     QColor colorHilite(222, 186, 156);
@@ -198,32 +191,32 @@ void::StarTrekker13PatternView::paintTop(QPainter* painter,Info* info, unsigned 
 
     drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + 71, top + 0, infoFont());
     painter->setPen(colorHilite);
-    drawText("POSITION", painter, left + 3, top + 0, infoFont(),-1);
+    drawText("POSITION", painter, left + 3, top + 0, infoFont(), -1);
     painter->setPen(colorShadow);
-    drawText("PATTERN", painter, left + 111, top + 1, infoFont(),-1);
+    drawText("PATTERN", painter, left + 111, top + 1, infoFont(), -1);
     painter->setPen(colorHilite);
-    drawText("PATTERN", painter, left + 110, top + 0, infoFont(),-1);
+    drawText("PATTERN", painter, left + 110, top + 0, infoFont(), -1);
     painter->setPen(QColor(0, 0, 0));
 
     drawText(QString("%1").arg(m_currentPattern, 4, 10, QChar('0')), painter, left + 178, top + 0, infoFont());
     painter->setPen(colorShadow);
-    drawText("LENGTH", painter, left + 4, top + 11 + 1, infoFont(),-1);
+    drawText("LENGTH", painter, left + 4, top + 11 + 1, infoFont(), -1);
     painter->setPen(colorHilite);
-    drawText("LENGTH", painter, left + 3, top + 11, infoFont(),-1);
+    drawText("LENGTH", painter, left + 3, top + 11, infoFont(), -1);
     painter->setPen(QColor(0, 0, 0));
     const auto t = this->parent();
     drawText(QString("%1").arg(t->info->numOrders, 4, 10, QChar('0')), painter, left + 71, top + 11, infoFont());
     painter->setPen(colorShadow);
-    drawText("RESTART", painter, left + 111, top + 11 + 1, infoFont(),-1);
+    drawText("RESTART", painter, left + 111, top + 11 + 1, infoFont(), -1);
     painter->setPen(colorHilite);
-    drawText("RESTART", painter, left + 110, top + 11, infoFont(),-1);
+    drawText("RESTART", painter, left + 110, top + 11, infoFont(), -1);
     painter->setPen(QColor(0, 0, 0));
     drawText(QString("%1").arg(t->info->restart, 4, 10, QChar('0')), painter, left + 178, top + 11, infoFont());
 
     painter->setPen(colorShadow);
-    drawText("SONGNAME:", painter, left + 4, top + 23, infoFont(),-1);
+    drawText("SONGNAME:", painter, left + 4, top + 23, infoFont(), -1);
     painter->setPen(colorHilite);
-    drawText("SONGNAME:", painter, left + 3, top + 22, infoFont(),-1);
+    drawText("SONGNAME:", painter, left + 3, top + 22, infoFont(), -1);
     painter->setPen(QColor(0, 0, 0));
 
     drawText(QString("%1").arg(t->info->title.c_str(), -20, QChar('_')).toUpper(), painter, left + 72,
@@ -282,16 +275,16 @@ void::StarTrekker13PatternView::paintTop(QPainter* painter,Info* info, unsigned 
     painter->drawImage(targetNext, imageTop, sourceNext);
 
     painter->setPen(colorShadow);
-    drawText("SAMPLENAME:", painter, left + 59, top + 33 + 1, infoFont(),-1);
+    drawText("SAMPLENAME:", painter, left + 59, top + 33 + 1, infoFont(), -1);
     painter->setPen(colorHilite);
-    drawText("SAMPLENAME:", painter, left + 58, top + 33, infoFont(),-1);
+    drawText("SAMPLENAME:", painter, left + 58, top + 33, infoFont(), -1);
     painter->setPen(QColor(0, 0, 0));
 
     drawText(QString("%1").arg(getCurrentSample() + 1, 2, 10, QChar('0')), painter,
              left + 24, top + 33, infoFont());
     drawText(
-            QString("%1").arg(t->info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
-                    toUpper(), painter, left + 141, top + 33, infoFont());
+        QString("%1").arg(t->info->samples[getCurrentSample()].c_str(), -22, QChar('_')).
+        toUpper(), painter, left + 141, top + 33, infoFont());
 
     // 1px antialias
     painter->fillRect(left, 32, 1, 1, colorBase);

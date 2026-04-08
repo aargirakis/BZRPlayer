@@ -1,8 +1,7 @@
 #include "SoundFXPatternView.h"
 
-SoundFXPatternView::SoundFXPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+SoundFXPatternView::SoundFXPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     m_font = QFont("Sound FX V1.8");
     m_font.setPixelSize(16);
     m_fontWidth = 8;
@@ -15,7 +14,9 @@ SoundFXPatternView::SoundFXPatternView(Tracker* parent, const unsigned int chann
     m_ColorWindowBackground = "00ffee";
     m_ColorRowNumberBackground = m_ColorWindowBackground;
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(0, 0, 204);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        0, 0, 204);
     m_colorCurrentRowBackground = QColor(0, 255, 0);
     m_colorCurrentRowForeground = QColor(255, 0, 0);
     m_SeparatorChannel = "'''";
@@ -34,12 +35,10 @@ SoundFXPatternView::SoundFXPatternView(Tracker* parent, const unsigned int chann
     octaveOffset = 44;
 }
 
-SoundFXPatternView::~SoundFXPatternView()
-{
+SoundFXPatternView::~SoundFXPatternView() {
 }
 
-void SoundFXPatternView::paintAbove(QPainter* painter, const int height, int currentRow)
-{
+void SoundFXPatternView::paintAbove(QPainter *painter, const int height, int currentRow) {
     constexpr auto colorCyan = QColor(0, 255, 238);
     // top
     painter->fillRect(1, 2, 609, 2, QColor(0, 0, 0));
@@ -52,15 +51,13 @@ void SoundFXPatternView::paintAbove(QPainter* painter, const int height, int cur
     painter->fillRect(16, 0, 570, 2, colorCyan);
 }
 
-void SoundFXPatternView::paintBelow(QPainter* painter, const int height, const int currentRow)
-{
+void SoundFXPatternView::paintBelow(QPainter *painter, const int height, const int currentRow) {
     constexpr auto colorCyan = QColor(0, 255, 238);
     // background
     painter->fillRect(0, 0, 640, height, colorCyan);
 
     // channel separators
-    for (unsigned int chan = 0; chan < m_channels + 1; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels + 1; chan++) {
         const int xtra = chan == m_channels ? 1 : 0;
         painter->fillRect(1 + chan * 152 - xtra, 4, 2, height - 5, QColor(0, 0, 0));
     }
@@ -79,12 +76,10 @@ void SoundFXPatternView::paintBelow(QPainter* painter, const int height, const i
     painter->fillRect(614, yPos, 23, 8, m_colorDefault);
 }
 
-QString SoundFXPatternView::note(BaseRow* row)
-{
+QString SoundFXPatternView::note(BaseRow *row) {
     QString note = AbstractPatternView::note(row);
 
-    if (note != "---")
-    {
+    if (note != "---") {
         note.replace('-', ' ');
     }
 

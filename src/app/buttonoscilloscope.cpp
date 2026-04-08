@@ -131,7 +131,6 @@ void ButtonOscilloscope::drawOscilloVoice(const uint32_t *audio, const int count
         } else {
             myPath.lineTo(x, y);
         }
-
     }
 
     painter.drawPath(myPath);

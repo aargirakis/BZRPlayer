@@ -3,25 +3,29 @@
 
 #include <QListWidget>
 
-class QListWidgetCustom : public QListWidget
-{
+class QListWidgetCustom : public QListWidget {
 public:
-    explicit QListWidgetCustom(QWidget* parent = nullptr);
+    explicit QListWidgetCustom(QWidget *parent = nullptr);
 
-    ~QListWidgetCustom()
-    {
+    ~QListWidgetCustom() {
     }
 
     void setDragBackgroundColor(QColor);
-    void setDragTextColor(QColor );
+
+    void setDragTextColor(QColor);
 
 protected:
     void startDrag(Qt::DropActions supportedActions) override;
-    void dragMoveEvent(QDragMoveEvent* event) override;
-    void dropEvent(QDropEvent* event) override;
-    void dragLeaveEvent(QDragLeaveEvent* event) override;
-    void dragEnterEvent(QDragEnterEvent* event) override;
-    void paintEvent(QPaintEvent* event) override;
+
+    void dragMoveEvent(QDragMoveEvent *event) override;
+
+    void dropEvent(QDropEvent *event) override;
+
+    void dragLeaveEvent(QDragLeaveEvent *event) override;
+
+    void dragEnterEvent(QDragEnterEvent *event) override;
+
+    void paintEvent(QPaintEvent *event) override;
 
 private:
     int m_dropLineRow = -1;

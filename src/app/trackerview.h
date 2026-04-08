@@ -4,23 +4,28 @@
 #include <QOpenGLWidget>
 #include "visualizers/tracker.h"
 
-class TrackerView : public QOpenGLWidget
-{
+class TrackerView : public QOpenGLWidget {
     Q_OBJECT
 
 public:
-    explicit TrackerView(QWidget* parent = nullptr);
+    explicit TrackerView(QWidget *parent = nullptr);
+
     void init();
-    void paintEvent(QPaintEvent* event);
+
+    void paintEvent(QPaintEvent *event);
+
     bool inited;
-    Tracker* getTracker() const;
+
+    Tracker *getTracker() const;
+
     void setBackgroundColor(QColor newColor);
 
 private:
-    Tracker* tracker;
+    Tracker *tracker;
 
 
-    bool eventFilter(QObject* obj, QEvent* event);
+    bool eventFilter(QObject *obj, QEvent *event);
+
     QColor backgroundColor;
 };
 

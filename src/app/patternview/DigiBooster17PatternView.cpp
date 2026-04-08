@@ -3,8 +3,7 @@
 #include "mainwindow.h"
 
 DigiBooster17PatternView::DigiBooster17PatternView(Tracker *parent, const unsigned int channels) : AbstractPatternView(
-    parent, channels)
-{
+    parent, channels) {
     octaveOffset = 48;
     rowNumberOffset = 0;
     instrumentHex = false;
@@ -25,7 +24,9 @@ DigiBooster17PatternView::DigiBooster17PatternView(Tracker *parent, const unsign
     m_colorCurrentRowForeground = QColor(222, 186, 140);
 
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(173, 170, 173);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        173, 170, 173);
 
     m_RowEnd = m_SeparatorRowNumber = m_SeparatorChannel = "'";
     m_xOffsetRow = 8;
@@ -40,25 +41,21 @@ DigiBooster17PatternView::DigiBooster17PatternView(Tracker *parent, const unsign
     m_renderTop = true;
 }
 
-QFont DigiBooster17PatternView::currentRowFont()
-{
+QFont DigiBooster17PatternView::currentRowFont() {
     return m_font2;
 }
 
-BitmapFont DigiBooster17PatternView::currentRowBitmapFont()
-{
+BitmapFont DigiBooster17PatternView::currentRowBitmapFont() {
     return m_bitmapFont2;
 }
 
-BitmapFont DigiBooster17PatternView::infoFont()
-{
+BitmapFont DigiBooster17PatternView::infoFont() {
     return m_bitmapFont3;
 }
 
-void DigiBooster17PatternView::paintAbove(QPainter* painter, const int height, int currentRow)
-{
+void DigiBooster17PatternView::paintAbove(QPainter *painter, const int height, int currentRow) {
     const QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-        "trackerview" + QDir::separator() + "digibooster17_top.png";
+                              "trackerview" + QDir::separator() + "digibooster17_top.png";
     const QImage spriteSheet(imagepath);
 
     // right border (channel buttons)
@@ -71,8 +68,7 @@ void DigiBooster17PatternView::paintAbove(QPainter* painter, const int height, i
 
     const int numberOfLeftBarPieces = (height - 33) / 147 + 1;
 
-    for (int i = 0; i < numberOfLeftBarPieces; i++)
-    {
+    for (int i = 0; i < numberOfLeftBarPieces; i++) {
         QRectF targetLeftBar(0, 46 + i * 147, 6, 147);
         painter->drawImage(targetLeftBar, spriteSheet, sourceLeftBar);
     }
@@ -88,8 +84,7 @@ void DigiBooster17PatternView::paintAbove(QPainter* painter, const int height, i
     painter->drawImage(targetBottomBar, spriteSheet, sourceBottomBar);
 }
 
-void DigiBooster17PatternView::paintBelow(QPainter* painter, const int height, int currentRow)
-{
+void DigiBooster17PatternView::paintBelow(QPainter *painter, const int height, int currentRow) {
     constexpr QColor colorHilite(82, 85, 99);
     constexpr QColor colorShadow(49, 48, 66);
 
@@ -97,8 +92,7 @@ void DigiBooster17PatternView::paintBelow(QPainter* painter, const int height, i
     pen.setWidth(1);
     painter->setPen(pen);
 
-    for (int chan = 0; chan < m_channels; chan++)
-    {
+    for (int chan = 0; chan < m_channels; chan++) {
         // channel dividers
         pen.setColor(colorShadow);
         painter->setPen(pen);
@@ -112,7 +106,7 @@ void DigiBooster17PatternView::paintBelow(QPainter* painter, const int height, i
     }
 
     const QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-        "trackerview" + QDir::separator() + "digibooster17_top.png";
+                              "trackerview" + QDir::separator() + "digibooster17_top.png";
     const QImage spriteSheet(imagepath);
 
     // bottom border
@@ -121,8 +115,9 @@ void DigiBooster17PatternView::paintBelow(QPainter* painter, const int height, i
     painter->drawImage(targetBar, spriteSheet, sourceBar);
 }
 
-void::DigiBooster17PatternView::paintTop(QPainter* painter,Info* info, const unsigned int m_currentPattern, const unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
+void ::DigiBooster17PatternView::paintTop(QPainter *painter, Info *info, const unsigned int m_currentPattern,
+                                          const unsigned int m_currentPosition, unsigned int m_currentSpeed,
+                                          unsigned int m_currentBPM, unsigned int m_currentRow) {
     constexpr QColor fontColor(222, 186, 140);
 
     constexpr int top = 18;
@@ -133,29 +128,29 @@ void::DigiBooster17PatternView::paintTop(QPainter* painter,Info* info, const uns
     constexpr QRectF source(0, 0, imageWidth, imageHeight);
     constexpr QRectF target(left - 4, 0, imageWidth, imageHeight);
 
-        const auto t = this->parent();
-        const QString imagepath = dataPath + RESOURCES_DIR +
-                            QDir::separator() + "trackerview" + QDir::separator() + "digibooster17_top.png";
-        const QImage imageTop(imagepath);
-        painter->drawImage(target, imageTop, source);
+    const auto t = this->parent();
+    const QString imagepath = dataPath + RESOURCES_DIR +
+                              QDir::separator() + "trackerview" + QDir::separator() + "digibooster17_top.png";
+    const QImage imageTop(imagepath);
+    painter->drawImage(target, imageTop, source);
 
-        painter->setPen(QColor(0, 0, 0));
-        drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + 122, top + 2,infoFont());
-        painter->setPen(fontColor);
-        drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + 122, top,infoFont());
-        painter->setPen(QColor(0, 0, 0));
-        drawText(QString("%1").arg(m_currentPattern, 4, 10, QChar('0')), painter, left + 331, top + 2,infoFont());
-        painter->setPen(fontColor);
-        drawText(QString("%1").arg(m_currentPattern, 4, 10, QChar('0')), painter, left + 331, top,infoFont());
-        painter->setPen(QColor(0, 0, 0));
-        drawText(QString("%1").arg(t->info->numOrders, 4, 10, QChar('0')), painter, left + 540, top + 2,infoFont());
-        painter->setPen(fontColor);
-        drawText(QString("%1").arg(t->info->numOrders, 4, 10, QChar('0')), painter, left + 540, top,infoFont());
-        painter->setPen(QColor(0, 0, 0));
-        drawText(QString(t->info->title.c_str()), painter, left + 72, top + 24,infoFont());
-        painter->setPen(fontColor);
-        drawText(QString(t->info->title.c_str()), painter, left + 72, top + 22,infoFont());
+    painter->setPen(QColor(0, 0, 0));
+    drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + 122, top + 2, infoFont());
+    painter->setPen(fontColor);
+    drawText(QString("%1").arg(m_currentPosition, 4, 10, QChar('0')), painter, left + 122, top, infoFont());
+    painter->setPen(QColor(0, 0, 0));
+    drawText(QString("%1").arg(m_currentPattern, 4, 10, QChar('0')), painter, left + 331, top + 2, infoFont());
+    painter->setPen(fontColor);
+    drawText(QString("%1").arg(m_currentPattern, 4, 10, QChar('0')), painter, left + 331, top, infoFont());
+    painter->setPen(QColor(0, 0, 0));
+    drawText(QString("%1").arg(t->info->numOrders, 4, 10, QChar('0')), painter, left + 540, top + 2, infoFont());
+    painter->setPen(fontColor);
+    drawText(QString("%1").arg(t->info->numOrders, 4, 10, QChar('0')), painter, left + 540, top, infoFont());
+    painter->setPen(QColor(0, 0, 0));
+    drawText(QString(t->info->title.c_str()), painter, left + 72, top + 24, infoFont());
+    painter->setPen(fontColor);
+    drawText(QString(t->info->title.c_str()), painter, left + 72, top + 22, infoFont());
 }
-DigiBooster17PatternView::~DigiBooster17PatternView()
-{
+
+DigiBooster17PatternView::~DigiBooster17PatternView() {
 }

@@ -3,16 +3,21 @@
 
 #include "AbstractPatternView.h"
 
-class ScreamTracker2PatternView : public AbstractPatternView
-{
+class ScreamTracker2PatternView : public AbstractPatternView {
 public:
-    ScreamTracker2PatternView(Tracker* parent, unsigned int channels);
+    ScreamTracker2PatternView(Tracker *parent, unsigned int channels);
+
     ~ScreamTracker2PatternView();
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
-    QString effect(BaseRow* row);
-    QString note(BaseRow* row);
-    QString parameter(BaseRow* row);
+
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
+
+    QString effect(BaseRow *row);
+
+    QString note(BaseRow *row);
+
+    QString parameter(BaseRow *row);
 };
 
 #endif // SCREAMTRACKER2PATTERNVIEW_H

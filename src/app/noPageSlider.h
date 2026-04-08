@@ -3,12 +3,11 @@
 
 #include <QSlider>
 
-class NoPageSlider : public QSlider
-{
+class NoPageSlider : public QSlider {
     Q_OBJECT
 
 public:
-    NoPageSlider(QWidget* parent = nullptr);
+    NoPageSlider(QWidget *parent = nullptr);
 
     void setDefaultValue(const int value) { this->defaultValue = value; }
     int getDefaultValue() const { return defaultValue; }
@@ -19,16 +18,22 @@ protected:
     //QValidator::State validate(QString &text, int &pos) const;
     //int valueFromText(const QString &text) const;
     //QString textFromValue(int value) const;
-    void mousePressEvent(QMouseEvent* e);
-    void keyPressEvent(QKeyEvent* e);
-    void mouseReleaseEvent(QMouseEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
-    void mouseDoubleClickEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent *e);
+
+    void keyPressEvent(QKeyEvent *e);
+
+    void mouseReleaseEvent(QMouseEvent *e);
+
+    void mouseMoveEvent(QMouseEvent *e);
+
+    void mouseDoubleClickEvent(QMouseEvent *e);
 
 private:
     //QRegExpValidator *validator;
-    int valueFromPoint(const QPoint& p) const;
+    int valueFromPoint(const QPoint &p) const;
+
     QStyleOptionSlider getStyleOption() const;
+
     int defaultValue;
     bool snapDefault;
     int snapDistance;

@@ -2,32 +2,26 @@
 #include <QStyleOptionSlider>
 #include "noPageSlider.h"
 
-NoPageSlider::NoPageSlider(QWidget *parent) : QSlider(parent)
-{
+NoPageSlider::NoPageSlider(QWidget *parent) : QSlider(parent) {
     defaultValue = 0;
     snapDefault = false;
     snapDistance = 10; // this is currently in "values", should be in mouse distance
 }
 
-void NoPageSlider::keyPressEvent(QKeyEvent* e)
-{
+void NoPageSlider::keyPressEvent(QKeyEvent *e) {
     e->ignore();
 }
 
-void NoPageSlider::mouseDoubleClickEvent(QMouseEvent* e)
-{
-    if (e->button() == Qt::RightButton)
-    {
+void NoPageSlider::mouseDoubleClickEvent(QMouseEvent *e) {
+    if (e->button() == Qt::RightButton) {
         setSliderPosition(getDefaultValue());
     }
 }
 
-void NoPageSlider::mousePressEvent(QMouseEvent* e)
-{
+void NoPageSlider::mousePressEvent(QMouseEvent *e) {
     if (maximum() == minimum() ||
         e->button() != Qt::LeftButton ||
-        e->buttons() ^ e->button())
-    {
+        e->buttons() ^ e->button()) {
         e->ignore();
         return;
     }
@@ -35,10 +29,8 @@ void NoPageSlider::mousePressEvent(QMouseEvent* e)
     e->accept();
     int realValue = valueFromPoint(e->pos());
 
-    if (snapToDefault())
-    {
-        if (abs(realValue - getDefaultValue()) < snapDistance)
-        {
+    if (snapToDefault()) {
+        if (abs(realValue - getDefaultValue()) < snapDistance) {
             realValue = getDefaultValue();
         }
     }
@@ -47,10 +39,8 @@ void NoPageSlider::mousePressEvent(QMouseEvent* e)
     setSliderDown(true);
 }
 
-void NoPageSlider::mouseReleaseEvent(QMouseEvent* e)
-{
-    if (e->button() != Qt::LeftButton)
-    {
+void NoPageSlider::mouseReleaseEvent(QMouseEvent *e) {
+    if (e->button() != Qt::LeftButton) {
         e->ignore();
         return;
     }
@@ -58,10 +48,8 @@ void NoPageSlider::mouseReleaseEvent(QMouseEvent* e)
     e->accept();
     int realValue = valueFromPoint(e->pos());
 
-    if (snapToDefault())
-    {
-        if (abs(realValue - getDefaultValue()) < snapDistance)
-        {
+    if (snapToDefault()) {
+        if (abs(realValue - getDefaultValue()) < snapDistance) {
             realValue = getDefaultValue();
         }
     }
@@ -70,10 +58,8 @@ void NoPageSlider::mouseReleaseEvent(QMouseEvent* e)
     setSliderDown(false);
 }
 
-void NoPageSlider::mouseMoveEvent(QMouseEvent* e)
-{
-    if (!hasTracking() || !(e->buttons() & Qt::LeftButton))
-    {
+void NoPageSlider::mouseMoveEvent(QMouseEvent *e) {
+    if (!hasTracking() || !(e->buttons() & Qt::LeftButton)) {
         e->ignore();
         return;
     }
@@ -82,10 +68,8 @@ void NoPageSlider::mouseMoveEvent(QMouseEvent* e)
     //d->doNotEmit = true;
     int realValue = valueFromPoint(e->pos());
 
-    if (snapToDefault())
-    {
-        if (abs(realValue - getDefaultValue()) < snapDistance)
-        {
+    if (snapToDefault()) {
+        if (abs(realValue - getDefaultValue()) < snapDistance) {
             realValue = getDefaultValue();
         }
     }
@@ -96,22 +80,19 @@ void NoPageSlider::mouseMoveEvent(QMouseEvent* e)
     //d->doNotEmit = false;
 }
 
-int NoPageSlider::valueFromPoint(const QPoint& p) const {
+int NoPageSlider::valueFromPoint(const QPoint &p) const {
     const QStyleOptionSlider opt = getStyleOption();
     const QRect gr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this);
     const QRect sr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
 
     int sliderMin, sliderMax, sliderLength, point;
 
-    if (orientation() == Qt::Horizontal)
-    {
+    if (orientation() == Qt::Horizontal) {
         sliderLength = sr.width();
         sliderMin = gr.x() + sliderLength / 2;
         sliderMax = gr.right() - sliderLength / 2 + 1;
         point = p.x();
-    }
-    else
-    {
+    } else {
         sliderLength = sr.height();
         sliderMin = gr.y() + sliderLength / 2;
         sliderMax = gr.bottom() - sliderLength / 2 + 1;
@@ -122,8 +103,7 @@ int NoPageSlider::valueFromPoint(const QPoint& p) const {
                                            sliderMax - sliderMin, opt.upsideDown);
 }
 
-QStyleOptionSlider NoPageSlider::getStyleOption() const
-{
+QStyleOptionSlider NoPageSlider::getStyleOption() const {
     QStyleOptionSlider opt;
     opt.initFrom(this);
     opt.subControls = QStyle::SC_None;

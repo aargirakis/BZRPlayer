@@ -3,14 +3,18 @@
 
 #include <QStyledItemDelegate>
 
-class MyItemDelegate : public QStyledItemDelegate
-{
+class MyItemDelegate : public QStyledItemDelegate {
     Q_OBJECT
+
 public:
-    MyItemDelegate(QObject*);
-    void paint(QPainter* pPainter, const QStyleOptionViewItem& rOption, const QModelIndex& rIndex) const override;
+    MyItemDelegate(QObject *);
+
+    void paint(QPainter *pPainter, const QStyleOptionViewItem &rOption, const QModelIndex &rIndex) const override;
+
     void setDragActive(bool active);
+
     void setMainTextColor(QColor);
+
     void setMainColor(QColor);
 
 private:

@@ -1,8 +1,7 @@
 #include "MEDPatternView.h"
 
-MEDPatternView::MEDPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+MEDPatternView::MEDPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     octaveOffset = 12;
     m_font = QFont("MED 3.21");
     m_font.setPixelSize(16);
@@ -21,7 +20,7 @@ MEDPatternView::MEDPatternView(Tracker* parent, const unsigned int channels)
     m_colorCurrentRowBackground = QColor(102, 102, 119);
     m_colorCurrentRowForeground = QColor(153, 153, 170);
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorVolume =
-        m_colorEmpty = QColor(204, 204, 204);
+                                                                                m_colorEmpty = QColor(204, 204, 204);
 
     m_SeparatorRowNumber = m_SeparatorChannel = "'";
     m_RowEnd = "'";
@@ -58,13 +57,11 @@ MEDPatternView::MEDPatternView(Tracker* parent, const unsigned int channels)
     m_linearGradDark.setColorAt(1, QColor(187, 187, 187).rgb());
 }
 
-BitmapFont MEDPatternView::infoFont()
-{
+BitmapFont MEDPatternView::infoFont() {
     return m_bitmapFont3;
 }
 
-QString MEDPatternView::rowNumber(const int rowNumber)
-{
+QString MEDPatternView::rowNumber(const int rowNumber) {
     const int base = rowNumberHex ? 16 : 10;
 
     QString rowNumberStr = QString::number(rowNumber + rowNumberOffset, base).toUpper();
@@ -73,8 +70,7 @@ QString MEDPatternView::rowNumber(const int rowNumber)
     return rowNumberStr;
 }
 
-QString MEDPatternView::effect(BaseRow* row)
-{
+QString MEDPatternView::effect(BaseRow *row) {
     if (row->effect == 171) return "F"; // might be a bug in libxmp
 
     if (row->effect == 146) return "4"; // might be a bug in libxmp
@@ -82,39 +78,33 @@ QString MEDPatternView::effect(BaseRow* row)
     return AbstractPatternView::effect(row);
 }
 
-QString MEDPatternView::note(BaseRow* row)
-{
+QString MEDPatternView::note(BaseRow *row) {
     // hold/decay
-    if (row->effect2 == 177)
-    {
+    if (row->effect2 == 177) {
         return "-|-";
     }
 
     QString note = AbstractPatternView::note(row);
 
-    if (note.left(1) == "B")
-    {
+    if (note.left(1) == "B") {
         note = "H" + note.right(2);
     }
 
     return note;
 }
 
-QString MEDPatternView::instrument(BaseRow* row)
-{
+QString MEDPatternView::instrument(BaseRow *row) {
     const int instrument = row->sample;
     QString padding = m_SeparatorRowNumber;
 
-    if (instrument >= 32)
-    {
+    if (instrument >= 32) {
         padding = "";
     }
 
     return padding + QString::number(instrument, 32).toUpper();
 }
 
-void MEDPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void MEDPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(153, 153, 170);
     QColor colorHilite(204, 204, 204);
     QColor colorShadow(102, 102, 119);
@@ -126,16 +116,14 @@ void MEDPatternView::paintAbove(QPainter* painter, int height, int currentRow)
     painter->fillRect(4, height - 2, 634, 2, colorShadow);
 
     // vu-meter bottom
-    for (unsigned int i = 0; i < m_channels; i++)
-    {
+    for (unsigned int i = 0; i < m_channels; i++) {
         painter->fillRect(152 + 144 * i, height - 8, 4, 2, QColor(170, 170, 170));
         painter->fillRect(156 + 144 * i, height - 8, 16, 2, QColor(0, 136, 0));
         painter->fillRect(172 + 144 * i, height - 8, 4, 2, QColor(187, 187, 187));
     }
 }
 
-void MEDPatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void MEDPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     QColor colorBase(153, 153, 170);
     QColor colorHilite(204, 204, 204);
     QColor colorShadow(102, 102, 119);
@@ -157,10 +145,10 @@ void MEDPatternView::paintBelow(QPainter* painter, int height, int currentRow)
     painter->fillRect(632, 0, 2, height, colorShadow);
 }
 
-void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_currentPattern, unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM, unsigned int m_currentRow)
-{
-    if(QString(info->fileFormat.c_str()).toLower().startsWith("octamed (mmd0"))
-    {
+void ::MEDPatternView::paintTop(QPainter *painter, Info *info, unsigned int m_currentPattern,
+                                unsigned int m_currentPosition, unsigned int m_currentSpeed, unsigned int m_currentBPM,
+                                unsigned int m_currentRow) {
+    if (QString(info->fileFormat.c_str()).toLower().startsWith("octamed (mmd0")) {
         QColor colorBase(153, 153, 170);
         QColor colorHilite(204, 204, 204);
         QColor colorShadow(102, 102, 119);
@@ -202,9 +190,7 @@ void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_curr
         drawText(QString("%1").arg(m_currentPattern, 3, 10, QChar('0')), painter, left + 94, 24, infoFont());
         drawText("/", painter, left + 120, 24, infoFont());
         drawText(QString("%1").arg(info->numPatterns, 3, 10, QChar('0')), painter, left + 130, 24, infoFont());
-    }
-    else
-    {
+    } else {
         m_topHeight = 28;
         QColor colorBase(153, 153, 170);
         QColor colorHilite(204, 204, 204);
@@ -218,7 +204,7 @@ void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_curr
         painter->fillRect(left, 0, 2, m_topHeight, colorShadow);
 
         // right
-        painter->fillRect(left + 638, 2, 2, m_topHeight-2, colorHilite);
+        painter->fillRect(left + 638, 2, 2, m_topHeight - 2, colorHilite);
 
         // top
         painter->fillRect(left + 1, 0, 639, 2, colorHilite);
@@ -263,6 +249,6 @@ void::MEDPatternView::paintTop(QPainter* painter,Info* info, unsigned int m_curr
         drawText(QString("%1").arg(m_currentSpeed, 2, 16, QChar('0')), painter, left + 235, 24, infoFont());
     }
 }
-MEDPatternView::~MEDPatternView()
-{
+
+MEDPatternView::~MEDPatternView() {
 }

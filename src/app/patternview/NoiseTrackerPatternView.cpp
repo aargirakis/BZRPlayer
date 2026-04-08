@@ -1,14 +1,15 @@
 #include "NoiseTrackerPatternView.h"
 
-NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, const unsigned int channels)
-    : AbstractPatternView(parent, channels)
-{
+NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker *parent, const unsigned int channels)
+    : AbstractPatternView(parent, channels) {
     rowNumberOffset = 0;
     octaveOffset = 48;
     m_font2 = QFont("Noisetracker 1.1 Double Height");
     m_font2.setPixelSize(14);
     m_colorDefault = m_ColorRowNumber = m_ColorInstrument = m_ColorEffect = m_ColorParameter = m_ColorEffect2 =
-        m_ColorParameter2 = m_ColorVolume = m_colorEmpty = QColor(0, 69, 222);
+                                                                                m_ColorParameter2 =
+                                                                                m_ColorVolume = m_colorEmpty = QColor(
+                                                                                        0, 69, 222);
     m_font = QFont("Noisetracker 1.1");
     m_font.setPixelSize(7);
     m_fontWidth = 8;
@@ -67,33 +68,27 @@ NoiseTrackerPatternView::NoiseTrackerPatternView(Tracker* parent, const unsigned
     m_linearGradDark.setColorAt(1, QColor(0, 96, 0).rgb()); // dark green
 }
 
-QFont NoiseTrackerPatternView::currentRowFont()
-{
+QFont NoiseTrackerPatternView::currentRowFont() {
     return m_font2;
 }
 
-BitmapFont NoiseTrackerPatternView::currentRowBitmapFont()
-{
+BitmapFont NoiseTrackerPatternView::currentRowBitmapFont() {
     return m_bitmapFont2;
 }
 
-NoiseTrackerPatternView::~NoiseTrackerPatternView()
-{
+NoiseTrackerPatternView::~NoiseTrackerPatternView() {
 }
 
-void NoiseTrackerPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void NoiseTrackerPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorBase(115, 117, 115);
     QColor colorHilite(173, 170, 173);
     QColor colorShadow(66, 69, 66);
     QColor colorRed(255, 0, 0);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
 
@@ -117,8 +112,7 @@ void NoiseTrackerPatternView::paintAbove(QPainter* painter, int height, int curr
     painter->fillRect(45, 32, 1, 1, colorBase);
 }
 
-void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int currentRow)
-{
+void NoiseTrackerPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
     int left = 3;
 
     QColor colorBase(115, 117, 115);
@@ -145,8 +139,7 @@ void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int curr
     // 1 pixel bottom antialiasing
     painter->fillRect(left - 3, height - 1, 1, 1, colorBase);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // channel dividers
         pen.setColor(colorHilite);
         painter->setPen(pen);
@@ -176,14 +169,12 @@ void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int curr
     // 1 pixel antialiasing
     painter->fillRect(318, 0, 1, 1, colorBase);
 
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         // current row per channel
 
         int extra = 0;
 
-        if (chan == m_channels - 1)
-        {
+        if (chan == m_channels - 1) {
             extra = 2;
         }
 
@@ -210,8 +201,7 @@ void NoiseTrackerPatternView::paintBelow(QPainter* painter, int height, int curr
     QColor colorGreenShadowColor(0, 101, 0);
 
     // vu-meters base
-    for (unsigned int chan = 0; chan < m_channels; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels; chan++) {
         painter->fillRect(left + 30 + chan * 72 + 22, height / 2 - 2 + topOffset, 2, 1, colorGreenHiliteColor);
         painter->fillRect(left + 32 + chan * 72 + 22, height / 2 - 2 + topOffset, 6, 1, colorGreenBaseColor);
         painter->fillRect(left + 38 + chan * 72 + 22, height / 2 - 2 + topOffset, 2, 1, colorGreenShadowColor);

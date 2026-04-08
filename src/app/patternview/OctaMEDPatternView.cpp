@@ -1,8 +1,7 @@
 #include "OctaMEDPatternView.h"
 
-OctaMEDPatternView::OctaMEDPatternView(Tracker* parent, const unsigned int channels)
-    : MEDPatternView(parent, channels)
-{
+OctaMEDPatternView::OctaMEDPatternView(Tracker *parent, const unsigned int channels)
+    : MEDPatternView(parent, channels) {
     octaveOffset = 12;
     m_font = QFont("OctaMED Pro 4");
     m_font.setPixelSize(16);
@@ -52,8 +51,7 @@ OctaMEDPatternView::OctaMEDPatternView(Tracker* parent, const unsigned int chann
     m_linearGradDark.setColorAt(1, QColor(187, 187, 187).rgb());
 }
 
-QString OctaMEDPatternView::effect(BaseRow* row)
-{
+QString OctaMEDPatternView::effect(BaseRow *row) {
     if (row->effect < 9 || row->effect == 0xC || row->effect == 0xB) return AbstractPatternView::effect(row);
 
     if (row->effect == 0x9) return "19";
@@ -83,12 +81,10 @@ QString OctaMEDPatternView::effect(BaseRow* row)
     return "#" + AbstractPatternView::effect(row) + "#";
 }
 
-QString OctaMEDPatternView::parameter(BaseRow* row)
-{
+QString OctaMEDPatternView::parameter(BaseRow *row) {
     int parameter = row->param;
 
-    if (row->effect == 0xE)
-    {
+    if (row->effect == 0xE) {
         parameter = parameter & 0x0f;
 
         if (parameter == 0) return m_emptyParameter;
@@ -103,8 +99,7 @@ QString OctaMEDPatternView::parameter(BaseRow* row)
     return AbstractPatternView::parameter(row);
 }
 
-void OctaMEDPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void OctaMEDPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorPink(255, 170, 173);
     QColor colorRed(255, 0, 0);
 
@@ -118,8 +113,7 @@ void OctaMEDPatternView::paintAbove(QPainter* painter, int height, int currentRo
     //    t->drawText(QString::number(m_channels),painter,24,32);
 
     // channel separators
-    for (unsigned int chan = 0; chan < m_channels - 1; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels - 1; chan++) {
         painter->fillRect(103 + chan * 72, 0, 1, height, colorPink);
         painter->fillRect(103 + chan * 72, height / 2 - 18, 1, 18, colorRed);
     }
@@ -158,11 +152,9 @@ void OctaMEDPatternView::paintAbove(QPainter* painter, int height, int currentRo
     // t->drawText(fromUtf8OrLatin1(t->info->title).left(25),painter,406*m_scale,height-(2*m_scale));
 }
 
-void OctaMEDPatternView::paintBelow(QPainter* painter, const int height, int currentRow)
-{
+void OctaMEDPatternView::paintBelow(QPainter *painter, const int height, int currentRow) {
     painter->fillRect(0, height / 2 - 18, 640, 18, m_colorCurrentRowBackground);
 }
 
-OctaMEDPatternView::~OctaMEDPatternView()
-{
+OctaMEDPatternView::~OctaMEDPatternView() {
 }

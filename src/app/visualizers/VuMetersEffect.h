@@ -10,10 +10,10 @@ public:
     // settings
     void setEnabled(const bool on) { m_enabled = on; }
     bool enabled() const { return m_enabled; }
-    void setTopColor(const QColor& c) { m_colTop = c; }
-    void setMiddleColor(const QColor& c) { m_colMid = c; }
-    void setBottomColor(const QColor& c) { m_colBot = c; }
-    void setPeakColor(const QColor& c) { m_colPeak = c; }
+    void setTopColor(const QColor &c) { m_colTop = c; }
+    void setMiddleColor(const QColor &c) { m_colMid = c; }
+    void setBottomColor(const QColor &c) { m_colBot = c; }
+    void setPeakColor(const QColor &c) { m_colPeak = c; }
     QColor topColor() const { return m_colTop; }
     QColor middleColor() const { return m_colMid; }
     QColor bottomColor() const { return m_colBot; }
@@ -34,16 +34,21 @@ public:
     void setReflectionOpacity(const double o01) { m_reflectionOpacity = std::clamp(o01, 0.0, 1.0); }
     int reflectionOpacityPercent() const { return static_cast<int>(m_reflectionOpacity * 100.0 + 0.5); }
 
-    void setCanvasSize(const int w, const int h) { canvasWidth = w; canvasHeight = h; }
+    void setCanvasSize(const int w, const int h) {
+        canvasWidth = w;
+        canvasHeight = h;
+    }
+
     void setAvailableHeight(const int h) { m_maxHeightOverride = h; }
-    void paint(QPainter* painter, bool stereo);
+
+    void paint(QPainter *painter, bool stereo);
 
 private:
     // settings
     bool m_enabled = true;
-    QColor m_colTop {  0, 255,  64 };
-    QColor m_colMid { 64, 255, 128 };
-    QColor m_colBot {  0, 128,  32 };
+    QColor m_colTop{0, 255, 64};
+    QColor m_colMid{64, 255, 128};
+    QColor m_colBot{0, 128, 32};
     QColor m_colPeak{255, 255, 255};
     double m_opacity = 1.0;
     double m_widthPct = 100.0;
@@ -53,9 +58,19 @@ private:
     double m_reflectionOpacity = 0.04;
     // end settings
 
-    struct Peak { int currentY = 0; int timeLeftStill = 0; int currentSpeedDrop = 0;Peak(const int y = 0) : currentY(y) {} };
+    struct Peak {
+        int currentY = 0;
+        int timeLeftStill = 0;
+        int currentSpeedDrop = 0;
+
+        Peak(const int y = 0) : currentY(y) {
+        }
+    };
+
     std::vector<Peak> m_peaks;
+
     void ensurePeakSlots(size_t n);
+
     int canvasWidth = 320, canvasHeight = 256;
     int m_maxHeightOverride = -1;
     int m_numChannels;

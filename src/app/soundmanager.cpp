@@ -3,8 +3,7 @@
 #include "plugins.h"
 #include "soundmanager.h"
 
-void SoundManager::Init(int outputDeviceProvided, const QString &outputFilenameProvided)
-{
+void SoundManager::Init(int outputDeviceProvided, const QString &outputFilenameProvided) {
     result = FMOD_System_Create(&system, FMOD_VERSION);
     checkFmodError(result);
 
@@ -15,8 +14,7 @@ void SoundManager::Init(int outputDeviceProvided, const QString &outputFilenameP
     result = FMOD_System_GetVersion(system, &version, nullptr);
     checkFmodError(result);
 
-    if (version < FMOD_VERSION)
-    {
+    if (version < FMOD_VERSION) {
         printf("Error!  You are using an old version of FMOD %08x.  This program requires %08x\n", version,
                FMOD_VERSION);
     }
@@ -29,18 +27,14 @@ void SoundManager::Init(int outputDeviceProvided, const QString &outputFilenameP
     result = FMOD_System_SetOutput(system, outputType);
     checkFmodError(result);
 
-    if (outputType != FMOD_OUTPUTTYPE_WAVWRITER)
-    {
+    if (outputType != FMOD_OUTPUTTYPE_WAVWRITER) {
         printf("FMOD_System_Init: %i\n", currentDevice);
         result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, nullptr);
         checkFmodError(result);
-    }
-    else
-    {
+    } else {
         QString outputPath = outputFilenameProvided;
 
-        if (const QDir pathDir(userPath + "/recordings"); !pathDir.exists())
-        {
+        if (const QDir pathDir(userPath + "/recordings"); !pathDir.exists()) {
             QDir().mkdir(userPath + "/recordings");
         }
 
@@ -116,192 +110,156 @@ void SoundManager::loadPluginChain() {
      * FMOD_SOUND_TYPE_USER         2600
      */
 
-    if (PLUGIN_libsidplayfp_LIB != "")
-    {
+    if (PLUGIN_libsidplayfp_LIB != "") {
         loadPlugin(PLUGIN_libsidplayfp_LIB, 0);
     }
 
-    if (PLUGIN_libopenmpt_LIB != "")
-    {
+    if (PLUGIN_libopenmpt_LIB != "") {
         loadPlugin(PLUGIN_libopenmpt_LIB, 0);
     }
 
-    if (PLUGIN_highly_experimental_LIB != "")
-    {
+    if (PLUGIN_highly_experimental_LIB != "") {
         loadPlugin(PLUGIN_highly_experimental_LIB, 1);
     }
 
-    if (PLUGIN_highly_theoretical_LIB != "")
-    {
+    if (PLUGIN_highly_theoretical_LIB != "") {
         loadPlugin(PLUGIN_highly_theoretical_LIB, 1);
     }
 
-    if (PLUGIN_lazyusf2_LIB != "")
-    {
+    if (PLUGIN_lazyusf2_LIB != "") {
         loadPlugin(PLUGIN_lazyusf2_LIB, 1);
     }
 
-    if (PLUGIN_highly_quixotic_LIB != "")
-    {
+    if (PLUGIN_highly_quixotic_LIB != "") {
         loadPlugin(PLUGIN_highly_quixotic_LIB, 1);
     }
 
-    if (PLUGIN_vio2sf_LIB != "")
-    {
+    if (PLUGIN_vio2sf_LIB != "") {
         loadPlugin(PLUGIN_vio2sf_LIB, 1);
     }
 
-    if (PLUGIN_protrekkr_LIB != "")
-    {
+    if (PLUGIN_protrekkr_LIB != "") {
         loadPlugin(PLUGIN_protrekkr_LIB, 1);
     }
 
-    if (PLUGIN_hivelytracker_LIB != "")
-    {
+    if (PLUGIN_hivelytracker_LIB != "") {
         loadPlugin(PLUGIN_hivelytracker_LIB, 1);
     }
 
-    if (PLUGIN_libstsound_LIB != "")
-    {
+    if (PLUGIN_libstsound_LIB != "") {
         loadPlugin(PLUGIN_libstsound_LIB, 1);
     }
 
-    if (PLUGIN_flod_LIB != "")
-    {
+    if (PLUGIN_flod_LIB != "") {
         loadPlugin(PLUGIN_flod_LIB, 1);
     }
 
-    if (PLUGIN_sndh_player_LIB != "")
-    {
+    if (PLUGIN_sndh_player_LIB != "") {
         loadPlugin(PLUGIN_sndh_player_LIB, 1);
     }
 
-    if (PLUGIN_furnace_LIB != "")
-    {
+    if (PLUGIN_furnace_LIB != "") {
         loadPlugin(PLUGIN_furnace_LIB, 1);
     }
 
-    if (PLUGIN_uade_LIB != "")
-    {
+    if (PLUGIN_uade_LIB != "") {
         loadPlugin(PLUGIN_uade_LIB, 1);
     }
 
     //loadPlugin("plugin_quartet.dll",1);
 
-    if (PLUGIN_adplug_LIB != "")
-    {
+    if (PLUGIN_adplug_LIB != "") {
         loadPlugin(PLUGIN_adplug_LIB, 599);
     }
 
-    if (PLUGIN_vgmstream_LIB != "")
-    {
+    if (PLUGIN_vgmstream_LIB != "") {
         loadPlugin(PLUGIN_vgmstream_LIB, 599);
     }
 
-    if (PLUGIN_klystron_LIB != "")
-    {
+    if (PLUGIN_klystron_LIB != "") {
         loadPlugin(PLUGIN_klystron_LIB, 1701);
     }
 
-    if (PLUGIN_asap_LIB != "")
-    {
+    if (PLUGIN_asap_LIB != "") {
         loadPlugin(PLUGIN_asap_LIB, 1701);
     }
 
-    if (PLUGIN_libkss_LIB != "")
-    {
+    if (PLUGIN_libkss_LIB != "") {
         loadPlugin(PLUGIN_libkss_LIB, 1701);
     }
 
-    if (PLUGIN_organya_decoder_LIB != "")
-    {
+    if (PLUGIN_organya_decoder_LIB != "") {
         loadPlugin(PLUGIN_organya_decoder_LIB, 1701);
     }
 
-    if (PLUGIN_sunvox_lib_LIB != "")
-    {
+    if (PLUGIN_sunvox_lib_LIB != "") {
         loadPlugin(PLUGIN_sunvox_lib_LIB, 1701);
     }
 
-    if (PLUGIN_sc68_LIB != "")
-    {
+    if (PLUGIN_sc68_LIB != "") {
         loadPlugin(PLUGIN_sc68_LIB, 1701);
     }
 
-    if (PLUGIN_kdm_LIB != "")
-    {
+    if (PLUGIN_kdm_LIB != "") {
         loadPlugin(PLUGIN_kdm_LIB, 1701);
     }
 
-    if (PLUGIN_libpac_LIB != "")
-    {
+    if (PLUGIN_libpac_LIB != "") {
         loadPlugin(PLUGIN_libpac_LIB, 1701);
     }
 
-    if (PLUGIN_libxmp_LIB != "")
-    {
+    if (PLUGIN_libxmp_LIB != "") {
         loadPlugin(PLUGIN_libxmp_LIB, 1701);
     }
 
-    if (PLUGIN_mdxmini_LIB != "")
-    {
+    if (PLUGIN_mdxmini_LIB != "") {
         loadPlugin(PLUGIN_mdxmini_LIB, 1701);
     }
 
-    if (PLUGIN_libvgm_LIB != "")
-    {
+    if (PLUGIN_libvgm_LIB != "") {
         loadPlugin(PLUGIN_libvgm_LIB, 1701);
     }
 
-    if (PLUGIN_game_music_emu_LIB != "")
-    {
+    if (PLUGIN_game_music_emu_LIB != "") {
         loadPlugin(PLUGIN_game_music_emu_LIB, 1701);
     }
 
-    if (PLUGIN_audiodecoder_wsr_LIB != "")
-    {
+    if (PLUGIN_audiodecoder_wsr_LIB != "") {
         loadPlugin(PLUGIN_audiodecoder_wsr_LIB, 1701);
     }
 
-    if (PLUGIN_v2m_player_LIB != "")
-    {
+    if (PLUGIN_v2m_player_LIB != "") {
         loadPlugin(PLUGIN_v2m_player_LIB, 1701);
     }
 
-    if (PLUGIN_jaytrax_LIB != "")
-    {
+    if (PLUGIN_jaytrax_LIB != "") {
         loadPlugin(PLUGIN_jaytrax_LIB, 1701);
     }
 
-    if (PLUGIN_audiofile_LIB != "")
-    {
+    if (PLUGIN_audiofile_LIB != "") {
         loadPlugin(PLUGIN_audiofile_LIB, 1701);
     }
 
-    if (PLUGIN_zxtune_LIB != "")
-    {
+    if (PLUGIN_zxtune_LIB != "") {
         loadPlugin(PLUGIN_zxtune_LIB, 1701);
     }
 }
 
-int SoundManager::getSoundData(const unsigned int channelProvided)
-{
-    FMOD_DSP_PARAMETER_FFT* fft = nullptr;
+int SoundManager::getSoundData(const unsigned int channelProvided) {
+    FMOD_DSP_PARAMETER_FFT *fft = nullptr;
 
-    result = FMOD_DSP_GetParameterData(dspFft, FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fft, nullptr, nullptr, 0);
+    result = FMOD_DSP_GetParameterData(dspFft, FMOD_DSP_FFT_SPECTRUMDATA, (void **) &fft, nullptr, nullptr, 0);
 
     float val = 0;
     //for (int channelProvided = 0; channelProvided < fft->numchannels; channelProvided++)
     //{
-        for (int bin = 0; bin < fft->length / 2; bin++)
-        {
-            val += fft->spectrum[channelProvided][bin];
-        }
+    for (int bin = 0; bin < fft->length / 2; bin++) {
+        val += fft->spectrum[channelProvided][bin];
+    }
     //}
     // clipping is probably over 5 (guessing?)
     // so clamp values over 5 to 5
-    if (val > 5)
-    {
+    if (val > 5) {
         val = 5;
     }
 
@@ -350,106 +308,59 @@ int SoundManager::getSoundData(const unsigned int channelProvided)
     //ERRCHECK(result);
 }
 
-void SoundManager::setReverbEnabled(const bool enabled)
-{
+void SoundManager::setReverbEnabled(const bool enabled) {
     result = FMOD_System_SetReverbProperties(system, 0, enabled ? &currentReverbPreset : nullptr);
     checkFmodError(result);
 }
 
-void SoundManager::setReverbPreset(const QString& preset)
-{
+void SoundManager::setReverbPreset(const QString &preset) {
     FMOD_REVERB_PROPERTIES prop;
 
-    if (preset == "Generic")
-    {
+    if (preset == "Generic") {
         prop = FMOD_PRESET_GENERIC;
-    }
-    else if (preset == "Padded cell")
-    {
+    } else if (preset == "Padded cell") {
         prop = FMOD_PRESET_PADDEDCELL;
-    }
-    else if (preset == "Room")
-    {
+    } else if (preset == "Room") {
         prop = FMOD_PRESET_ROOM;
-    }
-    else if (preset == "Bathroom")
-    {
+    } else if (preset == "Bathroom") {
         prop = FMOD_PRESET_BATHROOM;
-    }
-    else if (preset == "Living room")
-    {
+    } else if (preset == "Living room") {
         prop = FMOD_PRESET_LIVINGROOM;
-    }
-    else if (preset == "Stone room")
-    {
+    } else if (preset == "Stone room") {
         prop = FMOD_PRESET_STONEROOM;
-    }
-    else if (preset == "Auditorium")
-    {
+    } else if (preset == "Auditorium") {
         prop = FMOD_PRESET_AUDITORIUM;
-    }
-    else if (preset == "Concert hall")
-    {
+    } else if (preset == "Concert hall") {
         prop = FMOD_PRESET_CONCERTHALL;
-    }
-    else if (preset == "Cave")
-    {
+    } else if (preset == "Cave") {
         prop = FMOD_PRESET_CAVE;
-    }
-    else if (preset == "Arena")
-    {
+    } else if (preset == "Arena") {
         prop = FMOD_PRESET_ARENA;
-    }
-    else if (preset == "Hangar")
-    {
+    } else if (preset == "Hangar") {
         prop = FMOD_PRESET_HANGAR;
-    }
-    else if (preset == "Carpeted hallway")
-    {
+    } else if (preset == "Carpeted hallway") {
         prop = FMOD_PRESET_CARPETTEDHALLWAY;
-    }
-    else if (preset == "Hallway")
-    {
+    } else if (preset == "Hallway") {
         prop = FMOD_PRESET_HALLWAY;
-    }
-    else if (preset == "Stone corridor")
-    {
+    } else if (preset == "Stone corridor") {
         prop = FMOD_PRESET_STONECORRIDOR;
-    }
-    else if (preset == "Alley")
-    {
+    } else if (preset == "Alley") {
         prop = FMOD_PRESET_ALLEY;
-    }
-    else if (preset == "Forest")
-    {
+    } else if (preset == "Forest") {
         prop = FMOD_PRESET_FOREST;
-    }
-    else if (preset == "City")
-    {
+    } else if (preset == "City") {
         prop = FMOD_PRESET_CITY;
-    }
-    else if (preset == "Mountains")
-    {
+    } else if (preset == "Mountains") {
         prop = FMOD_PRESET_MOUNTAINS;
-    }
-    else if (preset == "Quarry")
-    {
+    } else if (preset == "Quarry") {
         prop = FMOD_PRESET_QUARRY;
-    }
-    else if (preset == "Plain")
-    {
+    } else if (preset == "Plain") {
         prop = FMOD_PRESET_PLAIN;
-    }
-    else if (preset == "Parking lot")
-    {
+    } else if (preset == "Parking lot") {
         prop = FMOD_PRESET_PARKINGLOT;
-    }
-    else if (preset == "Sewer pipe")
-    {
+    } else if (preset == "Sewer pipe") {
         prop = FMOD_PRESET_SEWERPIPE;
-    }
-    else if (preset == "Underwater")
-    {
+    } else if (preset == "Underwater") {
         prop = FMOD_PRESET_UNDERWATER;
     }
 
@@ -480,7 +391,7 @@ void SoundManager::setNormalizeEnabled(const bool enabled) const {
     }
 }
 
-FMOD_RESULT SoundManager::getTag(const char* name, const int index, FMOD_TAG* tag) const {
+FMOD_RESULT SoundManager::getTag(const char *name, const int index, FMOD_TAG *tag) const {
     return FMOD_Sound_GetTag(sound, name, index, tag);
 }
 
@@ -490,15 +401,13 @@ int SoundManager::getNumTags() const {
     return numTags;
 }
 
-void SoundManager::loadPlugin(const string_view &filename, const int priority)
-{
+void SoundManager::loadPlugin(const string_view &filename, const int priority) {
     string pluginsDir = QString(libPath + PLUGINS_DIR + "/").toStdString();
-    const char* pluginPath = (pluginsDir += filename).c_str();
+    const char *pluginPath = (pluginsDir += filename).c_str();
 
     result = FMOD_System_LoadPlugin(system, pluginPath, nullptr, priority);
 
-    if (result != FMOD_OK)
-    {
+    if (result != FMOD_OK) {
         //DebugWindow::instance()->addText(QString(filename.c_str()));
     }
 
@@ -507,22 +416,18 @@ void SoundManager::loadPlugin(const string_view &filename, const int priority)
     //DebugWindow::instance()->addText("GetNumPlugins " + QString::number(numplugins));
 }
 
-void SoundManager::checkFmodError(const FMOD_RESULT result)
-{
+void SoundManager::checkFmodError(const FMOD_RESULT result) {
     checkFmodError(result, "");
 }
 
 void SoundManager::checkFmodError(const FMOD_RESULT result, const QString &msg) {
-    if (result != FMOD_OK)
-    {
+    if (result != FMOD_OK) {
         printf("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
 
-        if (msg == "")
-        {
+        if (msg == "") {
             printf("\n");
         }
-        if (msg != "")
-        {
+        if (msg != "") {
             printf(" - %s\n", msg.toStdString().c_str());
         }
 
@@ -594,8 +499,7 @@ bool SoundManager::isPaused() const {
     return pause;
 }
 
-void SoundManager::playAudio(const bool startPaused)
-{
+void SoundManager::playAudio(const bool startPaused) {
     mutedChannelsMask = 0;
     mutedChannelsMaskString = "";
     FMOD_System_PlaySound(system, sound, channelGroup, startPaused, &channel);
@@ -612,8 +516,7 @@ void SoundManager::shutdown() const {
     FMOD_System_Release(system);
 }
 
-void SoundManager::muteChannels(const unsigned int mask, const QString &maskStr)
-{
+void SoundManager::muteChannels(const unsigned int mask, const QString &maskStr) {
     info->mutedChannelsMask = maskStr.toStdString();
 
     FMOD_Channel_SetPosition(channel, mask, FMOD_TIMEUNIT_MUTE_VOICE);
@@ -625,16 +528,14 @@ void SoundManager::muteChannels(const unsigned int mask, const QString &maskStr)
 bool SoundManager::isChannelMuted(const unsigned int channelProvided) const {
     bool muted = false;
 
-    if (mutedChannelsMaskString != nullptr && mutedChannelsMaskString.at(channelProvided) == '0')
-    {
+    if (mutedChannelsMaskString != nullptr && mutedChannelsMaskString.at(channelProvided) == '0') {
         muted = true;
     }
 
     return muted;
 }
 
-bool SoundManager::loadSound(const QString &filename, Info* infoProvided)
-{
+bool SoundManager::loadSound(const QString &filename, Info *infoProvided) {
     stop();
     release();
 

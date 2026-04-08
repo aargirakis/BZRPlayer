@@ -1,9 +1,8 @@
 #include "OctaMED44ChanPatternView.h"
 #include "visualizers/tracker.h"
 
-OctaMED44ChanPatternView::OctaMED44ChanPatternView(Tracker* parent, const unsigned int channels)
-    : MEDPatternView(parent, channels)
-{
+OctaMED44ChanPatternView::OctaMED44ChanPatternView(Tracker *parent, const unsigned int channels)
+    : MEDPatternView(parent, channels) {
     effectPad = true;
     m_emptyEffect = "00";
     m_SeparatorChannel = "";
@@ -23,8 +22,7 @@ OctaMED44ChanPatternView::OctaMED44ChanPatternView(Tracker* parent, const unsign
     m_renderVuMeter = true;
 }
 
-void OctaMED44ChanPatternView::paintAbove(QPainter* painter, int height, int currentRow)
-{
+void OctaMED44ChanPatternView::paintAbove(QPainter *painter, int height, int currentRow) {
     QColor colorPink(255, 170, 173);
     QColor colorRed(255, 0, 0);
 
@@ -33,8 +31,7 @@ void OctaMED44ChanPatternView::paintAbove(QPainter* painter, int height, int cur
 
     // vu-meter bottom and channel numbers
 
-    for (unsigned int i = 0; i < m_channels; i++)
-    {
+    for (unsigned int i = 0; i < m_channels; i++) {
         painter->fillRect(152 + 144 * i, height - 22, 4, 2, QColor(170, 170, 170));
         painter->fillRect(156 + 144 * i, height - 22, 16, 2, QColor(0, 136, 0));
         painter->fillRect(172 + 144 * i, height - 22, 4, 2, QColor(187, 187, 187));
@@ -44,8 +41,7 @@ void OctaMED44ChanPatternView::paintAbove(QPainter* painter, int height, int cur
     drawText("4", painter, 56, 60, bitmapFont());
 
     // channel separators
-    for (unsigned int chan = 0; chan < m_channels - 1; chan++)
-    {
+    for (unsigned int chan = 0; chan < m_channels - 1; chan++) {
         painter->fillRect(207 + chan * 144, 28, 2, height - 28, colorPink);
         painter->fillRect(207 + chan * 144, height / 2 - 17, 2, 18, colorRed);
     }
@@ -82,16 +78,14 @@ void OctaMED44ChanPatternView::paintAbove(QPainter* painter, int height, int cur
     painter->setPen(colorHilite);
 
     const auto t = this->parent();
-    drawText(QString(t->info->title.c_str()).left(25), painter, 406, height - 2,bitmapFont());
+    drawText(QString(t->info->title.c_str()).left(25), painter, 406, height - 2, bitmapFont());
 }
 
-void OctaMED44ChanPatternView::paintBelow(QPainter* painter, const int height, int currentRow)
-{
+void OctaMED44ChanPatternView::paintBelow(QPainter *painter, const int height, int currentRow) {
     painter->fillRect(0, height / 2 - 17, 640, 18, m_colorCurrentRowBackground);
 }
 
-QString OctaMED44ChanPatternView::effect(BaseRow* row)
-{
+QString OctaMED44ChanPatternView::effect(BaseRow *row) {
     if (row->effect < 9 || row->effect == 0xC || row->effect == 0xB) return AbstractPatternView::effect(row);
 
     if (row->effect == 0x9) return "19";
@@ -121,12 +115,10 @@ QString OctaMED44ChanPatternView::effect(BaseRow* row)
     return "#" + AbstractPatternView::effect(row) + "#";
 }
 
-QString OctaMED44ChanPatternView::parameter(BaseRow* row)
-{
+QString OctaMED44ChanPatternView::parameter(BaseRow *row) {
     int parameter = row->param;
 
-    if (row->effect == 0xE)
-    {
+    if (row->effect == 0xE) {
         parameter = parameter & 0x0f;
 
         if (parameter == 0) return m_emptyParameter;
@@ -141,6 +133,5 @@ QString OctaMED44ChanPatternView::parameter(BaseRow* row)
     return AbstractPatternView::parameter(row);
 }
 
-OctaMED44ChanPatternView::~OctaMED44ChanPatternView()
-{
+OctaMED44ChanPatternView::~OctaMED44ChanPatternView() {
 }

@@ -1,18 +1,15 @@
 #include "about.h"
 #include "ui_about.h"
 
-about::about(QWidget* parent) :
-    QDialog(parent),
-    ui(new Ui::about)
-{
+about::about(QWidget *parent) : QDialog(parent),
+                                ui(new Ui::about) {
     setWindowFlags(windowFlags().setFlag(Qt::WindowContextHelpButtonHint, false));
     ui->setupUi(this);
-    mainWindow = static_cast<MainWindow*>(this->parent());
+    mainWindow = static_cast<MainWindow *>(this->parent());
     setVersion(mainWindow->getVersion());
 }
 
-about::~about()
-{
+about::~about() {
     delete ui;
 }
 
@@ -20,7 +17,6 @@ void about::setVersion(const QString &version) const {
     ui->labelVersion->setText(version);
 }
 
-void about::on_pushButton_clicked()
-{
+void about::on_pushButton_clicked() {
     close();
 }

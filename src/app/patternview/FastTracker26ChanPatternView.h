@@ -3,13 +3,15 @@
 
 #include "FastTracker2PatternView.h"
 
-class FastTracker26ChanPatternView : public FastTracker2PatternView
-{
+class FastTracker26ChanPatternView : public FastTracker2PatternView {
 public:
-    FastTracker26ChanPatternView(Tracker* parent, unsigned int channels);
+    FastTracker26ChanPatternView(Tracker *parent, unsigned int channels);
+
     ~FastTracker26ChanPatternView();
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
+
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
 };
 
 #endif // FASTTRACKER26CHANPATTERNVIEW_H

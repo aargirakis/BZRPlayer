@@ -1,7 +1,6 @@
 #include "playlistitem.h"
 
-PlaylistItem::PlaylistItem(Info* i, const QString &fullpath, const int subsong)
-{
+PlaylistItem::PlaylistItem(Info *i, const QString &fullpath, const int subsong) {
     info = i;
     this->fullPath = fullpath;
     this->subsong = subsong;
@@ -9,8 +8,7 @@ PlaylistItem::PlaylistItem(Info* i, const QString &fullpath, const int subsong)
     this->startSubsongPlayList = -1;
 }
 
-PlaylistItem::PlaylistItem()
-{
+PlaylistItem::PlaylistItem() {
     this->length = -1;
     this->startSubsongPlayList = -1;
 }

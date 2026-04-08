@@ -3,17 +3,23 @@
 
 #include "AbstractPatternView.h"
 
-class ImpulseTrackerPatternView : public AbstractPatternView
-{
+class ImpulseTrackerPatternView : public AbstractPatternView {
 public:
-    ImpulseTrackerPatternView(Tracker* parent, unsigned int channels);
+    ImpulseTrackerPatternView(Tracker *parent, unsigned int channels);
+
     ~ImpulseTrackerPatternView();
-    void paintAbove(QPainter* painter, int height, int currentRow);
-    void paintBelow(QPainter* painter, int height, int currentRow);
-    QString effect(BaseRow* row);
-    QString note(BaseRow* row);
+
+    void paintAbove(QPainter *painter, int height, int currentRow);
+
+    void paintBelow(QPainter *painter, int height, int currentRow);
+
+    QString effect(BaseRow *row);
+
+    QString note(BaseRow *row);
+
     QString rowNumber(int rowNumber);
-    QString volume(BaseRow* row);
+
+    QString volume(BaseRow *row);
 };
 
 #endif // IMPULSETRACKERPATTERNVIEW_H
