@@ -48,6 +48,7 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->sliderRotatingObjectFocalLength->installEventFilter(this);
     ui->sliderRotatingObjectModelSize->installEventFilter(this);
     ui->sliderRotatingObjectOrbitSize->installEventFilter(this);
+    ui->sliderRotatingObjectOrbitSpeed->installEventFilter(this);
 
     ui->comboBoxAdPlugEmulator->installEventFilter(this);
     ui->comboBoxAdPlugEmulator->addItem("Tatsuyuki Satoh", "0");
