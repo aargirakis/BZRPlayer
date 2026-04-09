@@ -2526,10 +2526,20 @@ void MainWindow::exportInstrument(const QString &format) {
     const unsigned int loopStart = info->samplesLoopStart[row];
     const unsigned int loopLength = info->samplesLoopEnd[row] - info->samplesLoopStart[row];
 
-    if (format == "WAV") {
-        const QString fileName = QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFileName,
-                                                              "Wave (*.wav)");
+    QString filter;
 
+    if (format == "WAV") {
+        filter = "Wave (*.wav)";
+    } else if (format == "IFF") {
+        filter = "IFF (*.iff)";
+    } else return;
+
+    const QString fileName = QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFileName,
+                                                          filter);
+
+    if (fileName.isEmpty()) return;
+
+    if (format == "WAV") {
         addDebugText(
             "Saving sample to WAV, no. " + QString::number(row) + ", filesize: " + QString::number(
                 info->samplesSize[row]));
