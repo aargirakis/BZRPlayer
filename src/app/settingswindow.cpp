@@ -256,11 +256,16 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     // don't understand why it's not triggered, hence the following row
     on_checkBoxRotatingObjectEnabled_toggled(mainWindow->getEffect()->getRotatingObjectEnabled());
 
-    ui->checkBoxScrollerEnabled->setChecked(mainWindow->getEffect()->getScrollerEnabled());
     ui->textEditScrollerCustomText->setText(mainWindow->getEffect()->getCustomScrolltext());
     ui->checkBoxScrollerCustomTextEnabled->setChecked(mainWindow->getEffect()->getCustomScrolltextEnabled());
+    ui->checkBoxScrollerEnabled->setChecked(mainWindow->getEffect()->getScrollerEnabled());
+
+    on_checkBoxScrollerEnabled_toggled(mainWindow->getEffect()->getScrollerEnabled());
+
     ui->checkBoxPrinterEnabled->setChecked(mainWindow->getEffect()->getPrinterEnabled());
     ui->checkBoxVuMeterEnabled->setChecked(mainWindow->getEffect()->isVuMeterEnabled());
+    on_checkBoxVuMeterEnabled_toggled(mainWindow->getEffect()->isVuMeterEnabled());
+
     ui->checkBoxScrollerSinusFontScaling->setChecked(mainWindow->getEffect()->getSinusFontScalingEnabled());
     ui->comboBoxStarfieldDirection->installEventFilter(this);
     ui->comboBoxStarfieldDirection->addItem("Left", "left");
@@ -2085,6 +2090,7 @@ void settingsWindow::on_buttonVuMeterPeakColor_clicked() {
 }
 
 void settingsWindow::on_checkBoxVuMeterPeaks_toggled(const bool isChecked) const {
+    mainWindow->getEffect()->setVuMeterPeaksEnabled(isChecked);
     ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 
     mainWindow->setVuMeterPeaksEnabled(isChecked);
@@ -2338,22 +2344,12 @@ void settingsWindow::on_checkBoxVuMeterEnabled_toggled(const bool isChecked) con
         ui->labelVuMeterWidthValue->setEnabled(true);
         ui->labelVuMeterOpacityValue->setEnabled(true);
         ui->checkBoxVuMeterPeaks->setEnabled(true);
-
-        if (ui->checkBoxVuMeterPeaks->checkState() == Qt::Checked) {
-            ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-on"]);
-            ui->labelVuMeterPeakColor->setEnabled(true);
-            ui->labelVuMeterPeakHeight->setEnabled(true);
-            ui->buttonVuMeterPeakColor->setEnabled(true);
-            ui->sliderVuMeterPeakHeight->setEnabled(true);
-            ui->labelVuMeterPeakHeightValue->setEnabled(true);
-        } else {
-            ui->checkBoxVuMeterPeaks->setIcon(mainWindow->icons["checkbox-off"]);
-            ui->labelVuMeterPeakColor->setEnabled(false);
-            ui->labelVuMeterPeakHeight->setEnabled(false);
-            ui->buttonVuMeterPeakColor->setEnabled(false);
-            ui->sliderVuMeterPeakHeight->setEnabled(false);
-            ui->labelVuMeterPeakHeightValue->setEnabled(false);
-        }
+        ui->labelVuMeterPeakColor->setEnabled(true);
+        ui->labelVuMeterPeakHeight->setEnabled(true);
+        ui->checkBoxVuMeterPeaks->setEnabled(true);
+        ui->buttonVuMeterPeakColor->setEnabled(true);
+        ui->sliderVuMeterPeakHeight->setEnabled(true);
+        ui->labelVuMeterPeakHeightValue->setEnabled(true);
     } else {
         ui->checkBoxVuMeterEnabled->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelVuMeterBottomColor->setEnabled(false);
@@ -2362,15 +2358,12 @@ void settingsWindow::on_checkBoxVuMeterEnabled_toggled(const bool isChecked) con
         ui->buttonVuMeterTopColor->setEnabled(false);
         ui->buttonVuMeterMiddleColor->setEnabled(false);
         ui->buttonVuMeterBottomColor->setEnabled(false);
-        ui->sliderVuMeterPeakHeight->setEnabled(false);
-        ui->labelVuMeterPeakHeightValue->setEnabled(false);
         ui->labelVuMeterWidth->setEnabled(false);
         ui->labelVuMeterOpacity->setEnabled(false);
         ui->sliderVuMeterWidth->setEnabled(false);
         ui->sliderVuMeterOpacity->setEnabled(false);
         ui->labelVuMeterWidthValue->setEnabled(false);
         ui->labelVuMeterOpacityValue->setEnabled(false);
-
         ui->checkBoxVuMeterPeaks->setEnabled(false);
         ui->labelVuMeterPeakColor->setEnabled(false);
         ui->labelVuMeterPeakHeight->setEnabled(false);
@@ -2409,7 +2402,12 @@ void settingsWindow::on_checkBoxScrollerEnabled_toggled(const bool isChecked) co
         ui->labelScrollerFontYScaleValue->setEnabled(true);
         ui->checkBoxScrollerSinusFontScaling->setEnabled(true);
         ui->checkBoxScrollerCustomTextEnabled->setEnabled(true);
-        ui->textEditScrollerCustomText->setEnabled(true);
+
+        if (ui->checkBoxScrollerCustomTextEnabled->isChecked())
+            ui->textEditScrollerCustomText->setEnabled(true);
+        else {
+            ui->textEditScrollerCustomText->setEnabled(false);
+        }
     } else {
         ui->checkBoxScrollerEnabled->setIcon(mainWindow->icons["checkbox-off"]);
         ui->labelScrollerAmplitude->setEnabled(false);
@@ -2435,7 +2433,7 @@ void settingsWindow::on_checkBoxScrollerEnabled_toggled(const bool isChecked) co
         ui->labelScrollerFontYScaleValue->setEnabled(false);
         ui->checkBoxScrollerSinusFontScaling->setEnabled(false);
         ui->checkBoxScrollerCustomTextEnabled->setEnabled(false);
-        ui->textEditScrollerCustomText->setEnabled(true);
+        ui->textEditScrollerCustomText->setEnabled(false);
     }
 }
 
@@ -2727,13 +2725,12 @@ void settingsWindow::on_checkBoxRasterBarsEnabled_toggled(const bool isChecked) 
 }
 
 void settingsWindow::on_checkBoxScrollerCustomTextEnabled_toggled(const bool isChecked) const {
+    mainWindow->getEffect()->setCustomScrolltextEnabled(isChecked);
     ui->checkBoxScrollerCustomTextEnabled->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 
-    mainWindow->getEffect()->setCustomScrolltextEnabled(isChecked);
+    ui->textEditScrollerCustomText->setEnabled(isChecked);
 
     updateScrollText();
-
-    ui->textEditScrollerCustomText->setEnabled(isChecked);
 }
 
 void settingsWindow::updateScrollText() const {
@@ -2769,8 +2766,6 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxRotatingObjectEnabled->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxRotatingObjectWireframeEnabled->setIcon(
         mainWindow->icons[ui->checkBoxRotatingObjectWireframeEnabled->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxRotatingObjectOrbit->setIcon(
-        mainWindow->icons[ui->checkBoxRotatingObjectOrbit->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxRotatingObjectOrbit->setIcon(
         mainWindow->icons[ui->checkBoxRotatingObjectOrbit->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxPrinterEnabled->setIcon(
