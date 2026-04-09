@@ -4174,9 +4174,10 @@ void MainWindow::on_volumeSlider_valueChanged(const int value) {
     const auto &sm = SoundManager::getInstance();
 
     sm.setVolume(static_cast<float>(vol) / 100);
-    ui->checkBoxVolumeOn->setCheckState(Qt::Checked);
     sm.setMute(false);
     isVolumeMuted = false;
+    ui->checkBoxVolumeOn->setCheckState(Qt::Checked);
+    ui->checkBoxVolumeOn->setIcon(icons["speaker-on"]);
 }
 
 void MainWindow::on_playlist_doubleClicked(const QModelIndex &index) const {
