@@ -137,8 +137,7 @@ void AHXPatternView::paintTop(QPainter *painter, Info *info, unsigned int m_curr
     drawText(QString("%1").arg(info->modPatternRows, 3, 10, QChar('0')), painter, left + 176, top + 11, infoFont());
     drawText(QString("%1").arg(info->numSubsongs, 3, 10, QChar('0')), painter, left + 219, top + 11, infoFont());
 
-    // TODO
-    drawText("#blablbla", painter, left + 33, top + 24, infoFont());
+    drawText(info->title.c_str(), painter, left + 33, top + 24, infoFont());
 }
 
 void AHXPatternView::paintBelow(QPainter *painter, int height, int currentRow) {
