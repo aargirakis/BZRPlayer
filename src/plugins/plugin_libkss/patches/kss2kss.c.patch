@@ -1,0 +1,14 @@
+--- src/kss/kss2kss.c	2024-08-27 18:21:33.000000000 +0200
++++ src/kss/kss2kss.c	2026-05-04 08:26:06.798566935 +0200
+@@ -9,7 +9,10 @@
+   if (!kss)
+     return;
+ 
+-  kss->type = KSS_check_type(data, size, NULL);
++  KSS_TYPE_INFO type_info = KSS_check_type(data, size, NULL);
++  kss->type = type_info.type;
++  data = &data[type_info.offset];
++  size = size - type_info.offset;
+ 
+   switch (kss->type) {
+   case MGSDATA:

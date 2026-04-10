@@ -1,5 +1,5 @@
 --- src/kss/opx2kss.c	2024-08-27 18:21:33.000000000 +0200
-+++ src/kss/opx2kss.c	2025-08-11 13:42:17.959733378 +0200
++++ src/kss/opx2kss.c	2026-05-04 07:35:37.233900013 +0200
 @@ -5,7 +5,7 @@
  
  static uint8_t OPXDRV[16384] = {
@@ -9,3 +9,53 @@
  #endif
  };
  static uint32_t opxdrv_size = sizeof(OPXDRV);
+@@ -43,11 +43,33 @@
+     0x63, 0x4A, 0xC1, 0xC1, 0xC1, 0xC1, 0x21, 0x04, 0x00, 0x09, 0x7E, 0x23, 0x66, 0x6F, 0xC5, 0xCD, 0xD5, 0x72,
+ };
+ 
+-int KSS_isOPXdata(uint8_t *data, uint32_t size) {
+-  if ((128 + 32 < size) && /*data[0x7B]==0x0D&&data[0x7C]==0x0A&&*/ data[0x7D] == 0x1A)
+-    return 1;
+-  else
++// improved opx detection by Kaens (see https://github.com/Kaens/audio1sg)
++#define MATCHES_AT(offset, bytes) (memcmp(&(data[offset]), (bytes), sizeof(bytes) -1) == 0)
++#define BASE_OFS 0x7E
++static uint32_t base_ofs;
++
++//helper for many-offsets checks
++static int KSS_isOPXdata_at(uint8_t *data, uint32_t size, uint32_t ofs) {
++  data = &data[ofs];
++  base_ofs = BASE_OFS;
++  if (ofs+size < 128 + 32) return 0;
++  if (MATCHES_AT(0x7A, " \x0D\x0A\x1A")) {
++    if (!MATCHES_AT(0x35, "\x0D\x0A") || !MATCHES_AT(0x6C, "\x0D\x0A")) return 0;
++  } else if (!MATCHES_AT(0x7A, "    ")) return 0;
++  if (data[0] != 4)
++    for (uint8_t i = 0; i < 0x35; i++)
++      if (data[i] < 0x20) return 0;
++  if (data[base_ofs + 1] > 2 || data[base_ofs + 3] > 0x3F || data[base_ofs + 4] > 6 || data[base_ofs + 6] > 5
++      || data[base_ofs + 7] > 0x21 || data[base_ofs + 8] > 1 || data[base_ofs + 9] > 0x4F || data[base_ofs + 10]
++      || data[base_ofs + 12] > 1 || data[base_ofs + 14] > 3 || data[base_ofs + 16] > 3 || data[base_ofs + 18] > 3)
+     return 0;
++  return 1;
++}
++
++int KSS_isOPXdata(uint8_t *data, uint32_t size) { //now returns offset, or -1 if undetected
++  if (KSS_isOPXdata_at(data, size, 0)) return 0;
++  if (KSS_isOPXdata_at(data, size, 0xC00)) return 0xC00;
++  return -1;
+ }
+ 
+ int KSS_set_fmbios(const uint8_t *data, uint32_t size) {
+@@ -109,6 +131,11 @@
+     return;
+   }
+ 
++  if (base_ofs != 0x7E) {
++    strcpy((char *) kss->title, "");
++    return;
++  }
++
+   memcpy(kss->title, data, 53);
+   for (i = 52; i >= 0; i--) {
+     if (kss->title[i] != 0x20)

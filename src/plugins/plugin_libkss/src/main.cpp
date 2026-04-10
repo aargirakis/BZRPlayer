@@ -82,8 +82,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    if (KSS_check_type(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
-                       plugin->info->filePath.c_str()) == KSSDATA) {
+    const auto typeInfo = KSS_check_type(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
+                                         plugin->info->filePath.c_str());
+
+    if (typeInfo.type == KSSDATA) {
         /* TODO:
          *  KSS format support in libkss is better than game-music-emu (which doesn't support FM sound),
          *  however currently subsongs are not handled here, so better to stick with game-music-emu
@@ -92,8 +94,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    if (KSS_check_type(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
-                       plugin->info->filePath.c_str()) == MBMDATA) {
+    if (typeInfo.type == MBMDATA) {
         /* TODO:
          *  seems the KSS_autoload_mbk invocation introduces a beginning audio delay
          *  somewhere in the code not in this function
