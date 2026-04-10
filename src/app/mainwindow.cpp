@@ -2598,6 +2598,11 @@ void MainWindow::exportInstrument(const QString &format) {
         }
 
         FILE *pFile = fopen(filename.toStdString().c_str(), "wb");
+
+        if (pFile == nullptr) {
+            return;
+        }
+
         fwrite(&wavHeader, sizeof(char), sizeof wavHeader, pFile);
 
         for (int i = 0; i < info->samplesSize[row]; i++)
@@ -2612,6 +2617,10 @@ void MainWindow::exportInstrument(const QString &format) {
         fclose(pFile);
     } else if (format == "IFF") {
         FILE *f = fopen(filename.toStdString().c_str(), "wb");
+
+        if (f == nullptr) {
+            return;
+        }
 
         // "FORM" chunk
         iffWriteChunkHeader(f, "FORM", 0); // "FORM" chunk size is overwritten later
