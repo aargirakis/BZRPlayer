@@ -124,10 +124,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->mainPlr->RegisterPlayerEngine(new S98Player);
     plugin->mainPlr->RegisterPlayerEngine(new VGMPlayer);
 
-    plugin->mainPlr->SetFileReqCallback([](void *, PlayerBase *, const char *fileName) {
+    plugin->mainPlr->SetFileReqCallback([](void *, PlayerBase *, const char *filename) {
         DATA_LOADER *loader = nullptr;
 
-        if (strcmp(fileName, "yrw801.rom") == 0) {
+        if (strcmp(filename, "yrw801.rom") == 0) {
             loader = MemoryLoader_Init(yrw801_rom, sizeof(yrw801_rom));
         }
 

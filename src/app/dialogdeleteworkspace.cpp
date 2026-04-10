@@ -30,8 +30,8 @@ void DialogDeleteWorkspace::on_buttonCancel_clicked() {
 }
 
 void DialogDeleteWorkspace::on_buttonDelete_clicked() {
-    if (const QString fileName = ui->comboBoxWorkspace->currentText() + ".ini";
-        QFile::remove(userPath + LAYOUTS_DIR + "/" + fileName)) {
+    if (const QString filename = ui->comboBoxWorkspace->currentText() + ".ini";
+        QFile::remove(userPath + LAYOUTS_DIR + "/" + filename)) {
         const auto mw = static_cast<MainWindow *>(this->parent());
         mw->deleteWorkspace(ui->comboBoxWorkspace->currentText());
         ui->comboBoxWorkspace->removeItem(ui->comboBoxWorkspace->currentIndex());

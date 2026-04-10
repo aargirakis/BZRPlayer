@@ -2529,13 +2529,13 @@ void MainWindow::exportInstrument(const QString &format) {
     }
 
     static auto regex = QRegularExpression(":|;|/|\"");
-    QString defaultFileName = info->samples[row].c_str();
-    defaultFileName.replace(regex, "-");
+    QString defaultFilename = info->samples[row].c_str();
+    defaultFilename.replace(regex, "-");
 
-    const QString fileName = QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFileName,
+    const QString filename = QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFilename,
                                                           filter);
 
-    if (fileName.isEmpty()) return;
+    if (filename.isEmpty()) return;
 
     addDebugText(
         "Saving sample to " + format + ", no. " + QString::number(row) + ", filesize: " + QString::number(
@@ -2597,7 +2597,7 @@ void MainWindow::exportInstrument(const QString &format) {
             samplerChunk.loop.dwEnd = loopStart + loopLength - 1;
         }
 
-        FILE *pFile = fopen(fileName.toStdString().c_str(), "wb");
+        FILE *pFile = fopen(filename.toStdString().c_str(), "wb");
         fwrite(&wavHeader, sizeof(char), sizeof wavHeader, pFile);
 
         for (int i = 0; i < info->samplesSize[row]; i++)
@@ -2611,7 +2611,7 @@ void MainWindow::exportInstrument(const QString &format) {
 
         fclose(pFile);
     } else if (format == "IFF") {
-        FILE *f = fopen(fileName.toStdString().c_str(), "wb");
+        FILE *f = fopen(filename.toStdString().c_str(), "wb");
 
         // "FORM" chunk
         iffWriteChunkHeader(f, "FORM", 0); // "FORM" chunk size is overwritten later
@@ -3019,10 +3019,10 @@ void MainWindow::addFolder() {
 void MainWindow::addFiles() {
     const QString root = lastDir;
 
-    if (QStringList fileNames = QFileDialog::getOpenFileNames(this, "Add files", root, tr("All files (*.*)"));
-        !fileNames.empty()) {
-        addSong(fileNames, 0, selectedPlaylist, true);
-        lastDir = QFileInfo(fileNames.last()).absolutePath();
+    if (QStringList filenames = QFileDialog::getOpenFileNames(this, "Add files", root, tr("All files (*.*)"));
+        !filenames.empty()) {
+        addSong(filenames, 0, selectedPlaylist, true);
+        lastDir = QFileInfo(filenames.last()).absolutePath();
     }
 }
 
@@ -4851,8 +4851,8 @@ void MainWindow::sendSocketMsg() const {
     QByteArray data;
     //    for(int j = 1; j<args.count(); j++)
     //    {
-    //        QString fileName = args.at(j);
-    //        stringList.append(fileName);
+    //        QString filename = args.at(j);
+    //        stringList.append(filename);
     //    }
 
     QDataStream dataStreamWrite(&data, QIODevice::WriteOnly);
@@ -5045,8 +5045,8 @@ void MainWindow::slot_LoadWorkspace(const QString &filename) {
 }
 
 void MainWindow::createNewWorkspace(const QString &filename) {
-    QString fileNameAndExtension = filename + ".ini";
-    QSettings settings(userPath + LAYOUTS_DIR + "/" + fileNameAndExtension, QSettings::IniFormat);
+    QString filenameAndExtension = filename + ".ini";
+    QSettings settings(userPath + LAYOUTS_DIR + "/" + filenameAndExtension, QSettings::IniFormat);
 
     settings.setValue("Internal/dockingState", dockManager->saveState());
 
@@ -5054,8 +5054,8 @@ void MainWindow::createNewWorkspace(const QString &filename) {
 
     ui->menuRestore_Layout->insertAction(workspaceSeparator, action);
 
-    connect(action, &QAction::triggered, this, [&, this, fileNameAndExtension] {
-        slot_LoadWorkspace(fileNameAndExtension);
+    connect(action, &QAction::triggered, this, [&, this, filenameAndExtension] {
+        slot_LoadWorkspace(filenameAndExtension);
     });
 }
 
