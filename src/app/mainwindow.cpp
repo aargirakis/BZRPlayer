@@ -2511,8 +2511,6 @@ void MainWindow::exportInstrumentToIff() {
 }
 
 void MainWindow::exportInstrument(const QString &format) {
-    static auto regex = QRegularExpression(":|;|/|\"");
-
     const auto &info = SoundManager::getInstance().info;
     const int row = ui->samples->currentRow();
 
@@ -2520,30 +2518,33 @@ void MainWindow::exportInstrument(const QString &format) {
         return;
     }
 
-    QString defaultFileName = info->samples[row].c_str();
-    defaultFileName.replace(regex, "-");
-
-    const unsigned int loopStart = info->samplesLoopStart[row];
-    const unsigned int loopLength = info->samplesLoopEnd[row] - info->samplesLoopStart[row];
-
     QString filter;
 
     if (format == "WAV") {
         filter = "Wave (*.wav)";
     } else if (format == "IFF") {
         filter = "IFF (*.iff)";
-    } else return;
+    } else {
+        return;
+    }
+
+    static auto regex = QRegularExpression(":|;|/|\"");
+    QString defaultFileName = info->samples[row].c_str();
+    defaultFileName.replace(regex, "-");
 
     const QString fileName = QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFileName,
                                                           filter);
 
     if (fileName.isEmpty()) return;
 
-    if (format == "WAV") {
-        addDebugText(
-            "Saving sample to WAV, no. " + QString::number(row) + ", filesize: " + QString::number(
-                info->samplesSize[row]));
+    addDebugText(
+        "Saving sample to " + format + ", no. " + QString::number(row) + ", filesize: " + QString::number(
+            info->samplesSize[row]));
 
+    const unsigned int loopStart = info->samplesLoopStart[row];
+    const unsigned int loopLength = info->samplesLoopEnd[row] - info->samplesLoopStart[row];
+
+    if (format == "WAV") {
         typedef struct wavHeader_t {
             uint32_t chunkID, chunkSize, format, subchunk1ID, subchunk1Size;
             uint16_t audioFormat, numChannels;
@@ -2610,13 +2611,6 @@ void MainWindow::exportInstrument(const QString &format) {
 
         fclose(pFile);
     } else if (format == "IFF") {
-        addDebugText(
-            "Saving sample to IFF, no. " + QString::number(row) + ", filesize: " + QString::number(
-                info->samplesSize[row]));
-
-        const QString fileName =
-                QFileDialog::getSaveFileName(this, "Export sample", "/" + defaultFileName, "IFF (*.iff)");
-
         FILE *f = fopen(fileName.toStdString().c_str(), "wb");
 
         // "FORM" chunk
