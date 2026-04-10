@@ -1,0 +1,23 @@
+--- src/kss/kss.h	2024-08-27 18:21:33.000000000 +0200
++++ src/kss/kss.h	2026-05-04 07:45:23.710547343 +0200
+@@ -78,6 +78,11 @@
+ 
+ } KSS;
+ 
++typedef struct {
++  uint8_t type;
++  uint32_t offset;
++} KSS_TYPE_INFO;
++
+ KSS *KSS_new(uint8_t *data, uint32_t size);
+ void KSS_delete(KSS *kss);
+ 
+@@ -85,7 +90,7 @@
+ 
+ enum { KSSDATA, MGSDATA, MBMDATA, MPK106DATA, MPK103DATA, BGMDATA, OPXDATA, FMDATA, KSS_TYPE_UNKNOWN };
+ 
+-int KSS_check_type(uint8_t *data, uint32_t size, const char *filename);
++KSS_TYPE_INFO KSS_check_type(uint8_t *data, uint32_t size, const char *filename);
+ 
+ int KSS_load_mgsdrv(const char *filename);
+ int KSS_set_mgsdrv(const uint8_t *data, uint32_t size);

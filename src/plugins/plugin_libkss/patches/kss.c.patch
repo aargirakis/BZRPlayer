@@ -1,0 +1,76 @@
+--- src/kss/kss.c	2024-08-27 18:21:33.000000000 +0200
++++ src/kss/kss.c	2026-05-04 07:58:31.351609790 +0200
+@@ -39,33 +39,33 @@
+   }
+ }
+ 
+-int KSS_check_type(uint8_t *data, uint32_t size, const char *filename) {
++KSS_TYPE_INFO KSS_check_type(uint8_t *data, uint32_t size, const char *filename) {
+   char *p;
+ 
+   if (size < 0x4)
+-    return KSSDATA;
++    return (KSS_TYPE_INFO){.type = KSSDATA, .offset = 0};
+ 
+   if (KSS_isMGSdata(data, size))
+-    return MGSDATA;
++    return (KSS_TYPE_INFO){.type = MGSDATA, .offset = 0};
+   else if (KSS_isMPK106data(data, size))
+-    return MPK106DATA;
++    return (KSS_TYPE_INFO){.type = MPK106DATA, .offset = 0};
+   else if (KSS_isMPK103data(data, size))
+-    return MPK103DATA;
++    return (KSS_TYPE_INFO){.type = MPK103DATA, .offset = 0};
+   else if (!strncmp("KSCC", (const char *)data, 4))
+-    return KSSDATA;
++    return (KSS_TYPE_INFO){.type = KSSDATA, .offset = 0};
+   else if (!strncmp("KSSX", (const char *)data, 4))
+-    return KSSDATA;
+-  else if (KSS_isOPXdata(data, size))
+-    return OPXDATA;
++    return (KSS_TYPE_INFO){.type = KSSDATA, .offset = 0};
++  else if (int offset = KSS_isOPXdata(data, size); offset >= 0)
++    return (KSS_TYPE_INFO){.type = OPXDATA, .offset = offset};
+   else if (KSS_isBGMdata(data, size))
+-    return BGMDATA;
++    return (KSS_TYPE_INFO){.type = BGMDATA, .offset = 0};
+   else if (filename) {
+     p = strrchr(filename, '.');
+     if (p && (strcmp(p, ".MBM") == 0 || strcmp(p, ".mbm") == 0))
+-      return MBMDATA;
++      return (KSS_TYPE_INFO){.type = MBMDATA, .offset = 0};
+   }
+ 
+-  return KSS_TYPE_UNKNOWN;
++  return (KSS_TYPE_INFO){.type = KSS_TYPE_UNKNOWN, .offset = 0};
+ }
+ 
+ void KSS_make_header(uint8_t *header, uint16_t load_adr, uint16_t load_size, uint16_t init_adr, uint16_t play_adr) {
+@@ -229,14 +229,15 @@
+ 
+ KSS *KSS_bin2kss(uint8_t *data, uint32_t data_size, const char *filename) {
+   KSS *kss;
+-  int type;
+ 
+   if (data == NULL)
+     return NULL;
+ 
+-  type = KSS_check_type(data, data_size, filename);
++  KSS_TYPE_INFO type_info = KSS_check_type(data, data_size, filename);
++  data = &data[type_info.offset];
++  data_size = data_size - type_info.offset;
+ 
+-  switch (type) {
++  switch (type_info.type) {
+   case MBMDATA:
+     kss = KSS_mbm2kss(data, data_size);
+     if (kss)
+@@ -285,7 +286,7 @@
+ 
+   if (kss == NULL)
+     return NULL;
+-  kss->type = type;
++  kss->type = type_info.type;
+   msx_kanji_fix(kss->title);
+   scan_info(kss);
+   return kss;
