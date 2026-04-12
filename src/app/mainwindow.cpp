@@ -4248,7 +4248,7 @@ void MainWindow::on_actionAbout_BZR_Player_triggered() {
 
 void MainWindow::on_pitchSlider_valueChanged(int value) const {
     SoundManager::getInstance().setFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
-    ui->labelPitchValue->setText(QString::number(ui->pitchSlider->value()) + " %");
+    ui->labelPitchValue->setText(QString::number(ui->pitchSlider->value()) + "%");
 }
 
 void MainWindow::on_positionSlider_valueChanged(const int value) const {
@@ -5156,10 +5156,10 @@ void MainWindow::setupIcons() {
     QPixmap loopPointsOff = changeSvgColor(":/resources/loop-points.svg", colorButton.left(7));
     QPixmap loopPointsOffHover = changeSvgColor(":/resources/loop-points.svg", colorButtonHover.left(7));
     QPixmap loopPointAOn = changeSvgColor(":/resources/loop-points.svg", colorMain.left(7),
-                                          new QRectF(0.35, 0, 1, 1), colorButton.left(7));
+                                          new QRectF(0.50, 0, 1, 1), colorButton.left(7));
     QPixmap loopPointsOn = changeSvgColor(":/resources/loop-points.svg", colorMain.left(7));
     QPixmap loopPointAOnHover = changeSvgColor(":/resources/loop-points.svg", colorMainHover.left(7),
-                                               new QRectF(0.35, 0, 1, 1), colorButtonHover.left(7));
+                                               new QRectF(0.50, 0, 1, 1), colorButtonHover.left(7));
     QPixmap loopPointsOnHover = changeSvgColor(":/resources/loop-points.svg", colorMainHover.left(7));
 
     QPixmap add = changeSvgColor(":/resources/add.svg", colorButton.left(7));

@@ -1264,7 +1264,7 @@ background-color:#009379/*main*/;
               <number>1</number>
              </property>
              <property name="pageStep">
-              <number>10</number>
+              <number>1</number>
              </property>
              <property name="value">
               <number>100</number>
@@ -1387,13 +1387,13 @@ background-color:#009379/*main*/;
              </property>
              <property name="minimumSize">
               <size>
-               <width>40</width>
+               <width>30</width>
                <height>24</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>24</width>
+               <width>30</width>
                <height>16777215</height>
               </size>
              </property>
@@ -1410,7 +1410,7 @@ background-color:#009379/*main*/;
               <string notr="true">QCheckBox
 {
 	color:#b7b7b7/*button*/;
-margin-left:-24px
+    margin-left:-19px
 }
 QCheckBox::indicator {
 
@@ -1476,7 +1476,7 @@ QCheckBox:hover
              </property>
              <property name="maximumSize">
               <size>
-               <width>170</width>
+               <width>248</width>
                <height>210</height>
               </size>
              </property>
@@ -1489,6 +1489,15 @@ QCheckBox:hover
              <layout class="QGridLayout" name="gridLayout_3">
               <property name="sizeConstraint">
                <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>0</number>
               </property>
               <item row="0" column="1">
                <widget class="QPushButton" name="buttonPrev">
@@ -1561,12 +1570,6 @@ QPushButton:hover
               </item>
               <item row="0" column="2">
                <widget class="QPushButton" name="buttonPlay_2">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
                 <property name="minimumSize">
                  <size>
                   <width>40</width>
@@ -1743,8 +1746,7 @@ QPushButton:hover
 {
 
 	color:#b7b7b7/*button*/;
-margin-top:0;
-margin-left:-6px;
+    margin-top:0;
 }
 QPushButton:hover
 {
@@ -1797,8 +1799,8 @@ QPushButton:hover
 {
 
 	color:#b7b7b7/*button*/;
-margin-left:-20px;
-margin-top:-1px;
+    margin-left:-20px;
+    margin-top:0px;
 
 
 }
@@ -1869,7 +1871,7 @@ QCheckBox
 {
 	color:#b7b7b7/*button*/;
 	font-size: 34px;
-	margin-left: -21px
+    margin-left: -21px
 }
 QCheckBox::indicator {
 
@@ -2003,13 +2005,13 @@ QCheckBox:hover
              </property>
              <property name="minimumSize">
               <size>
-               <width>45</width>
+               <width>50</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>40</width>
+               <width>50</width>
                <height>16777215</height>
               </size>
              </property>
@@ -2034,7 +2036,7 @@ QCheckBox:hover
 }</string>
              </property>
              <property name="text">
-              <string>100 %</string>
+              <string>100%</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>

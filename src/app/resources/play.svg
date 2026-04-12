@@ -1,10 +1,49 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generator: Adobe Illustrator 23.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 142.4 142.4" style="enable-background:new 0 0 142.4 142.4;" xml:space="preserve">
 
-<g>
-	<path d="M94.6,67.1L63,44.4c-3.4-2.4-8.1,0-8.1,4.1v45.3c0,4.1,4.7,6.6,8.1,4.1l31.6-22.6
-		C97.4,73.3,97.4,69.1,94.6,67.1z"/>
+<svg
+   version="1.1"
+   id="Capa_1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 100.00001 142.4"
+   xml:space="preserve"
+   sodipodi:docname="play.svg"
+   width="100"
+   height="142.39999"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs2" /><sodipodi:namedview
+   id="namedview2"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="6.1025284"
+   inkscape:cx="49.897351"
+   inkscape:cy="71.199996"
+   inkscape:window-width="2752"
+   inkscape:window-height="1078"
+   inkscape:window-x="0"
+   inkscape:window-y="0"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Capa_1" />
+<g
+   id="g1"
+   transform="translate(-22)">
+	
 </g>
-</svg>
+
+<g
+   id="g1-6"
+   transform="translate(-21.8,0.02831317)">
+	<path
+   d="M 94.6,67.1 63,44.4 c -3.4,-2.4 -8.1,0 -8.1,4.1 v 45.3 c 0,4.1 4.7,6.6 8.1,4.1 L 94.6,75.3 c 2.8,-2 2.8,-6.2 0,-8.2 z"
+   id="path1" />
+</g></svg>
