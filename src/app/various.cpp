@@ -1,7 +1,7 @@
 #include <sstream>
 #include "various.h"
 
-QString groupDigits(const int64_t number) {
+QString groupDigits(const size_t number) {
     QString num = QString::number(number);
 
     for (int i = num.length(); i > 0; i -= 3) {

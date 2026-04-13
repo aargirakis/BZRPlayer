@@ -67,27 +67,15 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    auto *myBuffer = new uint8_t[filesize];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
+    auto *info = static_cast<Info *>(userexinfo->userdata);
 
     JT1Song *song;
 
-    const bool isErr = jxsfile_readSongMem(myBuffer, filesize, &song) != 0;
-
-    delete[] myBuffer;
-
-    if (isErr) {
+    if (jxsfile_readSongMem(info->fileBuffer, info->filesize, &song) != 0) {
         return FMOD_ERR_FORMAT;
     }
 
     auto *plugin = new pluginJaytrax(codec);
-    auto *info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->jay = jaytrax_init();
     plugin->jay->song = song;

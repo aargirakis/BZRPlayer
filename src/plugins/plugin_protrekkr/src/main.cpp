@@ -64,8 +64,6 @@ public:
     }
 
     ~pluginProtrekkr() {
-        delete[] buffer;
-
         if (loaded) {
             Ptk_Stop();
             Free_Samples();
@@ -74,9 +72,8 @@ public:
         }
     }
 
+    Info *info;
     FMOD_CODEC_WAVEFORMAT waveformat;
-    uint8_t *buffer;
-    uint32_t filesize;
     bool loaded = false;
 };
 
@@ -98,48 +95,28 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-    auto *testBuffer = new uint8_t[7];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, testBuffer, 7, &bytesread);
-
-    if (memcmp(testBuffer, "PROTREK", 7) != 0 && memcmp(testBuffer, "TWNNSNG", 7) != 0) {
-        delete[] testBuffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] testBuffer;
-
-    auto *plugin = new pluginProtrekkr(codec);
-
-    FMOD_CODEC_FILE_SIZE(codec, &plugin->filesize);
-
     memset(SampleName, 0, sizeof(SampleName));
     memset(nameins, 0, sizeof(nameins));
 
     Ptk_InitDriver();
     Alloc_Patterns_Pool();
 
-    plugin->buffer = new uint8_t[plugin->filesize];
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, plugin->buffer, plugin->filesize, &bytesread);
+    auto *plugin = new pluginProtrekkr(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    if (!Load_Ptk({plugin->buffer, plugin->filesize})) {
+    if (!Load_Ptk({plugin->info->fileBuffer, plugin->info->filesize})) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     plugin->loaded = true;
 
-    const auto info = static_cast<Info *>(userexinfo->userdata);
-
-    info->samples = new string[128];
-    info->instruments = new string[128];
+    plugin->info->samples = new string[128];
+    plugin->info->instruments = new string[128];
 
     for (int j = 0; j < 128; j++) {
-        info->samples[j] = SampleName[j][0];
-        info->instruments[j] = nameins[j];
+        plugin->info->samples[j] = SampleName[j][0];
+        plugin->info->instruments[j] = nameins[j];
     }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
@@ -153,15 +130,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
     codec->plugindata = plugin; // user data value
 
-    info->numSamples = 128;
-    info->numInstruments = 128;
-    info->numChannels = static_cast<int>(Song_Tracks);
-    info->title = customPtkName;
-    info->artist = artist;
-    info->plugin = PLUGIN_protrekkr;
-    info->pluginName = PLUGIN_protrekkr_NAME;
-    info->fileFormat = "Protrekkr";
-    info->setSeekable(false);
+    plugin->info->numSamples = 128;
+    plugin->info->numInstruments = 128;
+    plugin->info->numChannels = static_cast<int>(Song_Tracks);
+    plugin->info->title = customPtkName;
+    plugin->info->artist = artist;
+    plugin->info->plugin = PLUGIN_protrekkr;
+    plugin->info->pluginName = PLUGIN_protrekkr_NAME;
+    plugin->info->fileFormat = "Protrekkr";
+    plugin->info->setSeekable(false);
 
     return FMOD_OK;
 }
@@ -183,7 +160,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
     auto const *plugin = static_cast<pluginProtrekkr *>(codec->plugindata);
 
-    if (!Load_Ptk({plugin->buffer, plugin->filesize})) {
+    if (!Load_Ptk({plugin->info->fileBuffer, plugin->info->filesize})) {
         return FMOD_ERR_FORMAT;
     }
 

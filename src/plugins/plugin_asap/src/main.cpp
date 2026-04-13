@@ -65,12 +65,11 @@ public:
 
     ~pluginAsap() {
         // delete some stuff
-        delete[] myBuffer;
         ASAP_Delete(asap);
     }
 
+    Info *info;
     FMOD_CODEC_WAVEFORMAT waveformat;
-    uint8_t *myBuffer = nullptr;
     ASAP *asap;
     const ASAPInfo *asap_info;
     int songLength;
@@ -90,33 +89,23 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int filesize;
-    unsigned int bytesread;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
     auto *plugin = new pluginAsap(codec);
-
-    plugin->myBuffer = new uint8_t[filesize];
-
-    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
-
     plugin->asap = ASAP_New();
 
-    auto *info = static_cast<Info *>(userexinfo->userdata);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     if (static constexpr ASAPFileLoader loader;
-        !ASAP_LoadWithExtraFiles(plugin->asap, info->filename.c_str(), plugin->myBuffer, static_cast<int>(filesize),
-                                 &loader)) {
+        !ASAP_LoadWithExtraFiles(plugin->asap, plugin->info->filePath.c_str(), plugin->info->fileBuffer,
+                                 static_cast<int>(plugin->info->filesize), &loader)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     plugin->asap_info = ASAP_GetInfo(plugin->asap);
 
-    plugin->songLength = ASAPInfo_GetDuration(plugin->asap_info, info->currentSubsong);
+    plugin->songLength = ASAPInfo_GetDuration(plugin->asap_info, plugin->info->currentSubsong);
 
-    if (!ASAP_PlaySong(plugin->asap, info->currentSubsong, plugin->songLength)) {
+    if (!ASAP_PlaySong(plugin->asap, plugin->info->currentSubsong, plugin->songLength)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -132,46 +121,47 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
     codec->plugindata = plugin; // user data value
 
-    info->numSubsongs = ASAPInfo_GetSongs(plugin->asap_info);
-    info->defaultSubsong = info->numSubsongs > 1
-                               ? ASAPInfo_GetDefaultSong(plugin->asap_info) + 1
-                               : -1;
-    info->author = ASAPInfo_GetAuthor(plugin->asap_info);
-    info->title = ASAPInfo_GetTitle(plugin->asap_info);
-    info->chips = format("x{} ({})", plugin->waveformat.channels,
-                         plugin->waveformat.channels > 1 ? "Stereo" : "Mono");
-    info->numChannels = plugin->waveformat.channels * 4;
-    info->date = ASAPInfo_GetDate(plugin->asap_info);
-    info->clockSpeedStr = format("{} Hz / {} scanlines ({})", ASAPInfo_GetPlayerRateHz(plugin->asap_info),
-                                 ASAPInfo_GetPlayerRateScanlines(plugin->asap_info),
-                                 ASAPInfo_IsNtsc(plugin->asap_info) ? "NTSC" : "PAL");
-    info->plugin = PLUGIN_asap;
-    info->pluginName = PLUGIN_asap_NAME;
-    info->setSeekable(true);
+    plugin->info->numSubsongs = ASAPInfo_GetSongs(plugin->asap_info);
+    plugin->info->defaultSubsong = plugin->info->numSubsongs > 1
+                                       ? ASAPInfo_GetDefaultSong(plugin->asap_info) + 1
+                                       : -1;
+    plugin->info->author = ASAPInfo_GetAuthor(plugin->asap_info);
+    plugin->info->title = ASAPInfo_GetTitle(plugin->asap_info);
+    plugin->info->chips = format("x{} ({})", plugin->waveformat.channels,
+                                 plugin->waveformat.channels > 1 ? "Stereo" : "Mono");
+    plugin->info->numChannels = plugin->waveformat.channels * 4;
+    plugin->info->date = ASAPInfo_GetDate(plugin->asap_info);
+    plugin->info->clockSpeedStr = format("{} Hz / {} scanlines ({})", ASAPInfo_GetPlayerRateHz(plugin->asap_info),
+                                         ASAPInfo_GetPlayerRateScanlines(plugin->asap_info),
+                                         ASAPInfo_IsNtsc(plugin->asap_info) ? "NTSC" : "PAL");
+    plugin->info->plugin = PLUGIN_asap;
+    plugin->info->pluginName = PLUGIN_asap_NAME;
+    plugin->info->setSeekable(true);
 
     if (const char *originalModuleExt = ASAPInfo_GetOriginalModuleExt(plugin->asap_info);
         originalModuleExt == nullptr) {
-        info->fileFormat = format("Slight Atari Player (Type {:c})", ASAPInfo_GetTypeLetter(plugin->asap_info));
+        plugin->info->fileFormat = format("Slight Atari Player (Type {:c})", ASAPInfo_GetTypeLetter(plugin->asap_info));
     } else {
-        info->fileFormat = ASAPInfo_GetExtDescription(originalModuleExt);
+        plugin->info->fileFormat = ASAPInfo_GetExtDescription(originalModuleExt);
     }
 
-    if (int offset = ASAPInfo_GetInstrumentNamesOffset(plugin->asap_info, plugin->myBuffer, static_cast<int>(filesize));
+    if (int offset = ASAPInfo_GetInstrumentNamesOffset(plugin->asap_info, plugin->info->fileBuffer,
+                                                       static_cast<int>(plugin->info->filesize));
         offset > 0) {
-        info->numInstruments = 0;
+        plugin->info->numInstruments = 0;
         vector<string> instruments;
 
         do {
-            const char *instrument = reinterpret_cast<const char *>(plugin->myBuffer) + offset;
+            const char *instrument = reinterpret_cast<const char *>(plugin->info->fileBuffer) + offset;
             instruments.emplace_back(instrument);
-            offset += static_cast<int>(strnlen(instrument, filesize - offset)) + 1;
-            info->numInstruments++;
-        } while (offset < filesize);
+            offset += static_cast<int>(strnlen(instrument, plugin->info->filesize - offset)) + 1;
+            plugin->info->numInstruments++;
+        } while (offset < plugin->info->filesize);
 
-        info->instruments = new string[info->numInstruments];
+        plugin->info->instruments = new string[plugin->info->numInstruments];
 
-        for (int i = 0; i < info->numInstruments; i++) {
-            info->instruments[i] = instruments[i];
+        for (int i = 0; i < plugin->info->numInstruments; i++) {
+            plugin->info->instruments[i] = instruments[i];
         }
     }
 

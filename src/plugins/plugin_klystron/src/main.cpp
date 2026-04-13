@@ -46,10 +46,8 @@ public:
         if (song) KSND_FreeSong(song);
         if (player) KSND_FreePlayer(player);
         delete songinfo;
-        delete[] myBuffer;
     }
 
-    uint8_t *myBuffer = nullptr;
     KPlayer *player;
     KSongInfo *songinfo = nullptr;
     KSong *song = nullptr;
@@ -69,18 +67,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    uint8_t smallBuffer[sizeof(MUS_SONG_SIG) - 1];
-    unsigned int bytesread;
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, smallBuffer, sizeof(MUS_SONG_SIG)-1, &bytesread);
-
-    if (memcmp(smallBuffer, MUS_SONG_SIG, sizeof(MUS_SONG_SIG) - 1) != 0) {
-        return FMOD_ERR_FORMAT;
-    }
-
     auto *plugin = new pluginKlystron(codec);
-    const auto info = static_cast<Info *>(userexinfo->userdata);
 
     constexpr int sampleRate = 44100;
 
@@ -90,15 +77,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->myBuffer = new uint8_t[filesize];
-
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
-
-    plugin->song = KSND_LoadSongFromMemory(plugin->player, plugin->myBuffer, filesize);
+    plugin->song = KSND_LoadSongFromMemory(plugin->player, info->fileBuffer, static_cast<int>(info->filesize));
 
     if (!plugin->song) {
         delete plugin;

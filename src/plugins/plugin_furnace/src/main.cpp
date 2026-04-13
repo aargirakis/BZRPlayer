@@ -83,31 +83,6 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int filesize;
-    unsigned int bytesread;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    if (filesize == 4294967295) // stream
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    auto *buffer = new uint8_t[filesize];
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, buffer, 4, &bytesread);
-
-    // only furnace, deflemask and zlib (with no/fast/default/best compression) are allowed here
-    if (memcmp(buffer, "-F'", 2) != 0 && memcmp(buffer, ".D", 2) != 0 &&
-        memcmp(buffer, "\x78\x01", 2) != 0 && memcmp(buffer, "\x78\x5e", 2) != 0 &&
-        memcmp(buffer, "\x78\x9c", 2) != 0 && memcmp(buffer, "\x78\xda", 2) != 0) {
-        delete[] buffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, buffer, filesize, &bytesread);
-
     initLog(stdout);
 
     const auto plugin = new pluginFurnace(codec);
@@ -115,7 +90,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->engine = new DivEngine;
     plugin->engine->preInit();
-    if (!plugin->engine->load(buffer, filesize) || !plugin->engine->init()) {
+
+    // this is deleted by furnace when needed
+    const auto fileBufferCopy = new uint8_t[plugin->info->filesize];
+
+    memcpy(fileBufferCopy, plugin->info->fileBuffer, sizeof(uint8_t) * plugin->info->filesize);
+
+    if (!plugin->engine->load(fileBufferCopy, plugin->info->filesize) || !plugin->engine->init()) {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
@@ -140,7 +122,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     string format;
     if (song.version == DIV_VERSION_FTM) {
-        format = "Famitracker";
+        format = "Famitracker"; // TODO is this supported?
         plugin->info->fileFormat = format;
     } else {
         format = song.isDMF ? "DefleMask v" : "Furnace v";

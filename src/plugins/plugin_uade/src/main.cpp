@@ -88,30 +88,6 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     auto *plugin = new pluginUade(codec);
-
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    if (filesize == 4294967295) // stream
-    {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
-    auto *smallBuffer = new uint8_t[4];
-    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, smallBuffer, 4, nullptr);
-
-    // skip midi, riff and psf
-    if (memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF", 4) == 0 ||
-        memcmp(smallBuffer, "PSF", 3) == 0) {
-        delete[] smallBuffer;
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] smallBuffer;
-
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/uade.cfg";
@@ -257,14 +233,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     uade_enable_uadecore_log_collection(plugin->uadeState);
 #endif
 
-    auto myBuffer = new uint8_t[filesize];
-
-    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, nullptr);
-
-    if (uade_play_from_buffer(plugin->info->filename.c_str(), myBuffer, filesize, -1, plugin->uadeState) <= 0) {
-        cout << "Can not play " << plugin->info->filename << endl;
-        delete[] myBuffer;
+    if (uade_play_from_buffer(plugin->info->filePath.c_str(), plugin->info->fileBuffer, plugin->info->filesize,
+                              -1, plugin->uadeState) <= 0) {
+        cout << "Can not play " << plugin->info->filePath << endl;
         return FMOD_ERR_FORMAT;
     }
 
@@ -281,15 +252,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
         uade_stop(plugin->uadeState);
 
-        if (uade_play_from_buffer(plugin->info->filename.c_str(), myBuffer, filesize, subsong, plugin->uadeState) <=
-            0) {
-            cout << "Can not play " << plugin->info->filename << " subsong " << subsong << endl;
-            delete[] myBuffer;
+        if (uade_play_from_buffer(plugin->info->filePath.c_str(), plugin->info->fileBuffer, plugin->info->filesize,
+                                  subsong, plugin->uadeState) <= 0) {
+            cout << "Can not play " << plugin->info->filePath << " subsong " << subsong << endl;
             return FMOD_ERR_FORMAT;
         }
     }
-
-    delete[] myBuffer;
 
     if (plugin->uadeSongInfo->formatname[0]) {
         string str(plugin->uadeSongInfo->formatname);
@@ -318,13 +286,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->info->fileFormat == "RichardJoseph" || plugin->info->fileFormat == "SIDMon1.0" ||
         plugin->info->fileFormat == "SIDMon2.0" || plugin->info->fileFormat == "PaulShields") {
         // read samples
-        auto d = new uint8_t[filesize];
-        FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-        FMOD_CODEC_FILE_READ(codec, d, filesize, nullptr);
+        auto d = new uint8_t[plugin->info->filesize];
+
+        memcpy(d, plugin->info->fileBuffer, sizeof(uint8_t) * plugin->info->filesize);
 
         auto *fileLoader = new FileLoader();
 
-        AmigaPlayer *player = fileLoader->load(d, filesize, plugin->info->filename.c_str());
+        AmigaPlayer *player = fileLoader->load(d, plugin->info->filesize, plugin->info->filePath.c_str());
 
         delete fileLoader;
         delete[] d;
@@ -424,7 +392,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
             *length = -1;
         } else {
             if (plugin->length == -1) {
-                plugin->length = getLengthFromDatabase(plugin->info->filename.c_str(), plugin->info->currentSubsong,
+                plugin->length = getLengthFromDatabase(plugin->info->filePath.c_str(), plugin->info->currentSubsong,
                                                        plugin->uadeSongInfo->modulemd5,
                                                        plugin->uade_songlengthspath.c_str());
             }

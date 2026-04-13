@@ -214,8 +214,6 @@ public:
 
     static void *OpenPSF(void *context, const char *uri) {
         const auto plugin = static_cast<pluginHighlyExp *>(context);
-        unsigned int filesize;
-        FMOD_CODEC_FILE_SIZE(plugin->_codec, &filesize);
 
 #ifdef WIN32
         plugin->file = fopen(uri, "rb");
@@ -295,23 +293,10 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-    const auto buffer = new uint8_t[4];
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, buffer, 4, &bytesread);
-
-    // skip midi and riff
-    if (memcmp(buffer, "MThd", 4) == 0 || memcmp(buffer, "RIFF", 4) == 0) {
-        delete[] buffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] buffer;
-
     auto *plugin = new pluginHighlyExp(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->psfType = psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0, nullptr, nullptr,
+    plugin->psfType = psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, 0, nullptr, nullptr,
                                pluginHighlyExp::InfoMetaPSF, plugin, 1, nullptr, nullptr);
 
     if (plugin->psfType != 1 && plugin->psfType != 2) {
@@ -329,7 +314,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->psf2fs = psf2fs_create();
     }
 
-    if (psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(plugin->psfType),
+    if (psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(plugin->psfType),
                  plugin->psfType == 1 ? pluginHighlyExp::PsfLoad : psf2fs_load_callback,
                  plugin->psfType == 1 ? plugin : plugin->psf2fs,
                  nullptr, nullptr, 0, nullptr, nullptr) < 0) {
@@ -412,7 +397,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         plugin->psf2fs = psf2fs_create();
     }
     plugin->loaderState.Clear();
-    psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(plugin->psfType),
+    psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(plugin->psfType),
              plugin->psfType == 1 ? pluginHighlyExp::PsfLoad : psf2fs_load_callback,
              plugin->psfType == 1 ? plugin : plugin->psf2fs, nullptr,
              nullptr, 0, nullptr, nullptr);

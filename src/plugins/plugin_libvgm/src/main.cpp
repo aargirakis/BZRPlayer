@@ -66,12 +66,10 @@ public:
 
     ~pluginLibvgm() {
         DataLoader_Deinit(loader);
-        delete [] myBuffer;
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
-    uint8_t *myBuffer;
     DATA_LOADER *loader;
     PlayerA *mainPlr;
     PlayerBase *player;
@@ -95,18 +93,10 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
     auto *plugin = new pluginLibvgm(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->myBuffer = new uint8_t[filesize];
-
-    auto result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, nullptr);
-
-    plugin->loader = MemoryLoader_Init(plugin->myBuffer, filesize);
+    plugin->loader = MemoryLoader_Init(plugin->info->fileBuffer, static_cast<UINT32>(plugin->info->filesize));
 
     if (plugin->loader == nullptr) {
         delete plugin;

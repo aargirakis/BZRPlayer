@@ -117,22 +117,6 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    if (filesize < 8 || filesize > 1024 * 2048) // 2 mb (biggest sndh on modland is 1150960 bytes, dunno real max)
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-    auto *buffer = new uint8_t[filesize];
-
-    unsigned int bytesread;
-
-    result = FMOD_CODEC_FILE_READ(codec, buffer, filesize, &bytesread);
-
     auto *plugin = new pluginSndhPlayer(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
@@ -140,13 +124,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     constexpr int freq = 44100;
 
-    if (bool ok = plugin->sndh->Load(buffer, filesize, freq); !ok || !plugin->sndh->IsLoaded()) {
-        delete[] buffer;
+    if (bool ok = plugin->sndh->Load(plugin->info->fileBuffer, static_cast<int>(plugin->info->filesize), freq);
+        !ok || !plugin->sndh->IsLoaded()) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
-
-    delete[] buffer;
 
     plugin->BuildHash(plugin->sndh);
 

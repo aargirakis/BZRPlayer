@@ -65,10 +65,8 @@ public:
         info->patterns.clear();
         delete mod;
         mod = nullptr;
-        delete[] myBuffer;
     }
 
-    uint8_t *myBuffer;
     queue<unsigned char *> vuMeterBuffer;
     queue<int> rowBuffer;
     queue<int> patternBuffer;
@@ -92,122 +90,83 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    if (filesize == 4294967295) // stream
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
-    constexpr char farMagic[] = "FAR\xFE";
-    constexpr uint8_t farMagicLength = sizeof(farMagic) - 1;
-    constexpr char farCrLfEof[] = "\x0D\x0A\x1A";
-    constexpr uint8_t farCrLfEofLength = sizeof(farCrLfEof) - 1;
-    constexpr uint8_t farCrLfEofOffset = 0x2C;
-
-    constexpr uint8_t smallBufferLength = farCrLfEofOffset + farCrLfEofLength;
-
-    auto smallBuffer = new uint8_t[smallBufferLength];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, smallBuffer, smallBufferLength, &bytesread);
-
-    if (constexpr uint8_t farMagicOffset = 0;
-        // skip midi and gm.dls
-        memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF\x0c\x80" "4\0DLS colh", 16) == 0 ||
-
-        // skip Farandole Composer module (as of today libxmp play this one really better)
-        memcmp(&smallBuffer[farMagicOffset], farMagic, farMagicLength) == 0 &&
-        memcmp(&smallBuffer[farCrLfEofOffset], farCrLfEof, farCrLfEofLength) == 0) {
-        delete[] smallBuffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] smallBuffer;
-
     auto *plugin = new pluginLibopenmpt(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->myBuffer = new uint8_t[filesize];
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
 
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
 
-    try {
-        auto info = static_cast<Info *>(userexinfo->userdata);
+    // defaults
+    int stereo_separation = 100;
+    int interpolation_filter = 0;
+    string emulate_amiga_filter = "1";
+    string amiga_filter = "auto";
+    string dither = "1";
+    info->isContinuousPlaybackActive = false;
 
-        string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
-        ifstream ifs(filename.c_str());
-        bool useDefaults = false;
-        if (ifs.fail()) {
-            // the file could not be opened
-            useDefaults = true;
-        }
-
-        // defaults
-        int stereo_separation = 100;
-        int interpolation_filter = 0;
-        string emulate_amiga_filter = "1";
-        string amiga_filter = "auto";
-        string dither = "1";
-        info->isContinuousPlaybackActive = false;
-
-        if (!useDefaults) {
-            string line;
-            while (getline(ifs, line)) {
-                if (int i = line.find_first_of("="); i != -1) {
-                    string word = line.substr(0, i);
-                    string value = line.substr(i + 1);
-                    if (word == "stereoSeparation") {
-                        stereo_separation = atoi(value.c_str());
-                    } else if (word == "continuousPlayback") {
-                        info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
-                    } else if (word == "interpolationFilter") {
-                        interpolation_filter = atoi(value.c_str());
-                    } else if (word == "emulateAmigaFilter") {
-                        if (value == "true") {
-                            emulate_amiga_filter = "1";
-                        } else {
-                            emulate_amiga_filter = "0";
-                        }
-                    } else if (word == "amigaFilter") {
-                        if (value == "a500") {
-                            amiga_filter = "a500";
-                        } else if (value == "a1200") {
-                            amiga_filter = "a1200";
-                        } else if (value == "unfiltered") {
-                            amiga_filter = "unfiltered";
-                        } else if (value == "auto") {
-                            amiga_filter = "auto";
-                        }
-                    } else if (word == "dither") {
-                        if (value == "0") {
-                            dither = "0";
-                        } else if (value == "1") {
-                            dither = "1";
-                        } else if (value == "2") {
-                            dither = "2";
-                        } else if (value == "3") {
-                            dither = "3";
-                        }
+    if (!useDefaults) {
+        string line;
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word == "stereoSeparation") {
+                    stereo_separation = atoi(value.c_str());
+                } else if (word == "continuousPlayback") {
+                    info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
+                } else if (word == "interpolationFilter") {
+                    interpolation_filter = atoi(value.c_str());
+                } else if (word == "emulateAmigaFilter") {
+                    if (value == "true") {
+                        emulate_amiga_filter = "1";
+                    } else {
+                        emulate_amiga_filter = "0";
+                    }
+                } else if (word == "amigaFilter") {
+                    if (value == "a500") {
+                        amiga_filter = "a500";
+                    } else if (value == "a1200") {
+                        amiga_filter = "a1200";
+                    } else if (value == "unfiltered") {
+                        amiga_filter = "unfiltered";
+                    } else if (value == "auto") {
+                        amiga_filter = "auto";
+                    }
+                } else if (word == "dither") {
+                    if (value == "0") {
+                        dither = "0";
+                    } else if (value == "1") {
+                        dither = "1";
+                    } else if (value == "2") {
+                        dither = "2";
+                    } else if (value == "3") {
+                        dither = "3";
                     }
                 }
             }
-            ifs.close();
         }
+        ifs.close();
+    }
 
-        map<string, string> ctls
-        {
-            {"seek.sync_samples", "1"},
-            {"play.at_end", info->isContinuousPlaybackActive ? "continue" : "stop"},
-            {"render.resampler.emulate_amiga", emulate_amiga_filter},
-            {"render.resampler.emulate_amiga_type", amiga_filter},
-            {"dither", dither}
-        };
-        plugin->mod = nullptr;
-        plugin->mod = new openmpt::module_ext(plugin->myBuffer, filesize, clog, ctls);
+    map<string, string> ctls
+    {
+        {"seek.sync_samples", "1"},
+        {"play.at_end", info->isContinuousPlaybackActive ? "continue" : "stop"},
+        {"render.resampler.emulate_amiga", emulate_amiga_filter},
+        {"render.resampler.emulate_amiga_type", amiga_filter},
+        {"dither", dither}
+    };
+    plugin->mod = nullptr;
+
+    try {
+        plugin->mod = new openmpt::module_ext(plugin->info->fileBuffer, plugin->info->filesize, clog, ctls);
 
         plugin->mod->set_repeat_count(0); // it is 0 by default, and ignored with "continue" play mode
         plugin->mod->set_render_param(openmpt::module::RENDER_STEREOSEPARATION_PERCENT, stereo_separation);

@@ -81,27 +81,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    // TODO is there a reason for this?
     pac_disable(PAC_MODE_DEFAULT);
     pac_enable(PAC_MODE_DEFAULT);
-
     pac_enable(PAC_MODE_DEFAULT);
-    auto *smallBuffer = new uint8_t[12];
-    unsigned int bytesread;
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, smallBuffer, 12, &bytesread);
-
-    if (memcmp(&smallBuffer[0], "PACG", 4) != 0 || memcmp(&smallBuffer[8], "PAIN", 4) != 0) {
-        delete[] smallBuffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] smallBuffer;
 
     const auto plugin = new pluginLibpac(codec);
     const auto info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->pac_module = pac_open(info->filename.c_str());
+    plugin->pac_module = pac_open(info->filePath.c_str());
 
     if (!plugin->pac_module) {
         delete plugin;

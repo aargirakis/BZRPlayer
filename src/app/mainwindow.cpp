@@ -1054,7 +1054,7 @@ void MainWindow::refreshInfo() {
     } else {
         title = fromUtf8OrLatin1(!pi.info->containerFilenames.empty()
                                      ? pi.info->containerLastFilename
-                                     : pi.info->filename);
+                                     : pi.info->filePath);
     }
 
     QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());

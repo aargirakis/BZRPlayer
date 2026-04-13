@@ -77,13 +77,16 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->queueSize = 18000;
     ifstream is;
     //is.imbue(locale("en_US.UTF8"));
-    is.open(plugin->info->filename, ios::binary);
+    is.open(plugin->info->filePath, ios::binary);
 
     const string samples_path = plugin->info->dataPath + ORGANYA_DATA_DIR;
     plugin->tune = org_decoder_create(is, samples_path.c_str(), 1);
     is.close();
 
-    if (!plugin->tune) return FMOD_ERR_FORMAT;
+    if (!plugin->tune) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;

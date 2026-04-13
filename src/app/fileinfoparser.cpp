@@ -1,4 +1,3 @@
-#include <QFileInfo>
 #include <QPlainTextEdit>
 #include "fileinfoparser.h"
 #include "plugins.h"
@@ -58,20 +57,27 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
     tableInfo->clearContents();
     tableInfo->setRowCount(999);
 
-    const QFileInfo fileinfo(playlistItem->fullPath);
     int row = 0;
 
     const auto &info = SoundManager::getInstance().info;
 
-    addInfo(tableInfo, &row, "Filename", fileinfo.fileName());
-    addInfo(tableInfo, &row, "Path", fileinfo.path());
-    addInfo(tableInfo, &row, "Size", groupDigits(fileinfo.size()) + " bytes");
-    addInfo(tableInfo, &row, "Last Modified", fileinfo.lastModified().toString("yyyy-MM-dd hh:mm:ss"));
-    addInfo(tableInfo, &row, "Created", fileinfo.birthTime().toString("yyyy-MM-dd hh:mm:ss"));
-    addLengthInfo(tableInfo, playlistItem, &row);
+    if (info->isLocalFilePath) {
+        addInfo(tableInfo, &row, "Filename", info->filename.c_str());
+        addInfo(tableInfo, &row, "Path", info->fileDir.c_str());
+        addInfo(tableInfo, &row, "Size", groupDigits(info->filesize) + " bytes");
+        addInfo(tableInfo, &row, "Last Modified", info->fileLastModified.c_str());
+        addInfo(tableInfo, &row, "Created", info->fileCreatedAt.c_str());
+        addLengthInfo(tableInfo, playlistItem, &row);
+    } else {
+        addInfo(tableInfo, &row, "URL", info->filePath.c_str());
+    }
+
     addInfo(tableInfo, &row, "Player Engine", info->pluginName.c_str());
     addInfo(tableInfo, &row, "Format", info->fileFormat.c_str());
-    addSubsongInfo(tableInfo, &row);
+
+    if (info->isLocalFilePath) {
+        addSubsongInfo(tableInfo, &row);
+    }
 
     switch (info->plugin) {
         case PLUGIN_adplug:
@@ -150,7 +156,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Positions", QString::number(info->numOrders));
             break;
         case PLUGIN_libsidplayfp:
-            if (info->fieldSet == 0) {
+            if (info->isSid) {
                 const int defaultSubsong = info->defaultSubsong;
                 addInfo(tableInfo, &row, "Default Subsong",
                         defaultSubsong == 0 ? "-" : QString::number(defaultSubsong));
@@ -164,7 +170,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "SID Chip", info->chips.c_str());
             addInfo(tableInfo, &row, "Clock Speed", info->clockSpeedStr.c_str());
 
-            if (info->fieldSet == 0) {
+            if (info->isSid) {
                 addInfo(tableInfo, &row, "Replayer", fromUtf8OrLatin1(info->songPlayer));
             } else {
                 addMultilineInfo(tableInfo, &row, "Comments", info->comments);
@@ -174,7 +180,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Init Addr", "$" + QString::number(info->initAddr, 16));
             addInfo(tableInfo, &row, "Play Addr", "$" + QString::number(info->playAddr, 16));
 
-            if (info->fieldSet == 0) {
+            if (info->isSid) {
                 addInfo(tableInfo, &row, "MD5", info->md5.c_str());
             }
             break;
@@ -413,29 +419,22 @@ void FileInfoParser::showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const P
         }
 
         auto tagName = QString(tag.name);
-        QString tagData = static_cast<char *>(tag.data);
+        const QString tagData = static_cast<char *>(tag.data);
 
         if (tagName == "ARTIST") {
-            tagName = "Artist";
             playlistItem->info->artist = tagData.toStdString();
+            addInfo(tableInfo, row, "Artist", tagData);
         } else if (tagName == "TITLE") {
-            tagName = "Title";
             playlistItem->info->title = tagData.toStdString();
+            addInfo(tableInfo, row, "Title", tagData);
         } else if (tagName == "icy-genre") {
-            tagName = "Genre";
+            addInfo(tableInfo, row, "Genre", tagData);
         } else if (tagName == "icy-name") {
-            tagName = "Name";
-        } else if (tagName == "icy-url") {
-            tagName = "URL";
+            addInfo(tableInfo, row, "Name", tagData);
         } else if (tagName == "icy-br") {
-            tagName = "Bitrate";
+            addInfo(tableInfo, row, "Bitrate", tagData);
         } else if (tagName == "icy-pub") {
-            tagName = "Published";
-            tagData = tagData == "1" ? "Yes" : "No";
-        }
-
-        if (!tagName.isEmpty()) {
-            addInfo(tableInfo, row, tagName, tagData);
+            addInfo(tableInfo, row, "Published", tagData == "1" ? "Yes" : "No");
         }
     }
 }

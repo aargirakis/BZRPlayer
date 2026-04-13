@@ -1,7 +1,5 @@
 #include <cstring>
 #include <fstream>
-#include <iostream>
-#include <gme.h>
 #include "Music_Emu.h"
 #include "fmod_errors.h"
 #include "info.h"
@@ -78,19 +76,13 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    if (filesize == 4294967295) // stream
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
     auto plugin = new pluginGme(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/gme.cfg";
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
+
     if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
@@ -132,15 +124,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-    // check what music format the file is
-    unsigned int bytesread;
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-    uint8_t header[4] = "";
-
-    result = FMOD_CODEC_FILE_READ(codec, header, 4, &bytesread);
-
-    gme_type_t file_type = gme_identify_extension(gme_identify_header(header));
+    gme_type_t file_type = gme_identify_extension(gme_identify_header(plugin->info->fileBuffer));
 
     // sap format is played by plugin_asap
     if (!file_type || file_type->extension_ == string(gme_sap_type->extension_)) {
@@ -151,27 +135,18 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->fileFormat = file_type->system;
     plugin->emu = gme_new_emu(file_type, freq);
 
-    // allocate space for buffer
-    auto myBuffer = new uint8_t[filesize];
-
-    // rewind file pointer
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-    // read whole file to memory
-    result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
-
-    if (gme_load_data(plugin->emu, myBuffer, filesize)) {
+    if (gme_load_data(plugin->emu, plugin->info->fileBuffer, static_cast<long>(plugin->info->filesize))) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    delete [] myBuffer;
-
     if (gme_track_info(plugin->emu, &plugin->gmeInfo, plugin->info->currentSubsong)) {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
     if (!plugin->gmeInfo) {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 

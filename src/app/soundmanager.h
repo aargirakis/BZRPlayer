@@ -16,11 +16,11 @@ public:
 
     Info *info;
 
-    void Init(int outputDeviceProvided, const QString &outputFilenameProvided);
+    void Init(int outputDeviceProvided, const QString &filePathProvided);
 
     void loadPluginChain();
 
-    void loadPlugin(const string_view &filename, int priority);
+    void loadPlugin(const string &pluginFilename, int priority);
 
     static void checkFmodError(FMOD_RESULT result);
 
@@ -56,9 +56,50 @@ public:
 
     void setMute(bool mute) const;
 
-    bool loadSound(const QString &filename, Info *infoProvided);
+    bool loadSound(const QString &filePath, Info *infoProvided);
+
+    static pair<uint8_t *, size_t> mapFile(const QString &fileToMap);
+
+    static void unmapFile(uint8_t *fileMapped, size_t filesize, const string_view &filePath);
 
     static const char *getFmodSoundTypeName(FMOD_SOUND_TYPE type);
+
+    static bool isFormatMidi(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatSidOrMusStr(const uint8_t *fileBuffer, size_t filesize, const string_view &filename,
+                                    bool &isSid);
+
+    static bool isFormatFarandole(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatRiff(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatProtrekkr(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatAhxOrHvl(const uint8_t *fileBuffer, size_t filesize, bool &isAhx);
+
+    static bool isFormatBPSoundMon1(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatFurOrDfmOrZlib(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatPsf(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatKlystron(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatOrganya1(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatSunVox(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatSc68(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatSndh(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatPac(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatWsr(const uint8_t *fileBuffer, size_t filesize);
+
+    static bool isFormatV2M(size_t filesize, const string_view &filename);
+
+    static bool isFormatJaytrax(const uint8_t *fileBuffer, size_t filesize);
 
     void setReverbEnabled(bool);
 

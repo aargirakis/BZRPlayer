@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 project(app VERSION "${PROJECT_VERSION}")
 
 set(CMAKE_C_STANDARD 17)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(QT_VERSION_MAJOR "6")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -68,6 +68,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE LAYOUTS_DIR="${LAYOUTS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLAYLISTS_DIR="${PLAYLISTS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_DIR="${PLUGINS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE FMOD_DLS_PATH="${PLUGINS_FMOD_DIR}/gm.dls")
 
 foreach (QT_MODULE ${QT_MODULES})
     target_link_libraries(${PROJECT_NAME} PRIVATE "Qt${QT_VERSION_MAJOR}::${QT_MODULE}")

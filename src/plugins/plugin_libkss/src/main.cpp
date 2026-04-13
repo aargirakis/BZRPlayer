@@ -44,7 +44,6 @@ public:
 
     ~pluginLibkss() {
         // delete some stuff
-        delete[] myBuffer;
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -52,8 +51,6 @@ public:
     Info *info;
     KSS *kss = nullptr;
     KSSPLAY *kssplay = nullptr;
-    uint32_t filesize;
-    uint8_t *myBuffer;
     int loopNum;
 };
 
@@ -71,13 +68,6 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     auto *plugin = new pluginLibkss(codec);
-    plugin->info = static_cast<Info *>(userexinfo->userdata);
-
-    FMOD_CODEC_FILE_SIZE(codec, &plugin->filesize);
-    if (plugin->filesize == 4294967295) // stream
-    {
-        return FMOD_ERR_FORMAT;
-    }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
@@ -90,12 +80,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
     codec->plugindata = plugin; // user data value
 
-    plugin->myBuffer = new uint8_t[plugin->filesize];
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, plugin->filesize, nullptr);
-
-    if (KSS_check_type(plugin->myBuffer, plugin->filesize, plugin->info->filename.c_str()) == KSSDATA) {
+    if (KSS_check_type(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
+                       plugin->info->filePath.c_str()) == KSSDATA) {
         /* TODO:
          *  KSS format support in libkss is better than game-music-emu (which doesn't support FM sound),
          *  however currently subsongs are not handled here, so better to stick with game-music-emu
@@ -104,15 +92,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    if (KSS_check_type(plugin->myBuffer, plugin->filesize, plugin->info->filename.c_str()) == MBMDATA) {
+    if (KSS_check_type(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
+                       plugin->info->filePath.c_str()) == MBMDATA) {
         /* TODO:
          *  seems the KSS_autoload_mbk invocation introduces a beginning audio delay
          *  somewhere in the code not in this function
          */
-        KSS_autoload_mbk(plugin->info->filename.c_str(), "", nullptr);
+        KSS_autoload_mbk(plugin->info->filePath.c_str(), "", nullptr);
     }
 
-    plugin->kss = KSS_bin2kss(plugin->myBuffer, plugin->filesize, plugin->info->filename.c_str());
+    plugin->kss = KSS_bin2kss(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
+                              plugin->info->filePath.c_str());
 
     if (plugin->kss == nullptr) {
         return FMOD_ERR_FORMAT;

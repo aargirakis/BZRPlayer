@@ -1,8 +1,6 @@
-#include <filesystem>
 #include <format>
 #include <fstream>
 #include <iostream>
-
 #include "sidplayfp.h"
 #include "SidTune.h"
 #include "SidInfo.h"
@@ -100,7 +98,6 @@ public:
     bool hvscSonglengthsDataBaseEnabled;
     bool isSeeking = false;
     unsigned int length = 0;
-    bool isMus = false;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -123,36 +120,8 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    if (filesize > 1024 * 96) // 96kb (biggest sid in HVSC is 63kb while biggest mus/str in CGSC is 29kb)
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
-    unsigned int bytesread;
-    auto *myBuffer = new uint8_t[filesize];
-
-    // rewind file pointer
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-    // read whole file to memory
-    result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
-
     auto *plugin = new pluginLibsidplayfp(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
-
-    if (memcmp(myBuffer, "PSID", 4) != 0 && memcmp(myBuffer, "RSID", 4) != 0) {
-        const string ext = filesystem::path(plugin->info->filename).extension().string();
-
-        if (strcasecmp(ext.c_str(), ".MUS") == 0 || strcasecmp(ext.c_str(), ".STR") == 0) {
-            plugin->isMus = true;
-        } else {
-            delete[] myBuffer;
-            delete plugin;
-            return FMOD_ERR_FORMAT;
-        }
-    }
 
     string kernal_filename = plugin->info->dataPath + KERNAL_BIN_DATA_PATH;
     string basic_filename = plugin->info->dataPath + BASIC_BIN_DATA_PATH;
@@ -174,7 +143,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     // check if builder is ok
     if (!plugin->rs->getStatus()) {
-        delete[] myBuffer;
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -183,6 +151,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     ifstream ifs(filename.c_str());
 
     bool useDefaults = false;
+
     if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
@@ -194,7 +163,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->waveformat.channels = 2;
 
     SidConfig::sid_model_t defaultSidModel = SidConfig::MOS6581;
-    SidConfig::c64_model_t c64Model = plugin->isMus ? SidConfig::NTSC : SidConfig::PAL;
+    SidConfig::c64_model_t c64Model = plugin->info->isSid ? SidConfig::PAL : SidConfig::NTSC;
     SidConfig::sampling_method_t samplingMethod = SidConfig::RESAMPLE_INTERPOLATE;
     bool forceSidModel = false;
     bool forcec64Model = false;
@@ -281,19 +250,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-    if (plugin->isMus) {
-        plugin->tune = new SidTune(nullptr, plugin->info->filename.c_str(), nullptr);
+    if (plugin->info->isSid) {
+        plugin->tune = new SidTune(plugin->info->fileBuffer, static_cast<uint_least32_t>(plugin->info->filesize));
     } else {
-        plugin->tune = new SidTune(myBuffer, filesize);
+        plugin->tune = new SidTune(nullptr, plugin->info->filePath.c_str(), nullptr);
     }
 
     // check if the tune is valid
     if (!plugin->tune->getStatus()) {
-        delete[] myBuffer;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
-
-    delete[] myBuffer;
 
     plugin->rs->filter(filter);
 
@@ -310,7 +277,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     cfg.sidEmulation = plugin->rs;
 
     if (!plugin->player->config(cfg)) {
-        delete[] myBuffer;
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
@@ -403,9 +370,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             plugin->info->compatibility = "Unknown";
     }
 
-    if (plugin->isMus) {
-        plugin->info->fieldSet = 1;
-    } else {
+    if (plugin->info->isSid) {
         if (s->numberOfInfoStrings() == 3) {
             plugin->info->title = s->infoString(0);
             plugin->info->artist = s->infoString(1);
@@ -413,7 +378,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         }
 
         const string sididCfg = plugin->info->dataPath + SIDID_CFG_DATA_PATH;
-        plugin->info->songPlayer = identifyBufferFromConfig(sididCfg.c_str(), myBuffer, filesize);
+        plugin->info->songPlayer = identifyBufferFromConfig(sididCfg.c_str(), plugin->info->fileBuffer,
+                                                            static_cast<int>(plugin->info->filesize));
 
         plugin->info->md5 = plugin->tune->createMD5New();
     }
@@ -545,7 +511,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        if (plugin->isMus || !plugin->hvscSonglengthsDataBaseEnabled) {
+        if (!plugin->info->isSid || !plugin->hvscSonglengthsDataBaseEnabled) {
             *length = -1;
         } else {
             if (plugin->length == 0) {

@@ -1,5 +1,5 @@
 #include <cstring>
-#include <audiofile.h>
+#include "audiofile.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
@@ -74,7 +74,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     const auto plugin = new pluginAudiofile(codec);
     const auto info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->file = afOpenFile(info->filename.c_str(), "r", nullptr);
+    plugin->file = afOpenFile(info->filePath.c_str(), "r", nullptr);
 
     if (!plugin->file) {
         delete plugin;

@@ -1,4 +1,3 @@
-#include <algorithm>
 #include "v2mplayer.h"
 #include "v2mconv.h"
 #include "sounddef.h"
@@ -79,41 +78,20 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     auto *info = static_cast<Info *>(userexinfo->userdata);
 
-    string filename_lowercase = info->filename;
-
-    transform(filename_lowercase.begin(), filename_lowercase.end(), filename_lowercase.begin(), ::tolower);
-    if (const string ext = filename_lowercase.substr(filename_lowercase.find_last_of('.') + 1);
-        ext != "v2m" && ext != "v2") {
-        return FMOD_ERR_FORMAT;
-    }
-
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    // allocate space for buffer
-    auto *myBuffer = new uint8_t[filesize];
-
-    // rewind file pointer
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-    // read whole file to memory
-    unsigned int bytesread;
-    result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
-
     sdInit();
-    if (ssbase base{}; CheckV2MVersion(myBuffer, filesize, base) < 0) {
-        delete [] myBuffer;
+
+    if (ssbase base{}; CheckV2MVersion(info->fileBuffer, static_cast<int>(info->filesize), base) < 0) {
         return FMOD_ERR_FORMAT;
     }
 
     auto *plugin = new pluginV2mPlayer(codec);
 
-    int converted_length;
-    ConvertV2M(myBuffer, filesize, &plugin->convertedSong, &converted_length);
-
-    delete [] myBuffer;
+    int songLength;
+    ConvertV2M(info->fileBuffer, static_cast<int>(info->filesize), &plugin->convertedSong, &songLength);
 
     plugin->player = new V2MPlayer();
     plugin->player->Init();
+
     if (!plugin->player->Open(plugin->convertedSong)) {
         return FMOD_ERR_FORMAT;
     }

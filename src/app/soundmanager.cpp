@@ -1,9 +1,20 @@
+#include <fstream>
 #include <QDir>
+
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#else
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#endif
+
 #include "mainwindow.h"
 #include "plugins.h"
 #include "soundmanager.h"
 
-void SoundManager::Init(int outputDeviceProvided, const QString &outputFilenameProvided) {
+void SoundManager::Init(int outputDeviceProvided, const QString &filePathProvided) {
     result = FMOD_System_Create(&system, FMOD_VERSION);
     checkFmodError(result);
 
@@ -32,23 +43,23 @@ void SoundManager::Init(int outputDeviceProvided, const QString &outputFilenameP
         result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, nullptr);
         checkFmodError(result);
     } else {
-        QString outputPath = outputFilenameProvided;
+        QString outputFilePath = filePathProvided;
 
         if (const QDir pathDir(userPath + "/recordings"); !pathDir.exists()) {
             QDir().mkdir(userPath + "/recordings");
         }
 
-        outputPath = userPath + "/recordings/" + outputFilenameProvided;
-        cout << "filename: " << outputPath.toStdString().c_str() << "\n";
+        outputFilePath = userPath + "/recordings/" + filePathProvided;
+        cout << "output file path: " << outputFilePath.toStdString().c_str() << "\n";
 
         const QDateTime date = QDateTime::currentDateTime();
         const QString formattedTime = date.toString("yyyy.MM.dd - hh.mm.ss.ms");
-        const QString outputPathFile = outputPath + " " + formattedTime + ".wav";
+        outputFilePath = outputFilePath + " " + formattedTime + ".wav";
 
         printf("FMOD_System_Init: WAVWRITER %i\n", currentDevice);
 
-        cout << "filename complete: " << outputPathFile.toStdString().c_str() << "\n";
-        result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, outputPathFile.toStdString().data());
+        cout << "output file path complete: " << outputFilePath.toStdString().c_str() << "\n";
+        result = FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, outputFilePath.toStdString().data());
         checkFmodError(result);
         printf("WAVWRITER is set\n");
     }
@@ -110,138 +121,145 @@ void SoundManager::loadPluginChain() {
      * FMOD_SOUND_TYPE_USER         2600
      */
 
-    if (PLUGIN_libsidplayfp_LIB != "") {
+    const auto fileBuffer = info->fileBuffer;
+    const auto filesize = info->filesize;
+    const auto filename = info->filename;
+
+    if (PLUGIN_libsidplayfp_LIB != "" && isFormatSidOrMusStr(fileBuffer, filesize, filename, info->isSid)) {
         loadPlugin(PLUGIN_libsidplayfp_LIB, 0);
     }
 
-    if (PLUGIN_libopenmpt_LIB != "") {
+    // libxmp seems to play Farandole Composer module really better
+    if (PLUGIN_libopenmpt_LIB != "" && !isFormatFarandole(fileBuffer, filesize)) {
         loadPlugin(PLUGIN_libopenmpt_LIB, 0);
     }
 
-    if (PLUGIN_highly_experimental_LIB != "") {
-        loadPlugin(PLUGIN_highly_experimental_LIB, 1);
+    if (PLUGIN_highly_experimental_LIB != "" && isFormatPsf(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_highly_experimental_LIB, 0);
     }
 
-    if (PLUGIN_highly_theoretical_LIB != "") {
-        loadPlugin(PLUGIN_highly_theoretical_LIB, 1);
+    if (PLUGIN_highly_theoretical_LIB != "" && isFormatPsf(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_highly_theoretical_LIB, 0);
     }
 
-    if (PLUGIN_lazyusf2_LIB != "") {
-        loadPlugin(PLUGIN_lazyusf2_LIB, 1);
+    if (PLUGIN_lazyusf2_LIB != "" && isFormatPsf(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_lazyusf2_LIB, 0);
     }
 
-    if (PLUGIN_highly_quixotic_LIB != "") {
-        loadPlugin(PLUGIN_highly_quixotic_LIB, 1);
+    if (PLUGIN_highly_quixotic_LIB != "" && isFormatPsf(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_highly_quixotic_LIB, 0);
     }
 
-    if (PLUGIN_vio2sf_LIB != "") {
-        loadPlugin(PLUGIN_vio2sf_LIB, 1);
+    if (PLUGIN_vio2sf_LIB != "" && isFormatPsf(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_vio2sf_LIB, 0);
     }
 
-    if (PLUGIN_protrekkr_LIB != "") {
-        loadPlugin(PLUGIN_protrekkr_LIB, 1);
+    if (PLUGIN_protrekkr_LIB != "" && isFormatProtrekkr(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_protrekkr_LIB, 0);
     }
 
-    if (PLUGIN_hivelytracker_LIB != "") {
-        loadPlugin(PLUGIN_hivelytracker_LIB, 1);
+    if (PLUGIN_hivelytracker_LIB != "" && isFormatAhxOrHvl(fileBuffer, filesize, info->isAhx)) {
+        loadPlugin(PLUGIN_hivelytracker_LIB, 0);
     }
 
     if (PLUGIN_libstsound_LIB != "") {
-        loadPlugin(PLUGIN_libstsound_LIB, 1);
+        loadPlugin(PLUGIN_libstsound_LIB, 0);
     }
 
-    if (PLUGIN_flod_LIB != "") {
-        loadPlugin(PLUGIN_flod_LIB, 1);
+    if (PLUGIN_flod_LIB != "" && isFormatBPSoundMon1(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_flod_LIB, 0);
     }
 
-    if (PLUGIN_sndh_player_LIB != "") {
-        loadPlugin(PLUGIN_sndh_player_LIB, 1);
+    if (PLUGIN_sndh_player_LIB != "" && isFormatSndh(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_sndh_player_LIB, 0);
     }
 
-    if (PLUGIN_furnace_LIB != "") {
-        loadPlugin(PLUGIN_furnace_LIB, 1);
+    if (PLUGIN_furnace_LIB != "" && isFormatFurOrDfmOrZlib(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_furnace_LIB, 0);
     }
 
-    if (PLUGIN_uade_LIB != "") {
-        loadPlugin(PLUGIN_uade_LIB, 1);
+    // 16mb max allowed (emulated chipmem in uade is currently 8mb)
+    if (PLUGIN_uade_LIB != "" && filesize <= 1024 * 1024 * 16 && !isFormatRiff(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_uade_LIB, 0);
     }
 
-    //loadPlugin("plugin_quartet.dll",1);
+    //loadPlugin("plugin_quartet.dll", 0);
 
     if (PLUGIN_adplug_LIB != "") {
-        loadPlugin(PLUGIN_adplug_LIB, 599);
+        loadPlugin(PLUGIN_adplug_LIB, 0);
     }
 
     if (PLUGIN_vgmstream_LIB != "") {
-        loadPlugin(PLUGIN_vgmstream_LIB, 599);
+        loadPlugin(PLUGIN_vgmstream_LIB, 0);
     }
 
-    if (PLUGIN_klystron_LIB != "") {
-        loadPlugin(PLUGIN_klystron_LIB, 1701);
+    if (PLUGIN_klystron_LIB != "" && isFormatKlystron(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_klystron_LIB, 0);
     }
 
     if (PLUGIN_asap_LIB != "") {
-        loadPlugin(PLUGIN_asap_LIB, 1701);
+        loadPlugin(PLUGIN_asap_LIB, 0);
     }
 
     if (PLUGIN_libkss_LIB != "") {
-        loadPlugin(PLUGIN_libkss_LIB, 1701);
+        loadPlugin(PLUGIN_libkss_LIB, 0);
     }
 
-    if (PLUGIN_organya_decoder_LIB != "") {
-        loadPlugin(PLUGIN_organya_decoder_LIB, 1701);
+    if (PLUGIN_organya_decoder_LIB != "" && isFormatOrganya1(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_organya_decoder_LIB, 0);
     }
 
-    if (PLUGIN_sunvox_lib_LIB != "") {
-        loadPlugin(PLUGIN_sunvox_lib_LIB, 1701);
+    if (PLUGIN_sunvox_lib_LIB != "" && isFormatSunVox(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_sunvox_lib_LIB, 0);
     }
 
-    if (PLUGIN_sc68_LIB != "") {
-        loadPlugin(PLUGIN_sc68_LIB, 1701);
+    if (PLUGIN_sc68_LIB != "" && isFormatSc68(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_sc68_LIB, 0);
     }
 
     if (PLUGIN_kdm_LIB != "") {
-        loadPlugin(PLUGIN_kdm_LIB, 1701);
+        loadPlugin(PLUGIN_kdm_LIB, 0);
     }
 
-    if (PLUGIN_libpac_LIB != "") {
-        loadPlugin(PLUGIN_libpac_LIB, 1701);
+    if (PLUGIN_libpac_LIB != "" && isFormatPac(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_libpac_LIB, 0);
     }
 
-    if (PLUGIN_libxmp_LIB != "") {
-        loadPlugin(PLUGIN_libxmp_LIB, 1701);
+    if (PLUGIN_libxmp_LIB != "" && !isFormatRiff(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_libxmp_LIB, 0);
     }
 
-    if (PLUGIN_mdxmini_LIB != "") {
-        loadPlugin(PLUGIN_mdxmini_LIB, 1701);
+    // 100kb max allowed (biggest mdx on modland is 85kb)
+    if (PLUGIN_mdxmini_LIB != "" && filesize <= 1024 * 100) {
+        loadPlugin(PLUGIN_mdxmini_LIB, 0);
     }
 
     if (PLUGIN_libvgm_LIB != "") {
-        loadPlugin(PLUGIN_libvgm_LIB, 1701);
+        loadPlugin(PLUGIN_libvgm_LIB, 0);
     }
 
     if (PLUGIN_game_music_emu_LIB != "") {
-        loadPlugin(PLUGIN_game_music_emu_LIB, 1701);
+        loadPlugin(PLUGIN_game_music_emu_LIB, 0);
     }
 
-    if (PLUGIN_audiodecoder_wsr_LIB != "") {
-        loadPlugin(PLUGIN_audiodecoder_wsr_LIB, 1701);
+    if (PLUGIN_audiodecoder_wsr_LIB != "" && isFormatWsr(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_audiodecoder_wsr_LIB, 0);
     }
 
-    if (PLUGIN_v2m_player_LIB != "") {
-        loadPlugin(PLUGIN_v2m_player_LIB, 1701);
+    if (PLUGIN_v2m_player_LIB != "" && isFormatV2M(filesize, filename)) {
+        loadPlugin(PLUGIN_v2m_player_LIB, 0);
     }
 
-    if (PLUGIN_jaytrax_LIB != "") {
-        loadPlugin(PLUGIN_jaytrax_LIB, 1701);
+    if (PLUGIN_jaytrax_LIB != "" && isFormatJaytrax(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_jaytrax_LIB, 0);
     }
 
     if (PLUGIN_audiofile_LIB != "") {
-        loadPlugin(PLUGIN_audiofile_LIB, 1701);
+        loadPlugin(PLUGIN_audiofile_LIB, 0);
     }
 
     if (PLUGIN_zxtune_LIB != "") {
-        loadPlugin(PLUGIN_zxtune_LIB, 1701);
+        loadPlugin(PLUGIN_zxtune_LIB, 0);
     }
 }
 
@@ -401,17 +419,16 @@ int SoundManager::getNumTags() const {
     return numTags;
 }
 
-void SoundManager::loadPlugin(const string_view &filename, const int priority) {
-    string pluginsDir = QString(libPath + PLUGINS_DIR + "/").toStdString();
-    const char *pluginPath = (pluginsDir += filename).c_str();
+void SoundManager::loadPlugin(const string &pluginFilename, const int priority) {
+    const string pluginPath = info->pluginsDir + pluginFilename;
 
-    result = FMOD_System_LoadPlugin(system, pluginPath, nullptr, priority);
+    result = FMOD_System_LoadPlugin(system, pluginPath.c_str(), nullptr, priority);
 
     if (result != FMOD_OK) {
-        //DebugWindow::instance()->addText(QString(filename.c_str()));
+        //DebugWindow::instance()->addText(QString(pluginFilename.c_str()));
     }
 
-    checkFmodError(result, pluginPath);
+    checkFmodError(result, pluginPath.c_str());
 
     //DebugWindow::instance()->addText("GetNumPlugins " + QString::number(numplugins));
 }
@@ -442,6 +459,10 @@ void SoundManager::stop() const {
     //    {
     //        setOutput(0);
     //    }
+
+    if (info != nullptr) {
+        unmapFile(info->fileBuffer, info->filesize, info->filePath);
+    }
 }
 
 bool SoundManager::isPlaying() const {
@@ -535,42 +556,91 @@ bool SoundManager::isChannelMuted(const unsigned int channelProvided) const {
     return muted;
 }
 
-bool SoundManager::loadSound(const QString &filename, Info *infoProvided) {
+bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
     stop();
     release();
 
-    mutedChannelsMask = 0;
-    mutedChannelsMaskString = "";
-
     info = infoProvided;
+
+    const auto filePathStr = filePath.toStdString();
+    const bool isLocalFilePath = !filePathStr.starts_with("http");
+
+    if (isLocalFilePath) {
+        const auto [fileMapped, filesize] = mapFile(filePath);
+
+        if (fileMapped == nullptr || filesize == NULL) return false;
+
+        info->fileBuffer = fileMapped;
+        info->filesize = filesize;
+        info->isLocalFilePath = true;
+    }
+
     info->tempPath = QDir::tempPath().toStdString();
     info->dataPath = dataPath.toStdString();
     info->libPath = libPath.toStdString();
     info->userPath = userPath.toStdString();
-    info->filename = filename.toStdString();
+    info->filePath = filePathStr;
+
+    const QFileInfo fileinfo(filePath);
+    info->filename = fileinfo.fileName().toStdString();
+    info->fileDir = fileinfo.path().toStdString();
+    info->fileLastModified = fileinfo.lastModified().toString("yyyy-MM-dd hh:mm:ss").toStdString();
+    info->fileCreatedAt = fileinfo.birthTime().toString("yyyy-MM-dd hh:mm:ss").toStdString();
+
+    mutedChannelsMask = 0;
+    mutedChannelsMaskString = "";
 
     FMOD_CREATESOUNDEXINFO extraInfo = {};
-
     extraInfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-    const string dls = dataPath.toStdString() + PLUGINS_FMOD_DIR + "/gm.dls";
-    extraInfo.dlsname = dls.c_str();
     extraInfo.userdata = info;
 
-    cout << "Loading " << info->filename << " (subsong " << info->currentSubsong + 1 << ")" << endl;
+    cout << "Loading " << filePathStr << " (subsong " << info->currentSubsong + 1 << ")" << endl;
 
-    loadPluginChain();
+    constexpr FMOD_MODE fmodModeNetwork = FMOD_ACCURATETIME | FMOD_CREATESTREAM;
+    constexpr FMOD_MODE fmodModeLocal = fmodModeNetwork | FMOD_OPENMEMORY_POINT;
+    constexpr FMOD_MODE fmodModeLocalPlugins = fmodModeLocal | FMOD_LOOP_OFF;
 
-    constexpr FMOD_MODE fmodMode = FMOD_ACCURATETIME | FMOD_CREATESTREAM;
+    FMOD_MODE fmodModeCurrent;
 
-    result = FMOD_System_CreateSound(system, filename.toStdString().c_str(), fmodMode | FMOD_LOOP_OFF, &extraInfo,
-                                     &sound);
+    const char *pathOrBuffer;
+
+    // use fmod for network streams playback
+    if (!isLocalFilePath) {
+        fmodModeCurrent = fmodModeNetwork;
+        pathOrBuffer = filePathStr.c_str();
+    } else {
+        pathOrBuffer = reinterpret_cast<const char *>(info->fileBuffer);
+        extraInfo.length = static_cast<unsigned int>(info->filesize);
+
+        // use fmod for midi playback
+        if (isFormatMidi(info->fileBuffer, info->filesize)) {
+            static const char *fmodDlsPath = strdup((dataPath + FMOD_DLS_PATH).toStdString().c_str());
+            extraInfo.dlsname = fmodDlsPath;
+
+            if (info->isPlayModeRepeatSongEnabled && info->isFmodSeamlessLoopEnabled) {
+                info->isSeamlessLoopActive = true;
+                fmodModeCurrent = fmodModeLocal | FMOD_LOOP_NORMAL;
+            } else {
+                fmodModeCurrent = fmodModeLocal | FMOD_LOOP_OFF;
+            }
+        } else {
+            fmodModeCurrent = fmodModeLocalPlugins;
+            info->pluginsDir = info->libPath + PLUGINS_DIR + "/";
+            loadPluginChain();
+        }
+    }
+
+    result = FMOD_System_CreateSound(system, pathOrBuffer, fmodModeCurrent, &extraInfo, &sound);
 
     if (result != FMOD_OK) {
         checkFmodError(result);
+        unmapFile(info->fileBuffer, info->filesize, info->filePath);
         delete info;
         info = nullptr;
         return false;
     }
+
+    cout << "FMOD_System_CreateSound done\n";
 
     FMOD_SOUND_TYPE type;
     int channels;
@@ -593,19 +663,112 @@ bool SoundManager::loadSound(const QString &filename, Info *infoProvided) {
         if (info->plugin == PLUGIN_fmod) {
             info->pluginName = PLUGIN_fmod_NAME;
             info->fileFormat = getFmodSoundTypeName(type);
-
-            if (info->isPlayModeRepeatSongEnabled && info->isFmodSeamlessLoopEnabled) {
-                info->isSeamlessLoopActive = true;
-                FMOD_Sound_SetMode(sound, fmodMode | FMOD_LOOP_NORMAL);
-            }
         }
     }
 
-    cout << "FMOD_System_CreateSound done\n";
     cout << "plugin: " << info->pluginName << "\n";
     flush(cout);
 
     return true;
+}
+
+pair<uint8_t *, size_t> SoundManager::mapFile(const QString &fileToMap) {
+    const auto fileToMapStr = fileToMap.toStdString();
+    uint8_t *fileMapped;
+    size_t filesize;
+#ifdef WIN32
+    const auto hFile = CreateFileW(fileToMap.toStdWString().c_str(), GENERIC_READ, FILE_SHARE_READ,
+                                   nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE) {
+        cerr << "Error reading file " << fileToMapStr << ": error " << GetLastError() << endl;
+        return {nullptr, NULL};
+    }
+
+    LARGE_INTEGER size;
+
+    if (!GetFileSizeEx(hFile, &size)) {
+        cerr << "Error getting size of file " << fileToMapStr << ": error " << GetLastError() << endl;
+        CloseHandle(hFile);
+        return {nullptr, NULL};
+    }
+
+    filesize = static_cast<unsigned long>(size.QuadPart);
+#else
+    const int fd = open(fileToMapStr.c_str(), O_RDONLY);
+
+    if (fd < 0) {
+        cerr << "Error reading file " << fileToMapStr << ": " << strerror(errno) << endl;
+        return {nullptr, NULL};
+    }
+
+    struct stat st = {};
+
+    if (const int status = fstat(fd, &st); status < 0) {
+        cerr << "Stat failed for file " << fileToMapStr << ": " << strerror(errno) << endl;
+        close(fd);
+        return {nullptr, NULL};
+    }
+
+    filesize = st.st_size;
+#endif
+    if (filesize <= 0) {
+        cerr << "Invalid size for file " << fileToMapStr << endl;
+        return {nullptr, NULL};
+    }
+
+#ifdef WIN32
+    const auto hMapping = CreateFileMapping(hFile, nullptr, PAGE_READONLY, 0,
+                                            0, nullptr);
+
+    auto err = GetLastError();
+
+    CloseHandle(hFile);
+
+    if (hMapping == nullptr) {
+        cerr << "Error creating file mapping object for " << fileToMapStr << ": error " << err << endl;
+        return {nullptr, NULL};
+    }
+
+    fileMapped = static_cast<uint8_t *>(MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, filesize));
+
+    err = GetLastError();
+
+    CloseHandle(hMapping);
+
+    if (fileMapped == nullptr) {
+        cerr << "Error mapping file " << fileToMapStr << " to memory: error " << err << endl;
+        return {nullptr, NULL};
+    }
+#else
+    fileMapped = static_cast<uint8_t *>(mmap(nullptr, filesize, PROT_READ, MAP_PRIVATE | MAP_POPULATE,
+                                             fd, 0));
+
+    const auto errStr = strerror(errno);
+
+    close(fd);
+
+    if (fileMapped == MAP_FAILED) {
+        cerr << "Error mapping file " << fileToMapStr << " to memory: " << errStr << endl;
+        return {nullptr, NULL};
+    }
+#endif
+
+    return {fileMapped, filesize};
+}
+
+void SoundManager::unmapFile(uint8_t *fileMapped, const size_t filesize, const string_view &filePath) {
+    if (fileMapped != nullptr) {
+#ifdef WIN32
+        if (!UnmapViewOfFile(fileMapped)) {
+            cerr << "Error unmapping file " << filePath << " from memory: error " << GetLastError() << endl;
+        }
+#else
+        if (const int rc = munmap(fileMapped, filesize); rc < 0) {
+            cerr << "Error unmapping file " << filePath << " from memory: " << strerror(errno) << endl;
+        }
+#endif
+    }
 }
 
 const char *SoundManager::getFmodSoundTypeName(const FMOD_SOUND_TYPE type) {
@@ -665,4 +828,260 @@ const char *SoundManager::getFmodSoundTypeName(const FMOD_SOUND_TYPE type) {
         default:
             return "Unknown format";
     }
+}
+
+bool SoundManager::isFormatMidi(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magicHeaderChunk[] = "MThd";
+    constexpr char magicTrackChunk[] = "MTrk";
+    constexpr uint8_t magicTrackChunkOffset1 = 0x04;
+    constexpr uint8_t magicLength = 0x04;
+    constexpr uint8_t formatOffset = 0x08;
+
+    if (filesize < magicLength) return false;
+
+    if (memcmp(fileBuffer, magicHeaderChunk, magicLength) != 0) {
+        return false;
+    }
+
+    uint16_t format;
+
+    if (filesize < formatOffset + sizeof(format)) return false;
+
+    memcpy(&format, &fileBuffer[formatOffset], sizeof(format));
+
+    if (byteswap(format) > 0x02) return false;
+
+    uint32_t magicTrackChunkOffset2;
+
+    memcpy(&magicTrackChunkOffset2, &fileBuffer[magicTrackChunkOffset1], sizeof(magicTrackChunkOffset2));
+    magicTrackChunkOffset2 = formatOffset + byteswap(magicTrackChunkOffset2);
+
+    if (filesize < magicTrackChunkOffset2 + magicLength) return false;
+
+    return memcmp(&fileBuffer[magicTrackChunkOffset2], magicTrackChunk, magicLength) == 0;
+}
+
+bool SoundManager::isFormatSidOrMusStr(const uint8_t *fileBuffer, const size_t filesize, const string_view &filename,
+                                       bool &isSid) {
+    // 96kb max allowed (biggest sid in HVSC is 63kb while biggest mus/str in CGSC is 29kb)
+    if (filesize > 1024 * 96) return false;
+
+    constexpr char magic1[] = "PSID";
+    constexpr char magic2[] = "RSID";
+    constexpr uint8_t magicLength = 0x04;
+
+    if (filesize < magicLength) return false;
+
+    if (memcmp(fileBuffer, magic1, magicLength) == 0 || memcmp(fileBuffer, magic2, magicLength) == 0) {
+        isSid = true;
+        return true;
+    }
+
+    if (const string ext = filesystem::path(filename).extension().string();
+        strcasecmp(ext.c_str(), ".MUS") == 0 || strcasecmp(ext.c_str(), ".STR") == 0) {
+        return true;
+    }
+
+    return false;
+}
+
+bool SoundManager::isFormatFarandole(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic[] = "FAR\xFE";
+    constexpr uint8_t magicOffset = 0x00;
+    constexpr uint8_t magicLength = 0x04;
+    constexpr char crLfEof[] = "\x0D\x0A\x1A";
+    constexpr uint8_t crLfEofOffset = 0x2C;
+    constexpr uint8_t crLfEofLength = 0x03;
+
+    if (filesize < crLfEofOffset + crLfEofLength) return false;
+
+    return memcmp(&fileBuffer[magicOffset], magic, magicLength) == 0 &&
+           memcmp(&fileBuffer[crLfEofOffset], crLfEof, crLfEofLength) == 0;
+}
+
+bool SoundManager::isFormatRiff(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic[] = "RIFF";
+    constexpr uint8_t magicLength = 0x04;
+
+    if (filesize < magicLength) return false;
+
+    return memcmp(fileBuffer, magic, magicLength) == 0;
+}
+
+bool SoundManager::isFormatProtrekkr(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic1[] = "PROTREK";
+    constexpr char magic2[] = "TWNNSNG";
+    constexpr uint8_t magicLength = 0x07;
+
+    if (filesize < magicLength) return false;
+
+    return memcmp(fileBuffer, magic1, magicLength) == 0 || memcmp(fileBuffer, magic2, magicLength) == 0;
+}
+
+bool SoundManager::isFormatAhxOrHvl(const uint8_t *fileBuffer, const size_t filesize, bool &isAhx) {
+    constexpr char magic1[] = "THX";
+    constexpr char magic2[] = "HVL";
+    constexpr uint8_t magicLength = 0x03;
+
+    if (filesize < magicLength) return false;
+
+    if (memcmp(fileBuffer, magic1, magicLength) == 0) {
+        isAhx = true;
+        return true;
+    }
+    if (memcmp(fileBuffer, magic2, magicLength) == 0) {
+        return true;
+    }
+
+    return false;
+}
+
+bool SoundManager::isFormatBPSoundMon1(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic[] = "BPSM";
+    constexpr uint8_t magicOffset = 0x1A;
+    constexpr uint8_t magicLength = 0x04;
+
+    if (filesize < magicOffset + magicLength) return false;
+
+    return memcmp(&fileBuffer[magicOffset], magic, magicLength) == 0;
+}
+
+bool SoundManager::isFormatFurOrDfmOrZlib(const uint8_t *fileBuffer, const size_t filesize) {
+    // furnace, deflemask & zlib (with no/fast/default/best compression)
+    constexpr char magicFur[] = "-Furnace module-";
+    constexpr char magicDfm[] = ".DelekDefleMask.";
+    constexpr uint8_t magicFurAndDfmLength = 0x10;
+    constexpr char magicZlibNo[] = "\x78\x01";
+    constexpr uint8_t magicZlibNoLength = 0x02;
+    constexpr char magicZlibFast[] = "\x78\x5E";
+    constexpr uint8_t magicZlibFastLength = 0x02;
+    constexpr char magicZlibDefault[] = "\x78\x9C";
+    constexpr uint8_t magicZlibDefaultLength = 0x02;
+    constexpr char magicZlibBest[] = "\x78\xDA";
+    constexpr uint8_t magicZlibBestLength = 0x02;
+
+    if (filesize < magicFurAndDfmLength) return false;
+
+    return memcmp(fileBuffer, magicFur, magicFurAndDfmLength) == 0 ||
+           memcmp(fileBuffer, magicDfm, magicFurAndDfmLength) == 0 ||
+           memcmp(fileBuffer, magicZlibNo, magicZlibNoLength) == 0 ||
+           memcmp(fileBuffer, magicZlibFast, magicZlibFastLength) == 0 ||
+           memcmp(fileBuffer, magicZlibDefault, magicZlibDefaultLength) == 0 ||
+           memcmp(fileBuffer, magicZlibBest, magicZlibBestLength) == 0;
+}
+
+bool SoundManager::isFormatPsf(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic[] = "PSF";
+    constexpr uint8_t magicLength = 0x03;
+
+    if (filesize < magicLength) return false;
+
+    return memcmp(fileBuffer, magic, magicLength) == 0;
+}
+
+bool SoundManager::isFormatKlystron(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic[] = "cyd!song";
+    constexpr uint8_t magicLength = 0x08;
+
+    if (filesize < magicLength) return false;
+
+    return memcmp(fileBuffer, magic, magicLength) == 0;
+}
+
+bool SoundManager::isFormatOrganya1(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic[] = "Org-02";
+    constexpr uint8_t magicLength = 0x06;
+
+    if (filesize < magicLength) return false;
+
+    return memcmp(fileBuffer, magic, magicLength) == 0;
+}
+
+bool SoundManager::isFormatSunVox(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic[] = "SVOX";
+    constexpr uint8_t magicLength = 0x04;
+
+    if (filesize < magicLength) return false;
+
+    return memcmp(fileBuffer, magic, magicLength) == 0;
+}
+
+bool SoundManager::isFormatSc68(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic[] = "SC68";
+    constexpr uint8_t magicLength = 0x04;
+
+    if (filesize < magicLength) return false;
+
+    return memcmp(fileBuffer, magic, magicLength) == 0;
+}
+
+bool SoundManager::isFormatSndh(const uint8_t *fileBuffer, const size_t filesize) {
+    // 2mb max allowed (biggest sndh on modland is 1383730 bytes)
+    if (filesize > 1024 * 2048) return false;
+
+    constexpr char magic[] = "SNDH";
+    constexpr uint8_t magicOffset = 0x0C;
+    constexpr char magicPacked1[] = "ICE!";
+    constexpr char magicPacked2[] = "Ice!";
+    constexpr uint8_t magicPackedOffset = 0x00;
+    constexpr uint8_t magicLength = 0x04;
+
+    if (filesize < magicOffset + magicLength) return false;
+
+    return memcmp(&fileBuffer[magicOffset], magic, magicLength) == 0 ||
+           memcmp(&fileBuffer[magicPackedOffset], magicPacked1, magicLength) == 0 ||
+           memcmp(&fileBuffer[magicPackedOffset], magicPacked2, magicLength) == 0;
+}
+
+bool SoundManager::isFormatPac(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr char magic1[] = "PACG";
+    constexpr uint8_t magic1Offset = 0x00;
+    constexpr char magic2[] = "PAIN";
+    constexpr uint8_t magic2Offset = 0x08;
+    constexpr uint8_t magicLength = 0x04;
+
+    if (filesize < magic2Offset + magicLength) return false;
+
+    return memcmp(&fileBuffer[magic1Offset], magic1, magicLength) == 0 &&
+           memcmp(&fileBuffer[magic2Offset], magic2, magicLength) == 0;
+}
+
+bool SoundManager::isFormatWsr(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr size_t magic1OffsetFromEnd = 0x20;
+
+    if (filesize < magic1OffsetFromEnd) return false;
+
+    constexpr char magic1[] = "WSRF";
+    const size_t magic1Offset = filesize - magic1OffsetFromEnd;
+    constexpr uint8_t magic1Length = 0x04;
+    constexpr char magic2[] = "\xEA";
+    const size_t magic2Offset = filesize - 0x10;
+    constexpr uint8_t magic2Length = 0x01;
+
+    return memcmp(&fileBuffer[magic1Offset], magic1, magic1Length) == 0 &&
+           memcmp(&fileBuffer[magic2Offset], magic2, magic2Length) == 0;
+}
+
+bool SoundManager::isFormatV2M(const size_t filesize, const string_view &filename) {
+    if (filesize < 480) return false;
+
+    if (const string ext = filesystem::path(filename).extension().string();
+        strcasecmp(ext.c_str(), ".V2") == 0 || strcasecmp(ext.c_str(), ".V2M") == 0) {
+        return true;
+    }
+
+    return false;
+}
+
+bool SoundManager::isFormatJaytrax(const uint8_t *fileBuffer, const size_t filesize) {
+    constexpr uint32_t verMugician1 = 0xD80;
+    constexpr uint32_t verMugician2 = 0xD81;
+    constexpr uint8_t verLength = 0x04;
+
+    if (filesize < verLength) return false;
+
+    uint32_t value;
+    memcpy(&value, fileBuffer, verLength);
+
+    return value == verMugician1 || value == verMugician2;
 }

@@ -87,25 +87,13 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    uint8_t id[4];
-    unsigned int bytesread;
-    FMOD_CODEC_FILE_READ(codec, id, 4, &bytesread);
-
     auto *plugin = new pluginHivelyTracker(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
-
-    if (memcmp(id, "HVL", 3) == 0) {
-        plugin->info->fileFormat = "HivelyTracker";
-    } else if (memcmp(id, "THX", 3) == 0) {
-        plugin->info->fileFormat = "AHX";
-    } else {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
 
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
+
     if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
@@ -134,25 +122,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     hvl_InitReplayer();
 
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    auto *myBuffer = new uint8_t[filesize];
-
-    // rewind file pointer
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-    // read whole file to memory
-    result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
-
-    plugin->tune = hvl_ParseTune(myBuffer, filesize, 44100, defstereo);
+    plugin->tune = hvl_ParseTune(plugin->info->fileBuffer, plugin->info->filesize, 44100, defstereo);
 
     if (!plugin->tune) {
         delete plugin;
-        delete [] myBuffer;
         return FMOD_ERR_FORMAT;
     }
-
-    delete [] myBuffer;
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
@@ -164,6 +139,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     codec->numsubsounds = 0;
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
     codec->plugindata = plugin; // user data value
+
+    plugin->info->fileFormat = plugin->info->isAhx ? "AHX" : "HivelyTracker";
 
     hvl_InitSubsong(plugin->tune, plugin->info->currentSubsong);
 

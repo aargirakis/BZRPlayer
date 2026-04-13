@@ -172,8 +172,6 @@ public:
 
     static void *OpenPSF(void *context, const char *uri) {
         const auto plugin = static_cast<pluginLazyusf2 *>(context);
-        unsigned int filesize;
-        FMOD_CODEC_FILE_SIZE(plugin->_codec, &filesize);
 
 #ifdef WIN32
         plugin->file = fopen(uri, "rb");
@@ -256,24 +254,10 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-
-    auto *buffer = new uint8_t[4];
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, buffer, 4, &bytesread);
-
-    // skip midi and riff
-    if (memcmp(buffer, "MThd", 4) == 0 || memcmp(buffer, "RIFF", 4) == 0) {
-        delete[] buffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] buffer;
-
     auto *plugin = new pluginLazyusf2(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    const auto psfType = psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0x21, nullptr, nullptr,
+    const auto psfType = psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, 0x21, nullptr, nullptr,
                                   pluginLazyusf2::InfoMetaPSF,
                                   plugin, 0, nullptr, nullptr);
     if (psfType != 0x21) {
@@ -286,9 +270,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     usf_clear(plugin->lazyState);
-    if (psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(psfType),
-                 pluginLazyusf2::UsfLoad, plugin,
-                 nullptr, nullptr, 0, nullptr, nullptr) < 0) {
+    if (psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(psfType),
+                 pluginLazyusf2::UsfLoad, plugin, nullptr, nullptr, 0, nullptr, nullptr) < 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -356,7 +339,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     auto *plugin = static_cast<pluginLazyusf2 *>(codec->plugindata);
     usf_shutdown(plugin->lazyState);
     usf_clear(plugin->lazyState);
-    psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0x21, pluginLazyusf2::UsfLoad, plugin, nullptr,
+    psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, 0x21, pluginLazyusf2::UsfLoad, plugin, nullptr,
              nullptr, 0, nullptr, nullptr);
     usf_set_hle_audio(plugin->lazyState, 1);
     usf_set_compare(plugin->lazyState, plugin->loaderState.enablecompare);

@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <cstring>
 #include "fmod_errors.h"
 #include "info.h"
@@ -80,23 +79,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginWsr(codec);
     const auto info = static_cast<Info *>(userexinfo->userdata);
 
-    string filename_lowercase = info->filename;
-    ranges::transform(filename_lowercase, filename_lowercase.begin(), ::tolower);
+    ROMSize = static_cast<int>(info->filesize);
+    ROM = new uint8_t[info->filesize];
 
-    if (!filename_lowercase.ends_with(".wsr")) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
-    unsigned int bytesread;
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    ROMSize = filesize;
-    ROMBank = (ROMSize + 0xFFFF) >> 16;
-    ROM = new uint8_t[ROMBank * 0x10000];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, ROM, filesize, &bytesread);
+    memcpy(ROM, info->fileBuffer, sizeof(uint8_t) * info->filesize);
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;

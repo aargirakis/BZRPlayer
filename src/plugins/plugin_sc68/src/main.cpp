@@ -80,42 +80,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-    auto *s = new uint8_t[16];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, s, 16, &bytesread);
-
     const auto plugin = new pluginSc68(codec);
-
-    bool isSC68 = false;
-    bool isValidFile = false;
-    if (memcmp(s, "SC68", 4) == 0) {
-        isSC68 = true;
-        isValidFile = true;
-    } else if (memcmp(s, "ICE!", 4) == 0 || memcmp(s, "SNDH", 4) == 0) {
-        isSC68 = false;
-        isValidFile = true;
-    }
-
-    delete[] s;
-
-    if (!isValidFile) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    // allocate space for buffer
-    auto *myBuffer = new uint8_t[filesize];
-
-    // rewind file pointer
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-    // read whole file to memory
-    result = FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, &bytesread);
 
     sc68_init(&plugin->init68);
 
@@ -126,13 +91,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->sc68 = sc68_create(&plugin->create68);
 
-    if (sc68_load_mem(plugin->sc68, myBuffer, filesize) < 0) {
-        delete[] myBuffer;
+    if (sc68_load_mem(plugin->sc68, info->fileBuffer, info->filesize) < 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
-
-    delete[] myBuffer;
 
     // setting loop = 1 in api68_seek function will make it work
     // but seeking is so slow (like slowly winding it up, audible so it's pretty useless
@@ -169,12 +131,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     info->plugin = PLUGIN_sc68;
     info->pluginName = PLUGIN_sc68_NAME;
-
-    if (isSC68) {
-        info->fileFormat = "SC68";
-    } else {
-        info->fileFormat = "SNDH";
-    }
+    info->fileFormat = "SC68";
 
     info->author = plugin->info.author;
     info->composer = plugin->info.composer;

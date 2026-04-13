@@ -1,5 +1,3 @@
-#include <algorithm>
-#include <filesystem>
 #include <format>
 #include <fstream>
 
@@ -84,25 +82,6 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    auto *smallBuffer = new uint8_t[16];
-    FMOD_CODEC_FILE_READ(codec, smallBuffer, 16, nullptr);
-
-    /* skip gm.dls:
-     * plugin_vgmstream has higher prio than FMOD_SOUND_TYPE_MIDI,
-     * thus when plugin_vgmstream will fail on midi loading
-     * FMOD will try to invoke plugin_vgmstream again for loading gm.dls too
-    */
-    if (memcmp(smallBuffer, "RIFF\x0c\x80" "4\0DLS colh", 16) == 0) {
-        delete[] smallBuffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] smallBuffer;
-
-    unsigned int filesize;
-
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
     auto *plugin = new pluginVgmstream(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
@@ -124,20 +103,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     pair<string, string> metadataCueTrackRemReplayGainTrackGain;
     pair<string, string> metadataCueTrackRemReplayGainTrackPeak;
 
-    if (filesize <= 1024 * 500) {
-        auto *myBuffer = new char[filesize];
-
-        FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-        FMOD_CODEC_FILE_READ(codec, myBuffer, filesize, nullptr);
-
-        if (const auto cd = cue_parse_string(myBuffer); cd) {
+    if (plugin->info->filesize <= 1024 * 500) {
+        if (const auto cd = cue_parse_string(reinterpret_cast<const char *>(plugin->info->fileBuffer)); cd) {
             if (const auto tracksCount = cd_get_ntrack(cd); tracksCount >= 1) {
                 if (const auto currentTrack = cd_get_track(cd, plugin->info->currentSubsong + 1); currentTrack) {
                     if (const auto trackFilename = track_get_filename(currentTrack)) {
                         plugin->info->isTrackFromCueSheet = true;
                         plugin->info->cueSheetTrackFilename = trackFilename;
-                        plugin->info->filename = filesystem::path(plugin->info->filename)
-                                .replace_filename(trackFilename).string();
+                        plugin->info->filePath = plugin->info->fileDir + "/" + trackFilename;
                         plugin->info->numSubsongs = tracksCount;
                         plugin->trackStartFromCueSheet = track_get_start(currentTrack);
                         plugin->trackLengthFromCueSheet = track_get_length(currentTrack);
@@ -214,8 +187,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                 }
             }
         }
-
-        delete[] myBuffer;
     }
 
     plugin->libvgmstream = libvgmstream_init();
@@ -262,7 +233,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     libvgmstream_setup(plugin->libvgmstream, &config);
 
-    auto libsf = libstreamfile_open_from_stdio(plugin->info->filename.c_str());
+    auto libsf = libstreamfile_open_from_stdio(plugin->info->filePath.c_str());
     if (!libsf) {
         delete plugin;
         return FMOD_ERR_FORMAT;

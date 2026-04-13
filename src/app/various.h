@@ -37,7 +37,7 @@ struct Equalizer {
     float eq16000;
 };
 
-QString groupDigits(int64_t number);
+QString groupDigits(size_t number);
 
 QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds);
 

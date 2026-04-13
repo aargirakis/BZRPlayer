@@ -44,12 +44,9 @@ public:
 
     ~pluginKdm() {
         // delete some stuff
-        delete[] myBuffer;
         delete player;
-        myBuffer = nullptr;
     }
 
-    uint8_t *myBuffer;
     Info *info;
     kdmeng *player;
 
@@ -75,26 +72,16 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
+    constexpr int sampleRate = 44100;
 
     const auto plugin = new pluginKdm(codec);
-    plugin->info = static_cast<Info *>(userexinfo->userdata);
-
-    plugin->myBuffer = new uint8_t[filesize];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
-
-    constexpr int sampleRate = 44100;
 
     plugin->player = new kdmeng(sampleRate, 2, 2);
 
-    const unsigned found = plugin->info->filename.find_last_of("/\\");
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    const long length = plugin->player->load(plugin->myBuffer, filesize,
-                                             plugin->info->filename.substr(0, found + 1).c_str());
+    const long length = plugin->player->load(plugin->info->fileBuffer, plugin->info->filesize,
+                                             (plugin->info->fileDir + "/").c_str());
 
     if (!length) {
         delete plugin;

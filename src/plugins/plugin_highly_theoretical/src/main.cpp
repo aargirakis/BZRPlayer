@@ -165,8 +165,6 @@ public:
 
     static void *OpenPSF(void *context, const char *uri) {
         const auto plugin = static_cast<pluginHighlyTheo *>(context);
-        unsigned int filesize;
-        FMOD_CODEC_FILE_SIZE(plugin->_codec, &filesize);
 
 #ifdef WIN32
         plugin->file = fopen(uri, "rb");
@@ -290,25 +288,10 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-    auto *buffer = new uint8_t[4];
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, buffer, 4, &bytesread);
-
-    // skip midi and riff
-    if (memcmp(buffer, "MThd", 4) == 0 || memcmp(buffer, "RIFF", 4) == 0) {
-        delete[] buffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] buffer;
-
     auto *plugin = new pluginHighlyTheo(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    const auto psfType = psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, 0, nullptr, nullptr,
+    const auto psfType = psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, 0, nullptr, nullptr,
                                   pluginHighlyTheo::InfoMetaPSF,
                                   plugin, 0, nullptr, nullptr);
 
@@ -317,7 +300,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    if (psf_load(plugin->info->filename.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(psfType),
+    if (psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(psfType),
                  pluginHighlyTheo::SdsfLoad, plugin, nullptr, nullptr, 0, nullptr, nullptr) < 0) {
         delete plugin;
         return FMOD_ERR_FORMAT;

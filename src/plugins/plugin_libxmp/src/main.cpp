@@ -68,12 +68,9 @@ public:
         //xmp_end_player(xmp);
         xmp_release_module(xmp); // unload module
         xmp_free_context(xmp); // destroy the player context
-        delete[] myBuffer;
-        myBuffer = nullptr;
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
-    uint8_t *myBuffer;
     Info *info;
     xmp_context xmp;
     xmp_module_info mi;
@@ -99,38 +96,13 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-    unsigned int filesize;
-
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-    if (filesize == 4294967295) // stream
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
-    auto *smallBuffer = new uint8_t[4];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, smallBuffer, 4, &bytesread);
-
-    // skip midi and riff
-    if (memcmp(smallBuffer, "MThd", 4) == 0 || memcmp(smallBuffer, "RIFF", 4) == 0) {
-        delete[] smallBuffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] smallBuffer;
-
     auto *plugin = new pluginLibxmp(codec);
-    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->myBuffer = new uint8_t[filesize];
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
     plugin->xmp = xmp_create_context();
 
-    // load our module
-    if (xmp_load_module_from_memory(plugin->xmp, plugin->myBuffer, bytesread) != 0)
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
+
+    if (xmp_load_module_from_memory(plugin->xmp, plugin->info->fileBuffer, plugin->info->filesize) != 0)
     // doesn't work with prowizard songs
     //if (xmp_load_module(plugin->xmp, const_cast<char*>(plugin->info->filename.c_str())) != 0)
     {
@@ -143,6 +115,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/libxmp.cfg";
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
+
     if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;

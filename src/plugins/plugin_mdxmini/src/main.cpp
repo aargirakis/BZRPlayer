@@ -70,28 +70,12 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    if (filesize == 4294967295) // stream
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
-    // dunno if there are some kind of magic bytes to be sure it is an mdx file
-    // and since it sometimes tries to play m4a-files, I return false if the size seems too big
-    if (filesize > 102400) // 100kb (biggest mdx file on modland is 85kb)
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
     auto *plugin = new pluginMdxmini(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    const size_t found = plugin->info->filename.find_last_of("/\\");
-
-    if (const int success = mdx_open(&plugin->data, &plugin->info->filename[0],
-                                     &plugin->info->filename.substr(0, found)[0]); success < 0) {
+    if (const int success = mdx_open(&plugin->data, &plugin->info->filePath[0], &plugin->info->fileDir[0]);
+        success < 0) {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 

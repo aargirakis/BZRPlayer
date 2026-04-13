@@ -50,13 +50,11 @@ public:
 
     ~pluginFlod() {
         //delete some stuf
-        myBuffer = nullptr;
         delete player;
         player = nullptr;
     }
 
     AmigaPlayer *player = nullptr;
-    uint8_t *myBuffer;
     Info *info;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
@@ -80,35 +78,7 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int bytesread;
-    unsigned int filesize;
-
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    if (filesize < 30 || filesize == 4294967295 /* stream */) {
-        return FMOD_ERR_FORMAT;
-    }
-
-    auto *smallBuffer = new uint8_t[30];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, smallBuffer, 30, &bytesread);
-
-    // only soundmon 1.0 is allowed here
-    if (memcmp(&smallBuffer[26], "BPSM", 4) != 0) {
-        delete[] smallBuffer;
-        return FMOD_ERR_FORMAT;
-    }
-
-    delete[] smallBuffer;
-
     auto plugin = new pluginFlod(codec);
-
-    plugin->myBuffer = new uint8_t[filesize];
-
-    result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
-
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/flod.cfg";
@@ -116,6 +86,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     int force = 0;
     int forcePlayer = 0;
     bool useDefaults = false;
+
     if (ifs.fail()) {
         // the file could not be opened
         useDefaults = true;
@@ -166,11 +137,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     fileLoader->setForcePlayer(forcePlayer);
 
-    plugin->player = fileLoader->load(plugin->myBuffer, filesize, plugin->info->filename.c_str());
+    plugin->player = fileLoader->load(plugin->info->fileBuffer, plugin->info->filesize, plugin->info->filePath.c_str());
 
     if (!plugin->player) {
         // delete some stuff
-        delete[] plugin->myBuffer;
         delete plugin->player;
         delete plugin;
         delete fileLoader;

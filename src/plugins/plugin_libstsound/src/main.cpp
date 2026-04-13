@@ -45,12 +45,10 @@ public:
     ~pluginLibstsound() {
         // delete some stuff
         ymMusicDestroy(pMusic);
-        delete[] myBuffer;
     }
 
     YMMUSIC *pMusic;
     FMOD_CODEC_WAVEFORMAT waveformat;
-    uint8_t *myBuffer;
 };
 
 #ifdef __cplusplus
@@ -66,25 +64,12 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    if (filesize == 4294967295) // stream
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
     auto *plugin = new pluginLibstsound(codec);
-
-    plugin->myBuffer = new uint8_t[filesize];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    unsigned int bytesread;
-    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->pMusic = ymMusicCreate();
 
-    if (!ymMusicLoadMemory(plugin->pMusic, plugin->myBuffer, filesize)) {
+    if (!ymMusicLoadMemory(plugin->pMusic, info->fileBuffer, static_cast<ymu32>(info->filesize))) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -109,8 +94,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     codec->numsubsounds = 0;
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
     codec->plugindata = plugin; // user data value
-
-    const auto info = static_cast<Info *>(userexinfo->userdata);
 
     info->artist = yminfo.pSongAuthor;
     info->title = yminfo.pSongName;

@@ -58,7 +58,6 @@ public:
         }
     }
 
-    uint8_t *myBuffer;
     bool isDllLoaded = false;
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -76,24 +75,6 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
-    unsigned int filesize;
-    FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-    if (filesize == 4294967295) // stream
-    {
-        return FMOD_ERR_FORMAT;
-    }
-
-    uint8_t id[4] = "";
-    unsigned int bytesread;
-
-    FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    FMOD_CODEC_FILE_READ(codec, id, 4, &bytesread);
-
-    if (memcmp(id, "SVOX", 4) != 0) {
-        return FMOD_ERR_FORMAT;
-    }
-
     auto *plugin = new pluginSunvoxLib(codec);
     const auto info = static_cast<Info *>(userexinfo->userdata);
 
@@ -114,14 +95,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     sv_open_slot(0);
 
-    plugin->myBuffer = new uint8_t[filesize];
-
-    FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-    result = FMOD_CODEC_FILE_READ(codec, plugin->myBuffer, filesize, &bytesread);
-
-    res = sv_load_from_memory(0, plugin->myBuffer, filesize);
-
-    delete[] plugin->myBuffer;
+    res = sv_load_from_memory(0, info->fileBuffer, static_cast<uint32_t>(info->filesize));
 
     if (res != 0) {
         delete plugin;

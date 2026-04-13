@@ -1,4 +1,3 @@
-#include <filesystem>
 #include <iostream>
 #include <regex>
 #include "attributes.h"
@@ -59,6 +58,27 @@ public:
         // delete some stuff
     }
 
+    class LightweightBinaryContainer : public Binary::Container {
+    public:
+        explicit LightweightBinaryContainer(const Binary::View data) : Data(data) {
+        }
+
+        const void *Start() const override {
+            return Data.Start();
+        }
+
+        std::size_t Size() const override {
+            return Data.Size();
+        }
+
+        Ptr GetSubcontainer(const std::size_t offset, const std::size_t size) const override {
+            return Binary::CreateContainer(Data.SubView(offset, size));
+        }
+
+    private:
+        const Binary::View Data;
+    };
+
     class ModulesDetector : public Module::DetectCallback {
         string filename;
         int numModules = 0;
@@ -73,12 +93,12 @@ public:
         }
 
         void ProcessModule(const ZXTune::DataLocation &location, const ZXTune::Plugin &decoder,
-                           Module::Holder::Ptr holder) override {
+                           const Module::Holder::Ptr holder) override {
             if (numModules++ != currentModuleNum) {
                 return;
             }
 
-            containerFilenames = filesystem::path(filename).filename().string();
+            containerFilenames = filename;
 
             if (const auto path = location.GetPath(); !path->Empty()) {
                 isContainer = true;
@@ -156,44 +176,19 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 #endif
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
+    auto *plugin = new pluginZxtune(codec);
+    const auto info = static_cast<Info *>(userexinfo->userdata);
+
     try {
-        unsigned int filesize;
-        unsigned int bytesread;
-        FMOD_CODEC_FILE_SIZE(codec, &filesize);
-
-        if (filesize == 4294967295) // stream
-        {
-            return FMOD_ERR_FORMAT;
-        }
-
-        // rewind file pointer
-        FMOD_RESULT result = FMOD_CODEC_FILE_SEEK(codec, 0, 0);
-
-        if (result != FMOD_OK) {
-            return FMOD_ERR_FORMAT;
-        }
-
-        // allocate space for buffer
-        auto myBuffer = make_unique<Binary::Dump>(filesize);
-
-        // read whole file to memory
-        result = FMOD_CODEC_FILE_READ(codec, myBuffer->data(), filesize, &bytesread);
-
-        if (result != FMOD_OK) {
-            return FMOD_ERR_FORMAT;
-        }
-
-        myBuffer->resize(bytesread);
+        auto myBuffer = make_unique<pluginZxtune::LightweightBinaryContainer>
+                (Binary::View{info->fileBuffer, info->filesize});
 
         const auto fileDataContainer = Binary::CreateContainer(move(myBuffer));
 
         if (!fileDataContainer) {
+            delete plugin;
             return FMOD_ERR_FORMAT;
         }
-
-        auto *plugin = new pluginZxtune(codec);
-
-        auto info = static_cast<Info *>(userexinfo->userdata);
 
         plugin->modulesDetector.setCurrentModuleNum(info->currentSubsong);
         plugin->modulesDetector.setFilename(info->filename);
