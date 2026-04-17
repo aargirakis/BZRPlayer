@@ -1873,10 +1873,11 @@ void MainWindow::playSongAtRow(int rowProvided) {
      * this workaround calculates the maximum pitch slider value (see ticket #623)
      * seems fmod can play at freqs slightly greater than 749700 (we should find the highest possible one)
      */
-    float freq = sm.getNominalFrequency();
-    int pitchSliderMaxValue = 749700 / freq * 100;
-    ui->pitchSlider->setMaximum(pitchSliderMaxValue);
-    sm.setFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
+    if (float freq = sm.getNominalFrequency(); freq > 0) {
+        int pitchSliderMaxValue = 749700 / freq * 100;
+        ui->pitchSlider->setMaximum(pitchSliderMaxValue);
+        sm.setFrequencyByMultiplier(ui->pitchSlider->value() / 100.0);
+    }
 
     addDebugText("Mute is:" + QString::number(isVolumeMuted));
     sm.setMute(isVolumeMuted);
