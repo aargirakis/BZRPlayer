@@ -274,7 +274,8 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             vector<pair<string, string> > metadataOther;
 
             for (auto &metadata: info->metadata) {
-                if (metadata.first.empty()) {
+                if (metadata.first.empty() ||
+                    ranges::all_of(metadata.second, [](const unsigned char c) { return isspace(c); })) {
                     continue;
                 }
 
