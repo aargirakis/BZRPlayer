@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "game-music-emu")
-set(VERSION "0.6.4")
+set(VERSION "0.6.5")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "Game_Music_Emu" PARENT_SCOPE)
@@ -14,7 +14,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/libgme/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "f2360feb5a32ace226c583df4faf6eff74145c81264aaea11e17a1af2f6f101a")
+set(SHA_256_HASH "8531678502451c2cf04248cda45c8b4645e19fcfb63e6a7ec2549641c47bb392")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" ""
 )
