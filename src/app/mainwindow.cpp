@@ -2893,6 +2893,7 @@ void MainWindow::deletePlaylist() {
     tableWidgetPlaylists.remove(ui->listWidget->currentItem()->text());
     delete ui->listWidget->takeItem(ui->listWidget->currentRow());
     ui->listWidget->setCurrentRow(rowNumber);
+    currentPlaylist = ui->listWidget->currentItem()->text();
     on_listWidget_itemClicked(ui->listWidget->item(rowNumber));
 }
 
