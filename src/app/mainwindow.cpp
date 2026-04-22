@@ -158,7 +158,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     normalizeThreshold = settings.value("normalizerThreshold", 10).toInt();
     normalizeMaxAmp = settings.value("normalizerMaxAmp", 20).toInt();
     currentPlaylist = settings.value("Internal/currentPlaylist", PLAYLIST_DEFAULT).toString();
-    currentRow = settings.value("Internal/currentRow", -1).toInt();
+    currentRow = settings.value("Internal/currentRow", 0).toInt();
     selectedPlaylist = settings.value("Internal/selectedPlaylist", PLAYLIST_DEFAULT).toString();
     reverbEnabled = settings.value("reverb", false).toBool();
     reverbPreset = settings.value("reverbPreset", "Generic").toString();
