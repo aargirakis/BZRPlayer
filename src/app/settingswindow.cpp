@@ -2310,7 +2310,12 @@ void settingsWindow::on_checkBoxMilliseconds_toggled(const bool isChecked) const
 }
 
 void settingsWindow::on_sliderLibopenmptStereoSeparation_valueChanged(const int value) const {
-    ui->labelLibopenmptStereoSeparationValue->setText(QString::number(value / 2) + "%");
+    const int valueAdjusted = value / 2;
+
+    ui->sliderLibopenmptStereoSeparation->blockSignals(true);
+    ui->sliderLibopenmptStereoSeparation->setValue(valueAdjusted * 2);
+    ui->labelLibopenmptStereoSeparationValue->setText(QString::number(valueAdjusted) + "%");
+    ui->sliderLibopenmptStereoSeparation->blockSignals(false);
 }
 
 void settingsWindow::on_checkBoxLibopenmptContinuousPlayback_toggled(const bool isChecked) const {
