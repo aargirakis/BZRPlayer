@@ -153,7 +153,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     int numInstruments = plugin->tune->ht_InstrumentNr;
     plugin->info->numInstruments = numInstruments;
-    plugin->info->numSubsongs = plugin->tune->ht_SubsongNr;
+    plugin->info->numSubsongs = plugin->tune->ht_SubsongNr + 1;
     plugin->info->numOrders = plugin->tune->ht_PositionNr;
     plugin->info->modPatternRestart = plugin->tune->ht_Restart;
 
