@@ -125,7 +125,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     int freq = 44100;
     int channels = 2;
     int interpolation = XMP_INTERP_LINEAR;
-    int stereoSeparation = 70;
+    int stereoSeparation = 50;
     plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -172,15 +172,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
     codec->plugindata = plugin; // user data value
 
-    xmp_set_player(plugin->xmp,XMP_PLAYER_INTERP, interpolation);
-    xmp_set_player(plugin->xmp,XMP_PLAYER_DSP,XMP_DSP_LOWPASS);
-    xmp_set_player(plugin->xmp,XMP_PLAYER_MIX, stereoSeparation);
-
     if (channels == 1) {
         xmp_start_player(plugin->xmp, freq, XMP_FORMAT_MONO);
     } else {
         xmp_start_player(plugin->xmp, freq, 0);
     }
+
+    xmp_set_player(plugin->xmp,XMP_PLAYER_INTERP, interpolation);
+    xmp_set_player(plugin->xmp,XMP_PLAYER_MIX, stereoSeparation);
 
     xmp_get_module_info(plugin->xmp, &plugin->mi);
     xmp_set_position(plugin->xmp, plugin->mi.seq_data[plugin->info->currentSubsong].entry_point);

@@ -100,7 +100,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     // defaults
-    uint32 defstereo = 4;
+    uint32 stereoSeparation = 2;
     plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -110,7 +110,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
                 if (word == "stereoSeparation") {
-                    defstereo = atoi(value.c_str());
+                    stereoSeparation = atoi(value.c_str());
                 } else if (word == "continuousPlayback") {
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
@@ -122,7 +122,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     hvl_InitReplayer();
 
-    plugin->tune = hvl_ParseTune(plugin->info->fileBuffer, plugin->info->filesize, 44100, defstereo);
+    plugin->tune = hvl_ParseTune(plugin->info->fileBuffer, plugin->info->filesize, 44100, stereoSeparation);
 
     if (!plugin->tune) {
         delete plugin;

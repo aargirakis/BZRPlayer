@@ -860,7 +860,7 @@ void settingsWindow::loadSettingsHivelytracker() const {
     }
 
     // defaults
-    int index = ui->comboBoxHivelyTrackerStereoSeparation->findData("4");
+    int index = ui->comboBoxHivelyTrackerStereoSeparation->findData("2");
     ui->comboBoxHivelyTrackerStereoSeparation->setCurrentIndex(index);
     ui->checkBoxHivelyTrackerContinuousPlayback->setChecked(false);
 
