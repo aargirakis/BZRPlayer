@@ -122,18 +122,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     const auto song = plugin->engine->song;
     const auto subsong = *song.subsong[plugin->info->currentSubsong];
 
-    char ver[16];
-
-    string format;
-    if (song.version == DIV_VERSION_FTM) {
-        format = "Famitracker"; // TODO is this supported?
-        plugin->info->fileFormat = format;
-    } else {
-        format = song.isDMF ? "DefleMask v" : "Furnace v";
-        sprintf(ver, "%d", song.version);
-        plugin->info->fileFormat = format + string(ver);
-    }
-
+    plugin->info->fileFormat = fmt::format("{} v{}", song.isDMF ? "DefleMask" : "Furnace", song.version);
     plugin->info->numSubsongs = static_cast<int>(song.subsong.size());
     plugin->info->title = song.name;
 
@@ -146,7 +135,18 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     plugin->info->artist = song.author;
+    plugin->info->album = song.category;
     plugin->info->system = song.systemName;
+    plugin->info->comments = song.notes;
+
+    if (!subsong.notes.empty()) {
+        if (!song.notes.empty()) {
+            plugin->info->comments += "\n\n";
+        }
+
+        plugin->info->comments += subsong.notes;
+    }
+
     plugin->info->numChannels = plugin->engine->getTotalChannelCount();
     plugin->info->plugin = PLUGIN_furnace;
     plugin->info->pluginName = PLUGIN_furnace_NAME;

@@ -98,8 +98,10 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Replay Freq", info->clockSpeedStr.c_str());
             break;
         case PLUGIN_furnace:
-            addInfo(tableInfo, &row, "Channels", QString::number(info->numChannels));
+            addInfo(tableInfo, &row, "Album", fromUtf8OrLatin1(info->album));
             addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(info->system));
+            addInfo(tableInfo, &row, "Channels", QString::number(info->numChannels));
+            addMultilineInfo(tableInfo, &row, "Notes", info->comments);
             break;
         case PLUGIN_game_music_emu:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
@@ -206,7 +208,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->author));
             addInfo(tableInfo, &row, "Composer", fromUtf8OrLatin1(info->composer));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addInfo(tableInfo, &row, "Disk", fromUtf8OrLatin1(info->disk));
+            addInfo(tableInfo, &row, "Disk", fromUtf8OrLatin1(info->album));
             addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(info->converter));
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(info->ripper));
             addInfo(tableInfo, &row, "Replay", info->replay.c_str());

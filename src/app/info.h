@@ -88,7 +88,7 @@ public:
         isAhx = false;
         system = "";
         game = "";
-        disk = "";
+        album = "";
         genre = "";
         emulator = "";
         songPlayer = "";
@@ -317,7 +317,7 @@ public:
     bool isAhx;
     string system;
     string game;
-    string disk;
+    string album;
     string genre;
     string emulator;
     string songPlayer;

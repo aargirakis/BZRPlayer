@@ -111,7 +111,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    info->disk = plugin->info.title;
+    info->album = plugin->info.title;
 
     if (sc68_music_info(plugin->sc68, &plugin->info, info->currentSubsong + 1, nullptr) < 0) {
         delete plugin;
