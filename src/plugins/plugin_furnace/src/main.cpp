@@ -4,6 +4,8 @@
 #include "info.h"
 #include "plugins.h"
 
+using namespace std;
+
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 
 static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
@@ -117,7 +119,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
     codec->plugindata = plugin; // user data value
 
-    const DivSong song = plugin->engine->song;
+    const auto song = plugin->engine->song;
+    const auto subsong = *song.subsong[plugin->info->currentSubsong];
+
     char ver[16];
 
     string format;
@@ -130,8 +134,18 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->info->fileFormat = format + string(ver);
     }
 
-    plugin->info->artist = song.author;
+    plugin->info->numSubsongs = static_cast<int>(song.subsong.size());
     plugin->info->title = song.name;
+
+    if (any_of(subsong.name.begin(), subsong.name.end(), [](const unsigned char c) { return !isspace(c); })) {
+        if (!song.name.empty()) {
+            plugin->info->title += " / ";
+        }
+
+        plugin->info->title += subsong.name;
+    }
+
+    plugin->info->artist = song.author;
     plugin->info->system = song.systemName;
     plugin->info->numChannels = plugin->engine->getTotalChannelCount();
     plugin->info->plugin = PLUGIN_furnace;
