@@ -1,3 +1,4 @@
+#include <fstream>
 #include <queue>
 #include "engine.h"
 #include "fmod_errors.h"
@@ -64,7 +65,6 @@ public:
     float samples[2][maxSamples];
     int32_t lastLoopPos = -1;
     uint32_t numRemainingSamples = 0;
-    bool isTrackEnd = false;
     queue<unsigned char *> vuMeterBuffer;
 };
 
@@ -104,8 +104,36 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/furnace.cfg";
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    plugin->info->isContinuousPlaybackActive = false;
+
+    if (!useDefaults) {
+        string line;
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word == "continuousPlayback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                }
+            }
+        }
+        ifs.close();
+    }
+
     plugin->engine->initDispatch(false);
     plugin->engine->changeSongP(plugin->info->currentSubsong);
+    plugin->engine->setLoops(plugin->info->isContinuousPlaybackActive ? -1 : 1);
     plugin->engine->play();
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
@@ -193,8 +221,8 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
         const auto numSamplesToCopy = min(numSamples, numSamplesAvailable);
 
         for (uint32_t i = 0; i < numSamplesToCopy; i++) {
-            *bufferPtr++ = samples[0][i];
-            *bufferPtr++ = samples[1][i];
+            *bufferPtr++ = samples[0][maxSamples - numRemainingSamples + i];
+            *bufferPtr++ = samples[1][maxSamples - numRemainingSamples + i];
         }
 
         numSamples -= numSamplesToCopy;
@@ -258,12 +286,8 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     plugin->numRemainingSamples = numRemainingSamples;
     *read = numSamplesRendered;
 
-    if (plugin->isTrackEnd && !plugin->engine->endOfSong) {
+    if (!plugin->engine->isPlaying() && !plugin->info->isContinuousPlaybackActive) {
         return FMOD_ERR_FILE_EOF;
-    }
-
-    if (plugin->engine->endOfSong) {
-        plugin->isTrackEnd = true;
     }
 
     return FMOD_OK;

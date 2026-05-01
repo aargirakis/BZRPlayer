@@ -195,6 +195,8 @@ if (WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_VIRTUAL_TERMINAL_PROCESSING=0x0004)
 endif ()
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
         adpcm
         fmt

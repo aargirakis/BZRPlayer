@@ -314,6 +314,10 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsAdplug();
     }
 
+    if (PLUGIN_furnace_LIB != "") {
+        loadSettingsFurnace();
+    }
+
     if (PLUGIN_hivelytracker_LIB != "") {
         loadSettingsHivelytracker();
     }
@@ -722,6 +726,10 @@ void settingsWindow::on_buttonOK_clicked() {
         saveSettingsAdplug();
     }
 
+    if (PLUGIN_furnace_LIB != "") {
+        saveSettingsFurnace();
+    }
+
     if (PLUGIN_hivelytracker_LIB != "") {
         saveSettingsHivelytracker();
     }
@@ -846,6 +854,38 @@ void settingsWindow::loadSettingsFmod() const {
     }
 
     mainWindow->setFmodSeamlessLoopEnabled(ui->checkBoxFmodSeamlessLoop->isChecked());
+}
+
+void settingsWindow::loadSettingsFurnace() const {
+    // read config from disk
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/furnace.cfg";
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    ui->checkBoxFurnaceContinuousPlayback->setChecked(false);
+
+    if (!useDefaults) {
+        string line;
+
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+
+                if (word.compare("continuousPlayback") == 0) {
+                    ui->checkBoxFurnaceContinuousPlayback->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+
+        ifs.close();
+    }
 }
 
 void settingsWindow::loadSettingsHivelytracker() const {
@@ -1252,6 +1292,20 @@ void settingsWindow::saveSettingsFmod() const {
     mainWindow->setFmodSeamlessLoopEnabled(isFmodSeamlessLoopEnabled);
 }
 
+void settingsWindow::saveSettingsFurnace() const {
+    // save config to disk
+    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/furnace.cfg";
+    ofstream ofs(filename.c_str());
+
+    if (ofs.fail()) {
+        // the file could not be opened
+        return;
+    }
+
+    ofs << "continuousPlayback=" << (ui->checkBoxFurnaceContinuousPlayback->isChecked() ? "true" : "false") << "\n";
+    ofs.close();
+}
+
 void settingsWindow::saveSettingsHivelytracker() const {
     // save config to disk
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
@@ -1418,6 +1472,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     if (const int row = item->row(); ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_adplug_NAME) {
         ui->groupBoxAdplug->setHidden(false);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1429,6 +1484,19 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_fmod_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(false);
+        ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
+        ui->groupBoxLibvgm->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
+        ui->groupBoxVgmstream->setHidden(true);
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_furnace_NAME) {
+        ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(false);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1440,6 +1508,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(false);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1451,6 +1520,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(false);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1462,6 +1532,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(false);
@@ -1473,6 +1544,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libvgm_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1484,6 +1556,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1495,6 +1568,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_sndh_player_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1506,6 +1580,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_uade_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1517,6 +1592,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_vgmstream_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1528,6 +1604,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1646,6 +1723,17 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxFmod->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxFurnace->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxFurnace->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxHivelytracker->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -1863,6 +1951,7 @@ void settingsWindow::on_buttonVisualizer_clicked() const {
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
+    ui->groupBoxFurnace->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibopenmpt->setHidden(true);
     ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1880,6 +1969,7 @@ void settingsWindow::on_buttonGeneral_clicked() const {
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
+    ui->groupBoxFurnace->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibopenmpt->setHidden(true);
     ui->groupBoxLibsidplayfp->setHidden(true);
@@ -1904,6 +1994,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
+    ui->groupBoxFurnace->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
     ui->groupBoxLibopenmpt->setHidden(true);
     ui->groupBoxLibsidplayfp->setHidden(true);
@@ -2784,6 +2875,8 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxVuMeterEnabled->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxAdPlugContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxAdPlugContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxFurnaceContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxFurnaceContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxHivelyTrackerContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxHivelyTrackerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxLibvgmContinuousPlayback->setIcon(
@@ -2875,6 +2968,10 @@ void settingsWindow::forceUpdateToSliders() const {
 
 void settingsWindow::on_checkBoxAdPlugContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxAdPlugContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxFurnaceContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxFurnaceContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::on_checkBoxHivelyTrackerContinuousPlayback_toggled(const bool isChecked) const {

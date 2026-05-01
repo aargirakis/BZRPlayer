@@ -163,6 +163,8 @@ private slots:
 
     void on_checkBoxAdPlugContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxFurnaceContinuousPlayback_toggled(bool isChecked) const;
+
     void on_checkBoxHivelyTrackerContinuousPlayback_toggled(bool isChecked) const;
 
     void on_checkBoxLibvgmContinuousPlayback_toggled(bool isChecked) const;
@@ -266,6 +268,8 @@ private:
 
     void loadSettingsFmod() const;
 
+    void loadSettingsFurnace() const;
+
     void loadSettingsHivelytracker() const;
 
     void loadSettingsLibopenmpt() const;
@@ -285,6 +289,8 @@ private:
     void saveSettingsAdplug() const;
 
     void saveSettingsFmod() const;
+
+    void saveSettingsFurnace() const;
 
     void saveSettingsHivelytracker() const;
 
