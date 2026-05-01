@@ -104,8 +104,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->engine->initDispatch();
-    plugin->engine->renderSamplesP();
+    plugin->engine->initDispatch(false);
     plugin->engine->changeSongP(plugin->info->currentSubsong);
     plugin->engine->play();
 
@@ -163,25 +162,30 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto plugin = static_cast<pluginFurnace *>(codec->plugindata);
 
-    auto bufferPtr = static_cast<float *>(buffer); // pointer to the buffer
+    auto bufferPtr = static_cast<float *>(buffer);
     unsigned int numSamples = size;
 
     float *samples[] = {plugin->samples[0], plugin->samples[1]};
     uint32_t numSamplesRendered = 0;
     uint32_t numRemainingSamples = plugin->numRemainingSamples;
+
     while (numSamples) {
         if (numRemainingSamples == 0) {
             plugin->engine->nextBuf(nullptr, samples, 0, 2, maxSamples);
             numRemainingSamples = maxSamples;
             plugin->lastLoopPos = plugin->engine->lastLoopPos;
         }
+
         auto numSamplesAvailable = numRemainingSamples;
+
         if (plugin->lastLoopPos > -1) {
             numSamplesAvailable = plugin->lastLoopPos - (maxSamples - numRemainingSamples);
+
             if (numSamplesAvailable == 0) {
                 if (numSamplesRendered == 0) {
                     plugin->lastLoopPos = -1;
                 }
+
                 break;
             }
         }
@@ -189,18 +193,20 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
         const auto numSamplesToCopy = min(numSamples, numSamplesAvailable);
 
         for (uint32_t i = 0; i < numSamplesToCopy; i++) {
-            // copy the samples to buffer
             *bufferPtr++ = samples[0][i];
             *bufferPtr++ = samples[1][i];
         }
+
         numSamples -= numSamplesToCopy;
         numRemainingSamples -= numSamplesToCopy;
         numSamplesRendered += numSamplesToCopy;
 
         auto *vuMeters = new unsigned char[plugin->engine->getTotalChannelCount()];
+
         for (int i = 0; i < plugin->engine->getTotalChannelCount(); i++) {
             const auto *divDispatchOscBuffer = plugin->engine->getOscBuffer(i);
             int displaySize = 0;
+
             if (divDispatchOscBuffer != nullptr) {
                 displaySize = static_cast<float>(divDispatchOscBuffer->rate) * 0.03f;
             }
@@ -208,6 +214,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
             short minLevel = 32767;
             short maxLevel = -32768;
             unsigned short needlePos = 0;
+
             if (divDispatchOscBuffer != nullptr) {
                 needlePos = divDispatchOscBuffer->needle;
             }
@@ -218,26 +225,31 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
             for (unsigned short j = 0; j < bufsize; j++) {
                 short y = 0;
+
                 if (divDispatchOscBuffer != nullptr) {
                     y = plugin->engine->getOscBuffer(i)->data[static_cast<unsigned short>(
-                        needlePos + (j * displaySize / bufsize))];
+                        needlePos + j * displaySize / bufsize)];
                 }
+
                 if (minLevel > y) minLevel = y;
                 if (maxLevel < y) maxLevel = y;
             }
 
             float estimate = pow(static_cast<float>(maxLevel - minLevel) / 32768.0f, 0.5f);
+
             if (estimate > 1.0f) estimate = 1.0f;
+
             estimate = estimate * 100;
 
             if (!plugin->vuMeterBuffer.empty()) {
-                vuMeters[i] = (MAX(plugin->vuMeterBuffer.back()[i] * 0.87f, estimate));
+                vuMeters[i] = max(plugin->vuMeterBuffer.back()[i] * 0.87f, estimate);
             } else {
                 vuMeters[i] = estimate;
             }
         }
 
         plugin->vuMeterBuffer.push(vuMeters);
+
         if (plugin->vuMeterBuffer.size() >= 10) {
             plugin->vuMeterBuffer.pop();
         }
@@ -270,6 +282,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
             const bool mute = m == 1;
             plugin->engine->muteChannel(i, mute);
         }
+
         return FMOD_OK;
     }
 
