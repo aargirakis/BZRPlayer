@@ -64,6 +64,7 @@ public:
     float samples[2][maxSamples];
     int32_t lastLoopPos = -1;
     uint32_t numRemainingSamples = 0;
+    bool isTrackEnd = false;
     queue<unsigned char *> vuMeterBuffer;
 };
 
@@ -244,8 +245,13 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
     plugin->numRemainingSamples = numRemainingSamples;
     *read = numSamplesRendered;
+
+    if (plugin->isTrackEnd && !plugin->engine->endOfSong) {
+        return FMOD_ERR_FILE_EOF;
+    }
+
     if (plugin->engine->endOfSong) {
-        return FMOD_ERR_FILE_ENDOFDATA;
+        plugin->isTrackEnd = true;
     }
 
     return FMOD_OK;
