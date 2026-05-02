@@ -1,5 +1,6 @@
 #include <cstring>
 #include <list>
+#include "decoder.h"
 #include "organya.h"
 #include "fmod_errors.h"
 #include "info.h"
@@ -57,6 +58,7 @@ public:
     int queueSize;
     list<unsigned char *> vuMeterBuffer;
     FMOD_CODEC_WAVEFORMAT waveformat;
+    static constexpr int sampleRate = 44100;
 };
 
 #ifdef __cplusplus
@@ -88,9 +90,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    plugin->tune->state.sample_rate = pluginOrganya::sampleRate;
+
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.frequency = pluginOrganya::sampleRate;
     plugin->waveformat.pcmblocksize = 4;
     plugin->waveformat.lengthpcm = static_cast<unsigned int>(org_decoder_get_total_samples(plugin->tune));
 
@@ -117,8 +121,9 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     auto *plugin = static_cast<pluginOrganya *>(codec->plugindata);
 
-    size_t samples_decoded = org_decode_samples(plugin->tune, static_cast<short *>(buffer),
-                                                plugin->waveformat.pcmblocksize);
+    const auto samplesDecoded = org_decode_samples(plugin->tune, static_cast<short *>(buffer),
+                                                   plugin->waveformat.pcmblocksize);
+
     unsigned char vuMeters[16];
     //unsigned char const* vuMetersMean = new unsigned char[16];
     constexpr double maxVuMeter = 32767 / 4;
@@ -134,7 +139,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
     plugin->vuMeterBuffer.push_back(vuMeters);
 
-    *read = plugin->waveformat.pcmblocksize;
+    *read = static_cast<int>(samplesDecoded);
     return FMOD_OK;
 }
 
@@ -144,7 +149,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
     if (postype == FMOD_TIMEUNIT_MS) {
         // position should be in samples, not ms
-        org_decoder_seek_sample(plugin->tune, position * plugin->waveformat.frequency / 1000);
+        org_decoder_seek_sample(plugin->tune, position * pluginOrganya::sampleRate / 1000);
         return FMOD_OK;
     }
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
