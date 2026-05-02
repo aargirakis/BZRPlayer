@@ -18,6 +18,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
     for (size_t i = 0; i < a.size(); ++i) {
         const auto ca = static_cast<unsigned char>(a[i]);
+
         if (const auto cb = static_cast<unsigned char>(b[i]); std::tolower(ca) != std::tolower(cb)) return false;
     }
 
@@ -26,6 +27,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
 std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
     std::FILE *fp = std::fopen(name.c_str(), mode);
+
     if (fp) return fp;
 
     const filesystem::path p(name);
@@ -39,10 +41,13 @@ std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
 
     for (std::error_code ec; auto const &entry: filesystem::directory_iterator(dir, ec)) {
         if (ec) break;
+
         if (!entry.is_regular_file(ec) && !entry.is_symlink(ec)) continue;
+
         if (std::string cand = entry.path().filename().string(); case_insensitive_compare(cand, target_basename)) {
             std::string candidate_path = (dir / cand).string();
             fp = std::fopen(candidate_path.c_str(), mode);
+
             if (fp) return fp;
         }
     }
@@ -99,6 +104,7 @@ public:
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
         auto *plugin = static_cast<pluginHighlyTheo *>(context);
+
         if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1)) {
         }
 
@@ -116,29 +122,37 @@ public:
             auto getDigit = [](const char *&value) {
                 bool isDigit = false;
                 int32_t digit = 0;
+
                 while (*value && (*value < '0' || *value > '9'))
                     ++value;
+
                 while (*value && *value >= '0' && *value <= '9') {
                     isDigit = true;
                     digit = digit * 10 + *value - '0';
                     ++value;
                 }
+
                 if (isDigit)
                     return digit;
+
                 return -1;
             };
 
             if (auto length = getDigit(value); length >= 0) {
                 while (*value && *value != ':' && *value != '.' && *value != ',')
                     ++value;
+
                 if (*value) {
                     while (*value == ':') {
                         if (auto d = getDigit(++value); d >= 0)
                             length = length * 60 + Clamp(d, 0, 59);
                     }
+
                     length *= 1000;
+
                     while (*value && *value != '.' && *value != ',')
                         ++value;
+
                     if (*value == '.' || *value == ',') {
                         // up to 3 decimal digits are supported
                         // 0.0nn & 0.00n values are not handled
@@ -160,6 +174,7 @@ public:
         } else {
             plugin->tags[name] = value;
         }
+
         return 0;
     }
 
@@ -201,6 +216,7 @@ public:
     static int SdsfLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t * /* reserved */,
                         size_t /* reserved_size */) {
         auto *plugin = static_cast<pluginHighlyTheo *>(context);
+
         if (exe_size < 4) return -1;
 
         uint8_t *dst = plugin->loaderState.data;
@@ -218,7 +234,9 @@ public:
         src_start &= 0x7fffff;
         size_t dst_len = plugin->loaderState.data_size - 4;
         size_t src_len = exe_size - 4;
+
         if (dst_len > 0x800000) dst_len = 0x800000;
+
         if (src_len > 0x800000) src_len = 0x800000;
 
         if (src_start < dst_start) {
@@ -231,6 +249,7 @@ public:
             dst_start = src_start;
             set_le32(dst, dst_start);
         }
+
         if (src_start + src_len > dst_start + dst_len) {
             const size_t diff = src_start + src_len - (dst_start + dst_len);
             plugin->loaderState.data_size = dst_len + 4 + diff;
@@ -386,7 +405,8 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     sega_enable_dsp_dynarec(plugin->segaState, 0);
     const uint32_t start = *reinterpret_cast<uint32_t *>(plugin->loaderState.data);
     uint32_t length = plugin->loaderState.data_size;
-    if (const size_t maxLength = (plugin->psfType == 0x12) ? 0x800000 : 0x80000; (start + (length - 4)) > maxLength) {
+
+    if (const size_t maxLength = (plugin->psfType == 0x12) ? 0x800000 : 0x80000; start + (length - 4) > maxLength) {
         length = maxLength - start + 4;
     }
 

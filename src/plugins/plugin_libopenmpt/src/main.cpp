@@ -310,6 +310,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     const auto *plugin = static_cast<pluginLibopenmpt *>(codec->plugindata);
+
     if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
         //         // position is a mask
         //         for(int i = 0 ; i<plugin->info->numChannels ; i++)

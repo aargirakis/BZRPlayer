@@ -19,6 +19,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
     for (size_t i = 0; i < a.size(); ++i) {
         const auto ca = static_cast<unsigned char>(a[i]);
+
         if (const auto cb = static_cast<unsigned char>(b[i]); std::tolower(ca) != std::tolower(cb)) return false;
     }
 
@@ -27,6 +28,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
 std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
     std::FILE *fp = std::fopen(name.c_str(), mode);
+
     if (fp) return fp;
 
     const filesystem::path p(name);
@@ -40,10 +42,13 @@ std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
 
     for (std::error_code ec; auto const &entry: filesystem::directory_iterator(dir, ec)) {
         if (ec) break;
+
         if (!entry.is_regular_file(ec) && !entry.is_symlink(ec)) continue;
+
         if (std::string cand = entry.path().filename().string(); case_insensitive_compare(cand, target_basename)) {
             std::string candidate_path = (dir / cand).string();
             fp = std::fopen(candidate_path.c_str(), mode);
+
             if (fp) return fp;
         }
     }
@@ -102,6 +107,7 @@ public:
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
         auto *plugin = static_cast<pluginLazyusf2 *>(context);
+
         if (!strcasecmp(name, "_enablecompare")) {
             plugin->loaderState.enablecompare = 1;
         } else if (!strcasecmp(name, "_enablefifofull")) {
@@ -123,29 +129,37 @@ public:
             auto getDigit = [](const char *&value) {
                 bool isDigit = false;
                 int32_t digit = 0;
+
                 while (*value && (*value < '0' || *value > '9'))
                     ++value;
+
                 while (*value && *value >= '0' && *value <= '9') {
                     isDigit = true;
                     digit = digit * 10 + *value - '0';
                     ++value;
                 }
+
                 if (isDigit)
                     return digit;
+
                 return -1;
             };
 
             if (auto length = getDigit(value); length >= 0) {
                 while (*value && *value != ':' && *value != '.' && *value != ',')
                     ++value;
+
                 if (*value) {
                     while (*value == ':') {
                         if (auto d = getDigit(++value); d >= 0)
                             length = length * 60 + Clamp(d, 0, 59);
                     }
+
                     length *= 1000;
+
                     while (*value && *value != '.' && *value != ',')
                         ++value;
+
                     if (*value == '.' || *value == ',') {
                         // up to 3 decimal digits are supported
                         // 0.0nn & 0.00n values are not handled
@@ -167,6 +181,7 @@ public:
         } else {
             plugin->tags[name] = value;
         }
+
         return 0;
     }
 
@@ -208,6 +223,7 @@ public:
     static int UsfLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t *reserved,
                        size_t reserved_size) {
         const auto *plugin = static_cast<pluginLazyusf2 *>(context);
+
         if (exe && exe_size > 0)
             return -1;
 
@@ -260,6 +276,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     const auto psfType = psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, 0x21, nullptr, nullptr,
                                   pluginLazyusf2::InfoMetaPSF,
                                   plugin, 0, nullptr, nullptr);
+
     if (psfType != 0x21) {
         delete plugin;
         return FMOD_ERR_FORMAT;
@@ -270,6 +287,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     usf_clear(plugin->lazyState);
+
     if (psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(psfType),
                  pluginLazyusf2::UsfLoad, plugin, nullptr, nullptr, 0, nullptr, nullptr) < 0) {
         delete plugin;

@@ -20,6 +20,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
     for (size_t i = 0; i < a.size(); ++i) {
         const auto ca = static_cast<unsigned char>(a[i]);
+
         if (const auto cb = static_cast<unsigned char>(b[i]); std::tolower(ca) != std::tolower(cb)) return false;
     }
 
@@ -28,6 +29,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
 std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
     std::FILE *fp = std::fopen(name.c_str(), mode);
+
     if (fp) return fp;
 
     const filesystem::path p(name);
@@ -41,10 +43,13 @@ std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
 
     for (std::error_code ec; auto const &entry: filesystem::directory_iterator(dir, ec)) {
         if (ec) break;
+
         if (!entry.is_regular_file(ec) && !entry.is_symlink(ec)) continue;
+
         if (std::string cand = entry.path().filename().string(); case_insensitive_compare(cand, target_basename)) {
             std::string candidate_path = (dir / cand).string();
             fp = std::fopen(candidate_path.c_str(), mode);
+
             if (fp) return fp;
         }
     }
@@ -101,6 +106,7 @@ public:
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
         auto *plugin = static_cast<pluginHighlyQ *>(context);
+
         if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1)) {
         }
 
@@ -118,29 +124,37 @@ public:
             auto getDigit = [](const char *&value) {
                 bool isDigit = false;
                 int32_t digit = 0;
+
                 while (*value && (*value < '0' || *value > '9'))
                     ++value;
+
                 while (*value && *value >= '0' && *value <= '9') {
                     isDigit = true;
                     digit = digit * 10 + *value - '0';
                     ++value;
                 }
+
                 if (isDigit)
                     return digit;
+
                 return -1;
             };
 
             if (auto length = getDigit(value); length >= 0) {
                 while (*value && *value != ':' && *value != '.' && *value != ',')
                     ++value;
+
                 if (*value) {
                     while (*value == ':') {
                         if (auto d = getDigit(++value); d >= 0)
                             length = length * 60 + Clamp(d, 0, 59);
                     }
+
                     length *= 1000;
+
                     while (*value && *value != '.' && *value != ',')
                         ++value;
+
                     if (*value == '.' || *value == ',') {
                         // up to 3 decimal digits are supported
                         // 0.0nn & 0.00n values are not handled
@@ -162,6 +176,7 @@ public:
         } else {
             plugin->tags[name] = value;
         }
+
         return 0;
     }
 
@@ -203,9 +218,12 @@ public:
     static int QsoundLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t * /* reserved */,
                           size_t /* reserved_size */) {
         auto *plugin = static_cast<pluginHighlyQ *>(context);
+
         for (;;) {
             char s[4];
+
             if (exe_size < 11) break;
+
             memcpy(s, exe, 3);
             exe += 3;
             exe_size -= 3;
@@ -216,54 +234,55 @@ public:
             const uint32_t datasize = *(uint32_t *) exe;
             exe += 4;
             exe_size -= 4;
-            if (datasize > exe_size)
-                return -1; {
-                char const *section = s;
-                const uint32_t start = dataofs;
-                const uint8_t *data = exe;
-                const uint32_t size = datasize;
 
-                core::Array<uint8_t> *pArray = nullptr;
-                core::Array<valid_range> *pArrayValid = nullptr;
-                uint32_t maxsize = 0x7FFFFFFF;
+            if (datasize > exe_size) return -1;
 
-                if (!strcmp(section, "KEY")) {
-                    pArray = &plugin->aKey;
-                    pArrayValid = &plugin->aKeyValid;
-                    maxsize = 11;
-                } else if (!strcmp(section, "Z80")) {
-                    pArray = &plugin->aZ80ROM;
-                    pArrayValid = &plugin->aZ80ROMValid;
-                } else if (!strcmp(section, "SMP")) {
-                    pArray = &plugin->aSampleROM;
-                    pArrayValid = &plugin->aSampleROMValid;
-                } else {
-                    return -1;
-                }
+            char const *section = s;
+            const uint32_t start = dataofs;
+            const uint8_t *data = exe;
+            const uint32_t size = datasize;
 
-                if ((start + size) < start) {
-                    return -1;
-                }
+            core::Array<uint8_t> *pArray = nullptr;
+            core::Array<valid_range> *pArrayValid = nullptr;
+            uint32_t maxsize = 0x7FFFFFFF;
 
-                const uint32_t newsize = start + size;
-                uint32_t oldsize = pArray->NumItems();
-                if (newsize > maxsize) {
-                    return -1;
-                }
-
-                if (newsize > oldsize) {
-                    pArray->Resize(newsize);
-                    memset(pArray->Items() + oldsize, 0, newsize - oldsize);
-                }
-
-                memcpy(pArray->Items() + start, data, size);
-
-                oldsize = pArrayValid->NumItems();
-                pArrayValid->Resize(oldsize + 1);
-                valid_range &range = pArrayValid->Items()[oldsize];
-                range.start = start;
-                range.size = size;
+            if (!strcmp(section, "KEY")) {
+                pArray = &plugin->aKey;
+                pArrayValid = &plugin->aKeyValid;
+                maxsize = 11;
+            } else if (!strcmp(section, "Z80")) {
+                pArray = &plugin->aZ80ROM;
+                pArrayValid = &plugin->aZ80ROMValid;
+            } else if (!strcmp(section, "SMP")) {
+                pArray = &plugin->aSampleROM;
+                pArrayValid = &plugin->aSampleROMValid;
+            } else {
+                return -1;
             }
+
+            if (start + size < start) {
+                return -1;
+            }
+
+            const uint32_t newsize = start + size;
+            uint32_t oldsize = pArray->NumItems();
+
+            if (newsize > maxsize) {
+                return -1;
+            }
+
+            if (newsize > oldsize) {
+                pArray->Resize(newsize);
+                memset(pArray->Items() + oldsize, 0, newsize - oldsize);
+            }
+
+            memcpy(pArray->Items() + start, data, size);
+
+            oldsize = pArrayValid->NumItems();
+            pArrayValid->Resize(oldsize + 1);
+            valid_range &range = pArrayValid->Items()[oldsize];
+            range.start = start;
+            range.size = size;
 
             exe += datasize;
             exe_size -= datasize;
@@ -373,6 +392,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (keyExists(plugin->tags, "comment")) {
         plugin->info->comments = plugin->tags["comment"];
     }
+
     return FMOD_OK;
 }
 

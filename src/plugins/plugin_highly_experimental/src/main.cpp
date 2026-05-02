@@ -23,6 +23,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
     for (size_t i = 0; i < a.size(); ++i) {
         const auto ca = static_cast<unsigned char>(a[i]);
+
         if (const auto cb = static_cast<unsigned char>(b[i]); std::tolower(ca) != std::tolower(cb)) return false;
     }
 
@@ -31,6 +32,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
 std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
     std::FILE *fp = std::fopen(name.c_str(), mode);
+
     if (fp) return fp;
 
     const filesystem::path p(name);
@@ -44,10 +46,13 @@ std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
 
     for (std::error_code ec; auto const &entry: filesystem::directory_iterator(dir, ec)) {
         if (ec) break;
+
         if (!entry.is_regular_file(ec) && !entry.is_symlink(ec)) continue;
+
         if (std::string cand = entry.path().filename().string(); case_insensitive_compare(cand, target_basename)) {
             std::string candidate_path = (dir / cand).string();
             fp = std::fopen(candidate_path.c_str(), mode);
+
             if (fp) return fp;
         }
     }
@@ -102,11 +107,13 @@ public:
         if (psf2fs) {
             psf2fs_delete(psf2fs);
         }
+
         delete[] psxState;
     }
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
         auto *plugin = static_cast<pluginHighlyExp *>(context);
+
         if (!strcasecmp(name, "_refresh")) {
             sscanf(value, "%u", &plugin->loaderState.refresh);
         } else if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1)) {
@@ -126,29 +133,37 @@ public:
             auto getDigit = [](const char *&value) {
                 bool isDigit = false;
                 int32_t digit = 0;
+
                 while (*value && (*value < '0' || *value > '9'))
                     ++value;
+
                 while (*value && *value >= '0' && *value <= '9') {
                     isDigit = true;
                     digit = digit * 10 + *value - '0';
                     ++value;
                 }
+
                 if (isDigit)
                     return digit;
+
                 return -1;
             };
 
             if (auto length = getDigit(value); length >= 0) {
                 while (*value && *value != ':' && *value != '.' && *value != ',')
                     ++value;
+
                 if (*value) {
                     while (*value == ':') {
                         if (auto d = getDigit(++value); d >= 0)
                             length = length * 60 + Clamp(d, 0, 59);
                     }
+
                     length *= 1000;
+
                     while (*value && *value != '.' && *value != ',')
                         ++value;
+
                     if (*value == '.' || *value == ',') {
                         // up to 3 decimal digits are supported
                         // 0.0nn & 0.00n values are not handled
@@ -170,6 +185,7 @@ public:
         } else {
             plugin->tags[name] = value;
         }
+
         return 0;
     }
 
@@ -180,6 +196,7 @@ public:
 
         if (exe_size < 0x800)
             return -1;
+
         if (exe_size > UINT_MAX)
             return -1;
 
@@ -187,7 +204,8 @@ public:
         const uint32_t size = static_cast<uint32_t>(exe_size) - 0x800;
 
         addr &= 0x1fffff;
-        if ((addr < 0x10000) || (size > 0x1f0000) || (addr + size > 0x200000))
+
+        if (addr < 0x10000 || size > 0x1f0000 || addr + size > 0x200000)
             return -1;
 
         void *pIOP = psx_get_iop_state(plugin->psxState);
@@ -341,6 +359,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     } else {
         plugin->info->fileFormat = "PlayStation 2 (PSF2)";
     }
+
     plugin->info->numSamples = 0;
 
     if (keyExists(plugin->tags, "title")) {
@@ -392,18 +411,22 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     auto *plugin = static_cast<pluginHighlyExp *>(codec->plugindata);
 
     psx_clear_state(plugin->psxState, static_cast<uint8_t>(plugin->psfType));
+
     if (plugin->psf2fs) {
         psf2fs_delete(plugin->psf2fs);
         plugin->psf2fs = psf2fs_create();
     }
+
     plugin->loaderState.Clear();
     psf_load(plugin->info->filePath.c_str(), &plugin->psfFileSystem, static_cast<uint8_t>(plugin->psfType),
              plugin->psfType == 1 ? pluginHighlyExp::PsfLoad : psf2fs_load_callback,
              plugin->psfType == 1 ? plugin : plugin->psf2fs, nullptr,
              nullptr, 0, nullptr, nullptr);
+
     if (plugin->loaderState.refresh) {
         psx_set_refresh(plugin->psxState, plugin->loaderState.refresh);
     }
+
     if (plugin->psfType == 2) {
         struct {
             static int EMU_CALL virtual_readfile(void *context, const char *path, int offset, char *buffer,
@@ -413,6 +436,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         } cb;
         psx_set_readfile(plugin->psxState, cb.virtual_readfile, plugin->psf2fs);
     }
+
     void *pIOP = psx_get_iop_state(plugin->psxState);
     iop_set_compat(pIOP, IOP_COMPAT_HARSH);
 

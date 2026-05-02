@@ -244,6 +244,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     const auto plugin = static_cast<pluginFurnace *>(codec->plugindata);
+
     if (postype == FMOD_TIMEUNIT_MS) {
         return FMOD_OK;
     }

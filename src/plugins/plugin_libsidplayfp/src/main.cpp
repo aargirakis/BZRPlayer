@@ -465,6 +465,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
     auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
+
     if (postype == FMOD_TIMEUNIT_MS) {
         if (position == 0) {
             if (plugin->player->timeMs() != 0) {

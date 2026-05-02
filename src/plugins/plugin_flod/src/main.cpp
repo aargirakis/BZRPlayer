@@ -209,6 +209,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto plugin = static_cast<pluginFlod *>(codec->plugindata);
+
     if (plugin->player->amiga->isCompleted()) {
         return FMOD_ERR_FILE_COULDNOTSEEK;
     }

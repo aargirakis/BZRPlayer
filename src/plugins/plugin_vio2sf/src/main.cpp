@@ -20,6 +20,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
     for (size_t i = 0; i < a.size(); ++i) {
         const auto ca = static_cast<unsigned char>(a[i]);
+
         if (const auto cb = static_cast<unsigned char>(b[i]); std::tolower(ca) != std::tolower(cb)) return false;
     }
 
@@ -28,6 +29,7 @@ static bool case_insensitive_compare(const std::string &a, const std::string &b)
 
 std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
     std::FILE *fp = std::fopen(name.c_str(), mode);
+
     if (fp) return fp;
 
     const filesystem::path p(name);
@@ -41,10 +43,13 @@ std::FILE *fopen_case_insensitive(const std::string &name, const char *mode) {
 
     for (std::error_code ec; auto const &entry: filesystem::directory_iterator(dir, ec)) {
         if (ec) break;
+
         if (!entry.is_regular_file(ec) && !entry.is_symlink(ec)) continue;
+
         if (std::string cand = entry.path().filename().string(); case_insensitive_compare(cand, target_basename)) {
             std::string candidate_path = (dir / cand).string();
             fp = std::fopen(candidate_path.c_str(), mode);
+
             if (fp) return fp;
         }
     }
@@ -101,6 +106,7 @@ public:
 
     static int InfoMetaPSF(void *context, const char *name, const char *value) {
         auto *plugin = static_cast<pluginVio2sf *>(context);
+
         if (!strncasecmp(name, "replaygain_", sizeof("replaygain_") - 1)) {
         }
 
@@ -118,29 +124,37 @@ public:
             auto getDigit = [](const char *&value) {
                 bool isDigit = false;
                 int32_t digit = 0;
+
                 while (*value && (*value < '0' || *value > '9'))
                     ++value;
+
                 while (*value && *value >= '0' && *value <= '9') {
                     isDigit = true;
                     digit = digit * 10 + *value - '0';
                     ++value;
                 }
+
                 if (isDigit)
                     return digit;
+
                 return -1;
             };
 
             if (auto length = getDigit(value); length >= 0) {
                 while (*value && *value != ':' && *value != '.' && *value != ',')
                     ++value;
+
                 if (*value) {
                     while (*value == ':') {
                         if (auto d = getDigit(++value); d >= 0)
                             length = length * 60 + Clamp(d, 0, 59);
                     }
+
                     length *= 1000;
+
                     while (*value && *value != '.' && *value != ',')
                         ++value;
+
                     if (*value == '.' || *value == ',') {
                         // up to 3 decimal digits are supported
                         // 0.0nn & 0.00n values are not handled
@@ -162,6 +176,7 @@ public:
         } else {
             plugin->tags[name] = value;
         }
+
         return 0;
     }
 
@@ -203,14 +218,17 @@ public:
     int static TwosfLoad(void *context, const uint8_t *exe, size_t exe_size, const uint8_t *reserved,
                          size_t reserved_size) {
         auto *plugin = static_cast<pluginVio2sf *>(context);
+
         if (exe_size >= 8 && TwosfLoadMap(plugin, 0, exe, static_cast<unsigned>(exe_size))) {
             return -1;
         }
 
         if (reserved_size) {
             size_t resv_pos = 0;
+
             if (reserved_size < 16)
                 return -1;
+
             while (resv_pos + 12 < reserved_size) {
                 const unsigned save_size = get_le32(reserved + resv_pos + 4);
                 const unsigned save_crc = get_le32(reserved + resv_pos + 8);
@@ -218,9 +236,11 @@ public:
                 if (get_le32(reserved + resv_pos + 0) == 0x45564153) {
                     if (resv_pos + 12 + save_size > reserved_size)
                         return -1;
+
                     if (TwosfLoadMapz(plugin, 1, reserved + resv_pos + 12, save_size, save_crc))
                         return -1;
                 }
+
                 resv_pos += 12 + save_size;
             }
         }
@@ -230,12 +250,14 @@ public:
 
     int static TwosfLoadMap(void *context, int issave, const unsigned char *udata, const unsigned usize) {
         auto *plugin = static_cast<pluginVio2sf *>(context);
+
         if (usize < 8) return -1;
 
         unsigned char *iptr;
         size_t isize;
         const unsigned xsize = get_le32(udata + 4);
         const unsigned xofs = get_le32(udata + 0);
+
         if (issave) {
             iptr = plugin->loaderState.state;
             isize = plugin->loaderState.state_size;
@@ -247,8 +269,10 @@ public:
             plugin->loaderState.rom = nullptr;
             plugin->loaderState.rom_size = 0;
         }
+
         if (!iptr) {
             size_t rsize = xofs + xsize;
+
             if (!issave) {
                 rsize -= 1;
                 rsize |= rsize >> 1;
@@ -258,13 +282,17 @@ public:
                 rsize |= rsize >> 16;
                 rsize += 1;
             }
+
             iptr = static_cast<unsigned char *>(malloc(rsize + 10));
+
             if (!iptr)
                 return -1;
+
             memset(iptr, 0, rsize + 10);
             isize = rsize;
         } else if (isize < xofs + xsize) {
             size_t rsize = xofs + xsize;
+
             if (!issave) {
                 rsize -= 1;
                 rsize |= rsize >> 1;
@@ -274,15 +302,20 @@ public:
                 rsize |= rsize >> 16;
                 rsize += 1;
             }
+
             auto *xptr = static_cast<unsigned char *>(realloc(iptr, xofs + rsize + 10));
+
             if (!xptr) {
                 free(iptr);
                 return -1;
             }
+
             iptr = xptr;
             isize = rsize;
         }
+
         memcpy(iptr + xofs, udata + 8, xsize);
+
         if (issave) {
             plugin->loaderState.state = iptr;
             plugin->loaderState.state_size = isize;
@@ -290,6 +323,7 @@ public:
             plugin->loaderState.rom = iptr;
             plugin->loaderState.rom_size = isize;
         }
+
         return 0;
     }
 
@@ -302,6 +336,7 @@ public:
         unsigned char *rdata;
 
         auto *udata = static_cast<unsigned char *>(malloc(usize));
+
         if (!udata)
             return -1;
 
@@ -310,8 +345,10 @@ public:
                 free(udata);
                 return -1;
             }
+
             if (usize >= 8) {
                 usize = get_le32(udata + 4) + 8;
+
                 if (usize < rsize) {
                     rsize += rsize;
                     usize = rsize;
@@ -321,11 +358,14 @@ public:
                 rsize += rsize;
                 usize = rsize;
             }
+
             rdata = static_cast<unsigned char *>(realloc(udata, usize));
+
             if (!rdata) {
                 free(udata);
                 return -1;
             }
+
             udata = rdata;
         }
 

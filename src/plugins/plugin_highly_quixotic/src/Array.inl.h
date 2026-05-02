@@ -668,6 +668,7 @@ namespace core {
                 return numRemovedItems;
             }
         }
+
         return 0;
     }
 
