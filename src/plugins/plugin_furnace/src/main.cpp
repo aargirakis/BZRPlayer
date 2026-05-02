@@ -56,6 +56,7 @@ public:
         if (engine != nullptr) {
             engine->quit(false);
         }
+
         delete engine;
     }
 
@@ -228,59 +229,6 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
         numSamples -= numSamplesToCopy;
         numRemainingSamples -= numSamplesToCopy;
         numSamplesRendered += numSamplesToCopy;
-
-        auto *vuMeters = new unsigned char[plugin->engine->getTotalChannelCount()];
-
-        for (int i = 0; i < plugin->engine->getTotalChannelCount(); i++) {
-            const auto *divDispatchOscBuffer = plugin->engine->getOscBuffer(i);
-            int displaySize = 0;
-
-            if (divDispatchOscBuffer != nullptr) {
-                displaySize = static_cast<float>(divDispatchOscBuffer->rate) * 0.03f;
-            }
-
-            short minLevel = 32767;
-            short maxLevel = -32768;
-            unsigned short needlePos = 0;
-
-            if (divDispatchOscBuffer != nullptr) {
-                needlePos = divDispatchOscBuffer->needle;
-            }
-
-            needlePos -= displaySize;
-
-            constexpr int bufsize = 64;
-
-            for (unsigned short j = 0; j < bufsize; j++) {
-                short y = 0;
-
-                if (divDispatchOscBuffer != nullptr) {
-                    y = plugin->engine->getOscBuffer(i)->data[static_cast<unsigned short>(
-                        needlePos + j * displaySize / bufsize)];
-                }
-
-                if (minLevel > y) minLevel = y;
-                if (maxLevel < y) maxLevel = y;
-            }
-
-            float estimate = pow(static_cast<float>(maxLevel - minLevel) / 32768.0f, 0.5f);
-
-            if (estimate > 1.0f) estimate = 1.0f;
-
-            estimate = estimate * 100;
-
-            if (!plugin->vuMeterBuffer.empty()) {
-                vuMeters[i] = max(plugin->vuMeterBuffer.back()[i] * 0.87f, estimate);
-            } else {
-                vuMeters[i] = estimate;
-            }
-        }
-
-        plugin->vuMeterBuffer.push(vuMeters);
-
-        if (plugin->vuMeterBuffer.size() >= 10) {
-            plugin->vuMeterBuffer.pop();
-        }
     }
 
     plugin->numRemainingSamples = numRemainingSamples;
@@ -330,6 +278,59 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
     const auto plugin = static_cast<pluginFurnace *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MODVUMETER) {
+        auto *vuMeters = new unsigned char[plugin->engine->getTotalChannelCount()];
+
+        for (int i = 0; i < plugin->engine->getTotalChannelCount(); i++) {
+            const auto *divDispatchOscBuffer = plugin->engine->getOscBuffer(i);
+            int displaySize = 0;
+
+            if (divDispatchOscBuffer != nullptr) {
+                displaySize = static_cast<float>(divDispatchOscBuffer->rate) * 0.03f;
+            }
+
+            short minLevel = 32767;
+            short maxLevel = -32768;
+            unsigned short needlePos = 0;
+
+            if (divDispatchOscBuffer != nullptr) {
+                needlePos = divDispatchOscBuffer->needle;
+            }
+
+            needlePos -= displaySize;
+
+            constexpr int bufferSize = 64;
+
+            for (unsigned short j = 0; j < bufferSize; j++) {
+                short y = 0;
+
+                if (divDispatchOscBuffer != nullptr) {
+                    y = plugin->engine->getOscBuffer(i)->data[static_cast<unsigned short>(
+                        needlePos + j * displaySize / bufferSize)];
+                }
+
+                if (minLevel > y) minLevel = y;
+                if (maxLevel < y) maxLevel = y;
+            }
+
+            float estimate = pow(static_cast<float>(maxLevel - minLevel) / 32768.0f, 0.5f);
+
+            if (estimate > 1.0f) estimate = 1.0f;
+
+            estimate = estimate * 100;
+
+            if (!plugin->vuMeterBuffer.empty()) {
+                vuMeters[i] = max(plugin->vuMeterBuffer.back()[i] * 0.87f, estimate);
+            } else {
+                vuMeters[i] = estimate;
+            }
+        }
+
+        plugin->vuMeterBuffer.push(vuMeters);
+
+        if (plugin->vuMeterBuffer.size() >= 10) {
+            plugin->vuMeterBuffer.pop();
+        }
+
         plugin->info->modVuMeters = plugin->vuMeterBuffer.front();
         return FMOD_OK;
     }
