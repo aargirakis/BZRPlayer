@@ -14,7 +14,7 @@ jobs:
           dnf install -y git-lfs
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           lfs: true
 
@@ -135,7 +135,7 @@ jobs:
           mv ~/rpmbuild/RPMS/x86_64/bzr-player-${{env.BZR2_VERSION}}-1.x86_64.rpm ~/artifacts
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: artifacts-rpm
           path: |

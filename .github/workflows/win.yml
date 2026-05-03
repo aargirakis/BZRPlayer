@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           lfs: true
 
@@ -29,7 +29,7 @@ jobs:
           ninja -C cmake-build
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: artifacts-win
           path: cmake-build/output_release/bzr-player-*-win64.zip
@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup environment
         run: |
@@ -60,20 +60,20 @@ jobs:
                                             nsis-registry-bin
 
       - name: Download
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Build
         run: |
-          unzip -q artifacts-win/bzr-player-${{env.BZR2_VERSION}}-win64.zip -d src/inst/nsis/bin
+          unzip -q bzr-player-${{env.BZR2_VERSION}}-win64.zip -d src/inst/nsis/bin
           cd src/inst/nsis
           makensis -DVERSION="${{env.BZR2_VERSION}}" bzr2_setup.nsi
-          mv bzr-player-${{env.BZR2_VERSION}}-win64.exe ../../../artifacts-win
+          mv bzr-player-${{env.BZR2_VERSION}}-win64.exe ../../..
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: artifacts-win
           path: |
-            artifacts-win/bzr-player-${{env.BZR2_VERSION}}-win64.zip
-            artifacts-win/bzr-player-${{env.BZR2_VERSION}}-win64.exe
+            bzr-player-${{env.BZR2_VERSION}}-win64.zip
+            bzr-player-${{env.BZR2_VERSION}}-win64.exe
           overwrite: true
