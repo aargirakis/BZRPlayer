@@ -1,0 +1,10 @@
+--- src/strings/encoding.h	2025-05-30 12:43:47.000000000 +0200
++++ src/strings/encoding.h	2026-05-03 11:25:52.309848700 +0200
+@@ -10,6 +10,7 @@
+ 
+ #pragma once
+ 
++#include <cstdint>
+ #include "string_type.h"
+ #include "string_view.h"
+ 

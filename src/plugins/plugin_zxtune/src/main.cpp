@@ -1,5 +1,6 @@
 #include <iostream>
 #include <regex>
+#include <sstream>
 #include "attributes.h"
 #include "binary/container_factories.h"
 #include "core/data_location.h"
