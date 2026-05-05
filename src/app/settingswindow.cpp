@@ -319,8 +319,6 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     const QString thumbP(mainWindow->getEffect()->getPrinterFont().left(extensionPos) + ".thumb.png");
     ui->buttonPrinterFontImage->setIcon(QIcon(thumbP));
 
-    loadSettingsFmod();
-
     if (PLUGIN_adplug_LIB != "") {
         loadSettingsAdplug();
     }
@@ -457,6 +455,11 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     if (PLUGIN_flod_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_flod_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_flod_NAME));
+    }
+
+    if (PLUGIN_fluidsynth_LIB != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_fluidsynth_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_fluidsynth_NAME));
     }
 
     if (PLUGIN_furnace_LIB != "") {
@@ -771,8 +774,6 @@ void settingsWindow::on_buttonOk_clicked() {
 
     updateScrollText();
 
-    saveSettingsFmod();
-
     if (PLUGIN_adplug_LIB != "") {
         saveSettingsAdplug();
     }
@@ -966,40 +967,6 @@ void settingsWindow::loadSettingsAtariAudio() const {
 
         ifs.close();
     }
-}
-
-void settingsWindow::loadSettingsFmod() const {
-    // read config from disk
-    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/fmod.cfg";
-    ifstream ifs(filename.c_str());
-    bool useDefaults = false;
-
-    if (ifs.fail()) {
-        // the file could not be opened
-        useDefaults = true;
-    }
-
-    // defaults
-    ui->checkBoxFmodSeamlessLoop->setChecked(false);
-
-    if (!useDefaults) {
-        string line;
-
-        while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
-
-                if (word.compare("seamlessLoop") == 0) {
-                    ui->checkBoxFmodSeamlessLoop->setChecked(value.compare("true") == 0);
-                }
-            }
-        }
-
-        ifs.close();
-    }
-
-    mainWindow->setFmodSeamlessLoopEnabled(ui->checkBoxFmodSeamlessLoop->isChecked());
 }
 
 void settingsWindow::loadSettingsFurnace() const {
@@ -1674,24 +1641,6 @@ void settingsWindow::saveSettingsAtariAudio() const {
     ofs.close();
 }
 
-void settingsWindow::saveSettingsFmod() const {
-    // save config to disk
-    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/fmod.cfg";
-    ofstream ofs(filename.c_str());
-
-    if (ofs.fail()) {
-        // the file could not be opened
-        return;
-    }
-
-    const bool isFmodSeamlessLoopEnabled = ui->checkBoxFmodSeamlessLoop->isChecked();
-
-    ofs << "seamlessLoop=" << (isFmodSeamlessLoopEnabled ? "true" : "false") << "\n";
-    ofs.close();
-
-    mainWindow->setFmodSeamlessLoopEnabled(isFmodSeamlessLoopEnabled);
-}
-
 void settingsWindow::saveSettingsFurnace() const {
     // save config to disk
     const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_furnace_CONFIG_FILENAME;
@@ -1980,7 +1929,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(false);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2001,7 +1950,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(false);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2022,7 +1971,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(false);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2039,11 +1988,11 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
         ui->groupBoxZxtune->setHidden(true);
-    } else if (selectedPlugin == PLUGIN_fmod_NAME) {
+    } else if (selectedPlugin == PLUGIN_fluidsynth_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(false);
+        ui->groupBoxFluidsynth->setHidden(false);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2064,7 +2013,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(false);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2085,7 +2034,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(false);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2106,7 +2055,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(false);
@@ -2127,7 +2076,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2148,7 +2097,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2169,7 +2118,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2190,7 +2139,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2211,7 +2160,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2232,7 +2181,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2253,7 +2202,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2274,7 +2223,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2295,7 +2244,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2316,7 +2265,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2337,7 +2286,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2357,7 +2306,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2377,7 +2326,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2397,7 +2346,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxAtariAudio->setHidden(true);
-        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFluidsynth->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2535,7 +2484,7 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxAtariAudio->setStyleSheet(stylesheet);
 
-    stylesheet = ui->groupBoxFmod->styleSheet();
+    stylesheet = ui->groupBoxFluidsynth->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
@@ -2544,7 +2493,7 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
-    ui->groupBoxFmod->setStyleSheet(stylesheet);
+    ui->groupBoxFluidsynth->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxFurnace->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -2851,7 +2800,7 @@ void settingsWindow::on_buttonVisualizer_clicked() const {
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxAsap->setHidden(true);
     ui->groupBoxAtariAudio->setHidden(true);
-    ui->groupBoxFmod->setHidden(true);
+    ui->groupBoxFluidsynth->setHidden(true);
     ui->groupBoxFurnace->setHidden(true);
     ui->groupBoxGameMusicEmu->setHidden(true);
     ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2878,7 +2827,7 @@ void settingsWindow::on_buttonGeneral_clicked() const {
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxAsap->setHidden(true);
     ui->groupBoxAtariAudio->setHidden(true);
-    ui->groupBoxFmod->setHidden(true);
+    ui->groupBoxFluidsynth->setHidden(true);
     ui->groupBoxFurnace->setHidden(true);
     ui->groupBoxGameMusicEmu->setHidden(true);
     ui->groupBoxHighlyExperimental->setHidden(true);
@@ -2912,7 +2861,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxAsap->setHidden(true);
     ui->groupBoxAtariAudio->setHidden(true);
-    ui->groupBoxFmod->setHidden(true);
+    ui->groupBoxFluidsynth->setHidden(true);
     ui->groupBoxFurnace->setHidden(true);
     ui->groupBoxGameMusicEmu->setHidden(true);
     ui->groupBoxHighlyExperimental->setHidden(true);
@@ -3744,8 +3693,6 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxAtariAudioContinuousPlayback->isChecked()
                               ? "checkbox-on"
                               : "checkbox-off"]);
-    ui->checkBoxFmodSeamlessLoop->setIcon(
-        mainWindow->icons[ui->checkBoxFmodSeamlessLoop->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxFurnaceContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxFurnaceContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxGameMusicEmuContinuousPlayback->setIcon(
@@ -3890,10 +3837,6 @@ void settingsWindow::on_checkBoxAsapContinuousPlayback_toggled(const bool isChec
 void settingsWindow::on_checkBoxAtariAudioContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxAtariAudioContinuousPlayback->setIcon(
         mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxFmodSeamlessLoop_toggled(const bool isChecked) const {
-    ui->checkBoxFmodSeamlessLoop->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::on_checkBoxFurnaceContinuousPlayback_toggled(const bool isChecked) const {
