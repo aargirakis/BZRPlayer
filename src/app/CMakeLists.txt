@@ -62,13 +62,11 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_VERSION_MAJOR="${PROJ
 target_compile_definitions(${PROJECT_NAME} PRIVATE DATA_DIR="${DATA_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE LIB_DIR="${LIB_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE USER_DIR="${USER_DIR}")
-target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_FMOD_DIR="${PLUGINS_FMOD_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE RESOURCES_DIR="${RESOURCES_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE LAYOUTS_DIR="${LAYOUTS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLAYLISTS_DIR="${PLAYLISTS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_DIR="${PLUGINS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
-target_compile_definitions(${PROJECT_NAME} PRIVATE FMOD_DLS_PATH="${PLUGINS_FMOD_DIR}/gm.dls")
 
 foreach (QT_MODULE ${QT_MODULES})
     target_link_libraries(${PROJECT_NAME} PRIVATE "Qt${QT_VERSION_MAJOR}::${QT_MODULE}")

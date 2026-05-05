@@ -44,11 +44,3 @@ else ()
             ${FMOD_DIR}/${FMOD_REALNAME} ${FMOD_LIB_DIR}/${FMOD_SONAME}
             VERBATIM)
 endif ()
-
-cmake_path(SET FMOD_DATA_PATH NORMALIZE ${OUTPUT_DIR}${DATA_DIR}${PLUGINS_FMOD_DIR})
-
-add_custom_target(copy-data-${NAME} ALL
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${FMOD_DATA_PATH}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_LIST_DIR}/dist/gm.dls ${FMOD_DATA_PATH}
-        VERBATIM)

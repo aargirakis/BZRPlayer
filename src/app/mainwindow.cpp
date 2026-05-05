@@ -1092,7 +1092,7 @@ void MainWindow::timerProgress() {
         }
 
         if (const auto &info = sm.info;
-            info != nullptr && (info->isContinuousPlaybackActive || info->isSeamlessLoopActive)) {
+            info != nullptr && info->isContinuousPlaybackActive) {
             return;
         }
 
@@ -1313,7 +1313,6 @@ bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
     info->clearMemory();
     info->clear();
     info->isPlayModeRepeatSongEnabled = playMode == repeatSong;
-    info->isFmodSeamlessLoopEnabled = getFmodSeamlessLoopEnabled();
     info->currentSubsong = subsong;
     info->defaultLengthMs = isDefaultTrackLengthEnabled ? 60 * 1000 * defaultTrackLengthValue : 0;
 
@@ -4264,14 +4263,6 @@ void MainWindow::on_pitchSlider_valueChanged(int value) const {
 void MainWindow::on_positionSlider_valueChanged(const int value) const {
     const auto timeToShow = QString(msToNiceStringExact(value, displayMilliseconds));
     ui->labelTimer_2->setText(timeToShow);
-}
-
-void MainWindow::setFmodSeamlessLoopEnabled(const bool seamlessLoop) {
-    isFmodSeamlessLoopEnabled = seamlessLoop;
-}
-
-bool MainWindow::getFmodSeamlessLoopEnabled() const {
-    return isFmodSeamlessLoopEnabled;
 }
 
 const QString &MainWindow::getColorMain() const {

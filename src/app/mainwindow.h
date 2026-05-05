@@ -265,10 +265,6 @@ public:
 
     QString createPlaylist(const QString &);
 
-    void setFmodSeamlessLoopEnabled(bool seamlessLoop);
-
-    bool getFmodSeamlessLoopEnabled() const;
-
     const QString &getColorMain() const;
 
     const QString &getColorMainHover() const;
@@ -745,8 +741,6 @@ private:
 
     bool enqueueItems;
     bool isShownCheckBoxLoopPoints;
-
-    bool isFmodSeamlessLoopEnabled;
 
     int key;
 };
