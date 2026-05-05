@@ -227,8 +227,6 @@ private slots:
 
     void on_checkBoxAtariAudioLibraryContinuousPlayback_toggled(bool isChecked) const;
 
-    void on_checkBoxFmodSeamlessLoop_toggled(bool isChecked) const;
-
     void on_checkBoxFurnaceContinuousPlayback_toggled(bool isChecked) const;
 
     void on_checkBoxGameMusicEmuContinuousPlayback_toggled(bool isChecked) const;
@@ -300,8 +298,6 @@ private:
 
     void loadSettingsAtariAudioLibrary() const;
 
-    void loadSettingsFmod() const;
-
     void loadSettingsFurnace() const;
 
     void loadSettingsGameMusicEmu() const;
@@ -339,8 +335,6 @@ private:
     void saveSettingsAsap() const;
 
     void saveSettingsAtariAudioLibrary() const;
-
-    void saveSettingsFmod() const;
 
     void saveSettingsFurnace() const;
 
