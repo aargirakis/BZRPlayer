@@ -1137,7 +1137,7 @@ void MainWindow::timerProgress() {
             return;
         }
 
-        if (info != nullptr && (info->isContinuousPlaybackActive || info->isSeamlessLoopActive)) {
+        if (info != nullptr && info->isContinuousPlaybackActive) {
             return;
         }
 
@@ -1358,7 +1358,6 @@ bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
     info->clearMemory();
     info->clear();
     info->isPlayModeRepeatSongEnabled = playMode == repeatSong;
-    info->isFmodSeamlessLoopEnabled = getFmodSeamlessLoopEnabled();
     info->currentSubsong = subsong;
     info->defaultLengthMs = isDefaultTrackLengthEnabled ? 60 * 1000 * defaultTrackLengthValue : 0;
 
@@ -1920,33 +1919,31 @@ void MainWindow::playSongAtRow(int rowProvided) {
 
     QString title(fileInfo.fileName());
 
-    if (sm.info->plugin == PLUGIN_fmod) {
-        if (!pi.info->title.empty()) {
-            title = pi.info->title.c_str();
-        } else if (!pi.info->isLocalFilePath) {
-            if (!pi.info->streamName.empty()) {
-                title = pi.info->streamName.c_str();
-            } else {
-                title = pi.info->filePath.c_str();
-            }
-        }
-    } else {
+    if (pi.info->isLocalFilePath) {
         if (!pi.info->title.empty()) {
             title = fromUtf8OrLatin1(pi.info->title);
         } else if (!pi.info->containerFilenames.empty()) {
             title = fromUtf8OrLatin1(pi.info->containerLastFilename);
+        }
+    } else {
+        if (!pi.info->title.empty()) {
+            title = pi.info->title.c_str();
+        } else if (!pi.info->streamName.empty()) {
+            title = pi.info->streamName.c_str();
+        } else {
+            title = pi.info->filePath.c_str();
         }
     }
 
     QString artist = "";
 
     if (!pi.info->artist.empty()) {
-        if (sm.info->plugin == PLUGIN_fmod) {
-            artist = pi.info->artist.c_str();
-        } else {
+        if (pi.info->isLocalFilePath) {
             artist = fromUtf8OrLatin1(pi.info->artist);
+        } else {
+            artist = pi.info->artist.c_str();
         }
-    } else {
+    } else if (pi.info->isLocalFilePath) {
         artist = fromUtf8OrLatin1(pi.info->composer);
     }
 
@@ -4337,14 +4334,6 @@ void MainWindow::on_pitchSlider_valueChanged(int value) const {
 void MainWindow::on_positionSlider_valueChanged(const int value) const {
     const auto timeToShow = QString(msToNiceStringExact(value, displayMilliseconds));
     ui->labelTimer_2->setText(timeToShow);
-}
-
-void MainWindow::setFmodSeamlessLoopEnabled(const bool seamlessLoop) {
-    isFmodSeamlessLoopEnabled = seamlessLoop;
-}
-
-bool MainWindow::getFmodSeamlessLoopEnabled() const {
-    return isFmodSeamlessLoopEnabled;
 }
 
 const QString &MainWindow::getColorMain() const {

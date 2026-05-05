@@ -41,14 +41,6 @@ else ()
             VERBATIM)
 endif ()
 
-add_custom_target(copy-data-${NAME} ALL
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_PATH}/${DATA_DIR}${PLUGINS_FMOD_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_LIST_DIR}/dist/gm.dls ${OUTPUT_PATH}/${DATA_DIR}${PLUGINS_FMOD_DIR}
-        VERBATIM)
-
 if (NOT WIN32)
     install(FILES ${OUTPUT_PATH}/${LIB_DIR}/${FMOD_SONAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
-    install(FILES ${OUTPUT_PATH}/${DATA_DIR}${PLUGINS_FMOD_DIR}/gm.dls
-            DESTINATION ${CMAKE_INSTALL_DATADIR}${PLUGINS_FMOD_DIR})
 endif ()

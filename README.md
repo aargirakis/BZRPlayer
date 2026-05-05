@@ -18,6 +18,7 @@ BZR2 is designed with a modular plugin system to support multiple third party au
 - **plugin_audiodecoder.wsr**: [audiodecoder.wsr](https://github.com/xbmc/audiodecoder.wsr)
 - **plugin_audiofile**: [Audio File Library](https://github.com/mpruett/audiofile)
 - **plugin_flod**: custom C++ port of [Flod](https://github.com/photonstorm/Flod)
+- **plugin_fluidsynth**: [FluidSynth](https://github.com/FluidSynth/fluidsynth) + [BW MIDI Sequencer](https://github.com/Wohlstand/bw-midi-sequencer)
 - **plugin_furnace**: [Furnace](https://github.com/tildearrow/furnace)
 - **plugin_game-music-emu**: [Game_Music_Emu](https://github.com/libgme/game-music-emu)
 - **plugin_highly_experimental**: [Highly Experimental](https://gitlab.com/kode54/highly_experimental) + [psflib](https://gitlab.com/kode54/psflib)
@@ -47,7 +48,7 @@ BZR2 is designed with a modular plugin system to support multiple third party au
 - **plugin_vio2sf**: [vio2sf](https://gitlab.com/kode54/vio2sf) + [psflib](https://gitlab.com/kode54/psflib)
 - **plugin_zxtune**: [ZXTune](https://github.com/vitamin-caig/zxtune)
 
-In addition to these **FMOD** itself is used to provide support for both MIDI and network streams playback
+In addition to these **FMOD** itself is used to provide support for network streams playback
 
 ### Supported formats
 
