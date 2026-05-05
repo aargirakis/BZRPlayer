@@ -38,7 +38,6 @@ set(RESOURCES_DIR "/resources")
 set(LAYOUTS_DIR "/layouts")
 set(PLAYLISTS_DIR "/playlists")
 set(PLUGINS_DIR "/plugins")
-set(PLUGINS_FMOD_DIR "${PLUGINS_DIR}/fmod")
 set(PLUGINS_CONFIG_DIR "${PLUGINS_DIR}/config")
 
 include(${CMAKE_SOURCE_DIR}/utils.cmake)
@@ -56,6 +55,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_audiodecoder.wsr "src/plugins/plugin_audiodecoder.wsr"
         plugin_audiofile "src/plugins/plugin_audiofile"
         plugin_flod "src/plugins/plugin_flod"
+        plugin_fluidsynth "src/plugins/plugin_fluidsynth"
         plugin_furnace "src/plugins/plugin_furnace"
         plugin_game-music-emu "src/plugins/plugin_game-music-emu"
         plugin_highly_experimental "src/plugins/plugin_highly_experimental"

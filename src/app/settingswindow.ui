@@ -4430,7 +4430,7 @@ QComboBox::drop-down:disabled {
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBoxFmod">
+  <widget class="QGroupBox" name="groupBoxFluidsynth">
    <property name="geometry">
     <rect>
      <x>170</x>
@@ -4582,25 +4582,6 @@ QComboBox::drop-down:disabled {
    <property name="flat">
     <bool>true</bool>
    </property>
-   <widget class="QCheckBox" name="checkBoxFmodSeamlessLoop">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>20</y>
-      <width>200</width>
-      <height>26</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Seamless Loop</string>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>40</width>
-      <height>40</height>
-     </size>
-    </property>
-   </widget>
   </widget>
   <widget class="QGroupBox" name="groupBoxFurnace">
    <property name="geometry">

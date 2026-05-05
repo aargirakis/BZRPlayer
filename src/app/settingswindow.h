@@ -173,8 +173,6 @@ private slots:
 
     void on_checkBoxVgmstreamContinuousPlayback_toggled(bool isChecked) const;
 
-    void on_checkBoxFmodSeamlessLoop_toggled(bool isChecked) const;
-
     void on_sliderLibopenmptStereoSeparation_valueChanged(int value) const;
 
     void on_checkBoxLibopenmptContinuousPlayback_toggled(bool isChecked) const;
@@ -266,8 +264,6 @@ private:
 
     void loadSettingsAdplug() const;
 
-    void loadSettingsFmod() const;
-
     void loadSettingsFurnace() const;
 
     void loadSettingsHivelytracker() const;
@@ -287,8 +283,6 @@ private:
     void loadSettingsVgmstream() const;
 
     void saveSettingsAdplug() const;
-
-    void saveSettingsFmod() const;
 
     void saveSettingsFurnace() const;
 

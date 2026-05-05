@@ -121,6 +121,10 @@ void SoundManager::loadPluginChain() {
     const auto filesize = info->filesize;
     const auto filename = info->filename;
 
+    if (PLUGIN_fluidsynth_LIB != "" && isFormatMidi(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_fluidsynth_LIB, 0);
+    }
+
     if (PLUGIN_libsidplayfp_LIB != "" && isFormatSidOrMusStr(fileBuffer, filesize, filename, info->isSid)) {
         loadPlugin(PLUGIN_libsidplayfp_LIB, 0);
     }
@@ -587,8 +591,7 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
     cout << "Loading " << filePathStr << " (subsong " << info->currentSubsong + 1 << ")" << endl;
 
     constexpr FMOD_MODE fmodModeNetwork = FMOD_ACCURATETIME | FMOD_CREATESTREAM;
-    constexpr FMOD_MODE fmodModeLocal = fmodModeNetwork | FMOD_OPENMEMORY_POINT;
-    constexpr FMOD_MODE fmodModeLocalPlugins = fmodModeLocal | FMOD_LOOP_OFF;
+    constexpr FMOD_MODE fmodModeLocal = fmodModeNetwork | FMOD_OPENMEMORY_POINT | FMOD_LOOP_OFF;
 
     FMOD_MODE fmodModeCurrent;
 
@@ -601,23 +604,10 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
     } else {
         pathOrBuffer = reinterpret_cast<const char *>(info->fileBuffer);
         extraInfo.length = static_cast<unsigned int>(info->filesize);
-
-        // use fmod for midi playback
-        if (isFormatMidi(info->fileBuffer, info->filesize)) {
-            static const char *fmodDlsPath = strdup((dataPath + FMOD_DLS_PATH).toStdString().c_str());
-            extraInfo.dlsname = fmodDlsPath;
-
-            if (info->isPlayModeRepeatSongEnabled && info->isFmodSeamlessLoopEnabled) {
-                info->isSeamlessLoopActive = true;
-                fmodModeCurrent = fmodModeLocal | FMOD_LOOP_NORMAL;
-            } else {
-                fmodModeCurrent = fmodModeLocal | FMOD_LOOP_OFF;
-            }
-        } else {
-            fmodModeCurrent = fmodModeLocalPlugins;
-            info->pluginsDir = info->libPath + PLUGINS_DIR + "/";
-            loadPluginChain();
-        }
+        fmodModeCurrent = fmodModeLocal;
+        info->pluginsDir = info->libPath + PLUGINS_DIR + "/";
+        loadPluginChain();
+        // }
     }
 
     result = FMOD_System_CreateSound(system, pathOrBuffer, fmodModeCurrent, &extraInfo, &sound);
