@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libvgm")
-set(VERSION "57585ea7a53f56bcf5a56071068c6ef9154ca299")
+set(VERSION "d1151884997ba4769b070b7c7aaedeffc60a25fb")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
@@ -17,7 +17,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
 set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/ValleyBell/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "7a5677921eaf4c0d3cef07c8b6b6da2cbf2d5da90e54d7d65fd955a409189954")
+set(SHA_256_HASH "7af2e58bc1bef990c0ee759cdef7bdf5e1e1ebc9d16cde489932b0370c0e7fbc")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(
         ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
@@ -26,6 +26,8 @@ download_patch_and_add(
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/emu/*.c
         ${EXTERNAL_SOURCE_DIR}/emu/cores/*.c
+        ${EXTERNAL_SOURCE_DIR}/emu/cores/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/emu/cores/ymfm/*.cpp
         ${EXTERNAL_SOURCE_DIR}/player/*.c
         ${EXTERNAL_SOURCE_DIR}/player/*.cpp
         ${EXTERNAL_SOURCE_DIR}/utils/DataLoader.c
