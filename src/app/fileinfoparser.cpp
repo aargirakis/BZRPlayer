@@ -81,8 +81,8 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
 
     switch (info->plugin) {
         case PLUGIN_adplug:
-            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(info->artist));
             addMultilineInfo(tableInfo, &row, "Description", info->comments);
             addInfo(tableInfo, &row, "Patterns", QString::number(info->numPatterns));
             addInfo(tableInfo, &row, "Orders", QString::number(info->numOrders));
@@ -120,8 +120,8 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
         case PLUGIN_highly_theoretical:
         case PLUGIN_lazyusf2:
         case PLUGIN_vio2sf:
-            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Game", fromUtf8OrLatin1(info->game));
             addInfo(tableInfo, &row, "Genre", fromUtf8OrLatin1(info->genre));
             addInfo(tableInfo, &row, "Copyright", fromUtf8OrLatin1(info->copyright));
@@ -207,9 +207,9 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Channels", QString::number(info->numChannels));
             break;
         case PLUGIN_sc68:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
             addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Composer", fromUtf8OrLatin1(info->composer));
-            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
             addInfo(tableInfo, &row, "Disk", fromUtf8OrLatin1(info->album));
             addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(info->converter));
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(info->ripper));
@@ -219,8 +219,8 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Address", "$" + QString::number(info->address, 16));
             break;
         case PLUGIN_sndh_player:
-            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Year", info->date.c_str());
             addInfo(tableInfo, &row, "Clock Speed", QString::number(info->clockSpeed) + " Hz");
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(info->ripper));
@@ -416,6 +416,13 @@ void FileInfoParser::showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const P
     const auto &sm = SoundManager::getInstance();
     const int numTags = sm.getNumTags();
 
+    QString title;
+    QString artist;
+    QString genre;
+    QString name;
+    QString bitrate;
+    QString published;
+
     for (int i = 0; i < numTags; i++) {
         if (const FMOD_RESULT res = sm.getTag(nullptr, i, &tag);
             res != FMOD_OK || tag.type != FMOD_TAGTYPE_SHOUTCAST || tag.datatype != FMOD_TAGDATATYPE_STRING) {
@@ -425,20 +432,39 @@ void FileInfoParser::showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const P
         auto tagName = QString(tag.name);
         const QString tagData = static_cast<char *>(tag.data);
 
-        if (tagName == "ARTIST") {
-            playlistItem->info->artist = tagData.toStdString();
-            addInfo(tableInfo, row, "Artist", tagData);
-        } else if (tagName == "TITLE") {
-            playlistItem->info->title = tagData.toStdString();
-            addInfo(tableInfo, row, "Title", tagData);
+        if (tagName == "TITLE") {
+            title = tagData;
+        } else if (tagName == "ARTIST") {
+            artist = tagData;
         } else if (tagName == "icy-genre") {
-            addInfo(tableInfo, row, "Genre", tagData);
+            genre = tagData;
         } else if (tagName == "icy-name") {
-            addInfo(tableInfo, row, "Name", tagData);
+            name = tagData;
         } else if (tagName == "icy-br") {
-            addInfo(tableInfo, row, "Bitrate", tagData);
+            bitrate = tagData;
         } else if (tagName == "icy-pub") {
-            addInfo(tableInfo, row, "Published", tagData == "1" ? "Yes" : "No");
+            published = tagData;
         }
+    }
+
+    if (!title.isEmpty()) {
+        playlistItem->info->title = title.toStdString();
+        addInfo(tableInfo, row, "Title", title);
+    }
+    if (!artist.isEmpty()) {
+        playlistItem->info->artist = artist.toStdString();
+        addInfo(tableInfo, row, "Artist", artist);
+    }
+    if (!genre.isEmpty()) {
+        addInfo(tableInfo, row, "Genre", genre);
+    }
+    if (!name.isEmpty()) {
+        addInfo(tableInfo, row, "Name", name);
+    }
+    if (!bitrate.isEmpty()) {
+        addInfo(tableInfo, row, "Bitrate", bitrate);
+    }
+    if (!published.isEmpty()) {
+        addInfo(tableInfo, row, "Published", published == "1" ? "Yes" : "No");
     }
 }
