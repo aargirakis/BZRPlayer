@@ -98,6 +98,8 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Replay Freq", info->clockSpeedStr.c_str());
             break;
         case PLUGIN_furnace:
+            addInfo(tableInfo, &row, "Name", fromUtf8OrLatin1(info->title));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Album", fromUtf8OrLatin1(info->album));
             addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(info->system));
             addInfo(tableInfo, &row, "Channels", QString::number(info->numChannels));
