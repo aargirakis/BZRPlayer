@@ -1919,12 +1919,6 @@ void MainWindow::playSongAtRow(int rowProvided) {
         } else {
             artist = fromUtf8OrLatin1(pi.info->artist);
         }
-    } else if (!pi.info->author.empty()) {
-        if (sm.info->plugin == PLUGIN_fmod) {
-            artist = pi.info->author.c_str();
-        } else {
-            artist = fromUtf8OrLatin1(pi.info->author);
-        }
     } else if (!pi.info->composer.empty()) {
         if (sm.info->plugin == PLUGIN_fmod) {
             artist = pi.info->composer.c_str();

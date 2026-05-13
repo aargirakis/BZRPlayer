@@ -133,7 +133,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     info->pluginName = PLUGIN_sc68_NAME;
     info->fileFormat = "SC68";
 
-    info->author = plugin->info.author;
+    info->artist = plugin->info.author;
     info->composer = plugin->info.composer;
     info->replay = plugin->info.replay;
     info->hardware = plugin->info.hwname;

@@ -92,7 +92,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Default Subsong", defaultSubsong == -1 ? "-" : QString::number(defaultSubsong));
         }
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->author));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Creation Date", info->date.c_str());
             addInfo(tableInfo, &row, "POKEY Chip", info->chips.c_str());
             addInfo(tableInfo, &row, "Replay Freq", info->clockSpeedStr.c_str());
@@ -207,7 +207,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Channels", QString::number(info->numChannels));
             break;
         case PLUGIN_sc68:
-            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->author));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Composer", fromUtf8OrLatin1(info->composer));
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
             addInfo(tableInfo, &row, "Disk", fromUtf8OrLatin1(info->album));
@@ -257,7 +257,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             break;
         case PLUGIN_zxtune:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->author));
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(info->system));
             addInfo(tableInfo, &row, "Container Files", info->containerFilenames.c_str());
             addInfo(tableInfo, &row, "Container Formats", info->containerFileformats.c_str());

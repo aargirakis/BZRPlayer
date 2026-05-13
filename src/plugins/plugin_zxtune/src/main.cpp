@@ -236,7 +236,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         containerFormats = regex_replace(containerFormats, regex(">"), " > ");
         info->containerFileformats = containerFormats;
 
-        info->author = moduleProperties->FindString(Module::ATTR_AUTHOR).value_or("");
+        info->artist = moduleProperties->FindString(Module::ATTR_AUTHOR).value_or("");
         info->comments = moduleProperties->FindString(Module::ATTR_COMMENT).value_or("");
         info->date = moduleProperties->FindString(Module::ATTR_DATE).value_or("");
         info->title = moduleProperties->FindString(Module::ATTR_TITLE).value_or("");

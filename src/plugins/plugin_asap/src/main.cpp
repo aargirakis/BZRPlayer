@@ -125,7 +125,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->defaultSubsong = plugin->info->numSubsongs > 1
                                        ? ASAPInfo_GetDefaultSong(plugin->asap_info) + 1
                                        : -1;
-    plugin->info->author = ASAPInfo_GetAuthor(plugin->asap_info);
+    plugin->info->artist = ASAPInfo_GetAuthor(plugin->asap_info);
     plugin->info->title = ASAPInfo_GetTitle(plugin->asap_info);
     plugin->info->chips = format("x{} ({})", plugin->waveformat.channels,
                                  plugin->waveformat.channels > 1 ? "Stereo" : "Mono");

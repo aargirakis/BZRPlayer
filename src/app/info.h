@@ -92,7 +92,6 @@ public:
         genre = "";
         emulator = "";
         songPlayer = "";
-        author = "";
         composer = "";
         converter = "";
         ripper = "";
@@ -321,7 +320,6 @@ public:
     string genre;
     string emulator;
     string songPlayer;
-    string author;
     string composer;
     string replay;
     string hardware;
