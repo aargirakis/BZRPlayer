@@ -459,7 +459,7 @@ void FileInfoParser::showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const P
         addInfo(tableInfo, row, "Genre", genre);
     }
     if (!name.isEmpty()) {
-        addInfo(tableInfo, row, "Name", name);
+        addInfo(tableInfo, row, "Stream Name", name);
     }
     if (!bitrate.isEmpty()) {
         addInfo(tableInfo, row, "Bitrate", bitrate);
