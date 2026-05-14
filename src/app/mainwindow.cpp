@@ -314,7 +314,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     ui->tableInfo->setColumnWidth(1, infoValueWidth);
 
     connect(ui->tableInfo->horizontalHeader(), &QHeaderView::sectionResized,
-            [this](const int logicalIndex, const int newSize) {
+            [this](const int logicalIndex, const int, const int newSize) {
                 if (ui->tableInfo->horizontalHeaderItem(logicalIndex) != nullptr) {
                     if (const QString columnText = ui->tableInfo->horizontalHeaderItem(logicalIndex)->text();
                         columnText == "Name") {
@@ -570,7 +570,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     }
 
     connect(ui->samples->horizontalHeader(), &QHeaderView::sectionResized,
-            [this](const int logicalIndex, const int newSize) {
+            [this](const int logicalIndex, const int, const int newSize) {
                 if (ui->samples->horizontalHeaderItem(logicalIndex) != nullptr) {
                     if (const QString columnText = ui->samples->horizontalHeaderItem(logicalIndex)->text();
                         columnText == "#") {
@@ -594,7 +594,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
             });
 
     connect(ui->instruments->horizontalHeader(), &QHeaderView::sectionResized,
-            [this](const int logicalIndex, const int newSize) {
+            [this](const int logicalIndex, const int, const int newSize) {
                 if (ui->instruments->horizontalHeaderItem(logicalIndex) != nullptr) {
                     if (const QString columnText = ui->instruments->horizontalHeaderItem(logicalIndex)->text();
                         columnText == "#") {
