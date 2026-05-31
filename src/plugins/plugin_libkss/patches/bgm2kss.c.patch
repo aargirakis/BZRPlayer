@@ -1,5 +1,5 @@
 --- src/kss/bgm2kss.c	2024-08-27 18:21:33.000000000 +0200
-+++ src/kss/bgm2kss.c	2025-08-11 13:32:39.127324257 +0200
++++ src/kss/bgm2kss.c	2026-05-31 09:42:21.902016767 +0200
 @@ -5,7 +5,7 @@
  
  static uint8_t KINROU[8192] = {
@@ -9,3 +9,108 @@
  #endif
  };
  static uint32_t kinrou_size = sizeof(KINROU);
+@@ -44,20 +44,93 @@
+ };
+ 
+ int KSS_isBGMdata(uint8_t *data, uint32_t size) {
+-  uint32_t top, end;
++  // improved bgm detection by Kaens (see https://github.com/Kaens/audio1sg)
+ 
+-  if (data[0] == 0xfe && size >= 8) {
+-    if ((size >= 0x60) && !strncmp((const char *)(data + 0x50), "BTO", 3))
+-      return 1;
+-    top = (data[2] << 8) + data[1];
+-    end = (data[4] << 8) + data[3];
+-    if (size >= (8 + end - top) && data[7] < 2)
+-      return 1;
+-    if (top == 0xA5B7 && data[7] < 2)
+-      return 1;
++#define rU16(x) (data[x] | (data[x+1] << 8)) // uint16 LE read helper
++#define within(x, l,r) ((l) <= (x) && (x) <= (r))  // a shortcut
++
++  // MSX binary check
++  if (data[0] != 0xFE || size < 7 + 1 + 17 * 2) // BIN header + loop byte + 17 pointers to channel flows
++    return 0;
++
++  const uint16_t base = rU16(1), // RAM base address
++      sz = 8 + rU16(3) - base, // calculated=expected file size
++      Mp = sz > size ? size : sz; // maximum offset
++
++  if (base && !within(base, 0x4000, 0xFF80)) return 0;
++
++  int32_t p = 7 + rU16(5) - base, // entrypoint as file offset — for starters
++      y = 20; // y for "yes it's a bgm": confidence
++
++  if (!within(p, 0, size)) return 0;
++
++  uint16_t mp = p + 1 + 17 * 2; // minimum offset
++
++  if (sz <= mp || size <= mp) return 0;
++  if (sz > size) y -= 15;
++  else y += 5; // calcsize should fit in the filesize, but we can detect a corrupt file
++  if (!within(sz, 80, 16384)) y -= 10; // suspicious calcsize
++  if (data[p] > 1) y -= 20;
++  else y += 5; // unusual loop value, but also a decent check
++
++  // metadata tag presence check
++  if (size >= 0x60 && !strncmp((const char *) (data + 0x50), "BTO", 3))
++    y += 30; // auspicious occurrence! don't just trust it though, it's only 3 ASCII chars
++  if (y <= 0) return 0; // confidence break-off
++
++  // 17 channel pointer read & check
++  uint16_t chp[17];
++  int32_t t;
++  uint8_t i, ch = 0;
++
++  for (i = 0, ++p; i < 17 && y > 0 && p < Mp; ++i, p += 2) {
++    t = rU16(p);
++    if (!t) continue;
++    t += 7 - base; // normalize the offset
++    if (within(t, mp, sz-1)) y += 3;
++    else {
++      y -= 15;
++      continue;
++    } // offsets must fit (may not mean much). Maybe a couple are broken
++    chp[ch++] = t;
++    if (p + ch * 4 > mp) mp = p + ch * 4; // a new minimum pointer value, yay
++  }
++  if (!ch || y <= 0) return 0; // at least 1 channel must be present (I saw 2 at least)
++
++  // per-channel block list, pointers
++  uint16_t chc, totalblk = 0; // a channel's block counter
++  uint8_t FFencountered = 0; // gotta find at least
++
++  for (i = 0; i < ch && y > 0; ++i) {
++    p = chp[i];
++    t = rU16(p); // select the next channel's block list
++
++    // check each pointer to a block (u16 ptr, u8 repetitions)
++    for (chc = 0; y > 0 && p < Mp; ++chc) {
++      if (!t) {
++        p += 2;
++        break;
++      } // zero pointer has no repetitions, break off to the next channel
++      t += 7 - base; // normalise offset
++      if (within(t, mp, Mp-1)) {
++        y += 10; // these pointers are 2nd-stage so worth more points
++        if (!data[p + 2]) y -= 10; // 0 times to play is suspicious, 1+ is expected
++        if (data[t - 1] == 0xFF) {
++          // the end-of-track marker from a previous block is a good sanity check!
++          y += 15;
++          FFencountered = 1;
++        }
++      } else y -= 15; // corrupt pointer?
++      p += 3;
++      t = rU16(p);
++    }
++    totalblk += chc;
++    if (!chc) y -= 15; // no blocks in an active channel is suspicious
+   }
++  if (totalblk > 1 && !FFencountered) y -= 50;
+ 
+-  return 0;
++  // it's super unlikely there's a file with just one channel or two channels pointing at the same block
++  return p <= Mp && y > 0;
+ }
+ 
+ int KSS_set_kinrou(const uint8_t *data, uint32_t size) {
