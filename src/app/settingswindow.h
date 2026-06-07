@@ -257,6 +257,10 @@ private slots:
 
     void on_checkBoxLibsidplayfpContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxDefaultTrackLength_toggled(bool isChecked) const;
+
+    void on_sliderDefaultTrackLength_valueChanged(int value) const;
+
 private:
     void updateColorButtons() const;
 

@@ -176,6 +176,12 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->checkBoxEnqueueItems->setChecked(mainWindow->getEnqueueItems());
     ui->checkBoxEnqueueItems->setEnabled(mainWindow->isOnlyOneInstanceEnabled());
 
+    ui->checkBoxDefaultTrackLength->setChecked(mainWindow->getDefaultTrackLengthEnabled());
+
+    ui->sliderDefaultTrackLength->installEventFilter(this);
+    ui->sliderDefaultTrackLength->setValue(mainWindow->getDefaultTrackLengthValue());
+    on_sliderDefaultTrackLength_valueChanged(mainWindow->getDefaultTrackLengthValue());
+
     ui->checkBoxShowLoopPoints->setChecked(mainWindow->getShowCheckBoxLoopPoints());
     mainWindow->showCheckBoxLoopPoints(mainWindow->getShowCheckBoxLoopPoints());
 
@@ -696,7 +702,8 @@ bool settingsWindow::eventFilter(QObject *obj, QEvent *event) {
          obj == ui->comboBoxRotatingObjectMaterial ||
          obj == ui->comboBoxRotatingObjectModel ||
          obj == ui->sliderRotatingObjectOrbitSize ||
-         obj == ui->sliderRotatingObjectOrbitSpeed)) {
+         obj == ui->sliderRotatingObjectOrbitSpeed ||
+         obj == ui->sliderDefaultTrackLength)) {
         return true;
     }
 
@@ -718,6 +725,9 @@ void settingsWindow::on_buttonOK_clicked() {
     mainWindow->setMenuBarHiddenChecked(ui->checkBoxMenuBarHidden->checkState() == Qt::Checked);
     mainWindow->setIgnoreSuffix(ui->lineEditIgnoreSuffixes->text());
     mainWindow->setIgnorePrefix(ui->lineEditIgnorePrefixes->text());
+    mainWindow->setDefaultTrackLengthEnable(ui->checkBoxDefaultTrackLength->checkState() == Qt::Checked);
+    mainWindow->setDefaultTrackLengthValue(ui->sliderDefaultTrackLength->value());
+
     updateScrollText();
 
     saveSettingsFmod();
@@ -2931,6 +2941,8 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxMilliseconds->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxShowLoopPoints->setIcon(
         mainWindow->icons[ui->checkBoxShowLoopPoints->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxDefaultTrackLength->setIcon(
+        mainWindow->icons[ui->checkBoxDefaultTrackLength->isChecked() ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::forceUpdateToSliders() const {
@@ -3087,4 +3099,15 @@ void settingsWindow::on_checkBoxMenuBarHidden_toggled(const bool isChecked) cons
 void settingsWindow::on_sliderAppearanceNowPlayingFontSize_valueChanged(const int value) const {
     ui->labelAppearanceNowPlayingFontSizeValue->setText(QString::number(value) + "px");
     mainWindow->setNowPlayingFontSize(value);
+}
+
+void settingsWindow::on_checkBoxDefaultTrackLength_toggled(const bool isChecked) const {
+    ui->sliderDefaultTrackLength->setEnabled(isChecked);
+    ui->labelDefaultTrackLengthValue->setEnabled(isChecked);
+    ui->checkBoxDefaultTrackLength->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_sliderDefaultTrackLength_valueChanged(const int value) const {
+    ui->labelDefaultTrackLengthValue->setText(QString::number(value) + "m");
+    mainWindow->setDefaultTrackLengthValue(value);
 }

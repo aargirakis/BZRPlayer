@@ -301,6 +301,14 @@ public:
 
     bool isOnlyOneInstanceEnabled() const;
 
+    bool getDefaultTrackLengthEnabled() const;
+
+    void setDefaultTrackLengthEnable(bool enabled);
+
+    int getDefaultTrackLengthValue() const;
+
+    void setDefaultTrackLengthValue(int value);
+
     FileDownloader *filedownloader;
     qint64 bundledHvscSonglengthsDownloadEpoch;
 
@@ -496,6 +504,9 @@ private:
     int refreshInfoTimer;
 
     bool allowOnlyOneInstance;
+
+    bool isDefaultTrackLengthEnabled;
+    int defaultTrackLengthValue;
 
     QList<ads::CDockWidget *> dockWidgets;
     ads::CDockManager *dockManager;

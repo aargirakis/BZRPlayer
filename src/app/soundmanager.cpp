@@ -506,6 +506,10 @@ unsigned int SoundManager::getLength() const {
         songLengthMs = -1;
     }
 
+    if (static_cast<int>(songLengthMs) == -1 && info->defaultLengthMs > 0 && info->isLocalFilePath) {
+        songLengthMs = info->defaultLengthMs;
+    }
+
     return songLengthMs;
 }
 

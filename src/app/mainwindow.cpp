@@ -151,6 +151,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     enqueueItems = settings.value("enqueueItems", false).toBool();
 
+    isDefaultTrackLengthEnabled = settings.value("defaultTrackLength", false).toBool();
+    defaultTrackLengthValue = settings.value("defaultTrackLengthValue", 3).toInt();
+
     isShownCheckBoxLoopPoints = settings.value("showLoopPoints", false).toBool();
 
     normalizeEnabled = settings.value("normalizer", false).toBool();
@@ -1331,6 +1334,7 @@ bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
     info->isPlayModeRepeatSongEnabled = playMode == repeatSong;
     info->isFmodSeamlessLoopEnabled = getFmodSeamlessLoopEnabled();
     info->currentSubsong = subsong;
+    info->defaultLengthMs = isDefaultTrackLengthEnabled ? 60 * 1000 * defaultTrackLengthValue : 0;
 
     const bool loadOK = sm.loadSound(fullPath, info);
 
@@ -3502,6 +3506,8 @@ void MainWindow::saveSettings() const {
     settings.setValue("Internal/columnInfoNameWidth", infoNameWidth);
     settings.setValue("Internal/columnInfoValueWidth", infoValueWidth);
     settings.setValue("allowOnlyOneInstance", isOnlyOneInstanceEnabled());
+    settings.setValue("defaultTrackLength", isDefaultTrackLengthEnabled);
+    settings.setValue("defaultTrackLengthValue", defaultTrackLengthValue);
     settings.setValue("Internal/lastOpenedDir", lastDir);
 
     savePlayListSettings();
@@ -4827,6 +4833,22 @@ bool MainWindow::isOnlyOneInstanceEnabled() const {
 
 void MainWindow::setAllowOnlyOneInstanceEnabled(const bool enabled) {
     allowOnlyOneInstance = enabled;
+}
+
+bool MainWindow::getDefaultTrackLengthEnabled() const {
+    return isDefaultTrackLengthEnabled;
+}
+
+void MainWindow::setDefaultTrackLengthEnable(const bool enabled) {
+    isDefaultTrackLengthEnabled = enabled;
+}
+
+int MainWindow::getDefaultTrackLengthValue() const {
+    return defaultTrackLengthValue;
+}
+
+void MainWindow::setDefaultTrackLengthValue(const int value) {
+    defaultTrackLengthValue = value;
 }
 
 void MainWindow::setDisplayMilliseconds(const bool enabled) {

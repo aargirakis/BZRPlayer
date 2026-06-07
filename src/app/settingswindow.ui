@@ -256,7 +256,7 @@ QScrollBar#scrollArea:vertical {
       <x>0</x>
       <y>0</y>
       <width>700</width>
-      <height>690</height>
+      <height>740</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -268,7 +268,7 @@ QScrollBar#scrollArea:vertical {
     <property name="minimumSize">
      <size>
       <width>0</width>
-      <height>690</height>
+      <height>740</height>
      </size>
     </property>
     <property name="maximumSize">
@@ -580,7 +580,7 @@ QCheckBox::indicator {
       </size>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBoxShowLoopPoints">
+    <widget class="QCheckBox" name="checkBoxDefaultTrackLength">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -588,6 +588,81 @@ QCheckBox::indicator {
       <rect>
        <x>10</x>
        <y>230</y>
+       <width>301</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Limit playback duration when unknown (does not apply to network streams)</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>Default track length</string>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QSlider" name="sliderDefaultTrackLength">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>230</y>
+       <width>360</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>60</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="invertedAppearance">
+      <bool>false</bool>
+     </property>
+     <property name="invertedControls">
+      <bool>false</bool>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelDefaultTrackLengthValue">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>230</y>
+       <width>45</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxShowLoopPoints">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>280</y>
        <width>301</width>
        <height>26</height>
       </rect>
@@ -609,7 +684,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>260</y>
+       <y>310</y>
        <width>301</width>
        <height>26</height>
       </rect>
@@ -628,7 +703,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>290</y>
+       <y>340</y>
        <width>301</width>
        <height>26</height>
       </rect>
@@ -647,7 +722,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>340</y>
+       <y>390</y>
        <width>301</width>
        <height>26</height>
       </rect>
@@ -666,7 +741,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>370</y>
+       <y>420</y>
        <width>301</width>
        <height>26</height>
       </rect>
@@ -685,7 +760,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>420</y>
+       <y>470</y>
        <width>301</width>
        <height>26</height>
       </rect>
@@ -704,7 +779,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>450</y>
+       <y>500</y>
        <width>125</width>
        <height>26</height>
       </rect>
@@ -720,7 +795,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>450</y>
+       <y>500</y>
        <width>360</width>
        <height>26</height>
       </rect>
@@ -742,7 +817,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>590</x>
-       <y>450</y>
+       <y>500</y>
        <width>45</width>
        <height>26</height>
       </rect>
@@ -758,7 +833,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>480</y>
+       <y>530</y>
        <width>125</width>
        <height>26</height>
       </rect>
@@ -774,7 +849,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>480</y>
+       <y>530</y>
        <width>360</width>
        <height>26</height>
       </rect>
@@ -793,7 +868,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>590</x>
-       <y>480</y>
+       <y>530</y>
        <width>45</width>
        <height>26</height>
       </rect>
@@ -809,7 +884,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>510</y>
+       <y>560</y>
        <width>161</width>
        <height>26</height>
       </rect>
@@ -825,7 +900,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>510</y>
+       <y>560</y>
        <width>360</width>
        <height>26</height>
       </rect>
@@ -850,7 +925,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>590</x>
-       <y>510</y>
+       <y>560</y>
        <width>45</width>
        <height>26</height>
       </rect>
@@ -866,7 +941,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>560</y>
+       <y>610</y>
        <width>301</width>
        <height>26</height>
       </rect>
@@ -888,7 +963,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>560</y>
+       <y>610</y>
        <width>150</width>
        <height>26</height>
       </rect>
@@ -898,7 +973,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>610</y>
+       <y>660</y>
        <width>125</width>
        <height>26</height>
       </rect>
@@ -911,7 +986,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>610</y>
+       <y>660</y>
        <width>360</width>
        <height>26</height>
       </rect>
@@ -921,7 +996,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>640</y>
+       <y>690</y>
        <width>125</width>
        <height>26</height>
       </rect>
@@ -934,7 +1009,7 @@ QCheckBox::indicator {
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>640</y>
+       <y>690</y>
        <width>360</width>
        <height>26</height>
       </rect>

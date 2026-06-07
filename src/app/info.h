@@ -115,6 +115,7 @@ public:
         numOrders = 0;
         numChannels = 0;
         numChannelsStream = 0;
+        defaultLengthMs = 0;
         defaultSubsong = 0;
         numSubsongs = 0;
         currentSubsong = 0;
@@ -343,6 +344,7 @@ public:
     int numOrders;
     unsigned int numChannels;
     unsigned int numChannelsStream;
+    int defaultLengthMs;
     int defaultSubsong;
     int numSubsongs;
     int currentSubsong;
