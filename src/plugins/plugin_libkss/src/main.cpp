@@ -85,15 +85,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     const auto typeInfo = KSS_check_type(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
                                          plugin->info->filePath.c_str());
 
-    if (typeInfo.type == KSSDATA) {
-        /* TODO:
-         *  KSS format support in libkss is better than game-music-emu (which doesn't support FM sound),
-         *  however currently subsongs are not handled here, so better to stick with game-music-emu
-         *  until proper subsongs support will be implemented
-         */
-        return FMOD_ERR_FORMAT;
-    }
-
     if (typeInfo.type == MBMDATA) {
         /* TODO:
          *  seems the KSS_autoload_mbk invocation introduces a beginning audio delay
@@ -112,7 +103,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->kssplay = KSSPLAY_new(plugin->waveformat.frequency, plugin->waveformat.channels, 16);
     KSSPLAY_set_data(plugin->kssplay, plugin->kss);
 
-    KSSPLAY_reset(plugin->kssplay, 0, 0);
+    uint8_t subsongOffset = 0;
+
+    if (typeInfo.type == KSSDATA) {
+        plugin->info->numSubsongs = plugin->kss->trk_max - plugin->kss->trk_min + 1;
+        subsongOffset = plugin->kss->trk_min;
+    }
+
+    KSSPLAY_reset(plugin->kssplay, plugin->info->currentSubsong + subsongOffset, 0);
 
     // TODO setting to 0 for continuous playback, however it results silent playback for some tracks (eg REQUIEM2.MGS)
     plugin->loopNum = 1;
