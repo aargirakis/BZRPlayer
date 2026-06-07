@@ -48,7 +48,7 @@ public:
 
     unsigned int getPosition(FMOD_TIMEUNIT) const;
 
-    unsigned int getLength(FMOD_TIMEUNIT timeUnit) const;
+    unsigned int getLength() const;
 
     void setPosition(unsigned int positon, FMOD_TIMEUNIT timeUnit) const;
 

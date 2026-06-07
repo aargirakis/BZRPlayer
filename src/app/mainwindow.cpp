@@ -1646,17 +1646,8 @@ void MainWindow::addPlaylistEntry(const QTableView *table, const int rowPosition
 
 void MainWindow::getLength() {
     if (const auto &sm = SoundManager::getInstance(); sm.isPlaying()) {
-        songLengthMs = sm.getLength(FMOD_TIMEUNIT_MS);
-        addDebugText("songLengthMs: " + QString::number(songLengthMs));
+        songLengthMs = sm.getLength();
 
-        if (songLengthMs == 0 || songLengthMs == -1) {
-            songLengthMs = sm.getLength(FMOD_TIMEUNIT_MS_REAL);
-            addDebugText("songLengthMs: " + QString::number(songLengthMs));
-        }
-
-        if (songLengthMs == 0) {
-            songLengthMs = -1;
-        }
         //        if(songLengthMs==-1 && playlists[currentPlaylist].at(currentRow)->length>0)
         //        {
         //            songLengthMs=playlists[currentPlaylist].at(currentRow)->length;

@@ -493,10 +493,19 @@ unsigned int SoundManager::getPosition(const FMOD_TIMEUNIT timeUnit) const {
     return currentMs;
 }
 
-unsigned int SoundManager::getLength(const FMOD_TIMEUNIT timeUnit) const {
+unsigned int SoundManager::getLength() const {
     unsigned int songLengthMs;
-    //DebugWindow::instance()->addText("SoundManager: getLength, Timeunit: " + QString::number(timeUnit));
-    FMOD_Sound_GetLength(sound, &songLengthMs, timeUnit);
+
+    FMOD_Sound_GetLength(sound, &songLengthMs, FMOD_TIMEUNIT_MS);
+
+    if (songLengthMs == 0 || songLengthMs == -1) {
+        FMOD_Sound_GetLength(sound, &songLengthMs, FMOD_TIMEUNIT_MS_REAL);
+    }
+
+    if (songLengthMs == 0) {
+        songLengthMs = -1;
+    }
+
     return songLengthMs;
 }
 

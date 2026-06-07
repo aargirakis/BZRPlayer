@@ -67,7 +67,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
         addInfo(tableInfo, &row, "Size", groupDigits(info->filesize) + " bytes");
         addInfo(tableInfo, &row, "Last Modified", info->fileLastModified.c_str());
         addInfo(tableInfo, &row, "Created", info->fileCreatedAt.c_str());
-        addLengthInfo(tableInfo, playlistItem, &row);
+        addInfo(tableInfo, &row, "Length", msToNiceStringExact(SoundManager::getInstance().getLength(), true));
     } else {
         addInfo(tableInfo, &row, "URL", info->filePath.c_str());
     }
@@ -380,25 +380,6 @@ void FileInfoParser::addMultilineInfo(QTableWidget *tableInfo, int *row, const Q
         tableInfo->setCellWidget(*row, 1, plainText);
         addInfo(tableInfo, row, label, text);
     }
-}
-
-void FileInfoParser::addLengthInfo(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {
-    const auto &sm = SoundManager::getInstance();
-    unsigned int songLengthMs = sm.getLength(FMOD_TIMEUNIT_MS);
-
-    if (songLengthMs == 0 || songLengthMs == -1) {
-        songLengthMs = sm.getLength(FMOD_TIMEUNIT_MS_REAL);
-    }
-
-    if (songLengthMs == 0) {
-        songLengthMs = -1;
-    }
-
-    if (songLengthMs == -1 && playlistItem->length > 0) {
-        songLengthMs = playlistItem->length;
-    }
-
-    addInfo(tableInfo, row, "Length", msToNiceStringExact(songLengthMs, true));
 }
 
 void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
