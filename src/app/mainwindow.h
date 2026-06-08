@@ -3,9 +3,9 @@
 
 #include <DockManager.h>
 #include <QListWidgetItem>
+#include <QLocalServer>
 #include <QMainWindow>
 #include <QSystemTrayIcon>
-#include <QTcpServer>
 
 #include "channels.h"
 #include "filedownloader.h"
@@ -343,13 +343,11 @@ protected:
 private slots:
     void downloadHvscSonglengthsComplete();
 
-    void sendSocketMsg() const;
+    bool handleInstance();
 
-    void getSocketData();
+    void handleNewConnection();
 
-    void acceptConnection();
-
-    void displayError(QAbstractSocket::SocketError socketError);
+    void handleSocketData(const QStringList &args);
 
     void dockWindowClosed(bool);
 
@@ -479,6 +477,8 @@ private slots:
     void on_buttonStop_clicked();
 
 private:
+    QLocalServer *localServer = nullptr;
+
     QString hvscSonglengthsPath;
     QString bundledHvscSonglengthsPath;
     QString bundledHvscSonglengthsUpdateFrequency;
@@ -497,9 +497,6 @@ private:
 
     DropWidget dropWidget;
     static const QString VERSION;
-    QTcpServer *tcpServer;
-    QTcpSocket *tcpClient;
-    QTcpSocket *tcpServerConnection;
 
     int refreshInfoTimer;
 
@@ -585,8 +582,6 @@ private:
     int infoValueWidth;
 
     void highlightPlaylistItem(const QString &playlist, int row);
-
-    bool initializeSocket();
 
     void createMenuWindowTabs();
 

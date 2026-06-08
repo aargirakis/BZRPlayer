@@ -1,6 +1,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QLocalSocket>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QScreen>
@@ -25,6 +26,7 @@
 #define PLAYLISTFIELDSPLITTER "<><>::????"
 #define PROJECT_NAME "BZR Player"
 #define PROJECT_NAME_VERSIONED PROJECT_NAME " " PROJECT_VERSION
+#define SERVER_NAME PROJECT_NAME " " PROJECT_VERSION_MAJOR
 #define PLAYLIST_DEFAULT "Default"
 #define PLAYLIST_DEFAULT_EXTENSION ".m3u"
 #define PLAYLIST_DEFAULT_FILENAME PLAYLIST_DEFAULT PLAYLIST_DEFAULT_EXTENSION
@@ -57,18 +59,15 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         QCoreApplication::exit(EXIT_FAILURE);
     }
 
-    bool instanceExists = false;
-
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
     allowOnlyOneInstance = settings.value("allowOnlyOneInstance", true).toBool();
 
-    qDebug() << "allowOnlyOneInstance: " << allowOnlyOneInstance;
+    qDebug() << "Single instance mode is" << (allowOnlyOneInstance ? "enabled" : "disabled");
 
-    if (allowOnlyOneInstance) {
-        instanceExists = initializeSocket();
+    if (allowOnlyOneInstance && handleInstance()) {
+        qDebug() << "Another instance is already running: exiting";
+        exit(0);
     }
-
-    if (instanceExists) return;
 
     // fonts needs to be added before the GUI
     QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "Roboto-Medium.ttf");
@@ -692,34 +691,6 @@ void MainWindow::checkCommandLine(int argc, char *argv[]) {
         currentRow = rowCountBeforeAddSong;
         playSongAtRow(currentRow);
     }
-}
-
-bool MainWindow::initializeSocket() {
-    bool instanceExists = false;
-
-    tcpServer = new QTcpServer(this);
-    // if we can't listen with server, there is already an instance of the application running
-    // so we don't create a server, we create a client instead
-    // the client will send command line argumens (filepaths) to the server, when the server has got it,
-    // the client will disconnect and close
-    if (!tcpServer->listen(QHostAddress::LocalHost, 9860)) {
-        instanceExists = true;
-    }
-
-    if (!instanceExists) {
-        connect(tcpServer, SIGNAL(newConnection()), this, SLOT(acceptConnection()));
-    } else {
-        tcpClient = new QTcpSocket(this);
-        connect(tcpClient, SIGNAL(connected()), this, SLOT(sendSocketMsg()));
-        connect(tcpClient, SIGNAL(disconnected()), this, SLOT(close()));
-        connect(tcpClient, SIGNAL(error(QAbstractSocket::SocketError)), this,
-                SLOT(displayError(QAbstractSocket::SocketError)));
-        connect(tcpClient, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this,
-                SLOT(displayError(QAbstractSocket::SocketError)));
-        tcpClient->connectToHost(QHostAddress::LocalHost, 9860);
-    }
-
-    return instanceExists;
 }
 
 void MainWindow::createMenuWindowTabs() {
@@ -4863,57 +4834,73 @@ QString MainWindow::getVersion() {
     return VERSION;
 }
 
-void MainWindow::sendSocketMsg() const {
-    QStringList args = qApp->arguments();
-    args.removeFirst(); // remove first argument from commandline since it's always "BZRPlayer.exe"
-    //addDebugText("Send socket message, count( " + QString::number(args.count()) + ")");
-    QByteArray data;
-    //    for(int j = 1; j<args.count(); j++)
-    //    {
-    //        QString filename = args.at(j);
-    //        stringList.append(filename);
-    //    }
+bool MainWindow::handleInstance() {
+    QLocalSocket socket;
+    socket.connectToServer(SERVER_NAME);
 
-    QDataStream dataStreamWrite(&data, QIODevice::WriteOnly);
-    dataStreamWrite << args;
+    if (socket.waitForConnected(1000)) {
+        auto args = QCoreApplication::arguments();
+        args.removeFirst();
 
-    tcpClient->write(data);
-    tcpClient->disconnectFromHost();
+        if (!args.isEmpty()) {
+            QByteArray data;
+            QDataStream out(&data, QIODevice::WriteOnly);
+            out << args;
+            socket.write(data);
+            socket.waitForBytesWritten();
+        }
+
+        return true;
+    }
+
+    localServer = new QLocalServer(this);
+
+    // Remove stale socket from potential previous crash
+    if (!localServer->listen(SERVER_NAME) && localServer->serverError() == QAbstractSocket::AddressInUseError) {
+        QLocalServer::removeServer(SERVER_NAME);
+        localServer->listen(SERVER_NAME);
+    }
+
+    connect(localServer, &QLocalServer::newConnection, this, &MainWindow::handleNewConnection);
+
+    return false;
 }
 
-void MainWindow::acceptConnection() {
-    tcpClient = tcpServer->nextPendingConnection();
-    connect(tcpClient, SIGNAL(readyRead()), SLOT(getSocketData()));
-}
+void MainWindow::handleNewConnection() {
+    auto *socket = localServer->nextPendingConnection();
 
-void MainWindow::displayError(QAbstractSocket::SocketError socketError) {
-    //if (socketError == QTcpSocket::RemoteHostClosedError)
-    //    return;
+    if (!socket) return;
 
-    QMessageBox::information(this, "Network error", "The following error occurred: " + tcpClient->errorString());
-    tcpClient->close();
-    tcpServer->close();
+    connect(socket, &QLocalSocket::readyRead, this, [this, socket] {
+        if (socket->bytesAvailable() > 0) {
+            QByteArray data = socket->readAll();
+            QDataStream in(&data, QIODevice::ReadOnly);
+            QStringList args;
+            in >> args;
+
+            if (!args.isEmpty()) handleSocketData(args);
+        }
+
+        socket->deleteLater();
+    });
+
+    connect(socket, &QLocalSocket::disconnected, socket, &QLocalSocket::deleteLater);
 }
 
 /*
  * Reads all the data from the socket
  * the data read is what the instance got from the command line
- * if m_bEnqueueFileEnabled is true then we add all sounds to the playlist
- * if it is false, we play them directly (only the last one)
+ * if enqueueItems is true the entries are only appended to the playlist
+ * otherwise the first of them is played too
  */
-void MainWindow::getSocketData() {
-    const QByteArray bytes = tcpClient->readAll();
-
-    QDataStream dataStreamRead(bytes);
-
+void MainWindow::handleSocketData(const QStringList &args) {
     QStringList list;
-    dataStreamRead >> list;
-    //QMessageBox::information(this, "list","count: " + QString::number(list.count()));
+    list.append(args);
 
     QList<QUrl> urls;
 
     for (const auto &item: list) {
-        urls.append(QUrl().fromLocalFile(item));
+        urls.append(QUrl::fromLocalFile(item));
     }
 
     if (list.count() <= 0) {
@@ -4953,7 +4940,7 @@ void MainWindow::getSocketData() {
         //            }
     } else // no command, just add/play the file
     {
-        //            if(m_bEnqueueFileEnabled)
+        //            if(enqueueItems)
         //            {
         //                m_playListWindow->addSong(QStringList(QStringList(bytes).last()),-1);
         //            }
@@ -4993,7 +4980,6 @@ void MainWindow::getSocketData() {
 
             playSongAtRow(currentRow);
         }
-        //}
     }
 }
 

@@ -59,6 +59,7 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(${PROJECT_NAME} PRIVATE OUTPUT_DIR="${OUTPUT_DIR}")
 endif ()
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_VERSION_MAJOR="${PROJECT_VERSION_MAJOR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE DATA_DIR="${DATA_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE LIB_DIR="${LIB_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE USER_DIR="${USER_DIR}")
