@@ -1,11 +1,11 @@
-name: Deb
+name: Ubuntu 24.04
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -17,7 +17,7 @@ jobs:
         run: |
           echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
           sudo apt-get -y update
-          sudo apt-get -y upgrade
+          # sudo apt-get -y upgrade
           # sudo apt-get -y dist-upgrade
           # sudo sed -i -e 's/Prompt=lts/Prompt=normal/g' /etc/update-manager/release-upgrades
           # sudo do-release-upgrade -f DistUpgradeViewNonInteractive
@@ -31,16 +31,16 @@ jobs:
           cmake -B cmake-build-qt-ads -S Qt-Advanced-Docking-System -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF \
           -DADS_VERSION=4.4.1 -DQT_VERSION_MAJOR=6 -G Ninja
           ninja -C cmake-build-qt-ads
-          sudo install -Dm644 cmake-build-qt-ads/x64/lib/libqtadvanceddocking-qt6.so.4.4.1 /usr/lib
-          sudo ln -s /usr/lib/libqtadvanceddocking-qt6.so.4.4.1 /usr/lib/libqtadvanceddocking-qt6.so
-          qt_ads_deb_name="libqt-advanced-docking-system4.4.1_4.4.1-0_amd64"
+          sudo install -Dm644 cmake-build-qt-ads/x64/lib/libqtadvanceddocking-qt6.so.4.4.1 /usr/lib/x86_64-linux-gnu
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libqtadvanceddocking-qt6.so.4.4.1 /usr/lib/x86_64-linux-gnu/libqtadvanceddocking-qt6.so.4
+          qt_ads_deb_name="libqt-advanced-docking-system4_4.4.1-0_amd64"
           echo "QT_ADS_DEB_NAME=$qt_ads_deb_name" >> "$GITHUB_ENV"
-          mkdir -p "$qt_ads_deb_name/usr/lib"
-          sudo mv /usr/lib/libqtadvanceddocking-qt6.* "$qt_ads_deb_name/usr/lib"
+          mkdir -p "$qt_ads_deb_name/usr/lib/x86_64-linux-gnu"
+          sudo mv /usr/lib/x86_64-linux-gnu/libqtadvanceddocking-qt6.* "$qt_ads_deb_name/usr/lib/x86_64-linux-gnu"
           mkdir -p "$qt_ads_deb_name/DEBIAN"
 
           cat >"$qt_ads_deb_name/DEBIAN/control" <<'EOF'
-          Package: libqt-advanced-docking-system4.4.1
+          Package: libqt-advanced-docking-system4
           Version: 4.4.1-0
           Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
           Architecture: amd64
@@ -57,16 +57,17 @@ jobs:
           EOF
 
           dpkg-deb --root-owner-group --build "$qt_ads_deb_name"
-          sudo dpkg -i "$qt_ads_deb_name.deb"
+          mv "$qt_ads_deb_name.deb" "$qt_ads_deb_name-ubuntu-24.04.deb"
+          sudo dpkg -i "$qt_ads_deb_name-ubuntu-24.04.deb"
 
-          qt_ads_deb_dev_name="libqt-advanced-docking-system-dev4.4.1_4.4.1-0_amd64"
+          qt_ads_deb_dev_name="libqt-advanced-docking-system-dev4_4.4.1-0_amd64"
           echo "QT_ADS_DEB_DEV_NAME=$qt_ads_deb_dev_name" >> "$GITHUB_ENV"
           mkdir -p "$qt_ads_deb_dev_name/usr/include/qtadvanceddocking-qt6"
           mv Qt-Advanced-Docking-System/src/*.h "$qt_ads_deb_dev_name/usr/include/qtadvanceddocking-qt6"
           mkdir -p "$qt_ads_deb_dev_name/DEBIAN"
 
           cat >"$qt_ads_deb_dev_name/DEBIAN/control" <<'EOF'
-          Package: libqt-advanced-docking-system-dev4.4.1
+          Package: libqt-advanced-docking-system-dev4
           Version: 4.4.1-0
           Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
           Architecture: amd64
@@ -76,14 +77,15 @@ jobs:
            integrated development environments (IDEs) such as Visual Studio.
            .
            This package contains the build-time libraries
-          Depends: libqt-advanced-docking-system4.4.1, qt6-base-dev
+          Depends: libqt-advanced-docking-system4, qt6-base-dev
           Section: libdevel
           Priority: optional
           Homepage: https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System
           EOF
 
           dpkg-deb --root-owner-group --build "$qt_ads_deb_dev_name"
-          sudo dpkg -i "$qt_ads_deb_dev_name.deb"
+          mv "$qt_ads_deb_dev_name.deb" "$qt_ads_deb_dev_name-ubuntu-24.04.deb"
+          sudo dpkg -i "$qt_ads_deb_dev_name-ubuntu-24.04.deb"
 
       - name: Build
         run: |
@@ -136,18 +138,19 @@ jobs:
           Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
           Architecture: amd64
           Description: Audio player supporting a wide array of multi-platform exotic file formats
-          Depends: libqt6core6, libqt6network6, libqt6openglwidgets6, libqt6svg6, libqt6xml6, libqt-advanced-docking-system4.4.1
+          Depends: libqt6core6, libqt6network6, libqt6openglwidgets6, libqt6svg6, libqt6xml6, libqt-advanced-docking-system4
           Homepage: https://bzrplayer.blazer.nu
           EOF
 
           dpkg-deb --root-owner-group --build "$bzr2_deb_name"
-          sudo dpkg -i "$bzr2_deb_name.deb"
+          mv "$bzr2_deb_name.deb" "$bzr2_deb_name-ubuntu-24.04.deb"
+          sudo dpkg -i "$bzr2_deb_name-ubuntu-24.04.deb"
 
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
-          name: artifacts-deb
+          name: artifacts-ubuntu-24.04
           path: |
-            ${{env.QT_ADS_DEB_NAME}}.deb
-            ${{env.QT_ADS_DEB_DEV_NAME}}.deb
-            ${{env.BZR2_DEB_NAME}}.deb
+            ${{env.QT_ADS_DEB_NAME}}-ubuntu-24.04.deb
+            ${{env.QT_ADS_DEB_DEV_NAME}}-ubuntu-24.04.deb
+            ${{env.BZR2_DEB_NAME}}-ubuntu-24.04.deb

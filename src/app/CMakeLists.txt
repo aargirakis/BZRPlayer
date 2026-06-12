@@ -78,7 +78,20 @@ endforeach ()
 if (WIN32)
     set(QT_ADS "${CMAKE_PREFIX_PATH}/bin/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.${LIB_EXT}")
 else ()
-    set(QT_ADS "${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_LIBDIR}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.${LIB_EXT}")
+    if (CMAKE_LIBRARY_ARCHITECTURE)
+        set(QT_ADS "${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.${LIB_EXT}")
+    else ()
+        set(QT_ADS "${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_LIBDIR}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.${LIB_EXT}")
+    endif ()
+
+    file(GLOB MATCHES "${QT_ADS}*")
+    list(FILTER MATCHES INCLUDE REGEX "${QT_ADS}(\\.[0-9]+)?$")
+
+    if (MATCHES)
+        list(GET MATCHES 0 QT_ADS)
+    else ()
+        message(FATAL_ERROR "${QT_ADS}* not found")
+    endif ()
 endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
