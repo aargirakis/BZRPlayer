@@ -21,6 +21,9 @@ coded pretty much from scratch.
 `mingw-w64-ucrt-x86_64-qt-advanced-docking-system` `mingw-w64-ucrt-x86_64-SDL2` `mingw-w64-ucrt-x86_64-toolchain`
 `openssl-devel`
 
+Optional:\
+`mingw-w64-ucrt-x86_64-git-lfs` to clone the Git repo (Git LFS is already included in **[Git for Windows](https://gitforwindows.org)**)
+
 From the MSYS2 **ucrt64.exe** command prompt go to the project sources dir (keep in mind Unix-style paths are
 required), then start the configuration process executing:\
 `cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
@@ -103,6 +106,9 @@ In order to build BZR2 following packages are required:
   `@c-development` `@development-tools` `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel`
   `Qt-Advanced-Docking-System-devel` `sdl2-compat-devel` `vulkan-headers` `which`
 
+
+- Optional (on any distro):\
+  `git-lfs` to clone the Git repo
 ---
 
 Go to the project sources dir then start the configuration process executing:\
