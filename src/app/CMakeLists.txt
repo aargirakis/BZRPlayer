@@ -84,6 +84,11 @@ else ()
         set(QT_ADS "${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_LIBDIR}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.${LIB_EXT}")
     endif ()
 
+    find_path(QT${QT_VERSION_MAJOR}ADS_INCLUDE_DIR "DockManager.h" PATH_SUFFIXES qtadvanceddocking-qt${QT_VERSION_MAJOR})
+    if(QT${QT_VERSION_MAJOR}ADS_INCLUDE_DIR)
+        target_include_directories(${PROJECT_NAME} PRIVATE ${QT${QT_VERSION_MAJOR}ADS_INCLUDE_DIR})
+    endif()
+
     file(GLOB MATCHES "${QT_ADS}*")
     list(FILTER MATCHES INCLUDE REGEX "${QT_ADS}(\\.[0-9]+)?$")
 
