@@ -1,8 +1,8 @@
-#include <cstring>
-
 #include "fluidsynth.h"
 #include "fluidsynth/settings.h"
 #include "fluidsynth/synth.h"
+#include "midi_sequencer.hpp"
+#include "midi_sequencer_impl.hpp"
 #include "fmod_errors.h"
 #include "info.h"
 #include "plugins.h"
@@ -18,8 +18,10 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
+constexpr uint8_t rate = 44100;
 constexpr uint8_t channels = 2;
 constexpr uint8_t pcmFloatSize = sizeof(uint32_t);
+constexpr uint8_t pcmBlockSize = channels * pcmFloatSize;
 constexpr unsigned int samplesToWrite = 256;
 
 FMOD_CODEC_DESCRIPTION codec =
@@ -66,6 +68,9 @@ public:
     fluid_settings_t *settings = nullptr;
     fluid_synth_t *synth = nullptr;
     fluid_player_t *player = nullptr;
+
+    BW_MidiSequencer *sequencer = nullptr;
+    BW_MidiRtInterface *sequencerInterface = nullptr;
 };
 
 #ifdef __cplusplus
@@ -112,30 +117,46 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->player = new_fluid_player(plugin->synth);
+    plugin->sequencer = new BW_MidiSequencer();
+    plugin->sequencerInterface = new BW_MidiRtInterface;
 
-    if (plugin->player == nullptr) {
+    memset(plugin->sequencer, 0, sizeof(BW_MidiRtInterface));
+
+    plugin->sequencerInterface->onDebugMessage= nullptr;
+    // plugin->sequencerInterface->rtUserData = this;
+    // plugin->sequencerInterface->rt_noteOn  = rtNoteOn;
+    // plugin->sequencerInterface->rt_noteOff = rtNoteOff;
+    // plugin->sequencerInterface->rt_noteAfterTouch = rtNoteAfterTouch;
+    // plugin->sequencerInterface->rt_channelAfterTouch = rtChannelAfterTouch;
+    // plugin->sequencerInterface->rt_controllerChange = rtControllerChange;
+    // plugin->sequencerInterface->rt_patchChange = rtPatchChange;
+    // plugin->sequencerInterface->rt_pitchBend = rtPitchBend;
+    // plugin->sequencerInterface->rt_systemExclusive = rtSysEx;
+    //
+    // plugin->sequencerInterface->onPcmRender = playSynth;
+    // plugin->sequencerInterface->onPcmRender_userData = this;
+    //
+
+    plugin->sequencerInterface->pcmSampleRate = rate;
+    plugin->sequencerInterface->pcmFrameSize = pcmBlockSize;
+
+    // sequencerInterface->rt_deviceSwitch = rtDeviceSwitch;
+    // sequencerInterface->rt_currentDevice = rtCurrentDevice;
+
+    plugin->sequencer->setInterface(plugin->sequencerInterface);
+    plugin->sequencer->setDeviceMask(
+        BW_MidiSequencer::Device_GeneralMidi | BW_MidiSequencer::Device_SoundMasterII |
+        BW_MidiSequencer::Device_GravisUltrasound);
+
+    if (!plugin->sequencer->loadMIDI(plugin->info->fileBuffer, plugin->info->filesize)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
-
-    if (fluid_player_add_mem(plugin->player, plugin->info->fileBuffer, plugin->info->filesize) != FLUID_OK) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
-    if (fluid_player_play(plugin->player) != FLUID_OK) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
-    //TODO
-    int ticks = fluid_player_get_total_ticks(plugin->player);
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
     plugin->waveformat.channels = channels;
-    plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = pcmFloatSize * channels;
+    plugin->waveformat.frequency = rate;
+    plugin->waveformat.pcmblocksize = pcmBlockSize;
     plugin->waveformat.lengthpcm = -1;
     //plugin->waveformat.lengthpcm = static_cast<unsigned int>(length / 1000.0L * plugin->waveformat.frequency);;
 
@@ -165,16 +186,16 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginFluidsynth *>(codec->plugindata);
 
-    if (fluid_player_get_status(plugin->player) != FLUID_PLAYER_PLAYING) {
-        return FMOD_ERR_FILE_EOF;
-    }
-
-    if (fluid_synth_write_float(plugin->synth, samplesToWrite, buffer, 0, 2, buffer, 1, 2) != FLUID_OK) {
-        //TODO
-        return FMOD_ERR_FILE_EOF;
-    }
-
-    *read = samplesToWrite;
+    // if (fluid_player_get_status(plugin->player) != FLUID_PLAYER_PLAYING) {
+    //     return FMOD_ERR_FILE_EOF;
+    // }
+    //
+    // if (fluid_synth_write_float(plugin->synth, samplesToWrite, buffer, 0, 2, buffer, 1, 2) != FLUID_OK) {
+    //     //TODO
+    //     return FMOD_ERR_FILE_EOF;
+    // }
+    //
+    // *read = samplesToWrite;
 
     return FMOD_OK;
 }

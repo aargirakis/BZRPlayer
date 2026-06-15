@@ -182,7 +182,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 cmake_path(SET FLUIDSYNTH_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${FLUIDSYNTH_DATA_DIR})
 
-add_custom_target(copy-lib-${NAME} ALL
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${FLUIDSYNTH_DATA_PATH}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/dist/${GM_SF2} ${FLUIDSYNTH_DATA_PATH}
         VERBATIM)
