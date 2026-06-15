@@ -14,6 +14,7 @@ set(CMAKE_AUTOUIC ON)
 set(QT_MODULES Core Gui Network OpenGL OpenGLWidgets Svg Widgets Xml)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
+find_package(qtadvanceddocking-qt${QT_VERSION_MAJOR} REQUIRED)
 
 configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest.in
@@ -49,9 +50,7 @@ endif ()
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_PREFIX_PATH}/include/qtadvanceddocking-qt${QT_VERSION_MAJOR}
-        ${FMOD_API_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${FMOD_API_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_VERSION="${PROJECT_VERSION}")
 
@@ -75,27 +74,8 @@ foreach (QT_MODULE ${QT_MODULES})
     target_link_libraries(${PROJECT_NAME} PRIVATE "Qt${QT_VERSION_MAJOR}::${QT_MODULE}")
 endforeach ()
 
-if (WIN32)
-    set(QT_ADS "${CMAKE_PREFIX_PATH}/bin/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.${LIB_EXT}")
-else ()
-    if (CMAKE_LIBRARY_ARCHITECTURE)
-        set(QT_ADS "${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.${LIB_EXT}")
-    else ()
-        set(QT_ADS "${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_LIBDIR}/libqtadvanceddocking-qt${QT_VERSION_MAJOR}.${LIB_EXT}")
-    endif ()
-
-    file(GLOB MATCHES "${QT_ADS}*")
-    list(FILTER MATCHES INCLUDE REGEX "${QT_ADS}(\\.[0-9]+)?$")
-
-    if (MATCHES)
-        list(GET MATCHES 0 QT_ADS)
-    else ()
-        message(FATAL_ERROR "${QT_ADS}* not found")
-    endif ()
-endif ()
-
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        ${QT_ADS}
+        ads::qtadvanceddocking-qt${QT_VERSION_MAJOR}
         -L"${FMOD_DIR}" -lfmod
 )
 
@@ -112,13 +92,24 @@ endif ()
 
 if (WIN32)
     foreach (QT_MODULE ${QT_MODULES})
-        list(APPEND RUNTIME_LIBS ${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${QT_MODULE}.dll)
-    endforeach ()
-endif ()
+        get_target_property(QT_MODULE_LIB Qt${QT_VERSION_MAJOR}::${QT_MODULE} LOCATION)
 
-if (WIN32)
+        if (NOT QT_MODULE_LIB)
+            message(FATAL_ERROR "Qt${QT_VERSION_MAJOR}::${QT_MODULE} LOCATION not found")
+        endif ()
+
+        list(APPEND RUNTIME_LIBS ${QT_MODULE_LIB})
+    endforeach ()
+
+    get_target_property(QT_ADS_LIB ads::qtadvanceddocking-qt${QT_VERSION_MAJOR} LOCATION)
+
+    if (NOT QT_ADS_LIB)
+        message(FATAL_ERROR "ads::qtadvanceddocking-qt${QT_VERSION_MAJOR} LOCATION not found")
+    endif ()
+
+    list(APPEND RUNTIME_LIBS ${QT_ADS_LIB})
+
     list(APPEND RUNTIME_LIBS
-            ${QT_ADS}
             ${CMAKE_PREFIX_PATH}/bin/libbrotlicommon.dll
             ${CMAKE_PREFIX_PATH}/bin/libbrotlidec.dll
             ${CMAKE_PREFIX_PATH}/bin/libb2-1.dll

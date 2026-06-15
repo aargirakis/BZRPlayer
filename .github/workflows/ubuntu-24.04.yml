@@ -28,9 +28,10 @@ jobs:
       - name: Build qt-ads 4.4.1
         run: |
           git clone -b 4.4.1 --single-branch https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git
-          cmake -B cmake-build-qt-ads -S Qt-Advanced-Docking-System -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF \
-          -DADS_VERSION=4.4.1 -DQT_VERSION_MAJOR=6 -G Ninja
+          cmake -B cmake-build-qt-ads -S Qt-Advanced-Docking-System -DADS_VERSION=4.4.1 -DBUILD_EXAMPLES=OFF \
+                -DQT_VERSION_MAJOR=6 -DCMAKE_INSTALL_PREFIX=/usr -G Ninja
           ninja -C cmake-build-qt-ads
+          sudo cmake --install cmake-build-qt-ads
           sudo install -Dm644 cmake-build-qt-ads/x64/lib/libqtadvanceddocking-qt6.so.4.4.1 /usr/lib/x86_64-linux-gnu
           sudo ln -s /usr/lib/x86_64-linux-gnu/libqtadvanceddocking-qt6.so.4.4.1 /usr/lib/x86_64-linux-gnu/libqtadvanceddocking-qt6.so.4
           qt_ads_deb_name="libqt-advanced-docking-system4_4.4.1-0_amd64"
@@ -63,7 +64,9 @@ jobs:
           qt_ads_deb_dev_name="libqt-advanced-docking-system-dev4_4.4.1-0_amd64"
           echo "QT_ADS_DEB_DEV_NAME=$qt_ads_deb_dev_name" >> "$GITHUB_ENV"
           mkdir -p "$qt_ads_deb_dev_name/usr/include/qtadvanceddocking-qt6"
-          mv Qt-Advanced-Docking-System/src/*.h "$qt_ads_deb_dev_name/usr/include/qtadvanceddocking-qt6"
+          sudo mv /usr/include/qtadvanceddocking-qt6/* "$qt_ads_deb_dev_name/usr/include/qtadvanceddocking-qt6"
+          mkdir -p "$qt_ads_deb_dev_name/usr/lib/x86_64-linux-gnu/cmake/qtadvanceddocking-qt6"
+          sudo mv /usr/lib/x86_64-linux-gnu/cmake/qtadvanceddocking-qt6/* "$qt_ads_deb_dev_name/usr/lib/x86_64-linux-gnu/cmake/qtadvanceddocking-qt6"
           mkdir -p "$qt_ads_deb_dev_name/DEBIAN"
 
           cat >"$qt_ads_deb_dev_name/DEBIAN/control" <<'EOF'
