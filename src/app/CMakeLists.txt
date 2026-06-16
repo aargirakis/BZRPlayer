@@ -155,17 +155,26 @@ endif ()
 
 set(RUNTIME_LIBS ${RUNTIME_LIBS} PARENT_SCOPE)
 
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts ${OUTPUT_DIR}${DATA_DIR}${RESOURCES_DIR}/fonts
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/trackerview ${OUTPUT_DIR}${DATA_DIR}${RESOURCES_DIR}/trackerview
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/visualizer ${OUTPUT_DIR}${DATA_DIR}${RESOURCES_DIR}/visualizer
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/icon.png ${OUTPUT_DIR}${DATA_DIR}${RESOURCES_DIR}
+        VERBATIM)
+
 if (WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/static/data ${OUTPUT_DIR}/${DATA_DIR}
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_SOURCE_DIR}/LICENSE ${OUTPUT_DIR}/LICENSE.txt
             VERBATIM)
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/static/BZRPlayer.VisualElementsManifest.xml ${OUTPUT_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.VisualElementsManifest.xml ${OUTPUT_DIR}
             VERBATIM)
 
     set(QT_PLUGINS_DIR "${CMAKE_PREFIX_PATH}/share/qt${QT_VERSION_MAJOR}/plugins")
@@ -187,8 +196,6 @@ if (WIN32)
             VERBATIM)
 else ()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/static/data ${OUTPUT_DIR}/${DATA_DIR}
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_SOURCE_DIR}/LICENSE ${OUTPUT_DIR}
             VERBATIM)

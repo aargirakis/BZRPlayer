@@ -70,9 +70,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     }
 
     // fonts needs to be added before the GUI
-    QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "Roboto-Medium.ttf");
-    QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "Roboto-Regular.ttf");
-    QFontDatabase::addApplicationFont(dataPath + "/resources" + QDir::separator() + "RobotoMono-Regular.ttf");
+    const QString resourcesFontsDir = dataPath + "/resources" + QDir::separator() + "/fonts" + QDir::separator();
+    QFontDatabase::addApplicationFont(resourcesFontsDir + "Roboto-Medium.ttf");
+    QFontDatabase::addApplicationFont(resourcesFontsDir + "Roboto-Regular.ttf");
+    QFontDatabase::addApplicationFont(resourcesFontsDir + "RobotoMono-Regular.ttf");
 
     ui->setupUi(this);
 
@@ -4081,7 +4082,7 @@ void MainWindow::setPlaylistsRowHeight(const int newRowHeight) {
 void MainWindow::createTrayMenu() {
     tray = new QSystemTrayIcon(this);
 
-    const auto trayIcon = QIcon(":/static/data/resources/icon.png");
+    const auto trayIcon = QIcon(":/resources/icon.png");
 
     tray->setIcon(trayIcon);
     tray->setToolTip(PROJECT_NAME);
@@ -5117,54 +5118,54 @@ void MainWindow::swapColumns(QTableView *tableview) {
 }
 
 void MainWindow::setupIcons() {
-    QPixmap shuffleOn = changeSvgColor(":/resources/shuffle.svg", colorMain.left(7));
-    QPixmap shuffleOnHover = changeSvgColor(":/resources/shuffle.svg", colorMainHover.left(7));
-    QPixmap shuffleOff = changeSvgColor(":/resources/shuffle.svg", colorButton.left(7));
-    QPixmap shuffleOffHover = changeSvgColor(":/resources/shuffle.svg", colorButtonHover.left(7));
+    QPixmap shuffleOn = changeSvgColor(":/resources/svg/shuffle.svg", colorMain.left(7));
+    QPixmap shuffleOnHover = changeSvgColor(":/resources/svg/shuffle.svg", colorMainHover.left(7));
+    QPixmap shuffleOff = changeSvgColor(":/resources/svg/shuffle.svg", colorButton.left(7));
+    QPixmap shuffleOffHover = changeSvgColor(":/resources/svg/shuffle.svg", colorButtonHover.left(7));
 
-    QPixmap speakerOn = changeSvgColor(":/resources/speaker.svg", colorButton.left(7));
-    QPixmap speakerOnHover = changeSvgColor(":/resources/speaker.svg", colorButtonHover.left(7));
-    QPixmap speakerOff = changeSvgColor(":/resources/speaker-off.svg", colorButton.left(7));
-    QPixmap speakerOffHover = changeSvgColor(":/resources/speaker-off.svg", colorButtonHover.left(7));
+    QPixmap speakerOn = changeSvgColor(":/resources/svg/speaker.svg", colorButton.left(7));
+    QPixmap speakerOnHover = changeSvgColor(":/resources/svg/speaker.svg", colorButtonHover.left(7));
+    QPixmap speakerOff = changeSvgColor(":/resources/svg/speaker-off.svg", colorButton.left(7));
+    QPixmap speakerOffHover = changeSvgColor(":/resources/svg/speaker-off.svg", colorButtonHover.left(7));
 
-    QPixmap play = changeSvgColor(":/resources/play.svg", colorButton.left(7));
-    QPixmap playHover = changeSvgColor(":/resources/play.svg", colorButtonHover.left(7));
-    QPixmap pause = changeSvgColor(":/resources/pause.svg", colorButton.left(7));
-    QPixmap pauseHover = changeSvgColor(":/resources/pause.svg", colorButtonHover.left(7));
-    QPixmap pauseDisabled = changeSvgColor(":/resources/pause.svg", colorMain.left(7));
+    QPixmap play = changeSvgColor(":/resources/svg/play.svg", colorButton.left(7));
+    QPixmap playHover = changeSvgColor(":/resources/svg/play.svg", colorButtonHover.left(7));
+    QPixmap pause = changeSvgColor(":/resources/svg/pause.svg", colorButton.left(7));
+    QPixmap pauseHover = changeSvgColor(":/resources/svg/pause.svg", colorButtonHover.left(7));
+    QPixmap pauseDisabled = changeSvgColor(":/resources/svg/pause.svg", colorMain.left(7));
 
-    QPixmap stop = changeSvgColor(":/resources/stop.svg", colorButton.left(7));
-    QPixmap stopHover = changeSvgColor(":/resources/stop.svg", colorButtonHover.left(7));
+    QPixmap stop = changeSvgColor(":/resources/svg/stop.svg", colorButton.left(7));
+    QPixmap stopHover = changeSvgColor(":/resources/svg/stop.svg", colorButtonHover.left(7));
 
-    QPixmap prev = changeSvgColor(":/resources/prev.svg", colorButton.left(7));
-    QPixmap prevHover = changeSvgColor(":/resources/prev.svg", colorButtonHover.left(7));
-    QPixmap next = changeSvgColor(":/resources/next.svg", colorButton.left(7));
-    QPixmap nextHover = changeSvgColor(":/resources/next.svg", colorButtonHover.left(7));
+    QPixmap prev = changeSvgColor(":/resources/svg/prev.svg", colorButton.left(7));
+    QPixmap prevHover = changeSvgColor(":/resources/svg/prev.svg", colorButtonHover.left(7));
+    QPixmap next = changeSvgColor(":/resources/svg/next.svg", colorButton.left(7));
+    QPixmap nextHover = changeSvgColor(":/resources/svg/next.svg", colorButtonHover.left(7));
 
-    QPixmap repeat = changeSvgColor(":/resources/repeat.svg", colorButton.left(7));
-    QPixmap repeatHover = changeSvgColor(":/resources/repeat.svg", colorButtonHover.left(7));
-    QPixmap repeat1 = changeSvgColor(":/resources/repeat-1.svg", colorMain.left(7));
-    QPixmap repeat1Hover = changeSvgColor(":/resources/repeat-1.svg", colorMainHover.left(7));
-    QPixmap repeatOn = changeSvgColor(":/resources/repeat.svg", colorMain.left(7));
-    QPixmap repeatOnHover = changeSvgColor(":/resources/repeat.svg", colorMainHover.left(7));
+    QPixmap repeat = changeSvgColor(":/resources/svg/repeat.svg", colorButton.left(7));
+    QPixmap repeatHover = changeSvgColor(":/resources/svg/repeat.svg", colorButtonHover.left(7));
+    QPixmap repeat1 = changeSvgColor(":/resources/svg/repeat-1.svg", colorMain.left(7));
+    QPixmap repeat1Hover = changeSvgColor(":/resources/svg/repeat-1.svg", colorMainHover.left(7));
+    QPixmap repeatOn = changeSvgColor(":/resources/svg/repeat.svg", colorMain.left(7));
+    QPixmap repeatOnHover = changeSvgColor(":/resources/svg/repeat.svg", colorMainHover.left(7));
 
-    QPixmap loopPointsOffDisabled = changeSvgColor(":/resources/loop-points.svg", colorMedium.left(7));
-    QPixmap loopPointsOff = changeSvgColor(":/resources/loop-points.svg", colorButton.left(7));
-    QPixmap loopPointsOffHover = changeSvgColor(":/resources/loop-points.svg", colorButtonHover.left(7));
-    QPixmap loopPointAOn = changeSvgColor(":/resources/loop-points.svg", colorMain.left(7),
+    QPixmap loopPointsOffDisabled = changeSvgColor(":/resources/svg/loop-points.svg", colorMedium.left(7));
+    QPixmap loopPointsOff = changeSvgColor(":/resources/svg/loop-points.svg", colorButton.left(7));
+    QPixmap loopPointsOffHover = changeSvgColor(":/resources/svg/loop-points.svg", colorButtonHover.left(7));
+    QPixmap loopPointAOn = changeSvgColor(":/resources/svg/loop-points.svg", colorMain.left(7),
                                           new QRectF(0.50, 0, 1, 1), colorButton.left(7));
-    QPixmap loopPointsOn = changeSvgColor(":/resources/loop-points.svg", colorMain.left(7));
-    QPixmap loopPointAOnHover = changeSvgColor(":/resources/loop-points.svg", colorMainHover.left(7),
+    QPixmap loopPointsOn = changeSvgColor(":/resources/svg/loop-points.svg", colorMain.left(7));
+    QPixmap loopPointAOnHover = changeSvgColor(":/resources/svg/loop-points.svg", colorMainHover.left(7),
                                                new QRectF(0.50, 0, 1, 1), colorButtonHover.left(7));
-    QPixmap loopPointsOnHover = changeSvgColor(":/resources/loop-points.svg", colorMainHover.left(7));
+    QPixmap loopPointsOnHover = changeSvgColor(":/resources/svg/loop-points.svg", colorMainHover.left(7));
 
-    QPixmap add = changeSvgColor(":/resources/add.svg", colorButton.left(7));
-    QPixmap addHover = changeSvgColor(":/resources/add.svg", colorButtonHover.left(7));
+    QPixmap add = changeSvgColor(":/resources/svg/add.svg", colorButton.left(7));
+    QPixmap addHover = changeSvgColor(":/resources/svg/add.svg", colorButtonHover.left(7));
 
-    QPixmap checkBoxOn = changeSvgColor(":/resources/checkbox-on.svg", colorMain.left(7));
-    QPixmap checkBoxOff = changeSvgColor(":/resources/checkbox-off.svg", colorBehindBackground.left(7));
-    QPixmap checkBoxOnDisabled = changeSvgColor(":/resources/checkbox-on-disabled.svg", colorMedium.left(7));
-    QPixmap checkBoxOffDisabled = changeSvgColor(":/resources/checkbox-off-disabled.svg", colorMedium.left(7));
+    QPixmap checkBoxOn = changeSvgColor(":/resources/svg/checkbox-on.svg", colorMain.left(7));
+    QPixmap checkBoxOff = changeSvgColor(":/resources/svg/checkbox-off.svg", colorBehindBackground.left(7));
+    QPixmap checkBoxOnDisabled = changeSvgColor(":/resources/svg/checkbox-on-disabled.svg", colorMedium.left(7));
+    QPixmap checkBoxOffDisabled = changeSvgColor(":/resources/svg/checkbox-off-disabled.svg", colorMedium.left(7));
 
     icons["speaker-on"] = speakerOn;
     icons["speaker-off"] = speakerOff;

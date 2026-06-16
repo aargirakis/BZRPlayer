@@ -24,7 +24,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
-    <normaloff>:/static/data/resources/icon.png</normaloff>:/static/data/resources/icon.png</iconset>
+    <normaloff>:/resources/icon.png</normaloff>:/resources/icon.png</iconset>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -913,7 +913,7 @@ QPushButton:hover
        </property>
        <property name="icon">
         <iconset resource="resource.qrc">
-         <normaloff>:/resources/add.svg</normaloff>:/resources/add.svg</iconset>
+         <normaloff>:/resources/svg/add.svg</normaloff>:/resources/svg/add.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -1430,8 +1430,8 @@ QCheckBox:hover
              </property>
              <property name="icon">
               <iconset resource="resource.qrc">
-               <normaloff>:/resources/speaker-off.svg</normaloff>
-               <normalon>:/resources/speaker.svg</normalon>:/resources/speaker-off.svg</iconset>
+               <normaloff>:/resources/svg/speaker-off.svg</normaloff>
+               <normalon>:/resources/svg/speaker.svg</normalon>:/resources/svg/speaker-off.svg</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -1549,7 +1549,7 @@ QPushButton:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/resources/prev.svg</normaloff>:/resources/prev.svg</iconset>
+                  <normaloff>:/resources/svg/prev.svg</normaloff>:/resources/svg/prev.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1624,7 +1624,7 @@ QPushButton:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/resources/play.svg</normaloff>:/resources/play.svg</iconset>
+                  <normaloff>:/resources/svg/play.svg</normaloff>:/resources/svg/play.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1697,7 +1697,7 @@ QPushButton:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/resources/next.svg</normaloff>:/resources/next.svg</iconset>
+                  <normaloff>:/resources/svg/next.svg</normaloff>:/resources/svg/next.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1759,7 +1759,7 @@ QPushButton:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/resources/stop.svg</normaloff>:/resources/stop.svg</iconset>
+                  <normaloff>:/resources/svg/stop.svg</normaloff>:/resources/svg/stop.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1829,7 +1829,7 @@ QCheckBox:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/resources/shuffle.svg</normaloff>:/resources/shuffle.svg</iconset>
+                  <normaloff>:/resources/svg/shuffle.svg</normaloff>:/resources/svg/shuffle.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1904,7 +1904,7 @@ QCheckBox:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/resources/repeat.svg</normaloff>:/resources/repeat.svg</iconset>
+                  <normaloff>:/resources/svg/repeat.svg</normaloff>:/resources/svg/repeat.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -1982,7 +1982,7 @@ QCheckBox:hover
                 </property>
                 <property name="icon">
                  <iconset resource="resource.qrc">
-                  <normaloff>:/resources/loop-points.svg</normaloff>:/resources/loop-points.svg</iconset>
+                  <normaloff>:/resources/svg/loop-points.svg</normaloff>:/resources/svg/loop-points.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
