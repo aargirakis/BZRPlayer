@@ -54,6 +54,10 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // getwaveformat
 };
 
+static constexpr unsigned int channels = 2;
+static constexpr unsigned int pcmFloatSize = sizeof(uint32_t);
+static constexpr unsigned int pcmBlockSize = channels * pcmFloatSize;
+
 class pluginProtrekkr {
     FMOD_CODEC_STATE *_codec;
 
@@ -120,9 +124,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
-    plugin->waveformat.channels = 2;
+    plugin->waveformat.channels = channels;
     plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
+    plugin->waveformat.pcmblocksize = pcmBlockSize;
     plugin->waveformat.lengthpcm = static_cast<unsigned int>(Calc_Length() / 1000.0 * plugin->waveformat.frequency);
 
     codec->waveformat = &plugin->waveformat;
@@ -149,7 +153,7 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
-    *read = Mixer(static_cast<Uint8 *>(buffer), size >> 1);
+    *read = Mixer(static_cast<Uint8 *>(buffer), size);
     return FMOD_OK;
 }
 

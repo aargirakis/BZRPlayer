@@ -40,7 +40,10 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // getwaveformat
 };
 
-static constexpr uint32_t maxSamples = 2048;
+static constexpr unsigned int channels = 2;
+static constexpr unsigned int pcmFloatSize = sizeof(uint32_t);
+static constexpr unsigned int maxSamples = 256;
+static constexpr unsigned int audioChunkSize = channels * pcmFloatSize * maxSamples;
 
 class pluginFurnace {
     FMOD_CODEC_STATE *_codec;
@@ -63,9 +66,9 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
     DivEngine *engine = nullptr;
-    float samples[2][maxSamples];
+    float samples[2][audioChunkSize];
     int32_t lastLoopPos = -1;
-    uint32_t numRemainingSamples = 0;
+    uint32_t numRemainingBytes = 0;
     queue<unsigned char *> vuMeterBuffer;
 };
 
@@ -138,9 +141,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->engine->play();
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
-    plugin->waveformat.channels = 2;
+    plugin->waveformat.channels = channels;
     plugin->waveformat.frequency = static_cast<int>(plugin->engine->getAudioDescGot().rate);
-    plugin->waveformat.pcmblocksize = maxSamples;
+    plugin->waveformat.pcmblocksize = audioChunkSize;
     plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
@@ -192,26 +195,26 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     const auto plugin = static_cast<pluginFurnace *>(codec->plugindata);
 
     auto bufferPtr = static_cast<float *>(buffer);
-    unsigned int numSamples = size;
+    unsigned int numBytes = size;
 
     float *samples[] = {plugin->samples[0], plugin->samples[1]};
-    uint32_t numSamplesRendered = 0;
-    uint32_t numRemainingSamples = plugin->numRemainingSamples;
+    uint32_t numBytesRendered = 0;
+    uint32_t numRemainingBytes = plugin->numRemainingBytes;
 
-    while (numSamples) {
-        if (numRemainingSamples == 0) {
-            plugin->engine->nextBuf(nullptr, samples, 0, 2, maxSamples);
-            numRemainingSamples = maxSamples;
+    while (numBytes) {
+        if (numRemainingBytes == 0) {
+            plugin->engine->nextBuf(nullptr, samples, 0, 2, audioChunkSize);
+            numRemainingBytes = audioChunkSize;
             plugin->lastLoopPos = plugin->engine->lastLoopPos;
         }
 
-        auto numSamplesAvailable = numRemainingSamples;
+        auto numBytesAvailable = numRemainingBytes;
 
         if (plugin->lastLoopPos > -1) {
-            numSamplesAvailable = plugin->lastLoopPos - (maxSamples - numRemainingSamples);
+            numBytesAvailable = plugin->lastLoopPos - (audioChunkSize - numRemainingBytes);
 
-            if (numSamplesAvailable == 0) {
-                if (numSamplesRendered == 0) {
+            if (numBytesAvailable == 0) {
+                if (numBytesRendered == 0) {
                     plugin->lastLoopPos = -1;
                 }
 
@@ -219,20 +222,20 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
             }
         }
 
-        const auto numSamplesToCopy = min(numSamples, numSamplesAvailable);
+        const auto numBytesToCopy = min(numBytes, numBytesAvailable);
 
-        for (uint32_t i = 0; i < numSamplesToCopy; i++) {
-            *bufferPtr++ = samples[0][maxSamples - numRemainingSamples + i];
-            *bufferPtr++ = samples[1][maxSamples - numRemainingSamples + i];
+        for (uint32_t i = 0; i < numBytesToCopy; i++) {
+            *bufferPtr++ = samples[0][audioChunkSize - numRemainingBytes + i];
+            *bufferPtr++ = samples[1][audioChunkSize - numRemainingBytes + i];
         }
 
-        numSamples -= numSamplesToCopy;
-        numRemainingSamples -= numSamplesToCopy;
-        numSamplesRendered += numSamplesToCopy;
+        numBytes -= numBytesToCopy;
+        numRemainingBytes -= numBytesToCopy;
+        numBytesRendered += numBytesToCopy;
     }
 
-    plugin->numRemainingSamples = numRemainingSamples;
-    *read = numSamplesRendered;
+    plugin->numRemainingBytes = numRemainingBytes;
+    *read = numBytesRendered;
 
     if (!plugin->engine->isPlaying() && !plugin->info->isContinuousPlaybackActive) {
         return FMOD_ERR_FILE_EOF;

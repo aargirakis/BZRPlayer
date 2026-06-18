@@ -36,6 +36,11 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // getwaveformat
 };
 
+static constexpr unsigned int channels = 2;
+static constexpr unsigned int pcmFloatSize = sizeof(uint32_t);
+static constexpr unsigned int maxSamples = 512;
+static constexpr unsigned int audioChunkSize = channels * pcmFloatSize * maxSamples;
+
 class pluginV2mPlayer {
     FMOD_CODEC_STATE *_codec;
 
@@ -97,9 +102,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
-    plugin->waveformat.channels = 2;
+    plugin->waveformat.channels = channels;
     plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = 4096;
+    plugin->waveformat.pcmblocksize = audioChunkSize;
     plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
@@ -147,12 +152,12 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginV2mPlayer *>(codec->plugindata);
 
-    plugin->player->Render(static_cast<float *>(buffer), plugin->waveformat.pcmblocksize);
+    plugin->player->Render(static_cast<float *>(buffer), maxSamples);
 
-    if (size < plugin->waveformat.pcmblocksize) {
+    if (size < maxSamples) {
         *read = size;
     } else {
-        *read = plugin->waveformat.pcmblocksize;
+        *read = maxSamples;
     }
 
     return FMOD_OK;

@@ -49,6 +49,9 @@ const char *NOTES[67] =
     "C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "???"
 };
 
+static constexpr unsigned int sampleRate = 44100;
+static constexpr unsigned int maxSamples = sampleRate / 50;
+
 class pluginHivelyTracker {
     FMOD_CODEC_STATE *_codec;
 
@@ -122,7 +125,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     hvl_InitReplayer();
 
-    plugin->tune = hvl_ParseTune(plugin->info->fileBuffer, plugin->info->filesize, 44100, stereoSeparation);
+    plugin->tune = hvl_ParseTune(plugin->info->fileBuffer, plugin->info->filesize, sampleRate, stereoSeparation);
 
     if (!plugin->tune) {
         delete plugin;
@@ -131,8 +134,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = 44100;
-    plugin->waveformat.pcmblocksize = 882; //(16 >> 3) * plugin->waveformat.channels;
+    plugin->waveformat.frequency = sampleRate;
+    plugin->waveformat.pcmblocksize = maxSamples;
     plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
@@ -197,10 +200,10 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     const auto *plugin = static_cast<pluginHivelyTracker *>(codec->plugindata);
     hvl_DecodeFrame(plugin->tune, static_cast<int8 *>(buffer), static_cast<int8 *>(buffer) + 2, 4);
 
-    if (size < plugin->waveformat.pcmblocksize) {
+    if (size < maxSamples) {
         *read = size;
     } else {
-        *read = plugin->waveformat.pcmblocksize;
+        *read = maxSamples;
     }
 
     return FMOD_OK;
