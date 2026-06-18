@@ -18,11 +18,11 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
-constexpr uint8_t rate = 44100;
-constexpr uint8_t channels = 2;
-constexpr uint8_t pcmFloatSize = sizeof(uint32_t);
-constexpr uint8_t pcmBlockSize = channels * pcmFloatSize;
-constexpr unsigned int samplesToWrite = 256;
+static constexpr unsigned int rate = 44100;
+static constexpr unsigned int channels = 2;
+static constexpr unsigned int pcmFloatSize = sizeof(uint32_t);
+static constexpr unsigned int pcmBlockSize = channels * pcmFloatSize;
+static constexpr unsigned int samplesToWrite = 256;
 
 FMOD_CODEC_DESCRIPTION codec =
 {
