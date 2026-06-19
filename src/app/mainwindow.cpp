@@ -2798,9 +2798,12 @@ void MainWindow::savePlayList(QString path, QString newPath) {
 
     for (int i = 0; i < tableWidgetPlaylists[fileInfoOld.fileName()]->model()->rowCount(); i++) {
         QString playlistKey = fileInfoOld.fileName();
+        const auto lengthMs = tableWidgetPlaylists[playlistKey]->model()->index(i, 5).data().toInt();
+        const auto lengthStr = lengthMs == -1
+                                   ? QString("000.000")
+                                   : QString("%1.%2").arg(lengthMs / 1000).arg(lengthMs % 1000, 3, 10, QChar('0'));
         QString path = tableWidgetPlaylists[playlistKey]->model()->index(i, 4).data().toString();
-        QString extInfo = "#EXTINF:" +
-                          QString::number(tableWidgetPlaylists[playlistKey]->model()->index(i, 5).data().toInt()) + ","
+        QString extInfo = "#EXTINF:" + lengthStr + ","
                           + QString(
                               tableWidgetPlaylists[playlistKey]->model()->index(i, 0).data().toString());
         out << extInfo << "\n" << path << NEZPLAYLISTSPLITTER << tableWidgetPlaylists[playlistKey]->model()->index(i, 1)
@@ -3623,7 +3626,11 @@ vector<PlaylistItem *> MainWindow::getPlayListEntriesM3u(QString filename) const
 
             if (extInfoLength != "") {
                 if (extInfoLength != "-1" && extInfoLength != "0") {
-                    playlistItem->length = extInfoLength.toInt() * 1000;
+                    const auto lengthParts = extInfoLength.split('.');
+                    const auto lengthSec = lengthParts[0].toInt();
+                    const auto lengthMs = lengthParts.size() == 2 ? lengthParts[1].toInt() : 0;
+
+                    playlistItem->length = lengthSec * 1000 + lengthMs;
                 } else {
                     playlistItem->length = -1;
                 }

@@ -139,7 +139,7 @@ bool PlaylistModel::setData(const QModelIndex &index, const QVariant &value, con
         } else if (index.column() == 4)
             contact.fullPath = value.toString();
         else if (index.column() == 5)
-            contact.lengthInt = value.toInt() / 1000;
+            contact.lengthInt = value.toInt();
         else if (index.column() == 6) {
             contact.playable = value.toBool();
         } else if (index.column() == 7) {
