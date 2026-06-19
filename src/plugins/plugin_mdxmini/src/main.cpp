@@ -117,11 +117,14 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
-    const auto plugin = static_cast<pluginMdxmini *>(codec->plugindata);
+    static constexpr unsigned int maxSamples = 256;
 
-    mdx_calc_sample(&plugin->data, static_cast<short *>(buffer), static_cast<int>(size));
+    if (const auto plugin = static_cast<pluginMdxmini *>(codec->plugindata);
+        !mdx_calc_sample(&plugin->data, static_cast<short *>(buffer), maxSamples)) {
+        return FMOD_ERR_FILE_EOF;
+    }
 
-    *read = size;
+    *read = maxSamples;
     return FMOD_OK;
 }
 
