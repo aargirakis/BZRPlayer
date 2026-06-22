@@ -472,10 +472,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSectionsMovable(true);
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setSortIndicatorShown(false);
         tableWidgetPlaylists[f.fileName()]->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-        tv->setColumnHidden(4, true);
-        tv->setColumnHidden(5, true);
-        tv->setColumnHidden(6, true);
-        tv->setColumnHidden(7, true);
+        tv->setColumnHidden(PlaylistModel::Section::FullPath, true);
+        tv->setColumnHidden(PlaylistModel::Section::LengthInt, true);
+        tv->setColumnHidden(PlaylistModel::Section::IsPlayable, true);
+        tv->setColumnHidden(PlaylistModel::Section::IsPlaying, true);
 
         auto newItem = new QListWidgetItem;
         newItem->setText(f.fileName());
@@ -639,7 +639,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     ui->listWidget->installEventFilter(this);
     tableWidgetPlaylists[currentPlaylist]->installEventFilter(this);
 
-    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0);
+    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->
+            index(currentRow, PlaylistModel::Section::Title);
     tableWidgetPlaylists[currentPlaylist]->scrollTo(index);
     tableWidgetPlaylists[currentPlaylist]->setCurrentIndex(index);
 
@@ -1032,10 +1033,12 @@ void MainWindow::refreshInfo() {
                                      : pi.info->filePath);
     }
 
-    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0, QModelIndex());
+    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
+        currentRow, PlaylistModel::Section::Title, QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index, title, Qt::EditRole);
 
-    index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 8, QModelIndex());
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, PlaylistModel::Section::Artist,
+                                                                  QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->artist), Qt::EditRole);
 }
 
@@ -1238,7 +1241,8 @@ void MainWindow::playNextSong(const bool forceNext) {
 }
 
 void MainWindow::highlightPlaylistItem(const QString &playlist, const int row) {
-    const QModelIndex index = tableWidgetPlaylists[playlist]->model()->index(row, 0, QModelIndex());
+    const QModelIndex index = tableWidgetPlaylists[playlist]->model()->index(
+        row, PlaylistModel::Section::Title, QModelIndex());
     tableWidgetPlaylists[playlist]->model()->setData(index, row, Qt::ForegroundRole);
     tableWidgetPlaylists[currentPlaylist]->update();
     tableWidgetPlaylists[currentPlaylist]->repaint();
@@ -1296,7 +1300,8 @@ bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
 
     addDebugText("Try to load sound (playlistitem): " + fullPath);
     ui->buttonPlay_2->setIcon(icons["pause"]);
-    const QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 0);
+    const QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
+        currentRow, PlaylistModel::Section::Title);
     tableWidgetPlaylists[currentPlaylist]->scrollTo(index);
     repaint();
 
@@ -1323,7 +1328,8 @@ bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
 
         cout << "Failed to load sound setting bool to true" << endl;
 
-        QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 6, QModelIndex());
+        QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
+            currentRow, PlaylistModel::Section::IsPlayable, QModelIndex());
         tableWidgetPlaylists[currentPlaylist]->model()->setData(index, true, Qt::EditRole);
         tableWidgetPlaylists[currentPlaylist]->update();
     }
@@ -1604,19 +1610,19 @@ void MainWindow::addPlaylistEntry(const QTableView *table, const int rowPosition
         subsongStr = "";
     }
 
-    QModelIndex index = table->model()->index(rowPosition, 0, QModelIndex());
+    QModelIndex index = table->model()->index(rowPosition, PlaylistModel::Section::Title, QModelIndex());
     table->model()->setData(index, filename, Qt::EditRole);
-    index = table->model()->index(rowPosition, 1, QModelIndex());
+    index = table->model()->index(rowPosition, PlaylistModel::Section::FileFormat, QModelIndex());
     table->model()->setData(index, fileFormat, Qt::EditRole);
-    index = table->model()->index(rowPosition, 2, QModelIndex());
+    index = table->model()->index(rowPosition, PlaylistModel::Section::LengthStr, QModelIndex());
     table->model()->setData(index, length, Qt::EditRole);
-    index = table->model()->index(rowPosition, 3, QModelIndex());
+    index = table->model()->index(rowPosition, PlaylistModel::Section::Subsong, QModelIndex());
     table->model()->setData(index, subsongStr, Qt::EditRole);
-    index = table->model()->index(rowPosition, 4, QModelIndex());
+    index = table->model()->index(rowPosition, PlaylistModel::Section::FullPath, QModelIndex());
     table->model()->setData(index, fullPath, Qt::EditRole);
-    index = table->model()->index(rowPosition, 5, QModelIndex());
+    index = table->model()->index(rowPosition, PlaylistModel::Section::LengthInt, QModelIndex());
     table->model()->setData(index, lengthInt, Qt::EditRole);
-    index = table->model()->index(rowPosition, 8, QModelIndex());
+    index = table->model()->index(rowPosition, PlaylistModel::Section::Artist, QModelIndex());
     table->model()->setData(index, artist, Qt::EditRole);
 }
 
@@ -1781,17 +1787,13 @@ void MainWindow::updateScrollText() const {
 }
 
 void MainWindow::playSongAtRow(int rowProvided) {
-    QString fullPath = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 4).data().toString();
+    QString fullPath = tableWidgetPlaylists[currentPlaylist]->model()->index(
+        rowProvided, PlaylistModel::Section::FullPath).data().toString();
     addDebugText("Now playing and loading sound " + fullPath);
 
-    QString subsong = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3).data().toString();
-
-    if (subsong != "") {
-        subsong = "[" + subsong + "]";
-    }
-
     // addDebugText("startSubsongPlayList: " + QString::number(playlists[currentPlaylist].at(playlistNumber)->startSubsongPlayList));
-    currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3).data().toInt();
+    currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, PlaylistModel::Section::Subsong)
+            .data().toInt();
 
     if (currentSubsong < 1) {
         currentSubsong = 1;
@@ -1800,6 +1802,12 @@ void MainWindow::playSongAtRow(int rowProvided) {
     QFileInfo fileInfo(fullPath);
     QString suffix(fileInfo.suffix());
     QString baseName(fileInfo.baseName());
+    QString subsong = tableWidgetPlaylists[currentPlaylist]->model()->index(
+        rowProvided, PlaylistModel::Section::Subsong).data().toString();
+
+    if (subsong != "") {
+        subsong = "[" + subsong + "]";
+    }
 
     setOutputDevice(outputDevice, baseName + subsong + "." + suffix);
 
@@ -1910,26 +1918,34 @@ void MainWindow::playSongAtRow(int rowProvided) {
 
     tray->setToolTip(windowTitle);
 
-    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 0, QModelIndex());
+    QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
+        rowProvided, PlaylistModel::Section::Title, QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index, title, Qt::EditRole);
 
-    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 1, QModelIndex());
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, PlaylistModel::Section::FileFormat,
+                                                                  QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(
         index, sm.info->fileFormat.c_str(), Qt::EditRole);
-    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 2, QModelIndex());
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, PlaylistModel::Section::LengthStr,
+                                                                  QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(
         index, msToNiceStringExact(songLengthMs, displayMilliseconds), Qt::EditRole);
-    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 5, QModelIndex());
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, PlaylistModel::Section::LengthInt,
+                                                                  QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index, songLengthMs, Qt::EditRole);
-    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 8, QModelIndex());
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, PlaylistModel::Section::Artist,
+                                                                  QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index, artist, Qt::EditRole);
 
-    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 6, QModelIndex());
+    index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, PlaylistModel::Section::IsPlayable,
+                                                                  QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index, false, Qt::EditRole);
 
-    currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3).data().toInt();
+    currentSubsong = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, PlaylistModel::Section::Subsong)
+            .data().toInt();
 
-    QModelIndex index2 = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 0);
+    QModelIndex index2 = tableWidgetPlaylists[currentPlaylist]->model()->index(
+        rowProvided, PlaylistModel::Section::Title);
     tableWidgetPlaylists[currentPlaylist]->scrollTo(index2);
 
     // set text of currently playing sound to main color
@@ -1945,17 +1961,23 @@ void MainWindow::playSongAtRow(int rowProvided) {
 
     // ok, now to add all subsongs, one for each row
 
-    if (tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3).data().toInt() < 1 &&
+    if (tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, PlaylistModel::Section::Subsong).data().
+        toInt() < 1 &&
         sm.info->numSubsongs > 1) {
-        QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 3, QModelIndex());
+        QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
+            rowProvided, PlaylistModel::Section::Subsong, QModelIndex());
         tableWidgetPlaylists[currentPlaylist]->model()->setData(index, 1, Qt::EditRole);
 
         currentSubsong = 1;
 
-        QString title = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 0).data().toString();
-        QString fileFormat = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 1).data().toString();
-        QString fullpath = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 4).data().toString();
-        QString artist = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 8).data().toString();
+        QString title = tableWidgetPlaylists[currentPlaylist]->model()->index(
+            rowProvided, PlaylistModel::Section::Title).data().toString();
+        QString fileFormat = tableWidgetPlaylists[currentPlaylist]->model()->index(
+            rowProvided, PlaylistModel::Section::FileFormat).data().toString();
+        QString fullpath = tableWidgetPlaylists[currentPlaylist]->model()->index(
+            rowProvided, PlaylistModel::Section::FullPath).data().toString();
+        QString artist = tableWidgetPlaylists[currentPlaylist]->model()->index(
+            rowProvided, PlaylistModel::Section::Artist).data().toString();
 
         for (int i = 1; i < sm.info->numSubsongs; i++) {
             addPlaylistEntry(tableWidgetPlaylists[currentPlaylist], rowProvided + i, title, fileFormat, "", i + 1,
@@ -1963,11 +1985,13 @@ void MainWindow::playSongAtRow(int rowProvided) {
         }
     }
 
-    QModelIndex index3 = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 7, QModelIndex());
+    QModelIndex index3 = tableWidgetPlaylists[currentPlaylist]->model()->index(
+        rowProvided, PlaylistModel::Section::IsPlaying, QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index3, true, Qt::EditRole);
     tableWidgetPlaylists[currentPlaylist]->update();
 
-    QString printerText = tableWidgetPlaylists[currentPlaylist]->model()->index(rowProvided, 0).data().toString();
+    QString printerText = tableWidgetPlaylists[currentPlaylist]->model()->index(
+        rowProvided, PlaylistModel::Section::Title).data().toString();
     //        if(printerText.isEmpty())
     //        {
     //            printerText=sm.info->filename.c_str();
@@ -2751,10 +2775,10 @@ void MainWindow::savePlaylistAs() {
     proxyModel->setSourceModel(pm);
     tv->setModel(proxyModel);
 
-    tv->setColumnHidden(4, true);
-    tv->setColumnHidden(5, true);
-    tv->setColumnHidden(6, true);
-    tv->setColumnHidden(7, true);
+    tv->setColumnHidden(PlaylistModel::Section::FullPath, true);
+    tv->setColumnHidden(PlaylistModel::Section::LengthInt, true);
+    tv->setColumnHidden(PlaylistModel::Section::IsPlayable, true);
+    tv->setColumnHidden(PlaylistModel::Section::IsPlaying, true);
 
     tableWidgetPlaylists[newName] = tv;
 
@@ -2798,23 +2822,30 @@ void MainWindow::savePlayList(QString path, QString newPath) {
 
     for (int i = 0; i < tableWidgetPlaylists[fileInfoOld.fileName()]->model()->rowCount(); i++) {
         QString playlistKey = fileInfoOld.fileName();
-        const auto lengthMs = tableWidgetPlaylists[playlistKey]->model()->index(i, 5).data().toInt();
+        const auto lengthMs = tableWidgetPlaylists[playlistKey]->model()->index(i, PlaylistModel::Section::LengthInt).
+                data().toInt();
         const auto lengthStr = lengthMs == -1
                                    ? QString("000.000")
                                    : QString("%1.%2").arg(lengthMs / 1000).arg(lengthMs % 1000, 3, 10, QChar('0'));
-        QString path = tableWidgetPlaylists[playlistKey]->model()->index(i, 4).data().toString();
+        QString path = tableWidgetPlaylists[playlistKey]->model()->index(i, PlaylistModel::Section::FullPath).data().
+                toString();
         QString extInfo = "#EXTINF:" + lengthStr + ","
                           + QString(
-                              tableWidgetPlaylists[playlistKey]->model()->index(i, 0).data().toString());
-        out << extInfo << "\n" << path << NEZPLAYLISTSPLITTER << tableWidgetPlaylists[playlistKey]->model()->index(i, 1)
-                .data().toString() << PLAYLISTFIELDSPLITTER << tableWidgetPlaylists[playlistKey]->model()->index(i, 3).
-                data().toString() << PLAYLISTFIELDSPLITTER << tableWidgetPlaylists[playlistKey]->model()->index(i, 0).
+                              tableWidgetPlaylists[playlistKey]->model()->index(i, PlaylistModel::Section::Title).data()
+                              .toString());
+        out << extInfo << "\n" << path << NEZPLAYLISTSPLITTER << tableWidgetPlaylists[playlistKey]->model()->index(
+                    i, PlaylistModel::Section::FileFormat)
+                .data().toString() << PLAYLISTFIELDSPLITTER << tableWidgetPlaylists[playlistKey]->model()->index(
+                    i, PlaylistModel::Section::Subsong).
+                data().toString() << PLAYLISTFIELDSPLITTER << tableWidgetPlaylists[playlistKey]->model()->index(
+                    i, PlaylistModel::Section::Title).
                 data()
                 .toString() << PLAYLISTFIELDSPLITTER << "[time(h:m:s)] " << PLAYLISTFIELDSPLITTER << "[loop(h:m:s)][-]"
                 <<
                 PLAYLISTFIELDSPLITTER << "[fade(h:m:s)]" << PLAYLISTFIELDSPLITTER << "[loopcount]" <<
                 PLAYLISTFIELDSPLITTER
-                << tableWidgetPlaylists[playlistKey]->model()->index(i, 8).data().toString() << "\n";
+                << tableWidgetPlaylists[playlistKey]->model()->index(i, PlaylistModel::Section::Artist).data().
+                toString() << "\n";
     }
 
     file.close();
@@ -2879,7 +2910,9 @@ void MainWindow::clearPlaylist() {
 
 void MainWindow::showContainingFolder() {
     foreach(QModelIndex idx, tableWidgetPlaylists[selectedPlaylist]->selectionModel()->selectedRows()) {
-        QFile file(tableWidgetPlaylists[selectedPlaylist]->model()->index(idx.row(), 4).data().toString());
+        QFile file(
+            tableWidgetPlaylists[selectedPlaylist]->model()->index(idx.row(), PlaylistModel::Section::FullPath).data().
+            toString());
 
         if (QFileInfo fileinfo(file);
             !fileinfo.path().startsWith("http://", Qt::CaseInsensitive) && !fileinfo.path().startsWith("https://")) {
@@ -3754,10 +3787,10 @@ QString MainWindow::createPlaylist(const QString &name) {
     const auto proxyModel = new QSortFilterProxyModel(pm); // create proxy
     proxyModel->setSourceModel(pm);
     tv->setModel(proxyModel);
-    tv->setColumnHidden(4, true);
-    tv->setColumnHidden(5, true);
-    tv->setColumnHidden(6, true);
-    tv->setColumnHidden(7, true);
+    tv->setColumnHidden(PlaylistModel::Section::FullPath, true);
+    tv->setColumnHidden(PlaylistModel::Section::LengthInt, true);
+    tv->setColumnHidden(PlaylistModel::Section::IsPlayable, true);
+    tv->setColumnHidden(PlaylistModel::Section::IsPlaying, true);
     tableWidgetPlaylists[newItem->text()] = tv;
 
     tableWidgetPlaylists[newItem->text()]->setStyleSheet(
@@ -4792,7 +4825,8 @@ void MainWindow::resetAll() {
 
 void MainWindow::removeHighlight() {
     if (tableWidgetPlaylists.contains(currentPlaylist)) {
-        const QModelIndex index3 = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, 7, QModelIndex());
+        const QModelIndex index3 = tableWidgetPlaylists[currentPlaylist]->model()->index(
+            currentRow, PlaylistModel::Section::IsPlaying, QModelIndex());
         tableWidgetPlaylists[currentPlaylist]->model()->setData(index3, false, Qt::EditRole);
         tableWidgetPlaylists[currentPlaylist]->update();
     }
@@ -5115,11 +5149,11 @@ void MainWindow::setBundledHvscSonglengthsUpdateFrequency(const QString &freq) {
 
 // swaps columns so that artist column is first for default and new playlists
 void MainWindow::swapColumns(QTableView *tableview) {
-    tableview->setColumnWidth(0, 200);
-    tableview->setColumnWidth(1, 100);
-    tableview->setColumnWidth(2, 55);
-    tableview->setColumnWidth(3, 75);
-    tableview->setColumnWidth(8, 175);
+    tableview->setColumnWidth(PlaylistModel::Section::Title, 200);
+    tableview->setColumnWidth(PlaylistModel::Section::FileFormat, 100);
+    tableview->setColumnWidth(PlaylistModel::Section::LengthStr, 55);
+    tableview->setColumnWidth(PlaylistModel::Section::Subsong, 75);
+    tableview->setColumnWidth(PlaylistModel::Section::Artist, 175);
 
     tableview->horizontalHeader()->swapSections(1, 8);
 }

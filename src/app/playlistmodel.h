@@ -5,22 +5,22 @@
 #include "mainwindow.h"
 
 struct Item {
-    bool isPlaying;
-    bool playable;
-    QString fullPath;
-    QString filename;
-    QString fileFormat;
-    QString path;
     QString title;
-    Info *info;
+    QString fileFormat;
+    QString lengthStr;
     QString subsong;
+    QString fullPath;
+    int lengthInt;
+    bool isPlayable;
+    bool isPlaying;
     QString artist;
+    QString filename;
+    QString path;
+    Info *info;
     int subsongs;
     unsigned int startTime;
     unsigned int startSubsong;
     signed int startSubsongPlayList;
-    QString length;
-    int lengthInt;
     QUuid uuid = QUuid::createUuid();
 
     bool operator==(const Item &other) const {
@@ -33,6 +33,8 @@ class PlaylistModel : public QAbstractTableModel {
 
 public:
     explicit PlaylistModel(QObject *parent = nullptr);
+
+    enum Section { Title, FileFormat, LengthStr, Subsong, FullPath, LengthInt, IsPlayable, IsPlaying, Artist };
 
     Qt::DropActions supportedDropActions() const;
 

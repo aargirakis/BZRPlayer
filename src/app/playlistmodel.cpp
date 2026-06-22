@@ -29,29 +29,29 @@ QVariant PlaylistModel::data(const QModelIndex &index, const int role) const {
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (index.column() == 0)
+        if (index.column() == Title)
             return contact.title;
-        if (index.column() == 1)
+        if (index.column() == FileFormat)
             return contact.fileFormat;
-        if (index.column() == 2)
-            return contact.length;
-        if (index.column() == 3)
+        if (index.column() == LengthStr)
+            return contact.lengthStr;
+        if (index.column() == Subsong)
             return contact.subsong;
-        if (index.column() == 4)
+        if (index.column() == FullPath)
             return contact.fullPath;
-        if (index.column() == 5)
+        if (index.column() == LengthInt)
             return contact.lengthInt;
-        if (index.column() == 6)
-            return contact.playable;
-        if (index.column() == 7)
+        if (index.column() == IsPlayable)
+            return contact.isPlayable;
+        if (index.column() == IsPlaying)
             return contact.isPlaying;
-        if (index.column() == 8)
+        if (index.column() == Artist)
             return contact.artist;
     } else if (role == Qt::ForegroundRole && contact.isPlaying)
     //else if (role == Qt::ForegroundRole && index.row() == currentRowPlaying)
     {
         return QColor(m_root->getColorMain().left(7));
-    } else if (role == Qt::ForegroundRole && contact.playable) {
+    } else if (role == Qt::ForegroundRole && contact.isPlayable) {
         QColor maintext(m_root->getColorMainText().left(7));
         maintext.setAlpha(128);
         return maintext;
@@ -111,7 +111,7 @@ bool PlaylistModel::removeRows(const int position, const int rows, const QModelI
 }
 
 bool PlaylistModel::setData(const QModelIndex &index, const QVariant &value, const int role) {
-    //    if(role==Qt::ForegroundRole && index.column()==0)
+    //    if(role == Qt::ForegroundRole && index.column() == Title)
     //    {
     //        currentRowPlaying=value.toInt();
     //    }
@@ -122,29 +122,28 @@ bool PlaylistModel::setData(const QModelIndex &index, const QVariant &value, con
     if (role == Qt::EditRole || Qt::DisplayRole) {
         auto contact = items.value(row);
 
-        if (index.column() == 0)
+        if (index.column() == Title)
             contact.title = value.toString();
-        else if (index.column() == 8)
-            contact.artist = value.toString();
-        else if (index.column() == 1)
+        else if (index.column() == FileFormat)
             contact.fileFormat = value.toString();
-        else if (index.column() == 2)
-            contact.length = value.toString();
-        else if (index.column() == 3) {
-            if (value == -1) {
+        else if (index.column() == LengthStr)
+            contact.lengthStr = value.toString();
+        else if (index.column() == Subsong) {
+            if (value == -1)
                 contact.subsong = "";
-            } else {
+            else
                 contact.subsong = value.toString();
-            }
-        } else if (index.column() == 4)
+        } else if (index.column() == FullPath)
             contact.fullPath = value.toString();
-        else if (index.column() == 5)
+        else if (index.column() == LengthInt)
             contact.lengthInt = value.toInt();
-        else if (index.column() == 6) {
-            contact.playable = value.toBool();
-        } else if (index.column() == 7) {
+        else if (index.column() == IsPlayable)
+            contact.isPlayable = value.toBool();
+        else if (index.column() == IsPlaying)
             contact.isPlaying = value.toBool();
-        } else
+        else if (index.column() == Artist)
+            contact.artist = value.toString();
+        else
             return false;
 
         items.replace(row, contact);
