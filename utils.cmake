@@ -108,8 +108,54 @@ endfunction()
 
 function(download_and_patch target_name target_filename target_url
         sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
+    if (sha_256_hash STREQUAL "")
+        message(FATAL_ERROR "Hash for file ${target_filename} is missing")
+    endif ()
+
     if (OFFLINE_MODE EQUAL 1 OR "${target_url}" STREQUAL "")
-        unpack_and_patch("${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename}" "${target_name}"
+        set(target_filepath "${CMAKE_CURRENT_LIST_DIR}/dist/${target_filename}")
+
+        if (NOT EXISTS "${target_filepath}")
+            set(target_parts_ext "00[0-9]")
+
+            file(GLOB target_parts "${target_filepath}.${target_parts_ext}")
+
+            if (NOT target_parts)
+                message(FATAL_ERROR
+                        "Unable to find file ${target_filepath} or ${target_filepath}.${target_parts_ext}")
+            endif ()
+
+            set(target_filepath "${DEPENDENCIES_DIR}/${target_name}/${target_filename}")
+
+            if (EXISTS "${target_filepath}")
+                file(SHA256 "${target_filepath}" sha_256_hash_actual)
+            else ()
+                file(MAKE_DIRECTORY "${DEPENDENCIES_DIR}/${target_name}")
+            endif ()
+
+            if (NOT sha_256_hash_actual STREQUAL sha_256_hash)
+                execute_process(COMMAND ${CMAKE_COMMAND} -E cat ${target_parts}
+                        OUTPUT_FILE ${target_filepath}
+                        RESULT_VARIABLE concat_result
+                        ERROR_VARIABLE concat_error
+                )
+
+                if (NOT concat_result EQUAL 0)
+                    message(FATAL_ERROR "Error joining parts to ${target_filepath}: ${concat_error}")
+                endif ()
+            endif ()
+        endif ()
+
+        file(SHA256 "${target_filepath}" sha_256_hash_actual)
+
+        if (NOT sha_256_hash_actual STREQUAL sha_256_hash)
+            message(FATAL_ERROR
+                    "Hash mismatch for file: ${target_filepath}"
+                    "\nexpected hash: ${sha_256_hash_actual}"
+                    "\nactual hash: ${sha_256_hash}")
+        endif ()
+
+        unpack_and_patch("${target_filepath}" "${target_name}"
                 "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
     else ()
         download_to("${target_filename}" "${target_url}" "${sha_256_hash}" "${DEPENDENCIES_DIR}/${target_name}"
