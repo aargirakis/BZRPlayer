@@ -677,7 +677,11 @@ void MainWindow::checkCommandLine(int argc, char *argv[]) {
     args.removeFirst();
     QList<QUrl> urls;
     for (const auto &item: args) {
-        urls.append(QUrl().fromLocalFile(item));
+        if (item.startsWith("http://") || item.startsWith("https://")) {
+            urls.append(QUrl::fromLocalFile(item));
+        } else {
+            urls.append(QUrl::fromLocalFile(QFileInfo(item).absoluteFilePath()));
+        }
     }
 
     const int rowCountBeforeAddSong = tableWidgetPlaylists[currentPlaylist]->model()->rowCount();
