@@ -169,6 +169,8 @@ private slots:
 
     void on_checkBoxHighlyQuixoticContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxHighlyTheoreticalContinuousPlayback_toggled(bool isChecked) const;
+
     void on_checkBoxHivelyTrackerContinuousPlayback_toggled(bool isChecked) const;
 
     void on_checkBoxLibvgmContinuousPlayback_toggled(bool isChecked) const;
@@ -282,6 +284,8 @@ private:
 
     void loadSettingsHighlyQuixotic() const;
 
+    void loadSettingsHighlyTheoretical() const;
+
     void loadSettingsHivelytracker() const;
 
     void loadSettingsLibopenmpt() const;
@@ -307,6 +311,8 @@ private:
     void saveSettingsHighlyExperimental() const;
 
     void saveSettingsHighlyQuixotic() const;
+
+    void saveSettingsHighlyTheoretical() const;
 
     void saveSettingsHivelytracker() const;
 

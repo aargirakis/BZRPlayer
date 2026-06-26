@@ -43,6 +43,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_compile_definitions(${PROJECT_NAME} PRIVATE
         EMU_COMPILE EMU_LITTLE_ENDIAN HAVE_STDINT_H LSB_FIRST C68K_NO_JUMP_TABLE NO_DYNAREC
 )
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-int-conversion>)
 
