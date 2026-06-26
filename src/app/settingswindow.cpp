@@ -340,6 +340,10 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsHivelytracker();
     }
 
+    if (PLUGIN_lazyusf2_LIB != "") {
+        loadSettingsLazyusf2();
+    }
+
     if (PLUGIN_libsidplayfp_LIB != "") {
         loadSettingsLibsidplayfp();
     }
@@ -768,6 +772,10 @@ void settingsWindow::on_buttonOK_clicked() {
         saveSettingsHivelytracker();
     }
 
+    if (PLUGIN_lazyusf2_LIB != "") {
+        saveSettingsLazyusf2();
+    }
+
     if (PLUGIN_libsidplayfp_LIB != "") {
         saveSettingsLibsidplayfp();
     }
@@ -800,16 +808,6 @@ void settingsWindow::on_comboBoxReverb_textActivated(const QString &arg1) const 
     mainWindow->setReverbPreset(arg1);
     const bool checkedReverb = ui->checkBoxReverb->checkState() == Qt::Checked;
     mainWindow->setReverbEnabled(checkedReverb);
-}
-
-void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked() {
-    const QString startFolder = ui->lineEditLibsidplayfpHvscSonglengthsPath->text();
-
-    if (const QString file = QFileDialog::getOpenFileName(this, "Choose your Songlengths.md5", startFolder, "*.md5");
-        !file.isEmpty()) {
-        setUiLineEditLibsidplayfpHvscSonglengthsPath(file);
-        mainWindow->setHvscSonglengthsPath(file);
-    }
 }
 
 void settingsWindow::loadSettingsAdplug() const {
@@ -1047,6 +1045,38 @@ void settingsWindow::loadSettingsHivelytracker() const {
                     ui->comboBoxHivelyTrackerStereoSeparation->setCurrentIndex(index);
                 } else if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxHivelyTrackerContinuousPlayback->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+
+        ifs.close();
+    }
+}
+
+void settingsWindow::loadSettingsLazyusf2() const {
+    // read config from disk
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/lazyusf2.cfg";
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    ui->checkBoxLazyusf2ContinuousPlayback->setChecked(false);
+
+    if (!useDefaults) {
+        string line;
+
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+
+                if (word.compare("continuousPlayback") == 0) {
+                    ui->checkBoxLazyusf2ContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1498,6 +1528,21 @@ void settingsWindow::saveSettingsHivelytracker() const {
     ofs.close();
 }
 
+void settingsWindow::saveSettingsLazyusf2() const {
+    // save config to disk
+    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/lazyusf2.cfg";
+    ofstream ofs(filename.c_str());
+
+    if (ofs.fail()) {
+        // the file could not be opened
+        return;
+    }
+
+    ofs << "continuousPlayback=" << (ui->checkBoxLazyusf2ContinuousPlayback->isChecked() ? "true" : "false")
+            << "\n";
+    ofs.close();
+}
+
 void settingsWindow::saveSettingsLibopenmpt() const {
     // save config to disk
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
@@ -1652,6 +1697,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1667,6 +1713,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1682,6 +1729,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1697,6 +1745,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1712,6 +1761,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(false);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1727,6 +1777,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(false);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1742,6 +1793,23 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(false);
+        ui->groupBoxLazyusf2->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
+        ui->groupBoxLibvgm->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
+        ui->groupBoxVgmstream->setHidden(true);
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_lazyusf2_NAME) {
+        ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxHighlyExperimental->setHidden(true);
+        ui->groupBoxHighlyQuixotic->setHidden(true);
+        ui->groupBoxHighlyTheoretical->setHidden(true);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(false);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1757,6 +1825,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(false);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1772,6 +1841,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(false);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1787,6 +1857,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(false);
@@ -1802,6 +1873,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1817,6 +1889,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1832,6 +1905,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1846,6 +1920,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -1860,6 +1935,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
@@ -2033,7 +2109,7 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxHivelytracker->setStyleSheet(stylesheet);
 
-    stylesheet = ui->groupBoxUade->styleSheet();
+    stylesheet = ui->groupBoxLazyusf2->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
@@ -2042,18 +2118,7 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
-    ui->groupBoxUade->setStyleSheet(stylesheet);
-
-    stylesheet = ui->groupBoxLibsidplayfp->styleSheet();
-    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
-    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
-    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
-    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
-    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
-    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
-    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
-    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
-    ui->groupBoxLibsidplayfp->setStyleSheet(stylesheet);
+    ui->groupBoxLazyusf2->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxLibopenmpt->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -2065,6 +2130,17 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxLibopenmpt->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxLibsidplayfp->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxLibsidplayfp->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxLibvgm->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -2098,6 +2174,17 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxSndhPlayer->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxUade->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxUade->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxVgmstream->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -2243,6 +2330,7 @@ void settingsWindow::on_buttonVisualizer_clicked() const {
     ui->groupBoxHighlyQuixotic->setHidden(true);
     ui->groupBoxHighlyTheoretical->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
+    ui->groupBoxLazyusf2->setHidden(true);
     ui->groupBoxLibopenmpt->setHidden(true);
     ui->groupBoxLibsidplayfp->setHidden(true);
     ui->groupBoxLibvgm->setHidden(true);
@@ -2264,6 +2352,7 @@ void settingsWindow::on_buttonGeneral_clicked() const {
     ui->groupBoxHighlyQuixotic->setHidden(true);
     ui->groupBoxHighlyTheoretical->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
+    ui->groupBoxLazyusf2->setHidden(true);
     ui->groupBoxLibopenmpt->setHidden(true);
     ui->groupBoxLibsidplayfp->setHidden(true);
     ui->groupBoxLibvgm->setHidden(true);
@@ -2292,6 +2381,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->groupBoxHighlyQuixotic->setHidden(true);
     ui->groupBoxHighlyTheoretical->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
+    ui->groupBoxLazyusf2->setHidden(true);
     ui->groupBoxLibopenmpt->setHidden(true);
     ui->groupBoxLibsidplayfp->setHidden(true);
     ui->groupBoxLibvgm->setHidden(true);
@@ -2642,43 +2732,6 @@ void settingsWindow::on_checkBoxOnlyOneInstance_toggled(const bool isChecked) co
     }
 }
 
-void settingsWindow::on_sliderUadePanning_valueChanged(const int value) const {
-    ui->labelUadePanningValue->setText(QString::number(static_cast<float>(value) / 10, 'f', 1));
-}
-
-void settingsWindow::on_sliderUadeSilenceTimeOut_valueChanged(const int value) const {
-    ui->labelUadeSilenceTimeOutValue->setText(QString::number(value) + "s");
-}
-
-void settingsWindow::on_checkBoxUadeSilenceTimeout_toggled(const bool isChecked) const {
-    if (isChecked) {
-        ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelUadeSilenceTimeOutValue->setEnabled(true);
-        ui->sliderUadeSilenceTimeOut->setEnabled(true);
-    } else {
-        ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelUadeSilenceTimeOutValue->setEnabled(false);
-        ui->sliderUadeSilenceTimeOut->setEnabled(false);
-    }
-}
-
-void settingsWindow::on_buttonUadeSonglengthsBrowse_clicked() {
-    QString startFolder = ui->lineEditUadeSonglengthsPath->text();
-
-    if (startFolder.compare("/uade.md5") == 0) {
-        startFolder = dataPath + PLUGIN_uade_DIR + "/uade.md5";
-    }
-
-    if (const QString file = QFileDialog::getOpenFileName(this, "Choose your uade.md5", startFolder, "*.md5");
-        !file.isEmpty()) {
-        if (file.compare(dataPath + PLUGIN_uade_DIR + "/uade.md5") == 0) {
-            ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
-        } else {
-            ui->lineEditUadeSonglengthsPath->setText(file);
-        }
-    }
-}
-
 void settingsWindow::on_buttonAppearanceSelectionColor_clicked() {
     const QColor oldColor(mainWindow->getColorSelection().left(7));
 
@@ -2694,19 +2747,6 @@ void settingsWindow::on_buttonAppearanceSelectionColor_clicked() {
 void settingsWindow::on_checkBoxMilliseconds_toggled(const bool isChecked) const {
     mainWindow->setDisplayMilliseconds(isChecked);
     ui->checkBoxMilliseconds->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_sliderLibopenmptStereoSeparation_valueChanged(const int value) const {
-    const int valueAdjusted = value / 2;
-
-    ui->sliderLibopenmptStereoSeparation->blockSignals(true);
-    ui->sliderLibopenmptStereoSeparation->setValue(valueAdjusted * 2);
-    ui->labelLibopenmptStereoSeparationValue->setText(QString::number(valueAdjusted) + "%");
-    ui->sliderLibopenmptStereoSeparation->blockSignals(false);
-}
-
-void settingsWindow::on_checkBoxLibopenmptContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxLibopenmptContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::on_checkBoxEnqueueItems_toggled(const bool isChecked) const {
@@ -2916,61 +2956,6 @@ void settingsWindow::on_checkBoxVisualizerMaintainAspectRatio_toggled(const bool
     mainWindow->getEffect()->setKeepAspectRatio(isChecked);
 }
 
-void settingsWindow::on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString &arg1) const {
-    const QString selected = ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->itemData(
-        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->currentIndex()).toString();
-    mainWindow->setBundledHvscSonglengthsUpdateFrequency(selected);
-}
-
-void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsDownload_clicked() {
-    const QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
-    mainWindow->filedownloader = new FileDownloader(imageUrl, this);
-    ui->buttonLibsidplayfpHvscSonglengthsDownload->setEnabled(true);
-    ui->buttonLibsidplayfpHvscSonglengthsDownload->setText("Downloading...");
-
-    connect(mainWindow->filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-}
-
-void settingsWindow::downloadHvscSonglengthsComplete() const {
-    if (mainWindow->filedownloader->downloadedData().isEmpty()) {
-        mainWindow->addDebugText("Failed to download " + mainWindow->filedownloader->getUrl().toString());
-        return;
-    }
-
-    const QString hvscSonglengthsDownloadPath = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
-
-    QFile file(hvscSonglengthsDownloadPath);
-
-    if (!file.open(QIODevice::ReadWrite)) {
-        mainWindow->addDebugText("Couldn't write to file " + file.fileName());
-        return;
-    }
-
-    QTextStream stream(&file);
-    stream << mainWindow->filedownloader->downloadedData();
-    file.close();
-
-    mainWindow->bundledHvscSonglengthsDownloadEpoch = QDateTime::currentSecsSinceEpoch();
-    mainWindow->setBundledHvscSonglengthsPath(hvscSonglengthsDownloadPath);
-
-    if (ui->lineEditLibsidplayfpHvscSonglengthsPath->text()
-        .compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
-        setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsDownloadPath);
-        mainWindow->setHvscSonglengthsPath(hvscSonglengthsDownloadPath);
-    }
-
-    const QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscSonglengthsDownloadEpoch());
-    ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText(
-        "Downloaded to " + hvscSonglengthsDownloadPath + " at " + qdt.toString("yyyy-MM-dd hh:mm:ss"));
-    ui->buttonLibsidplayfpHvscSonglengthsDownload->setEnabled(true);
-    ui->buttonLibsidplayfpHvscSonglengthsDownload->setText("Download now");
-
-    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsPath", hvscSonglengthsDownloadPath);
-    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch",
-                      mainWindow->bundledHvscSonglengthsDownloadEpoch);
-}
-
 void settingsWindow::on_sliderRasterBarsAmount_valueChanged(const int value) const {
     mainWindow->getEffect()->setNumberOfRasterBars(value);
     ui->labelRasterBarsAmountValue->setText(QString::number(value));
@@ -3169,50 +3154,6 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxVisualizerMaintainAspectRatio->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxVuMeterEnabled->setIcon(
         mainWindow->icons[ui->checkBoxVuMeterEnabled->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxAdPlugContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxAdPlugContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxFurnaceContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxFurnaceContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxHighlyExperimentalContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxHighlyExperimentalContinuousPlayback->isChecked()
-                              ? "checkbox-on"
-                              : "checkbox-off"]);
-    ui->checkBoxHighlyQuixoticContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxHighlyQuixoticContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxHighlyTheoreticalContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxHighlyTheoreticalContinuousPlayback->isChecked()
-                              ? "checkbox-on"
-                              : "checkbox-off"]);
-    ui->checkBoxHivelyTrackerContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxHivelyTrackerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxLibvgmContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxLibvgmContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxSndhPlayerContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxSndhPlayerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxVgmstreamContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxVgmstreamContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxLibopenmptContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxLibopenmptContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxFmodSeamlessLoop->setIcon(
-        mainWindow->icons[ui->checkBoxFmodSeamlessLoop->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxLibopenmptAmigaResampler->setIcon(
-        mainWindow->icons[ui->checkBoxLibopenmptAmigaResampler->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxUadeFilterEmu->setIcon(
-        mainWindow->icons[ui->checkBoxUadeFilterEmu->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxUadeSilenceTimeout->setIcon(
-        mainWindow->icons[ui->checkBoxUadeSilenceTimeout->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxUadeContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxUadeContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxUadeSongLengths->setIcon(
-        mainWindow->icons[ui->checkBoxUadeSongLengths->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setIcon(
-        mainWindow->icons[ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->isChecked()
-                              ? "checkbox-on"
-                              : "checkbox-off"]);
-    ui->checkBoxLibsidplayfpContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxLibsidplayfpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxLibxmpContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxLibxmpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 
     if (ui->checkBoxSystray->isChecked()) {
         ui->checkBoxSystray->setIcon(mainWindow->icons["checkbox-on"]);
@@ -3239,6 +3180,53 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxShowLoopPoints->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxDefaultTrackLength->setIcon(
         mainWindow->icons[ui->checkBoxDefaultTrackLength->isChecked() ? "checkbox-on" : "checkbox-off"]);
+
+    ui->checkBoxAdPlugContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxAdPlugContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxFmodSeamlessLoop->setIcon(
+        mainWindow->icons[ui->checkBoxFmodSeamlessLoop->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxFurnaceContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxFurnaceContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxHighlyExperimentalContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxHighlyExperimentalContinuousPlayback->isChecked()
+                              ? "checkbox-on"
+                              : "checkbox-off"]);
+    ui->checkBoxHighlyQuixoticContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxHighlyQuixoticContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxHighlyTheoreticalContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxHighlyTheoreticalContinuousPlayback->isChecked()
+                              ? "checkbox-on"
+                              : "checkbox-off"]);
+    ui->checkBoxHivelyTrackerContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxHivelyTrackerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLazyusf2ContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxLazyusf2ContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLibopenmptAmigaResampler->setIcon(
+        mainWindow->icons[ui->checkBoxLibopenmptAmigaResampler->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLibopenmptContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxLibopenmptContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLibsidplayfpContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxLibsidplayfpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setIcon(
+        mainWindow->icons[ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->isChecked()
+                              ? "checkbox-on"
+                              : "checkbox-off"]);
+    ui->checkBoxLibvgmContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxLibvgmContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxLibxmpContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxLibxmpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxSndhPlayerContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxSndhPlayerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxUadeContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxUadeContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxUadeFilterEmu->setIcon(
+        mainWindow->icons[ui->checkBoxUadeFilterEmu->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxUadeSilenceTimeout->setIcon(
+        mainWindow->icons[ui->checkBoxUadeSilenceTimeout->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxUadeSongLengths->setIcon(
+        mainWindow->icons[ui->checkBoxUadeSongLengths->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxVgmstreamContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxVgmstreamContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::forceUpdateToSliders() const {
@@ -3274,112 +3262,10 @@ void settingsWindow::forceUpdateToSliders() const {
     on_sliderRotatingObjectModelSize_valueChanged(ui->sliderRotatingObjectModelSize->value());
 }
 
-void settingsWindow::on_checkBoxAdPlugContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxAdPlugContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxFurnaceContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxFurnaceContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxHighlyExperimentalContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxHighlyExperimentalContinuousPlayback->setIcon(
-        mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxHighlyQuixoticContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxHighlyQuixoticContinuousPlayback->setIcon(
-        mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxHighlyTheoreticalContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxHighlyTheoreticalContinuousPlayback->setIcon(
-        mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxHivelyTrackerContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxHivelyTrackerContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxLibvgmContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxLibvgmContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxSndhPlayerContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxSndhPlayerContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxUadeContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxUadeContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxVgmstreamContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxVgmstreamContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxFmodSeamlessLoop_toggled(const bool isChecked) const {
-    ui->checkBoxFmodSeamlessLoop->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxUadeSongLengths_toggled(const bool isChecked) const {
-    if (isChecked) {
-        ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->lineEditUadeSonglengthsPath->setEnabled(true);
-        ui->buttonUadeSonglengthsBrowse->setEnabled(true);
-    } else {
-        ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->lineEditUadeSonglengthsPath->setEnabled(false);
-        ui->buttonUadeSonglengthsBrowse->setEnabled(false);
-    }
-}
-
-void settingsWindow::on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled(const bool isChecked) const {
-    ui->lineEditLibsidplayfpHvscSonglengthsPath->setEnabled(isChecked);
-    ui->buttonLibsidplayfpHvscSonglengthsBrowse->setEnabled(isChecked);
-    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->
-            setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxLibsidplayfpContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxLibsidplayfpContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
-void settingsWindow::on_checkBoxLibopenmptAmigaResampler_toggled(const bool isChecked) const {
-    if (isChecked) {
-        ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelLibopenmptFilter->setEnabled(true);
-        ui->comboBoxLibopenmptFilter->setEnabled(true);
-    } else {
-        ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelLibopenmptFilter->setEnabled(false);
-        ui->comboBoxLibopenmptFilter->setEnabled(false);
-    }
-}
-
-void settingsWindow::on_checkBoxLibxmpContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxLibxmpContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
-}
-
 void settingsWindow::on_checkBoxOnlyOneInstance_clicked() {
     QMessageBox msgBox;
     msgBox.setText("You need to close all instances of BZR Player for this setting to have effect");
     msgBox.exec();
-}
-
-void settingsWindow::on_checkBoxUadeFilterEmu_toggled(const bool isChecked) const {
-    if (isChecked) {
-        ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-on"]);
-        ui->labelUadeFilterEmuMode->setEnabled(true);
-        ui->comboBoxUadeFilterEmuMode->setEnabled(true);
-        ui->labelUadeLedFilter->setEnabled(true);
-        ui->comboBoxUadeLedFilter->setEnabled(true);
-    } else {
-        ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-off"]);
-        ui->labelUadeFilterEmuMode->setEnabled(false);
-        ui->comboBoxUadeFilterEmuMode->setEnabled(false);
-        ui->labelUadeLedFilter->setEnabled(false);
-        ui->comboBoxUadeLedFilter->setEnabled(false);
-    }
 }
 
 void settingsWindow::on_checkBoxSystray_toggled(const bool isChecked) const {
@@ -3421,4 +3307,225 @@ void settingsWindow::on_checkBoxDefaultTrackLength_toggled(const bool isChecked)
 void settingsWindow::on_sliderDefaultTrackLength_valueChanged(const int value) const {
     ui->labelDefaultTrackLengthValue->setText(QString::number(value) + "m");
     mainWindow->setDefaultTrackLengthValue(value);
+}
+
+void settingsWindow::on_checkBoxAdPlugContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxAdPlugContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxFmodSeamlessLoop_toggled(const bool isChecked) const {
+    ui->checkBoxFmodSeamlessLoop->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxFurnaceContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxFurnaceContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxHighlyExperimentalContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxHighlyExperimentalContinuousPlayback->setIcon(
+        mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxHighlyQuixoticContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxHighlyQuixoticContinuousPlayback->setIcon(
+        mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxHighlyTheoreticalContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxHighlyTheoreticalContinuousPlayback->setIcon(
+        mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxHivelyTrackerContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxHivelyTrackerContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxLazyusf2ContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxLazyusf2ContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxLibopenmptAmigaResampler_toggled(const bool isChecked) const {
+    if (isChecked) {
+        ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelLibopenmptFilter->setEnabled(true);
+        ui->comboBoxLibopenmptFilter->setEnabled(true);
+    } else {
+        ui->checkBoxLibopenmptAmigaResampler->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelLibopenmptFilter->setEnabled(false);
+        ui->comboBoxLibopenmptFilter->setEnabled(false);
+    }
+}
+
+void settingsWindow::on_checkBoxLibopenmptContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxLibopenmptContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_sliderLibopenmptStereoSeparation_valueChanged(const int value) const {
+    const int valueAdjusted = value / 2;
+
+    ui->sliderLibopenmptStereoSeparation->blockSignals(true);
+    ui->sliderLibopenmptStereoSeparation->setValue(valueAdjusted * 2);
+    ui->labelLibopenmptStereoSeparationValue->setText(QString::number(valueAdjusted) + "%");
+    ui->sliderLibopenmptStereoSeparation->blockSignals(false);
+}
+
+void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked() {
+    const QString startFolder = ui->lineEditLibsidplayfpHvscSonglengthsPath->text();
+
+    if (const QString file = QFileDialog::getOpenFileName(this, "Choose your Songlengths.md5", startFolder, "*.md5");
+        !file.isEmpty()) {
+        setUiLineEditLibsidplayfpHvscSonglengthsPath(file);
+        mainWindow->setHvscSonglengthsPath(file);
+        }
+}
+
+void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsDownload_clicked() {
+    const QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
+    mainWindow->filedownloader = new FileDownloader(imageUrl, this);
+    ui->buttonLibsidplayfpHvscSonglengthsDownload->setEnabled(true);
+    ui->buttonLibsidplayfpHvscSonglengthsDownload->setText("Downloading...");
+
+    connect(mainWindow->filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+}
+
+void settingsWindow::downloadHvscSonglengthsComplete() const {
+    if (mainWindow->filedownloader->downloadedData().isEmpty()) {
+        mainWindow->addDebugText("Failed to download " + mainWindow->filedownloader->getUrl().toString());
+        return;
+    }
+
+    const QString hvscSonglengthsDownloadPath = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
+
+    QFile file(hvscSonglengthsDownloadPath);
+
+    if (!file.open(QIODevice::ReadWrite)) {
+        mainWindow->addDebugText("Couldn't write to file " + file.fileName());
+        return;
+    }
+
+    QTextStream stream(&file);
+    stream << mainWindow->filedownloader->downloadedData();
+    file.close();
+
+    mainWindow->bundledHvscSonglengthsDownloadEpoch = QDateTime::currentSecsSinceEpoch();
+    mainWindow->setBundledHvscSonglengthsPath(hvscSonglengthsDownloadPath);
+
+    if (ui->lineEditLibsidplayfpHvscSonglengthsPath->text()
+        .compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
+        setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsDownloadPath);
+        mainWindow->setHvscSonglengthsPath(hvscSonglengthsDownloadPath);
+        }
+
+    const QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscSonglengthsDownloadEpoch());
+    ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText(
+        "Downloaded to " + hvscSonglengthsDownloadPath + " at " + qdt.toString("yyyy-MM-dd hh:mm:ss"));
+    ui->buttonLibsidplayfpHvscSonglengthsDownload->setEnabled(true);
+    ui->buttonLibsidplayfpHvscSonglengthsDownload->setText("Download now");
+
+    QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
+    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsPath", hvscSonglengthsDownloadPath);
+    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch",
+                      mainWindow->bundledHvscSonglengthsDownloadEpoch);
+}
+
+void settingsWindow::on_checkBoxLibsidplayfpContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxLibsidplayfpContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled(const bool isChecked) const {
+    ui->lineEditLibsidplayfpHvscSonglengthsPath->setEnabled(isChecked);
+    ui->buttonLibsidplayfpHvscSonglengthsBrowse->setEnabled(isChecked);
+    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->
+            setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString &arg1) const {
+    const QString selected = ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->itemData(
+        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->currentIndex()).toString();
+    mainWindow->setBundledHvscSonglengthsUpdateFrequency(selected);
+}
+
+void settingsWindow::on_checkBoxLibvgmContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxLibvgmContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxLibxmpContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxLibxmpContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxSndhPlayerContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxSndhPlayerContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_buttonUadeSonglengthsBrowse_clicked() {
+    QString startFolder = ui->lineEditUadeSonglengthsPath->text();
+
+    if (startFolder.compare("/uade.md5") == 0) {
+        startFolder = dataPath + PLUGIN_uade_DIR + "/uade.md5";
+    }
+
+    if (const QString file = QFileDialog::getOpenFileName(this, "Choose your uade.md5", startFolder, "*.md5");
+        !file.isEmpty()) {
+        if (file.compare(dataPath + PLUGIN_uade_DIR + "/uade.md5") == 0) {
+            ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
+        } else {
+            ui->lineEditUadeSonglengthsPath->setText(file);
+        }
+    }
+}
+
+void settingsWindow::on_checkBoxUadeContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxUadeContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxUadeFilterEmu_toggled(const bool isChecked) const {
+    if (isChecked) {
+        ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelUadeFilterEmuMode->setEnabled(true);
+        ui->comboBoxUadeFilterEmuMode->setEnabled(true);
+        ui->labelUadeLedFilter->setEnabled(true);
+        ui->comboBoxUadeLedFilter->setEnabled(true);
+    } else {
+        ui->checkBoxUadeFilterEmu->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelUadeFilterEmuMode->setEnabled(false);
+        ui->comboBoxUadeFilterEmuMode->setEnabled(false);
+        ui->labelUadeLedFilter->setEnabled(false);
+        ui->comboBoxUadeLedFilter->setEnabled(false);
+    }
+}
+
+void settingsWindow::on_checkBoxUadeSilenceTimeout_toggled(const bool isChecked) const {
+    if (isChecked) {
+        ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->labelUadeSilenceTimeOutValue->setEnabled(true);
+        ui->sliderUadeSilenceTimeOut->setEnabled(true);
+    } else {
+        ui->checkBoxUadeSilenceTimeout->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->labelUadeSilenceTimeOutValue->setEnabled(false);
+        ui->sliderUadeSilenceTimeOut->setEnabled(false);
+    }
+}
+
+void settingsWindow::on_checkBoxUadeSongLengths_toggled(const bool isChecked) const {
+    if (isChecked) {
+        ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->lineEditUadeSonglengthsPath->setEnabled(true);
+        ui->buttonUadeSonglengthsBrowse->setEnabled(true);
+    } else {
+        ui->checkBoxUadeSongLengths->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->lineEditUadeSonglengthsPath->setEnabled(false);
+        ui->buttonUadeSonglengthsBrowse->setEnabled(false);
+    }
+}
+
+void settingsWindow::on_sliderUadePanning_valueChanged(const int value) const {
+    ui->labelUadePanningValue->setText(QString::number(static_cast<float>(value) / 10, 'f', 1));
+}
+
+void settingsWindow::on_sliderUadeSilenceTimeOut_valueChanged(const int value) const {
+    ui->labelUadeSilenceTimeOutValue->setText(QString::number(value) + "s");
+}
+
+void settingsWindow::on_checkBoxVgmstreamContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxVgmstreamContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }

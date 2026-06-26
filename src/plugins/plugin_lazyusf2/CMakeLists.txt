@@ -79,6 +79,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE #TODO remove unnecessary
 target_compile_definitions(${PROJECT_NAME} PRIVATE EMU_COMPILE ARCH_MIN_SSE2)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE DYNAREC)   #TODO
 #target_compile_definitions(${PROJECT_NAME} PRIVATE SP_STATUS_TASKDONE=0x200)   #TODO
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 #target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-fcommon>) #TODO for DYNAREC
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-return-mismatch>)

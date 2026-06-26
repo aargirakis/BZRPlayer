@@ -27,8 +27,6 @@ public:
 private slots:
     void updateScrollText() const;
 
-    void downloadHvscSonglengthsComplete() const;
-
     void on_sliderDefaultAudioLevel_sliderMoved(int position);
 
     void on_checkBoxDefaultAudioLevel_toggled(bool isChecked) const;
@@ -48,8 +46,6 @@ private slots:
     void on_buttonOK_clicked();
 
     void on_comboBoxReverb_textActivated(const QString &arg1) const;
-
-    void on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked();
 
     void on_buttonGeneral_clicked() const;
 
@@ -145,14 +141,6 @@ private slots:
 
     void on_checkBoxOnlyOneInstance_toggled(bool isChecked) const;
 
-    void on_sliderUadeSilenceTimeOut_valueChanged(int value) const;
-
-    void on_sliderUadePanning_valueChanged(int value) const;
-
-    void on_checkBoxUadeSilenceTimeout_toggled(bool isChecked) const;
-
-    void on_buttonUadeSonglengthsBrowse_clicked();
-
     void on_buttonAppearanceSelectionColor_clicked();
 
     void loadBitmapFont(const QString &) const;
@@ -160,30 +148,6 @@ private slots:
     void loadBitmapFontPrinter(const QString &) const;
 
     void on_checkBoxMilliseconds_toggled(bool isChecked) const;
-
-    void on_checkBoxAdPlugContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxFurnaceContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxHighlyExperimentalContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxHighlyQuixoticContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxHighlyTheoreticalContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxHivelyTrackerContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxLibvgmContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxSndhPlayerContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxVgmstreamContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxFmodSeamlessLoop_toggled(bool isChecked) const;
-
-    void on_sliderLibopenmptStereoSeparation_valueChanged(int value) const;
-
-    void on_checkBoxLibopenmptContinuousPlayback_toggled(bool isChecked) const;
 
     void on_checkBoxEnqueueItems_toggled(bool isChecked) const;
 
@@ -215,10 +179,6 @@ private slots:
 
     void on_checkBoxVisualizerMaintainAspectRatio_toggled(bool isChecked) const;
 
-    void on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString &arg1) const;
-
-    void on_buttonLibsidplayfpHvscSonglengthsDownload_clicked();
-
     void on_sliderRasterBarsAmount_valueChanged(int value) const;
 
     void on_sliderRasterBarsVerticalSpacing_valueChanged(int value) const;
@@ -239,17 +199,7 @@ private slots:
 
     void on_sliderRasterBarsOpacity_valueChanged(int value) const;
 
-    void on_checkBoxUadeContinuousPlayback_toggled(bool isChecked) const;
-
-    void on_checkBoxUadeSongLengths_toggled(bool isChecked) const;
-
-    void on_checkBoxLibopenmptAmigaResampler_toggled(bool isChecked) const;
-
-    void on_checkBoxLibxmpContinuousPlayback_toggled(bool isChecked) const;
-
     void on_checkBoxOnlyOneInstance_clicked();
-
-    void on_checkBoxUadeFilterEmu_toggled(bool isChecked) const;
 
     void on_checkBoxSystray_toggled(bool isChecked) const;
 
@@ -259,13 +209,65 @@ private slots:
 
     void on_sliderAppearanceNowPlayingFontSize_valueChanged(int value) const;
 
-    void on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled(bool isChecked) const;
-
-    void on_checkBoxLibsidplayfpContinuousPlayback_toggled(bool isChecked) const;
-
     void on_checkBoxDefaultTrackLength_toggled(bool isChecked) const;
 
     void on_sliderDefaultTrackLength_valueChanged(int value) const;
+
+    void on_checkBoxAdPlugContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxFmodSeamlessLoop_toggled(bool isChecked) const;
+
+    void on_checkBoxFurnaceContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxHighlyExperimentalContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxHighlyQuixoticContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxHighlyTheoreticalContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxHivelyTrackerContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxLazyusf2ContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxLibopenmptAmigaResampler_toggled(bool isChecked) const;
+
+    void on_checkBoxLibopenmptContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_sliderLibopenmptStereoSeparation_valueChanged(int value) const;
+
+    void on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked();
+
+    void on_buttonLibsidplayfpHvscSonglengthsDownload_clicked();
+
+    void downloadHvscSonglengthsComplete() const;
+
+    void on_checkBoxLibsidplayfpContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled(bool isChecked) const;
+
+    void on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString &arg1) const;
+
+    void on_checkBoxLibvgmContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxLibxmpContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxSndhPlayerContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_buttonUadeSonglengthsBrowse_clicked();
+
+    void on_checkBoxUadeContinuousPlayback_toggled(bool isChecked) const;
+
+    void on_checkBoxUadeFilterEmu_toggled(bool isChecked) const;
+
+    void on_checkBoxUadeSilenceTimeout_toggled(bool isChecked) const;
+
+    void on_checkBoxUadeSongLengths_toggled(bool isChecked) const;
+
+    void on_sliderUadePanning_valueChanged(int value) const;
+
+    void on_sliderUadeSilenceTimeOut_valueChanged(int value) const;
+
+    void on_checkBoxVgmstreamContinuousPlayback_toggled(bool isChecked) const;
 
 private:
     void updateColorButtons() const;
@@ -287,6 +289,8 @@ private:
     void loadSettingsHighlyTheoretical() const;
 
     void loadSettingsHivelytracker() const;
+
+    void loadSettingsLazyusf2() const;
 
     void loadSettingsLibopenmpt() const;
 
@@ -313,6 +317,8 @@ private:
     void saveSettingsHighlyQuixotic() const;
 
     void saveSettingsHighlyTheoretical() const;
+
+    void saveSettingsLazyusf2() const;
 
     void saveSettingsHivelytracker() const;
 
