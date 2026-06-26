@@ -364,6 +364,10 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsVgmstream();
     }
 
+    if (PLUGIN_vio2sf_LIB != "") {
+        loadSettingsVio2sf();
+    }
+
     loadSettingsLibopenmpt();
     loadSettingsUade();
 
@@ -794,6 +798,10 @@ void settingsWindow::on_buttonOK_clicked() {
 
     if (PLUGIN_vgmstream_LIB != "") {
         saveSettingsVgmstream();
+    }
+
+    if (PLUGIN_vio2sf_LIB != "") {
+        saveSettingsVio2sf();
     }
 
     saveSettingsLibopenmpt();
@@ -1417,6 +1425,38 @@ void settingsWindow::loadSettingsVgmstream() const {
     }
 }
 
+void settingsWindow::loadSettingsVio2sf() const {
+    // read config from disk
+    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/vio2sf.cfg";
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    ui->checkBoxVio2sfContinuousPlayback->setChecked(false);
+
+    if (!useDefaults) {
+        string line;
+
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+
+                if (word.compare("continuousPlayback") == 0) {
+                    ui->checkBoxVio2sfContinuousPlayback->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+
+        ifs.close();
+    }
+}
+
 void settingsWindow::saveSettingsAdplug() const {
     // save config to disk
     const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/adplug.cfg";
@@ -1688,6 +1728,21 @@ void settingsWindow::saveSettingsVgmstream() const {
     ofs.close();
 }
 
+void settingsWindow::saveSettingsVio2sf() const {
+    // save config to disk
+    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/vio2sf.cfg";
+    ofstream ofs(filename.c_str());
+
+    if (ofs.fail()) {
+        // the file could not be opened
+        return;
+    }
+
+    ofs << "continuousPlayback=" << (ui->checkBoxVio2sfContinuousPlayback->isChecked() ? "true" : "false")
+            << "\n";
+    ofs.close();
+}
+
 void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) const {
     if (const int row = item->row(); ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_adplug_NAME) {
         ui->groupBoxAdplug->setHidden(false);
@@ -1705,6 +1760,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_fmod_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(false);
@@ -1721,6 +1777,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_furnace_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1737,6 +1794,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_highly_experimental_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1753,6 +1811,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_highly_quixotic_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1769,6 +1828,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_highly_theoretical_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1785,6 +1845,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1801,6 +1862,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_lazyusf2_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1817,6 +1879,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1833,6 +1896,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1849,6 +1913,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libvgm_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1865,6 +1930,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1881,6 +1947,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_sndh_player_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1897,6 +1964,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(false);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_uade_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1913,6 +1981,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(false);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_vgmstream_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1928,6 +1997,23 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(false);
+        ui->groupBoxVio2sf->setHidden(true);
+    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_vio2sf_NAME) {
+        ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxHighlyExperimental->setHidden(true);
+        ui->groupBoxHighlyQuixotic->setHidden(true);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
+        ui->groupBoxLibvgm->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
+        ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(false);
     } else {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
@@ -1943,6 +2029,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxSndhPlayer->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
     }
 }
 
@@ -2196,6 +2283,17 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxVgmstream->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxVio2sf->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxVio2sf->setStyleSheet(stylesheet);
 }
 
 void settingsWindow::setUiLineEditLibsidplayfpHvscSonglengthsPath(const QString &text) const {
@@ -2338,6 +2436,7 @@ void settingsWindow::on_buttonVisualizer_clicked() const {
     ui->groupBoxSndhPlayer->setHidden(true);
     ui->groupBoxUade->setHidden(true);
     ui->groupBoxVgmstream->setHidden(true);
+    ui->groupBoxVio2sf->setHidden(true);
 }
 
 void settingsWindow::on_buttonGeneral_clicked() const {
@@ -2360,6 +2459,7 @@ void settingsWindow::on_buttonGeneral_clicked() const {
     ui->groupBoxSndhPlayer->setHidden(true);
     ui->groupBoxUade->setHidden(true);
     ui->groupBoxVgmstream->setHidden(true);
+    ui->groupBoxVio2sf->setHidden(true);
 }
 
 void settingsWindow::on_buttonPlugins_clicked() const {
@@ -2389,6 +2489,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->groupBoxSndhPlayer->setHidden(true);
     ui->groupBoxUade->setHidden(true);
     ui->groupBoxVgmstream->setHidden(true);
+    ui->groupBoxVio2sf->setHidden(true);
 }
 
 void settingsWindow::on_buttonVuMeterTopColor_clicked() {
@@ -3227,6 +3328,8 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxUadeSongLengths->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxVgmstreamContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxVgmstreamContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxVio2sfContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxVio2sfContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::forceUpdateToSliders() const {
@@ -3376,7 +3479,7 @@ void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked() {
         !file.isEmpty()) {
         setUiLineEditLibsidplayfpHvscSonglengthsPath(file);
         mainWindow->setHvscSonglengthsPath(file);
-        }
+    }
 }
 
 void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsDownload_clicked() {
@@ -3414,7 +3517,7 @@ void settingsWindow::downloadHvscSonglengthsComplete() const {
         .compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
         setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsDownloadPath);
         mainWindow->setHvscSonglengthsPath(hvscSonglengthsDownloadPath);
-        }
+    }
 
     const QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscSonglengthsDownloadEpoch());
     ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText(
@@ -3528,4 +3631,8 @@ void settingsWindow::on_sliderUadeSilenceTimeOut_valueChanged(const int value) c
 
 void settingsWindow::on_checkBoxVgmstreamContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxVgmstreamContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxVio2sfContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxVio2sfContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }

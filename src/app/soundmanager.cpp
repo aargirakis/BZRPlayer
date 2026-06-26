@@ -664,7 +664,8 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
         info->plugin != PLUGIN_libxmp &&
         info->plugin != PLUGIN_sndh_player &&
         info->plugin != PLUGIN_uade &&
-        info->plugin != PLUGIN_vgmstream
+        info->plugin != PLUGIN_vgmstream &&
+        info->plugin != PLUGIN_vio2sf
     ) {
         info->isContinuousPlaybackActive = false;
 

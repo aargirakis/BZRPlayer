@@ -269,6 +269,8 @@ private slots:
 
     void on_checkBoxVgmstreamContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxVio2sfContinuousPlayback_toggled(bool isChecked) const;
+
 private:
     void updateColorButtons() const;
 
@@ -306,6 +308,8 @@ private:
 
     void loadSettingsVgmstream() const;
 
+    void loadSettingsVio2sf() const;
+
     void saveSettingsAdplug() const;
 
     void saveSettingsFmod() const;
@@ -333,6 +337,8 @@ private:
     void saveSettingsUade() const;
 
     void saveSettingsVgmstream() const;
+
+    void saveSettingsVio2sf() const;
 
     MainWindow *mainWindow;
     Ui::settingsWindow *ui;
