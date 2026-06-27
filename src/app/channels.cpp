@@ -71,14 +71,14 @@ void Channels::updateChannels() const {
 
         if (i < info->numChannels &&
             (info->plugin == PLUGIN_asap ||
-             info->plugin == PLUGIN_game_music_emu ||
-             info->plugin == PLUGIN_libsidplayfp ||
-             info->plugin == PLUGIN_libopenmpt ||
-             info->plugin == PLUGIN_libvgm ||
-             info->plugin == PLUGIN_hivelytracker ||
              info->plugin == PLUGIN_furnace ||
-             // info->plugin == PLUGIN_sndh_player ||
-             info->plugin == PLUGIN_libxmp)) {
+             info->plugin == PLUGIN_game_music_emu ||
+             info->plugin == PLUGIN_hivelytracker ||
+             info->plugin == PLUGIN_libopenmpt ||
+             info->plugin == PLUGIN_libsidplayfp ||
+             info->plugin == PLUGIN_libvgm ||
+             info->plugin == PLUGIN_libxmp ||
+             info->plugin == PLUGIN_zxtune)) {
             channels.at(i)->setVisible(true);
             channels.at(i)->update();
         } else {

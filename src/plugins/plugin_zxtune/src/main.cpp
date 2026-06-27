@@ -1,8 +1,10 @@
+#include <algorithm>
 #include <iostream>
 #include <regex>
 #include <sstream>
 #include "attributes.h"
 #include "binary/container_factories.h"
+#include "core/core_parameters.h"
 #include "core/data_location.h"
 #include "core/service.h"
 #include "error.h"
@@ -33,7 +35,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     0x00009000, // version 0xAAAABBBB   A = major, B = minor.
     1, // whether or not force everything using this codec to be a stream
     // the time formats we would like to accept into setposition/getposition
-    FMOD_TIMEUNIT_MS,
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE,
     &open, // open callback
     &close, // close callback.
     &read, // read callback
@@ -68,11 +70,11 @@ public:
             return Data.Start();
         }
 
-        std::size_t Size() const override {
+        size_t Size() const override {
             return Data.Size();
         }
 
-        Ptr GetSubcontainer(const std::size_t offset, const std::size_t size) const override {
+        Ptr GetSubcontainer(const size_t offset, const size_t size) const override {
             return Binary::CreateContainer(Data.SubView(offset, size));
         }
 
@@ -153,6 +155,7 @@ public:
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     ModulesDetector modulesDetector;
+    shared_ptr<Parameters::Container> soundParams;
     Module::Renderer::Ptr renderer;
     Module::Information::Ptr moduleInfo;
     Sound::Chunk chunk;
@@ -201,9 +204,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         }
 
         // handle plugin preferences here
-        shared_ptr<Parameters::Container> soundParams = Parameters::Container::Create();
+        plugin->soundParams = Parameters::Container::Create();
 
-        plugin->renderer = CreatePipelinedRenderer(*plugin->modulesDetector.getCurrentModule(), soundParams);
+        plugin->renderer = CreatePipelinedRenderer(*plugin->modulesDetector.getCurrentModule(), plugin->soundParams);
 
         plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
         plugin->waveformat.channels = 2;
@@ -225,12 +228,15 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         }
 
         if (const auto *trackInfo = dynamic_cast<const Module::TrackInformation *>(plugin->moduleInfo.get())) {
-            info->numChannels = trackInfo->ChannelsCount();
             info->loopPosition = trackInfo->LoopPosition();
         }
 
         const Parameters::Accessor::Ptr moduleProperties = plugin->modulesDetector.getCurrentModule()->
                 GetModuleProperties();
+
+        if (const auto channelNames = moduleProperties->FindString(Module::ATTR_CHANNELS_NAMES)) {
+            info->numChannels = static_cast<unsigned int>(ranges::count(*channelNames, '\n')) + 1;
+        }
 
         string containerFormats = moduleProperties->FindString(Module::ATTR_CONTAINER).value_or("");
         containerFormats = regex_replace(containerFormats, regex(">"), " > ");
@@ -335,6 +341,11 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
         return FMOD_OK;
     }
 
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1; // ignored
+        return FMOD_OK;
+    }
+
     return FMOD_ERR_FORMAT;
 }
 
@@ -344,6 +355,11 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
     if (postype == FMOD_TIMEUNIT_MS) {
         plugin->renderer->SetPosition(Time::Instant<Time::Millisecond>(position));
+        return FMOD_OK;
+    }
+
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        plugin->soundParams->SetValue(Parameters::ZXTune::Core::CHANNELS_MASK, position);
         return FMOD_OK;
     }
 

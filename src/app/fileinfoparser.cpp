@@ -263,7 +263,11 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Container Files", info->containerFilenames.c_str());
             addInfo(tableInfo, &row, "Container Formats", info->containerFileformats.c_str());
             addInfo(tableInfo, &row, "Creation Date", info->date.c_str());
-            addInfo(tableInfo, &row, "Channels", QString::number(info->numChannels));
+
+            if (info->numChannels > 0) {
+                addInfo(tableInfo, &row, "Channels", QString::number(info->numChannels));
+            }
+
             addInfo(tableInfo, &row, "Loop Position", QString::number(info->loopPosition));
             addMultilineInfo(tableInfo, &row, "Comments", info->comments);
             break;
