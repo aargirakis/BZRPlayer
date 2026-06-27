@@ -104,7 +104,7 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->comboBoxUadeResampler->installEventFilter(this);
     ui->comboBoxUadeResampler->addItem("None", "none");
     ui->comboBoxUadeResampler->addItem("Default", "default");
-    ui->comboBoxUadeResampler->addItem("Sinc (best for freqs > 44100)", "sinc");
+    ui->comboBoxUadeResampler->addItem("Sinc", "sinc");
 
     ui->sliderUadePanning->installEventFilter(this);
 

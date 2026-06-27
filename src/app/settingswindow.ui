@@ -7175,6 +7175,9 @@ QComboBox::drop-down:disabled {
       <height>26</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>Sinc is the best resampling method for frequencies above 44100Hz</string>
+    </property>
     <property name="text">
      <string>Resampling method</string>
     </property>
@@ -7187,7 +7190,7 @@ QComboBox::drop-down:disabled {
      <rect>
       <x>400</x>
       <y>20</y>
-      <width>220</width>
+      <width>100</width>
       <height>26</height>
      </rect>
     </property>
