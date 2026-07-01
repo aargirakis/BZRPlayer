@@ -154,6 +154,7 @@ public:
         isContinuousPlaybackActive = false;
         isFmodSeamlessLoopEnabled = false;
         isSeamlessLoopActive = false;
+        useShiftJis = false;
     }
 
     void clearMemory() {
@@ -372,6 +373,7 @@ public:
     bool isContinuousPlaybackActive;
     bool isFmodSeamlessLoopEnabled;
     bool isSeamlessLoopActive;
+    bool useShiftJis;
 
 private:
     bool seekable;

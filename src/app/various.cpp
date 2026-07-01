@@ -1,5 +1,9 @@
+#include <iconv.h>
+#include <iostream>
 #include <sstream>
 #include "various.h"
+
+using namespace std;
 
 QString groupDigits(const size_t number) {
     QString num = QString::number(number);
@@ -91,7 +95,7 @@ QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds) {
     return songLength.c_str();
 }
 
-QString fromUtf8OrLatin1(const std::string &str) {
+QString fromUtf8OrLatin1(const string &str) {
     const QByteArray byteArray = QByteArray::fromStdString(str);
 
     if (QString utf8str = QString::fromUtf8(byteArray); byteArray == utf8str.toUtf8()) {
@@ -99,4 +103,34 @@ QString fromUtf8OrLatin1(const std::string &str) {
     }
 
     return QString::fromLatin1(str);
+}
+
+string shiftJisToUtf8(const string &input) {
+    const auto cd = iconv_open("UTF-8//IGNORE", "Shift_JIS");
+
+    if (cd == reinterpret_cast<iconv_t>(-1)) {
+        cerr << "Iconv error opening descriptor: " << strerror(errno) << endl;
+        return input;
+    }
+
+    auto inputBytes = input.size();
+    auto inputPtr = const_cast<char *>(input.data());
+    constexpr unsigned int UTF8_CHAR_MAX_SIZE = 4;
+    size_t outputBytes = inputBytes * UTF8_CHAR_MAX_SIZE;
+    string output(outputBytes, NULL);
+    auto outputPtr = output.data();
+
+    const size_t result = iconv(cd, &inputPtr, &inputBytes, &outputPtr, &outputBytes);
+
+    if (iconv_close(cd) == -1) {
+        cerr << "Iconv descriptor deallocation error: " << strerror(errno) << endl;
+    }
+
+    if (result == -1) {
+        cerr << "Iconv conversion error: " << strerror(errno) << endl;
+        return input;
+    }
+
+    output.resize(output.size() - outputBytes);
+    return output;
 }

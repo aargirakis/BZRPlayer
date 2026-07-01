@@ -97,6 +97,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     mdx_get_title(&plugin->data, title);
     plugin->info->title = title;
     plugin->info->fileFormat = "MDX";
+    plugin->info->useShiftJis = true;
     plugin->info->plugin = PLUGIN_mdxmini;
     plugin->info->pluginName = PLUGIN_mdxmini_NAME;
     plugin->info->setSeekable(false);

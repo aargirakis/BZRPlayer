@@ -15,6 +15,7 @@ set(QT_MODULES Core Gui Network OpenGL OpenGLWidgets Svg Widgets Xml)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
 find_package(qtadvanceddocking-qt${QT_VERSION_MAJOR} REQUIRED)
+find_package(Iconv REQUIRED)
 
 configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest.in
@@ -76,6 +77,7 @@ endforeach ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ads::qtadvanceddocking-qt${QT_VERSION_MAJOR}
+        Iconv::Iconv
         -L"${FMOD_DIR}" -lfmod
 )
 

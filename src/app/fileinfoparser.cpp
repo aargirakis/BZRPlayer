@@ -143,7 +143,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             break;
         case PLUGIN_libkss:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addMultilineInfo(tableInfo, &row, "Comments", info->comments);
+            addMultilineInfo(tableInfo, &row, "Comments", shiftJisToUtf8(info->comments));
             break;
         case PLUGIN_libopenmpt:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));

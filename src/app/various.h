@@ -42,4 +42,7 @@ QString groupDigits(size_t number);
 QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds);
 
 QString fromUtf8OrLatin1(const std::string &str);
+
+string shiftJisToUtf8(const string &input);
+
 #endif // VARIOUS_H

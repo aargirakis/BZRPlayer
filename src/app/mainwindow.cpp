@@ -1872,8 +1872,6 @@ void MainWindow::playSongAtRow(int rowProvided) {
     pi.fullPath = fullPath;
     pi.info = sm.info;
 
-    FileInfoParser::updateFileInfo(ui->tableInfo, &pi);
-
     QString title(fileInfo.fileName());
 
     if (sm.info->plugin == PLUGIN_fmod) {
@@ -1882,6 +1880,10 @@ void MainWindow::playSongAtRow(int rowProvided) {
         }
     } else {
         if (!pi.info->title.empty()) {
+            if (pi.info->useShiftJis) {
+                pi.info->title = shiftJisToUtf8(pi.info->title);
+            }
+
             title = fromUtf8OrLatin1(pi.info->title);
         } else if (!pi.info->containerFilenames.empty()) {
             title = fromUtf8OrLatin1(pi.info->containerLastFilename);
@@ -1911,6 +1913,8 @@ void MainWindow::playSongAtRow(int rowProvided) {
         ui->labelFilename->setText(title);
         windowTitle = title + " - " + PROJECT_NAME;
     }
+
+    FileInfoParser::updateFileInfo(ui->tableInfo, &pi);
 
     if (isMinimized() || !this->isVisible()) {
         this->setWindowTitle(windowTitle);
