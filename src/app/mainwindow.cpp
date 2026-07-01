@@ -366,8 +366,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     sm.setReverbPreset(reverbPreset);
     sm.setReverbEnabled(reverbEnabled);
 
-    fileInfoParser = new FileInfoParser();
-
     refreshInfoTimer = 0;
 
     Timer = new QTimer(this);
@@ -1874,7 +1872,7 @@ void MainWindow::playSongAtRow(int rowProvided) {
     pi.fullPath = fullPath;
     pi.info = sm.info;
 
-    fileInfoParser->updateFileInfo(ui->tableInfo, &pi);
+    FileInfoParser::updateFileInfo(ui->tableInfo, &pi);
 
     QString title(fileInfo.fileName());
 
