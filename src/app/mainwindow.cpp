@@ -5027,6 +5027,7 @@ void MainWindow::handleSocketData(const QStringList &args) {
             currentRow = rowCountBeforeAddSong;
 
             playSongAtRow(currentRow);
+            isUpdateCurrentRowToNextEnabled = true;
         }
     }
 }
