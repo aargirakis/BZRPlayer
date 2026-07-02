@@ -1744,7 +1744,8 @@ void settingsWindow::saveSettingsVio2sf() const {
 }
 
 void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) const {
-    if (const int row = item->row(); ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_adplug_NAME) {
+    if (const auto selectedPlugin = ui->tableWidgetPlugins->item(item->row(), 0)->text();
+        selectedPlugin == PLUGIN_adplug_NAME) {
         ui->groupBoxAdplug->setHidden(false);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1761,7 +1762,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_fmod_NAME) {
+    } else if (selectedPlugin == PLUGIN_fmod_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(false);
         ui->groupBoxFurnace->setHidden(true);
@@ -1778,7 +1779,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_furnace_NAME) {
+    } else if (selectedPlugin == PLUGIN_furnace_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(false);
@@ -1795,7 +1796,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_highly_experimental_NAME) {
+    } else if (selectedPlugin == PLUGIN_highly_experimental_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1812,7 +1813,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_highly_quixotic_NAME) {
+    } else if (selectedPlugin == PLUGIN_highly_quixotic_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1829,7 +1830,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_highly_theoretical_NAME) {
+    } else if (selectedPlugin == PLUGIN_highly_theoretical_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1846,7 +1847,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_hivelytracker_NAME) {
+    } else if (selectedPlugin == PLUGIN_hivelytracker_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1863,7 +1864,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_lazyusf2_NAME) {
+    } else if (selectedPlugin == PLUGIN_lazyusf2_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1880,7 +1881,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libopenmpt_NAME) {
+    } else if (selectedPlugin == PLUGIN_libopenmpt_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1897,7 +1898,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libsidplayfp_NAME) {
+    } else if (selectedPlugin == PLUGIN_libsidplayfp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1914,7 +1915,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libvgm_NAME) {
+    } else if (selectedPlugin == PLUGIN_libvgm_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1931,7 +1932,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_libxmp_NAME) {
+    } else if (selectedPlugin == PLUGIN_libxmp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1948,7 +1949,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_sndh_player_NAME) {
+    } else if (selectedPlugin == PLUGIN_sndh_player_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1965,7 +1966,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_uade_NAME) {
+    } else if (selectedPlugin == PLUGIN_uade_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1982,7 +1983,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(false);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_vgmstream_NAME) {
+    } else if (selectedPlugin == PLUGIN_vgmstream_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
@@ -1998,7 +1999,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(false);
         ui->groupBoxVio2sf->setHidden(true);
-    } else if (ui->tableWidgetPlugins->item(row, 0)->text() == PLUGIN_vio2sf_NAME) {
+    } else if (selectedPlugin == PLUGIN_vio2sf_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
