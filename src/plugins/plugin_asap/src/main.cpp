@@ -1,5 +1,6 @@
 #include <cstring>
 #include <format>
+#include <fstream>
 #include "asap.h"
 #include "fmod_errors.h"
 #include "info.h"
@@ -101,11 +102,39 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/asap.cfg";
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    plugin->info->isContinuousPlaybackActive = false;
+
+    if (!useDefaults) {
+        string line;
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word == "continuousPlayback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                }
+            }
+        }
+        ifs.close();
+    }
+
     plugin->asap_info = ASAP_GetInfo(plugin->asap);
 
     plugin->songLength = ASAPInfo_GetDuration(plugin->asap_info, plugin->info->currentSubsong);
 
-    if (!ASAP_PlaySong(plugin->asap, plugin->info->currentSubsong, plugin->songLength)) {
+    if (!ASAP_PlaySong(plugin->asap, plugin->info->currentSubsong,
+                       plugin->info->isContinuousPlaybackActive ? -1 : plugin->songLength)) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }

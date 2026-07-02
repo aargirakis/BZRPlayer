@@ -215,6 +215,8 @@ private slots:
 
     void on_checkBoxAdPlugContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxAsapContinuousPlayback_toggled(bool isChecked) const;
+
     void on_checkBoxFmodSeamlessLoop_toggled(bool isChecked) const;
 
     void on_checkBoxFurnaceContinuousPlayback_toggled(bool isChecked) const;
@@ -280,6 +282,8 @@ private:
 
     void loadSettingsAdplug() const;
 
+    void loadSettingsAsap() const;
+
     void loadSettingsFmod() const;
 
     void loadSettingsFurnace() const;
@@ -311,6 +315,8 @@ private:
     void loadSettingsVio2sf() const;
 
     void saveSettingsAdplug() const;
+
+    void saveSettingsAsap() const;
 
     void saveSettingsFmod() const;
 
