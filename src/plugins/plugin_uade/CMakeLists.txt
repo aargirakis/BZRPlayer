@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "uade")
-set(VERSION "9c044fb7b5863167189785aa7353ce97545809ed")
+set(VERSION "3f1a56294acf66bb184aece84151c9447c3f0b70")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
 set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(URL "https://gitlab.com/mvtiaine/${NAME}/-/archive/${VERSION}/${FILENAME}")
-set(SHA_256_HASH "9face9af7f3fb098bdde0799a89e498e9f8431dc68980a589454241ba6018518")
+set(SHA_256_HASH "80994e154f87ba0097e37afd862f9f4ad46e2918a18eaabbd41766c96c3493c8")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -46,12 +46,10 @@ endif ()
 set(PLUGIN_${NAME}_VERSION "${UADE_VERSION} (${VERSION_SHORT})" PARENT_SCOPE)
 
 set(SONG_CONF "song.conf")
-set(AUDACIOUS_UADE_VERSION "0.13.2")
+set(AUDACIOUS_UADE_VERSION "0.14.1")
 set(SONG_CONF_URL "https://raw.githubusercontent.com/mvtiaine/audacious-uade/refs/tags/${AUDACIOUS_UADE_VERSION}/conf/${SONG_CONF}")
 set(DESTINATION_PATH "${EXTERNAL_SOURCE_DIR}")
-download_to(${SONG_CONF} ${SONG_CONF_URL} "ce2ae365913d55a157114bb40818a3ba062c64b2008e02614fefda859f961505" ${DESTINATION_PATH} true "")
-
-patch_sources(${NAME_VERSIONED} ${CMAKE_CURRENT_SOURCE_DIR}/patches/post-make ${EXTERNAL_SOURCE_DIR})
+download_to(${SONG_CONF} ${SONG_CONF_URL} "a153ae53a8ed3f7622655ca5389aad5e4dca6aa0a7ed15302db0b4c8af36d5ec" ${DESTINATION_PATH} true "")
 
 file(GLOB SOURCES
         src/flod/*.cpp #TODO
