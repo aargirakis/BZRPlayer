@@ -5,13 +5,65 @@ formats, written in **C++** and **Qt** with a sound engine based on **FMOD**.\
 The first BZR version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version which is
 coded pretty much from scratch.
 
-## Download binaries
+![bzr2 0 27](screenshot.png)
+
+----
+
+## Plugins and supported formats
+
+BZR2 is designed with a modular plugin system to support multiple third party audio playback libraries:
+
+- **plugin_adplug**: [AdPlug](https://github.com/adplug/adplug)
+- **plugin_asap**: [ASAP](https://sourceforge.net/projects/asap)
+- **plugin_audiodecoder.wsr**: [audiodecoder.wsr](https://github.com/xbmc/audiodecoder.wsr)
+- **plugin_audiofile**: [Audio File Library](https://github.com/mpruett/audiofile)
+- **plugin_flod**: custom C++ port of [Flod](https://github.com/photonstorm/Flod)
+- **plugin_furnace**: [Furnace](https://github.com/tildearrow/furnace)
+- **plugin_game-music-emu**: [Game_Music_Emu](https://github.com/libgme/game-music-emu)
+- **plugin_highly_experimental**: [Highly Experimental](https://gitlab.com/kode54/highly_experimental) + [psflib](https://gitlab.com/kode54/psflib)
+- **plugin_highly_quixotic**: [Highly Quixotic](https://gitlab.com/kode54/highly_quixotic) + [psflib](https://gitlab.com/kode54/psflib)
+- **plugin_highly_theoretical**: [Highly Theoretical](https://gitlab.com/kode54/highly_theoretical) + [psflib](https://gitlab.com/kode54/psflib)
+- **plugin_hivelytracker**: [HivelyTracker](https://github.com/pete-gordon/hivelytracker)
+- **plugin_jaytrax**: [Jaytrax](https://github.com/pachuco/jaytrax)
+- **plugin_kdm**: custom adaptation of [KDM Decoder](https://www.foobar2000.org/components/view/foo_input_kdm)
+- **plugin_klystron**: [klystron](https://github.com/kometbomb/klystron)
+- **plugin_lazyusf2**: [lazyusf2](https://gitlab.com/kode54/lazyusf2) + [psflib](https://gitlab.com/kode54/psflib)
+- **plugin_libkss**: [libkss](https://github.com/digital-sound-antiques/libkss)
+- **plugin_libopenmpt**: [libopenmpt](https://lib.openmpt.org/libopenmpt)
+- **plugin_libpac**: [libpac](http://prdownloads.sourceforge.net/libpac)
+- **plugin_libsidplayfp**: [libsidplayfp](https://github.com/libsidplayfp/libsidplayfp) + [sidid](https://github.com/cadaver/sidid)
+- **plugin_libstsound**: [libstsound](https://github.com/cpcsdk/libstsound)
+- **plugin_libvgm**: [libvgm](https://github.com/ValleyBell/libvgm)
+- **plugin_libxmp**: [libxmp](https://github.com/libxmp/libxmp)
+- **plugin_mdxmini**: [mdxmini](https://github.com/mistydemeo/mdxmini)
+- **plugin_organya-decoder**: [Organya decoder](https://www.cavestory.one/download/music-players.php)
+- **plugin_protrekkr**: [ProTrekkr](https://github.com/hitchhikr/protrekkr)
+- **plugin_sc68**: [sc68](https://sourceforge.net/p/sc68)
+- **plugin_sndh-player**: [SNDH-Archive-Player](https://github.com/arnaud-carre/sndh-player)
+- **plugin_sunvox_lib**: [SunVox Library](https://warmplace.ru/soft/sunvox)
+- **plugin_uade**: [UADE (mvtiaine)](https://gitlab.com/mvtiaine/uade) + custom C++ port of [Flod](https://github.com/photonstorm/Flod) (for samples viewer)
+- **plugin_v2m-player**: [v2m-player](https://github.com/jgilje/v2m-player)
+- **plugin_vgmstream**: [vgmstream](https://github.com/vgmstream/vgmstream) + extended [ffmpeg](https://github.com/FFmpeg/FFmpeg) support + [libcue](https://github.com/lipnitsk/libcue)
+- **plugin_vio2sf**: [vio2sf](https://gitlab.com/kode54/vio2sf) + [psflib](https://gitlab.com/kode54/psflib)
+- **plugin_zxtune**: [ZXTune](https://github.com/vitamin-caig/zxtune)
+
+In addition to these **FMOD** itself is used to provide support for both MIDI and network streams playback
+
+### Supported formats
+
+[Here](samples) you can find an (incomplete) list of supported formats samples grouped by plugin
+
+----
+
+## How to get
 
 - [Releases & changelogs](https://github.com/aargirakis/BZRPlayer/releases)
 - AUR package: [`bzr-player`](https://aur.archlinux.org/packages/bzr-player)
 - [Old versions archive](https://github.com/aargirakis/BZRPlayer/tree/binaries_archive/binaries)
 
-## How To Build
+----
+
+## How to build
 
 ### Windows
 
@@ -96,14 +148,12 @@ In order to build BZR2 following packages are required:
   `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
   `libqt-advanced-docking-system-dev]`
   ([libqt-advanced-docking-system-dev4](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4_4.4.1-0_amd64-ubuntu-24.04.deb)
-  for Ubuntu 24.04)
+  for Ubuntu 24.04 and equivalent)
 
 
 - On **Fedora-based** distros:\
   `@c-development` `@development-tools` `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel`
   `Qt-Advanced-Docking-System-devel` `sdl2-compat-devel` `vulkan-headers` `which`
-
----
 
 Go to the project sources dir then start the configuration process executing:\
 `cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
@@ -131,7 +181,7 @@ For running BZR2 following packages are required:
   `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
   `libqt-advanced-docking-system4`
   ([libqt-advanced-docking-system4](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4_4.4.1-0_amd64-ubuntu-24.04.deb)
-  for Ubuntu 24.04)
+  for Ubuntu 24.04 and equivalent)
 
 
 - On **Fedora-based** distros:\
@@ -155,199 +205,6 @@ Offline mode doesn't guarantee that the build will include the latest versions o
 
 ----
 
-## Useful links:
+## Reach us
 
-- [BZR2 website](https://bzrplayer.blazer.nu)
-- [Patreon](https://www.patreon.com/bzrplayer)
-- [Discord](https://discord.gg/feEBce8cFe)
-
-![bzr2 0 27](https://user-images.githubusercontent.com/10993634/201359947-2633341d-9ff6-4a59-bb9e-ce1794df9cba.png)
-
-----
-
-## SUPPORTED FORMATS (#TODO wrong & incomplete)
-
-### Using Libsidplayfp
-
-Commodore 64 SID, PSID<br/>
-
-### Using Audio File Library
-
-Amiga IFF/8SVX<br/>
-Audio Visual Research<br/>
-Berkeley/IRCAM/CARL<br/>
-Compressed AIFF<br/>
-NeXT .snd<br/>
-NIST SPHERE<br/>
-SampleVision<br/>
-Sun .au<br/>
-
-### Using ASAP
-
-Atari systems using POKEY sound chip<br/>
-Chaos Music Composer<br/>
-Chaos Music Composer -3-4-<br/>
-Chaos Music Composer -Rzog-<br/>
-Delta Music Composer<br/>
-DoublePlay Chaos Music Composer<br/>
-Music ProTracker<br/>
-Raster Music Tracker<br/>
-Stereo Double Chaos Music Composer<br/>
-Theta Music Composer 1.x 4-channel<br/>
-Theta Music Composer 1.x 8-channel<br/>
-Theta Music Composer 2.x<br/>
-
-### Using Game Music Emu
-
-AY - ZX Spectrum, Amstrad CPC<br/>
-GBS - Nintendo Game Boyr<br/>
-GYM - Sega Genesis, Mega Drive<br/>
-HES - NEC TurboGrafx-16, PC Engine<br/>
-KSS - MSX Home Computer, other Z80 systems<br/>
-NSF - NES Sound Format<br/>
-NSFE - NES Sound Format Extended<br/>
-SPC - Super Nintendo, Super Famicom<br/>
-VGM - Video Game Music File<br/>
-VGZ - Compressed Video Game Music File<br/>
-RSN - RAR archive with SPC songs<br/>
-
-### Using HivelyTracker
-
-AHX<br/>
-HivelyTracker<br/>
-
-### Using Mamiya's m_s98.kpi
-
-S98
-
-### Using Ken's Digital Music
-
-Ken's Digital Music
-
-### Using libpac
-
-SBStudio PAC
-
-### Using LibV2
-
-Farbrausch V2M
-
-### Using Organya
-
-Organya<br/>
-
-### Using UADE
-
-ActionAmics<br/>
-Activision Pro (MartinWalker)<br/>
-Alcatraz_Packer<br/>
-AM-Composer<br/>
-Anders Øland<br/>
-Andrew Parton<br/>
-Art And Magic<br/>
-ArtOfNoise-4V<br/>
-ArtOfNoise-8V<br/>
-Ashley Hogg<br/>
-BeathovenSynthesizer<br/>
-Ben Daglish SID<br/>
-BladePacker<br/>
-Channel Players<br/>
-Cinemaware<br/>
-CoreDesign<br/>
-CustomMade<br/>
-DariusZendeh<br/>
-Dave Lowe<br/>
-Dave Lowe New<br/>
-David Hanney<br/>
-Desire<br/>
-Digital Sonix And Chrome<br/>
-DigitalSoundStudio<br/>
-Dirk Bialluch<br/>
-Dynamic Synthesizer<br/>
-EarAche<br/>
-EMS (Editeur Musical Sequentiel)<br/>
-Fashion Tracker<br/>
-FredGray<br/>
-FutureComposer-BSI<br/>
-FuturePlayer<br/>
-GlueMon<br/>
-HowieDavies<br/>
-InStereo<br/>
-InStereo! 2.0<br/>
-JamCracker<br/>
-JankoMrsicFlogel<br/>
-JanneSalmijarviOptimizer<br/>
-JasonPage<br/>
-Jeroen Tel<br/>
-JesperOlsen<br/>
-JochenHippel-7V<br/>
-Kim Christensen<br/>
-KrisHatlelid<br/>
-LegglessMusicEditor<br/>
-Lionheart_Game<br/>
-MajorTom<br/>
-ManiacsOfNoise<br/>
-MarkII<br/>
-Mark_Cooksey<br/>
-Mark_Cooksey_Old<br/>
-MCMD<br/>
-Medley<br/>
-MIDI-Loriciel<br/>
-MikeDavies<br/>
-MMDC<br/>
-Mosh Packer<br/>
-MusicAssembler<br/>
-MusiclineEditor<br/>
-MusicMaker-8V<br/>
-Nick Pelling Packer<br/>
-NTSP-system<br/>
-onEscapee<br/>
-Paul Robotham<br/>
-Paul Tonge<br/>
-PaulShields<br/>
-PaulSummers<br/>
-PeterVerswyvelen<br/>
-ProfessionalSoundArtists<br/>
-PumaTracker<br/>
-Quartet PSG<br/>
-Quartet_ST<br/>
-RiffRaff<br/>
-RobHubbardOld<br/>
-SCUMM<br/>
-SeanConnolly<br/>
-SeanConran<br/>
-Silmarils<br/>
-SonicArranger<br/>
-SonicArranger-pc-all<br/>
-SonixMusicDriver<br/>
-SoundControl<br/>
-SoundFactory<br/>
-SoundImages<br/>
-SoundMaster<br/>
-SoundPlayer<br/>
-SoundProgrammingLanguage<br/>
-Special-FX<br/>
-Special-FX_ST<br/>
-SpeedyA1System<br/>
-SpeedySystem<br/>
-SteveBarrett<br/>
-SteveTurner (Jason Page Old)<br/>
-SUN-Tronic<br/>
-Synth (Synthesis)<br/>
-SynTracker<br/>
-TFMX<br/>
-TFMX-7V<br/>
-TFMX-Pro<br/>
-TFMX_ST<br/>
-TheMusicalEnlightenment<br/>
-ThomasHermann<br/>
-TimFollin<br/>
-TomyTracker<br/>
-Tronic (TronicTracker)<br/>
-VoodooSupremeSynthesizer<br/>
-WallyBeben<br/>
-YM-2149<br/>
-
-### SUPPORTED PACKERS
-
-None right now
+You can find us on [Discord](https://discord.gg/feEBce8cFe) for feedback and discussion
