@@ -30,6 +30,10 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
 
 unsigned int getLengthFromDb(const string &databasePath, const string &md5, unsigned int subsong);
 
+unsigned int getTimeMs(const sidplayfp *player);
+
+unsigned int timeMsOffset = 0;
+
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
@@ -415,26 +419,26 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     //    bool skipClick=true;
     //    if(skipClick)
     //    {
-    //        if(plugin->player->timeMs()==0)
+    //        if(getTimeMs(plugin->player) == 0)
     //        {
     //            do
     //            {
     //                plugin->player->play((short int*)buffer,size<<1);
     //            }
-    //            while(plugin->player->timeMs()<10);
+    //            while(getTimeMs(plugin->player) < 10);
     //        }
     //    }
 
     unsigned int toRead;
 
     if (plugin->isSeeking) {
-        if (plugin->player->timeMs() < plugin->seekPosition) {
+        if (getTimeMs(plugin->player) < plugin->seekPosition) {
             /*
              * the current way playback & seeking are implemented leads to inaccurate seeking position:
              * higher is the number of rendered samples (per each fmod read) during seeking
              * and higher will be the difference between actual vs expected seeking position.
              * in order to fix the seeking position accuracy issue here
-             * the minimum possible number of samples are rendered during the seeking (which is less than 1msec).
+             * the minimum possible number of samples are rendered during the seeking (which is less than 1ms).
              * a better way would be to calculate the number of samples left for arriving to the desired position,
              * but this needs a whole redesign
              */
@@ -468,7 +472,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
     if (postype == FMOD_TIMEUNIT_MS) {
         if (position == 0) {
-            if (plugin->player->timeMs() != 0) {
+            if (getTimeMs(plugin->player) != 0) {
                 plugin->player->load(plugin->tune);
             }
         } else {
@@ -482,7 +486,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
             plugin->seekPosition = position;
 
-            if (position <= plugin->player->timeMs()) {
+            if (position <= getTimeMs(plugin->player)) {
                 plugin->player->load(plugin->tune);
             }
 
@@ -512,6 +516,11 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
+        // this is the sid time elapsed for initial fmod pre-buffering
+        if (timeMsOffset == 0) {
+            timeMsOffset = plugin->player->timeMs();
+        }
+
         if (!plugin->info->isSid || !plugin->hvscSonglengthsDataBaseEnabled) {
             *length = -1;
         } else {
@@ -541,7 +550,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
     const auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS_REAL) {
-        *position = plugin->player->timeMs();
+        *position = getTimeMs(plugin->player);
         return FMOD_OK;
     }
 
@@ -565,4 +574,18 @@ unsigned int getLengthFromDb(const string &databasePath, const string &md5, cons
     }
 
     return length;
+}
+
+unsigned int getTimeMs(const sidplayfp *player) {
+    const auto timeMs = player->timeMs();
+
+    if (timeMs == 0 || timeMsOffset > timeMs) {
+        return timeMs;
+    }
+
+    /*
+     * try to match as much as possible the sid time elapsed with the one elapsed since the real playback start
+     * in order to avoid both premature playback ending and skipping of very short tracks (with length <200ms)
+     */
+    return timeMs - timeMsOffset;
 }
