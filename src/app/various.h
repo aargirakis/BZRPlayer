@@ -6,6 +6,9 @@
 
 using namespace std;
 
+constexpr auto shiftJis = "Shift_JIS";
+constexpr auto windows1252 = "WINDOWS-1252";
+
 typedef struct {
     QString year;
     QString filename;
@@ -41,8 +44,8 @@ QString groupDigits(size_t number);
 
 QString msToNiceStringExact(unsigned int lenMs, bool displayMilliseconds);
 
-QString fromUtf8OrLatin1(const std::string &str);
+QString fromUtf8OrLatin1(const string &str);
 
-string shiftJisToUtf8(const string &input);
+string convertToUtf8(const string &input, const char *encoding);
 
 #endif // VARIOUS_H

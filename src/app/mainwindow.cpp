@@ -137,12 +137,12 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     }
 
     if (PLUGIN_libsidplayfp_LIB != "") {
-        bundledHvscSonglengthsPath = settings.value("Plugins/libsidplayfpBundledHvscSonglengthsPath",
-                                                    dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH).toString();
-        bundledHvscSonglengthsDownloadEpoch = settings.value("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch",
-                                                             0).toLongLong();
-        bundledHvscSonglengthsUpdateFrequency = settings.value("Plugins/libsidplayfpBundledHvscSonglengthsUpdate",
-                                                               "Weekly").toString();
+        bundledHvscFilesPath = settings.value("Plugins/libsidplayfpBundledHvscFilesPath",
+                                              dataPath + PLUGIN_libsidplayfp_DIR).toString();
+        bundledHvscFilesDownloadEpoch = settings.value("Plugins/libsidplayfpBundledHvscFilesDownloadEpoch", 0).
+                toLongLong();
+        bundledHvscFilesUpdateFrequency = settings.value("Plugins/libsidplayfpBundledHvscFilesUpdate", "Weekly").
+                toString();
     }
 
     ui->checkBoxShuffle->setChecked(settings.value("Internal/shuffle", false).toBool());
@@ -544,28 +544,37 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         resetShuffle(currentPlaylist);
     }
 
-    QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
-    filedownloader = new FileDownloader(imageUrl, this);
-
-    qint64 currentSeconds = QDateTime::currentSecsSinceEpoch();
-
     if (PLUGIN_libsidplayfp_LIB != "") {
-        if (bundledHvscSonglengthsUpdateFrequency == "Never") {
+        qint64 currentSeconds = QDateTime::currentSecsSinceEpoch();
+
+        const QList hvscUrls = {
+            QUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL),
+            QUrl(PLUGIN_libsidplayfp_HVSC_STIL_URL),
+            QUrl(PLUGIN_libsidplayfp_HVSC_BUGLIST_URL)
+        };
+
+        filesDownloaderHvsc = new FilesDownloader(hvscUrls, userPath + PLUGIN_libsidplayfp_DIR, this);
+
+        if (bundledHvscFilesUpdateFrequency == "Never") {
             // do nothing
-        } else if (bundledHvscSonglengthsUpdateFrequency == "At every start") {
-            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-        } else if (bundledHvscSonglengthsUpdateFrequency == "Daily" && currentSeconds -
-                   bundledHvscSonglengthsDownloadEpoch >= 86400) {
-            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-        } else if (bundledHvscSonglengthsUpdateFrequency == "Weekly" && currentSeconds -
-                   bundledHvscSonglengthsDownloadEpoch >=
-                   604800) {
-            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
-        } else if (bundledHvscSonglengthsUpdateFrequency == "Monthly" && currentSeconds -
-                   bundledHvscSonglengthsDownloadEpoch >=
-                   2629743) {
-            connect(filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+        } else if (bundledHvscFilesUpdateFrequency == "At every start") {
+            connect(filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
+                    SLOT(downloadHvscFilesComplete(QString)));
+        } else if (bundledHvscFilesUpdateFrequency == "Daily" &&
+                   currentSeconds - bundledHvscFilesDownloadEpoch >= 86400) {
+            connect(filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
+                    SLOT(downloadHvscFilesComplete(QString)));
+        } else if (bundledHvscFilesUpdateFrequency == "Weekly" &&
+                   currentSeconds - bundledHvscFilesDownloadEpoch >= 604800) {
+            connect(filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
+                    SLOT(downloadHvscFilesComplete(QString)));
+        } else if (bundledHvscFilesUpdateFrequency == "Monthly" &&
+                   currentSeconds - bundledHvscFilesDownloadEpoch >= 2629743) {
+            connect(filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
+                    SLOT(downloadHvscFilesComplete(QString)));
         }
+
+        filesDownloaderHvsc->downloadFiles();
     }
 
     connect(ui->samples->horizontalHeader(), &QHeaderView::sectionResized,
@@ -1881,7 +1890,7 @@ void MainWindow::playSongAtRow(int rowProvided) {
     } else {
         if (!pi.info->title.empty()) {
             if (pi.info->useShiftJis) {
-                pi.info->title = shiftJisToUtf8(pi.info->title);
+                pi.info->title = convertToUtf8(pi.info->title, shiftJis);
             }
 
             title = fromUtf8OrLatin1(pi.info->title);
@@ -3358,28 +3367,28 @@ int MainWindow::getPlaylistRowHeight() const {
     return playlistRowHeight;
 }
 
-QString MainWindow::getHvscSonglengthsPath() const {
-    return hvscSonglengthsPath;
+QString MainWindow::getHvscFilesPath() const {
+    return hvscFilesPath;
 }
 
-void MainWindow::setHvscSonglengthsPath(const QString &path) {
-    hvscSonglengthsPath = path;
+void MainWindow::setHvscFilesPath(const QString &path) {
+    hvscFilesPath = path;
 }
 
-qint64 MainWindow::getBundledHvscSonglengthsDownloadEpoch() const {
-    return bundledHvscSonglengthsDownloadEpoch;
+QString MainWindow::getBundledHvscFilesPath() const {
+    return bundledHvscFilesPath;
 }
 
-QString MainWindow::getBundledHvscSonglengthsUpdateFrequency() const {
-    return bundledHvscSonglengthsUpdateFrequency;
+void MainWindow::setBundledHvscFilesPath(const QString &path) {
+    bundledHvscFilesPath = path;
 }
 
-QString MainWindow::getBundledHvscSonglengthsPath() const {
-    return bundledHvscSonglengthsPath;
+qint64 MainWindow::getBundledHvscFilesDownloadEpoch() const {
+    return bundledHvscFilesDownloadEpoch;
 }
 
-void MainWindow::setBundledHvscSonglengthsPath(const QString &path) {
-    bundledHvscSonglengthsPath = path;
+QString MainWindow::getBundledHvscFilesUpdateFrequency() const {
+    return bundledHvscFilesUpdateFrequency;
 }
 
 int MainWindow::getPlaylistsRowHeight() const {
@@ -3527,8 +3536,7 @@ void MainWindow::saveSettings() const {
     savePlayListSettings();
 
     if (PLUGIN_libsidplayfp_LIB != "") {
-        settings.setValue(QString("Plugins/libsidplayfpBundledHvscSonglengthsUpdate"),
-                          bundledHvscSonglengthsUpdateFrequency);
+        settings.setValue(QString("Plugins/libsidplayfpBundledHvscFilesUpdate"), bundledHvscFilesUpdateFrequency);
     }
 }
 
@@ -5113,45 +5121,33 @@ void MainWindow::createNewWorkspace(const QString &filename) {
     });
 }
 
-void MainWindow::downloadHvscSonglengthsComplete() {
-    if (filedownloader->downloadedData().isEmpty()) {
-        addDebugText("Failed to download " + filedownloader->getUrl().toString());
+void MainWindow::downloadHvscFilesComplete(const QString &error) {
+    if (!error.isEmpty()) {
+        addDebugText("HVSC documents download: " + error);
         return;
     }
 
-    const QString hvscSonglengthsDownloadPath = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
+    bundledHvscFilesDownloadEpoch = QDateTime::currentSecsSinceEpoch();
 
-    QFile file(hvscSonglengthsDownloadPath);
-
-    if (!file.open(QIODevice::ReadWrite)) {
-        addDebugText("Couldn't write to file " + file.fileName());
-        return;
-    }
-
-    QTextStream stream(&file);
-    stream << filedownloader->downloadedData();
-    file.close();
-
-    bundledHvscSonglengthsDownloadEpoch = QDateTime::currentSecsSinceEpoch();
-    bundledHvscSonglengthsPath = hvscSonglengthsDownloadPath;
-
+    // this must happen before hvsc paths update
     const settingsWindow settingsWindow(this);
 
-    if (hvscSonglengthsPath.compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
-        hvscSonglengthsPath = hvscSonglengthsDownloadPath;
+    const QString newHvscFilesPath = userPath + PLUGIN_libsidplayfp_DIR;
+    bundledHvscFilesPath = newHvscFilesPath;
 
-        settingsWindow.setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsDownloadPath);
+    if (hvscFilesPath.compare(dataPath + PLUGIN_libsidplayfp_DIR) == 0) {
+        hvscFilesPath = newHvscFilesPath;
+        settingsWindow.setUiLineEditLibsidplayfpHvscFilesPath(newHvscFilesPath);
         settingsWindow.saveSettingsLibsidplayfp();
     }
 
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsPath", hvscSonglengthsDownloadPath);
-    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch",
-                      bundledHvscSonglengthsDownloadEpoch);
+    settings.setValue("Plugins/libsidplayfpBundledHvscFilesPath", dataPath + PLUGIN_libsidplayfp_DIR);
+    settings.setValue("Plugins/libsidplayfpBundledHvscFilesDownloadEpoch", bundledHvscFilesDownloadEpoch);
 }
 
-void MainWindow::setBundledHvscSonglengthsUpdateFrequency(const QString &freq) {
-    bundledHvscSonglengthsUpdateFrequency = freq;
+void MainWindow::setBundledHvscFilesUpdateFrequency(const QString &freq) {
+    bundledHvscFilesUpdateFrequency = freq;
 }
 
 // swaps columns so that artist column is first for default and new playlists

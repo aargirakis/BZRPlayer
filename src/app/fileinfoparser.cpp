@@ -143,7 +143,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             break;
         case PLUGIN_libkss:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addMultilineInfo(tableInfo, &row, "Comments", shiftJisToUtf8(info->comments));
+            addMultilineInfo(tableInfo, &row, "Comments", convertToUtf8(info->comments, shiftJis));
             break;
         case PLUGIN_libopenmpt:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
@@ -165,7 +165,6 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
                 const int defaultSubsong = info->defaultSubsong;
                 addInfo(tableInfo, &row, "Default Subsong",
                         defaultSubsong == 0 ? "-" : QString::number(defaultSubsong));
-
                 addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
                 addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
                 addInfo(tableInfo, &row, "Released", fromUtf8OrLatin1(info->copyright));
@@ -177,6 +176,8 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
 
             if (info->isSid) {
                 addInfo(tableInfo, &row, "Replayer", fromUtf8OrLatin1(info->songPlayer));
+                addInfo(tableInfo, &row, "HVSC Entry", info->collectionEntry.c_str());
+                addMultilineInfo(tableInfo, &row, "HVSC STIL", convertToUtf8(info->comments, windows1252));
             } else {
                 addMultilineInfo(tableInfo, &row, "Comments", info->comments);
             }

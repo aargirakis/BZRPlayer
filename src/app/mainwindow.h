@@ -8,7 +8,7 @@
 #include <QSystemTrayIcon>
 
 #include "channels.h"
-#include "filedownloader.h"
+#include "filesdownloader.h"
 #include "fileinfoparser.h"
 #include "visualizers/trackerfullscreen.h"
 #include "visualizers/visualizerfullscreen.h"
@@ -97,19 +97,19 @@ public:
 
     static QStringList sortPreservingOrder(const QStringList &, const QStringList &);
 
-    void setHvscSonglengthsPath(const QString &);
+    void setHvscFilesPath(const QString &);
 
-    QString getHvscSonglengthsPath() const;
+    QString getHvscFilesPath() const;
 
-    void setBundledHvscSonglengthsUpdateFrequency(const QString &);
+    void setBundledHvscFilesPath(const QString &);
 
-    void setBundledHvscSonglengthsPath(const QString &);
+    QString getBundledHvscFilesPath() const;
 
-    QString getBundledHvscSonglengthsUpdateFrequency() const;
+    void setBundledHvscFilesUpdateFrequency(const QString &);
 
-    QString getBundledHvscSonglengthsPath() const;
+    QString getBundledHvscFilesUpdateFrequency() const;
 
-    qint64 getBundledHvscSonglengthsDownloadEpoch() const;
+    qint64 getBundledHvscFilesDownloadEpoch() const;
 
     void deleteWorkspace(const QString &workspace) const;
 
@@ -309,8 +309,8 @@ public:
 
     void setDefaultTrackLengthValue(int value);
 
-    FileDownloader *filedownloader;
-    qint64 bundledHvscSonglengthsDownloadEpoch;
+    FilesDownloader *filesDownloaderHvsc;
+    qint64 bundledHvscFilesDownloadEpoch;
 
     QMap<QString, QPixmap> icons;
 
@@ -341,7 +341,7 @@ protected:
     void changeEvent(QEvent *event) override;
 
 private slots:
-    void downloadHvscSonglengthsComplete();
+    void downloadHvscFilesComplete(const QString &error);
 
     bool handleInstance();
 
@@ -479,9 +479,9 @@ private slots:
 private:
     QLocalServer *localServer = nullptr;
 
-    QString hvscSonglengthsPath;
-    QString bundledHvscSonglengthsPath;
-    QString bundledHvscSonglengthsUpdateFrequency;
+    QString hvscFilesPath;
+    QString bundledHvscFilesPath;
+    QString bundledHvscFilesUpdateFrequency;
     FileInfoParser *fileInfoParser;
 
     void loadWorkspaces();

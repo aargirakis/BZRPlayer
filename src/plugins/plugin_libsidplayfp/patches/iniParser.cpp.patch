@@ -1,0 +1,59 @@
+--- src/utils/iniParser.cpp	2025-12-23 16:07:45.000000000 +0100
++++ src/utils/iniParser.cpp	2026-07-15 10:35:47.584135337 +0200
+@@ -39,7 +39,7 @@
+     return buffer.substr(1, pos-1);
+ }
+ 
+-iniParser::keys_t::value_type iniParser::parseKey(const std::string &buffer)
++iniParser::keys_t::value_type iniParser::parseKey(const std::string &buffer, const std::string &sidPath)
+ {
+     const size_t pos = buffer.find('=');
+ 
+@@ -50,7 +50,7 @@
+ 
+     const std::string key = buffer.substr(0, buffer.find_last_not_of(' ', pos-1) + 1);
+     const std::string value = buffer.substr(pos + 1);
+-    return make_pair(key, value);
++    return make_pair(key, value + sidPath);
+ }
+ 
+ bool iniParser::open(const char *fName)
+@@ -86,9 +86,25 @@
+         if (buffer.empty())
+             continue;
+ 
++        static std::string sidPath;
++
+         switch (buffer.at(0))
+         {
+         case ';':
++            try
++            {
++                if (mIt != sections.end()) {
++                    const std::size_t pos = buffer.find('/');
++
++                    if (pos == std::string::npos) {
++                        throw parseError();
++                    }
++
++                    sidPath = buffer.substr(pos, buffer.size() - pos - (buffer.back() == '\r' ? 1 : 0));
++                }
++            }
++            catch (parseError const &) {};
++            break;
+         case '#':
+             // skip comments
+             break;
+@@ -105,8 +121,10 @@
+         default:
+             try
+             {
+-                if (mIt != sections.end())
+-                    (*mIt).second.insert(parseKey(buffer));
++                if (mIt != sections.end()) {
++                    (*mIt).second.insert(parseKey(buffer, sidPath));
++                    sidPath="";
++                }
+             }
+             catch (parseError const &) {};
+             break;

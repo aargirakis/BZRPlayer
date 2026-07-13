@@ -105,8 +105,8 @@ QString fromUtf8OrLatin1(const string &str) {
     return QString::fromLatin1(str);
 }
 
-string shiftJisToUtf8(const string &input) {
-    const auto cd = iconv_open("UTF-8//IGNORE", "Shift_JIS");
+string convertToUtf8(const string &input, const char *encoding) {
+    const auto cd = iconv_open("UTF-8//IGNORE", encoding);
 
     if (cd == reinterpret_cast<iconv_t>(-1)) {
         cerr << "Iconv error opening descriptor: " << strerror(errno) << endl;

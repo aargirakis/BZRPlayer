@@ -6508,7 +6508,7 @@ QComboBox::drop-down:disabled {
      </size>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBoxLibsidplayfpHvscSonglengthsEnabled">
+   <widget class="QCheckBox" name="checkBoxLibsidplayfpHvscFilesEnabled">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -6517,8 +6517,11 @@ QComboBox::drop-down:disabled {
       <height>26</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>Supports HVSC Songlengths.md5, STIL.txt &amp; BUGlist.txt</string>
+    </property>
     <property name="text">
-     <string>HVSC Songlengths db</string>
+     <string>HVSC documents support</string>
     </property>
     <property name="iconSize">
      <size>
@@ -6527,7 +6530,7 @@ QComboBox::drop-down:disabled {
      </size>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEditLibsidplayfpHvscSonglengthsPath">
+   <widget class="QLineEdit" name="lineEditLibsidplayfpHvscFilesPath">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -6536,6 +6539,9 @@ QComboBox::drop-down:disabled {
       <height>26</height>
      </rect>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
     <property name="cursorMoveStyle">
      <enum>Qt::CursorMoveStyle::LogicalMoveStyle</enum>
     </property>
@@ -6543,7 +6549,7 @@ QComboBox::drop-down:disabled {
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="buttonLibsidplayfpHvscSonglengthsBrowse">
+   <widget class="QPushButton" name="buttonLibsidplayfpHvscFilesBrowse">
     <property name="geometry">
      <rect>
       <x>590</x>
@@ -6559,23 +6565,23 @@ QComboBox::drop-down:disabled {
      <string>...</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelLibsidplayfpHvscSonglengthsUpdate">
+   <widget class="QLabel" name="labelLibsidplayfpHvscFilesUpdate">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>150</y>
-      <width>240</width>
+      <width>282</width>
       <height>26</height>
      </rect>
     </property>
     <property name="text">
-     <string>Update bundled HVSC Songlengths db</string>
+     <string>Update bundled HVSC documents</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBoxLibsidplayfpHvscSonglengthsUpdate">
+   <widget class="QComboBox" name="comboBoxLibsidplayfpHvscFilesUpdate">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>312</x>
       <y>150</y>
       <width>130</width>
       <height>26</height>
@@ -6585,10 +6591,10 @@ QComboBox::drop-down:disabled {
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="buttonLibsidplayfpHvscSonglengthsDownload">
+   <widget class="QPushButton" name="buttonLibsidplayfpHvscFilesDownload">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>455</x>
       <y>150</y>
       <width>110</width>
       <height>26</height>
@@ -6601,13 +6607,13 @@ QComboBox::drop-down:disabled {
      <string>Download now</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelLibsidplayfpHvscSonglengthsDownloadDetails">
+   <widget class="QLabel" name="labelLibsidplayfpHvscFilesDownloadDetails">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>180</y>
       <width>651</width>
-      <height>26</height>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -6617,9 +6623,6 @@ QComboBox::drop-down:disabled {
                     font-size:10px;
                     }
      </string>
-    </property>
-    <property name="text">
-     <string>Downloaded HVSC Songlengths.md5</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>

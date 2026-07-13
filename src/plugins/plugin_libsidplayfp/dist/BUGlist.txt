@@ -1,0 +1,177 @@
+#######################################################################
+#   The High Voltage SID Collection (HVSC) Bugged Tunes List          #
+#   Maintained by iAN CooG <hvsc.crew (sid) gmail.com>                #
+#   Last Updated: April 18, 2026                                      #
+#######################################################################
+#                                                                     #
+# The purpose of this text document is to highlight all the tunes     #
+# that are still left in HVSC which have bugs in the data which       #
+# either send a tune out of synch, play a wrong note, or even worse,  #
+# crash Sidplay2 or a real C64.  It also gives you all the incomplete #
+# rips that are in HVSC.  Although the HVSC Crew are an extremely     #
+# active and busy bunch of SID fans, there are occasions where some   #
+# of the older tunes in the collection have not been checked by the   #
+# original ripper before submitting to HVSC and so could have gone in #
+# with bugs.  We are doing all we can to eliminate this, but would    #
+# appreciate it if you could let me know of any bugged tunes you find.#
+#                                                                     #
+# If you are reporting a bugged tune that you have found in HVSC      #
+# that is not on the below list, please give the full HVSC filename   #
+# (inlcuding its path) and if concise but precise details of the      #
+# problem (see examples below for suitable format.)  The name in      #
+# brackets indicates who reported the bug and so you will be credited #
+# the same way if you happen to find one.                             #
+#                                                                     #
+# If you do manage to fix a bugged tune, please mail it to myself     #
+# with a description of what had to be done to fix it.                #
+#                                                                     #
+# NOTE: This lists only lists bugs where the SID file is definitely   #
+# incompatible with Sidplay2 or a real C64.                           #
+#                                                                     #
+# Some of these tunes may also have been fixed which will appear in a #
+# future HVSC update.                                                 #
+#                                                                     #
+#######################################################################
+
+##############################
+# Bugged tunes as of HVSC 85 #
+##############################
+
+/DEMOS/A-F/Digital_II.sid
+    BUG: Original has part of the samples overwritten by a ML monitor, hence
+         playing "garbage" at some point (0:32-0:33 and 1:02-1:03). This rip
+         has that sample repaired. No other good source known.
+(iAN CooG)
+
+/DEMOS/UNKNOWN/Misc_Tune_05.sid
+    BUG: Subtune #1 plays bad notes at 0:46. No bad reads.
+(Wilfred)
+
+/DEMOS/UNKNOWN/Wham.sid
+    BUG: Has a lot of wrong sounds inside, obviously a bad rip.
+         Sounds bad from 2:12.
+(Ramos)
+
+/DEMOS/UNKNOWN/Master_Composer/Devoted_to_You.sid
+    BUG: File seems truncated, lacks lots of data at end. No good source known.
+(iAN CooG)
+
+/DEMOS/UNKNOWN/Master_Composer/Every_Breath_You_Take.sid
+    BUG: File seems truncated, lacks lots of data at end. No good source known.
+(iAN CooG)
+
+/DEMOS/UNKNOWN/Master_Composer/I_Want_You.sid
+    BUG: File seems truncated, lacks lots of data at end. No good source known.
+(iAN CooG)
+
+/DEMOS/UNKNOWN/Master_Composer/Loving_Feeling.sid
+    BUG: File seems truncated, lacks lots of data at end. No good source known.
+(iAN CooG)
+
+/DEMOS/UNKNOWN/Master_Composer/Only_You.sid
+    BUG: File seems truncated, lacks lots of data at end. No good source known.
+(iAN CooG)
+
+/DEMOS/UNKNOWN/Master_Composer/Pink_Panther.sid
+    BUG: File seems truncated, lacks lots of data at end. No good source known.
+(iAN CooG)
+
+/DEMOS/UNKNOWN/Master_Composer/We_Two.sid
+    BUG: File seems truncated, lacks lots of data at end. No good source known.
+(iAN CooG)
+
+/MUSICIANS/A/Astovel/Tengu_Warez_1_menu.sid
+    BUG: Gets progressively out of sync with each loop.
+(Mariusz)
+
+/MUSICIANS/A/Audial_Arts/Prijt_Francois/Blaze_of_Glory_Holland_Promo.sid
+    BUG: Falls out of synch at around the 5:10 mark. This bug doesn't occur
+         in the demo as the next part gets loaded after around one minute
+         of playtime.
+(Mariusz)
+
+/MUSICIANS/B/Bleed_Into_One/Knick_Knack.sid
+    BUG: Falls out of sync after 2:20, just like in the music collection it
+         was taken from.
+(Yodelking)
+
+/MUSICIANS/C/Cane/Brainball.sid
+    BUG: Wrong notes from 2:00. No known clean version found yet.
+
+/MUSICIANS/D/Davis_John/Santuzza.sid
+    BUG: Stops abruptly at 1:57 due to missing data at end.
+         No known clean version found yet.
+
+/MUSICIANS/D/Digiblaster/Mix3_plus_plus.sid
+    BUG: Falls out of synch from 1:13. No good version found.
+(iAN CooG)
+
+/MUSICIANS/D/Doussis_Stello/Hero.sid
+    BUG: Has a lot of wrong sounds inside, obviously a bad rip.
+         Sounds bad from 1:23
+(Stello Doussis)
+
+/MUSICIANS/F/Faclaug/Lets_Drink.sid
+    BUG: Falls out of synch at 2:50.
+
+/MUSICIANS/F/Feekzoid/Comfortably_Numb.sid
+    BUG: Falls out of synch after around 5:10.
+         Feekzoid confirmed that this tune was never finished:
+         "Comfortably Numb was never finished, I actually stopped working on it
+         about 1 min in... but when I discovered the file years later I jumbled
+         up the patterns a bit in order to make it follow the original song as
+         best as possible.. but yes... as you discovered... it falls apart later
+         on."
+(Stephan Schmid)
+
+/MUSICIANS/F/Feekzoid/SceptreMix.sid
+    BUG: Goes bad at around 2:30, clearly audible wrong notes at around 3:30.
+         Feekzoid confirmed that this tune was never finished:
+         "...the Sceptre tune was never finished. The tune was written at the
+         end of my C64 days... and abandoned. Years later there was a bit of a
+         clamouring for more SIDs, and I uncovered it on an old floppy disk, so
+         brought them back for the hell of it."
+(Stephan Schmid)
+
+/MUSICIANS/G/Goto80/Rent-A-Cop_Reloaded_title.sid
+    BUG: Badreads in the original, can't be repaired.
+(iAN CooG)
+
+/MUSICIANS/H/HTD/Katastrof.sid
+    BUG: Wrong notes from 1:47, bad tune in the original demo.
+(iAN CooG)
+
+/MUSICIANS/H/Hoffmann_Michal/Code_Me_a_Song.sid
+    BUG: Progressively falls out of sync after each loop.
+(McLoaf)
+
+/MUSICIANS/J/Jade_Tiger/Opposites_Attract.sid
+    BUG: Bugs after 2:20.
+(Wilfred)
+
+/MUSICIANS/K/Klax/South.sid
+    BUG: The tune starts to bug at the 02:45 mark. It's used in the note to
+         Logosland 2 by Draco, the music data is missing there too.
+(Mariusz)
+
+/MUSICIANS/M/MAC2/Amnesia_Intro_12.sid
+    BUG: The tune starts to bug at the 01:39 mark. It's used in the intro to
+         Bobix/Amnesia and the music data at $2000 were overwritten by gfx.
+(iAN CooG)
+
+/MUSICIANS/S/Shogoon/Dune_Cover.sid
+    BUG: Falls out of synch at around 2:40. Happens the same in the original.
+(iAN CooG)
+
+/MUSICIANS/S/Svensson_Roger/Walliball.sid
+    BUG: Subtune #5 falls out of sync upon looping
+(Wilfred)
+
+/MUSICIANS/T/TCC/Must_ve_Been.sid
+    BUG: Falls out of synch upon looping.
+(Wilfred)
+
+/MUSICIANS/W/Wizard_Oxygen/Night.sid
+    BUG: Contains bad data and sounds bad at 1:15, one voice pitch up too much.
+(iAN CooG)
+

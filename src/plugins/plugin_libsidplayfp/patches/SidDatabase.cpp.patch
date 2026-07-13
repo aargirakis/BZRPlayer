@@ -1,0 +1,41 @@
+--- src/utils/SidDatabase.cpp	2025-12-23 16:07:45.000000000 +0100
++++ src/utils/SidDatabase.cpp	2026-07-14 18:20:19.037759832 +0200
+@@ -22,6 +22,7 @@
+ 
+ #include <cctype>
+ #include <cstdlib>
++#include <cstring>
+ 
+ #include "SidDatabase.h"
+ 
+@@ -215,3 +216,30 @@
+ 
+     return time;
+ }
++
++std::string SidDatabase::sidPath(const char *md5) {
++    if (m_parser == nullptr) {
++        errorString = ERR_NO_DATABASE_LOADED;
++        return "";
++    }
++
++    if (!m_parser->setSection("Database")) {
++        errorString = ERR_DATABASE_CORRUPT;
++        return "";
++    }
++
++    const char *value = m_parser->getValue(md5);
++
++    if (!value) {
++        errorString = ERR_DATABASE_CORRUPT;
++        return "";
++    }
++
++    const char *sidPath = std::strchr(value, '/');
++
++    if (!sidPath) {
++        return "";
++    }
++
++    return sidPath;
++}

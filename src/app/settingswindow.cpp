@@ -295,16 +295,15 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     forceUpdateToSliders();
 
     if (PLUGIN_libsidplayfp_LIB != "") {
-        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->installEventFilter(this);
-        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("At every start", "At every start");
-        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Daily", "Daily");
-        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Weekly", "Weekly");
-        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Monthly", "Monthly");
-        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->addItem("Never", "Never");
+        ui->comboBoxLibsidplayfpHvscFilesUpdate->installEventFilter(this);
+        ui->comboBoxLibsidplayfpHvscFilesUpdate->addItem("At every start", "At every start");
+        ui->comboBoxLibsidplayfpHvscFilesUpdate->addItem("Daily", "Daily");
+        ui->comboBoxLibsidplayfpHvscFilesUpdate->addItem("Weekly", "Weekly");
+        ui->comboBoxLibsidplayfpHvscFilesUpdate->addItem("Monthly", "Monthly");
+        ui->comboBoxLibsidplayfpHvscFilesUpdate->addItem("Never", "Never");
 
-        index = ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->findData(
-            mainWindow->getBundledHvscSonglengthsUpdateFrequency());
-        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->setCurrentIndex(index);
+        index = ui->comboBoxLibsidplayfpHvscFilesUpdate->findData(mainWindow->getBundledHvscFilesUpdateFrequency());
+        ui->comboBoxLibsidplayfpHvscFilesUpdate->setCurrentIndex(index);
     }
 
     int extensionPos = mainWindow->getEffect()->getFont().lastIndexOf('.');
@@ -574,13 +573,15 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     }
 
     if (PLUGIN_libsidplayfp_LIB != "") {
-        const QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscSonglengthsDownloadEpoch());
-        if (mainWindow->getBundledHvscSonglengthsDownloadEpoch() > 0) {
-            ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText(
-                "Downloaded to " + mainWindow->getBundledHvscSonglengthsPath() + " at " + qdt.toString(
+        const QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscFilesDownloadEpoch());
+        if (mainWindow->getBundledHvscFilesDownloadEpoch() > 0) {
+            const QFileInfo fileInfo(mainWindow->getBundledHvscFilesPath());
+
+            ui->labelLibsidplayfpHvscFilesDownloadDetails->setText(
+                "HVSC documents downloaded to " + fileInfo.path() + "\nLast update at " + qdt.toString(
                     "yyyy-MM-dd hh:mm:ss"));
         } else {
-            ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText("Never downloaded");
+            ui->labelLibsidplayfpHvscFilesDownloadDetails->setText("Never downloaded");
         }
     }
 
@@ -716,7 +717,7 @@ bool settingsWindow::eventFilter(QObject *obj, QEvent *event) {
          obj == ui->comboBoxLibopenmptResampling ||
          obj == ui->comboBoxLibopenmptDither ||
          obj == ui->sliderLibopenmptStereoSeparation ||
-         obj == ui->comboBoxLibsidplayfpHvscSonglengthsUpdate ||
+         obj == ui->comboBoxLibsidplayfpHvscFilesUpdate ||
          obj == ui->sliderUadeSilenceTimeOut ||
          obj == ui->comboBoxAdPlugEmulator ||
          obj == ui->comboBoxAdPlugFreq ||
@@ -1203,9 +1204,9 @@ void settingsWindow::loadSettingsLibsidplayfp() const {
 
     // hack, because "toggled" means changing value,
     // so just to be sure, set it to both values so
-    // that on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled is called
-    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(false);
-    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(true);
+    // that on_checkBoxLibsidplayfpHvscFilesEnabled_toggled is called
+    ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(false);
+    ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(true);
 
     ui->checkBoxLibsidplayfpContinuousPlayback->setChecked(false);
 
@@ -1217,20 +1218,20 @@ void settingsWindow::loadSettingsLibsidplayfp() const {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("hvscSonglengthsPath") == 0) {
-                    QString hvscSonglengthsPathToLoad = value.c_str();
+                if (word.compare("hvscFilesPath") == 0) {
+                    QString hvscFilesPathToLoad = value.c_str();
 
-                    if (hvscSonglengthsPathToLoad.isEmpty()) {
-                        hvscSonglengthsPathToLoad = mainWindow->getBundledHvscSonglengthsPath();
+                    if (hvscFilesPathToLoad.isEmpty()) {
+                        hvscFilesPathToLoad = mainWindow->getBundledHvscFilesPath();
                     }
 
-                    mainWindow->setHvscSonglengthsPath(hvscSonglengthsPathToLoad);
-                    setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsPathToLoad);
-                } else if (word.compare("hvscSonglengthsEnabled") == 0) {
+                    mainWindow->setHvscFilesPath(hvscFilesPathToLoad);
+                    setUiLineEditLibsidplayfpHvscFilesPath(hvscFilesPathToLoad);
+                } else if (word.compare("hvscFilesEnabled") == 0) {
                     if (value.compare("true") == 0) {
-                        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(true);
+                        ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(true);
                     } else {
-                        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(false);
+                        ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(false);
                     }
                 } else if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxLibsidplayfpContinuousPlayback->setChecked(value.compare("true") == 0);
@@ -1240,10 +1241,10 @@ void settingsWindow::loadSettingsLibsidplayfp() const {
 
         ifs.close();
     } else {
-        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(false);
-        ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setChecked(true);
-        mainWindow->setHvscSonglengthsPath(mainWindow->getBundledHvscSonglengthsPath());
-        setUiLineEditLibsidplayfpHvscSonglengthsPath(mainWindow->getBundledHvscSonglengthsPath());
+        ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(false);
+        ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(true);
+        mainWindow->setHvscFilesPath(mainWindow->getBundledHvscFilesPath());
+        setUiLineEditLibsidplayfpHvscFilesPath(mainWindow->getBundledHvscFilesPath());
     }
 }
 
@@ -1670,18 +1671,18 @@ void settingsWindow::saveSettingsLibsidplayfp() const {
 
     ofs << "continuousPlayback=" << (ui->checkBoxLibsidplayfpContinuousPlayback->isChecked() ? "true" : "false") <<
             "\n";
-    ofs << "hvscSonglengthsEnabled=" << (ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->isChecked() ? "true" : "false")
-            << "\n";
+    ofs << "hvscFilesEnabled=" << (ui->checkBoxLibsidplayfpHvscFilesEnabled->isChecked() ? "true" : "false") << "\n";
 
-    QString hvscSonglengthsPathToSave = ui->lineEditLibsidplayfpHvscSonglengthsPath->text();
+    QString hvscFilesPathToSave = ui->lineEditLibsidplayfpHvscFilesPath->text();
 
-    if (hvscSonglengthsPathToSave.isEmpty()) {
-        hvscSonglengthsPathToSave = mainWindow->getBundledHvscSonglengthsPath();
+    if (hvscFilesPathToSave.isEmpty()) {
+        hvscFilesPathToSave = mainWindow->getBundledHvscFilesPath();
     }
 
-    ofs << "hvscSonglengthsPath=" << hvscSonglengthsPathToSave.toStdString().c_str() << "\n";
+    ofs << "hvscFilesPath=" << hvscFilesPathToSave.toStdString().c_str() << "\n";
 
-    mainWindow->setHvscSonglengthsPath(hvscSonglengthsPathToSave);
+    mainWindow->setHvscFilesPath(hvscFilesPathToSave);
+
     ofs.close();
 }
 
@@ -2398,8 +2399,8 @@ void settingsWindow::changeStyleSheetColor() {
     ui->groupBoxVio2sf->setStyleSheet(stylesheet);
 }
 
-void settingsWindow::setUiLineEditLibsidplayfpHvscSonglengthsPath(const QString &text) const {
-    ui->lineEditLibsidplayfpHvscSonglengthsPath->setText(text);
+void settingsWindow::setUiLineEditLibsidplayfpHvscFilesPath(const QString &text) const {
+    ui->lineEditLibsidplayfpHvscFilesPath->setText(text);
 }
 
 void settingsWindow::on_buttonAppearanceMainColor_clicked() {
@@ -3415,8 +3416,8 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxLibopenmptContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxLibsidplayfpContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxLibsidplayfpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->setIcon(
-        mainWindow->icons[ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->isChecked()
+    ui->checkBoxLibsidplayfpHvscFilesEnabled->setIcon(
+        mainWindow->icons[ui->checkBoxLibsidplayfpHvscFilesEnabled->isChecked()
                               ? "checkbox-on"
                               : "checkbox-off"]);
     ui->checkBoxLibvgmContinuousPlayback->setIcon(
@@ -3583,80 +3584,98 @@ void settingsWindow::on_sliderLibopenmptStereoSeparation_valueChanged(const int 
     ui->sliderLibopenmptStereoSeparation->blockSignals(false);
 }
 
-void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked() {
-    const QString startFolder = ui->lineEditLibsidplayfpHvscSonglengthsPath->text();
+void settingsWindow::on_buttonLibsidplayfpHvscFilesBrowse_clicked() {
+    const QString startDir = ui->lineEditLibsidplayfpHvscFilesPath->text();
 
-    if (const QString file = QFileDialog::getOpenFileName(this, "Choose your Songlengths.md5", startFolder, "*.md5");
-        !file.isEmpty()) {
-        setUiLineEditLibsidplayfpHvscSonglengthsPath(file);
-        mainWindow->setHvscSonglengthsPath(file);
+    if (const QString dir = QFileDialog::getExistingDirectory(this, "Choose your HVSC documents folder", startDir);
+        !dir.isEmpty()) {
+        static const QStringList requiredFiles = {
+            PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_FILENAME,
+            PLUGIN_libsidplayfp_HVSC_STIL_FILENAME,
+            PLUGIN_libsidplayfp_HVSC_BUGLIST_FILENAME
+        };
+
+        bool isDirValid = true;
+
+        for (const QString &filename: requiredFiles) {
+            if (!QFileInfo::exists(dir + "/" + filename)) {
+                isDirValid = false;
+                break;
+            }
+        }
+
+        if (!isDirValid) {
+            QMessageBox::warning(this, tr("Invalid HVSC documents folder"),
+                                 tr("It must contain the following files:\n%1")
+                                 .arg(requiredFiles.join(", ")));
+            return;
+        }
+
+        setUiLineEditLibsidplayfpHvscFilesPath(dir);
+        mainWindow->setHvscFilesPath(dir);
     }
 }
 
-void settingsWindow::on_buttonLibsidplayfpHvscSonglengthsDownload_clicked() {
-    const QUrl imageUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL);
-    mainWindow->filedownloader = new FileDownloader(imageUrl, this);
-    ui->buttonLibsidplayfpHvscSonglengthsDownload->setEnabled(true);
-    ui->buttonLibsidplayfpHvscSonglengthsDownload->setText("Downloading...");
+void settingsWindow::on_buttonLibsidplayfpHvscFilesDownload_clicked() {
+    const QList hvscUrls = {
+        QUrl(PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL),
+        QUrl(PLUGIN_libsidplayfp_HVSC_STIL_URL),
+        QUrl(PLUGIN_libsidplayfp_HVSC_BUGLIST_URL)
+    };
 
-    connect(mainWindow->filedownloader, SIGNAL(downloaded()), this, SLOT(downloadHvscSonglengthsComplete()));
+    ui->buttonLibsidplayfpHvscFilesDownload->setEnabled(true);
+    ui->buttonLibsidplayfpHvscFilesDownload->setText("Downloading...");
+
+    mainWindow->filesDownloaderHvsc = new FilesDownloader(hvscUrls, userPath + PLUGIN_libsidplayfp_DIR, this);
+
+    connect(mainWindow->filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
+            SLOT(downloadHvscFilesComplete(QString)));
+
+    mainWindow->filesDownloaderHvsc->downloadFiles();
 }
 
-void settingsWindow::downloadHvscSonglengthsComplete() const {
-    if (mainWindow->filedownloader->downloadedData().isEmpty()) {
-        mainWindow->addDebugText("Failed to download " + mainWindow->filedownloader->getUrl().toString());
+void settingsWindow::downloadHvscFilesComplete(const QString &error) const {
+    if (!error.isEmpty()) {
+        mainWindow->addDebugText("HVSC documents download: " + error);
         return;
     }
 
-    const QString hvscSonglengthsDownloadPath = userPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH;
+    mainWindow->bundledHvscFilesDownloadEpoch = QDateTime::currentSecsSinceEpoch();
 
-    QFile file(hvscSonglengthsDownloadPath);
+    const QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscFilesDownloadEpoch());
+    const QString newHvscFilesPath = userPath + PLUGIN_libsidplayfp_DIR;
 
-    if (!file.open(QIODevice::ReadWrite)) {
-        mainWindow->addDebugText("Couldn't write to file " + file.fileName());
-        return;
+    ui->labelLibsidplayfpHvscFilesDownloadDetails->setText(
+        "HVSC documents downloaded to " + newHvscFilesPath + "\nLast update at " + qdt.toString("yyyy-MM-dd hh:mm:ss"));
+    ui->buttonLibsidplayfpHvscFilesDownload->setEnabled(true);
+    ui->buttonLibsidplayfpHvscFilesDownload->setText("Download now");
+
+    mainWindow->setBundledHvscFilesPath(newHvscFilesPath);
+
+    if (ui->lineEditLibsidplayfpHvscFilesPath->text().compare(dataPath + PLUGIN_libsidplayfp_DIR) == 0) {
+        mainWindow->setHvscFilesPath(newHvscFilesPath);
+        setUiLineEditLibsidplayfpHvscFilesPath(newHvscFilesPath);
     }
-
-    QTextStream stream(&file);
-    stream << mainWindow->filedownloader->downloadedData();
-    file.close();
-
-    mainWindow->bundledHvscSonglengthsDownloadEpoch = QDateTime::currentSecsSinceEpoch();
-    mainWindow->setBundledHvscSonglengthsPath(hvscSonglengthsDownloadPath);
-
-    if (ui->lineEditLibsidplayfpHvscSonglengthsPath->text()
-        .compare(dataPath + PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH) == 0) {
-        setUiLineEditLibsidplayfpHvscSonglengthsPath(hvscSonglengthsDownloadPath);
-        mainWindow->setHvscSonglengthsPath(hvscSonglengthsDownloadPath);
-    }
-
-    const QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscSonglengthsDownloadEpoch());
-    ui->labelLibsidplayfpHvscSonglengthsDownloadDetails->setText(
-        "Downloaded to " + hvscSonglengthsDownloadPath + " at " + qdt.toString("yyyy-MM-dd hh:mm:ss"));
-    ui->buttonLibsidplayfpHvscSonglengthsDownload->setEnabled(true);
-    ui->buttonLibsidplayfpHvscSonglengthsDownload->setText("Download now");
 
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
-    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsPath", hvscSonglengthsDownloadPath);
-    settings.setValue("Plugins/libsidplayfpBundledHvscSonglengthsDownloadEpoch",
-                      mainWindow->bundledHvscSonglengthsDownloadEpoch);
+    settings.setValue("Plugins/libsidplayfpBundledHvscFilesPath", newHvscFilesPath);
+    settings.setValue("Plugins/libsidplayfpBundledHvscFilesDownloadEpoch", mainWindow->bundledHvscFilesDownloadEpoch);
 }
 
 void settingsWindow::on_checkBoxLibsidplayfpContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxLibsidplayfpContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
-void settingsWindow::on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled(const bool isChecked) const {
-    ui->lineEditLibsidplayfpHvscSonglengthsPath->setEnabled(isChecked);
-    ui->buttonLibsidplayfpHvscSonglengthsBrowse->setEnabled(isChecked);
-    ui->checkBoxLibsidplayfpHvscSonglengthsEnabled->
-            setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+void settingsWindow::on_checkBoxLibsidplayfpHvscFilesEnabled_toggled(const bool isChecked) const {
+    ui->lineEditLibsidplayfpHvscFilesPath->setEnabled(isChecked);
+    ui->buttonLibsidplayfpHvscFilesBrowse->setEnabled(isChecked);
+    ui->checkBoxLibsidplayfpHvscFilesEnabled->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
-void settingsWindow::on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString &arg1) const {
-    const QString selected = ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->itemData(
-        ui->comboBoxLibsidplayfpHvscSonglengthsUpdate->currentIndex()).toString();
-    mainWindow->setBundledHvscSonglengthsUpdateFrequency(selected);
+void settingsWindow::on_comboBoxLibsidplayfpHvscFilesUpdate_textActivated(const QString &arg1) const {
+    const QString selected = ui->comboBoxLibsidplayfpHvscFilesUpdate->itemData(
+        ui->comboBoxLibsidplayfpHvscFilesUpdate->currentIndex()).toString();
+    mainWindow->setBundledHvscFilesUpdateFrequency(selected);
 }
 
 void settingsWindow::on_checkBoxLibvgmContinuousPlayback_toggled(const bool isChecked) const {
@@ -3672,13 +3691,13 @@ void settingsWindow::on_checkBoxSndhPlayerContinuousPlayback_toggled(const bool 
 }
 
 void settingsWindow::on_buttonUadeSonglengthsBrowse_clicked() {
-    QString startFolder = ui->lineEditUadeSonglengthsPath->text();
+    QString startDir = ui->lineEditUadeSonglengthsPath->text();
 
-    if (startFolder.compare("/uade.md5") == 0) {
-        startFolder = dataPath + PLUGIN_uade_DIR + "/uade.md5";
+    if (startDir.compare("/uade.md5") == 0) {
+        startDir = dataPath + PLUGIN_uade_DIR + "/uade.md5";
     }
 
-    if (const QString file = QFileDialog::getOpenFileName(this, "Choose your uade.md5", startFolder, "*.md5");
+    if (const QString file = QFileDialog::getOpenFileName(this, "Choose your uade.md5", startDir, "*.md5");
         !file.isEmpty()) {
         if (file.compare(dataPath + PLUGIN_uade_DIR + "/uade.md5") == 0) {
             ui->lineEditUadeSonglengthsPath->setText("/uade.md5");

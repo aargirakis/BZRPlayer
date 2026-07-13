@@ -1,14 +1,15 @@
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <iostream>
+#include "residfp.h"
+#include "SidDatabase.h"
+#include "sidemu.h"
+#include "sidid.h"
+#include "SidInfo.h"
 #include "sidplayfp.h"
 #include "SidTune.h"
-#include "SidInfo.h"
-#include "residfp.h"
-#include "sidid.h"
-#include "sidemu.h"
-#include "MUS.h"
-#include "SidDatabase.h"
+#include "stil.h"
 #include "fmod_errors.h"
 #include "plugins.h"
 #include "info.h"
@@ -27,12 +28,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
                                       FMOD_TIMEUNIT postype);
 
 static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
-
-unsigned int getLengthFromDb(const string &databasePath, const string &md5, unsigned int subsong);
-
-unsigned int getTimeMs(const sidplayfp *player);
-
-unsigned int timeMsOffset = 0;
 
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
@@ -78,10 +73,121 @@ public:
         return buffer;
     }
 
+    unsigned int getLengthFromDb(const string &databasePath, const string &md5, const unsigned int subsong) const {
+        if (!sidDb) {
+            cout << "SidDatabase not initialized" << endl;
+            return -1;
+        }
+
+        if (!sidDb->open(databasePath.c_str())) {
+            cout << sidDb->error() << " [" << databasePath.c_str() << "]" << endl;
+            return -1;
+        }
+
+        const unsigned int length = sidDb->lengthMs(md5.c_str(), subsong);
+
+        if (length == 0) {
+            return -1;
+        }
+
+        return length;
+    }
+
+    unsigned int getTimeMs(const sidplayfp *player) const {
+        const auto timeMs = player->timeMs();
+
+        if (timeMs == 0 || timeMsOffset > timeMs) {
+            return timeMs;
+        }
+
+        /*
+         * try to match as much as possible the sid time elapsed with the one elapsed since the real playback start
+         * in order to avoid both premature playback ending and skipping of very short tracks (with length <200ms)
+         */
+        return timeMs - timeMsOffset;
+    }
+
+    string getSidPathFromOpenedDb(const string &md5) const {
+        if (!sidDb) {
+            cout << "SidDatabase not initialized" << endl;
+            return "";
+        }
+
+        return sidDb->sidPath(md5.c_str());
+    }
+
+    string getStilText(const string &baseDir, const string &stilPath, const string &buglistPath, const char *sidPath,
+                       const int subsong) {
+        stil = new STIL(stilPath.c_str(), buglistPath.c_str());
+
+        stil->setBaseDir(baseDir.c_str());
+
+        if (stil->getError() != 0) {
+            cout << "HVSC STIL error: " << stil->getErrorStr() << endl;
+            return "";
+        }
+
+        constexpr array fields = {
+            STIL::STILField::name,
+            STIL::STILField::author,
+            STIL::STILField::title,
+            STIL::STILField::artist,
+            STIL::STILField::comment
+        };
+
+        const char *stilEntry = nullptr;
+        string stilFinal;
+
+        for (const auto field: fields) {
+            stilEntry = stil->getEntry(sidPath, subsong, field);
+
+            if (stilEntry) {
+                const auto leadingWhiteSpacesCount = strspn(stilEntry, " ");
+                stilFinal += string(stilEntry + leadingWhiteSpacesCount);
+            }
+        }
+
+        stilEntry = stil->getEntry(sidPath, 0, STIL::STILField::comment);
+
+        if (stilEntry) {
+            stilFinal += stilEntry;
+        }
+
+        stilEntry = stil->getGlobalComment(sidPath);
+
+        if (stilEntry) {
+            stilFinal += stilEntry;
+        }
+
+        stilEntry = stil->getBug(sidPath);
+
+        if (stilEntry) {
+            const auto leadingWhiteSpacesCount = strspn(stilEntry, " ");
+            stilFinal += string(stilEntry + leadingWhiteSpacesCount);
+        }
+
+        if (stilFinal.empty()) {
+            return "";
+        }
+
+        constexpr string_view indentation = "\n         ";
+
+        size_t pos = 0;
+
+        while ((pos = stilFinal.find(indentation, pos)) != string::npos) {
+            stilFinal.replace(pos, indentation.length(), " ");
+            pos++;
+        }
+
+        return stilFinal.erase(stilFinal.find_last_not_of('\n') + 1);
+    }
+
     ~pluginLibsidplayfp() {
         delete mutePtr;
         delete player;
         delete rs;
+        delete sidDb;
+        delete stil;
         delete tune;
         delete [] kernal;
         delete [] basic;
@@ -92,16 +198,19 @@ public:
     SidTune *tune = nullptr;
     ReSIDfpBuilder *rs = nullptr;
     sidplayfp *player = nullptr;
+    SidDatabase *sidDb = nullptr;
+    STIL *stil = nullptr;
     char *kernal = nullptr;
     char *basic = nullptr;
     char *chargen = nullptr;
-    string hvscSonglengthsFile;
+    string hvscFilesPath;
     unsigned int seekPosition;
     unsigned int maxVoices;
     bool *mutePtr = nullptr;
-    bool hvscSonglengthsDataBaseEnabled;
+    bool hvscFilesEnabled;
     bool isSeeking = false;
     unsigned int length = 0;
+    unsigned int timeMsOffset = 0;
 
     FMOD_CODEC_WAVEFORMAT waveformat;
 };
@@ -127,13 +236,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginLibsidplayfp(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    string kernal_filename = plugin->info->dataPath + KERNAL_BIN_DATA_PATH;
-    string basic_filename = plugin->info->dataPath + BASIC_BIN_DATA_PATH;
-    string characters_filename = plugin->info->dataPath + CHARACTERS_BIN_DATA_PATH;
+    string filePathKernal = plugin->info->dataPath + KERNAL_BIN_DATA_PATH;
+    string filePathBasic = plugin->info->dataPath + BASIC_BIN_DATA_PATH;
+    string filePathCharacters = plugin->info->dataPath + CHARACTERS_BIN_DATA_PATH;
 
-    plugin->kernal = pluginLibsidplayfp::loadRom(kernal_filename.c_str(), 8192);
-    plugin->basic = pluginLibsidplayfp::loadRom(basic_filename.c_str(), 8192);
-    plugin->chargen = pluginLibsidplayfp::loadRom(characters_filename.c_str(), 4096);
+    plugin->kernal = pluginLibsidplayfp::loadRom(filePathKernal.c_str(), 8192);
+    plugin->basic = pluginLibsidplayfp::loadRom(filePathBasic.c_str(), 8192);
+    plugin->chargen = pluginLibsidplayfp::loadRom(filePathCharacters.c_str(), 4096);
 
     plugin->player = new sidplayfp();
 
@@ -172,7 +281,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     bool forceSidModel = false;
     bool forcec64Model = false;
 
-    plugin->hvscSonglengthsDataBaseEnabled = true;
+    plugin->hvscFilesEnabled = true;
     plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -237,13 +346,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                     } else {
                         filter = false;
                     }
-                } else if (word == "hvscSonglengthsPath") {
-                    plugin->hvscSonglengthsFile = value;
-                } else if (word == "hvscSonglengthsEnabled") {
+                } else if (word == "hvscFilesPath") {
+                    plugin->hvscFilesPath = value;
+                } else if (word == "hvscFilesEnabled") {
                     if (value == "true") {
-                        plugin->hvscSonglengthsDataBaseEnabled = true;
+                        plugin->hvscFilesEnabled = true;
                     } else {
-                        plugin->hvscSonglengthsDataBaseEnabled = false;
+                        plugin->hvscFilesEnabled = false;
                     }
                 } else if (word == "continuousPlayback") {
                     plugin->info->isContinuousPlaybackActive =
@@ -309,12 +418,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->mutePtr = new bool[plugin->maxVoices];
 
-    string comments;
-    for (int i = 0; i < s->numberOfCommentStrings(); i++) {
-        comments += '\n' + string(s->commentString(i));
-    }
-
-    plugin->info->comments = comments;
     plugin->info->numSamples = 0;
 
     plugin->info->clockSpeedStr = plugin->player->info().speedString();
@@ -386,6 +489,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                                                             static_cast<int>(plugin->info->filesize));
 
         plugin->info->md5 = plugin->tune->createMD5New();
+    } else {
+        string comments;
+        for (int i = 0; i < s->numberOfCommentStrings(); i++) {
+            comments += '\n' + string(s->commentString(i));
+        }
+
+        plugin->info->comments = comments;
     }
 
     plugin->info->numSubsongs = static_cast<int>(s->songs());
@@ -419,20 +529,20 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     //    bool skipClick=true;
     //    if(skipClick)
     //    {
-    //        if(getTimeMs(plugin->player) == 0)
+    //        if(plugin->getTimeMs(plugin->player) == 0)
     //        {
     //            do
     //            {
     //                plugin->player->play((short int*)buffer,size<<1);
     //            }
-    //            while(getTimeMs(plugin->player) < 10);
+    //            while(plugin->getTimeMs(plugin->player) < 10);
     //        }
     //    }
 
     unsigned int toRead;
 
     if (plugin->isSeeking) {
-        if (getTimeMs(plugin->player) < plugin->seekPosition) {
+        if (plugin->getTimeMs(plugin->player) < plugin->seekPosition) {
             /*
              * the current way playback & seeking are implemented leads to inaccurate seeking position:
              * higher is the number of rendered samples (per each fmod read) during seeking
@@ -472,7 +582,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
     if (postype == FMOD_TIMEUNIT_MS) {
         if (position == 0) {
-            if (getTimeMs(plugin->player) != 0) {
+            if (plugin->getTimeMs(plugin->player) != 0) {
                 plugin->player->load(plugin->tune);
             }
         } else {
@@ -486,7 +596,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
             plugin->seekPosition = position;
 
-            if (position <= getTimeMs(plugin->player)) {
+            if (position <= plugin->getTimeMs(plugin->player)) {
                 plugin->player->load(plugin->tune);
             }
 
@@ -517,24 +627,72 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         // this is the sid time elapsed for initial fmod pre-buffering
-        if (timeMsOffset == 0) {
-            timeMsOffset = plugin->player->timeMs();
+        if (plugin->timeMsOffset == 0) {
+            plugin->timeMsOffset = plugin->player->timeMs();
         }
 
-        if (!plugin->info->isSid || !plugin->hvscSonglengthsDataBaseEnabled) {
+        if (!plugin->info->isSid || !plugin->hvscFilesEnabled) {
             *length = -1;
-        } else {
-            if (plugin->length == 0) {
-                if (plugin->hvscSonglengthsFile.empty()) {
-                    plugin->hvscSonglengthsFile = plugin->info->dataPath + HVSC_SONGLENGTHS_PATH;
-                }
-
-                plugin->length = getLengthFromDb(plugin->hvscSonglengthsFile, plugin->info->md5,
-                                                 plugin->info->currentSubsong + 1);
-            }
-
-            *length = plugin->length;
+            return FMOD_OK;
         }
+
+        if (plugin->length != 0) {
+            *length = plugin->length;
+            return FMOD_OK;
+        }
+
+        plugin->sidDb = new SidDatabase();
+
+        if (plugin->hvscFilesPath.empty()) {
+            plugin->hvscFilesPath = plugin->info->dataPath + SID_DATA_DIR;
+        }
+
+        string baseDir;
+        string songlengthsPath;
+        string stilPath;
+        string buglistPath;
+
+        if (plugin->hvscFilesPath.empty()) {
+            baseDir = plugin->info->dataPath + SID_DATA_DIR;
+            songlengthsPath = "/" HVSC_SONGLENGTHS_FILENAME;
+            stilPath = "/" HVSC_STIL_FILENAME;
+            buglistPath = "/" HVSC_BUGLIST_FILENAME;
+        } else if (plugin->hvscFilesPath == plugin->info->dataPath + SID_DATA_DIR ||
+                   plugin->hvscFilesPath == plugin->info->userPath + SID_DATA_DIR) {
+            baseDir = plugin->hvscFilesPath;
+            songlengthsPath = baseDir + "/" HVSC_SONGLENGTHS_FILENAME;
+            stilPath = "/" HVSC_STIL_FILENAME;
+            buglistPath = "/" HVSC_BUGLIST_FILENAME;
+        } else {
+            const filesystem::path p(plugin->hvscFilesPath);
+            baseDir = p.parent_path().string();
+            songlengthsPath = baseDir + "/DOCUMENTS/" HVSC_SONGLENGTHS_FILENAME;
+            stilPath = "/DOCUMENTS/" HVSC_STIL_FILENAME;
+            buglistPath = "/DOCUMENTS/" HVSC_BUGLIST_FILENAME;
+        }
+
+        plugin->length = plugin->getLengthFromDb(songlengthsPath,
+                                                 plugin->info->md5,
+                                                 plugin->info->currentSubsong + 1);
+
+        *length = plugin->length;
+
+        const string sidPath = plugin->getSidPathFromOpenedDb(plugin->info->md5);
+
+        plugin->sidDb->close();
+
+        if (sidPath.empty()) {
+            return FMOD_OK;
+        }
+
+        plugin->info->collectionEntry = sidPath;
+
+
+        plugin->info->comments = plugin->getStilText(baseDir,
+                                                     stilPath,
+                                                     buglistPath,
+                                                     sidPath.c_str(),
+                                                     plugin->info->currentSubsong + 1);
 
         return FMOD_OK;
     }
@@ -550,42 +708,9 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
     const auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS_REAL) {
-        *position = getTimeMs(plugin->player);
+        *position = plugin->getTimeMs(plugin->player);
         return FMOD_OK;
     }
 
     return FMOD_ERR_UNSUPPORTED;
-}
-
-unsigned int getLengthFromDb(const string &databasePath, const string &md5, const unsigned int subsong) {
-    const auto sidDb = new SidDatabase(); // TODO sidDatabase->close() && Delete
-
-    if (!sidDb->open(databasePath.c_str())) {
-        cout << sidDb->error() << " [" << databasePath.c_str() << "]" << endl;
-        return -1;
-    }
-
-    const unsigned int length = sidDb->lengthMs(md5.c_str(), subsong);
-
-    delete sidDb;
-
-    if (length == 0) {
-        return -1;
-    }
-
-    return length;
-}
-
-unsigned int getTimeMs(const sidplayfp *player) {
-    const auto timeMs = player->timeMs();
-
-    if (timeMs == 0 || timeMsOffset > timeMs) {
-        return timeMs;
-    }
-
-    /*
-     * try to match as much as possible the sid time elapsed with the one elapsed since the real playback start
-     * in order to avoid both premature playback ending and skipping of very short tracks (with length <200ms)
-     */
-    return timeMs - timeMsOffset;
 }

@@ -1,0 +1,11 @@
+--- src/utils/iniParser.h	2025-12-23 16:07:45.000000000 +0100
++++ src/utils/iniParser.h	2026-07-14 13:42:25.144967872 +0200
+@@ -41,7 +41,7 @@
+ private:
+     std::string parseSection(const std::string &buffer);
+ 
+-    keys_t::value_type parseKey(const std::string &buffer);
++    keys_t::value_type parseKey(const std::string &buffer, const std::string &sidPath);
+ 
+     bool open_internal(std::ifstream& iniFile);
+ 

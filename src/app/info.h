@@ -47,6 +47,7 @@ public:
         title = "";
         hasTitle = false;
         copyright = "";
+        collectionEntry = "";
         comments = "";
         date = "";
         fade = "";
@@ -256,6 +257,7 @@ public:
     string ripper;
     bool hasTitle;
     string copyright;
+    string collectionEntry;
     string comments;
     string date;
     string fade;

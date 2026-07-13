@@ -100,8 +100,12 @@
 #define PLUGIN_libsidplayfp_NAME "@PLUGIN_libsidplayfp_NAME@"
 #define PLUGIN_libsidplayfp_VERSION "@PLUGIN_libsidplayfp_VERSION@"
 #define PLUGIN_libsidplayfp_DIR "@PLUGIN_libsidplayfp_DIR@"
-#define PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH "@PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_PATH@"
+#define PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_FILENAME "@PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_FILENAME@"
 #define PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL "@PLUGIN_libsidplayfp_HVSC_SONGLENGTHS_URL@"
+#define PLUGIN_libsidplayfp_HVSC_STIL_FILENAME "@PLUGIN_libsidplayfp_HVSC_STIL_FILENAME@"
+#define PLUGIN_libsidplayfp_HVSC_STIL_URL "@PLUGIN_libsidplayfp_HVSC_STIL_URL@"
+#define PLUGIN_libsidplayfp_HVSC_BUGLIST_FILENAME"@PLUGIN_libsidplayfp_HVSC_BUGLIST_FILENAME@"
+#define PLUGIN_libsidplayfp_HVSC_BUGLIST_URL "@PLUGIN_libsidplayfp_HVSC_BUGLIST_URL@"
 
 #define PLUGIN_libstsound 20
 #define PLUGIN_libstsound_LIB "@PLUGIN_libstsound_LIB@"

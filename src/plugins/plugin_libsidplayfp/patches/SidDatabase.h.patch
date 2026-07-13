@@ -1,0 +1,19 @@
+--- src/utils/SidDatabase.h	2025-12-23 16:07:45.000000000 +0100
++++ src/utils/SidDatabase.h	2026-07-14 13:58:44.647605050 +0200
+@@ -24,6 +24,7 @@
+ #define SIDDATABASE_H
+ 
+ #include <stdint.h>
++#include <string>
+ 
+ #include "sidplayfp/siddefs.h"
+ 
+@@ -101,6 +102,8 @@
+      */
+     int_least32_t lengthMs(const char *md5, unsigned int song);
+ 
++    std::string sidPath(const char *md5);
++
+     /**
+      * Get descriptive error message.
+      */

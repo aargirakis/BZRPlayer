@@ -22,7 +22,7 @@ public:
 
     void saveSettingsLibsidplayfp() const;
 
-    void setUiLineEditLibsidplayfpHvscSonglengthsPath(const QString &text) const;
+    void setUiLineEditLibsidplayfpHvscFilesPath(const QString &text) const;
 
 private slots:
     void updateScrollText() const;
@@ -237,17 +237,17 @@ private slots:
 
     void on_sliderLibopenmptStereoSeparation_valueChanged(int value) const;
 
-    void on_buttonLibsidplayfpHvscSonglengthsBrowse_clicked();
+    void on_buttonLibsidplayfpHvscFilesBrowse_clicked();
 
-    void on_buttonLibsidplayfpHvscSonglengthsDownload_clicked();
+    void on_buttonLibsidplayfpHvscFilesDownload_clicked();
 
-    void downloadHvscSonglengthsComplete() const;
+    void downloadHvscFilesComplete(const QString &error) const;
 
     void on_checkBoxLibsidplayfpContinuousPlayback_toggled(bool isChecked) const;
 
-    void on_checkBoxLibsidplayfpHvscSonglengthsEnabled_toggled(bool isChecked) const;
+    void on_checkBoxLibsidplayfpHvscFilesEnabled_toggled(bool isChecked) const;
 
-    void on_comboBoxLibsidplayfpHvscSonglengthsUpdate_textActivated(const QString &arg1) const;
+    void on_comboBoxLibsidplayfpHvscFilesUpdate_textActivated(const QString &arg1) const;
 
     void on_checkBoxLibvgmContinuousPlayback_toggled(bool isChecked) const;
 
