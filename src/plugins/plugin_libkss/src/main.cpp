@@ -88,7 +88,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     const auto typeInfo = KSS_check_type(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
                                          plugin->info->filePath.c_str());
 
-    if (typeInfo.type == MBMDATA) {
+    if (typeInfo == MBMDATA) {
         /* TODO:
          *  seems the KSS_autoload_mbk invocation introduces a beginning audio delay
          *  somewhere in the code not in this function
@@ -135,7 +135,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     uint8_t subsongOffset = 0;
 
-    if (typeInfo.type == KSSDATA) {
+    if (typeInfo == KSSDATA) {
         plugin->info->numSubsongs = plugin->kss->trk_max - plugin->kss->trk_min + 1;
         subsongOffset = plugin->kss->trk_min;
     }

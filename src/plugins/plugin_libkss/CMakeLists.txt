@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libkss")
-set(VERSION "1.2.1")
+set(VERSION "db97d0830ca408b0982b82fc384967231bf82929")
+string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
-set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
+set(PLUGIN_${NAME}_VERSION "${VERSION_SHORT}" PARENT_SCOPE)
 
 add_subdirectory(deps/emu2149)
 add_subdirectory(deps/emu2212)
@@ -17,12 +18,13 @@ add_subdirectory(deps/kmz80)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(NAME_VERSIONED "${NAME}-${VERSION}")
-set(FILENAME "${NAME_VERSIONED}.tar.gz")
+set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
+set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
-set(URL "https://github.com/digital-sound-antiques/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "303a0948350a137630a69658d658e9c11b42832588768b9f60c19b8586348c76")
-download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
+set(URL "https://github.com/digital-sound-antiques/${NAME}/archive/${FILENAME_URL}")
+set(SHA_256_HASH "cc00e8c4e5cede2c481da36b41badaa1de9480d4acc3031f7e7e17b2bf508327")
+set(UNPACKED_DIR "${NAME}-${VERSION}")
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
