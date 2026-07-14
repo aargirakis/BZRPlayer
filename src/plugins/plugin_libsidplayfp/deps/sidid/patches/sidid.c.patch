@@ -1,6 +1,6 @@
---- sidid.c	2025-09-20 12:52:04.821852652 +0200
-+++ sidid.c	2025-09-20 14:06:59.005491946 +0200
-@@ -543,3 +543,46 @@
+--- sidid.c	2026-07-14 16:18:17.000000000 +0200
++++ sidid.c	2026-07-14 19:17:49.270443155 +0200
+@@ -543,3 +543,37 @@
    if ((c >= 'A') && (c <= 'F')) return c - 'A' + 10;
    return -1;
  }
@@ -25,25 +25,16 @@
 +        found = 1;
 +        identified++;
 +      }
-+
 +      if (!multiscan) break;
 +    }
-+    if (!playerid)
-+    {
-+      id = (SIDID *)id->next;
-+    }
-+    else
-+    {
-+      break;
-+    }
++    if (!playerid) id = (SIDID *)id->next;
++    else break;
 +  }
 +  if (!found)
 +  {
-+
 +    unidentified++;
 +    return "Unknown";
 +  }
 +  examined++;
 +  return id->name;
-+
 +}
