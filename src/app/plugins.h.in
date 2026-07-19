@@ -157,6 +157,7 @@
 #define PLUGIN_uade_NAME "@PLUGIN_uade_NAME@"
 #define PLUGIN_uade_VERSION "@PLUGIN_uade_VERSION@"
 #define PLUGIN_uade_DIR "@PLUGIN_uade_DIR@"
+#define PLUGIN_uade_SONGLENGTHS_FILENAME "@PLUGIN_uade_SONGLENGTHS_FILENAME@"
 
 #define PLUGIN_v2m_player 30
 #define PLUGIN_v2m_player_LIB "@PLUGIN_v2m-player_LIB@"

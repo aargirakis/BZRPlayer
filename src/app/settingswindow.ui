@@ -7697,6 +7697,9 @@ QComboBox::drop-down:disabled {
       <height>26</height>
      </rect>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
     <property name="cursorMoveStyle">
      <enum>Qt::CursorMoveStyle::LogicalMoveStyle</enum>
     </property>

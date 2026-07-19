@@ -66,11 +66,11 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
 
     Info *info;
-    bool uade_songlengths_enabled;
-    string uade_songlengthspath;
+    bool uadeSonglengthsEnabled;
+    string uadeSonglengthsPath;
     uade_state *uadeState = nullptr;
     const struct uade_song_info *uadeSongInfo;
-    unsigned int length = -1;
+    unsigned int length = 0;
     bool isSeekSkipped = true;
 };
 
@@ -109,7 +109,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     string panning = "0.5";
     string silence_timeout = "5";
     bool silence_timeout_enabled = true;
-    plugin->uade_songlengths_enabled = true;
+    plugin->uadeSonglengthsEnabled = true;
     plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -155,12 +155,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 } else if (word == "uadeSonglengthsPath") {
-                    plugin->uade_songlengthspath = value;
+                    plugin->uadeSonglengthsPath = value;
                 } else if (word == "uadeSonglengthsEnabled") {
                     if (value == "true") {
-                        plugin->uade_songlengths_enabled = true;
+                        plugin->uadeSonglengthsEnabled = true;
                     } else {
-                        plugin->uade_songlengths_enabled = false;
+                        plugin->uadeSonglengthsEnabled = false;
                     }
                 }
             }
@@ -178,10 +178,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     codec->numsubsounds = 0;
     // number of 'subsounds' in this sound.  For most codecs this is 0, only multi sound codecs such as FSB or CDDA have subsounds
     codec->plugindata = plugin; // user data value
-
-    if (plugin->uade_songlengthspath.empty() || plugin->uade_songlengthspath == "/uade.md5") {
-        plugin->uade_songlengthspath = plugin->info->dataPath + UADE_DATA_DIR + "/uade.md5";
-    }
 
     uade_config *uadeConfig = uade_new_config();
 
@@ -372,7 +368,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     }
 
     /*
-     * renderedBytes should never reach value 0 when uade.md5 provides the song length
+     * renderedBytes should never reach value 0 when uade songlengths file provides the song length
      * however this check *might* be still useful if no UADE_NOTIFICATION_SONG_END is received
      */
     if (renderedBytes == 0) {
@@ -386,13 +382,19 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     auto *plugin = static_cast<pluginUade *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        if (!plugin->uade_songlengths_enabled) {
+        if (!plugin->uadeSonglengthsEnabled) {
             *length = -1;
         } else {
-            if (plugin->length == -1) {
+            if (plugin->length == 0) {
+                if (plugin->uadeSonglengthsPath.empty() ||
+                    plugin->uadeSonglengthsPath == "/" UADE_SONGLENGTHS_FILENAME) {
+                    plugin->uadeSonglengthsPath =
+                            plugin->info->dataPath + UADE_DATA_DIR + "/" UADE_SONGLENGTHS_FILENAME;
+                }
+
                 plugin->length = getLengthFromDatabase(plugin->info->filePath.c_str(), plugin->info->currentSubsong,
                                                        plugin->uadeSongInfo->modulemd5,
-                                                       plugin->uade_songlengthspath.c_str());
+                                                       plugin->uadeSonglengthsPath.c_str());
             }
 
             *length = plugin->length;
@@ -422,8 +424,6 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 }
 
 unsigned int getLengthFromDatabase(const char *filename, int subsong, const char *md5, const char *database) {
-    unsigned int length = 0;
-
     string filenameFromDb = database;
 
     ifstream ifs(filenameFromDb);
@@ -431,8 +431,10 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
     if (ifs.fail()) {
         // the file could not be opened
         cout << "Couldn't open UADE songlengths file: " << filenameFromDb << endl;
-        return 0;
+        return -1;
     }
+
+    unsigned int length = 0;
 
     string line;
     while (getline(ifs, line)) {
@@ -441,7 +443,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
             int j = line.find_first_of("=");
             if (j == -1) {
                 cout << "Formatting error in uade songlengths file: " << filenameFromDb << endl;
-                return 0;
+                return -1;
             }
 
             line = line.substr(j + 1);
@@ -452,7 +454,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
 
             if (subsong >= vstrings.size()) {
                 cout << "Subsong length not found" << endl;
-                return 0;
+                return -1;
             }
 
             line = vstrings.at(subsong);
@@ -460,7 +462,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
             int i = line.find_first_of(":");
             if (i == -1) {
                 cout << "Formatting error in uade songlengths file: " << filenameFromDb << endl;
-                return 0;
+                return -1;
             }
 
             int msk = line.find_first_of(".");
@@ -486,6 +488,7 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
 
     if (length == 0) {
         cout << "Couldn't find song length for: " << filename << " [Hash: " << md5 << "]" << endl;
+        return -1;
     }
 
     return length;

@@ -70,8 +70,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${FMOD_API_DIR})
 
 set(UADE_DATA_DIR "${PLUGINS_DIR}/uade")
+set(UADE_SONGLENGTHS_FILENAME "uade.md5")
 set(PLUGIN_${NAME}_DIR "${UADE_DATA_DIR}" PARENT_SCOPE)
-set(UADE_SONGLENGTHS "uade.md5")
+set(PLUGIN_${NAME}_SONGLENGTHS_FILENAME "${UADE_SONGLENGTHS_FILENAME}" PARENT_SCOPE)
 
 if (WIN32)
     set(UADE_CORE "uadecore.exe")
@@ -80,10 +81,10 @@ else ()
 endif ()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_DATA_DIR="${UADE_DATA_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_SONGLENGTHS_FILENAME="${UADE_SONGLENGTHS_FILENAME}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE UADE_CORE="${UADE_CORE}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_DIR="${PLUGINS_DIR}")
-target_compile_definitions(${PROJECT_NAME} PRIVATE EMSCRIPTEN)
 
 add_library(LIBUADE_STATIC STATIC IMPORTED GLOBAL)
 
@@ -117,7 +118,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${EXTERNAL_SOURCE_DIR}/${SONG_CONF}
         ${EXTERNAL_SOURCE_DIR}/uade.conf
         ${EXTERNAL_SOURCE_DIR}/uaerc
-        ${CMAKE_CURRENT_SOURCE_DIR}/dist/${UADE_SONGLENGTHS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/dist/${UADE_SONGLENGTHS_FILENAME}
         ${UADE_DATA_PATH}
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different

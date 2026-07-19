@@ -1364,7 +1364,7 @@ void settingsWindow::loadSettingsUade() const {
     ui->sliderUadePanning->setValue(5);
     ui->labelUadePanningValue->setText("0.5");
     ui->sliderUadeSilenceTimeOut->setValue(5);
-    ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
+    ui->lineEditUadeSonglengthsPath->setText("/" PLUGIN_uade_SONGLENGTHS_FILENAME);
     ui->checkBoxUadeSongLengths->setChecked(true);
     ui->checkBoxUadeContinuousPlayback->setChecked(false);
 
@@ -1422,7 +1422,7 @@ void settingsWindow::loadSettingsUade() const {
                     }
                 } else if (word.compare("uadeSonglengthsPath") == 0) {
                     if (value == "") {
-                        ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
+                        ui->lineEditUadeSonglengthsPath->setText("/" PLUGIN_uade_SONGLENGTHS_FILENAME);
                     } else {
                         ui->lineEditUadeSonglengthsPath->setText(value.c_str());
                     }
@@ -3693,14 +3693,15 @@ void settingsWindow::on_checkBoxSndhPlayerContinuousPlayback_toggled(const bool 
 void settingsWindow::on_buttonUadeSonglengthsBrowse_clicked() {
     QString startDir = ui->lineEditUadeSonglengthsPath->text();
 
-    if (startDir.compare("/uade.md5") == 0) {
-        startDir = dataPath + PLUGIN_uade_DIR + "/uade.md5";
+    if (startDir.compare("/" PLUGIN_uade_SONGLENGTHS_FILENAME) == 0) {
+        startDir = dataPath + PLUGIN_uade_DIR + "/" PLUGIN_uade_SONGLENGTHS_FILENAME;
     }
 
-    if (const QString file = QFileDialog::getOpenFileName(this, "Choose your uade.md5", startDir, "*.md5");
+    if (const QString file = QFileDialog::getOpenFileName(this, "Choose your " PLUGIN_uade_SONGLENGTHS_FILENAME,
+                                                          startDir, PLUGIN_uade_SONGLENGTHS_FILENAME);
         !file.isEmpty()) {
-        if (file.compare(dataPath + PLUGIN_uade_DIR + "/uade.md5") == 0) {
-            ui->lineEditUadeSonglengthsPath->setText("/uade.md5");
+        if (file.compare(dataPath + PLUGIN_uade_DIR + "/" PLUGIN_uade_SONGLENGTHS_FILENAME) == 0) {
+            ui->lineEditUadeSonglengthsPath->setText("/" PLUGIN_uade_SONGLENGTHS_FILENAME);
         } else {
             ui->lineEditUadeSonglengthsPath->setText(file);
         }
