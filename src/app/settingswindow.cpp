@@ -347,6 +347,10 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsLazyusf2();
     }
 
+    if (PLUGIN_libopenmpt_LIB != "") {
+        loadSettingsLibopenmpt();
+    }
+
     if (PLUGIN_libsidplayfp_LIB != "") {
         loadSettingsLibsidplayfp();
     }
@@ -363,6 +367,10 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsSndhPlayer();
     }
 
+    if (PLUGIN_uade_LIB != "") {
+        loadSettingsUade();
+    }
+
     if (PLUGIN_vgmstream_LIB != "") {
         loadSettingsVgmstream();
     }
@@ -370,9 +378,6 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     if (PLUGIN_vio2sf_LIB != "") {
         loadSettingsVio2sf();
     }
-
-    loadSettingsLibopenmpt();
-    loadSettingsUade();
 
     updateColorButtons();
 
@@ -789,6 +794,10 @@ void settingsWindow::on_buttonOK_clicked() {
         saveSettingsLazyusf2();
     }
 
+    if (PLUGIN_libopenmpt_LIB != "") {
+        saveSettingsLibopenmpt();
+    }
+
     if (PLUGIN_libsidplayfp_LIB != "") {
         saveSettingsLibsidplayfp();
     }
@@ -805,6 +814,10 @@ void settingsWindow::on_buttonOK_clicked() {
         saveSettingsSndhPlayer();
     }
 
+    if (PLUGIN_uade_LIB != "") {
+        saveSettingsUade();
+    }
+
     if (PLUGIN_vgmstream_LIB != "") {
         saveSettingsVgmstream();
     }
@@ -812,9 +825,6 @@ void settingsWindow::on_buttonOK_clicked() {
     if (PLUGIN_vio2sf_LIB != "") {
         saveSettingsVio2sf();
     }
-
-    saveSettingsLibopenmpt();
-    saveSettingsUade();
 
     mainWindow->saveSettings();
 
@@ -829,7 +839,7 @@ void settingsWindow::on_comboBoxReverb_textActivated(const QString &arg1) const 
 
 void settingsWindow::loadSettingsAdplug() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/adplug.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_adplug_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -873,7 +883,7 @@ void settingsWindow::loadSettingsAdplug() const {
 
 void settingsWindow::loadSettingsAsap() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/asap.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_asap_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -905,7 +915,7 @@ void settingsWindow::loadSettingsAsap() const {
 
 void settingsWindow::loadSettingsFmod() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/fmod.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/fmod.cfg";
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -939,7 +949,7 @@ void settingsWindow::loadSettingsFmod() const {
 
 void settingsWindow::loadSettingsFurnace() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/furnace.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_furnace_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -971,7 +981,7 @@ void settingsWindow::loadSettingsFurnace() const {
 
 void settingsWindow::loadSettingsHighlyExperimental() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/highly_experimental.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_highly_experimental_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1003,7 +1013,7 @@ void settingsWindow::loadSettingsHighlyExperimental() const {
 
 void settingsWindow::loadSettingsHighlyQuixotic() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/highly_quixotic.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_highly_quixotic_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1035,7 +1045,7 @@ void settingsWindow::loadSettingsHighlyQuixotic() const {
 
 void settingsWindow::loadSettingsHighlyTheoretical() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/highly_theoretical.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_highly_theoretical_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1067,7 +1077,7 @@ void settingsWindow::loadSettingsHighlyTheoretical() const {
 
 void settingsWindow::loadSettingsHivelytracker() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_hivelytracker_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1104,7 +1114,7 @@ void settingsWindow::loadSettingsHivelytracker() const {
 
 void settingsWindow::loadSettingsLazyusf2() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/lazyusf2.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_lazyusf2_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1136,7 +1146,7 @@ void settingsWindow::loadSettingsLazyusf2() const {
 
 void settingsWindow::loadSettingsLibopenmpt() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_libopenmpt_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1193,7 +1203,7 @@ void settingsWindow::loadSettingsLibopenmpt() const {
 
 void settingsWindow::loadSettingsLibsidplayfp() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_libsidplayfp_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1250,7 +1260,7 @@ void settingsWindow::loadSettingsLibsidplayfp() const {
 
 void settingsWindow::loadSettingsLibvgm() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libvgm.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_libvgm_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1282,7 +1292,7 @@ void settingsWindow::loadSettingsLibvgm() const {
 
 void settingsWindow::loadSettingsLibxmp() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libxmp.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_libxmp_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1314,7 +1324,7 @@ void settingsWindow::loadSettingsLibxmp() const {
 
 void settingsWindow::loadSettingsSndhPlayer() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/sndh-player.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_sndh_player_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1346,7 +1356,7 @@ void settingsWindow::loadSettingsSndhPlayer() const {
 
 void settingsWindow::loadSettingsUade() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/uade.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_uade_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1436,7 +1446,7 @@ void settingsWindow::loadSettingsUade() const {
 
 void settingsWindow::loadSettingsVgmstream() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/vgmstream.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_vgmstream_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1468,7 +1478,7 @@ void settingsWindow::loadSettingsVgmstream() const {
 
 void settingsWindow::loadSettingsVio2sf() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/vio2sf.cfg";
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_vio2sf_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -1500,7 +1510,7 @@ void settingsWindow::loadSettingsVio2sf() const {
 
 void settingsWindow::saveSettingsAdplug() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/adplug.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_adplug_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1517,7 +1527,7 @@ void settingsWindow::saveSettingsAdplug() const {
 
 void settingsWindow::saveSettingsAsap() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/asap.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_asap_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1532,7 +1542,7 @@ void settingsWindow::saveSettingsAsap() const {
 
 void settingsWindow::saveSettingsFmod() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/fmod.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/fmod.cfg";
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1550,7 +1560,7 @@ void settingsWindow::saveSettingsFmod() const {
 
 void settingsWindow::saveSettingsFurnace() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/furnace.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_furnace_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1564,7 +1574,7 @@ void settingsWindow::saveSettingsFurnace() const {
 
 void settingsWindow::saveSettingsHighlyExperimental() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/highly_experimental.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_highly_experimental_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1579,7 +1589,7 @@ void settingsWindow::saveSettingsHighlyExperimental() const {
 
 void settingsWindow::saveSettingsHighlyQuixotic() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/highly_quixotic.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_highly_quixotic_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1594,7 +1604,7 @@ void settingsWindow::saveSettingsHighlyQuixotic() const {
 
 void settingsWindow::saveSettingsHighlyTheoretical() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/highly_theoretical.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_highly_theoretical_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1609,7 +1619,7 @@ void settingsWindow::saveSettingsHighlyTheoretical() const {
 
 void settingsWindow::saveSettingsHivelytracker() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/hivelytracker.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_hivelytracker_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1626,7 +1636,7 @@ void settingsWindow::saveSettingsHivelytracker() const {
 
 void settingsWindow::saveSettingsLazyusf2() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/lazyusf2.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_lazyusf2_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1641,7 +1651,7 @@ void settingsWindow::saveSettingsLazyusf2() const {
 
 void settingsWindow::saveSettingsLibopenmpt() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libopenmpt.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_libopenmpt_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1661,7 +1671,7 @@ void settingsWindow::saveSettingsLibopenmpt() const {
 
 void settingsWindow::saveSettingsLibsidplayfp() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libsidplayfp.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_libsidplayfp_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1688,7 +1698,7 @@ void settingsWindow::saveSettingsLibsidplayfp() const {
 
 void settingsWindow::saveSettingsLibvgm() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libvgm.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_libvgm_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1702,7 +1712,7 @@ void settingsWindow::saveSettingsLibvgm() const {
 
 void settingsWindow::saveSettingsLibxmp() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/libxmp.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_libxmp_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1716,7 +1726,7 @@ void settingsWindow::saveSettingsLibxmp() const {
 
 void settingsWindow::saveSettingsSndhPlayer() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/sndh-player.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_sndh_player_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1730,7 +1740,7 @@ void settingsWindow::saveSettingsSndhPlayer() const {
 
 void settingsWindow::saveSettingsUade() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/uade.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_uade_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1772,7 +1782,7 @@ void settingsWindow::saveSettingsUade() const {
 
 void settingsWindow::saveSettingsVgmstream() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/vgmstream.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_vgmstream_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1786,7 +1796,7 @@ void settingsWindow::saveSettingsVgmstream() const {
 
 void settingsWindow::saveSettingsVio2sf() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGINS_CONFIG_DIR + "/vio2sf.cfg";
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_vio2sf_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {

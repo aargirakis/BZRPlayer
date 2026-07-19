@@ -76,10 +76,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE #TODO remove unnecessary
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
 
+set(CONFIG_FILENAME "${PROJECT_NAME}.cfg")
+set(PLUGIN_${NAME}_CONFIG_FILENAME "${CONFIG_FILENAME}" PARENT_SCOPE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE CONFIG_FILENAME="${CONFIG_FILENAME}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGIN_CONFIGS_DIR="${PLUGIN_CONFIGS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE EMU_COMPILE ARCH_MIN_SSE2)
 #target_compile_definitions(${PROJECT_NAME} PRIVATE DYNAREC)   #TODO
 #target_compile_definitions(${PROJECT_NAME} PRIVATE SP_STATUS_TASKDONE=0x200)   #TODO
-target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
 
 #target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-fcommon>) #TODO for DYNAREC
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-return-mismatch>)

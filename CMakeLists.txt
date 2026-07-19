@@ -39,7 +39,7 @@ set(LAYOUTS_DIR "/layouts")
 set(PLAYLISTS_DIR "/playlists")
 set(PLUGINS_DIR "/plugins")
 set(PLUGINS_FMOD_DIR "${PLUGINS_DIR}/fmod")
-set(PLUGINS_CONFIG_DIR "${PLUGINS_DIR}/config")
+set(PLUGIN_CONFIGS_DIR "${PLUGINS_DIR}/configs")
 
 include(${CMAKE_SOURCE_DIR}/utils.cmake)
 include(${CMAKE_SOURCE_DIR}/src/external/fmod/fmod.cmake)

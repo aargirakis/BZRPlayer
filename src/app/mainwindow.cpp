@@ -396,8 +396,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         QDir().mkdir(userPath + PLUGIN_libsidplayfp_DIR);
     }
 
-    if (!QDir(userPath + PLUGINS_CONFIG_DIR).exists()) {
-        QDir().mkdir(userPath + PLUGINS_CONFIG_DIR);
+    if (!QDir(userPath + PLUGIN_CONFIGS_DIR).exists()) {
+        QDir().mkdir(userPath + PLUGIN_CONFIGS_DIR);
     }
 
     QDir directory(userPath + PLAYLISTS_DIR);

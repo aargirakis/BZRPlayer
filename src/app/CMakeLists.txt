@@ -68,7 +68,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE RESOURCES_DIR="${RESOURCES_DI
 target_compile_definitions(${PROJECT_NAME} PRIVATE LAYOUTS_DIR="${LAYOUTS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLAYLISTS_DIR="${PLAYLISTS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_DIR="${PLUGINS_DIR}")
-target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGINS_CONFIG_DIR="${PLUGINS_CONFIG_DIR}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGIN_CONFIGS_DIR="${PLUGIN_CONFIGS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE FMOD_DLS_PATH="${PLUGINS_FMOD_DIR}/gm.dls")
 
 foreach (QT_MODULE ${QT_MODULES})

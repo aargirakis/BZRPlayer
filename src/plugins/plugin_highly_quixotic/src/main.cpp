@@ -351,7 +351,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->qsoundState = new uint8_t[qsound_get_state_size()];
     qsound_init();
 
-    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/highly_quixotic.cfg";
+    string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 

@@ -196,7 +196,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/vgmstream.cfg";
+    string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 

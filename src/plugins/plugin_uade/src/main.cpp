@@ -90,7 +90,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginUade(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    string filename = plugin->info->userPath + PLUGINS_CONFIG_DIR + "/uade.cfg";
+    string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 

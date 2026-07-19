@@ -33,7 +33,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
 
-set(ORGANYA_DATA_DIR "${PLUGINS_DIR}/organya")
+set(ORGANYA_DATA_DIR "${PLUGINS_DIR}/${PROJECT_NAME}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE ORGANYA_DATA_DIR="${ORGANYA_DATA_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

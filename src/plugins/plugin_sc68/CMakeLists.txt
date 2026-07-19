@@ -55,7 +55,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src/app
         ${FMOD_API_DIR})
 
-set(SC68_DATA_DIR "${PLUGINS_DIR}/sc68")
+set(SC68_DATA_DIR "${PLUGINS_DIR}/${PROJECT_NAME}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE SC68_DATA_DIR="${SC68_DATA_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_FREE)
 target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_MALLOC)
