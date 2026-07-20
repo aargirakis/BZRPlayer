@@ -674,6 +674,15 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     updateButtons();
     highlightPlaylistItem(currentPlaylist, currentRow);
     checkCommandLine(argc, argv);
+
+#ifdef WIN32
+    // one day interval
+    if (QDateTime::currentSecsSinceEpoch() -
+        settings.value("Internal/lastUpdateCheckEpoch", 0).toLongLong()
+        >= 86400) {
+        updateCheck();
+    }
+#endif
 }
 
 void MainWindow::checkCommandLine(int argc, char *argv[]) {
@@ -5343,4 +5352,29 @@ QStringList MainWindow::sortPreservingOrder(const QStringList &folderPlaylists,
     }
 
     return result;
+}
+
+void MainWindow::updateCheck() {
+    const auto checker = new UpdateChecker(PROJECT_VERSION, "https://github.com/aargirakis/BZRPlayer", this);
+
+    connect(checker, &UpdateChecker::checkDone, this, [this](const QString &version, const QString &error) {
+        if (!error.isEmpty()) {
+            addDebugText("Update check: " + error);
+            return;
+        }
+
+        const auto isTrayVisible = tray->isVisible();
+
+        tray->setVisible(true);
+
+        tray->showMessage(QString("Update Available"), QString(PROJECT_NAME " %1 is available").arg(version),
+                          tray->icon(), 7000);
+
+        tray->setVisible(isTrayVisible);
+
+        QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
+        settings.setValue("Internal/lastUpdateCheckEpoch", QDateTime::currentSecsSinceEpoch());
+    });
+
+    checker->checkForUpdates();
 }

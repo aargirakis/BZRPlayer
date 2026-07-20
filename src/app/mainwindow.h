@@ -10,6 +10,7 @@
 #include "channels.h"
 #include "filesdownloader.h"
 #include "fileinfoparser.h"
+#include "updatechecker.h"
 #include "visualizers/trackerfullscreen.h"
 #include "visualizers/visualizerfullscreen.h"
 
@@ -670,6 +671,8 @@ private:
     static void iffWriteUint8(FILE *f, uint8_t value);
 
     static void iffWriteChunkData(FILE *f, const void *data, size_t length);
+
+    void updateCheck();
 
     int currentSubsong;
     PlayMode playMode;
