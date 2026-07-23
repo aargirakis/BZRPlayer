@@ -372,7 +372,7 @@ private slots:
 
     void timerProgress();
 
-    void refreshInfo();
+    void refreshInfoNetworkStream();
 
     void restoreLayout();
 
@@ -673,6 +673,8 @@ private:
     static void iffWriteChunkData(FILE *f, const void *data, size_t length);
 
     void updateCheck();
+
+    static bool isNetworkStream(const QString &);
 
     int currentSubsong;
     PlayMode playMode;

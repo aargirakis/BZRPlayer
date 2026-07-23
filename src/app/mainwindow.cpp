@@ -693,7 +693,7 @@ void MainWindow::checkCommandLine(int argc, char *argv[]) {
     args.removeFirst();
     QList<QUrl> urls;
     for (const auto &item: args) {
-        if (item.startsWith("http://") || item.startsWith("https://")) {
+        if (isNetworkStream(item)) {
             urls.append(QUrl::fromLocalFile(item));
         } else {
             urls.append(QUrl::fromLocalFile(QFileInfo(item).absoluteFilePath()));
@@ -1037,7 +1037,7 @@ void MainWindow::addDebugText(const QString &debugText) const {
     ui->Debug->appendPlainText(debugText);
 }
 
-void MainWindow::refreshInfo() {
+void MainWindow::refreshInfoNetworkStream() {
     PlaylistItem pi;
     pi.fullPath = currentPlayingFilepath;
     pi.info = SoundManager::getInstance().info;
@@ -1046,11 +1046,9 @@ void MainWindow::refreshInfo() {
     QString title;
 
     if (!pi.info->title.empty()) {
-        title = fromUtf8OrLatin1(pi.info->title);
+        title = pi.info->title.c_str();
     } else {
-        title = fromUtf8OrLatin1(!pi.info->containerFilenames.empty()
-                                     ? pi.info->containerLastFilename
-                                     : pi.info->filePath);
+        title = pi.info->filePath.c_str();
     }
 
     QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
@@ -1059,22 +1057,20 @@ void MainWindow::refreshInfo() {
 
     index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, PlaylistModel::Section::Artist,
                                                                   QModelIndex());
-    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, fromUtf8OrLatin1(pi.info->artist), Qt::EditRole);
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, pi.info->artist.c_str(), Qt::EditRole);
 }
 
 void MainWindow::timerProgress() {
     unsigned int currentMs = 0;
     const auto &sm = SoundManager::getInstance();
+    const auto info = sm.info;
 
     if (sm.isPlaying()) {
         refreshInfoTimer++;
 
-        if (refreshInfoTimer >= 120) {
-            if (const QFileInfo fileinfo(currentPlayingFilepath);
-                fileinfo.size() == 0) {
-                refreshInfoTimer = 0;
-                refreshInfo();
-            }
+        if (refreshInfoTimer >= 120 && !info->isLocalFilePath) {
+            refreshInfoTimer = 0;
+            refreshInfoNetworkStream();
         }
 
         if (visualizerFullScreen->isVisible()) {
@@ -1107,8 +1103,7 @@ void MainWindow::timerProgress() {
             return;
         }
 
-        if (const auto &info = sm.info;
-            info != nullptr && (info->isContinuousPlaybackActive || info->isSeamlessLoopActive)) {
+        if (info != nullptr && (info->isContinuousPlaybackActive || info->isSeamlessLoopActive)) {
             return;
         }
 
@@ -1858,7 +1853,7 @@ void MainWindow::playSongAtRow(int rowProvided) {
      * when playing network streams, this setPosition invocation
      * prevents delays in displaying full track metadata
      */
-    if (sm.info->plugin == PLUGIN_fmod && fileInfo.size() == 0) {
+    if (!sm.info->isLocalFilePath) {
         sm.setPosition(0, FMOD_TIMEUNIT_MS);
     }
 
@@ -1916,20 +1911,16 @@ void MainWindow::playSongAtRow(int rowProvided) {
         } else {
             artist = fromUtf8OrLatin1(pi.info->artist);
         }
-    } else if (!pi.info->composer.empty()) {
-        if (sm.info->plugin == PLUGIN_fmod) {
-            artist = pi.info->composer.c_str();
-        } else {
-            artist = fromUtf8OrLatin1(pi.info->composer);
-        }
+    } else {
+        artist = fromUtf8OrLatin1(pi.info->composer);
     }
 
-    if (artist != "") {
-        ui->labelFilename->setText(artist + " - " + title);
-        windowTitle = artist + " - " + title + " - " + PROJECT_NAME;
+    if (!artist.isEmpty()) {
+        ui->labelFilename->setText(QString("%1 - %2").arg(artist, title));
+        windowTitle = QString("%1 - %2 - %3").arg(artist, title, PROJECT_NAME);
     } else {
         ui->labelFilename->setText(title);
-        windowTitle = title + " - " + PROJECT_NAME;
+        windowTitle = QString("%1 - %2").arg(title, PROJECT_NAME);
     }
 
     FileInfoParser::updateFileInfo(ui->tableInfo, &pi);
@@ -2938,8 +2929,7 @@ void MainWindow::showContainingFolder() {
             tableWidgetPlaylists[selectedPlaylist]->model()->index(idx.row(), PlaylistModel::Section::FullPath).data().
             toString());
 
-        if (QFileInfo fileinfo(file);
-            !fileinfo.path().startsWith("http://", Qt::CaseInsensitive) && !fileinfo.path().startsWith("https://")) {
+        if (QFileInfo fileinfo(file); !isNetworkStream(fileinfo.path())) {
             QDesktopServices::openUrl(QUrl::fromLocalFile(fileinfo.path()));
         }
     }
@@ -3650,8 +3640,7 @@ vector<PlaylistItem *> MainWindow::getPlayListEntriesM3u(QString filename) const
                     playlistItem->title = playlistItem->filename;
                 }
                 // if it's a web location, don't add the playlist path
-                else if (!line.startsWith("http://", Qt::CaseInsensitive) && !line.startsWith(
-                             "https://", Qt::CaseInsensitive)) {
+                else if (!isNetworkStream(line)) {
                     // get the path of the playlist file
                     int i = filename.lastIndexOf('/');
                     QString playlistpath = filename.left(i);
@@ -5377,4 +5366,8 @@ void MainWindow::updateCheck() {
     });
 
     checker->checkForUpdates();
+}
+
+bool MainWindow::isNetworkStream(const QString &str) {
+    return str.startsWith("http://", Qt::CaseInsensitive) || str.startsWith("https://", Qt::CaseInsensitive);
 }
