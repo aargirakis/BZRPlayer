@@ -1885,6 +1885,10 @@ void MainWindow::playSongAtRow(int rowProvided) {
     pi.fullPath = fullPath;
     pi.info = sm.info;
 
+    if (!sm.info->isLocalFilePath) {
+        FileInfoParser::updateFileInfo(ui->tableInfo, &pi);
+    }
+
     QString title(fileInfo.fileName());
 
     if (sm.info->plugin == PLUGIN_fmod) {
@@ -1923,7 +1927,9 @@ void MainWindow::playSongAtRow(int rowProvided) {
         windowTitle = QString("%1 - %2").arg(title, PROJECT_NAME);
     }
 
-    FileInfoParser::updateFileInfo(ui->tableInfo, &pi);
+    if (sm.info->isLocalFilePath) {
+        FileInfoParser::updateFileInfo(ui->tableInfo, &pi);
+    }
 
     if (isMinimized() || !this->isVisible()) {
         this->setWindowTitle(windowTitle);
