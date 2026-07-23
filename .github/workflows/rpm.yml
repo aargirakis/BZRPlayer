@@ -36,7 +36,7 @@ jobs:
           Summary:        Audio player supporting a wide array of multi-platform exotic file formats
           Group:          Applications/Multimedia
           License:        GPL-3.0-only
-          URL:            https://bzrplayer.blazer.nu
+          URL:            https://github.com/aargirakis/BZRPlayer
           Source:         %{expand:%%(pwd)}
           BuildRequires:  cmake
           BuildRequires:  desktop-file-utils

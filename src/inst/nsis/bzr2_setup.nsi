@@ -21,7 +21,7 @@ CRCCheck force
 !define LICENSE_FILE "../../../LICENSE"
 !define ICON_FILE "../../app/resources/icon.ico"
 !define EXE_FILENAME "BZRPlayer.exe"
-!define URL_MAIN "https://bzrplayer.blazer.nu"
+!define URL_MAIN "https://github.com/aargirakis/BZRPlayer"
 !define DESCRIPTION "Audio player supporting a wide array of multi-platform exotic file formats"
 !define DIR_SETTINGS_USER "$INSTDIR\user"
 

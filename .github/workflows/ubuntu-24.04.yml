@@ -140,7 +140,7 @@ jobs:
           Architecture: amd64
           Description: Audio player supporting a wide array of multi-platform exotic file formats
           Depends: libqt6core6, libqt6network6, libqt6openglwidgets6, libqt6svg6, libqt6xml6, libqt-advanced-docking-system4
-          Homepage: https://bzrplayer.blazer.nu
+          Homepage: https://github.com/aargirakis/BZRPlayer
           EOF
 
           dpkg-deb --root-owner-group --build "$bzr2_deb_name"
