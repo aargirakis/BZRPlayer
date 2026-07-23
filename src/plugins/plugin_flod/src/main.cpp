@@ -172,7 +172,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->pluginName = PLUGIN_flod_NAME;
     plugin->info->setSeekable(false);
 
-    plugin->info->hasTitle = true;
     plugin->info->numChannels = plugin->player->getChannels();
     plugin->player->getTitle(plugin->info->title);
     if (vector<BaseSample *> samples = plugin->player->getSamples(); !samples.empty()) {

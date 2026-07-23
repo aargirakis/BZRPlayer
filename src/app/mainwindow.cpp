@@ -1047,6 +1047,8 @@ void MainWindow::refreshInfoNetworkStream() {
 
     if (!pi.info->title.empty()) {
         title = pi.info->title.c_str();
+    } else if (!pi.info->streamName.empty()) {
+        title = pi.info->streamName.c_str();
     } else {
         title = pi.info->filePath.c_str();
     }
@@ -1546,7 +1548,7 @@ void MainWindow::addSong(const QStringList &filenames, int row, QString playlist
         QString filenameFullPath = it.next();
         QFile file(filenameFullPath);
         QFileInfo fileInfo(file.fileName());
-        QString filename(fileInfo.fileName());
+        QString filename(isNetworkStream(filenameFullPath) ? filenameFullPath : fileInfo.fileName());
 
         QStringList ignorePrefixList = getIgnorePrefix().split(";");
         QStringListIterator itIgnorePrefixFiles(ignorePrefixList);
@@ -1894,6 +1896,12 @@ void MainWindow::playSongAtRow(int rowProvided) {
     if (sm.info->plugin == PLUGIN_fmod) {
         if (!pi.info->title.empty()) {
             title = pi.info->title.c_str();
+        } else if (!pi.info->isLocalFilePath) {
+            if (!pi.info->streamName.empty()) {
+                title = pi.info->streamName.c_str();
+            } else {
+                title = pi.info->filePath.c_str();
+            }
         }
     } else {
         if (!pi.info->title.empty()) {
@@ -1920,8 +1928,13 @@ void MainWindow::playSongAtRow(int rowProvided) {
     }
 
     if (!artist.isEmpty()) {
-        ui->labelFilename->setText(QString("%1 - %2").arg(artist, title));
-        windowTitle = QString("%1 - %2 - %3").arg(artist, title, PROJECT_NAME);
+        if (!pi.info->isLocalFilePath && (title == pi.info->streamName.c_str() || title == pi.info->filePath.c_str())) {
+            ui->labelFilename->setText(QString("%1 (%2)").arg(artist, title));
+            windowTitle = QString("%1 (%2) - %3").arg(artist, title, PROJECT_NAME);
+        } else {
+            ui->labelFilename->setText(QString("%1 - %2").arg(artist, title));
+            windowTitle = QString("%1 - %2 - %3").arg(artist, title, PROJECT_NAME);
+        }
     } else {
         ui->labelFilename->setText(title);
         windowTitle = QString("%1 - %2").arg(title, PROJECT_NAME);

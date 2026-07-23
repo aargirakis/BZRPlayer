@@ -45,7 +45,7 @@ public:
         cueSheetTrackFilename = "";
         artist = "";
         title = "";
-        hasTitle = false;
+        streamName = "";
         copyright = "";
         collectionEntry = "";
         comments = "";
@@ -253,9 +253,9 @@ public:
     string cueSheetTrackFilename;
     string artist;
     string title;
+    string streamName;
     string converter;
     string ripper;
-    bool hasTitle;
     string copyright;
     string collectionEntry;
     string comments;
