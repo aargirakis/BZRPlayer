@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(bzr2 VERSION "2.0.91")
+project(bzr2 VERSION "2.0.92")
 
 include(GNUInstallDirs)
 
