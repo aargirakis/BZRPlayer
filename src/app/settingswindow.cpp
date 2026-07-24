@@ -14,7 +14,7 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     setWindowFlags(windowFlags().setFlag(Qt::WindowContextHelpButtonHint, false));
     ui->setupUi(this);
     mainWindow = static_cast<MainWindow *>(this->parent());
-    connect(ui->textEditScrollerCustomText, SIGNAL(textChanged()), this, SLOT(updateScrollText()));
+    connect(ui->textEditScrollerCustomText, &QTextEdit::textChanged, this, &settingsWindow::updateScrollText);
 
     ui->sliderVuMeterWidth->installEventFilter(this);
     ui->sliderVuMeterOpacity->installEventFilter(this);
@@ -615,8 +615,8 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         albumPrinter->putPixmap(album->artwork);
         ui->albumGridPrinterFont->AddAlbum(albumPrinter);
 
-        connect(album, SIGNAL(clickedAddAlbum(QString)), this, SLOT(loadBitmapFont(const QString &)));
-        connect(albumPrinter, SIGNAL(clickedAddAlbum(QString)), this, SLOT(loadBitmapFontPrinter(const QString &)));
+        connect(album, &Album::clickedAddAlbum, this, &settingsWindow::loadBitmapFont);
+        connect(albumPrinter, &Album::clickedAddAlbum, this, &settingsWindow::loadBitmapFontPrinter);
     }
 
     updateCheckBoxes();
@@ -3638,8 +3638,8 @@ void settingsWindow::on_buttonLibsidplayfpHvscFilesDownload_clicked() {
 
     mainWindow->filesDownloaderHvsc = new FilesDownloader(hvscUrls, userPath + PLUGIN_libsidplayfp_DIR, this);
 
-    connect(mainWindow->filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
-            SLOT(downloadHvscFilesComplete(QString)));
+    connect(mainWindow->filesDownloaderHvsc, &FilesDownloader::downloadsFinished, this,
+            &settingsWindow::downloadHvscFilesComplete);
 
     mainWindow->filesDownloaderHvsc->downloadFiles();
 }

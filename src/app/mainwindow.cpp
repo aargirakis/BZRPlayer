@@ -374,7 +374,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     refreshInfoTimer = 0;
 
     Timer = new QTimer(this);
-    connect(Timer, SIGNAL(timeout()), this, SLOT(timerProgress()));
+    connect(Timer, &QTimer::timeout, this, &MainWindow::timerProgress);
 
     Timer->start(16);
 
@@ -459,8 +459,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         tableWidgetPlaylists[f.fileName()]->setFont(roboto);
         tableWidgetPlaylists[f.fileName()]->installEventFilter(this);
 
-        connect(tableWidgetPlaylists[f.fileName()], SIGNAL(doubleClicked(const QModelIndex &)),
-                SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
+        connect(tableWidgetPlaylists[f.fileName()], &QTableWidget::doubleClicked, this,
+                &MainWindow::on_playlist_itemDoubleClicked);
 
         QStringList columns;
         columns << tr("TITLE") << tr("FORMAT") << tr("LENGTH") << tr("SUBSONG");
@@ -558,28 +558,17 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
             QUrl(PLUGIN_libsidplayfp_HVSC_BUGLIST_URL)
         };
 
-        filesDownloaderHvsc = new FilesDownloader(hvscUrls, userPath + PLUGIN_libsidplayfp_DIR, this);
+        if (bundledHvscFilesUpdateFrequency == "At every start" ||
+            bundledHvscFilesUpdateFrequency == "Daily" && currentSeconds - bundledHvscFilesDownloadEpoch >= 86400 ||
+            bundledHvscFilesUpdateFrequency == "Weekly" && currentSeconds - bundledHvscFilesDownloadEpoch >= 604800 ||
+            bundledHvscFilesUpdateFrequency == "Monthly" && currentSeconds - bundledHvscFilesDownloadEpoch >= 2629743) {
+            filesDownloaderHvsc = new FilesDownloader(hvscUrls, userPath + PLUGIN_libsidplayfp_DIR, this);
 
-        if (bundledHvscFilesUpdateFrequency == "Never") {
-            // do nothing
-        } else if (bundledHvscFilesUpdateFrequency == "At every start") {
-            connect(filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
-                    SLOT(downloadHvscFilesComplete(QString)));
-        } else if (bundledHvscFilesUpdateFrequency == "Daily" &&
-                   currentSeconds - bundledHvscFilesDownloadEpoch >= 86400) {
-            connect(filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
-                    SLOT(downloadHvscFilesComplete(QString)));
-        } else if (bundledHvscFilesUpdateFrequency == "Weekly" &&
-                   currentSeconds - bundledHvscFilesDownloadEpoch >= 604800) {
-            connect(filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
-                    SLOT(downloadHvscFilesComplete(QString)));
-        } else if (bundledHvscFilesUpdateFrequency == "Monthly" &&
-                   currentSeconds - bundledHvscFilesDownloadEpoch >= 2629743) {
-            connect(filesDownloaderHvsc, SIGNAL(downloadsFinished(QString)), this,
-                    SLOT(downloadHvscFilesComplete(QString)));
+            connect(filesDownloaderHvsc, &FilesDownloader::downloadsFinished, this,
+                    &MainWindow::downloadHvscFilesComplete);
+
+            filesDownloaderHvsc->downloadFiles();
         }
-
-        filesDownloaderHvsc->downloadFiles();
     }
 
     connect(ui->samples->horizontalHeader(), &QHeaderView::sectionResized,
@@ -739,7 +728,7 @@ void MainWindow::createMenuWindowTabs() {
         action->setCheckable(true);
         action->setChecked(!widg->isClosed());
         connect(action, &QAction::triggered, this, [&, this, widg] { slot_dockWidgetMenuChecked(widg); });
-        connect(widg, SIGNAL(visibilityChanged(bool)), SLOT(dockWindowClosed(bool)));
+        connect(widg, &ads::CDockWidget::visibilityChanged, this, &MainWindow::dockWindowClosed);
         ui->menuWindow->addAction(action);
     }
 }
@@ -2856,8 +2845,8 @@ void MainWindow::savePlaylistAs() {
 
     swapColumns(tableWidgetPlaylists[newName]);
 
-    connect(tableWidgetPlaylists[newName], SIGNAL(doubleClicked(const QModelIndex &)),
-            SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
+    connect(tableWidgetPlaylists[newName], &QTableWidget::doubleClicked, this,
+            &MainWindow::on_playlist_itemDoubleClicked);
 
     const QUrl u = QUrl::fromLocalFile(QDir::separator() + userPath + PLAYLISTS_DIR + "/" + newName);
     QList<QUrl> ql;
@@ -3110,9 +3099,9 @@ void MainWindow::createThePopupLogWindow() {
     copyLogWindowAction = new QAction(tr("&Copy"), this);
     clearLogWindowAction = new QAction(tr("C&lear"), this);
 
-    connect(clearLogWindowAction, SIGNAL(triggered()), this, SLOT(clearLogWindow()));
-    connect(copyLogWindowAction, SIGNAL(triggered()), this, SLOT(copyLogWindow()));
-    connect(selectAllLogWindowAction, SIGNAL(triggered()), this, SLOT(selectAllLogWindow()));
+    connect(clearLogWindowAction, &QAction::triggered, this, &MainWindow::clearLogWindow);
+    connect(copyLogWindowAction, &QAction::triggered, this, &MainWindow::copyLogWindow);
+    connect(selectAllLogWindowAction, &QAction::triggered, this, &MainWindow::selectAllLogWindow);
 
     ui->Debug->setContextMenuPolicy(Qt::ActionsContextMenu);
 
@@ -3130,12 +3119,12 @@ void MainWindow::createThePopupMenuPlaylists() {
     savePlaylistAction = new QAction(tr("&Save"), this);
     savePlaylistAsAction = new QAction(tr("S&ave As"), this);
 
-    connect(renamePlaylistAction, SIGNAL(triggered()), this, SLOT(renamePlaylist()));
-    connect(clearPlaylistAction, SIGNAL(triggered()), this, SLOT(clearPlaylist()));
-    connect(deletePlaylistAction, SIGNAL(triggered()), this, SLOT(deletePlaylist()));
-    connect(deleteAllPlaylistsAction, SIGNAL(triggered()), this, SLOT(deleteAllPlaylists()));
-    connect(savePlaylistAction, SIGNAL(triggered()), this, SLOT(savePlaylist()));
-    connect(savePlaylistAsAction, SIGNAL(triggered()), this, SLOT(savePlaylistAs()));
+    connect(renamePlaylistAction, &QAction::triggered, this, &MainWindow::renamePlaylist);
+    connect(clearPlaylistAction, &QAction::triggered, this, &MainWindow::clearPlaylist);
+    connect(deletePlaylistAction, &QAction::triggered, this, &MainWindow::deletePlaylist);
+    connect(deleteAllPlaylistsAction, &QAction::triggered, this, &MainWindow::deleteAllPlaylists);
+    connect(savePlaylistAction, &QAction::triggered, this, &MainWindow::savePlaylist);
+    connect(savePlaylistAsAction, &QAction::triggered, this, &MainWindow::savePlaylistAs);
 
     ui->listWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     QListWidget *list = ui->listWidget;
@@ -3170,8 +3159,8 @@ void MainWindow::createThePopupMenuVisualizer() {
 
     showNextVisualizerAction = new QAction(tr("S&how Next Visualizer"), this);
 
-    connect(fullscreenVisualizerAction, SIGNAL(triggered()), this, SLOT(fullscreenVisualizer()));
-    connect(showNextVisualizerAction, SIGNAL(triggered()), this, SLOT(showNextVisualizer()));
+    connect(fullscreenVisualizerAction, &QAction::triggered, this, &MainWindow::fullscreenVisualizer);
+    connect(showNextVisualizerAction, &QAction::triggered, this, &MainWindow::showNextVisualizer);
 
     ui->visualizer->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->visualizer->addActions({fullscreenVisualizerAction});
@@ -3180,7 +3169,7 @@ void MainWindow::createThePopupMenuVisualizer() {
 void MainWindow::createThePopupMenuTracker() {
     fullscreenTrackerAction = new QAction(tr("&Show Fullscreen"), this);
 
-    connect(fullscreenTrackerAction, SIGNAL(triggered()), this, SLOT(fullscreenTracker()));
+    connect(fullscreenTrackerAction, &QAction::triggered, this, &MainWindow::fullscreenTracker);
 
     ui->trackerView->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->trackerView->addActions({fullscreenTrackerAction});
@@ -3193,10 +3182,10 @@ void MainWindow::createThePopupMenuCurrentPlaylist(const QString &playlist) {
     showContainingFolderAction = new QAction(tr("&Show containing folder"), this);
     clearPlaylistAction = new QAction(tr("&Clear playlist"), this);
 
-    connect(deleteFilesInPlaylistAction, SIGNAL(triggered()), this, SLOT(deleteFilesInPlaylist()));
-    connect(deleteFilesInPlaylistInvertedAction, SIGNAL(triggered()), this, SLOT(deleteFilesInvertedInPlaylist()));
-    connect(showContainingFolderAction, SIGNAL(triggered()), this, SLOT(showContainingFolder()));
-    connect(clearPlaylistAction, SIGNAL(triggered()), this, SLOT(clearPlaylist()));
+    connect(deleteFilesInPlaylistAction, &QAction::triggered, this, &MainWindow::deleteFilesInPlaylist);
+    connect(deleteFilesInPlaylistInvertedAction, &QAction::triggered, this, &MainWindow::deleteFilesInvertedInPlaylist);
+    connect(showContainingFolderAction, &QAction::triggered, this, &MainWindow::showContainingFolder);
+    connect(clearPlaylistAction, &QAction::triggered, this, &MainWindow::clearPlaylist);
 
     tableWidgetPlaylists[playlist]->setContextMenuPolicy(Qt::ActionsContextMenu);
     tableWidgetPlaylists[playlist]->addActions({deleteFilesInPlaylistAction});
@@ -3209,8 +3198,8 @@ void MainWindow::createThePopupMenuInstruments() {
     exportInstrumentWavAction = new QAction(tr("&Export to .wav"), this);
     exportInstrumentIffAction = new QAction(tr("&Export to .iff"), this);
 
-    connect(exportInstrumentWavAction, SIGNAL(triggered()), this, SLOT(exportInstrumentToWav()));
-    connect(exportInstrumentIffAction, SIGNAL(triggered()), this, SLOT(exportInstrumentToIff()));
+    connect(exportInstrumentWavAction, &QAction::triggered, this, &MainWindow::exportInstrumentToWav);
+    connect(exportInstrumentIffAction, &QAction::triggered, this, &MainWindow::exportInstrumentToIff);
 
     ui->samples->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->samples->addActions({exportInstrumentWavAction});
@@ -3221,8 +3210,8 @@ void MainWindow::createThePopupMenuChannels() {
     muteAllChannelsAction = new QAction(tr("&Mute All Channels"), this);
     unmuteAllChannelsAction = new QAction(tr("&Unmute All Channels"), this);
 
-    connect(muteAllChannelsAction, SIGNAL(triggered()), this, SLOT(muteAllChannels()));
-    connect(unmuteAllChannelsAction, SIGNAL(triggered()), this, SLOT(unmuteAllChannels()));
+    connect(muteAllChannelsAction, &QAction::triggered, this, &MainWindow::muteAllChannels);
+    connect(unmuteAllChannelsAction, &QAction::triggered, this, &MainWindow::unmuteAllChannels);
 
     ui->dockWidgetContents_7->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->dockWidgetContents_7->addActions({muteAllChannelsAction});
@@ -3860,8 +3849,8 @@ QString MainWindow::createPlaylist(const QString &name) {
 
     createThePopupMenuCurrentPlaylist(newItem->text());
 
-    connect(tableWidgetPlaylists[newItem->text()], SIGNAL(doubleClicked(const QModelIndex &)),
-            SLOT(on_playlist_itemDoubleClicked(const QModelIndex &)));
+    connect(tableWidgetPlaylists[newItem->text()], &QTableWidget::doubleClicked, this,
+            &MainWindow::on_playlist_itemDoubleClicked);
 
     swapColumns(tableWidgetPlaylists[newItem->text()]);
     return newItem->text();
@@ -4187,26 +4176,25 @@ void MainWindow::createTrayMenu() {
     tray->setIcon(trayIcon);
     tray->setToolTip(PROJECT_NAME);
 
-    connect(tray,SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
-            SLOT(clickSysTrayIcon(QSystemTrayIcon::ActivationReason)));
+    connect(tray, &QSystemTrayIcon::activated, this, &MainWindow::clickSysTrayIcon);
 
     addFilesAction = new QAction("Add File(s)", this);
-    connect(addFilesAction, SIGNAL(triggered()), this, SLOT(addFiles()));
+    connect(addFilesAction, &QAction::triggered, this, &MainWindow::addFiles);
 
     playAction = new QAction("Play", this);
-    connect(playAction, SIGNAL(triggered()), this, SLOT(on_buttonPlay_2_clicked()));
+    connect(playAction, &QAction::triggered, this, &MainWindow::on_buttonPlay_2_clicked);
 
     nextAction = new QAction("Next", this);
-    connect(nextAction, SIGNAL(triggered()), this, SLOT(on_buttonNext_clicked()));
+    connect(nextAction, &QAction::triggered, this, &MainWindow::on_buttonNext_clicked);
 
     prevAction = new QAction("Previous", this);
-    connect(prevAction, SIGNAL(triggered()), this, SLOT(on_buttonPrev_clicked()));
+    connect(prevAction, &QAction::triggered, this, &MainWindow::on_buttonPrev_clicked);
 
     muteAction = new QAction("Mute", this);
-    connect(muteAction, SIGNAL(triggered()), this, SLOT(muteVolume()));
+    connect(muteAction, &QAction::triggered, this, &MainWindow::muteVolume);
 
     quitAction = new QAction("Quit", this);
-    connect(quitAction, SIGNAL(triggered()), this, SLOT(quit()));
+    connect(quitAction, &QAction::triggered, this, &MainWindow::quit);
 
     trayIconMenu = new QMenu(this);
 
