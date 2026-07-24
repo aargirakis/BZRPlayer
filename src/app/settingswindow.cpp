@@ -621,7 +621,6 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
 
     updateCheckBoxes();
     on_buttonGeneral_clicked();
-    changeStyleSheetColor();
 }
 
 settingsWindow::~settingsWindow() {

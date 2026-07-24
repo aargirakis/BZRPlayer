@@ -3061,6 +3061,7 @@ void MainWindow::deleteFilesInvertedInPlaylist() {
 
 void MainWindow::openSettings() {
     settingsWindow settingsWindow(this);
+    settingsWindow.changeStyleSheetColor();
     settingsWindow.exec();
 }
 
@@ -4820,9 +4821,6 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet = ui->listWidget->styleSheet();
     stylesheet.replace(colorSelectionOld, colorSelection);
     ui->listWidget->setStyleSheet(stylesheet);
-
-    settingsWindow settingsWindow(this);
-    settingsWindow.changeStyleSheetColor();
 }
 
 void MainWindow::on_buttonStop_clicked() {
