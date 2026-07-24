@@ -30,6 +30,11 @@
 #define PLAYLIST_DEFAULT "Default"
 #define PLAYLIST_DEFAULT_EXTENSION ".m3u"
 #define PLAYLIST_DEFAULT_FILENAME PLAYLIST_DEFAULT PLAYLIST_DEFAULT_EXTENSION
+#define TITLE_WITH_APP "%1 - %2"
+#define ARTIST_AND_TITLE "%1 - %2"
+#define ARTIST_AND_TITLE_WITH_APP "%1 - %2 - %3"
+#define ARTIST_AND_RADIO_OR_URL "%1 (%2)"
+#define ARTIST_AND_RADIO_OR_URL_WITH_APP "%1 (%2) - %3"
 
 using namespace std;
 const QString MainWindow::VERSION = PROJECT_VERSION;
@@ -1053,13 +1058,28 @@ void MainWindow::refreshInfoNetworkStream() {
         title = pi.info->filePath.c_str();
     }
 
+    const QString artist(pi.info->artist.c_str());
+
+    if (!artist.isEmpty()) {
+        if (title == pi.info->streamName.c_str() || title == pi.info->filePath.c_str()) {
+            ui->labelFilename->setText(QString(ARTIST_AND_RADIO_OR_URL).arg(artist, title));
+            windowTitle = QString(ARTIST_AND_RADIO_OR_URL_WITH_APP).arg(artist, title, PROJECT_NAME);
+        } else {
+            ui->labelFilename->setText(QString(ARTIST_AND_TITLE).arg(artist, title));
+            windowTitle = QString(ARTIST_AND_TITLE_WITH_APP).arg(artist, title, PROJECT_NAME);
+        }
+    } else {
+        ui->labelFilename->setText(title);
+        windowTitle = QString(TITLE_WITH_APP).arg(title, PROJECT_NAME);
+    }
+
     QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
         currentRow, PlaylistModel::Section::Title, QModelIndex());
     tableWidgetPlaylists[currentPlaylist]->model()->setData(index, title, Qt::EditRole);
 
     index = tableWidgetPlaylists[currentPlaylist]->model()->index(currentRow, PlaylistModel::Section::Artist,
                                                                   QModelIndex());
-    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, pi.info->artist.c_str(), Qt::EditRole);
+    tableWidgetPlaylists[currentPlaylist]->model()->setData(index, artist, Qt::EditRole);
 }
 
 void MainWindow::timerProgress() {
@@ -1929,15 +1949,15 @@ void MainWindow::playSongAtRow(int rowProvided) {
 
     if (!artist.isEmpty()) {
         if (!pi.info->isLocalFilePath && (title == pi.info->streamName.c_str() || title == pi.info->filePath.c_str())) {
-            ui->labelFilename->setText(QString("%1 (%2)").arg(artist, title));
-            windowTitle = QString("%1 (%2) - %3").arg(artist, title, PROJECT_NAME);
+            ui->labelFilename->setText(QString(ARTIST_AND_RADIO_OR_URL).arg(artist, title));
+            windowTitle = QString(ARTIST_AND_RADIO_OR_URL_WITH_APP).arg(artist, title, PROJECT_NAME);
         } else {
-            ui->labelFilename->setText(QString("%1 - %2").arg(artist, title));
-            windowTitle = QString("%1 - %2 - %3").arg(artist, title, PROJECT_NAME);
+            ui->labelFilename->setText(QString(ARTIST_AND_TITLE).arg(artist, title));
+            windowTitle = QString(ARTIST_AND_TITLE_WITH_APP).arg(artist, title, PROJECT_NAME);
         }
     } else {
         ui->labelFilename->setText(title);
-        windowTitle = QString("%1 - %2").arg(title, PROJECT_NAME);
+        windowTitle = QString(TITLE_WITH_APP).arg(title, PROJECT_NAME);
     }
 
     if (sm.info->isLocalFilePath) {
