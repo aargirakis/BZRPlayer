@@ -633,7 +633,13 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     ui->dockWidgetSamples->hide();
     ui->dockWidgetTrackerView->hide();
     ui->dockWidgetVisualizer->hide();
-    dockManager->restoreState(settings.value("Internal/dockingState").toByteArray());
+
+    dockingState = settings.value("Internal/dockingState").toByteArray();
+
+    if (!dockingState.isEmpty()) {
+        dockManager->restoreState(dockingState);
+    }
+
     restoreGeometry(settings.value("Internal/geometry").toByteArray());
     restoreState(settings.value("Internal/windowState").toByteArray());
     visualizerFullScreen = new VisualizerFullScreen(ui->visualizer->getEffect());
@@ -2532,7 +2538,10 @@ void MainWindow::restoreLayout() {
     ui->dockWidgetSamples->hide();
     ui->dockWidgetTrackerView->hide();
     ui->dockWidgetVisualizer->hide();
-    dockManager->restoreState(dockingState);
+
+    if (!dockingState.isEmpty()) {
+        dockManager->restoreState(dockingState);
+    }
 }
 
 void MainWindow::exportInstrumentToWav() {
