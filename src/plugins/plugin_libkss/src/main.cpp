@@ -146,7 +146,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->info->comments = reinterpret_cast<char *>(plugin->kss->extra);
     }
 
-    plugin->info->useShiftJis = true;
     plugin->info->plugin = PLUGIN_libkss;
     plugin->info->pluginName = PLUGIN_libkss_NAME;
 
