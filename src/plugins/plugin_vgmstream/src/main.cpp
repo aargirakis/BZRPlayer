@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <format>
 #include <fstream>
 
@@ -58,11 +59,129 @@ public:
         libvgmstream = nullptr;
     }
 
+    void parseCueSheet() {
+        const auto cd = cue_parse_string(reinterpret_cast<const char *>(info->fileBuffer));
+
+        if (!cd) {
+            return;
+        }
+
+        const auto tracksCount = cd_get_ntrack(cd);
+
+        if (tracksCount < 1) {
+            return;
+        }
+
+        const auto currentTrack = cd_get_track(cd, info->currentSubsong + 1);
+
+        if (!currentTrack) {
+            return;
+        }
+
+        const auto trackFilename = track_get_filename(currentTrack);
+
+        if (!trackFilename) {
+            return;
+        }
+
+        info->isTrackFromCueSheet = true;
+        info->cueSheetTrackFilename = trackFilename;
+        info->filePath = info->fileDir + "/" + trackFilename;
+        info->numSubsongs = tracksCount;
+        trackStartFromCueSheet = track_get_start(currentTrack);
+        trackLengthFromCueSheet = track_get_length(currentTrack);
+
+        if (Cdtext const *cdText = cd_get_cdtext(cd)) {
+            if (const char *s; (s = cdtext_get(PTI_TITLE, cdText))) {
+                metadataCueCdTextAlbum = pair("Album", s);
+            }
+            if (const char *s; (s = cdtext_get(PTI_PERFORMER, cdText))) {
+                metadataCueCdTextAlbumArtist = pair("Album Artist", s);
+            }
+            if (const char *s; (s = cdtext_get(PTI_COMPOSER, cdText))) {
+                metadataCueCdTextComposer = pair("Composer", s);
+            }
+            if (const char *s; (s = cdtext_get(PTI_GENRE, cdText))) {
+                metadataCueCdTextGenre = pair("Genre", s);
+            }
+        }
+
+        if (Cdtext const *trackText = track_get_cdtext(currentTrack)) {
+            const char *s;
+            if ((s = cdtext_get(PTI_TITLE, trackText))) {
+                metadataCueTrackTextTitle = pair("Title", s);
+            }
+            if ((s = cdtext_get(PTI_PERFORMER, trackText))) {
+                metadataCueTrackTextArtist = pair("Artist", s);
+            }
+            if ((s = cdtext_get(PTI_COMPOSER, trackText))) {
+                metadataCueTrackTextComposer = pair("Composer", s);
+            }
+            if ((s = cdtext_get(PTI_GENRE, trackText))) {
+                metadataCueTrackTextGenre = pair("Genre", s);
+            }
+        }
+
+        if (Rem *cdRem = cd_get_rem(cd)) {
+            if (const char *s; (s = rem_get(REM_DATE, cdRem))) {
+                metadataCueCdRemDate = pair("Date", s);
+            }
+            if (const char *s1; (s1 = rem_get(REM_DISCNUMBER, cdRem))) {
+                if (const char *s2; (s2 = rem_get(REM_TOTALDISCS, cdRem))) {
+                    metadataCueCdRemDisc = pair("Disc", format("{} / {}", s1, s2));
+                } else {
+                    metadataCueCdRemDisc = pair("Disc", s1);
+                }
+            }
+            if (const char *s; (s = rem_get(REM_COMMENT, cdRem))) {
+                metadataCueCdRemComment = pair("Comment", s);
+            }
+            if (const char *s; (s = rem_get(REM_REPLAYGAIN_ALBUM_GAIN, cdRem))) {
+                metadataCueCdRemReplayGainAlbumGain = pair("REPLAYGAIN_ALBUM_GAIN", format("{} dB", s));
+            }
+            if (const char *s; (s = rem_get(REM_REPLAYGAIN_ALBUM_PEAK, cdRem))) {
+                metadataCueCdRemReplayGainAlbumPeak = pair("REPLAYGAIN_ALBUM_PEAK", s);
+            }
+        }
+
+        if (Rem *trackRem = track_get_rem(currentTrack)) {
+            if (const char *s; (s = rem_get(REM_DATE, trackRem))) {
+                metadataCueTrackRemDate = pair("Date", s);
+            }
+            if (const char *s; (s = rem_get(REM_COMMENT, trackRem))) {
+                metadataCueTrackRemComment = pair("Comment", s);
+            }
+            if (const char *s; (s = rem_get(REM_REPLAYGAIN_TRACK_GAIN, trackRem))) {
+                metadataCueTrackRemReplayGainTrackGain = pair("REPLAYGAIN_TRACK_GAIN", format("{} dB", s));
+            }
+            if (const char *s; (s = rem_get(REM_REPLAYGAIN_TRACK_PEAK, trackRem))) {
+                metadataCueTrackRemReplayGainTrackPeak = pair("REPLAYGAIN_TRACK_PEAK", s);
+            }
+        }
+    }
+
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
     libvgmstream_t *libvgmstream = nullptr;
     long trackStartFromCueSheet;
     long trackLengthFromCueSheet;
+    pair<string, string> metadataCueCdTextAlbum;
+    pair<string, string> metadataCueCdTextAlbumArtist;
+    pair<string, string> metadataCueCdTextComposer;
+    pair<string, string> metadataCueCdTextGenre;
+    pair<string, string> metadataCueTrackTextTitle;
+    pair<string, string> metadataCueTrackTextArtist;
+    pair<string, string> metadataCueTrackTextComposer;
+    pair<string, string> metadataCueTrackTextGenre;
+    pair<string, string> metadataCueCdRemDate;
+    pair<string, string> metadataCueCdRemDisc;
+    pair<string, string> metadataCueCdRemComment;
+    pair<string, string> metadataCueCdRemReplayGainAlbumGain;
+    pair<string, string> metadataCueCdRemReplayGainAlbumPeak;
+    pair<string, string> metadataCueTrackRemDate;
+    pair<string, string> metadataCueTrackRemComment;
+    pair<string, string> metadataCueTrackRemReplayGainTrackGain;
+    pair<string, string> metadataCueTrackRemReplayGainTrackPeak;
 };
 
 /*
@@ -88,107 +207,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginVgmstream(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    pair<string, string> metadataCueCdTextAlbum;
-    pair<string, string> metadataCueCdTextAlbumArtist;
-    pair<string, string> metadataCueCdTextComposer;
-    pair<string, string> metadataCueCdTextGenre;
-    pair<string, string> metadataCueTrackTextTitle;
-    pair<string, string> metadataCueTrackTextArtist;
-    pair<string, string> metadataCueTrackTextComposer;
-    pair<string, string> metadataCueTrackTextGenre;
-    pair<string, string> metadataCueCdRemDate;
-    pair<string, string> metadataCueCdRemDisc;
-    pair<string, string> metadataCueCdRemComment;
-    pair<string, string> metadataCueCdRemReplayGainAlbumGain;
-    pair<string, string> metadataCueCdRemReplayGainAlbumPeak;
-    pair<string, string> metadataCueTrackRemDate;
-    pair<string, string> metadataCueTrackRemComment;
-    pair<string, string> metadataCueTrackRemReplayGainTrackGain;
-    pair<string, string> metadataCueTrackRemReplayGainTrackPeak;
-
     if (plugin->info->filesize <= 1024 * 500) {
-        if (const auto cd = cue_parse_string(reinterpret_cast<const char *>(plugin->info->fileBuffer)); cd) {
-            if (const auto tracksCount = cd_get_ntrack(cd); tracksCount >= 1) {
-                if (const auto currentTrack = cd_get_track(cd, plugin->info->currentSubsong + 1); currentTrack) {
-                    if (const auto trackFilename = track_get_filename(currentTrack)) {
-                        plugin->info->isTrackFromCueSheet = true;
-                        plugin->info->cueSheetTrackFilename = trackFilename;
-                        plugin->info->filePath = plugin->info->fileDir + "/" + trackFilename;
-                        plugin->info->numSubsongs = tracksCount;
-                        plugin->trackStartFromCueSheet = track_get_start(currentTrack);
-                        plugin->trackLengthFromCueSheet = track_get_length(currentTrack);
-
-                        if (Cdtext const *cdText = cd_get_cdtext(cd)) {
-                            if (const char *s; (s = cdtext_get(PTI_TITLE, cdText))) {
-                                metadataCueCdTextAlbum = pair("Album", s);
-                            }
-                            if (const char *s; (s = cdtext_get(PTI_PERFORMER, cdText))) {
-                                metadataCueCdTextAlbumArtist = pair("Album Artist", s);
-                            }
-                            if (const char *s; (s = cdtext_get(PTI_COMPOSER, cdText))) {
-                                metadataCueCdTextComposer = pair("Composer", s);
-                            }
-                            if (const char *s; (s = cdtext_get(PTI_GENRE, cdText))) {
-                                metadataCueCdTextGenre = pair("Genre", s);
-                            }
-                        }
-
-                        if (Cdtext const *trackText = track_get_cdtext(currentTrack)) {
-                            const char *s;
-                            if ((s = cdtext_get(PTI_TITLE, trackText))) {
-                                metadataCueTrackTextTitle = pair("Title", s);
-                            }
-                            if ((s = cdtext_get(PTI_PERFORMER, trackText))) {
-                                metadataCueTrackTextArtist = pair("Artist", s);
-                            }
-                            if ((s = cdtext_get(PTI_COMPOSER, trackText))) {
-                                metadataCueTrackTextComposer = pair("Composer", s);
-                            }
-                            if ((s = cdtext_get(PTI_GENRE, trackText))) {
-                                metadataCueTrackTextGenre = pair("Genre", s);
-                            }
-                        }
-
-                        if (Rem *cdRem = cd_get_rem(cd)) {
-                            if (const char *s; (s = rem_get(REM_DATE, cdRem))) {
-                                metadataCueCdRemDate = pair("Date", s);
-                            }
-                            if (const char *s1; (s1 = rem_get(REM_DISCNUMBER, cdRem))) {
-                                if (const char *s2; (s2 = rem_get(REM_TOTALDISCS, cdRem))) {
-                                    metadataCueCdRemDisc = pair("Disc", format("{} / {}", s1, s2));
-                                } else {
-                                    metadataCueCdRemDisc = pair("Disc", s1);
-                                }
-                            }
-                            if (const char *s; (s = rem_get(REM_COMMENT, cdRem))) {
-                                metadataCueCdRemComment = pair("Comment", s);
-                            }
-                            if (const char *s; (s = rem_get(REM_REPLAYGAIN_ALBUM_GAIN, cdRem))) {
-                                metadataCueCdRemReplayGainAlbumGain = pair("REPLAYGAIN_ALBUM_GAIN", format("{} dB", s));
-                            }
-                            if (const char *s; (s = rem_get(REM_REPLAYGAIN_ALBUM_PEAK, cdRem))) {
-                                metadataCueCdRemReplayGainAlbumPeak = pair("REPLAYGAIN_ALBUM_PEAK", s);
-                            }
-                        }
-
-                        if (Rem *trackRem = track_get_rem(currentTrack)) {
-                            if (const char *s; (s = rem_get(REM_DATE, trackRem))) {
-                                metadataCueTrackRemDate = pair("Date", s);
-                            }
-                            if (const char *s; (s = rem_get(REM_COMMENT, trackRem))) {
-                                metadataCueTrackRemComment = pair("Comment", s);
-                            }
-                            if (const char *s; (s = rem_get(REM_REPLAYGAIN_TRACK_GAIN, trackRem))) {
-                                metadataCueTrackRemReplayGainTrackGain = pair(
-                                    "REPLAYGAIN_TRACK_GAIN", format("{} dB", s));
-                            }
-                            if (const char *s; (s = rem_get(REM_REPLAYGAIN_TRACK_PEAK, trackRem))) {
-                                metadataCueTrackRemReplayGainTrackPeak = pair("REPLAYGAIN_TRACK_PEAK", s);
-                            }
-                        }
-                    }
-                }
-            }
+        if (const string ext = filesystem::path(plugin->info->filename).extension().string();
+            strcasecmp(ext.c_str(), ".CUE") == 0) {
+            plugin->parseCueSheet();
         }
     }
 
@@ -313,24 +335,24 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     // metadata priority (higher to lower) by insertion order
-    plugin->info->metadata.emplace_back(metadataCueTrackTextTitle);
-    plugin->info->metadata.emplace_back(metadataCueTrackTextArtist);
-    plugin->info->metadata.emplace_back(metadataCueTrackTextComposer);
-    plugin->info->metadata.emplace_back(metadataCueTrackTextGenre);
-    plugin->info->metadata.emplace_back(metadataCueTrackRemDate);
-    plugin->info->metadata.emplace_back(metadataCueTrackRemComment);
-    plugin->info->metadata.emplace_back(metadataCueTrackRemReplayGainTrackGain);
-    plugin->info->metadata.emplace_back(metadataCueTrackRemReplayGainTrackPeak);
-    plugin->info->metadata.emplace_back(metadataCueCdTextAlbum);
-    plugin->info->metadata.emplace_back(metadataCueCdTextAlbumArtist);
-    plugin->info->metadata.emplace_back(metadataCueCdRemDisc);
-    plugin->info->metadata.emplace_back(metadataCueCdRemReplayGainAlbumGain);
-    plugin->info->metadata.emplace_back(metadataCueCdRemReplayGainAlbumPeak);
+    plugin->info->metadata.emplace_back(plugin->metadataCueTrackTextTitle);
+    plugin->info->metadata.emplace_back(plugin->metadataCueTrackTextArtist);
+    plugin->info->metadata.emplace_back(plugin->metadataCueTrackTextComposer);
+    plugin->info->metadata.emplace_back(plugin->metadataCueTrackTextGenre);
+    plugin->info->metadata.emplace_back(plugin->metadataCueTrackRemDate);
+    plugin->info->metadata.emplace_back(plugin->metadataCueTrackRemComment);
+    plugin->info->metadata.emplace_back(plugin->metadataCueTrackRemReplayGainTrackGain);
+    plugin->info->metadata.emplace_back(plugin->metadataCueTrackRemReplayGainTrackPeak);
+    plugin->info->metadata.emplace_back(plugin->metadataCueCdTextAlbum);
+    plugin->info->metadata.emplace_back(plugin->metadataCueCdTextAlbumArtist);
+    plugin->info->metadata.emplace_back(plugin->metadataCueCdRemDisc);
+    plugin->info->metadata.emplace_back(plugin->metadataCueCdRemReplayGainAlbumGain);
+    plugin->info->metadata.emplace_back(plugin->metadataCueCdRemReplayGainAlbumPeak);
     ranges::move(metadataFfmpegTrack, back_inserter(plugin->info->metadata));
-    plugin->info->metadata.emplace_back(metadataCueCdTextComposer);
-    plugin->info->metadata.emplace_back(metadataCueCdTextGenre);
-    plugin->info->metadata.emplace_back(metadataCueCdRemDate);
-    plugin->info->metadata.emplace_back(metadataCueCdRemComment);
+    plugin->info->metadata.emplace_back(plugin->metadataCueCdTextComposer);
+    plugin->info->metadata.emplace_back(plugin->metadataCueCdTextGenre);
+    plugin->info->metadata.emplace_back(plugin->metadataCueCdRemDate);
+    plugin->info->metadata.emplace_back(plugin->metadataCueCdRemComment);
 
     plugin->info->fileFormatSpecific = plugin->libvgmstream->format->codec_name;
     plugin->info->plugin = PLUGIN_vgmstream;
