@@ -35,8 +35,7 @@ GameMusicCreatorPatternView::GameMusicCreatorPatternView(Tracker *parent, const 
 }
 
 void GameMusicCreatorPatternView::paintAbove(QPainter *painter, const int height, int currentRow) {
-    const QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-                              "trackerview" + QDir::separator() + "gmc_top.png";
+    const QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/gmc_top.png";
     const QImage spriteSheet(imagepath);
 
     // bottom border
@@ -70,8 +69,7 @@ void GameMusicCreatorPatternView::paintBelow(QPainter *painter, int height, int 
     painter->drawLine(0, height / 2 - 1, 320, height / 2 - 1);
 
     // left border
-    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() +
-                        "trackerview" + QDir::separator() + "gmc_top.png";
+    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/gmc_top.png";
     QImage spriteSheet(imagepath);
     QRectF sourceLeftBar(1, 26, 5, 1);
     QRectF sourceRightBar(314, 26, 5, 1);
@@ -99,8 +97,7 @@ void ::GameMusicCreatorPatternView::paintTop(QPainter *painter, Info *info, cons
     constexpr QRectF source(0, 0, 320, 27);
     constexpr QRectF target(left, 0, 320, 27);
 
-    const QString imagepath = dataPath + RESOURCES_DIR +
-                              QDir::separator() + "trackerview" + QDir::separator() + "gmc_top.png";
+    const QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/gmc_top.png";
     const QImage imageTop(imagepath);
     painter->drawImage(target, imageTop, source);
 

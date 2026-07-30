@@ -268,8 +268,7 @@ void ::StarTrekker13PatternView::paintTop(QPainter *painter, Info *info, unsigne
     QRectF sourceNext(6, 0, 6, 7);
     QRectF targetPrev(left + 3, 35, 6, 7);
     QRectF targetNext(left + 14, 35, 6, 7);
-    QString imagepath = dataPath + RESOURCES_DIR +
-                        QDir::separator() + "trackerview" + QDir::separator() + "startrekker_top.png";
+    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/startrekker_top.png";
     QImage imageTop(imagepath);
     painter->drawImage(targetPrev, imageTop, sourcePrev);
     painter->drawImage(targetNext, imageTop, sourceNext);

@@ -333,8 +333,7 @@ void ::IceTrackerPatternView::paintTop(QPainter *painter, Info *info, unsigned i
     QRectF sourceNext(6, 0, 6, 7);
     QRectF targetPrev(left + 3, 24, 6, 7);
     QRectF targetNext(left + 14, 24, 6, 7);
-    QString imagepath = dataPath + RESOURCES_DIR +
-                        QDir::separator() + "trackerview" + QDir::separator() + "icetracker_top.png";
+    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/icetracker_top.png";
     QImage imageTop(imagepath);
     painter->drawImage(targetPrev, imageTop, sourcePrev);
     painter->drawImage(targetNext, imageTop, sourceNext);

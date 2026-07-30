@@ -139,8 +139,7 @@ void ::SoundTracker26PatternView::paintTop(QPainter *painter, Info *info, unsign
     QRectF sourceNext(6, 0, 6, 7);
     QRectF targetPrev(left + 3, 24, 6, 7);
     QRectF targetNext(left + 14, 24, 6, 7);
-    QString imagepath = dataPath + RESOURCES_DIR +
-                        QDir::separator() + "trackerview" + QDir::separator() + "noisetracker_top.png";
+    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/noisetracker_top.png";
     QImage imageTop(imagepath);
     painter->drawImage(targetPrev, imageTop, sourcePrev);
     painter->drawImage(targetNext, imageTop, sourceNext);

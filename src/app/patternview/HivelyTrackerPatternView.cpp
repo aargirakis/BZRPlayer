@@ -154,8 +154,7 @@ void ::HivelyTrackerPatternView::paintTop(QPainter *painter, Info *info, unsigne
     QRect rectBg(0, 0, m_width, m_topHeight);
     painter->fillRect(rectBg, QColor(0, 0, 0));
 
-    QString imagepath = dataPath + RESOURCES_DIR +
-                        QDir::separator() + "trackerview" + QDir::separator() + "hively_top.png";
+    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/hively_top.png";
     QImage imageTop(imagepath);
 
 

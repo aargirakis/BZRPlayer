@@ -37,8 +37,7 @@
 #include "tracker.h"
 
 Tracker::Tracker() {
-    const QString fontDir = dataPath + RESOURCES_DIR + "/trackerview/fonts" +
-                            QDir::separator();
+    const QString fontDir = dataPath + RESOURCES_DIR + "/trackerview/fonts/";
     QFontDatabase::addApplicationFont(fontDir + "DejaVuSansMono.ttf");
 }
 

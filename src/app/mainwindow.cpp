@@ -54,7 +54,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 #else
     dataPath = fromUtf8OrLatin1(DATA_DIR);
     libPath = fromUtf8OrLatin1(LIB_DIR);
-    userPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QDir::separator() + USER_DIR;
+    userPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/" + USER_DIR;
 #endif
 #endif
 
@@ -74,7 +74,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     }
 
     // fonts needs to be added before the GUI
-    const QString resourcesFontsDir = dataPath + "/resources" + QDir::separator() + "/fonts" + QDir::separator();
+    const QString resourcesFontsDir = dataPath + "/resources/fonts/";
     QFontDatabase::addApplicationFont(resourcesFontsDir + "Roboto-Medium.ttf");
     QFontDatabase::addApplicationFont(resourcesFontsDir + "Roboto-Regular.ttf");
     QFontDatabase::addApplicationFont(resourcesFontsDir + "RobotoMono-Regular.ttf");
@@ -413,7 +413,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     QStringList playlists;
 
-    if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() + PLAYLIST_DEFAULT_FILENAME)) {
+    if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + "/" + PLAYLIST_DEFAULT_FILENAME)) {
         playlists.append(PLAYLIST_DEFAULT_FILENAME);
     }
 
@@ -471,8 +471,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         columns << tr("TITLE") << tr("FORMAT") << tr("LENGTH") << tr("SUBSONG");
 
         // there was no existing default playlist
-        if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() +
-                               PLAYLIST_DEFAULT_FILENAME) && filename == PLAYLIST_DEFAULT_FILENAME) {
+        if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + "/" + PLAYLIST_DEFAULT_FILENAME)
+            && filename == PLAYLIST_DEFAULT_FILENAME) {
             swapColumns(tableWidgetPlaylists[f.fileName()]);
         }
 
@@ -510,7 +510,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         item->setMainColor(QColor(colorMain.left(7)));
         ui->listWidget->setItemDelegate(item);
 
-        QUrl u = QUrl::fromLocalFile(QDir::separator() + userPath + PLAYLISTS_DIR + "/" + f.fileName());
+        QUrl u = QUrl::fromLocalFile(userPath + PLAYLISTS_DIR + "/" + f.fileName());
         QList<QUrl> ql;
         ql.append(u);
 
@@ -519,7 +519,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
         createThePopupMenuCurrentPlaylist(f.fileName());
     }
 
-    if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + QDir::separator() + currentPlaylist)) {
+    if (!QFileInfo::exists(userPath + PLAYLISTS_DIR + "/" + currentPlaylist)) {
         currentPlaylist = PLAYLIST_DEFAULT_FILENAME;
     }
 
@@ -2742,8 +2742,8 @@ void MainWindow::renamePlaylist() {
             newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
         }
 
-        const QString playlistNewName = userPath + PLAYLISTS_DIR + QDir::separator() + newName;
-        const QString playlistOldName = userPath + PLAYLISTS_DIR + QDir::separator() + oldName;
+        const QString playlistNewName = userPath + PLAYLISTS_DIR + "/" + newName;
+        const QString playlistOldName = userPath + PLAYLISTS_DIR + "/" + oldName;
         QFile oldFile(playlistOldName);
         oldFile.rename(playlistNewName);
 
@@ -2784,8 +2784,8 @@ void MainWindow::savePlaylistAs() {
         newName = newOrgFilename + " (" + QString::number(suffix) + ")" PLAYLIST_DEFAULT_EXTENSION;
     }
 
-    const QString playlistNewName = userPath + PLAYLISTS_DIR + QDir::separator() + newName;
-    const QString playlistOldName = userPath + PLAYLISTS_DIR + QDir::separator() + oldName;
+    const QString playlistNewName = userPath + PLAYLISTS_DIR + "/" + newName;
+    const QString playlistOldName = userPath + PLAYLISTS_DIR + "/" + oldName;
 
     savePlayList(playlistOldName, playlistNewName);
 
@@ -2835,7 +2835,7 @@ void MainWindow::savePlaylistAs() {
     connect(tableWidgetPlaylists[newName], &QTableWidget::doubleClicked, this,
             &MainWindow::on_playlist_itemDoubleClicked);
 
-    const QUrl u = QUrl::fromLocalFile(QDir::separator() + userPath + PLAYLISTS_DIR + "/" + newName);
+    const QUrl u = QUrl::fromLocalFile(userPath + PLAYLISTS_DIR + "/" + newName);
     QList<QUrl> ql;
     ql.append(u);
 
@@ -2901,8 +2901,7 @@ void MainWindow::deleteAllPlaylists() {
         ui->listWidget->setCurrentRow(rowNumber);
 
         if (ui->listWidget->currentItem()->text() != PLAYLIST_DEFAULT_FILENAME) {
-            QString playlistToDelete = userPath + PLAYLISTS_DIR + QDir::separator() + ui->listWidget->currentItem()
-                                       ->text();
+            QString playlistToDelete = userPath + PLAYLISTS_DIR + "/" + ui->listWidget->currentItem()->text();
             logDebugQ("Deleting playlist " + playlistToDelete, getClassName());
             QFile::remove(playlistToDelete);
             tableWidgetPlaylists.remove(ui->listWidget->currentItem()->text());
@@ -2920,8 +2919,7 @@ void MainWindow::deletePlaylist() {
     int rowNumber = ui->listWidget->currentRow();
     rowNumber--;
 
-    const QString playlistToDelete = userPath + PLAYLISTS_DIR + QDir::separator() + ui->listWidget->currentItem()->
-                                     text();
+    const QString playlistToDelete = userPath + PLAYLISTS_DIR + "/" + ui->listWidget->currentItem()->text();
     logDebugQ("Deleting playlist " + playlistToDelete, getClassName());
     QFile::remove(playlistToDelete);
     //playlists.remove(ui->listWidget->currentItem()->text());

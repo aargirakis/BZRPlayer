@@ -116,8 +116,7 @@ void AHXPatternView::paintTop(QPainter *painter, Info *info, unsigned int m_curr
     QRectF source(0, 0, imageWidth, imageHeight);
     QRectF target(left, top, imageWidth, imageHeight);
 
-    QString imagepath = dataPath + RESOURCES_DIR + QDir::separator() + "trackerview" + QDir::separator() +
-                        "ahx_top.png";
+    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/ahx_top.png";
     QImage imageTop(imagepath);
     painter->drawImage(target, imageTop, source);
 
