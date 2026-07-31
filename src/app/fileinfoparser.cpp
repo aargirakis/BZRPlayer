@@ -142,9 +142,9 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Pattern Rows", QString::number(info->numPatterns));
             break;
         case PLUGIN_libkss:
-            info->title = convertToUtf8(info->title, shiftJis);
+            info->title = convertToUtf8(info->title, cp932);
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addMultilineInfo(tableInfo, &row, "Comments", convertToUtf8(info->comments, shiftJis));
+            addMultilineInfo(tableInfo, &row, "Comments", convertToUtf8(info->comments, cp932));
             break;
         case PLUGIN_libopenmpt:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
@@ -205,7 +205,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addMultilineInfo(tableInfo, &row, "Comments", info->comments);
             break;
         case PLUGIN_mdxmini:
-            info->title = convertToUtf8(info->title, shiftJis);
+            info->title = convertToUtf8(info->title, cp932);
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
             break;
         case PLUGIN_protrekkr:

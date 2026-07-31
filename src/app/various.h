@@ -38,7 +38,7 @@ public:
 #define logFatalQ(message, source) logQ(message, Level::FATAL, source)
 
 constexpr auto utf8Ignore = "UTF-8//IGNORE";
-constexpr auto shiftJis = "Shift_JIS";
+constexpr auto cp932 = "CP932";
 constexpr auto windows1252 = "WINDOWS-1252";
 
 typedef struct {
