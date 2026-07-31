@@ -1,4 +1,5 @@
 #include <cstring>
+#include <fstream>
 #include "kssplay.h"
 #include "fmod_errors.h"
 #include "info.h"
@@ -52,7 +53,6 @@ public:
     Info *info;
     KSS *kss = nullptr;
     KSSPLAY *kssplay = nullptr;
-    int loopNum;
 };
 
 #ifdef __cplusplus
@@ -103,6 +103,33 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    plugin->info->isContinuousPlaybackActive = false;
+
+    if (!useDefaults) {
+        string line;
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word == "continuousPlayback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                }
+            }
+        }
+        ifs.close();
+    }
+
     plugin->kssplay = KSSPLAY_new(plugin->waveformat.frequency, plugin->waveformat.channels, 16);
     KSSPLAY_set_data(plugin->kssplay, plugin->kss);
 
@@ -114,9 +141,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     KSSPLAY_reset(plugin->kssplay, plugin->info->currentSubsong + subsongOffset, 0);
-
-    // TODO setting to 0 for continuous playback, however it results silent playback for some tracks (eg REQUIEM2.MGS)
-    plugin->loopNum = 1;
 
     constexpr uint32_t quality = 1;
 
@@ -172,12 +196,10 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginLibkss *>(codec->plugindata);
 
-    // TODO
-    // plugin->kss->loop_detectable;
-
     KSSPLAY_calc(plugin->kssplay, static_cast<int16_t *>(buffer), plugin->waveformat.pcmblocksize);
 
-    if (KSSPLAY_get_loop_count(plugin->kssplay) >= plugin->loopNum || KSSPLAY_get_stop_flag(plugin->kssplay)) {
+    if (!plugin->info->isContinuousPlaybackActive && (
+            KSSPLAY_get_loop_count(plugin->kssplay) >= 1 || KSSPLAY_get_stop_flag(plugin->kssplay))) {
         return FMOD_ERR_FILE_EOF;
     }
 

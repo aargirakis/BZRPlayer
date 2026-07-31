@@ -92,6 +92,7 @@
 #define PLUGIN_libkss_LIB "@PLUGIN_libkss_LIB@"
 #define PLUGIN_libkss_NAME "@PLUGIN_libkss_NAME@"
 #define PLUGIN_libkss_VERSION "@PLUGIN_libkss_VERSION@"
+#define PLUGIN_libkss_CONFIG_FILENAME "@PLUGIN_libkss_CONFIG_FILENAME@"
 
 #define PLUGIN_libopenmpt 17
 #define PLUGIN_libopenmpt_LIB "@PLUGIN_libopenmpt_LIB@"

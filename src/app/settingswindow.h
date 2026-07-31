@@ -233,6 +233,8 @@ private slots:
 
     void on_checkBoxLazyusf2ContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxLibkssContinuousPlayback_toggled(bool isChecked) const;
+
     void on_checkBoxLibopenmptAmigaResampler_toggled(bool isChecked) const;
 
     void on_checkBoxLibopenmptContinuousPlayback_toggled(bool isChecked) const;
@@ -300,6 +302,8 @@ private:
 
     void loadSettingsLazyusf2() const;
 
+    void loadSettingsLibkss() const;
+
     void loadSettingsLibopenmpt() const;
 
     void loadSettingsLibsidplayfp() const;
@@ -330,9 +334,11 @@ private:
 
     void saveSettingsHighlyTheoretical() const;
 
+    void saveSettingsHivelytracker() const;
+
     void saveSettingsLazyusf2() const;
 
-    void saveSettingsHivelytracker() const;
+    void saveSettingsLibkss() const;
 
     void saveSettingsLibopenmpt() const;
 
