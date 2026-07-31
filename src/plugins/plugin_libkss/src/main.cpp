@@ -175,20 +175,12 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     // TODO
     // plugin->kss->loop_detectable;
 
-    // TODO need to check stop flag only if loopcount has been reached?
-    // TODO should be checked after KSSPLAY_calc?
-    if (KSSPLAY_get_stop_flag(plugin->kssplay)) {
-        return FMOD_ERR_FILE_EOF;
-    }
-
-    // TODO
-    if (KSSPLAY_get_loop_count(plugin->kssplay) >= plugin->loopNum) {
-        return FMOD_ERR_FILE_EOF;
-    }
-
     KSSPLAY_calc(plugin->kssplay, static_cast<int16_t *>(buffer), plugin->waveformat.pcmblocksize);
 
-    // TODO *read = plugin->waveformat.pcmblocksize * sizeof(int16_t) * plugin->waveformat.channels;
+    if (KSSPLAY_get_loop_count(plugin->kssplay) >= plugin->loopNum || KSSPLAY_get_stop_flag(plugin->kssplay)) {
+        return FMOD_ERR_FILE_EOF;
+    }
+
     *read = plugin->waveformat.pcmblocksize;
 
     return FMOD_OK;
