@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <fstream>
 #include <regex>
 #include <sstream>
 #include "attributes.h"
@@ -10,6 +11,7 @@
 #include "module/track_information.h"
 #include "module/track_state.h"
 #include "module/players/pipeline.h"
+#include "sound/sound_parameters.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "logger.h"
@@ -205,8 +207,38 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             return FMOD_ERR_FORMAT;
         }
 
-        // handle plugin preferences here
+        string filename = info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
+        ifstream ifs(filename.c_str());
+        bool useDefaults = false;
+
+        if (ifs.fail()) {
+            // the file could not be opened
+            useDefaults = true;
+        }
+
+        // defaults
+        info->isContinuousPlaybackActive = false;
+
+        if (!useDefaults) {
+            string line;
+            while (getline(ifs, line)) {
+                if (int i = line.find_first_of("="); i != -1) {
+                    string word = line.substr(0, i);
+                    string value = line.substr(i + 1);
+                    if (word == "continuousPlayback") {
+                        info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
+                    }
+                }
+            }
+            ifs.close();
+        }
+
         plugin->soundParams = Parameters::Container::Create();
+
+        if (info->isContinuousPlaybackActive) {
+            plugin->soundParams->SetValue(Parameters::ZXTune::Sound::LOOPED, true);
+            plugin->soundParams->SetValue(Parameters::ZXTune::Sound::LOOP_LIMIT, 0);
+        }
 
         plugin->renderer = CreatePipelinedRenderer(*plugin->modulesDetector.getCurrentModule(), plugin->soundParams);
 

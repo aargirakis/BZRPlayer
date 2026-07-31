@@ -195,6 +195,7 @@
 #define PLUGIN_zxtune_LIB "@PLUGIN_zxtune_LIB@"
 #define PLUGIN_zxtune_NAME "@PLUGIN_zxtune_NAME@"
 #define PLUGIN_zxtune_VERSION "@PLUGIN_zxtune_VERSION@"
+#define PLUGIN_zxtune_CONFIG_FILENAME "@PLUGIN_zxtune_CONFIG_FILENAME@"
 
 #define PLUGINS_COUNT 34
 

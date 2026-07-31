@@ -277,6 +277,8 @@ private slots:
 
     void on_checkBoxVio2sfContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxZxtuneContinuousPlayback_toggled(bool isChecked) const;
+
 private:
     void updateColorButtons() const;
 
@@ -320,6 +322,8 @@ private:
 
     void loadSettingsVio2sf() const;
 
+    void loadSettingsZxtune() const;
+
     void saveSettingsAdplug() const;
 
     void saveSettingsAsap() const;
@@ -353,6 +357,8 @@ private:
     void saveSettingsVgmstream() const;
 
     void saveSettingsVio2sf() const;
+
+    void saveSettingsZxtune() const;
 
     MainWindow *mainWindow;
     Ui::settingsWindow *ui;

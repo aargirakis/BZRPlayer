@@ -383,6 +383,10 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsVio2sf();
     }
 
+    if (PLUGIN_zxtune_LIB != "") {
+        loadSettingsZxtune();
+    }
+
     updateColorButtons();
 
     const QFont roboto("Roboto");
@@ -831,6 +835,10 @@ void settingsWindow::on_buttonOK_clicked() {
 
     if (PLUGIN_vio2sf_LIB != "") {
         saveSettingsVio2sf();
+    }
+
+    if (PLUGIN_zxtune_LIB != "") {
+        saveSettingsZxtune();
     }
 
     mainWindow->saveSettings();
@@ -1547,6 +1555,38 @@ void settingsWindow::loadSettingsVio2sf() const {
     }
 }
 
+void settingsWindow::loadSettingsZxtune() const {
+    // read config from disk
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_zxtune_CONFIG_FILENAME;
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    ui->checkBoxZxtuneContinuousPlayback->setChecked(false);
+
+    if (!useDefaults) {
+        string line;
+
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+
+                if (word.compare("continuousPlayback") == 0) {
+                    ui->checkBoxZxtuneContinuousPlayback->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+
+        ifs.close();
+    }
+}
+
 void settingsWindow::saveSettingsAdplug() const {
     // save config to disk
     const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_adplug_CONFIG_FILENAME;
@@ -1863,6 +1903,21 @@ void settingsWindow::saveSettingsVio2sf() const {
     ofs.close();
 }
 
+void settingsWindow::saveSettingsZxtune() const {
+    // save config to disk
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_zxtune_CONFIG_FILENAME;
+    ofstream ofs(filename.c_str());
+
+    if (ofs.fail()) {
+        // the file could not be opened
+        return;
+    }
+
+    ofs << "continuousPlayback=" << (ui->checkBoxZxtuneContinuousPlayback->isChecked() ? "true" : "false")
+            << "\n";
+    ofs.close();
+}
+
 void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) const {
     if (const auto selectedPlugin = ui->tableWidgetPlugins->item(item->row(), 0)->text();
         selectedPlugin == PLUGIN_adplug_NAME) {
@@ -1884,6 +1939,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_asap_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(false);
@@ -1903,6 +1959,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_fmod_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -1922,6 +1979,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_furnace_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -1941,6 +1999,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_highly_experimental_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -1960,6 +2019,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_highly_quixotic_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -1979,6 +2039,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_highly_theoretical_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -1998,6 +2059,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_hivelytracker_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2017,6 +2079,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_lazyusf2_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2036,6 +2099,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_libkss_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2055,6 +2119,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_libopenmpt_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2074,6 +2139,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_libsidplayfp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2093,6 +2159,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_libvgm_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2112,6 +2179,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_libxmp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2131,6 +2199,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_sndh_player_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2150,6 +2219,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_uade_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2169,6 +2239,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(false);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_vgmstream_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2187,6 +2258,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(false);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     } else if (selectedPlugin == PLUGIN_vio2sf_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2205,6 +2277,26 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(false);
+        ui->groupBoxZxtune->setHidden(true);
+    } else if (selectedPlugin == PLUGIN_zxtune_NAME) {
+        ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxAsap->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxHighlyExperimental->setHidden(true);
+        ui->groupBoxHighlyQuixotic->setHidden(true);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
+        ui->groupBoxLibkss->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
+        ui->groupBoxLibvgm->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
+        ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(false);
     } else {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
@@ -2223,6 +2315,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
     }
 }
 
@@ -2509,6 +2602,17 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxVio2sf->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxZxtune->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxZxtune->setStyleSheet(stylesheet);
 }
 
 void settingsWindow::setUiLineEditLibsidplayfpHvscFilesPath(const QString &text) const {
@@ -2654,6 +2758,7 @@ void settingsWindow::on_buttonVisualizer_clicked() const {
     ui->groupBoxUade->setHidden(true);
     ui->groupBoxVgmstream->setHidden(true);
     ui->groupBoxVio2sf->setHidden(true);
+    ui->groupBoxZxtune->setHidden(true);
 }
 
 void settingsWindow::on_buttonGeneral_clicked() const {
@@ -2679,6 +2784,7 @@ void settingsWindow::on_buttonGeneral_clicked() const {
     ui->groupBoxUade->setHidden(true);
     ui->groupBoxVgmstream->setHidden(true);
     ui->groupBoxVio2sf->setHidden(true);
+    ui->groupBoxZxtune->setHidden(true);
 }
 
 void settingsWindow::on_buttonPlugins_clicked() const {
@@ -2711,6 +2817,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->groupBoxUade->setHidden(true);
     ui->groupBoxVgmstream->setHidden(true);
     ui->groupBoxVio2sf->setHidden(true);
+    ui->groupBoxZxtune->setHidden(true);
 }
 
 void settingsWindow::on_buttonVuMeterTopColor_clicked() {
@@ -3526,7 +3633,7 @@ void settingsWindow::updateCheckBoxes() const {
     ui->checkBoxLazyusf2ContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxLazyusf2ContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxLibkssContinuousPlayback->setIcon(
-    mainWindow->icons[ui->checkBoxLibkssContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+        mainWindow->icons[ui->checkBoxLibkssContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxLibopenmptAmigaResampler->setIcon(
         mainWindow->icons[ui->checkBoxLibopenmptAmigaResampler->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxLibopenmptContinuousPlayback->setIcon(
@@ -3555,6 +3662,8 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxVgmstreamContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxVio2sfContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxVio2sfContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxZxtuneContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxZxtuneContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::forceUpdateToSliders() const {
@@ -3887,4 +3996,8 @@ void settingsWindow::on_checkBoxVgmstreamContinuousPlayback_toggled(const bool i
 
 void settingsWindow::on_checkBoxVio2sfContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxVio2sfContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxZxtuneContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxZxtuneContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
