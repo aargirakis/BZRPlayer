@@ -786,11 +786,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     }
 
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent const *keyEvent = static_cast<QKeyEvent *>(event);
-
-        if (keyEvent->key() == Qt::Key_F5) {
+        if (const auto key = static_cast<QKeyEvent *>(event)->key();
+            key == Qt::Key_F5) {
             ui->buttonPlay_2->click();
-        } else if (keyEvent->key() == Qt::Key_Right) {
+        } else if (key == Qt::Key_Right) {
             if (QApplication::keyboardModifiers() == Qt::ShiftModifier) {
                 setPosition(3000);
             } else if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
@@ -800,7 +799,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
             } else {
                 setPosition(10000);
             }
-        } else if (keyEvent->key() == Qt::Key_Left) {
+        } else if (key == Qt::Key_Left) {
             if (QApplication::keyboardModifiers() == Qt::ShiftModifier) {
                 setPosition(-3000);
             } else if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
@@ -813,13 +812,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
         }
 
         if (obj->parent() != nullptr && obj->parent()->objectName() == "Playlist") {
-            keyEvent = static_cast<QKeyEvent *>(event);
-
-            if (keyEvent->key() == Qt::Key_Delete) {
+            if (const auto key = static_cast<QKeyEvent *>(event)->key();
+                key == Qt::Key_Delete) {
                 logDebug("Deleting playlists items", getClassName());
                 deleteFilesInPlaylist();
             }
-            //            else if(keyEvent->key()==Qt::Key_Enter || keyEvent->key()==Qt::Key_Return)
+            //            else if(key == Qt::Key_Enter || key == Qt::Key_Return)
             //            {
             //                int selectedRow = tableWidgetPlaylists[selectedPlaylist]->currentRow();
             //                if(selectedRow>=0)
@@ -828,24 +826,19 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
             //                }
             //            }
         } else if (obj == ui->listWidget) {
-            keyEvent = static_cast<QKeyEvent *>(event);
-
-            if (keyEvent->key() == Qt::Key_Delete) {
+            if (const auto key = static_cast<QKeyEvent *>(event)->key();
+                key == Qt::Key_Delete) {
                 logDebug("Deleting playlist", getClassName());
                 deletePlaylist();
             }
         } else if (obj == visualizerFullScreen) {
-            keyEvent = static_cast<QKeyEvent *>(event);
-
-            if (keyEvent->key() == Qt::Key_Space || keyEvent->key() == Qt::Key_Escape ||
-                keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {
+            if (const auto key = static_cast<QKeyEvent *>(event)->key();
+                key == Qt::Key_Space || key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
                 visualizerFullScreen->hide();
             }
         } else if (obj == trackerFullScreen) {
-            keyEvent = static_cast<QKeyEvent *>(event);
-
-            if (keyEvent->key() == Qt::Key_Space || keyEvent->key() == Qt::Key_Escape || keyEvent->key() ==
-                Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {
+            if (const auto key = static_cast<QKeyEvent *>(event)->key();
+                key == Qt::Key_Space || key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
                 trackerFullScreen->hide();
             }
         }

@@ -756,8 +756,6 @@ private:
     bool isShownCheckBoxLoopPoints;
 
     bool isFmodSeamlessLoopEnabled;
-
-    int key;
 };
 
 #endif // MAINWINDOW_H
