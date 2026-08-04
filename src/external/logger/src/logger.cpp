@@ -2,6 +2,7 @@
 #include <mutex>
 #include <queue>
 #include <sstream>
+#include <utility>
 #include "logger.h"
 
 static queue<string> messageQueue;
