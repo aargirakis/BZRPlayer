@@ -16,7 +16,7 @@ jobs:
         run: |
           echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
           dnf update -y
-          dnf install -y @c-development @development-tools cmake dos2unix ninja-build patchelf \
+          dnf install -y @c-development @development-tools cmake dos2unix google-noto-cjk-fonts ninja-build patchelf \
                          Qt-Advanced-Docking-System-devel qt6-qtbase-devel qt6-qtsvg-devel rpm-build rpmlint \
                          sdl2-compat-devel vulkan-headers which
 
@@ -49,6 +49,7 @@ jobs:
           BuildRequires:  qt6-qtsvg-devel
           BuildRequires:  sdl2-compat-devel
           BuildRequires:  vulkan-headers
+          Requires:       google-noto-cjk-fonts
           Requires:       Qt-Advanced-Docking-System
           Requires:       qt6-qtbase
           Requires:       qt6-qtsvg

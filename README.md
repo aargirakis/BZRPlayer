@@ -174,18 +174,18 @@ ninja -C cmake-build
 For running BZR2 following packages are required:
 
 - On **Arch-based** distros:\
-  `qt6-base` `qt6-svg` `qt-advanced-docking-system`
+  `noto-fonts-cjk` `qt6-base` `qt6-svg` `qt-advanced-docking-system`
 
 
 - On **Debian-based** distros:\
-  `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
+  `fonts-noto-cjk` `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
   `libqt-advanced-docking-system4`
   ([libqt-advanced-docking-system4](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4_4.4.1-0_amd64-ubuntu-24.04.deb)
   for Ubuntu 24.04 and equivalent)
 
 
 - On **Fedora-based** distros:\
-  `qt6-qtbase` `qt6-qtsvg` `Qt-Advanced-Docking-System`
+  `google-noto-cjk-fonts` `qt6-qtbase` `qt6-qtsvg` `Qt-Advanced-Docking-System`
 
 #### Generated binaries
 
