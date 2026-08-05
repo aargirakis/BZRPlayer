@@ -389,7 +389,6 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
 
     updateColorButtons();
 
-    const QFont roboto("Roboto");
     QStringList columns;
     columns << tr("TITLE") << tr("VERSION");
 
@@ -400,7 +399,7 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->tableWidgetPlugins->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableWidgetPlugins->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     ui->tableWidgetPlugins->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-    ui->tableWidgetPlugins->setFont(roboto);
+    ui->tableWidgetPlugins->setFont(getDefaultFont());
     ui->tableWidgetPlugins->setFocusPolicy(Qt::NoFocus);
     ui->tableWidgetPlugins->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidgetPlugins->horizontalHeader()->setSortIndicatorShown(false);

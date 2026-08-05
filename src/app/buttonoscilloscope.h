@@ -30,7 +30,6 @@ public:
 private:
     bool checked;
     int channelNumber;
-    QFont font;
     Channels *channels;
     QColor enabledColor;
     QColor disabledColor;

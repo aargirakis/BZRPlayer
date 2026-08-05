@@ -8,8 +8,6 @@
 
 ButtonOscilloscope::ButtonOscilloscope(Channels *channelsProvided, const int i) {
     channelNumber = i;
-    font.setFamily("Roboto");
-    font.setPixelSize(14);
     checked = true;
     channels = channelsProvided;
 }
@@ -72,7 +70,7 @@ void ButtonOscilloscope::paintEvent(QPaintEvent *event) {
 void ButtonOscilloscope::drawChannelNumber(const QString &text) {
     QPainter painter(this);
     QPen pen;
-    painter.setFont(font);
+    painter.setFont(getDefaultFont());
     pen.setColor(textColor);
     painter.setPen(pen);
     painter.drawText(5, 15, text);

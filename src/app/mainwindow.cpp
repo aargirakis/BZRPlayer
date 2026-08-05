@@ -97,10 +97,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     ui->labelFilename->setText("");
     ui->centralWidget->setStyleSheet("background:#282828/*background*/;color:#ffffff");
 
-    QFont roboto("Roboto");
-
-    ui->playlist->setFont(roboto);
-    ui->labelFilename->setFont(roboto);
+    ui->playlist->setFont(getDefaultFont());
+    ui->labelFilename->setFont(getDefaultFont());
 
     currentRow = 0;
     isUpdateCurrentRowToNextEnabled = true;
@@ -312,7 +310,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     font.setPixelSize(16);
     ui->labelFilename->setFont(font);
 
-    ui->tableInfo->setFont(roboto);
+    ui->tableInfo->setFont(getDefaultFont());
 
     QStringList columnLabelsInfo;
     columnLabelsInfo << "Name" << "Value";
@@ -461,7 +459,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
             ui->dockWidgetContents_4->styleSheet() +
             "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
 
-        tableWidgetPlaylists[f.fileName()]->setFont(roboto);
+        tableWidgetPlaylists[f.fileName()]->setFont(getDefaultFont());
         tableWidgetPlaylists[f.fileName()]->installEventFilter(this);
 
         connect(tableWidgetPlaylists[f.fileName()], &QTableWidget::doubleClicked, this,
@@ -2814,13 +2812,11 @@ void MainWindow::savePlaylistAs() {
 
     tableWidgetPlaylists[newName] = tv;
 
-    const QFont roboto("Roboto");
-
     tableWidgetPlaylists[newName]->setStyleSheet(
         ui->dockWidgetContents_4->styleSheet() +
         "QHeaderView::section{font-family:Roboto;padding:0;} QTableView{padding:9px;}");
 
-    tableWidgetPlaylists[newName]->setFont(roboto);
+    tableWidgetPlaylists[newName]->setFont(getDefaultFont());
     tableWidgetPlaylists[newName]->installEventFilter(this);
 
     swapColumns(tableWidgetPlaylists[newName]);
@@ -3804,8 +3800,6 @@ QString MainWindow::createPlaylist(const QString &name) {
     item->setMainColor(QColor(colorMain.left(7)));
     ui->listWidget->setItemDelegate(item);
 
-    const QFont roboto("Roboto");
-
     const auto tv = new DraggableTableView();
     tv->setDragBackgroundColor(QColor(colorMain.left(7)));
     tv->setDragTextColor(QColor(colorMainText.left(7)));
@@ -3823,7 +3817,7 @@ QString MainWindow::createPlaylist(const QString &name) {
 
     tableWidgetPlaylists[newItem->text()]->setStyleSheet(
         ui->dockWidgetContents_4->styleSheet() + "QHeaderView::section{font-family:Roboto;} QTableView{padding:9px;}");
-    tableWidgetPlaylists[newItem->text()]->setFont(roboto);
+    tableWidgetPlaylists[newItem->text()]->setFont(getDefaultFont());
     tableWidgetPlaylists[newItem->text()]->installEventFilter(this);
 
     createThePopupMenuCurrentPlaylist(newItem->text());

@@ -1,7 +1,7 @@
 #ifndef VARIOUS_H
 #define VARIOUS_H
 
-#include <QString>
+#include <qfont.h>
 #include "info.h"
 #include "logger.h"
 
@@ -71,6 +71,12 @@ struct Equalizer {
     float eq8000;
     float eq16000;
 };
+
+inline const QFont defaultFont("Roboto");
+
+inline const QFont &getDefaultFont() {
+    return defaultFont;
+}
 
 QString groupDigits(size_t number);
 
