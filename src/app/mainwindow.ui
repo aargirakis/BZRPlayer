@@ -2432,6 +2432,9 @@ font-family:Roboto;
        <property name="columnCount">
         <number>0</number>
        </property>
+       <attribute name="horizontalHeaderMinimumSectionSize">
+        <number>10</number>
+       </attribute>
        <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
         <bool>false</bool>
        </attribute>
@@ -2837,6 +2840,9 @@ font-family:Roboto;
        <property name="cornerButtonEnabled">
         <bool>false</bool>
        </property>
+       <attribute name="horizontalHeaderMinimumSectionSize">
+        <number>10</number>
+       </attribute>
        <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
         <bool>false</bool>
        </attribute>
