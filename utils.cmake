@@ -32,10 +32,8 @@ function(download_to target_filename target_url sha_256_hash
         if ("${sha_256_hash}" STREQUAL "")
             file(DOWNLOAD ${target_url} ${destination_path}/${target_filename} STATUS status)
         else ()
-            file(
-                    DOWNLOAD ${target_url} ${destination_path}/${target_filename}
-                    EXPECTED_HASH SHA256=${sha_256_hash} STATUS status
-            )
+            file(DOWNLOAD ${target_url} ${destination_path}/${target_filename}
+                    EXPECTED_HASH SHA256=${sha_256_hash} STATUS status)
         endif ()
 
         list(GET status 0 status_code)
@@ -67,30 +65,23 @@ function(patch_sources target_name patches_dir target_dir)
 
     foreach (PATCH_FILE ${PATCH_FILES})
         if (NOT WIN32)
-            execute_process(
-                    COMMAND lsdiff ${PATCH_FILE}
+            execute_process(COMMAND lsdiff ${PATCH_FILE}
                     OUTPUT_STRIP_TRAILING_WHITESPACE
-                    OUTPUT_VARIABLE FILE_TO_PATCH
-            )
-            execute_process(
-                    COMMAND dos2unix ${target_dir}/${FILE_TO_PATCH}
-                    ERROR_QUIET
-            )
+                    OUTPUT_VARIABLE FILE_TO_PATCH)
+            execute_process(COMMAND dos2unix ${target_dir}/${FILE_TO_PATCH}
+                    ERROR_QUIET)
         endif ()
 
-        execute_process(
-                COMMAND patch
+        execute_process(COMMAND patch
                 -ul -d ${target_dir}
                 -p0 -i ${PATCH_FILE}
                 RESULT_VARIABLE PATCH_RESULT
                 OUTPUT_VARIABLE PATCH_OUTPUT
-                ERROR_VARIABLE PATCH_ERROR
-        )
+                ERROR_VARIABLE PATCH_ERROR)
         if (NOT PATCH_RESULT EQUAL 0)
             message(FATAL_ERROR
                     "Failed to apply patch ${PATCH_FILE}: ${PATCH_OUTPUT}"
-                    "${PATCH_ERROR}"
-            )
+                    "${PATCH_ERROR}")
         endif ()
     endforeach ()
 endfunction()
@@ -137,8 +128,7 @@ function(download_and_patch target_name target_filename target_url
                 execute_process(COMMAND ${CMAKE_COMMAND} -E cat ${target_parts}
                         OUTPUT_FILE ${target_filepath}
                         RESULT_VARIABLE concat_result
-                        ERROR_VARIABLE concat_error
-                )
+                        ERROR_VARIABLE concat_error)
 
                 if (NOT concat_result EQUAL 0)
                     message(FATAL_ERROR "Error joining parts to ${target_filepath}: ${concat_error}")
@@ -155,8 +145,8 @@ function(download_and_patch target_name target_filename target_url
                     "\nactual hash: ${sha_256_hash}")
         endif ()
 
-        unpack_and_patch("${target_filepath}" "${target_name}"
-                "${unpack_to_parent_dir}" "${target_unpacked_dir}" "${patches_dir}")
+        unpack_and_patch("${target_filepath}" "${target_name}" "${unpack_to_parent_dir}" "${target_unpacked_dir}"
+                "${patches_dir}")
     else ()
         download_to("${target_filename}" "${target_url}" "${sha_256_hash}" "${DEPENDENCIES_DIR}/${target_name}"
                 false "${target_name}")
@@ -169,18 +159,14 @@ endfunction()
 
 function(download_patch_and_add target_name target_filename target_url
         sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
-    download_and_patch(
-            "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
-            "${target_unpacked_dir}" "${patches_dir}"
-    )
+    download_and_patch("${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_unpacked_dir}" "${patches_dir}")
 
-    ExternalProject_Add(
-            ${target_name}
+    ExternalProject_Add(${target_name}
             SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
             CONFIGURE_COMMAND ""
             BUILD_COMMAND ""
-            INSTALL_COMMAND ""
-    )
+            INSTALL_COMMAND "")
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
@@ -188,10 +174,8 @@ endfunction()
 function(download_patch_and_make target_name target_filename target_url sha_256_hash
         unpack_to_parent_dir target_unpacked_dir patches_dir configure_command
         make_args allow_install build_byproducts)
-    download_and_patch(
-            "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
-            "${target_unpacked_dir}" "${patches_dir}"
-    )
+    download_and_patch("${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_unpacked_dir}" "${patches_dir}")
 
     if (WIN32)
         if (configure_command)
@@ -234,30 +218,25 @@ function(download_patch_and_make target_name target_filename target_url sha_256_
         list(APPEND build_byproducts_with_full_path ${EXTERNAL_SOURCE_DIR}/${build_byproduct})
     endforeach ()
 
-    ExternalProject_Add(
-            ${target_name}
+    ExternalProject_Add(${target_name}
             SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
             CONFIGURE_COMMAND ${configure_command}
             BUILD_COMMAND ${make_command}
             INSTALL_COMMAND "${install_command}"
             BUILD_IN_SOURCE 1
-            BUILD_BYPRODUCTS ${build_byproducts_with_full_path}
-    )
+            BUILD_BYPRODUCTS ${build_byproducts_with_full_path})
 
     set(EXTERNAL_SOURCE_DIR ${EXTERNAL_SOURCE_DIR} PARENT_SCOPE)
 endfunction()
 
 function(download_patch_and_cmake target_name target_filename target_url
         sha_256_hash unpack_to_parent_dir target_unpacked_dir patches_dir)
-    download_and_patch(
-            "${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
-            "${target_unpacked_dir}" "${patches_dir}"
-    )
+    download_and_patch("${target_name}" "${target_filename}" "${target_url}" "${sha_256_hash}" "${unpack_to_parent_dir}"
+            "${target_unpacked_dir}" "${patches_dir}")
 
     set(FETCHCONTENT_BASE_DIR "${DEPENDENCIES_DIR}/${target_name}")
 
-    FetchContent_Declare(
-            ${target_name}
+    FetchContent_Declare(${target_name}
             SOURCE_DIR ${EXTERNAL_SOURCE_DIR}
             EXCLUDE_FROM_ALL
     )

@@ -16,10 +16,8 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(URL "https://github.com/${NAME}/${NAME}/releases/download/v${VERSION}/${FILENAME}")
 set(SHA_256_HASH "81bfd58ccaa3a0ef28c903b841b4fa3014811901fd12fbb9a80b7b5d5ec2b151")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 set(PACKAGE_VERSION "${VERSION}")
 set(HAVE_BUILTIN_EXPECT 1)
@@ -133,11 +131,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE sidid logger)
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
 
-cmake_path(SET SID_DATA_PATH NORMALIZE ${OUTPUT_DIR}${DATA_DIR}${SID_DATA_DIR})
+cmake_path(SET SID_DATA_PATH ${OUTPUT_PATH}/${DATA_DIR}${SID_DATA_DIR})
 set(DESTINATION_PATH "${SID_DATA_PATH}")
 
 set(BASIC_BIN_URL "https://sourceforge.net/p/vice-emu/code/HEAD/tree/tags/v3.10/vice/data/C64/${BASIC_BIN}?format=raw")
@@ -162,3 +159,8 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR_sidid}/${SIDID_CFG} ${SID_DATA_PATH}
         VERBATIM)
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+    install(DIRECTORY ${SID_DATA_PATH} DESTINATION ${CMAKE_INSTALL_DATADIR}${PLUGINS_DIR})
+endif ()

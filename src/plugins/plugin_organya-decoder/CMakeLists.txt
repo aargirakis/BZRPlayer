@@ -15,10 +15,8 @@ set(UNPACKED_DIR "losnoco-foo_input_org-d713df1b6c8a")
 set(FILENAME "${UNPACKED_DIR}.zip")
 set(URL "https://www.cavestory.org/downloads/${FILENAME}")
 set(SHA_256_HASH "15d3f0851104c3b8dcb2d0fd600dac86c6afe98b7a3a16033d70dc2fcca9c8c8")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/liborganya/*.c
@@ -42,13 +40,16 @@ target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
-
-cmake_path(SET ORGANYA_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${ORGANYA_DATA_DIR})
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        ${EXTERNAL_SOURCE_DIR}/liborganya/samples ${ORGANYA_DATA_PATH}
+        ${EXTERNAL_SOURCE_DIR}/liborganya/samples ${OUTPUT_PATH}/${DATA_DIR}/${ORGANYA_DATA_DIR}
         VERBATIM)
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+    install(DIRECTORY ${OUTPUT_PATH}/${DATA_DIR}/${ORGANYA_DATA_DIR}
+            DESTINATION ${CMAKE_INSTALL_DATADIR}${PLUGINS_DIR})
+endif ()

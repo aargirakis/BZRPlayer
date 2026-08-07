@@ -74,13 +74,13 @@ In addition to these **FMOD** itself is used to provide support for both MIDI an
 `openssl-devel`
 
 From the MSYS2 **ucrt64.exe** command prompt go to the project sources dir (keep in mind Unix-style paths are
-required), then start the configuration process executing:\
+required), then start the configuration stage executing:\
 `cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
 
 To build the project execute:\
 `ninja -C cmake-build`
 
-As result of the building process, in the chosen CMake build directory the `output` directory will be populated with
+As result of the build stage, in the chosen CMake build directory the `output` directory will be populated with
 binaries.\
 If the **Release** build type is selected, along with `output` also `output_release` directory will be created,
 containing the final archive release file
@@ -132,7 +132,7 @@ still missing.
 
 In order to build the Windows installer put the target binaries in `src/inst/nsis/bin` then enter `src/inst/nsis`
 directory and execute: `makensis -DVERSION="<any_version>" bzr2_setup.nsi`\
-As result of the building process `bzr-player-<any_version>-win64.exe` will be generated in the same directory.
+As result of the build stage `bzr-player-<any_version>-win64.exe` will be generated in the same directory.
 
 ### Linux
 
@@ -155,18 +155,31 @@ In order to build BZR2 following packages are required:
   `@c-development` `@development-tools` `cmake` `dos2unix` `ninja-build` `qt6-qtbase-devel` `qt6-qtsvg-devel`
   `Qt-Advanced-Docking-System-devel` `sdl2-compat-devel` `vulkan-headers` `which`
 
-Go to the project sources dir then start the configuration process executing:\
-`cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
+Go to the project sources dir then start the configuration stage executing:\
+`cmake -B cmake-build -S . -DCMAKE_BUILD_TYPE=`[`Debug`|`Release`]` -G Ninja`
 
 To build the project execute:\
 `ninja -C cmake-build`
 
-#### Build example
+To install the project (optional) execute:\
+`ninja -C cmake-build install`
+
+To specify the installation prefix (make sure to have write permissions) add this to the configuration stage
+command (otherwise `/usr/local` will be used):\
+`-DCMAKE_INSTALL_PREFIX=<your_prefix>`
+
+As result of the build stage, in the chosen CMake build directory the `output` directory will be populated
+with binaries.\
+If the **Debug** build type is selected BZR2 will rely on isolated user settings (ideal for development purposes)
+instead of system ones
+
+#### Build with install example
 
 ```
 cd ~/bzr-player &&
-cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Debug -G Ninja &&
-ninja -C cmake-build 
+cmake -B cmake-build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -G Ninja &&
+ninja -C cmake-build
+ninja -C cmake-build install
 ```
 
 #### Runtime dependencies
@@ -186,16 +199,6 @@ For running BZR2 following packages are required:
 
 - On **Fedora-based** distros:\
   `google-noto-cjk-fonts` `qt6-qtbase` `qt6-qtsvg` `Qt-Advanced-Docking-System`
-
-#### Generated binaries
-
-On Linux, as result of the building process, in the chosen CMake build directory the `output` directory will be
-populated with binaries.\
-If the **Debug** build type is selected BZR2 will use development paths instead of system ones: this means all paths
-will refer to the `output` directory (including the user settings and the executable's RPATH) ensuring a complete
-isolation from any other (real) BZR2 installation (ideal for development purposes).\
-If **Release** build type is selected then the system paths will be used (this also means generated binaries will work
-only if they are installed in the correct system paths)
 
 ### Offline mode
 

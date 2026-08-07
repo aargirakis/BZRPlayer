@@ -14,10 +14,8 @@ set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/superctr/${NAME}/archive/${FILENAME_URL}")
 set(SHA_256_HASH "46da29342d2968ff222ba00e07c646e038b76af2e6c86de037c653059a056251")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}" PARENT_SCOPE)
 

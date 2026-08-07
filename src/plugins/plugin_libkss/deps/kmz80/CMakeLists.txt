@@ -14,9 +14,7 @@ set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/digital-sound-antiques/${NAME}/archive/${FILENAME_URL}")
 set(SHA_256_HASH "3695aa0e02235a1d018147c218821b0df43258ea5b4aaf730c51761d82853638")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/kmdmg.c

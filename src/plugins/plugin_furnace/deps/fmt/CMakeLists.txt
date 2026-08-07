@@ -14,9 +14,7 @@ set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/fmtlib/${NAME}/archive/${FILENAME_URL}")
 set(SHA_256_HASH "2d18d7b1c393791a180c8321cedd702093b5527625be955178bef8af2b1cf6db")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}" PARENT_SCOPE)
 

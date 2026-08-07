@@ -17,10 +17,8 @@ set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "v${VERSION}.tar.gz")
 set(URL "https://github.com/hitchhikr/${NAME}/archive/refs/tags/${FILENAME_URL}")
 set(SHA_256_HASH "40219b51997d4368ff931dada0832bacd99558d088d3aebe424e5d5e33f53b8d")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/release/distrib/replay/lib/*.cpp
@@ -69,6 +67,9 @@ endif ()
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+endif ()

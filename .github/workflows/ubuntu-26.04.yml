@@ -13,7 +13,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
+          echo "BZR2_VERSION=$(grep -oP '^project\(\"BZR Player\" VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
           sudo apt-get -y update
           # sudo apt-get -y upgrade
           # sudo apt-get -y dist-upgrade
@@ -26,14 +26,14 @@ jobs:
 
       - name: Build
         run: |
-          cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/usr -DCMAKE_BUILD_TYPE=Release -DOFFLINE_MODE=1 -G Ninja
+          cmake -B cmake-build -S . -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DOFFLINE_MODE=1 -G Ninja
           ninja -C cmake-build
           bzr2_deb_name="bzr-player_${{env.BZR2_VERSION}}-1_amd64"
           echo "BZR2_DEB_NAME=$bzr2_deb_name" >> "$GITHUB_ENV"
-          mkdir -p "$bzr2_deb_name"
-          mv cmake-build/output/usr "$bzr2_deb_name"
-          install -dm755 "$bzr2_deb_name/usr"
-          install -Dm644 cmake-build/output/LICENSE "$bzr2_deb_name/usr/share/doc/bzr-player/copyright"
+          mkdir "$bzr2_deb_name"
+          DESTDIR="$PWD/$bzr2_deb_name" ninja -C cmake-build install
+          mkdir -p "$bzr2_deb_name/usr/share/doc/bzr-player"
+          mv "$bzr2_deb_name/usr/share/bzr-player/LICENSE" "$bzr2_deb_name/usr/share/doc/bzr-player/copyright"
 
           for size in 16 32 48 64 128 256 512; do
             install -Dm644 "$bzr2_deb_name/usr/share/bzr-player/resources/icon.png" \

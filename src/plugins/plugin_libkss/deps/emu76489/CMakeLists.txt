@@ -14,9 +14,7 @@ set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/digital-sound-antiques/${NAME}/archive/${FILENAME_URL}")
 set(SHA_256_HASH "cddddbed8afdbe3fc21c5d2917286066c02d737bc4dc69a431acd7bc5a124fc5")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 
 file(GLOB SOURCES ${EXTERNAL_SOURCE_DIR}/emu76489.c)
 

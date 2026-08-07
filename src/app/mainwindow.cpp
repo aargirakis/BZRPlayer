@@ -41,20 +41,22 @@ const QString MainWindow::VERSION = PROJECT_VERSION;
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     setlocale(LC_ALL, ".UTF8");
 
-#ifdef WIN32
     const QString exePath = QApplication::applicationDirPath();
+
+#ifdef WIN32
     dataPath = exePath + DATA_DIR;
     libPath = exePath + LIB_DIR;
     userPath = exePath + USER_DIR;
 #else
-#ifdef OUTPUT_DIR
-    dataPath = fromUtf8OrLatin1(OUTPUT_DIR) + DATA_DIR;
-    libPath = fromUtf8OrLatin1(OUTPUT_DIR) + LIB_DIR;
-    userPath = fromUtf8OrLatin1(OUTPUT_DIR) + "/" + USER_DIR;
-#else
-    dataPath = fromUtf8OrLatin1(DATA_DIR);
-    libPath = fromUtf8OrLatin1(LIB_DIR);
+    QDir dir(exePath);
+    dir.cdUp();
+
+    dataPath = dir.absoluteFilePath(fromUtf8OrLatin1(DATA_DIR));
+    libPath = dir.absoluteFilePath(fromUtf8OrLatin1(LIB_DIR));
+#ifdef NDEBUG
     userPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/" + USER_DIR;
+#else
+    userPath = dir.absoluteFilePath(fromUtf8OrLatin1(USER_DIR));
 #endif
 #endif
 

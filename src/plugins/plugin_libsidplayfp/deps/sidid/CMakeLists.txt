@@ -14,10 +14,8 @@ set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/cadaver/${NAME}/archive/${FILENAME_URL}")
 set(SHA_256_HASH "fcab7eb271d08959bc1a6c2bbf07dfab902dbd15b94da5d12621a87942790737")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}" PARENT_SCOPE)
 

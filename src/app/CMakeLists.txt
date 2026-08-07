@@ -17,11 +17,9 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_MODULES} REQUIRED)
 find_package(qtadvanceddocking-qt${QT_VERSION_MAJOR} REQUIRED)
 find_package(Iconv REQUIRED)
 
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest.in
         ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.exe.manifest
-        @ONLY NEWLINE_STYLE UNIX
-)
+        @ONLY NEWLINE_STYLE UNIX)
 
 file(GLOB SOURCES
         *.cpp
@@ -39,21 +37,11 @@ file(GLOB SOURCES
         BZRPlayer.rc
         BZRPlayer.exe.manifest)
 
-if (NOT WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
-    #TODO workaround
-    set(CMAKE_BUILD_RPATH "${LIB_DIR}")
-endif ()
-
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${FMOD_API_DIR} ${LOGGER_API_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_VERSION="${PROJECT_VERSION}")
-
-if (NOT CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE OUTPUT_DIR="${OUTPUT_DIR}")
-endif ()
-
 target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_VERSION_MAJOR="${PROJECT_VERSION_MAJOR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE DATA_DIR="${DATA_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE LIB_DIR="${LIB_DIR}")
@@ -73,15 +61,16 @@ endforeach ()
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ads::qtadvanceddocking-qt${QT_VERSION_MAJOR} Iconv::Iconv -L"${FMOD_DIR}" -lfmod logger)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-        OUTPUT_NAME ${EXE_NAME}
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}${LIB_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}${BIN_DIR}
-        #ARCHIVE_OUTPUT_DIRECTORY DESTINATION ${OUTPUT_DIR}${LIB_DIR} #TODO
-)
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${EXE_NAME})
 
-if (WIN32 AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE true)
+if (WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH})
+
+    if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE true)
+    endif ()
+else ()
+    set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_BINDIR})
 endif ()
 
 if (WIN32)
@@ -109,6 +98,7 @@ if (WIN32)
             ${CMAKE_PREFIX_PATH}/bin/libb2-1.dll
             ${CMAKE_PREFIX_PATH}/bin/libbz2-1.dll
             ${CMAKE_PREFIX_PATH}/bin/libcrypto-3-x64.dll
+            ${CMAKE_PREFIX_PATH}/bin/libdouble-conversion.dll
             ${CMAKE_PREFIX_PATH}/bin/libfreetype-6.dll
             ${CMAKE_PREFIX_PATH}/bin/libgcc_s_seh-1.dll
             ${CMAKE_PREFIX_PATH}/bin/libglib-2.0-0.dll
@@ -116,6 +106,7 @@ if (WIN32)
             ${CMAKE_PREFIX_PATH}/bin/libharfbuzz-0.dll
             ${CMAKE_PREFIX_PATH}/bin/libiconv-2.dll
             ${CMAKE_PREFIX_PATH}/bin/libintl-8.dll
+            ${CMAKE_PREFIX_PATH}/bin/libmd4c.dll
             ${CMAKE_PREFIX_PATH}/bin/libpcre2-8-0.dll
             ${CMAKE_PREFIX_PATH}/bin/libpcre2-16-0.dll
             ${CMAKE_PREFIX_PATH}/bin/libpng16-16.dll
@@ -123,26 +114,18 @@ if (WIN32)
             ${CMAKE_PREFIX_PATH}/bin/libstdc++-6.dll
             ${CMAKE_PREFIX_PATH}/bin/libwinpthread-1.dll
             ${CMAKE_PREFIX_PATH}/bin/libzstd.dll
-            ${CMAKE_PREFIX_PATH}/bin/zlib1.dll
-    )
+            ${CMAKE_PREFIX_PATH}/bin/zlib1.dll)
 
-    if (WIN32)
-        list(APPEND RUNTIME_LIBS
-                ${CMAKE_PREFIX_PATH}/bin/libdouble-conversion.dll
-                ${CMAKE_PREFIX_PATH}/bin/libmd4c.dll
-        )
-        file(GLOB RUNTIME_LIBS_VERSIONED
-                ${CMAKE_PREFIX_PATH}/bin/libicudt*.dll
-                ${CMAKE_PREFIX_PATH}/bin/libicuin*.dll
-                ${CMAKE_PREFIX_PATH}/bin/libicuuc*.dll
-        )
-        list(APPEND RUNTIME_LIBS ${RUNTIME_LIBS_VERSIONED})
-    endif ()
+    file(GLOB RUNTIME_LIBS_VERSIONED
+            ${CMAKE_PREFIX_PATH}/bin/libicudt*.dll
+            ${CMAKE_PREFIX_PATH}/bin/libicuin*.dll
+            ${CMAKE_PREFIX_PATH}/bin/libicuuc*.dll)
+    list(APPEND RUNTIME_LIBS ${RUNTIME_LIBS_VERSIONED})
 
     foreach (LIB ${RUNTIME_LIBS})
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${LIB} ${OUTPUT_DIR}
+                ${LIB} ${OUTPUT_PATH}
                 VERBATIM)
     endforeach ()
 endif ()
@@ -151,46 +134,48 @@ set(RUNTIME_LIBS ${RUNTIME_LIBS} PARENT_SCOPE)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts ${OUTPUT_DIR}${DATA_DIR}${RESOURCES_DIR}/fonts
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts ${OUTPUT_PATH}/${DATA_DIR}${RESOURCES_DIR}/fonts
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources/trackerview ${OUTPUT_DIR}${DATA_DIR}${RESOURCES_DIR}/trackerview
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/trackerview ${OUTPUT_PATH}/${DATA_DIR}${RESOURCES_DIR}/trackerview
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources/visualizer ${OUTPUT_DIR}${DATA_DIR}${RESOURCES_DIR}/visualizer
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/visualizer ${OUTPUT_PATH}/${DATA_DIR}${RESOURCES_DIR}/visualizer
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources/icon.png ${OUTPUT_DIR}${DATA_DIR}${RESOURCES_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources/icon.png ${OUTPUT_PATH}/${DATA_DIR}${RESOURCES_DIR}
         VERBATIM)
 
 if (WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_SOURCE_DIR}/LICENSE ${OUTPUT_DIR}/LICENSE.txt
+            ${CMAKE_SOURCE_DIR}/LICENSE ${OUTPUT_PATH}/LICENSE.txt
             VERBATIM)
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.VisualElementsManifest.xml ${OUTPUT_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/BZRPlayer.VisualElementsManifest.xml ${OUTPUT_PATH}
             VERBATIM)
 
     set(QT_PLUGINS_DIR "${CMAKE_PREFIX_PATH}/share/qt${QT_VERSION_MAJOR}/plugins")
 
-    cmake_path(SET OUTPUT_PLATFORMS_DIR NORMALIZE ${OUTPUT_DIR}/${PLATFORMS_DIR})
-
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_PLATFORMS_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_PATH}${PLATFORMS_DIR}"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${QT_PLUGINS_DIR}/platforms/qwindows.dll ${OUTPUT_PLATFORMS_DIR}
+            ${QT_PLUGINS_DIR}/platforms/qwindows.dll ${OUTPUT_PATH}${PLATFORMS_DIR}
             VERBATIM)
 
-    cmake_path(SET OUTPUT_TLS_DIR NORMALIZE ${OUTPUT_DIR}/${TLS_DIR})
-
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_TLS_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_PATH}${TLS_DIR}"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${QT_PLUGINS_DIR}/tls/qopensslbackend.dll ${OUTPUT_TLS_DIR}
+            ${QT_PLUGINS_DIR}/tls/qopensslbackend.dll ${OUTPUT_PATH}${TLS_DIR}
             VERBATIM)
 else ()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_SOURCE_DIR}/LICENSE ${OUTPUT_DIR}
+            ${CMAKE_SOURCE_DIR}/LICENSE ${OUTPUT_PATH}/${DATA_DIR}
             VERBATIM)
+endif ()
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES ${OUTPUT_PATH}/${DATA_DIR}/LICENSE DESTINATION ${CMAKE_INSTALL_DATADIR})
+    install(DIRECTORY ${OUTPUT_PATH}/${DATA_DIR}${RESOURCES_DIR} DESTINATION ${CMAKE_INSTALL_DATADIR})
 endif ()

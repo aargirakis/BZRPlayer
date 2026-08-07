@@ -20,10 +20,8 @@ set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "v${VERSION}.tar.gz")
 set(URL "https://github.com/tildearrow/${NAME}/archive/refs/tags/${FILENAME_URL}")
 set(SHA_256_HASH "c54b93dc7211a8e86828ea6b436628920df7a7dc87b130b3752f2251f5466e9c")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/extern/adpcm-xq-s/*.c
@@ -210,6 +208,9 @@ endif ()
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+endif ()

@@ -15,9 +15,7 @@ set(FILENAME "${NAME_VERSIONED}.zip")
 set(URL "https://warmplace.ru/soft/sunvox/${FILENAME}")
 set(SHA_256_HASH "abe851de9d65a10e06673bf33257154591a2ff63ad2bb298488a5941cc5f4057")
 set(UNPACKED_DIR "${NAME}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 
 file(GLOB SOURCES src/main.cpp)
 
@@ -41,20 +39,25 @@ target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
-
-cmake_path(SET SUNVOX_LIB_DIR NORMALIZE ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR})
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
 
 if (WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${EXTERNAL_SOURCE_DIR}/${NAME}/windows/lib_x86_64/${SUNVOX_LIB} ${SUNVOX_LIB_DIR}
+            ${EXTERNAL_SOURCE_DIR}/${NAME}/windows/lib_x86_64/${SUNVOX_LIB}
+            ${OUTPUT_PATH}/${LIB_DIR}${PLUGINS_DIR}
             VERBATIM)
 else ()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${EXTERNAL_SOURCE_DIR}/${NAME}/linux/lib_x86_64/${SUNVOX_LIB} ${SUNVOX_LIB_DIR}
+            ${EXTERNAL_SOURCE_DIR}/${NAME}/linux/lib_x86_64/${SUNVOX_LIB}
+            ${OUTPUT_PATH}/${LIB_DIR}${PLUGINS_DIR}
             VERBATIM)
+endif ()
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+    install(FILES ${OUTPUT_PATH}/${LIB_DIR}${PLUGINS_DIR}/${SUNVOX_LIB}
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
 endif ()

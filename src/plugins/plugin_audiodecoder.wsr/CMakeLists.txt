@@ -15,9 +15,7 @@ set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "v${VERSION}.tar.gz")
 set(URL "https://github.com/xbmc/${NAME}/archive/refs/tags/${FILENAME_URL}")
 set(SHA_256_HASH "c84c49696939f950650ac05fbe6c0b9c6889003cea0cfb223d8045480ceb0a1a")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" ""
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" "")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/lib/in_wsr/*.c
@@ -40,6 +38,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+endif ()

@@ -18,10 +18,8 @@ set(FILENAME_URL "${TAG}.tar.gz")
 set(URL "https://github.com/${NAME}/${NAME}/archive/refs/tags/${FILENAME_URL}")
 set(SHA_256_HASH "b9ad0ffabb5919e1c9ec2912416e3ce37916417a8c410196822ce6c610dcde66")
 set(UNPACKED_DIR "${NAME_TAGGED}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 add_subdirectory(deps/ffmpeg)
 add_subdirectory(deps/libcue)
@@ -83,6 +81,9 @@ endif ()
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+endif ()

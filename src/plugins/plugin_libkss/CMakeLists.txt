@@ -22,10 +22,8 @@ set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/digital-sound-antiques/${NAME}/archive/refs/tags/${FILENAME_URL}")
 set(SHA_256_HASH "303a0948350a137630a69658d658e9c11b42832588768b9f60c19b8586348c76")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
 
@@ -38,9 +36,8 @@ set(DRV_FILENAME_URL "${DRV_VERSION}.tar.gz")
 set(DRV_URL "https://github.com/digital-sound-antiques/${DRV_NAME}/archive/${DRV_FILENAME_URL}")
 set(DRV_SHA_256_HASH "533cc994c0b4b85bcecedd98351a981204779833d89d49577e619d3d5685d47e")
 set(DRV_UNPACKED_DIR "${DRV_NAME}-${DRV_VERSION}")
-download_patch_and_add(
-        ${DRV_NAME_VERSIONED} ${DRV_FILENAME} ${DRV_URL} ${DRV_SHA_256_HASH} true ${DRV_UNPACKED_DIR} ""
-)
+download_patch_and_add(${DRV_NAME_VERSIONED} ${DRV_FILENAME} ${DRV_URL} ${DRV_SHA_256_HASH} true ${DRV_UNPACKED_DIR}
+        "")
 
 set(EXTERNAL_SOURCE_DIR_${DRV_NAME} "${EXTERNAL_SOURCE_DIR}")
 
@@ -71,6 +68,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+endif ()

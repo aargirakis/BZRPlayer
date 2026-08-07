@@ -14,9 +14,7 @@ set(FILENAME_URL "${NAME_VERSIONED}.tar.gz")
 set(URL "https://github.com/adplug/${NAME}/archive/refs/tags/${FILENAME_URL}")
 set(SHA_256_HASH "b05e3ceebe059903b21357bb7fe3cbbabeb2fa9b857a7257c9b507f027437ea7")
 set(UNPACKED_DIR "${NAME_VERSIONED2}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}" PARENT_SCOPE)
 
@@ -26,11 +24,9 @@ set(ISO_STDLIB 1)
 set(WITH_MATH 1)
 set(TYPE_INT "long long")
 set(TYPE_FLOAT "long double")
-configure_file(
-        ${EXTERNAL_SOURCE_DIR}/src/binio.h.in
+configure_file(${EXTERNAL_SOURCE_DIR}/src/binio.h.in
         ${EXTERNAL_SOURCE_DIR}/src/binio.h
-        @ONLY NEWLINE_STYLE UNIX
-)
+        @ONLY NEWLINE_STYLE UNIX)
 
 file(GLOB SOURCES ${EXTERNAL_SOURCE_DIR}/src/*.cpp)
 

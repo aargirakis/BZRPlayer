@@ -9,9 +9,8 @@ set(LIB_URL "https://gitlab.com/kode54/${LIB_NAME}/-/archive/${LIB_VERSION}/${LI
 set(LIB_SHA_256_HASH "1fc69539c3347c265cf44b92166de9ec93186a09a9cff56030de8cc53b23981c")
 set(LIB_UNPACKED_DIR "${LIB_NAME}-${LIB_VERSION}")
 if (NOT TARGET "${LIB_NAME_VERSIONED}")
-    download_patch_and_add(
-            ${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR} ""
-    )
+    download_patch_and_add(${LIB_NAME_VERSIONED} ${LIB_FILENAME} ${LIB_URL} ${LIB_SHA_256_HASH} true ${LIB_UNPACKED_DIR}
+            "")
 
     set(EXTERNAL_SOURCE_DIR_${LIB_NAME} "${EXTERNAL_SOURCE_DIR}")
     set(EXTERNAL_SOURCE_DIR_${LIB_NAME} "${EXTERNAL_SOURCE_DIR}" PARENT_SCOPE)

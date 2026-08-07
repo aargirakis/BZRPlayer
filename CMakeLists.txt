@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(bzr2 VERSION "2.0.92")
+project("BZR Player" VERSION "2.0.92")
 
 include(GNUInstallDirs)
 
@@ -14,9 +14,15 @@ if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_
     set(CMAKE_BUILD_TYPE "Debug")
 endif ()
 
-set(CMAKE_INSTALL_MESSAGE NEVER)
-set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/output")
-cmake_path(SET OUTPUT_DIR NORMALIZE "${CMAKE_INSTALL_PREFIX}")
+set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/output")
+
+if (WIN32)
+    set(CMAKE_INSTALL_PREFIX "${OUTPUT_PATH}")
+else ()
+    set(CMAKE_INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}/bzr-player")
+    set(CMAKE_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/bzr-player")
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+endif ()
 
 if (WIN32)
     set(EXE_NAME "BZRPlayer")
@@ -27,10 +33,9 @@ if (WIN32)
     set(USER_DIR "/user")
 else ()
     set(EXE_NAME "bzr-player")
-    set(PREFIX_DIR "${CMAKE_PREFIX_PATH}")
-    set(BIN_DIR "${PREFIX_DIR}/${CMAKE_INSTALL_BINDIR}")
-    set(LIB_DIR "${PREFIX_DIR}/${CMAKE_INSTALL_LIBDIR}/bzr-player")
-    set(DATA_DIR "${PREFIX_DIR}/share/bzr-player")
+    set(BIN_DIR "${CMAKE_INSTALL_BINDIR}")
+    set(LIB_DIR "${CMAKE_INSTALL_LIBDIR}")
+    set(DATA_DIR "${CMAKE_INSTALL_DATADIR}")
     set(USER_DIR "bzr-player")
 endif ()
 
@@ -84,8 +89,7 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO add v2mz support (see sources/v2m dir for example files)
         plugin_vgmstream "src/plugins/plugin_vgmstream"
         plugin_vio2sf "src/plugins/plugin_vio2sf"
-        plugin_zxtune "src/plugins/plugin_zxtune"
-)
+        plugin_zxtune "src/plugins/plugin_zxtune")
 
 set(MODULES)
 while (SUBDIRECTORIES_BY_MODULES)
@@ -94,47 +98,40 @@ while (SUBDIRECTORIES_BY_MODULES)
     add_subdirectory(${SUBDIRECTORY})
 endwhile ()
 
-configure_file(
-        ${CMAKE_SOURCE_DIR}/src/app/plugins.h.in
+configure_file(${CMAKE_SOURCE_DIR}/src/app/plugins.h.in
         ${CMAKE_SOURCE_DIR}/src/app/plugins.h
-        @ONLY NEWLINE_STYLE UNIX
-)
+        @ONLY NEWLINE_STYLE UNIX)
 
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    if (WIN32)
-        #TODO needed?
-        if (NOT DEFINED CPACK_EXECUTABLE)
-            set(CPACK_EXECUTABLE "${CMAKE_PREFIX_PATH}/bin/cpack")
-        endif ()
-
-        set(CPACK_PACKAGE_NAME "bzr-player")
-        set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-        set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-win64")
-        set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
-        set(CPACK_OUTPUT_FILE_PREFIX "${OUTPUT_DIR}_release")
-        set(CPACK_GENERATOR ZIP)
-
-        install(DIRECTORY
-                ${OUTPUT_DIR}${DATA_DIR}
-                ${OUTPUT_DIR}/${PLATFORMS_DIR}
-                ${OUTPUT_DIR}/${TLS_DIR}
-                DESTINATION .
-        )
-
-        install(FILES
-                ${OUTPUT_DIR}/${EXE_NAME}.exe
-                ${OUTPUT_DIR}/$<TARGET_FILE_NAME:logger>
-                ${OUTPUT_DIR}/BZRPlayer.VisualElementsManifest.xml
-                ${OUTPUT_DIR}/LICENSE.txt
-                ${OUTPUT_DIR}/${FMOD_LIB}
-                ${RUNTIME_LIBS}
-                DESTINATION .
-        )
-
-        include(CPack)
-
-        add_custom_target(generate_win_zip ALL
-                COMMAND ${CPACK_EXECUTABLE}
-                DEPENDS ${MODULES})
+if (WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
+    if (NOT DEFINED CPACK_EXECUTABLE)
+        set(CPACK_EXECUTABLE "${CMAKE_PREFIX_PATH}/bin/cpack")
     endif ()
+
+    set(CPACK_PACKAGE_NAME "bzr-player")
+    set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-win64")
+    set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+    set(CPACK_OUTPUT_FILE_PREFIX "${OUTPUT_PATH}_release")
+    set(CPACK_GENERATOR ZIP)
+
+    install(DIRECTORY
+            ${OUTPUT_PATH}${DATA_DIR}
+            ${OUTPUT_PATH}${PLATFORMS_DIR}
+            ${OUTPUT_PATH}${TLS_DIR}
+            DESTINATION .)
+
+    install(FILES
+            ${OUTPUT_PATH}/${EXE_NAME}.exe
+            ${OUTPUT_PATH}/$<TARGET_FILE_NAME:logger>
+            ${OUTPUT_PATH}/BZRPlayer.VisualElementsManifest.xml
+            ${OUTPUT_PATH}/LICENSE.txt
+            ${OUTPUT_PATH}/${FMOD_LIB}
+            ${RUNTIME_LIBS}
+            DESTINATION .)
+
+    include(CPack)
+
+    add_custom_target(generate_win_zip ALL
+            COMMAND ${CPACK_EXECUTABLE}
+            DEPENDS ${MODULES})
 endif ()

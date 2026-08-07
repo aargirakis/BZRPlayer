@@ -17,16 +17,12 @@ set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/mpruett/${NAME}/archive/${FILENAME_URL}")
 set(SHA_256_HASH "0590490b4134222b0dfb549a04115a7d81fdf5b2639620cc0824b98db02d7018")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
-configure_file(
-        src/config.h.in
+configure_file(src/config.h.in
         ${EXTERNAL_SOURCE_DIR}/libaudiofile/config.h
-        @ONLY NEWLINE_STYLE UNIX
-)
+        @ONLY NEWLINE_STYLE UNIX)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/libaudiofile/*.c
@@ -54,6 +50,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+endif ()

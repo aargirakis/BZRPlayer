@@ -27,10 +27,8 @@ set(CONFIGURE_COMMAND "configure ${CFLAGS} \
 --bencode-tools-prefix=/dev/null --libzakalwe-prefix=/dev/null")
 set(MAKE_ARGS uadecore staticlibuade)
 set(BUILD_BYPRODUCTS "src/frontends/common/libuade.a")
-download_patch_and_make(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
-        ${CONFIGURE_COMMAND} "${MAKE_ARGS}" false "${BUILD_BYPRODUCTS}"
-)
+download_patch_and_make(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
+        ${CONFIGURE_COMMAND} "${MAKE_ARGS}" false "${BUILD_BYPRODUCTS}")
 
 file(READ "${EXTERNAL_SOURCE_DIR}/version" UADE_VERSION)
 string(REPLACE "\r" "" UADE_VERSION "${UADE_VERSION}")
@@ -105,16 +103,16 @@ endif ()
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"
         PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}/${LIB_DIR}/${PLUGINS_DIR}
-)
-
-cmake_path(SET UADE_DATA_PATH NORMALIZE ${OUTPUT_DIR}/${DATA_DIR}/${UADE_DATA_DIR})
-cmake_path(SET UADE_LIB_DIR NORMALIZE ${OUTPUT_DIR}${LIB_DIR}${PLUGINS_DIR})
+        LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_PATH}/${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}${DATA_DIR}${PLUGINS_DIR})
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${EXTERNAL_SOURCE_DIR}/src/${UADE_CORE}
+        ${OUTPUT_PATH}/${LIB_DIR}${PLUGINS_DIR}
+
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        ${EXTERNAL_SOURCE_DIR}/players ${UADE_DATA_PATH}/players
+        ${EXTERNAL_SOURCE_DIR}/players ${OUTPUT_PATH}/${DATA_DIR}${UADE_DATA_DIR}/players
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${EXTERNAL_SOURCE_DIR}/amigasrc/score/score
@@ -123,10 +121,13 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         ${EXTERNAL_SOURCE_DIR}/uade.conf
         ${EXTERNAL_SOURCE_DIR}/uaerc
         ${CMAKE_CURRENT_SOURCE_DIR}/dist/${UADE_SONGLENGTHS_FILENAME}
-        ${UADE_DATA_PATH}
-
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${EXTERNAL_SOURCE_DIR}/src/${UADE_CORE}
-        ${UADE_LIB_DIR}
+        ${OUTPUT_PATH}/${DATA_DIR}${UADE_DATA_DIR}
 
         VERBATIM)
+
+if (NOT WIN32)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+    install(PROGRAMS ${OUTPUT_PATH}/${LIB_DIR}${PLUGINS_DIR}/${UADE_CORE}
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}${PLUGINS_DIR})
+    install(DIRECTORY ${OUTPUT_PATH}/${DATA_DIR}${UADE_DATA_DIR} DESTINATION ${CMAKE_INSTALL_DATADIR}${PLUGINS_DIR})
+endif ()

@@ -14,9 +14,9 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
+          echo "BZR2_VERSION=$(grep -oP '^project\(\"BZR Player\" VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
           dnf update -y
-          dnf install -y @c-development @development-tools cmake dos2unix google-noto-cjk-fonts ninja-build patchelf \
+          dnf install -y @c-development @development-tools cmake dos2unix google-noto-cjk-fonts ninja-build \
                          Qt-Advanced-Docking-System-devel qt6-qtbase-devel qt6-qtsvg-devel rpm-build rpmlint \
                          sdl2-compat-devel vulkan-headers which
 
@@ -27,9 +27,6 @@ jobs:
           cat >~/rpmbuild/SPECS/bzr-player.spec <<'EOF'
           %global debug_package %{nil}
           %global source_date_epoch_from_changelog %{nil}
-
-          # workaround for making plugin_furnace.so, plugin_klystron & plugin_protrekkr.so work:
-          %global build_ldflags %{build_ldflags} -Wl,-z,lazy
 
           Name:           bzr-player
           Version:        ${{env.BZR2_VERSION}}
@@ -62,23 +59,20 @@ jobs:
           cp -af %{SOURCEURL0}/. %{_builddir}
 
           %build
-          %cmake -DCMAKE_PREFIX_PATH=%{_prefix} \
+          %cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} \
                  -DCMAKE_BUILD_TYPE=Release \
                  -DOFFLINE_MODE=1 \
                  -G Ninja
           %cmake_build
 
           %install
-          cp -r %{_builddir}/redhat-linux-build/output%{_prefix} %{buildroot}
+          %cmake_install
 
-          # workaround
-          patchelf --set-rpath "%{_libdir}/%{name}" "%{buildroot}%{_bindir}/%{name}"
-          find %{buildroot}/%{_libdir}/%{name}/plugins -name "plugin_*.so" -exec patchelf --set-rpath "%{_libdir}/%{name}" {} \;
-          
-          install -Dm644 %{_builddir}/redhat-linux-build/output/LICENSE %{buildroot}%{_defaultlicensedir}/%{name}/LICENSE
+          mkdir -p %{buildroot}%{_defaultlicensedir}/%{name}
+          mv %{buildroot}%{_datadir}/%{name}/LICENSE %{buildroot}%{_defaultlicensedir}/%{name}
 
           for size in 16 32 48 64 128 256 512; do
-            install -Dm644 %{_builddir}/redhat-linux-build/output%{_datadir}/%{name}/resources/icon.png \
+            install -Dm644 %{buildroot}%{_datadir}/%{name}/resources/icon.png \
               %{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/%{name}.png
           done
 
@@ -97,7 +91,7 @@ jobs:
           Name=BZR Player 2
           GenericName=Audio Player
           Comment=Audio player supporting a wide array of multi-platform exotic file formats
-          Exec=/usr/bin/bzr-player %U
+          Exec=%{_prefix}/bin/bzr-player %U
           Icon=bzr-player
           Terminal=false
           StartupNotify=false

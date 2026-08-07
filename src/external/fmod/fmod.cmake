@@ -17,10 +17,8 @@ endif ()
 
 string(REPLACE "." "" UNPACKED_DIR "fmodstudioapi${VERSION}${OS}")
 set(FILENAME "${UNPACKED_DIR}.tar.gz")
-unpack_and_patch(
-        ${CMAKE_CURRENT_LIST_DIR}/dist/${FILENAME} ${NAME_VERSIONED} true ${UNPACKED_DIR}
-        ${CMAKE_CURRENT_LIST_DIR}/patches
-)
+unpack_and_patch(${CMAKE_CURRENT_LIST_DIR}/dist/${FILENAME} ${NAME_VERSIONED} true ${UNPACKED_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/patches)
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
 set(FMOD_DIR "${EXTERNAL_SOURCE_DIR_${NAME}}/api/core/lib/${ARCH}")
@@ -31,24 +29,26 @@ if (WIN32)
 
     add_custom_target(copy-lib-${NAME} ALL
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${FMOD_DIR}/${FMOD_LIB} ${OUTPUT_DIR}
+            ${FMOD_DIR}/${FMOD_LIB} ${OUTPUT_PATH}
             VERBATIM)
 else ()
     set(FMOD_SONAME "libfmod.so.14")
     set(FMOD_REALNAME "${FMOD_SONAME}.9")
 
-    cmake_path(SET FMOD_LIB_DIR NORMALIZE ${OUTPUT_DIR}${LIB_DIR})
-
     add_custom_target(copy-lib-${NAME} ALL
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${FMOD_DIR}/${FMOD_REALNAME} ${FMOD_LIB_DIR}/${FMOD_SONAME}
+            ${FMOD_DIR}/${FMOD_REALNAME} ${OUTPUT_PATH}/${LIB_DIR}/${FMOD_SONAME}
             VERBATIM)
 endif ()
 
-cmake_path(SET FMOD_DATA_PATH NORMALIZE ${OUTPUT_DIR}${DATA_DIR}${PLUGINS_FMOD_DIR})
-
 add_custom_target(copy-data-${NAME} ALL
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${FMOD_DATA_PATH}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_PATH}/${DATA_DIR}${PLUGINS_FMOD_DIR}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_LIST_DIR}/dist/gm.dls ${FMOD_DATA_PATH}
+        ${CMAKE_CURRENT_LIST_DIR}/dist/gm.dls ${OUTPUT_PATH}/${DATA_DIR}${PLUGINS_FMOD_DIR}
         VERBATIM)
+
+if (NOT WIN32)
+    install(FILES ${OUTPUT_PATH}/${LIB_DIR}/${FMOD_SONAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(FILES ${OUTPUT_PATH}/${DATA_DIR}${PLUGINS_FMOD_DIR}/gm.dls
+            DESTINATION ${CMAKE_INSTALL_DATADIR}${PLUGINS_FMOD_DIR})
+endif ()

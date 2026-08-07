@@ -44,7 +44,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "BZR2_VERSION=$(grep -oP '^project\(bzr2 VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
+          echo "BZR2_VERSION=$(grep -oP '^project\(\"BZR Player\" VERSION "\K[^"]+' CMakeLists.txt)" >> "$GITHUB_ENV"
           pacman-key --init
           pacman -Syu --noconfirm archlinux-keyring git go shared-mime-info unzip
           mkdir -m 777 yay_build

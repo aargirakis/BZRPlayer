@@ -17,9 +17,7 @@ set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/lipnitsk/${NAME}/archive/${FILENAME_URL}")
 set(SHA_256_HASH "2f1b58fb1e315d976be2d8441b9dc3d336ce9dfde7ec7a8f263ade905749525d")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
-download_patch_and_add(
-        ${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} ""
-)
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}" PARENT_SCOPE)
 
