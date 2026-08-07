@@ -1345,7 +1345,7 @@ bool MainWindow::loadSound(const QString &fullPath, const int subsong) {
     } else {
         currentPlayingFilepath = "";
 
-        logErrorQ("Failed to load sound: " + fullPath, getClassName());
+        logErrorQ("Unable to load file: " + fullPath, getClassName());
 
         QModelIndex index = tableWidgetPlaylists[currentPlaylist]->model()->index(
             currentRow, PlaylistModel::Section::IsPlayable, QModelIndex());
@@ -1835,7 +1835,6 @@ void MainWindow::playSongAtRow(int rowProvided) {
     playStarted = true;
 
     if (!loadSound(fullPath, currentSubsong - 1)) {
-        logError("Error loading file", getClassName());
         updateButtons();
         return;
     }
@@ -3989,7 +3988,7 @@ void MainWindow::restoreFromTray() {
 void MainWindow::quit() {
     playStarted = false;
 
-    const auto &sm = SoundManager::getInstance();
+    auto &sm = SoundManager::getInstance();
 
     sm.stop();
     sm.shutdown();
@@ -4808,7 +4807,7 @@ void MainWindow::on_buttonStop_clicked() {
 }
 
 void MainWindow::resetAll() {
-    const auto &sm = SoundManager::getInstance();
+    auto &sm = SoundManager::getInstance();
 
     sm.stop();
     //ui->visualizer->stop();

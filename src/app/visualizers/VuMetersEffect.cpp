@@ -15,7 +15,7 @@ void VuMetersEffect::paint(QPainter *painter, bool stereo) {
     painter->save();
     painter->setOpacity(m_opacity);
 
-    auto &sm = SoundManager::getInstance();
+    const auto &sm = SoundManager::getInstance();
     const auto &info = sm.info;
 
     int numChannels = info->numChannels;

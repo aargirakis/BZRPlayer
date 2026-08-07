@@ -23,13 +23,13 @@ public:
 
     void loadPluginChain();
 
-    void loadPlugin(const string &pluginFilename, int priority);
+    void loadPlugin(const string &pluginFilename, int priority) const;
 
     static void checkFmodError(FMOD_RESULT result);
 
     static void checkFmodError(FMOD_RESULT result, const QString &msg);
 
-    void stop() const;
+    void stop();
 
     bool isPlaying() const;
 
@@ -37,9 +37,9 @@ public:
 
     void playAudio(bool startPaused);
 
-    void release() const;
+    void release();
 
-    void shutdown() const;
+    void shutdown();
 
     void muteChannels(unsigned int mask, const QString &maskStr);
 
@@ -120,7 +120,7 @@ public:
 
     float getNominalFrequency() const;
 
-    int getSoundData(unsigned int channelProvided);
+    int getSoundData(unsigned int channelProvided) const;
 
     int getNumTags() const;
 
@@ -133,7 +133,6 @@ private:
     FMOD_SYSTEM *system;
     FMOD_SOUND *sound;
     FMOD_CHANNEL *channel = nullptr;
-    FMOD_RESULT result;
     FMOD_CHANNELGROUP *channelGroup;
     FMOD_DSP *dspNormalizer;
     FMOD_DSP *dspReverb;
@@ -143,6 +142,7 @@ private:
     float nominalFrequency;
     unsigned int mutedChannelsMask;
     QString mutedChannelsMaskString;
+    bool isFmodSystemCreated = false;
 };
 
 #endif // SOUNDMANAGER_H

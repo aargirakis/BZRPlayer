@@ -51,7 +51,7 @@ void Scroller::paint(QPainter *painter, QPaintEvent *event) {
     if (m_starField && m_starField->enabled())
         m_starField->paint(&buf);
 
-    auto &sm = SoundManager::getInstance();
+    const auto &sm = SoundManager::getInstance();
 
     if (m_rotatingObject && m_rotatingObject->enabled()) {
         const double amp = sm.getSoundData(0) / 100.0;
