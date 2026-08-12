@@ -3698,7 +3698,7 @@ void settingsWindow::forceUpdateToSliders() const {
     on_sliderRotatingObjectModelSize_valueChanged(ui->sliderRotatingObjectModelSize->value());
 }
 
-void settingsWindow::on_checkBoxOnlyOneInstance_clicked() {
+void settingsWindow::on_checkBoxOnlyOneInstance_clicked() const {
     QMessageBox msgBox;
     msgBox.setText("You need to close all instances of BZR Player for this setting to have effect");
     msgBox.exec();

@@ -58,9 +58,18 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 #endif
 #endif
 
-    if (!QDir(dataPath).exists()) {
-        logFatalQ("Cannot find directory " + dataPath, getClassName());
-        exit(1);
+    const QString resourcesDir = dataPath + RESOURCES_DIR;
+    const QString resourcesFontsDir = resourcesDir + "/fonts";
+    const vector dirsToCheck = {
+        libPath, libPath + PLUGINS_DIR, dataPath, dataPath + PLUGINS_DIR, resourcesDir, resourcesFontsDir,
+        resourcesDir + "/trackerview", resourcesDir + "/visualizer"
+    };
+
+    for (const QString &dirToCheck: dirsToCheck) {
+        if (!QDir(dirToCheck).exists()) {
+            logFatalQ("Cannot find directory " + dirToCheck, getClassName());
+            exit(1);
+        }
     }
 
     QSettings settings(userPath + "/settings.ini", QSettings::IniFormat);
@@ -74,10 +83,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     }
 
     // fonts needs to be added before the GUI
-    const QString resourcesFontsDir = dataPath + "/resources/fonts/";
-    QFontDatabase::addApplicationFont(resourcesFontsDir + "Roboto-Medium.ttf");
-    QFontDatabase::addApplicationFont(resourcesFontsDir + "Roboto-Regular.ttf");
-    QFontDatabase::addApplicationFont(resourcesFontsDir + "RobotoMono-Regular.ttf");
+    QFontDatabase::addApplicationFont(resourcesFontsDir + "/Roboto-Medium.ttf");
+    QFontDatabase::addApplicationFont(resourcesFontsDir + "/Roboto-Regular.ttf");
+    QFontDatabase::addApplicationFont(resourcesFontsDir + "/RobotoMono-Regular.ttf");
 
     ui->setupUi(this);
 

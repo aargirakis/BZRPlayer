@@ -201,7 +201,7 @@ private slots:
 
     void on_sliderRasterBarsOpacity_valueChanged(int value) const;
 
-    void on_checkBoxOnlyOneInstance_clicked();
+    void on_checkBoxOnlyOneInstance_clicked() const;
 
     void on_checkBoxSystray_toggled(bool isChecked) const;
 
