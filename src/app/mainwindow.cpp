@@ -3525,7 +3525,7 @@ void MainWindow::saveSettings() const {
     settings.setValue("Visualizer/printer", getEffect()->getPrinterEnabled());
     settings.setValue("Visualizer/vuMeter", getEffect()->isVuMeterEnabled());
     settings.setValue("Visualizer/reflectionColor", getEffect()->getReflectionColor());
-    settings.setValue("Visualizer/scrollerFontImage", getEffect()->getFont());
+    settings.setValue("Visualizer/scrollerFontImage", getEffect()->getScrollerFont());
     settings.setValue("Visualizer/reflectionOpacity", getEffect()->getReflectionOpacity());
     settings.setValue("Visualizer/scrollerSinusFontScaling", getEffect()->getSinusFontScalingEnabled());
     settings.setValue("Visualizer/maintainAspectRatio", getEffect()->getKeepAspectRatio());

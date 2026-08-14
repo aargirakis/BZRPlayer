@@ -67,7 +67,7 @@ public:
     bool getScrollerEnabled() const override { return m_scroller->enabled(); }
     void setScrollText(const QString t) { m_scroller->setText(t); }
     void setScrollerFont(const QString fontPng) { m_scroller->setFont(fontPng); }
-    QString getFont() const override { return m_scroller->getFont(); }
+    QString getScrollerFont() const override { return m_scroller->getFont(); }
     void setFontScaleX(const int v) { m_scroller->setFontScaleX(v); }
     void setFontScaleY(const int v) { m_scroller->setFontScaleY(v); }
     int getFontScaleX() const override { return m_scroller->getFontScaleX(); }
@@ -198,7 +198,7 @@ private:
     QPixmap m_CharacterMap;
     QPixmap m_CharacterMapPrinter;
     QColor colorVisualizerBackground;
-    QString m_bitmapFont;
+    QString m_bitmapFontScroller;
     QString m_bitmapFontPrinter;
     double reflectionOpacity;
 };

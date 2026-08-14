@@ -306,8 +306,8 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         ui->comboBoxLibsidplayfpHvscFilesUpdate->setCurrentIndex(index);
     }
 
-    int extensionPos = mainWindow->getEffect()->getFont().lastIndexOf('.');
-    const QString thumb(mainWindow->getEffect()->getFont().left(extensionPos) + ".thumb.png");
+    int extensionPos = mainWindow->getEffect()->getScrollerFont().lastIndexOf('.');
+    const QString thumb(mainWindow->getEffect()->getScrollerFont().left(extensionPos) + ".thumb.png");
     ui->buttonScrollerFontImage->setIcon(QIcon(thumb));
     extensionPos = mainWindow->getEffect()->getPrinterFont().lastIndexOf('.');
     const QString thumbP(mainWindow->getEffect()->getPrinterFont().left(extensionPos) + ".thumb.png");
@@ -606,21 +606,21 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     foreach(QString filename, images) {
         QString fullfilename = dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts/" +
                                filename;
-        const auto album = new Album(filename);
-        album->artwork = fullfilename;
-        album->title = filename.replace(".thumb.png", "");
-        album->path = fullfilename.replace(".thumb.png", ".png");
-        album->putPixmap(album->artwork);
-        ui->albumGridScrollerFont->AddAlbum(album);
+        const auto albumScroller = new Album(filename);
+        albumScroller->artwork = fullfilename;
+        albumScroller->title = filename.replace(".thumb.png", "");
+        albumScroller->path = fullfilename.replace(".thumb.png", ".png");
+        albumScroller->putPixmap(albumScroller->artwork);
+        ui->albumGridScrollerFont->AddAlbum(albumScroller);
 
         const auto albumPrinter = new Album(filename);
         albumPrinter->artwork = fullfilename;
         albumPrinter->title = filename.replace(".thumb.png", "");
         albumPrinter->path = fullfilename.replace(".thumb.png", ".png");
-        albumPrinter->putPixmap(album->artwork);
+        albumPrinter->putPixmap(albumScroller->artwork);
         ui->albumGridPrinterFont->AddAlbum(albumPrinter);
 
-        connect(album, &Album::clickedAddAlbum, this, &settingsWindow::loadBitmapFont);
+        connect(albumScroller, &Album::clickedAddAlbum, this, &settingsWindow::loadBitmapFontScroller);
         connect(albumPrinter, &Album::clickedAddAlbum, this, &settingsWindow::loadBitmapFontPrinter);
     }
 
@@ -3103,7 +3103,7 @@ void settingsWindow::on_buttonRotatingObjectWireframeColor_clicked() {
     }
 }
 
-void settingsWindow::loadBitmapFont(const QString &file) const {
+void settingsWindow::loadBitmapFontScroller(const QString &file) const {
     ui->albumGridScrollerFont->setVisible(false);
     mainWindow->getEffect()->setScrollerFont(file);
 

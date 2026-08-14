@@ -159,7 +159,7 @@ QString Scroller::getCustomScrolltext() const {
 }
 
 void Scroller::reset() {
-    setScrollerFont(m_bitmapFont);
+    setScrollerFont(m_bitmapFontScroller);
     setPrinterFont(m_bitmapFontPrinter);
 }
 

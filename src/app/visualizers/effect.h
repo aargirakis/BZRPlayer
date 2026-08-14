@@ -133,7 +133,7 @@ public:
 
     virtual bool getPrinterEnabled() const = 0;
 
-    virtual QString getFont() const = 0;
+    virtual QString getScrollerFont() const = 0;
 
     // settings vu-meter
     virtual void setVuMeterWidth(double) = 0;

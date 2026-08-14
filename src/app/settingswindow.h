@@ -145,7 +145,7 @@ private slots:
 
     void on_buttonAppearanceSelectionColor_clicked();
 
-    void loadBitmapFont(const QString &) const;
+    void loadBitmapFontScroller(const QString &) const;
 
     void loadBitmapFontPrinter(const QString &) const;
 
