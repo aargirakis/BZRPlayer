@@ -587,11 +587,9 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     if (PLUGIN_libsidplayfp_LIB != "") {
         const QDateTime qdt = QDateTime::fromSecsSinceEpoch(mainWindow->getBundledHvscFilesDownloadEpoch());
         if (mainWindow->getBundledHvscFilesDownloadEpoch() > 0) {
-            const QFileInfo fileInfo(mainWindow->getBundledHvscFilesPath());
-
             ui->labelLibsidplayfpHvscFilesDownloadDetails->setText(
-                "HVSC documents downloaded to " + fileInfo.path() + "\nLast update at " + qdt.toString(
-                    "yyyy-MM-dd hh:mm:ss"));
+                "HVSC documents downloaded to " + mainWindow->getBundledHvscFilesPath() + "\nLast update at " + qdt.
+                toString("yyyy-MM-dd hh:mm:ss"));
         } else {
             ui->labelLibsidplayfpHvscFilesDownloadDetails->setText("Never downloaded");
         }
