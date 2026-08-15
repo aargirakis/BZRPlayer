@@ -36,6 +36,7 @@
 #define ARTIST_AND_RADIO_OR_URL_WITH_APP "%1 (%2) - %3"
 
 using namespace std;
+
 const QString MainWindow::VERSION = PROJECT_VERSION;
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -60,11 +61,15 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 #endif
 #endif
 
-    const QString resourcesDir = dataPath + RESOURCES_DIR;
-    const QString resourcesFontsDir = resourcesDir + "/fonts";
+    const QString resourcesFontsPath = dataPath + RESOURCES_DIR "/fonts";
+    const QString resourcesTrackerViewDir = RESOURCES_DIR "/trackerview";
+    const QString resourcesVisualizerDir = RESOURCES_DIR "/visualizer";
+    const QString resourcesVisualizerFontsDir = resourcesVisualizerDir + "/bitmapfonts";
+    resourcesVisualizerFontsPath = dataPath + resourcesVisualizerFontsDir;
+
     const vector dirsToCheck = {
-        libPath, libPath + PLUGINS_DIR, dataPath, dataPath + PLUGINS_DIR, resourcesDir, resourcesFontsDir,
-        resourcesDir + "/trackerview", resourcesDir + "/visualizer"
+        libPath + PLUGINS_DIR, dataPath + PLUGINS_DIR, resourcesFontsPath, dataPath + resourcesTrackerViewDir,
+        resourcesVisualizerFontsPath
     };
 
     for (const QString &dirToCheck: dirsToCheck) {
@@ -85,9 +90,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     }
 
     // fonts needs to be added before the GUI
-    QFontDatabase::addApplicationFont(resourcesFontsDir + "/Roboto-Medium.ttf");
-    QFontDatabase::addApplicationFont(resourcesFontsDir + "/Roboto-Regular.ttf");
-    QFontDatabase::addApplicationFont(resourcesFontsDir + "/RobotoMono-Regular.ttf");
+    QFontDatabase::addApplicationFont(resourcesFontsPath + "/Roboto-Medium.ttf");
+    QFontDatabase::addApplicationFont(resourcesFontsPath + "/Roboto-Regular.ttf");
+    QFontDatabase::addApplicationFont(resourcesFontsPath + "/RobotoMono-Regular.ttf");
 
     ui->setupUi(this);
 
@@ -281,11 +286,11 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     getEffect()->setResolutionWidth(settings.value("Visualizer/resolutionWidth", 320).toInt());
     getEffect()->setResolutionHeight(settings.value("Visualizer/resolutionHeight", 256).toInt());
 
-    getEffect()->setScrollerFont(settings.value("Visualizer/scrollerFontImage",
-                                                dataPath + "/resources/visualizer/bitmapfonts/angels_font.png").
+    getEffect()->setScrollerFont(
+        resourcesVisualizerFontsPath + "/" + settings.value("Visualizer/scrollerFontImage", "angels_font.png").
         toString());
-    getEffect()->setPrinterFont(settings.value("Visualizer/printerFontImage",
-                                               dataPath + "/resources/visualizer/bitmapfonts/angels_font.png").
+    getEffect()->setPrinterFont(
+        resourcesVisualizerFontsPath + "/" + settings.value("Visualizer/printerFontImage", "angels_font.png").
         toString());
 
     getEffect()->setReflectionOpacity(settings.value("Visualizer/reflectionOpacity", 50).toInt());
@@ -3525,13 +3530,13 @@ void MainWindow::saveSettings() const {
     settings.setValue("Visualizer/printer", getEffect()->getPrinterEnabled());
     settings.setValue("Visualizer/vuMeter", getEffect()->isVuMeterEnabled());
     settings.setValue("Visualizer/reflectionColor", getEffect()->getReflectionColor());
-    settings.setValue("Visualizer/scrollerFontImage", getEffect()->getScrollerFont());
+    settings.setValue("Visualizer/scrollerFontImage", QFileInfo(getEffect()->getScrollerFont()).fileName());
     settings.setValue("Visualizer/reflectionOpacity", getEffect()->getReflectionOpacity());
     settings.setValue("Visualizer/scrollerSinusFontScaling", getEffect()->getSinusFontScalingEnabled());
     settings.setValue("Visualizer/maintainAspectRatio", getEffect()->getKeepAspectRatio());
     settings.setValue("Visualizer/resolutionWidth", getEffect()->getResolutionWidth());
     settings.setValue("Visualizer/resolutionHeight", getEffect()->getResolutionHeight());
-    settings.setValue("Visualizer/printerFontImage", getEffect()->getPrinterFont());
+    settings.setValue("Visualizer/printerFontImage", QFileInfo(getEffect()->getPrinterFont()).fileName());
     settings.setValue("Visualizer/printerFontXScale", getEffect()->getPrinterFontScaleX());
     settings.setValue("Visualizer/printerFontYScale", getEffect()->getPrinterFontScaleY());
     settings.setValue("Internal/columnSamplesNumberWidth", sampleColumnNumberWidth);

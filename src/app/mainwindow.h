@@ -312,6 +312,8 @@ public:
 
     void setDefaultTrackLengthValue(int value);
 
+    QString resourcesVisualizerFontsPath;
+
     FilesDownloader *filesDownloaderHvsc;
     qint64 bundledHvscFilesDownloadEpoch;
 

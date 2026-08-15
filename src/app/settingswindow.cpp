@@ -600,23 +600,22 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->albumGridScrollerFont->setVisible(false);
     ui->albumGridPrinterFont->setVisible(false);
 
-    const QDir directory(dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts");
+    const QDir directory(mainWindow->resourcesVisualizerFontsPath);
     QStringList images = directory.entryList(QStringList() << "*.thumb.png", QDir::Files);
 
     foreach(QString filename, images) {
-        QString fullfilename = dataPath + RESOURCES_DIR + "/visualizer/bitmapfonts/" +
-                               filename;
+        QString filePath = mainWindow->resourcesVisualizerFontsPath + "/" + filename;
         const auto albumScroller = new Album(filename);
-        albumScroller->artwork = fullfilename;
+        albumScroller->artwork = filePath;
         albumScroller->title = filename.replace(".thumb.png", "");
-        albumScroller->path = fullfilename.replace(".thumb.png", ".png");
+        albumScroller->path = filePath.replace(".thumb.png", ".png");
         albumScroller->putPixmap(albumScroller->artwork);
         ui->albumGridScrollerFont->AddAlbum(albumScroller);
 
         const auto albumPrinter = new Album(filename);
-        albumPrinter->artwork = fullfilename;
+        albumPrinter->artwork = filePath;
         albumPrinter->title = filename.replace(".thumb.png", "");
-        albumPrinter->path = fullfilename.replace(".thumb.png", ".png");
+        albumPrinter->path = filePath.replace(".thumb.png", ".png");
         albumPrinter->putPixmap(albumScroller->artwork);
         ui->albumGridPrinterFont->AddAlbum(albumPrinter);
 
