@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "fluidsynth")
-set(VERSION "2.5.7")
+set(VERSION "2.6.0")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "FluidSynth (BW MIDI Sequencer)" PARENT_SCOPE)
@@ -14,7 +14,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "v${VERSION}.tar.gz")
 set(URL "https://github.com/FluidSynth/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "ce27840221ab00dd59bf27e85ecbba480c6c2a7c9fbec4243658f68f59c07f4a")
+set(SHA_256_HASH "6d17570ea2086dd6fbcac995465773a6f316e689089b7fb7ba0b34c2ec6f680d")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" "")
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
@@ -95,8 +95,8 @@ configure_file(${EXTERNAL_SOURCE_DIR_${NAME}}/src/config.cmake
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR_${NAME}}/src/bindings/filerender.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/src/bindings/fluid_cmd.c
-        ${EXTERNAL_SOURCE_DIR_${NAME}}/src/bindings/fluid_filerenderer.c
+        ${EXTERNAL_SOURCE_DIR_${NAME}}/src/bindings/fluid_cmd.c         #TODO
+        ${EXTERNAL_SOURCE_DIR_${NAME}}/src/bindings/fluid_filerenderer.c  #TODO
         ${EXTERNAL_SOURCE_DIR_${NAME}}/src/drivers/fluid_adriver.c
         ${EXTERNAL_SOURCE_DIR_${NAME}}/src/drivers/fluid_mdriver.c
         ${EXTERNAL_SOURCE_DIR_${NAME}}/src/gentables/fluid_cb2amp.cpp
@@ -141,9 +141,13 @@ file(GLOB SOURCES
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
+#target_compile_options(${PROJECT_NAME} PRIVATE
+#        -include "${EXTERNAL_SOURCE_DIR_${NAME}}/include/fluidsynth/voice.h")
+
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR_${NAME}}
         ${EXTERNAL_SOURCE_DIR_${NAME}}/include
+        ${EXTERNAL_SOURCE_DIR_${NAME}}/include/fluidsynth
         ${EXTERNAL_SOURCE_DIR_${NAME}}/src
         ${EXTERNAL_SOURCE_DIR_${NAME}}/src/bindings
         ${EXTERNAL_SOURCE_DIR_${NAME}}/src/drivers
