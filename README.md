@@ -5,7 +5,7 @@ formats, written in **C++** and **Qt** with a sound engine based on **FMOD**.\
 The first BZR version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version which is
 coded pretty much from scratch.
 
-![bzr2 0 27](screenshot.png)
+![screenshot](screenshot.png)
 
 ----
 
