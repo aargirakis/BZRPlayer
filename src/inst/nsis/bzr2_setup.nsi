@@ -2,10 +2,6 @@
 #TODO add UAC Publisher (verisign)
 #TODO add comments
 #TODO try to do not hardcode addSectionContent macro inside addFiletypeAssociationsComponentContent (but add only to those really checked
-#TODO add "isPortable" checkbox/flag that when checked don't touch the registry but add ".portable" file to ${DIR_SETTINGS_USER} with version string
-#if the invoked installer.exe dir have ".portable" & bzrplayer.exe files then pre-set its checkbox by default (and put "wasPortable" flag to true)
-#in "isPortable" mode $INSTDIR will pre-set by default to the same of the installer.exe if "wasPortable" is true
-#add a command line param for forcing "isPortable" true
 
 !system "./filetype_associations_component_util_generator.sh" = 0
 
