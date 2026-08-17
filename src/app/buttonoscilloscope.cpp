@@ -45,7 +45,6 @@ void ButtonOscilloscope::paintEvent(QPaintEvent *event) {
     }
 
     QPainter painter(this);
-    painter.begin(this);
 
     if (info->plugin == PLUGIN_sndh_player) {
         painter.setBrush(QBrush(backgroundColor));
@@ -56,12 +55,12 @@ void ButtonOscilloscope::paintEvent(QPaintEvent *event) {
         drawOscilloVoice(info->waveformDisplay, kLatencySampleCount, channelNumber);
         drawChannelNumber(QString::number(channelNumber));
 
-        painter.end();
+        painter.end(); // TODO needed?
         update();
     } else {
         painter.setBrush(QBrush(checked ? enabledColor : disabledColor));
         painter.drawRect(event->rect());
-        painter.end();
+        painter.end(); // TODO needed?
     }
 
     drawChannelNumber(QString::number(channelNumber));
