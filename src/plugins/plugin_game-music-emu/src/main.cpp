@@ -82,10 +82,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto plugin = new pluginGme(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    gme_type_t file_type = gme_identify_extension(gme_identify_header(plugin->info->fileBuffer));
+    const auto fileType = gme_identify_extension(gme_identify_header(plugin->info->fileBuffer));
 
-    // sap format is played by plugin_asap
-    if (!file_type || file_type->extension_ == string(gme_sap_type->extension_)) {
+    if (!fileType) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -140,8 +139,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-    plugin->info->fileFormat = file_type->system;
-    plugin->emu = gme_new_emu(file_type, freq);
+    plugin->info->fileFormat = fileType->system;
+    plugin->emu = gme_new_emu(fileType, freq);
 
     if (gme_load_data(plugin->emu, plugin->info->fileBuffer, static_cast<long>(plugin->info->filesize))) {
         delete plugin;
