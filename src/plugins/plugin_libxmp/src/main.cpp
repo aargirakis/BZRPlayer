@@ -286,9 +286,9 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto *plugin = static_cast<pluginLibxmp *>(codec->plugindata);
-    xmp_play_buffer(plugin->xmp, buffer, static_cast<int>(size << 2), plugin->info->isContinuousPlaybackActive ? 0 : 1);
+    xmp_play_buffer(plugin->xmp, buffer, static_cast<int>(size), plugin->info->isContinuousPlaybackActive ? 0 : 1);
 
-    *read = size;
+    *read = size / plugin->waveformat.pcmblocksize;
     return FMOD_OK;
 }
 

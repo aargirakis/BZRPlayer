@@ -208,9 +208,9 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto plugin = static_cast<pluginGme *>(codec->plugindata);
-    plugin->emu->play(size << 1, static_cast<signed short *>(buffer));
+    plugin->emu->play(size, static_cast<signed short *>(buffer));
 
-    *read = size;
+    *read = size / plugin->waveformat.format;
     return FMOD_OK;
 }
 

@@ -168,8 +168,8 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     const auto plugin = static_cast<pluginKdm *>(codec->plugindata);
-    plugin->player->rendersound(buffer, size << 2);
-    *read = size;
+    plugin->player->rendersound(buffer, size);
+    *read = size / 4;
 
     return FMOD_OK;
 }
