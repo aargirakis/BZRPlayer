@@ -82,6 +82,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto plugin = new pluginGme(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
+    gme_type_t file_type = gme_identify_extension(gme_identify_header(plugin->info->fileBuffer));
+
+    // sap format is played by plugin_asap
+    if (!file_type || file_type->extension_ == string(gme_sap_type->extension_)) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
+
     string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
@@ -91,6 +99,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         useDefaults = true;
     }
 
+    // defaults
     int freq = 44100;
     bool ignore_silence = false;
     double treble = 0;
@@ -98,6 +107,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     double stereoDepth = 0.0;
     gme_equalizer_t eq = {treble, bass};
     float tempo = 1.0;
+    plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
         string line;
@@ -121,18 +131,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
                     bass = atoi(value.c_str());
                 } else if (word == "stereo_depth") {
                     stereoDepth = atof(value.c_str()) / 100.0;
+                } else if (word == "continuousPlayback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
             }
         }
         ifs.close();
-    }
-
-    gme_type_t file_type = gme_identify_extension(gme_identify_header(plugin->info->fileBuffer));
-
-    // sap format is played by plugin_asap
-    if (!file_type || file_type->extension_ == string(gme_sap_type->extension_)) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
     }
 
     plugin->info->fileFormat = file_type->system;
@@ -172,6 +177,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     eq.treble = treble;
     gme_set_equalizer(plugin->emu, &eq);
     gme_set_stereo_depth(plugin->emu, stereoDepth);
+
+    if (plugin->info->isContinuousPlaybackActive) {
+        gme_set_autoload_playback_limit(plugin->emu, 0);
+    }
 
     if (gme_start_track(plugin->emu, plugin->info->currentSubsong)) {
         return FMOD_ERR_FORMAT;

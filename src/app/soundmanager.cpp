@@ -696,6 +696,7 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
     if (info->plugin != PLUGIN_adplug &&
         info->plugin != PLUGIN_asap &&
         info->plugin != PLUGIN_furnace &&
+        info->plugin != PLUGIN_game_music_emu &&
         info->plugin != PLUGIN_highly_experimental &&
         info->plugin != PLUGIN_highly_quixotic &&
         info->plugin != PLUGIN_highly_theoretical &&

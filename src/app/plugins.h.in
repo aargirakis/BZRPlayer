@@ -42,6 +42,7 @@
 #define PLUGIN_game_music_emu_LIB "@PLUGIN_game-music-emu_LIB@"
 #define PLUGIN_game_music_emu_NAME "@PLUGIN_game-music-emu_NAME@"
 #define PLUGIN_game_music_emu_VERSION "@PLUGIN_game-music-emu_VERSION@"
+#define PLUGIN_game_music_emu_CONFIG_FILENAME "@PLUGIN_game-music-emu_CONFIG_FILENAME@"
 
 #define PLUGIN_highly_experimental 8
 #define PLUGIN_highly_experimental_LIB "@PLUGIN_highly_experimental_LIB@"

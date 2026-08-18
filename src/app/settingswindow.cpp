@@ -327,6 +327,10 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsFurnace();
     }
 
+    if (PLUGIN_game_music_emu_LIB != "") {
+        loadSettingsGameMusicEmu();
+    }
+
     if (PLUGIN_highly_experimental_LIB != "") {
         loadSettingsHighlyExperimental();
     }
@@ -777,6 +781,10 @@ void settingsWindow::on_buttonOK_clicked() {
         saveSettingsFurnace();
     }
 
+    if (PLUGIN_game_music_emu_LIB != "") {
+        saveSettingsGameMusicEmu();
+    }
+
     if (PLUGIN_highly_experimental_LIB != "") {
         saveSettingsHighlyExperimental();
     }
@@ -982,6 +990,38 @@ void settingsWindow::loadSettingsFurnace() const {
 
                 if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxFurnaceContinuousPlayback->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+
+        ifs.close();
+    }
+}
+
+void settingsWindow::loadSettingsGameMusicEmu() const {
+    // read config from disk
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_game_music_emu_CONFIG_FILENAME;
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    ui->checkBoxGameMusicEmuContinuousPlayback->setChecked(false);
+
+    if (!useDefaults) {
+        string line;
+
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+
+                if (word.compare("continuousPlayback") == 0) {
+                    ui->checkBoxGameMusicEmuContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1647,6 +1687,21 @@ void settingsWindow::saveSettingsFurnace() const {
     ofs.close();
 }
 
+void settingsWindow::saveSettingsGameMusicEmu() const {
+    // save config to disk
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_game_music_emu_CONFIG_FILENAME;
+    ofstream ofs(filename.c_str());
+
+    if (ofs.fail()) {
+        // the file could not be opened
+        return;
+    }
+
+    ofs << "continuousPlayback=" << (ui->checkBoxGameMusicEmuContinuousPlayback->isChecked() ? "true" : "false") <<
+            "\n";
+    ofs.close();
+}
+
 void settingsWindow::saveSettingsHighlyExperimental() const {
     // save config to disk
     const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_highly_experimental_CONFIG_FILENAME;
@@ -1921,6 +1976,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -1941,6 +1997,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(false);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -1961,6 +2018,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(false);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -1981,6 +2039,28 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(false);
+        ui->groupBoxGameMusicEmu->setHidden(true);
+        ui->groupBoxHighlyExperimental->setHidden(true);
+        ui->groupBoxHighlyQuixotic->setHidden(true);
+        ui->groupBoxHighlyTheoretical->setHidden(true);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
+        ui->groupBoxLibkss->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
+        ui->groupBoxLibvgm->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxSndhPlayer->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
+        ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
+    } else if (selectedPlugin == PLUGIN_game_music_emu_NAME) {
+        ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxAsap->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(false);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2001,6 +2081,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(false);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2021,6 +2102,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(false);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2041,6 +2123,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(false);
@@ -2061,6 +2144,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2081,6 +2165,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2101,6 +2186,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2121,6 +2207,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2141,6 +2228,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2161,6 +2249,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2181,6 +2270,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2201,6 +2291,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2221,6 +2312,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2241,6 +2333,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -2260,6 +2353,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -2279,6 +2373,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -2298,6 +2393,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxAsap->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
@@ -2444,6 +2540,17 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxFurnace->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxGameMusicEmu->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxGameMusicEmu->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxHighlyExperimental->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -2740,6 +2847,7 @@ void settingsWindow::on_buttonVisualizer_clicked() const {
     ui->groupBoxAsap->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
     ui->groupBoxFurnace->setHidden(true);
+    ui->groupBoxGameMusicEmu->setHidden(true);
     ui->groupBoxHighlyExperimental->setHidden(true);
     ui->groupBoxHighlyQuixotic->setHidden(true);
     ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2766,6 +2874,7 @@ void settingsWindow::on_buttonGeneral_clicked() const {
     ui->groupBoxAsap->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
     ui->groupBoxFurnace->setHidden(true);
+    ui->groupBoxGameMusicEmu->setHidden(true);
     ui->groupBoxHighlyExperimental->setHidden(true);
     ui->groupBoxHighlyQuixotic->setHidden(true);
     ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -2799,6 +2908,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->groupBoxAsap->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
     ui->groupBoxFurnace->setHidden(true);
+    ui->groupBoxGameMusicEmu->setHidden(true);
     ui->groupBoxHighlyExperimental->setHidden(true);
     ui->groupBoxHighlyQuixotic->setHidden(true);
     ui->groupBoxHighlyTheoretical->setHidden(true);
@@ -3614,6 +3724,8 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxFmodSeamlessLoop->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxFurnaceContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxFurnaceContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxGameMusicEmuContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxGameMusicEmuContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxHighlyExperimentalContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxHighlyExperimentalContinuousPlayback->isChecked()
                               ? "checkbox-on"
@@ -3756,6 +3868,10 @@ void settingsWindow::on_checkBoxFmodSeamlessLoop_toggled(const bool isChecked) c
 
 void settingsWindow::on_checkBoxFurnaceContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxFurnaceContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxGameMusicEmuContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxGameMusicEmuContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::on_checkBoxHighlyExperimentalContinuousPlayback_toggled(const bool isChecked) const {

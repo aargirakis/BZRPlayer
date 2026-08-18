@@ -223,6 +223,8 @@ private slots:
 
     void on_checkBoxFurnaceContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxGameMusicEmuContinuousPlayback_toggled(bool isChecked) const;
+
     void on_checkBoxHighlyExperimentalContinuousPlayback_toggled(bool isChecked) const;
 
     void on_checkBoxHighlyQuixoticContinuousPlayback_toggled(bool isChecked) const;
@@ -294,6 +296,8 @@ private:
 
     void loadSettingsFurnace() const;
 
+    void loadSettingsGameMusicEmu() const;
+
     void loadSettingsHighlyExperimental() const;
 
     void loadSettingsHighlyQuixotic() const;
@@ -331,6 +335,8 @@ private:
     void saveSettingsFmod() const;
 
     void saveSettingsFurnace() const;
+
+    void saveSettingsGameMusicEmu() const;
 
     void saveSettingsHighlyExperimental() const;
 
