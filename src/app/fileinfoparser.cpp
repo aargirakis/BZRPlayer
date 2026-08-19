@@ -66,7 +66,10 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
         addInfo(tableInfo, &row, "Path", info->fileDir.c_str());
         addInfo(tableInfo, &row, "Size", groupDigits(info->filesize) + " bytes");
         addInfo(tableInfo, &row, "Last Modified", info->fileLastModified.c_str());
-        addInfo(tableInfo, &row, "Created", info->fileCreatedAt.c_str());
+
+        const auto fileCreatedAt = info->fileCreatedAt;
+        addInfo(tableInfo, &row, "Created", fileCreatedAt.empty() ? "-" : fileCreatedAt.c_str());
+
         addInfo(tableInfo, &row, "Length", msToNiceStringExact(SoundManager::getInstance().getLength(), true));
     } else {
         addInfo(tableInfo, &row, "URL", info->filePath.c_str());
