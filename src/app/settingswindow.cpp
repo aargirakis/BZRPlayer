@@ -31,6 +31,9 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->sliderReflectionOpacity->installEventFilter(this);
     ui->sliderAppearancePlaylistRowHeight->installEventFilter(this);
     ui->sliderAppearancePlaylistItemRowHeight->installEventFilter(this);
+    ui->sliderAppearanceInfoRowHeight->installEventFilter(this);
+    ui->sliderAppearanceSamplesRowHeight->installEventFilter(this);
+    ui->sliderAppearanceInstrumentsRowHeight->installEventFilter(this);
     ui->sliderAppearanceNowPlayingFontSize->installEventFilter(this);
     ui->sliderDefaultAudioLevel->installEventFilter(this);
     ui->sliderNormalizerFadeTime->installEventFilter(this);
@@ -215,6 +218,9 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
 
     ui->sliderAppearancePlaylistItemRowHeight->setValue(mainWindow->getPlaylistRowHeight());
     ui->sliderAppearancePlaylistRowHeight->setValue(mainWindow->getPlaylistsRowHeight());
+    ui->sliderAppearanceInfoRowHeight->setValue(mainWindow->getInfoRowHeight());
+    ui->sliderAppearanceSamplesRowHeight->setValue(mainWindow->getSamplesRowHeight());
+    ui->sliderAppearanceInstrumentsRowHeight->setValue(mainWindow->getInstrumentsRowHeight());
     ui->sliderAppearanceNowPlayingFontSize->setValue(mainWindow->getNowPlayingFontSize());
 
     ui->sliderVuMeterWidth->setValue(mainWindow->getEffect()->getVuMeterWidth());
@@ -703,6 +709,9 @@ bool settingsWindow::eventFilter(QObject *obj, QEvent *event) {
          obj == ui->sliderStarfieldSpeed ||
          obj == ui->sliderAppearancePlaylistRowHeight ||
          obj == ui->sliderAppearancePlaylistItemRowHeight ||
+         obj == ui->sliderAppearanceInfoRowHeight ||
+         obj == ui->sliderAppearanceSamplesRowHeight ||
+         obj == ui->sliderAppearanceInstrumentsRowHeight ||
          obj == ui->sliderAppearanceNowPlayingFontSize ||
          obj == ui->sliderDefaultAudioLevel ||
          obj == ui->sliderNormalizerFadeTime ||
@@ -2984,6 +2993,21 @@ void settingsWindow::on_sliderAppearancePlaylistRowHeight_valueChanged(const int
     mainWindow->setPlaylistsRowHeight(value);
 }
 
+void settingsWindow::on_sliderAppearanceInfoRowHeight_valueChanged(const int value) const {
+    ui->labelAppearanceInfoRowHeightValue->setText(QString::number(value) + "px");
+    mainWindow->setInfoRowHeight(value);
+}
+
+void settingsWindow::on_sliderAppearanceSamplesRowHeight_valueChanged(const int value) const {
+    ui->labelAppearanceSamplesRowHeightValue->setText(QString::number(value) + "px");
+    mainWindow->setSamplesRowHeight(value);
+}
+
+void settingsWindow::on_sliderAppearanceInstrumentsRowHeight_valueChanged(const int value) const {
+    ui->labelAppearanceInstrumentsRowHeightValue->setText(QString::number(value) + "px");
+    mainWindow->setInstrumentsRowHeight(value);
+}
+
 void settingsWindow::updateColorButtons() const {
     QString qss = QString("background-color: %1").arg(mainWindow->getColorMain());
     ui->buttonAppearanceMainColor->setStyleSheet(qss);
@@ -3789,6 +3813,9 @@ void settingsWindow::forceUpdateToSliders() const {
     on_sliderReflectionOpacity_valueChanged(ui->sliderReflectionOpacity->value());
     on_sliderAppearancePlaylistRowHeight_valueChanged(ui->sliderAppearancePlaylistRowHeight->value());
     on_sliderAppearancePlaylistItemRowHeight_valueChanged(ui->sliderAppearancePlaylistItemRowHeight->value());
+    on_sliderAppearanceInfoRowHeight_valueChanged(ui->sliderAppearanceInfoRowHeight->value());
+    on_sliderAppearanceSamplesRowHeight_valueChanged(ui->sliderAppearanceSamplesRowHeight->value());
+    on_sliderAppearanceInstrumentsRowHeight_valueChanged(ui->sliderAppearanceInstrumentsRowHeight->value());
     on_sliderAppearanceNowPlayingFontSize_valueChanged(ui->sliderAppearanceNowPlayingFontSize->value());
     on_sliderDefaultAudioLevel_valueChanged(ui->sliderDefaultAudioLevel->value());
     on_sliderNormalizerFadeTime_valueChanged(ui->sliderNormalizerFadeTime->value());

@@ -297,6 +297,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     playlistRowHeight = settings.value("Appearance/playlistItemRowHeight", "30").toInt();
     playlistsRowHeight = settings.value("Appearance/playlistRowHeight", "30").toInt();
+    infoRowHeight = settings.value("Appearance/infoRowHeight", "30").toInt();
+    samplesRowHeight = settings.value("Appearance/samplesRowHeight", "30").toInt();
+    instrumentsRowHeight = settings.value("Appearance/instrumentsRowHeight", "30").toInt();
     nowPlayingFontSize = settings.value("Appearance/nowPlayingFontSize", "16").toInt();
 
     setColorVisualizerTop(colorVisualizerTop);
@@ -326,6 +329,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     ui->labelFilename->setFont(font);
 
     ui->tableInfo->setFont(getDefaultFont());
+
+    ui->tableInfo->verticalHeader()->setDefaultSectionSize(infoRowHeight);
 
     QStringList columnLabelsInfo;
     columnLabelsInfo << "Name" << "Value";
@@ -588,6 +593,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
             filesDownloaderHvsc->downloadFiles();
         }
     }
+
+    ui->samples->verticalHeader()->setDefaultSectionSize(samplesRowHeight);
+    ui->instruments->verticalHeader()->setDefaultSectionSize(instrumentsRowHeight);
 
     connect(ui->samples->horizontalHeader(), &QHeaderView::sectionResized,
             [this](const int logicalIndex, const int, const int newSize) {
@@ -3420,6 +3428,18 @@ int MainWindow::getPlaylistsRowHeight() const {
     return playlistsRowHeight;
 }
 
+int MainWindow::getInfoRowHeight() const {
+    return infoRowHeight;
+}
+
+int MainWindow::getSamplesRowHeight() const {
+    return samplesRowHeight;
+}
+
+int MainWindow::getInstrumentsRowHeight() const {
+    return instrumentsRowHeight;
+}
+
 int MainWindow::getNowPlayingFontSize() const {
     return nowPlayingFontSize;
 }
@@ -3492,6 +3512,9 @@ void MainWindow::saveSettings() const {
     settings.setValue("Visualizer/vuMeterPeakHeight", vuMeterPeaksHeight);
     settings.setValue("Appearance/playlistItemRowHeight", playlistRowHeight);
     settings.setValue("Appearance/playlistRowHeight", playlistsRowHeight);
+    settings.setValue("Appearance/infoRowHeight", infoRowHeight);
+    settings.setValue("Appearance/samplesRowHeight", samplesRowHeight);
+    settings.setValue("Appearance/instrumentsRowHeight", instrumentsRowHeight);
     settings.setValue("Appearance/nowPlayingFontSize", nowPlayingFontSize);
     settings.setValue("Visualizer/vuMeterWidth", getEffect()->getVuMeterWidth());
     settings.setValue("Visualizer/vuMeterOpacity", getEffect()->getVuMeterOpacity());
@@ -4153,6 +4176,21 @@ void MainWindow::setPlaylistsRowHeight(const int newRowHeight) {
         QListWidgetItem *item = ui->listWidget->item(i);
         item->setSizeHint(QSize(playlistsRowHeight, playlistsRowHeight));
     }
+}
+
+void MainWindow::setInfoRowHeight(const int newRowHeight) {
+    infoRowHeight = newRowHeight;
+    ui->tableInfo->verticalHeader()->setDefaultSectionSize(infoRowHeight);
+}
+
+void MainWindow::setSamplesRowHeight(const int newRowHeight) {
+    samplesRowHeight = newRowHeight;
+    ui->samples->verticalHeader()->setDefaultSectionSize(samplesRowHeight);
+}
+
+void MainWindow::setInstrumentsRowHeight(const int newRowHeight) {
+    instrumentsRowHeight = newRowHeight;
+    ui->instruments->verticalHeader()->setDefaultSectionSize(instrumentsRowHeight);
 }
 
 void MainWindow::createTrayMenu() {

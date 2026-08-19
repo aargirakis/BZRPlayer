@@ -89,6 +89,12 @@ private slots:
 
     void on_sliderAppearancePlaylistRowHeight_valueChanged(int value) const;
 
+    void on_sliderAppearanceInfoRowHeight_valueChanged(int value) const;
+
+    void on_sliderAppearanceSamplesRowHeight_valueChanged(int value) const;
+
+    void on_sliderAppearanceInstrumentsRowHeight_valueChanged(int value) const;
+
     void on_sliderScrollerAmplitude_valueChanged(int value) const;
 
     void on_sliderScrollerFrequency_valueChanged(int value) const;

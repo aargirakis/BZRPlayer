@@ -154,6 +154,12 @@ public:
 
     int getPlaylistsRowHeight() const;
 
+    int getInfoRowHeight() const;
+
+    int getSamplesRowHeight() const;
+
+    int getInstrumentsRowHeight() const;
+
     int getNowPlayingFontSize() const;
 
     bool isReverbEnabled() const;
@@ -263,6 +269,12 @@ public:
     void setPlaylistRowHeight(int);
 
     void setPlaylistsRowHeight(int);
+
+    void setInfoRowHeight(int);
+
+    void setSamplesRowHeight(int);
+
+    void setInstrumentsRowHeight(int);
 
     void setNowPlayingFontSize(int);
 
@@ -556,6 +568,9 @@ private:
 
     int playlistRowHeight;
     int playlistsRowHeight;
+    int infoRowHeight;
+    int samplesRowHeight;
+    int instrumentsRowHeight;
     int nowPlayingFontSize;
 
     QString colorMainDefault;

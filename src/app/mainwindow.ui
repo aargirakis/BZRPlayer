@@ -306,6 +306,9 @@ margin-right:10px;
        <attribute name="verticalHeaderVisible">
         <bool>false</bool>
        </attribute>
+       <attribute name="verticalHeaderMinimumSectionSize">
+        <number>1</number>
+       </attribute>
        <attribute name="verticalHeaderHighlightSections">
         <bool>false</bool>
        </attribute>
@@ -2444,6 +2447,9 @@ font-family:Roboto;
        <attribute name="verticalHeaderVisible">
         <bool>false</bool>
        </attribute>
+       <attribute name="verticalHeaderMinimumSectionSize">
+        <number>1</number>
+       </attribute>
       </widget>
      </item>
     </layout>
@@ -2851,6 +2857,9 @@ font-family:Roboto;
        </attribute>
        <attribute name="verticalHeaderVisible">
         <bool>false</bool>
+       </attribute>
+       <attribute name="verticalHeaderMinimumSectionSize">
+        <number>1</number>
        </attribute>
       </widget>
      </item>
