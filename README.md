@@ -88,7 +88,7 @@ containing the final archive release file
 #### Build example
 
 ```
-cd /c/BZRPlayer
+cd BZRPlayer &&
 cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
 ninja -C cmake-build
 ```
@@ -176,10 +176,10 @@ instead of system ones
 #### Build with install example
 
 ```
-cd ~/bzr-player &&
+cd BZRPlayer &&
 cmake -B cmake-build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -G Ninja &&
-ninja -C cmake-build
-ninja -C cmake-build install
+ninja -C cmake-build &&
+sudo ninja -C cmake-build install
 ```
 
 #### Runtime dependencies
