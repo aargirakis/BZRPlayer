@@ -38,6 +38,9 @@
 using namespace std;
 
 const QString MainWindow::VERSION = PROJECT_VERSION;
+QString MainWindow::resourcesTrackerViewPath;
+QString MainWindow::resourcesTrackerViewFontsPath;
+QString MainWindow::resourcesVisualizerFontsPath;
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     setlocale(LC_ALL, ".UTF8");
@@ -63,12 +66,15 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     const QString resourcesFontsPath = dataPath + RESOURCES_DIR "/fonts";
     const QString resourcesTrackerViewDir = RESOURCES_DIR "/trackerview";
+    resourcesTrackerViewPath = dataPath + resourcesTrackerViewDir;
+    const QString resourcesTrackerViewFontsDir = resourcesTrackerViewDir + "/fonts";
+    resourcesTrackerViewFontsPath = dataPath + resourcesTrackerViewFontsDir;
     const QString resourcesVisualizerDir = RESOURCES_DIR "/visualizer";
     const QString resourcesVisualizerFontsDir = resourcesVisualizerDir + "/bitmapfonts";
     resourcesVisualizerFontsPath = dataPath + resourcesVisualizerFontsDir;
 
     const vector dirsToCheck = {
-        libPath + PLUGINS_DIR, dataPath + PLUGINS_DIR, resourcesFontsPath, dataPath + resourcesTrackerViewDir,
+        libPath + PLUGINS_DIR, dataPath + PLUGINS_DIR, resourcesFontsPath, resourcesTrackerViewFontsPath,
         resourcesVisualizerFontsPath
     };
 

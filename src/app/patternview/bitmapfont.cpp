@@ -6,7 +6,7 @@ BitmapFont::BitmapFont() {
 }
 
 BitmapFont::BitmapFont(const QString &fontName) {
-    const QString fontFilePathWithoutExt = dataPath + RESOURCES_DIR + "/trackerview/fonts/" + fontName;
+    const QString fontFilePathWithoutExt = MainWindow::resourcesTrackerViewFontsPath + "/" + fontName;
     const QString fontFilePath = fontFilePathWithoutExt + ".inf";
 
     QFile myFile(fontFilePath);

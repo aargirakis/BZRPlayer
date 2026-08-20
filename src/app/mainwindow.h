@@ -324,7 +324,9 @@ public:
 
     void setDefaultTrackLengthValue(int value);
 
-    QString resourcesVisualizerFontsPath;
+    static QString resourcesTrackerViewPath;
+    static QString resourcesTrackerViewFontsPath;
+    static QString resourcesVisualizerFontsPath;
 
     FilesDownloader *filesDownloaderHvsc;
     qint64 bundledHvscFilesDownloadEpoch;

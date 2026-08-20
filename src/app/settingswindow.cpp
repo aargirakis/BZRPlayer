@@ -610,11 +610,11 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->albumGridScrollerFont->setVisible(false);
     ui->albumGridPrinterFont->setVisible(false);
 
-    const QDir directory(mainWindow->resourcesVisualizerFontsPath);
+    const QDir directory(MainWindow::resourcesVisualizerFontsPath);
     QStringList images = directory.entryList(QStringList() << "*.thumb.png", QDir::Files);
 
     foreach(QString filename, images) {
-        QString filePath = mainWindow->resourcesVisualizerFontsPath + "/" + filename;
+        QString filePath = MainWindow::resourcesVisualizerFontsPath + "/" + filename;
         const auto albumScroller = new Album(filename);
         albumScroller->artwork = filePath;
         albumScroller->title = filename.replace(".thumb.png", "");

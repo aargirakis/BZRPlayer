@@ -256,7 +256,7 @@ void ::ProTracker1PatternView::paintTop(QPainter *painter, Info *info, unsigned 
     QRectF sourceNext(6, 0, 6, 7);
     QRectF targetPrev(left + 3, 24, 6, 7);
     QRectF targetNext(left + 14, 24, 6, 7);
-    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/protracker_top.png";
+    QString imagepath = MainWindow::resourcesTrackerViewPath + "/protracker_top.png";
     QImage imageTop(imagepath);
     painter->drawImage(targetPrev, imageTop, sourcePrev);
     painter->drawImage(targetNext, imageTop, sourceNext);

@@ -229,7 +229,7 @@ void ::ChipTrackerPatternView::paintTop(QPainter *painter, Info *info, unsigned 
     QRectF targetPrev(left + 3, 24, 6, 7);
     QRectF targetNext(left + 14, 24, 6, 7);
 
-    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/chiptracker_top.png";
+    QString imagepath = MainWindow::resourcesTrackerViewPath + "/chiptracker_top.png";
     QImage imageTop(imagepath);
     painter->drawImage(targetPosition, imageTop, sourcePosition);
     painter->drawImage(targetPattern, imageTop, sourcePattern);

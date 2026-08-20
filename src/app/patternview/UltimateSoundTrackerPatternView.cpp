@@ -206,7 +206,7 @@ void ::UltimateSoundTrackerPatternView::paintTop(QPainter *painter, Info *info, 
     QRectF targetNextSample(left + 2, 24, 9, 7);
     QRectF sourcePrevSample(70, 0, 9, 7);
     QRectF targetPrevSample(left + 14, 24, 9, 7);
-    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/ust_top.png";
+    QString imagepath = MainWindow::resourcesTrackerViewPath + "/ust_top.png";
     QImage imageTop(imagepath);
     painter->drawImage(targetPosition, imageTop, sourcePosition);
     painter->drawImage(targetPattern, imageTop, sourcePattern);

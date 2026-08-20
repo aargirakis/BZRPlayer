@@ -83,7 +83,7 @@ void ScreamTracker3PatternView::paintAbove(QPainter *painter, int height, int cu
     painter->fillRect(0, 0, 72 + m_channels * 112, 2, colorHilite);
 
     // corners
-    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/s3m_top.png";
+    QString imagepath = MainWindow::resourcesTrackerViewPath + "/s3m_top.png";
     QImage spriteSheet(imagepath);
 
     QRectF sourceLeftCorner(0, 0, 8, 8);

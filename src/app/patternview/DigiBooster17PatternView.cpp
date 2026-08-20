@@ -54,7 +54,7 @@ BitmapFont DigiBooster17PatternView::infoFont() {
 }
 
 void DigiBooster17PatternView::paintAbove(QPainter *painter, const int height, int currentRow) {
-    const QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/digibooster17_top.png";
+    const QString imagepath = MainWindow::resourcesTrackerViewPath + "/digibooster17_top.png";
     const QImage spriteSheet(imagepath);
 
     // right border (channel buttons)
@@ -104,7 +104,7 @@ void DigiBooster17PatternView::paintBelow(QPainter *painter, const int height, i
         painter->drawLine(28 + chan * 72, 0, 28 + chan * 72, height);
     }
 
-    const QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/digibooster17_top.png";
+    const QString imagepath = MainWindow::resourcesTrackerViewPath + "/digibooster17_top.png";
     const QImage spriteSheet(imagepath);
 
     // bottom border
@@ -127,7 +127,7 @@ void ::DigiBooster17PatternView::paintTop(QPainter *painter, Info *info, const u
     constexpr QRectF target(left - 4, 0, imageWidth, imageHeight);
 
     const auto t = this->parent();
-    const QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/digibooster17_top.png";
+    const QString imagepath = MainWindow::resourcesTrackerViewPath + "/digibooster17_top.png";
     const QImage imageTop(imagepath);
     painter->drawImage(target, imageTop, source);
 

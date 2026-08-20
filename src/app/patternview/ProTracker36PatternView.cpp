@@ -100,7 +100,7 @@ void ProTracker36PatternView::paintAbove(QPainter *painter, int height, int curr
 
     // scrollbar
 
-    QString imagepath = dataPath + RESOURCES_DIR + "/trackerview/protracker361_top.png";
+    QString imagepath = MainWindow::resourcesTrackerViewPath + "/protracker361_top.png";
     QImage spriteSheet(imagepath);
 
     QRectF sourceScrollBarBg(0, 0, 13, 4);
