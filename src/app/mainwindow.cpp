@@ -115,11 +115,11 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     setupAdvancedDockingSystem();
 
     ui->positionSlider->setValue(0);
-    ui->labelFilename->setText("");
+    ui->labelNowPlaying->setText("");
     ui->centralWidget->setStyleSheet("background:#282828/*background*/;color:#ffffff");
 
     ui->playlist->setFont(getDefaultFont());
-    ui->labelFilename->setFont(getDefaultFont());
+    ui->labelNowPlaying->setFont(getDefaultFont());
 
     currentRow = 0;
     isUpdateCurrentRowToNextEnabled = true;
@@ -330,9 +330,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     channels = new Channels(this, ui->dockWidgetContents_7);
 
-    QFont font = ui->labelFilename->font();
+    QFont font = ui->labelNowPlaying->font();
     font.setPixelSize(16);
-    ui->labelFilename->setFont(font);
+    ui->labelNowPlaying->setFont(font);
 
     ui->tableInfo->setFont(getDefaultFont());
 
@@ -669,7 +669,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     createThePopupMenuTracker();
     createMenuWindowTabs();
 
-    ui->labelFilename->installEventFilter(this);
+    ui->labelNowPlaying->installEventFilter(this);
     ui->dockWidgetContents_4->installEventFilter(this);
     visualizerFullScreen->installEventFilter(this);
     trackerFullScreen->installEventFilter(this);
@@ -957,12 +957,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
                 default: ;
             }
         }
-    } else if (event->type() == QEvent::Wheel && obj == ui->labelFilename &&
+    } else if (event->type() == QEvent::Wheel && obj == ui->labelNowPlaying &&
                QApplication::keyboardModifiers() == Qt::ControlModifier) {
         const auto wheelEvent = static_cast<QWheelEvent *>(event);
         const QPoint numPixels = wheelEvent->pixelDelta();
         const QPoint numDegrees = wheelEvent->angleDelta() / 8;
-        const QFont font = ui->labelFilename->font();
+        const QFont font = ui->labelNowPlaying->font();
 
         if (!numPixels.isNull() && numPixels.y() != 0) {
             if (font.pixelSize() + numPixels.y() <= 100 && font.pixelSize() + numPixels.y() >= 1) {
@@ -1076,14 +1076,14 @@ void MainWindow::refreshInfoNetworkStream() {
 
     if (!artist.isEmpty()) {
         if (title == pi.info->streamName.c_str() || title == pi.info->filePath.c_str()) {
-            ui->labelFilename->setText(QString(ARTIST_AND_RADIO_OR_URL).arg(artist, title));
+            ui->labelNowPlaying->setText(QString(ARTIST_AND_RADIO_OR_URL).arg(artist, title));
             windowTitle = QString(ARTIST_AND_RADIO_OR_URL_WITH_APP).arg(artist, title, PROJECT_NAME);
         } else {
-            ui->labelFilename->setText(QString(ARTIST_AND_TITLE).arg(artist, title));
+            ui->labelNowPlaying->setText(QString(ARTIST_AND_TITLE).arg(artist, title));
             windowTitle = QString(ARTIST_AND_TITLE_WITH_APP).arg(artist, title, PROJECT_NAME);
         }
     } else {
-        ui->labelFilename->setText(title);
+        ui->labelNowPlaying->setText(title);
         windowTitle = QString(TITLE_WITH_APP).arg(title, PROJECT_NAME);
     }
 
@@ -1954,14 +1954,14 @@ void MainWindow::playSongAtRow(int rowProvided) {
 
     if (!artist.isEmpty()) {
         if (!pi.info->isLocalFilePath && (title == pi.info->streamName.c_str() || title == pi.info->filePath.c_str())) {
-            ui->labelFilename->setText(QString(ARTIST_AND_RADIO_OR_URL).arg(artist, title));
+            ui->labelNowPlaying->setText(QString(ARTIST_AND_RADIO_OR_URL).arg(artist, title));
             windowTitle = QString(ARTIST_AND_RADIO_OR_URL_WITH_APP).arg(artist, title, PROJECT_NAME);
         } else {
-            ui->labelFilename->setText(QString(ARTIST_AND_TITLE).arg(artist, title));
+            ui->labelNowPlaying->setText(QString(ARTIST_AND_TITLE).arg(artist, title));
             windowTitle = QString(ARTIST_AND_TITLE_WITH_APP).arg(artist, title, PROJECT_NAME);
         }
     } else {
-        ui->labelFilename->setText(title);
+        ui->labelNowPlaying->setText(title);
         windowTitle = QString(TITLE_WITH_APP).arg(title, PROJECT_NAME);
     }
 
@@ -4159,9 +4159,9 @@ Effect *MainWindow::getEffect() const {
 
 void MainWindow::setNowPlayingFontSize(const int fontSize) {
     nowPlayingFontSize = fontSize;
-    QFont font = ui->labelFilename->font();
+    QFont font = ui->labelNowPlaying->font();
     font.setPixelSize(nowPlayingFontSize);
-    ui->labelFilename->setFont(font);
+    ui->labelNowPlaying->setFont(font);
 }
 
 void MainWindow::setPlaylistRowHeight(const int newRowHeight) {
@@ -4670,9 +4670,9 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet.replace(colorMainTextOld, colorMainText);
     ui->dockWidgetContents_7->setStyleSheet(stylesheet);
 
-    stylesheet = ui->labelFilename->styleSheet();
+    stylesheet = ui->labelNowPlaying->styleSheet();
     stylesheet.replace(colorMainTextOld, colorMainText);
-    ui->labelFilename->setStyleSheet(stylesheet);
+    ui->labelNowPlaying->setStyleSheet(stylesheet);
 
     stylesheet = ui->dockWidgetContents_2->styleSheet();
     stylesheet.replace(colorSelectionOld, colorSelection);
@@ -4706,9 +4706,9 @@ void MainWindow::changeStyleSheetColor() {
     stylesheet.replace(colorSelectionOld, colorSelection);
     ui->dockWidgetContents_7->setStyleSheet(stylesheet);
 
-    stylesheet = ui->labelFilename->styleSheet();
+    stylesheet = ui->labelNowPlaying->styleSheet();
     stylesheet.replace(colorSelectionOld, colorSelection);
-    ui->labelFilename->setStyleSheet(stylesheet);
+    ui->labelNowPlaying->setStyleSheet(stylesheet);
 
     stylesheet = ui->checkBoxVolumeOn->styleSheet();
     stylesheet.replace(colorButtonOld, colorButton);
@@ -4891,7 +4891,7 @@ void MainWindow::resetAll() {
 
     ui->labelTimer_2->setText(displayMilliseconds ? "0:00.000" : "0:00");
 
-    ui->labelFilename->clear();
+    ui->labelNowPlaying->clear();
     this->setWindowTitle(PROJECT_NAME_VERSIONED);
     channels->updateChannels();
 

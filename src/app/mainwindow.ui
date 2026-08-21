@@ -580,7 +580,7 @@ color:#ffffff/*main text*/;
       <number>0</number>
      </property>
      <item row="0" column="0">
-      <widget class="QLabel" name="labelFilename">
+      <widget class="QLabel" name="labelNowPlaying">
        <property name="font">
         <font>
          <family>Roboto</family>
@@ -598,9 +598,6 @@ font-family:Roboto;
 
 
 </string>
-       </property>
-       <property name="text">
-        <string>te</string>
        </property>
        <property name="scaledContents">
         <bool>false</bool>
