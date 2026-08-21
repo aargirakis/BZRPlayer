@@ -256,14 +256,23 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         }
     }
 
+    string fileFormat;
+
     if (plugin->uadeSongInfo->formatname[0]) {
-        string str(plugin->uadeSongInfo->formatname);
-        plugin->info->fileFormat = str.starts_with(TYPE_PREFIX)
-                                       ? str.substr(TYPE_PREFIX.length())
-                                       : plugin->uadeSongInfo->formatname;
+        fileFormat = plugin->uadeSongInfo->formatname;
+
+        if (fileFormat.starts_with(TYPE_PREFIX)) {
+            fileFormat = fileFormat.substr(TYPE_PREFIX.length());
+        }
     } else {
-        plugin->info->fileFormat = plugin->uadeSongInfo->detectioninfo.ep->playername;
+        fileFormat = plugin->uadeSongInfo->detectioninfo.ep->playername;
     }
+
+    if (fileFormat == "custom") {
+        fileFormat = "DeliTracker Custom";
+    }
+
+    plugin->info->fileFormat = fileFormat;
 
     if (plugin->uadeSongInfo->modulename[0]) {
         plugin->info->title = plugin->uadeSongInfo->modulename;
