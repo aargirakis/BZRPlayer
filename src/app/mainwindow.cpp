@@ -330,9 +330,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     channels = new Channels(this, ui->dockWidgetContents_7);
 
-    QFont font = ui->labelNowPlaying->font();
-    font.setPixelSize(16);
-    ui->labelNowPlaying->setFont(font);
+    setNowPlayingFontSize(nowPlayingFontSize);
 
     ui->tableInfo->setFont(getDefaultFont());
 
