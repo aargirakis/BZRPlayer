@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libvgm")
-set(VERSION "61fc6725644886abc3168e240e4e51588d74bdf7")
+set(VERSION "d4a07d0111527bf5130d0814505a1243136f3962")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
@@ -17,7 +17,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
 set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/ValleyBell/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "5e444086e35132920ae427679e8eef72a65b5b6963ed2d9c3b227c127fff46d4")
+set(SHA_256_HASH "3490b641a52630a0aed24ab32ec7a92b4347498ab11d9f82192a63a6c866aef7")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 
