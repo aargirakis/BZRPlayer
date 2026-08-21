@@ -9,7 +9,7 @@ static queue<string> messageQueue;
 static mutex queueMutex;
 static mutex consoleMutex;
 
-static void writeToConsole(const string &message, const Level level) {
+static void writeToTerminal(const string &message, const Level level) {
     lock_guard lock(consoleMutex);
 
     ostream &out = level >= Level::ERR ? cerr : cout;
@@ -42,7 +42,7 @@ void log(const string &message, const Level level, string source) {
     logMessage += LevelNames[to_underlying(level)];
     logMessage += "][" + source + "] " + message;
 
-    writeToConsole(logMessage + '\n', level);
+    writeToTerminal(logMessage + '\n', level);
 
     lock_guard lock(queueMutex);
     messageQueue.emplace(move(logMessage));
