@@ -17,6 +17,6 @@ void about::setVersion(const QString &version) const {
     ui->labelVersion->setText(version);
 }
 
-void about::on_pushButton_clicked() {
+void about::on_buttonOk_clicked() {
     close();
 }

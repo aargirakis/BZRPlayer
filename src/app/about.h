@@ -20,7 +20,7 @@ public:
     void setVersion(const QString &) const;
 
 private slots:
-    void on_pushButton_clicked();
+    void on_buttonOk_clicked();
 
 private:
     MainWindow *mainWindow;

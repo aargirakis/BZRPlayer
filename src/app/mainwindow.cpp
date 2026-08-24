@@ -4324,7 +4324,7 @@ void MainWindow::on_actionQuit_triggered() {
     quit();
 }
 
-void MainWindow::on_actionAbout_BZR_Player_triggered() {
+void MainWindow::on_actionAbout_triggered() {
     about about(this);
     about.exec();
 }

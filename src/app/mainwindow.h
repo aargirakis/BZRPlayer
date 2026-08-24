@@ -487,7 +487,7 @@ private slots:
 
     void on_actionQuit_triggered();
 
-    void on_actionAbout_BZR_Player_triggered();
+    void on_actionAbout_triggered();
 
     void on_pitchSlider_valueChanged(int value) const;
 

@@ -76,7 +76,7 @@ QLineEdit {
     <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="buttonOk">
    <property name="geometry">
     <rect>
      <x>605</x>

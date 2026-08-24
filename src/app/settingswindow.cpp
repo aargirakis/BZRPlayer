@@ -756,7 +756,7 @@ bool settingsWindow::eventFilter(QObject *obj, QEvent *event) {
     return QWidget::eventFilter(obj, event);
 }
 
-void settingsWindow::on_buttonOK_clicked() {
+void settingsWindow::on_buttonOk_clicked() {
     if (ui->comboBoxOutputDevice->itemData(ui->comboBoxOutputDevice->currentIndex()).toInt() !=
         mainWindow->getOutputDevice()) {
         mainWindow->setOutputDeviceSetting(
@@ -2458,11 +2458,11 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     ui->buttonPlugins->setStyleSheet(stylesheet);
 
-    stylesheet = ui->buttonOK->styleSheet();
+    stylesheet = ui->buttonOk->styleSheet();
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
-    ui->buttonOK->setStyleSheet(stylesheet);
+    ui->buttonOk->setStyleSheet(stylesheet);
 
     stylesheet = ui->buttonAppearanceResetColors->styleSheet();
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());

@@ -2512,7 +2512,7 @@ background-color:#282828/*background*/;
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionAbout_BZR_Player"/>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -2944,7 +2944,7 @@ color:#ffffff;
     <string>Add Network Stream</string>
    </property>
   </action>
-  <action name="actionAbout_BZR_Player">
+  <action name="actionAbout">
    <property name="text">
     <string>About BZR Player</string>
    </property>

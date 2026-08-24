@@ -45,7 +45,7 @@ private slots:
 
     void on_checkBoxReverb_toggled(bool isChecked) const;
 
-    void on_buttonOK_clicked();
+    void on_buttonOk_clicked();
 
     void on_comboBoxReverb_textActivated(const QString &arg1) const;
 

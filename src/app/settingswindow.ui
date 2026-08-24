@@ -142,7 +142,7 @@ QScrollBar::add-line:horizontal
 }
 </string>
   </property>
-  <widget class="QPushButton" name="buttonOK">
+  <widget class="QPushButton" name="buttonOk">
    <property name="geometry">
     <rect>
      <x>820</x>
