@@ -2512,6 +2512,7 @@ background-color:#282828/*background*/;
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionHotkeys"/>
     <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
@@ -2942,6 +2943,11 @@ color:#ffffff;
   <action name="actionAdd_network_stream">
    <property name="text">
     <string>Add Network Stream</string>
+   </property>
+  </action>
+  <action name="actionHotkeys">
+   <property name="text">
+    <string>Hotkeys</string>
    </property>
   </action>
   <action name="actionAbout">

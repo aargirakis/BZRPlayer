@@ -31,6 +31,7 @@ file(GLOB SOURCES
         about.ui
         dialogdeleteworkspace.ui
         dialognewworkspace.ui
+        hotkeys.ui
         mainwindow.ui
         settingswindow.ui
 

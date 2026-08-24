@@ -489,6 +489,8 @@ private slots:
 
     void on_actionAbout_triggered();
 
+    void on_actionHotkeys_triggered();
+
     void on_pitchSlider_valueChanged(int value) const;
 
     void on_positionSlider_valueChanged(int value) const;

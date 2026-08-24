@@ -14,6 +14,7 @@
 #include "dialogdeleteworkspace.h"
 #include "dialognewworkspace.h"
 #include "DraggableTableView.h"
+#include "hotkeys.h"
 #include "mainwindow.h"
 #include "playlistmodel.h"
 #include "plugins.h"
@@ -4327,6 +4328,11 @@ void MainWindow::on_actionQuit_triggered() {
 void MainWindow::on_actionAbout_triggered() {
     about about(this);
     about.exec();
+}
+
+void MainWindow::on_actionHotkeys_triggered() {
+    hotkeys hotkeys(this);
+    hotkeys.exec();
 }
 
 void MainWindow::on_pitchSlider_valueChanged(int value) const {
