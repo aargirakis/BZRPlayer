@@ -2946,7 +2946,7 @@ color:#ffffff;
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About BZR Player</string>
+    <string>About</string>
    </property>
   </action>
   <action name="actionNew_Workspace">
