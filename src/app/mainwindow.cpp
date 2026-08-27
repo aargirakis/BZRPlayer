@@ -1332,13 +1332,14 @@ void MainWindow::changeEvent(QEvent *event) {
     if (event->type() == QEvent::WindowStateChange) {
         this->setWindowTitle(isMinimized() ? windowTitle : PROJECT_NAME_VERSIONED);
 
-        if (isMinimized() == true && isSystrayOnMinimizeEnabled && isSystrayOnMinimizeChecked) {
-            wasMaximized = false;
-            hide();
-        }
+        wasMaximized = isMaximized();
 
-        if (isMaximized() == true && isSystrayOnMinimizeEnabled && isSystrayOnMinimizeChecked) {
-            wasMaximized = true;
+        if (isSystrayOnMinimizeEnabled && isSystrayOnMinimizeChecked) {
+            if (isMinimized()) {
+                hide();
+            } else if (isMaximized()) {
+                show();
+            }
         }
     }
 
