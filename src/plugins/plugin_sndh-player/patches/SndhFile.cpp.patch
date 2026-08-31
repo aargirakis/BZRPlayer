@@ -1,56 +1,37 @@
---- AtariAudio/SndhFile.cpp	2025-04-24 23:11:52.000000000 +0200
-+++ AtariAudio/SndhFile.cpp	2025-08-05 19:07:20.755049544 +0200
-@@ -15,6 +15,8 @@
- 	m_rawBuffer = NULL;
- 	m_Title = NULL;
- 	m_Author = NULL;
-+    m_Ripper = NULL;
-+    m_Converter = NULL;				
- 	m_sYear = NULL;
- 	m_rawSize = 0;
- }
-@@ -29,11 +31,15 @@
- 	free((void*)m_rawBuffer);
- 	free(m_Title);
- 	free(m_Author);
-+    free(m_Ripper);
-+    free(m_Converter);				   
- 	free(m_sYear);
- 	m_bLoaded = false;
- 	m_rawBuffer = NULL;
- 	m_Title = NULL;
- 	m_Author = NULL;
-+    m_Converter = NULL;
-+    m_Ripper = NULL;					   
- 	m_sYear = NULL;
+--- AtariAudio/SndhFile.cpp	2026-08-30 01:00:52.000000000 +0200
++++ AtariAudio/SndhFile.cpp	2026-08-31 20:11:32.005000000 +0200
+@@ -28,6 +28,8 @@
+ 	m_rawBuffer = nullptr;
+ 	m_Title = nullptr;
+ 	m_Author = nullptr;
++	m_Ripper = nullptr;
++	m_Converter = nullptr;
+ 	m_sYear = nullptr;
  	m_rawSize = 0;
  	m_playerRate = 0;
-@@ -119,11 +125,16 @@
- 					m_Author = _strdup(read8 + 4);
+@@ -121,9 +123,14 @@
+ 					m_Author = read8 + 4;
  					read8 = skipNTString(read8 + 4);
  				}
 -				else if (	(0 == strncmp(read8, "RIPP", 4)) ||
 -							(0 == strncmp(read8, "CONV", 4)))
--				{
-+                else if (0 == strncmp(read8, "RIPP", 4))
-+                {
-+                    m_Ripper = _strdup(read8 + 4);
++				else if (0 == strncmp(read8, "RIPP", 4))
+ 				{
++					m_Ripper = read8 + 4;
++					read8 = skipNTString(read8 + 4);
++				}
++				else if (0 == strncmp(read8, "CONV", 4))
++				{
++				    m_Converter = read8 + 4;
  					read8 = skipNTString(read8 + 4);
  				}
-+                else if (0 == strncmp(read8, "CONV", 4))
-+                {
-+                    m_Converter = _strdup(read8 + 4);
-+                    read8 = skipNTString(read8 + 4);
-+                }
  				else if ((0 == strncmp(read8, "YEAR", 4)))
- 				{
- 					if ( read8[4] != 0)
-@@ -205,6 +216,8 @@
+@@ -219,6 +226,8 @@
+ 	out.samplePerTick = m_hostReplayRate / m_playerRate;
  	out.musicName = m_Title;
  	out.musicAuthor = m_Author;
++	out.ripper = m_Ripper;
++	out.converter = m_Converter;
  	out.year = m_sYear;
-+    out.converter = m_Converter;
-+    out.ripper = m_Ripper;								
  
  	out.subsongCount = m_subSongCount;
- 	return true;
