@@ -59,7 +59,7 @@ jobs:
           Icon=bzr-player
           Terminal=false
           StartupNotify=false
-          Categories=AudioVideo;Audio;Music;Player;
+          Categories=AudioVideo;Audio;Music;Player;Qt;
           MimeType=$desktop_entry_mime_types
           EOF
 
