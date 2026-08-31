@@ -146,6 +146,77 @@ jobs:
           mv "$bzr2_deb_name.deb" "$bzr2_deb_name-ubuntu-24.04.deb"
           sudo dpkg -i "$bzr2_deb_name-ubuntu-24.04.deb"
 
+      - name: Set AppImage release date env
+        run: echo "APPIMAGE_RELEASE_DATE=$(date +%Y-%m-%d)" >> "$GITHUB_ENV"
+
+      - name: Build AppImage
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+          LINUXDEPLOY_OUTPUT_APPIMAGE_PLUGIN: ./linuxdeploy-plugin-appimage-x86_64.AppImage
+          LINUXDEPLOY_OUTPUT_APP_NAME: bzr-player
+          LINUXDEPLOY_OUTPUT_VERSION: ${{env.BZR2_VERSION}}
+        run: |
+          sudo apt-get -y install appstream libfuse2t64
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-plugin-qt-x86_64.AppImage
+          mkdir -p AppDir/usr/share/metainfo
+          cp -r ${{env.QT_ADS_DEB_NAME}}/usr AppDir
+          cp -r ${{env.BZR2_DEB_NAME}}/usr AppDir
+          cp "${{env.BZR2_DEB_NAME}}/usr/share/bzr-player/resources/icon.png" AppDir/bzr-player.png
+          mv AppDir/usr/share/applications/bzr-player.desktop AppDir/usr/share/applications/io.github.bzrplayer.desktop
+          sed -i 's|Exec=/usr/bin/|Exec=|g' AppDir/usr/share/applications/io.github.bzrplayer.desktop
+          
+          cat >AppDir/usr/share/metainfo/io.github.bzrplayer.appdata.xml <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <component type="desktop-application">
+              <id>io.github.bzrplayer</id>
+              <metadata_license>CC0-1.0</metadata_license>
+              <project_license>GPL-3.0-only</project_license>
+              <name>BZR Player 2</name>
+              <summary>Audio player supporting a wide array of multi-platform exotic file formats</summary>
+              <description>
+                  <p>Audio player supporting a wide array of multi-platform exotic file formats</p>
+              </description>
+              <url type="homepage">https://github.com/aargirakis/BZRPlayer</url>
+              <launchable type="desktop-id">io.github.bzrplayer.desktop</launchable>
+              <releases>
+                  <release version="${{env.BZR2_VERSION}}" date="${{env.APPIMAGE_RELEASE_DATE}}">
+                      <description><p>See release notes on GitHub</p></description>
+                      <url>https://github.com/aargirakis/BZRPlayer/releases/tag/${{env.BZR2_VERSION}}</url>
+                  </release>
+              </releases>
+              <provides>
+                  <id>io.github.bzrplayer.desktop</id>
+              </provides>
+              <screenshots>
+                  <screenshot type="default">
+                      <image>https://github.com/aargirakis/BZRPlayer/blob/main/screenshot.png</image>
+                  </screenshot>
+              </screenshots>
+              <categories>
+                  <category>AudioVideo</category>
+                  <category>Audio</category>
+                  <category>Music</category>
+                  <category>Player</category>
+                  <category>Qt</category>
+              </categories>
+              <content_rating type="oars-1.0"/>
+          </component>
+          EOF
+          
+          cp /usr/lib/x86_64-linux-gnu/libssl.so.3 AppDir/usr/lib
+          ./linuxdeploy-x86_64.AppImage \
+            --appdir AppDir \
+            --plugin qt \
+            --output appimage \
+            --desktop-file AppDir/usr/share/applications/io.github.bzrplayer.desktop \
+            --executable AppDir/usr/bin/bzr-player
+          bzr2_appimage_filename=bzr-player*AppImage
+          echo "BZR2_APPIMAGE_FILENAME=$bzr2_appimage_filename" >> "$GITHUB_ENV"
+
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
@@ -154,3 +225,4 @@ jobs:
             ${{env.QT_ADS_DEB_NAME}}-ubuntu-24.04.deb
             ${{env.QT_ADS_DEB_DEV_NAME}}-ubuntu-24.04.deb
             ${{env.BZR2_DEB_NAME}}-ubuntu-24.04.deb
+            ${{env.BZR2_APPIMAGE_FILENAME}}
