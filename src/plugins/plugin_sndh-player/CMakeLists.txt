@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "sndh-player")
-set(VERSION "1.03")
+set(VERSION "1.04")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "SNDH-Archive-Player" PARENT_SCOPE)
@@ -11,12 +11,14 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION}")
-set(FILENAME "${NAME_VERSIONED}.tar.gz")
-set(FILENAME_URL "v${VERSION}.tar.gz")
+set(TAG "AtariAudio_${VERSION}")
+set(NAME_TAGGED "${NAME}-${TAG}")
+set(FILENAME "${NAME_TAGGED}.tar.gz")
+set(FILENAME_URL "${TAG}.tar.gz")
 set(URL "https://github.com/arnaud-carre/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "a67c7af05a43af853103116113d619e9ef9a21b4997ffdfe3aa0da53ec92b9eb")
-download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
-        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
+set(SHA_256_HASH "d2bc90e039aa4a5ed0d73e19cc39ab711848a9d61c17db866b8d1a12d839990a")
+set(UNPACKED_DIR "${NAME_TAGGED}")
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 
 set(TIMEDB_FILENAME "timedb.inc.h")
 set(TIMEDB_VERSION "713")
