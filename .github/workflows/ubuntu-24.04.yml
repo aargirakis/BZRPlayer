@@ -22,18 +22,19 @@ jobs:
                                   qt6-declarative-dev qt6-svg-dev libqt6core6 libqt6network6 libqt6openglwidgets6 \
                                   libqt6svg6 libqt6xml6
 
-      - name: Build qt-ads 5.1.1
+      - name: Build qt-ads
         run: |
-          git clone -b v5.1.1 --single-branch https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git
+          qt_ads_ver=5.1.1
+          git clone -b "v$qt_ads_ver" --single-branch https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git
           cmake -B cmake-build-qt-ads -S Qt-Advanced-Docking-System -DBUILD_EXAMPLES=OFF -DQT_VERSION_MAJOR=6 \
           -DCMAKE_INSTALL_PREFIX=/usr -G Ninja
           ninja -C cmake-build-qt-ads
-          qt_ads_deb_name="libqt-advanced-docking-system_5.1.1-0_amd64"
+          qt_ads_deb_name="libqt-advanced-docking-system_$qt_ads_ver-0_amd64"
           echo "QT_ADS_DEB_NAME=$qt_ads_deb_name" >> "$GITHUB_ENV"
           mkdir "$qt_ads_deb_name"
           DESTDIR="$PWD/$qt_ads_deb_name" cmake --install cmake-build-qt-ads
           
-          qt_ads_deb_dev_name="libqt-advanced-docking-system-dev_5.1.1-0_amd64"
+          qt_ads_deb_dev_name="libqt-advanced-docking-system-dev_$qt_ads_ver-0_amd64"
           echo "QT_ADS_DEB_DEV_NAME=$qt_ads_deb_dev_name" >> "$GITHUB_ENV"
           mkdir -p "$qt_ads_deb_dev_name/usr"
           mv "$qt_ads_deb_name/usr/include" "$qt_ads_deb_dev_name/usr"
@@ -42,9 +43,9 @@ jobs:
           
           mkdir -p "$qt_ads_deb_name/DEBIAN"
 
-          cat >"$qt_ads_deb_name/DEBIAN/control" <<'EOF'
+          cat >"$qt_ads_deb_name/DEBIAN/control" <<EOF
           Package: libqt-advanced-docking-system
-          Version: 5.1.1-0
+          Version: $qt_ads_ver-0
           Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
           Architecture: amd64
           Description: Advanced Docking System for Qt
@@ -65,9 +66,9 @@ jobs:
 
           mkdir -p "$qt_ads_deb_dev_name/DEBIAN"
 
-          cat >"$qt_ads_deb_dev_name/DEBIAN/control" <<'EOF'
+          cat >"$qt_ads_deb_dev_name/DEBIAN/control" <<EOF
           Package: libqt-advanced-docking-system-dev
-          Version: 5.1.1-0
+          Version: $qt_ads_ver-0
           Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
           Architecture: amd64
           Description: Advanced Docking System for Qt
