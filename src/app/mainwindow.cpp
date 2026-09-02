@@ -3858,6 +3858,7 @@ QString MainWindow::createPlaylist(const QString &name) {
     tv->setColumnHidden(PlaylistModel::Section::IsPlaying, true);
     tableWidgetPlaylists[newItem->text()] = tv;
 
+    tableWidgetPlaylists[newItem->text()]->verticalHeader()->setDefaultSectionSize(playlistRowHeight);
     tableWidgetPlaylists[newItem->text()]->setStyleSheet(
         ui->dockWidgetContents_4->styleSheet() + "QHeaderView::section{font-family:Roboto;} QTableView{padding:9px;}");
     tableWidgetPlaylists[newItem->text()]->setFont(getDefaultFont());
