@@ -144,8 +144,8 @@ In order to build BZR2 following packages are required:
 
 
 - On **Debian-based** distros:\
-  `build-essential` `cmake` `dos2unix` `libglvnd0` `libsdl2-dev` `libvulkan-dev` `ninja-build` `patchutils`
-  `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
+  `bison` `build-essential` `cmake` `dos2unix` `flex` `libglvnd0` `libsdl2-dev` `libvulkan-dev` `ninja-build`
+  `patchutils` `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
   `libqt-advanced-docking-system-dev]`
   ([libqt-advanced-docking-system-dev4](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4_4.4.1-0_amd64-ubuntu-24.04.deb)
   for Ubuntu 24.04 and equivalent)
