@@ -147,7 +147,7 @@ In order to build BZR2 following packages are required:
   `bison` `build-essential` `cmake` `dos2unix` `flex` `libglvnd0` `libsdl2-dev` `libvulkan-dev` `ninja-build`
   `patchutils` `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
   `libqt-advanced-docking-system-dev]`
-  ([libqt-advanced-docking-system-dev4](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev4_4.4.1-0_amd64-ubuntu-24.04.deb)
+  ([libqt-advanced-docking-system-dev](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev_5.1.1-0_amd64-ubuntu-24.04.deb)
   for Ubuntu 24.04 and equivalent)
 
 
@@ -193,7 +193,7 @@ For running BZR2 following packages are required:
 - On **Debian-based** distros:\
   `fonts-noto-cjk` `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
   `libqt-advanced-docking-system4`
-  ([libqt-advanced-docking-system4](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system4_4.4.1-0_amd64-ubuntu-24.04.deb)
+  ([libqt-advanced-docking-system](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system_5.1.1-0_amd64-ubuntu-24.04.deb)
   for Ubuntu 24.04 and equivalent)
 
 
