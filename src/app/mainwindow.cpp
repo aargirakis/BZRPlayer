@@ -1557,7 +1557,7 @@ bool MainWindow::addSong(const QList<QUrl> &urls, const int row, const QString &
             stringList.append(url.toString());
         }
     }
-    // this may happen if drag'n'drop an empty dir
+    // this may also happen if drag'n'drop an empty dir
     if (stringList.size() > 0) {
         addSong(stringList, row, playlistName, createNewPlaylist);
         return true;
@@ -1637,6 +1637,8 @@ void MainWindow::addSong(const QStringList &filenames, int row, QString playlist
 
                 //addDebugText("Added from m3u: " + QUrl::fromPercentEncoding(playlistEntries[e]->fullPath.toStdString().c_str()));
             }
+
+            playlistName = selectedPlaylist;
         } else {
             addPlaylistEntry(tableWidgetPlaylists[playlistName],
                              tableWidgetPlaylists[playlistName]->model()->rowCount(), filename, "", nullptr, 0,
