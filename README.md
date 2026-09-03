@@ -1,15 +1,25 @@
 # BZR Player 2 (BZR2)
 
+![screenshot](screenshot.png)
+
+----
+
+<div align="center">
+
+[Overview](#overview) • [How to get](#how-to-get) • [How to build](#how-to-build) • [Reach us](#reach-us)
+
+</div>
+
+----
+
+## Overview
+
 Audio player for **Windows** and **Linux** supporting a wide array of multi-platform **exotic** file
 formats, written in **C++** and **Qt** with a sound engine based on **FMOD**.\
 The first BZR version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version which is
 coded pretty much from scratch.
 
-![screenshot](screenshot.png)
-
-----
-
-## Plugins and supported formats
+### Provided plugins
 
 BZR2 is designed with a modular plugin system to support multiple third party audio playback libraries:
 
@@ -51,15 +61,15 @@ In addition to these **FMOD** itself is used to provide support for both MIDI an
 
 ### Supported formats
 
-[Here](samples) you can find an (incomplete) list of supported formats samples grouped by plugin
+[Here](samples) you can find an (incomplete) list, grouped by plugin, of supported formats along with samples 
 
 ----
 
 ## How to get
 
-- [Releases & changelogs](https://github.com/aargirakis/BZRPlayer/releases)
-- AUR package: [`bzr-player`](https://aur.archlinux.org/packages/bzr-player)
-- [Old versions archive](https://github.com/aargirakis/BZRPlayer/tree/binaries_archive/binaries)
+[![AUR](https://img.shields.io/aur/version/bzr-player.svg?label=AUR)](https://aur.archlinux.org/packages/bzr-player/)\
+[Releases & changelogs](https://github.com/aargirakis/BZRPlayer/releases)\
+[Old versions archive](https://github.com/aargirakis/BZRPlayer/tree/binaries_archive/binaries)
 
 ----
 
@@ -210,4 +220,6 @@ Offline mode doesn't guarantee that the build will include the latest versions o
 
 ## Reach us
 
-You can find us on [Discord](https://discord.gg/feEBce8cFe) for feedback and discussion
+You can find us on Discord for feedback and discussion
+
+[![Discord](https://img.shields.io/discord/893241318120239124?label=Discord&logo=discord)](https://discord.gg/feEBce8cFe)
