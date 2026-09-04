@@ -160,8 +160,8 @@ void SoundManager::loadPluginChain() {
         loadPlugin(PLUGIN_flod_LIB, 0);
     }
 
-    if (PLUGIN_sndh_player_LIB != "" && isFormatSndh(fileBuffer, filesize)) {
-        loadPlugin(PLUGIN_sndh_player_LIB, 0);
+    if (PLUGIN_atari_audio_library_LIB != "" && isFormatSndh(fileBuffer, filesize)) {
+        loadPlugin(PLUGIN_atari_audio_library_LIB, 0);
     }
 
     if (PLUGIN_furnace_LIB != "" && isFormatFurOrDfmOrZlib(fileBuffer, filesize)) {
@@ -695,6 +695,7 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
 
     if (info->plugin != PLUGIN_adplug &&
         info->plugin != PLUGIN_asap &&
+        info->plugin != PLUGIN_atari_audio_library &&
         info->plugin != PLUGIN_furnace &&
         info->plugin != PLUGIN_game_music_emu &&
         info->plugin != PLUGIN_highly_experimental &&
@@ -707,7 +708,6 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
         info->plugin != PLUGIN_libsidplayfp &&
         info->plugin != PLUGIN_libvgm &&
         info->plugin != PLUGIN_libxmp &&
-        info->plugin != PLUGIN_sndh_player &&
         info->plugin != PLUGIN_uade &&
         info->plugin != PLUGIN_vgmstream &&
         info->plugin != PLUGIN_vio2sf &&

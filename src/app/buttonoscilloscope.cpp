@@ -46,7 +46,7 @@ void ButtonOscilloscope::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this);
 
-    if (info->plugin == PLUGIN_sndh_player) {
+    if (info->plugin == PLUGIN_atari_audio_library) {
         painter.setBrush(QBrush(backgroundColor));
         painter.setRenderHint(QPainter::Antialiasing);
         painter.drawRect(event->rect());

@@ -100,6 +100,14 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "POKEY Chip", info->chips.c_str());
             addInfo(tableInfo, &row, "Replay Freq", info->clockSpeedStr.c_str());
             break;
+        case PLUGIN_atari_audio_library:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
+            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(info->artist));
+            addInfo(tableInfo, &row, "Year", info->date.c_str());
+            addInfo(tableInfo, &row, "Clock Speed", QString::number(info->clockSpeed) + " Hz");
+            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(info->ripper));
+            addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(info->converter));
+            break;
         case PLUGIN_furnace:
             addInfo(tableInfo, &row, "Name", fromUtf8OrLatin1(info->title));
             addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
@@ -227,14 +235,6 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Hardware", info->hardware.c_str());
             addInfo(tableInfo, &row, "Rate", QString::number(info->rate));
             addInfo(tableInfo, &row, "Address", "$" + QString::number(info->address, 16));
-            break;
-        case PLUGIN_sndh_player:
-            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(info->artist));
-            addInfo(tableInfo, &row, "Year", info->date.c_str());
-            addInfo(tableInfo, &row, "Clock Speed", QString::number(info->clockSpeed) + " Hz");
-            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(info->ripper));
-            addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(info->converter));
             break;
         case PLUGIN_uade:
             addInfo(tableInfo, &row, "MD5", info->md5.c_str());
