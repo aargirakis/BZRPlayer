@@ -59,6 +59,7 @@ set(SUBDIRECTORIES_BY_MODULES
         app "src/app"
         plugin_adplug "src/plugins/plugin_adplug"
         plugin_asap "src/plugins/plugin_asap"
+        plugin_atari-audio-library "src/plugins/plugin_atari-audio-library"
         plugin_audiodecoder.wsr "src/plugins/plugin_audiodecoder.wsr"
         plugin_audiofile "src/plugins/plugin_audiofile"
         plugin_flod "src/plugins/plugin_flod"
@@ -83,7 +84,6 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_organya-decoder "src/plugins/plugin_organya-decoder"
         plugin_protrekkr "src/plugins/plugin_protrekkr"
         plugin_sc68 "src/plugins/plugin_sc68"                                #TODO seeking it is now supported (should be implemented into main.cpp) #TODO also track length seems supported (see DisplayInfo function in sc68.c)
-        plugin_sndh-player "src/plugins/plugin_sndh-player"
         plugin_sunvox_lib "src/plugins/plugin_sunvox_lib"                    #TODO add sv_unload_dll() (see sunvox_lib README)
         plugin_uade "src/plugins/plugin_uade"
         plugin_v2m-player "src/plugins/plugin_v2m-player"                    #TODO add v2mz support (see sources/v2m dir for example files)
