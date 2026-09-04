@@ -25,6 +25,7 @@ BZR2 is designed with a modular plugin system to support multiple third party au
 
 - **plugin_adplug**: [AdPlug](https://github.com/adplug/adplug)
 - **plugin_asap**: [ASAP](https://sourceforge.net/projects/asap)
+- **plugin_atari-audio-library**: [AtariAudio Library](https://github.com/arnaud-carre/AtariAudio)
 - **plugin_audiodecoder.wsr**: [audiodecoder.wsr](https://github.com/xbmc/audiodecoder.wsr)
 - **plugin_audiofile**: [Audio File Library](https://github.com/mpruett/audiofile)
 - **plugin_flod**: custom C++ port of [Flod](https://github.com/photonstorm/Flod)
@@ -49,7 +50,6 @@ BZR2 is designed with a modular plugin system to support multiple third party au
 - **plugin_organya-decoder**: [Organya decoder](https://www.cavestory.one/download/music-players.php)
 - **plugin_protrekkr**: [ProTrekkr](https://github.com/hitchhikr/protrekkr)
 - **plugin_sc68**: [sc68](https://sourceforge.net/p/sc68)
-- **plugin_sndh-player**: [SNDH-Archive-Player](https://github.com/arnaud-carre/sndh-player)
 - **plugin_sunvox_lib**: [SunVox Library](https://warmplace.ru/soft/sunvox)
 - **plugin_uade**: [UADE (mvtiaine)](https://gitlab.com/mvtiaine/uade) + custom C++ port of [Flod](https://github.com/photonstorm/Flod) (for samples viewer)
 - **plugin_v2m-player**: [v2m-player](https://github.com/jgilje/v2m-player)

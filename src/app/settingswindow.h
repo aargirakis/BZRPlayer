@@ -225,6 +225,8 @@ private slots:
 
     void on_checkBoxAsapContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxAtariAudioLibraryContinuousPlayback_toggled(bool isChecked) const;
+
     void on_checkBoxFmodSeamlessLoop_toggled(bool isChecked) const;
 
     void on_checkBoxFurnaceContinuousPlayback_toggled(bool isChecked) const;
@@ -265,8 +267,6 @@ private slots:
 
     void on_checkBoxLibxmpContinuousPlayback_toggled(bool isChecked) const;
 
-    void on_checkBoxSndhPlayerContinuousPlayback_toggled(bool isChecked) const;
-
     void on_buttonUadeSonglengthsBrowse_clicked();
 
     void on_checkBoxUadeContinuousPlayback_toggled(bool isChecked) const;
@@ -298,6 +298,8 @@ private:
 
     void loadSettingsAsap() const;
 
+    void loadSettingsAtariAudioLibrary() const;
+
     void loadSettingsFmod() const;
 
     void loadSettingsFurnace() const;
@@ -324,8 +326,6 @@ private:
 
     void loadSettingsLibxmp() const;
 
-    void loadSettingsSndhPlayer() const;
-
     void loadSettingsUade() const;
 
     void loadSettingsVgmstream() const;
@@ -337,6 +337,8 @@ private:
     void saveSettingsAdplug() const;
 
     void saveSettingsAsap() const;
+
+    void saveSettingsAtariAudioLibrary() const;
 
     void saveSettingsFmod() const;
 
@@ -361,8 +363,6 @@ private:
     void saveSettingsLibvgm() const;
 
     void saveSettingsLibxmp() const;
-
-    void saveSettingsSndhPlayer() const;
 
     void saveSettingsUade() const;
 
