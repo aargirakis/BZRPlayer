@@ -160,6 +160,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     unsigned int ticks = subsongInfo.playerTickCount;
 
+    //TODO GetSongDuration
     plugin->songLength = ticks * subsongInfo.samplePerTick / (plugin->waveformat.frequency / 1000);
 
     plugin->info->numSubsongs = plugin->sndh->GetSubsongCount();
@@ -184,6 +185,13 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
     // TODO continuous playback
 
+    //TODO GetSongDuration
+    //TODO temp
+    if (plugin->songLength == 0) {
+        *read = size;
+        return FMOD_OK;
+    }
+
     if (renderedSamples != size) {
         return FMOD_ERR_FILE_EOF;
     }
@@ -205,6 +213,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginAtariAudioLibrary *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
+        //TODO GetSongDuration
         *length = plugin->songLength; // TODO use lengthpcm?
         return FMOD_OK;
     }
