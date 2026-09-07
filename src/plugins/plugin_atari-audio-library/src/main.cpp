@@ -24,7 +24,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     0x00010000, // version 0xAAAABBBB   A = major, B = minor.
     1, // whether or not force everything using this codec to be a stream
     // the time formats we would like to accept into setposition/getposition
-    FMOD_TIMEUNIT_MS,
+    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MUTE_VOICE,
     &open, // open callback
     &close, // close callback.
     &read, // read callback
@@ -164,7 +164,14 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
+    const auto *plugin = static_cast<pluginAtariAudioLibrary *>(codec->plugindata);
+
     if (postype == FMOD_TIMEUNIT_MS) {
+        return FMOD_OK;
+    }
+
+    if (postype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        plugin->sndh->MuteVoices(position);
         return FMOD_OK;
     }
 
@@ -176,6 +183,11 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         *length = plugin->sndh->GetSubsongDurationMs(plugin->info->currentSubsong + 1); // TODO use lengthpcm?
+        return FMOD_OK;
+    }
+
+    if (lengthtype == FMOD_TIMEUNIT_MUTE_VOICE) {
+        *length = -1; // ignored
         return FMOD_OK;
     }
 
