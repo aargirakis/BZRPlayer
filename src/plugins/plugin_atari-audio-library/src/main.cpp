@@ -1,6 +1,6 @@
 #include <cstring>
 #include <fstream>
-#include "SndhFile.h"
+#include "SndhRenderer.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "logger.h"
@@ -47,13 +47,12 @@ public:
     }
 
     ~pluginAtariAudioLibrary() {
-        sndh->Unload();
-        delete sndh;
+        SndhRenderer::Destroy(sndh);
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
-    SndhFile *sndh;
+    SndhRenderer *sndh;
 };
 
 /*
@@ -79,11 +78,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginAtariAudioLibrary(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->sndh = new SndhFile();
-
     constexpr int freq = 44100;
 
-    if (!plugin->sndh->Load(plugin->info->fileBuffer, static_cast<int>(plugin->info->filesize), freq)) {
+    plugin->sndh = SndhRenderer::Create(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize), freq);
+
+    if (!plugin->sndh) {
         delete plugin;
         return FMOD_ERR_FORMAT;
     }
@@ -133,22 +132,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     auto songInfo = plugin->sndh->GetSongInfo();
 
-    if (songInfo.musicAuthor != nullptr) {
-        plugin->info->artist = songInfo.musicAuthor;
-    }
-    if (songInfo.musicName != nullptr) {
-        plugin->info->title = songInfo.musicName;
-    }
-    if (songInfo.ripper != nullptr) {
-        plugin->info->ripper = songInfo.ripper;
-    }
-    if (songInfo.converter != nullptr) {
-        plugin->info->converter = songInfo.converter;
-    }
-    if (songInfo.year != nullptr) {
-        plugin->info->date = songInfo.year;
-    }
-
+    plugin->info->artist = songInfo.musicAuthor;
+    plugin->info->title = songInfo.musicName;
+    plugin->info->ripper = songInfo.ripper;
+    plugin->info->converter = songInfo.converter;
+    plugin->info->date = songInfo.year;
     plugin->info->clockSpeed = songInfo.playerTickRate;
     plugin->info->numSubsongs = songInfo.subsongCount;
 
