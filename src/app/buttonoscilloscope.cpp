@@ -46,22 +46,22 @@ void ButtonOscilloscope::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this);
 
-    if (info->plugin == PLUGIN_atari_audio_library) {
-        painter.setBrush(QBrush(backgroundColor));
-        painter.setRenderHint(QPainter::Antialiasing);
-        painter.drawRect(event->rect());
+    //if (info->plugin == PLUGIN_atari_audio_library) {
+    //    painter.setBrush(QBrush(backgroundColor));
+    //    painter.setRenderHint(QPainter::Antialiasing);
+    //    painter.drawRect(event->rect());
 
-        constexpr int kLatencySampleCount = 256; // 44100 / 60;
-        drawOscilloVoice(info->waveformDisplay, kLatencySampleCount, channelNumber);
-        drawChannelNumber(QString::number(channelNumber));
+    //    constexpr int kLatencySampleCount = 256; // 44100 / 60;
+    //    drawOscilloVoice(info->waveformDisplay, kLatencySampleCount, channelNumber);
+    //    drawChannelNumber(QString::number(channelNumber));
 
-        painter.end(); // TODO needed?
-        update();
-    } else {
+    //    painter.end(); // TODO needed?
+    //    update();
+    //} else {
         painter.setBrush(QBrush(checked ? enabledColor : disabledColor));
         painter.drawRect(event->rect());
         painter.end(); // TODO needed?
-    }
+    //}
 
     drawChannelNumber(QString::number(channelNumber));
 }
