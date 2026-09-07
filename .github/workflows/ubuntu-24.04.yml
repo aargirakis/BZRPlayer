@@ -156,13 +156,22 @@ jobs:
           LINUXDEPLOY_OUTPUT_APP_NAME: bzr-player
           LINUXDEPLOY_OUTPUT_VERSION: ${{env.BZR2_VERSION}}
         run: |
-          sudo apt-get -y install appstream libfuse2t64
-          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
-          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
-          chmod +x linuxdeploy-x86_64.AppImage
-          chmod +x linuxdeploy-plugin-qt-x86_64.AppImage
-          mkdir -p AppDir/usr/share/metainfo
+          #sudo apt-get -y install appstream libfuse2t64
+          #wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          #wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          #wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
+          #chmod +x linuxdeploy-x86_64.AppImage
+          #chmod +x linuxdeploy-plugin-qt-x86_64.AppImage
+          
+          wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
+          chmod +x appimagetool-*.AppImage
+          ./appimagetool-*.AppImage -s deploy ./AppDir/usr/share/applications/*.desktop # Bundle EVERYTHING
+          # or 
+          ./appimagetool-*.AppImage deploy ./AppDir/usr/share/applications/*.desktop # Bundle everything expect what comes with the base system
+          # and
+          VERSION=1.0 ./appimagetool-*.AppImage ./AppDir # turn AppDir into AppImage
+          
+          #mkdir -p AppDir/usr/share/metainfo
           cp -r ${{env.QT_ADS_DEB_NAME}}/usr AppDir
           cp -r ${{env.BZR2_DEB_NAME}}/usr AppDir
           cp "${{env.BZR2_DEB_NAME}}/usr/share/bzr-player/resources/icon.png" AppDir/bzr-player.png
