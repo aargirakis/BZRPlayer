@@ -1072,7 +1072,7 @@ bool SoundManager::isFormatSc68(const uint8_t *fileBuffer, const size_t filesize
 }
 
 bool SoundManager::isFormatSndh(const uint8_t *fileBuffer, const size_t filesize) {
-    // 2mb max allowed (biggest sndh on modland is 1383730 bytes)
+    // 2mb max allowed (biggest sndh in SNDH Archive is 1.67mb)
     if (filesize > 1024 * 2048) return false;
 
     constexpr char magic[] = "SNDH";
