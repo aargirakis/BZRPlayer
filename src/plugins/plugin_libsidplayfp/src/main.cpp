@@ -558,8 +558,9 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
              * a better way would be to calculate the number of samples left for arriving to the desired position,
              * but this needs a whole redesign
              */
-            plugin->player->play(static_cast<short int *>(buffer), 16 * plugin->waveformat.channels);
             toRead = 16;
+            plugin->player->play(static_cast<short int *>(buffer), toRead * plugin->waveformat.channels);
+            memset(buffer, 0, toRead * plugin->waveformat.format * plugin->waveformat.channels);
         } else {
             for (int i = 0; i < plugin->maxVoices; i++) {
                 plugin->player->mute(i / voicesPerSidChip, i % voicesPerSidChip, plugin->mutePtr[i]);
