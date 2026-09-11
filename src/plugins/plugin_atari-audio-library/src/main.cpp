@@ -162,20 +162,20 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     return FMOD_OK;
 }
 
-static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
-                                      FMOD_TIMEUNIT postype) {
-    if (postype == FMOD_TIMEUNIT_MS) {
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    const auto *plugin = static_cast<pluginAtariAudioLibrary *>(codec->plugindata);
+
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
+        *length = plugin->sndh->GetSubsongDurationMs(plugin->info->currentSubsong + 1); // TODO use lengthpcm?
         return FMOD_OK;
     }
 
     return FMOD_ERR_UNSUPPORTED;
 }
 
-static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
-    const auto *plugin = static_cast<pluginAtariAudioLibrary *>(codec->plugindata);
-
-    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        *length = plugin->sndh->GetSubsongDurationMs(plugin->info->currentSubsong + 1); // TODO use lengthpcm?
+static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
+                                      FMOD_TIMEUNIT postype) {
+    if (postype == FMOD_TIMEUNIT_MS) {
         return FMOD_OK;
     }
 
