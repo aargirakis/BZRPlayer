@@ -152,16 +152,13 @@ void SoundManager::loadPluginChain() {
         loadPlugin(PLUGIN_hivelytracker_LIB, 0);
     }
 
-    if (PLUGIN_libstsound_LIB != "") {
-        loadPlugin(PLUGIN_libstsound_LIB, 0);
+    if (PLUGIN_atari_audio_LIB != "" &&
+        (isFormatSndh(fileBuffer, filesize) || isFormatYmOrLha(fileBuffer, filesize))) {
+        loadPlugin(PLUGIN_atari_audio_LIB, 0);
     }
 
     if (PLUGIN_flod_LIB != "" && isFormatBPSoundMon1(fileBuffer, filesize)) {
         loadPlugin(PLUGIN_flod_LIB, 0);
-    }
-
-    if (PLUGIN_atari_audio_library_LIB != "" && isFormatSndh(fileBuffer, filesize)) {
-        loadPlugin(PLUGIN_atari_audio_library_LIB, 0);
     }
 
     if (PLUGIN_furnace_LIB != "" && isFormatFurOrDfmOrZlib(fileBuffer, filesize)) {
@@ -695,7 +692,7 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
 
     if (info->plugin != PLUGIN_adplug &&
         info->plugin != PLUGIN_asap &&
-        info->plugin != PLUGIN_atari_audio_library &&
+        info->plugin != PLUGIN_atari_audio &&
         info->plugin != PLUGIN_furnace &&
         info->plugin != PLUGIN_game_music_emu &&
         info->plugin != PLUGIN_highly_experimental &&
@@ -1072,7 +1069,7 @@ bool SoundManager::isFormatSc68(const uint8_t *fileBuffer, const size_t filesize
 }
 
 bool SoundManager::isFormatSndh(const uint8_t *fileBuffer, const size_t filesize) {
-    // 2mb max allowed (biggest sndh in SNDH Archive is 1.67mb)
+    // 2mb max allowed (biggest unpacked sndh in SNDH Archive is 1.67mb)
     if (filesize > 1024 * 2048) return false;
 
     constexpr char magic[] = "SNDH";
@@ -1088,6 +1085,45 @@ bool SoundManager::isFormatSndh(const uint8_t *fileBuffer, const size_t filesize
            memcmp(&fileBuffer[magicPackedOffset], magicPacked1, magicLength) == 0 ||
            memcmp(&fileBuffer[magicPackedOffset], magicPacked2, magicLength) == 0;
 }
+
+bool SoundManager::isFormatYmOrLha(const uint8_t *fileBuffer, const size_t filesize) {
+    // 2mb max allowed (biggest unpacked ym on fujiology/modland is 876kb)
+    if (filesize > 1024 * 1024) return false;
+
+    constexpr char magicLeonard[] = "LeOnArD!";
+    constexpr uint8_t magicLeonardOffset = 0x04;
+    constexpr uint8_t magicLeonardLength = 0x08;
+    constexpr array<const char *, 8> magicFormats = {"YM2!", "YM3!", "YM3b", "YM5!", "YM6!", "MIX1", "YMT1", "YMT2"};
+    constexpr uint8_t magicFormatOffset = 0x00;
+    constexpr uint8_t magicFormatLength = 0x04;
+    constexpr char magicLha[] = "-lh5-";
+    constexpr uint8_t magicLhaOffset = 0x02;
+    constexpr uint8_t magicLhaLength = 0x05;
+
+    if (filesize < magicLeonardOffset + magicLeonardLength) return false;
+
+    if (fileBuffer[0x00] != 0 &&
+        fileBuffer[0x14] == 0 &&
+        memcmp(&fileBuffer[magicLhaOffset], magicLha, magicLhaLength) == 0)
+        return true;
+
+    uint8_t value = 0;
+
+    while (value < magicFormats.size()) {
+        if (memcmp(&fileBuffer[magicFormatOffset], magicFormats[value], magicFormatLength) == 0) break;
+
+        value++;
+    }
+
+    if (value == magicFormats.size()) return false;
+
+    if (value <= 2) return true;
+
+    if (memcmp(&fileBuffer[magicLeonardOffset], magicLeonard, magicLeonardLength) == 0) return true;
+
+    return false;
+}
+
 
 bool SoundManager::isFormatPac(const uint8_t *fileBuffer, const size_t filesize) {
     constexpr char magic1[] = "PACG";

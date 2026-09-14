@@ -25,7 +25,7 @@ BZR2 is designed with a modular plugin system to support multiple third party au
 
 - **plugin_adplug**: [AdPlug](https://github.com/adplug/adplug)
 - **plugin_asap**: [ASAP](https://sourceforge.net/projects/asap)
-- **plugin_atari-audio-library**: [AtariAudio Library](https://github.com/arnaud-carre/AtariAudio)
+- **plugin_atari-audio**: [AtariAudio](https://github.com/arnaud-carre/AtariAudio)
 - **plugin_audiodecoder.wsr**: [audiodecoder.wsr](https://github.com/xbmc/audiodecoder.wsr)
 - **plugin_audiofile**: [Audio File Library](https://github.com/mpruett/audiofile)
 - **plugin_flod**: custom C++ port of [Flod](https://github.com/photonstorm/Flod)
@@ -43,7 +43,6 @@ BZR2 is designed with a modular plugin system to support multiple third party au
 - **plugin_libopenmpt**: [libopenmpt](https://lib.openmpt.org/libopenmpt)
 - **plugin_libpac**: [libpac](http://prdownloads.sourceforge.net/libpac)
 - **plugin_libsidplayfp**: [libsidplayfp](https://github.com/libsidplayfp/libsidplayfp) + [sidid](https://github.com/cadaver/sidid)
-- **plugin_libstsound**: [libstsound](https://github.com/cpcsdk/libstsound)
 - **plugin_libvgm**: [libvgm](https://github.com/ValleyBell/libvgm)
 - **plugin_libxmp**: [libxmp](https://github.com/libxmp/libxmp)
 - **plugin_mdxmini**: [mdxmini](https://github.com/mistydemeo/mdxmini)
