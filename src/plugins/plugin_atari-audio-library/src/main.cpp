@@ -1,6 +1,6 @@
 #include <cstring>
 #include <fstream>
-#include "SndhRenderer.h"
+#include "AtariAudioRenderer.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "logger.h"
@@ -84,7 +84,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginAtariAudioLibrary(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->sndh = SndhRenderer::Create(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
+    // TODO plugin->sndh -> plugin->atariAudio
+    // TODO missing lengths
+    // TODO proper format anmes
+    // TODO mute/unmude digi issue
+    // TODO only play atari st ym? check clock
+    // TODO formats filtering in soundmanager
+    // TODO continuos playback
+    // TODO fileinfoparser
+    // TODO gather each sample per format
+
+    plugin->sndh = AtariAudioRenderer::Create(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
                                         pluginAtariAudioLibrary::sampleRate);
 
     if (!plugin->sndh) {

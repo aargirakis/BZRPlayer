@@ -152,16 +152,13 @@ void SoundManager::loadPluginChain() {
         loadPlugin(PLUGIN_hivelytracker_LIB, 0);
     }
 
-    if (PLUGIN_libstsound_LIB != "") {
-        loadPlugin(PLUGIN_libstsound_LIB, 0);
+    // TODO
+    if (PLUGIN_atari_audio_library_LIB != "" /*&& isFormatSndh(fileBuffer, filesize)*/) {
+        loadPlugin(PLUGIN_atari_audio_library_LIB, 0);
     }
 
     if (PLUGIN_flod_LIB != "" && isFormatBPSoundMon1(fileBuffer, filesize)) {
         loadPlugin(PLUGIN_flod_LIB, 0);
-    }
-
-    if (PLUGIN_atari_audio_library_LIB != "" && isFormatSndh(fileBuffer, filesize)) {
-        loadPlugin(PLUGIN_atari_audio_library_LIB, 0);
     }
 
     if (PLUGIN_furnace_LIB != "" && isFormatFurOrDfmOrZlib(fileBuffer, filesize)) {

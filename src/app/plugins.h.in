@@ -112,7 +112,7 @@
 #define PLUGIN_libpac_NAME "@PLUGIN_libpac_NAME@"
 #define PLUGIN_libpac_VERSION "@PLUGIN_libpac_VERSION@"
 
-#define PLUGIN_libsidplayfp 28
+#define PLUGIN_libsidplayfp 20
 #define PLUGIN_libsidplayfp_LIB "@PLUGIN_libsidplayfp_LIB@"
 #define PLUGIN_libsidplayfp_NAME "@PLUGIN_libsidplayfp_NAME@"
 #define PLUGIN_libsidplayfp_VERSION "@PLUGIN_libsidplayfp_VERSION@"
@@ -125,49 +125,44 @@
 #define PLUGIN_libsidplayfp_HVSC_BUGLIST_URL "@PLUGIN_libsidplayfp_HVSC_BUGLIST_URL@"
 #define PLUGIN_libsidplayfp_CONFIG_FILENAME "@PLUGIN_libsidplayfp_CONFIG_FILENAME@"
 
-#define PLUGIN_libstsound 21
-#define PLUGIN_libstsound_LIB "@PLUGIN_libstsound_LIB@"
-#define PLUGIN_libstsound_NAME "@PLUGIN_libstsound_NAME@"
-#define PLUGIN_libstsound_VERSION "@PLUGIN_libstsound_VERSION@"
-
-#define PLUGIN_libvgm 22
+#define PLUGIN_libvgm 21
 #define PLUGIN_libvgm_LIB "@PLUGIN_libvgm_LIB@"
 #define PLUGIN_libvgm_NAME "@PLUGIN_libvgm_NAME@"
 #define PLUGIN_libvgm_VERSION "@PLUGIN_libvgm_VERSION@"
 #define PLUGIN_libvgm_CONFIG_FILENAME "@PLUGIN_libvgm_CONFIG_FILENAME@"
 
-#define PLUGIN_libxmp 23
+#define PLUGIN_libxmp 22
 #define PLUGIN_libxmp_LIB "@PLUGIN_libxmp_LIB@"
 #define PLUGIN_libxmp_NAME "@PLUGIN_libxmp_NAME@"
 #define PLUGIN_libxmp_VERSION "@PLUGIN_libxmp_VERSION@"
 #define PLUGIN_libxmp_CONFIG_FILENAME "@PLUGIN_libxmp_CONFIG_FILENAME@"
 
-#define PLUGIN_mdxmini 24
+#define PLUGIN_mdxmini 23
 #define PLUGIN_mdxmini_LIB "@PLUGIN_mdxmini_LIB@"
 #define PLUGIN_mdxmini_NAME "@PLUGIN_mdxmini_NAME@"
 #define PLUGIN_mdxmini_VERSION "@PLUGIN_mdxmini_VERSION@"
 
-#define PLUGIN_organya_decoder 25
+#define PLUGIN_organya_decoder 24
 #define PLUGIN_organya_decoder_LIB "@PLUGIN_organya-decoder_LIB@"
 #define PLUGIN_organya_decoder_NAME "@PLUGIN_organya-decoder_NAME@"
 #define PLUGIN_organya_decoder_VERSION "@PLUGIN_organya-decoder_VERSION@"
 
-#define PLUGIN_protrekkr 26
+#define PLUGIN_protrekkr 25
 #define PLUGIN_protrekkr_LIB "@PLUGIN_protrekkr_LIB@"
 #define PLUGIN_protrekkr_NAME "@PLUGIN_protrekkr_NAME@"
 #define PLUGIN_protrekkr_VERSION "@PLUGIN_protrekkr_VERSION@"
 
-#define PLUGIN_sc68 27
+#define PLUGIN_sc68 26
 #define PLUGIN_sc68_LIB "@PLUGIN_sc68_LIB@"
 #define PLUGIN_sc68_NAME "@PLUGIN_sc68_NAME@"
 #define PLUGIN_sc68_VERSION "@PLUGIN_sc68_VERSION@"
 
-#define PLUGIN_sunvox_lib 28
+#define PLUGIN_sunvox_lib 27
 #define PLUGIN_sunvox_lib_LIB "@PLUGIN_sunvox_lib_LIB@"
 #define PLUGIN_sunvox_lib_NAME "@PLUGIN_sunvox_lib_NAME@"
 #define PLUGIN_sunvox_lib_VERSION "@PLUGIN_sunvox_lib_VERSION@"
 
-#define PLUGIN_uade 29
+#define PLUGIN_uade 28
 #define PLUGIN_uade_LIB "@PLUGIN_uade_LIB@"
 #define PLUGIN_uade_NAME "@PLUGIN_uade_NAME@"
 #define PLUGIN_uade_VERSION "@PLUGIN_uade_VERSION@"
@@ -175,29 +170,29 @@
 #define PLUGIN_uade_SONGLENGTHS_FILENAME "@PLUGIN_uade_SONGLENGTHS_FILENAME@"
 #define PLUGIN_uade_CONFIG_FILENAME "@PLUGIN_uade_CONFIG_FILENAME@"
 
-#define PLUGIN_v2m_player 30
+#define PLUGIN_v2m_player 29
 #define PLUGIN_v2m_player_LIB "@PLUGIN_v2m-player_LIB@"
 #define PLUGIN_v2m_player_NAME "@PLUGIN_v2m-player_NAME@"
 #define PLUGIN_v2m_player_VERSION "@PLUGIN_v2m-player_VERSION@"
 
-#define PLUGIN_vgmstream 31
+#define PLUGIN_vgmstream 30
 #define PLUGIN_vgmstream_LIB "@PLUGIN_vgmstream_LIB@"
 #define PLUGIN_vgmstream_NAME "@PLUGIN_vgmstream_NAME@"
 #define PLUGIN_vgmstream_VERSION "@PLUGIN_vgmstream_VERSION@"
 #define PLUGIN_vgmstream_CONFIG_FILENAME "@PLUGIN_vgmstream_CONFIG_FILENAME@"
 
-#define PLUGIN_vio2sf 32
+#define PLUGIN_vio2sf 31
 #define PLUGIN_vio2sf_LIB "@PLUGIN_vio2sf_LIB@"
 #define PLUGIN_vio2sf_NAME "@PLUGIN_vio2sf_NAME@"
 #define PLUGIN_vio2sf_VERSION "@PLUGIN_vio2sf_VERSION@"
 #define PLUGIN_vio2sf_CONFIG_FILENAME "@PLUGIN_vio2sf_CONFIG_FILENAME@"
 
-#define PLUGIN_zxtune 33
+#define PLUGIN_zxtune 32
 #define PLUGIN_zxtune_LIB "@PLUGIN_zxtune_LIB@"
 #define PLUGIN_zxtune_NAME "@PLUGIN_zxtune_NAME@"
 #define PLUGIN_zxtune_VERSION "@PLUGIN_zxtune_VERSION@"
 #define PLUGIN_zxtune_CONFIG_FILENAME "@PLUGIN_zxtune_CONFIG_FILENAME@"
 
-#define PLUGINS_COUNT 34
+#define PLUGINS_COUNT 33
 
 #endif

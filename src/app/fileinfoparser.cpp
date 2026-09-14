@@ -107,6 +107,11 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Clock Speed", QString::number(info->clockSpeed) + " Hz");
             addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(info->ripper));
             addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(info->converter));
+
+            // TODO
+            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
+            addMultilineInfo(tableInfo, &row, "Comments", info->comments);
+            addInfo(tableInfo, &row, "Song Player", fromUtf8OrLatin1(info->songPlayer));
             break;
         case PLUGIN_furnace:
             addInfo(tableInfo, &row, "Name", fromUtf8OrLatin1(info->title));
@@ -201,12 +206,6 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             if (info->isSid) {
                 addInfo(tableInfo, &row, "MD5", info->md5.c_str());
             }
-            break;
-        case PLUGIN_libstsound:
-            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
-            addMultilineInfo(tableInfo, &row, "Comments", info->comments);
-            addInfo(tableInfo, &row, "Song Player", fromUtf8OrLatin1(info->songPlayer));
             break;
         case PLUGIN_libxmp:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));

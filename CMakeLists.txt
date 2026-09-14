@@ -77,7 +77,6 @@ set(SUBDIRECTORIES_BY_MODULES
         plugin_libopenmpt "src/plugins/plugin_libopenmpt"
         plugin_libpac "src/plugins/plugin_libpac"
         plugin_libsidplayfp "src/plugins/plugin_libsidplayfp"
-        plugin_libstsound "src/plugins/plugin_libstsound"
         plugin_libvgm "src/plugins/plugin_libvgm"
         plugin_libxmp "src/plugins/plugin_libxmp"
         plugin_mdxmini "src/plugins/plugin_mdxmini"

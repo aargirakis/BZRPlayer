@@ -529,11 +529,6 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libsidplayfp_NAME));
     }
 
-    if (PLUGIN_libstsound_LIB != "") {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libstsound_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libstsound_NAME));
-    }
-
     if (PLUGIN_libxmp_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libxmp_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libxmp_NAME));
