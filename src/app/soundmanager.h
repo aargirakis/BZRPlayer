@@ -96,6 +96,8 @@ public:
 
     static bool isFormatSndh(const uint8_t *fileBuffer, size_t filesize);
 
+    static bool isFormatYmOrLha(const uint8_t *fileBuffer, size_t filesize);
+
     static bool isFormatPac(const uint8_t *fileBuffer, size_t filesize);
 
     static bool isFormatWsr(const uint8_t *fileBuffer, size_t filesize);

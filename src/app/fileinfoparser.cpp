@@ -100,13 +100,31 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "POKEY Chip", info->chips.c_str());
             addInfo(tableInfo, &row, "Replay Freq", info->clockSpeedStr.c_str());
             break;
-        case PLUGIN_atari_audio_library:
+        case PLUGIN_atari_audio:
+            if (info->fileFormatSpecific == "SNDH") {
+                const int defaultSubsong = info->defaultSubsong;
+                addInfo(tableInfo, &row, "Default Subsong",
+                        defaultSubsong == -1 ? "-" : QString::number(defaultSubsong));
+            }
+
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addInfo(tableInfo, &row, "Artist", fromUtf8OrLatin1(info->artist));
-            addInfo(tableInfo, &row, "Year", info->date.c_str());
-            addInfo(tableInfo, &row, "Clock Speed", QString::number(info->clockSpeed) + " Hz");
-            addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(info->ripper));
-            addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(info->converter));
+
+            if (info->fileFormatSpecific == "SNDH") {
+                addInfo(tableInfo, &row, "Composer", fromUtf8OrLatin1(info->composer));
+                addInfo(tableInfo, &row, "Year", info->date.c_str());
+            } else {
+                addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
+            }
+
+            addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(info->system));
+            addInfo(tableInfo, &row, "Replayer Rate", QString::number(info->clockSpeed) + " Hz");
+
+            if (info->fileFormatSpecific == "SNDH") {
+                addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(info->ripper));
+                addInfo(tableInfo, &row, "Converter", fromUtf8OrLatin1(info->converter));
+            } else {
+                addMultilineInfo(tableInfo, &row, "Comments", info->comments);
+            }
             break;
         case PLUGIN_furnace:
             addInfo(tableInfo, &row, "Name", fromUtf8OrLatin1(info->title));
@@ -201,12 +219,6 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             if (info->isSid) {
                 addInfo(tableInfo, &row, "MD5", info->md5.c_str());
             }
-            break;
-        case PLUGIN_libstsound:
-            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
-            addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
-            addMultilineInfo(tableInfo, &row, "Comments", info->comments);
-            addInfo(tableInfo, &row, "Song Player", fromUtf8OrLatin1(info->songPlayer));
             break;
         case PLUGIN_libxmp:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));

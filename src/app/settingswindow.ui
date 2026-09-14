@@ -4830,7 +4830,7 @@ QComboBox::drop-down:disabled {
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBoxAtariAudioLibrary">
+  <widget class="QGroupBox" name="groupBoxAtariAudio">
    <property name="geometry">
     <rect>
      <x>170</x>
@@ -4982,7 +4982,7 @@ QComboBox::drop-down:disabled {
    <property name="flat">
     <bool>true</bool>
    </property>
-   <widget class="QCheckBox" name="checkBoxAtariAudioLibraryContinuousPlayback">
+   <widget class="QCheckBox" name="checkBoxAtariAudioContinuousPlayback">
     <property name="geometry">
      <rect>
       <x>10</x>

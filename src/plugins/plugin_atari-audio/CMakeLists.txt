@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(NAME "atari-audio-library")
-set(VERSION "1.22")
+set(NAME "atari-audio")
+set(VERSION "1.24")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
-set(PLUGIN_${NAME}_NAME "AtariAudio Library" PARENT_SCOPE)
+set(PLUGIN_${NAME}_NAME "AtariAudio" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
 set(CMAKE_C_STANDARD 17)
@@ -15,7 +15,7 @@ set(NAME2 "AtariAudio")
 set(FILENAME "${NAME2}-${VERSION}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/arnaud-carre/${NAME2}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "9d61495602a3f9afd44f3e228393d88e01bd0bde44f568686f429e0ace98cddd")
+set(SHA_256_HASH "5ebe258570583b705f3ce5a1f6bf7fe2538c64dc45d6adeb2464862dd027285f")
 set(UNPACKED_DIR "${NAME2}-${VERSION}")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 

@@ -329,8 +329,8 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsAsap();
     }
 
-    if (PLUGIN_atari_audio_library_LIB != "") {
-        loadSettingsAtariAudioLibrary();
+    if (PLUGIN_atari_audio_LIB != "") {
+        loadSettingsAtariAudio();
     }
 
     if (PLUGIN_furnace_LIB != "") {
@@ -439,9 +439,9 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_asap_NAME));
     }
 
-    if (PLUGIN_atari_audio_library_LIB != "") {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_atari_audio_library_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_atari_audio_library_NAME));
+    if (PLUGIN_atari_audio_LIB != "") {
+        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_atari_audio_VERSION));
+        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_atari_audio_NAME));
     }
 
     if (PLUGIN_audiodecoder_wsr_LIB != "") {
@@ -527,11 +527,6 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     if (PLUGIN_libsidplayfp_LIB != "") {
         ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libsidplayfp_VERSION));
         ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libsidplayfp_NAME));
-    }
-
-    if (PLUGIN_libstsound_LIB != "") {
-        ui->tableWidgetPlugins->setItem(row, 1, new QTableWidgetItem(PLUGIN_libstsound_VERSION));
-        ui->tableWidgetPlugins->setItem(row++, 0, new QTableWidgetItem(PLUGIN_libstsound_NAME));
     }
 
     if (PLUGIN_libxmp_LIB != "") {
@@ -786,8 +781,8 @@ void settingsWindow::on_buttonOk_clicked() {
         saveSettingsAsap();
     }
 
-    if (PLUGIN_atari_audio_library_LIB != "") {
-        saveSettingsAtariAudioLibrary();
+    if (PLUGIN_atari_audio_LIB != "") {
+        saveSettingsAtariAudio();
     }
 
     if (PLUGIN_furnace_LIB != "") {
@@ -941,9 +936,9 @@ void settingsWindow::loadSettingsAsap() const {
     }
 }
 
-void settingsWindow::loadSettingsAtariAudioLibrary() const {
+void settingsWindow::loadSettingsAtariAudio() const {
     // read config from disk
-    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_atari_audio_library_CONFIG_FILENAME;
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_atari_audio_CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -953,7 +948,7 @@ void settingsWindow::loadSettingsAtariAudioLibrary() const {
     }
 
     // defaults
-    ui->checkBoxAtariAudioLibraryContinuousPlayback->setChecked(false);
+    ui->checkBoxAtariAudioContinuousPlayback->setChecked(false);
 
     if (!useDefaults) {
         string line;
@@ -964,7 +959,7 @@ void settingsWindow::loadSettingsAtariAudioLibrary() const {
                 string value = line.substr(i + 1);
 
                 if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxAtariAudioLibraryContinuousPlayback->setChecked(value.compare("true") == 0);
+                    ui->checkBoxAtariAudioContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
         }
@@ -1664,9 +1659,9 @@ void settingsWindow::saveSettingsAsap() const {
     ofs.close();
 }
 
-void settingsWindow::saveSettingsAtariAudioLibrary() const {
+void settingsWindow::saveSettingsAtariAudio() const {
     // save config to disk
-    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_atari_audio_library_CONFIG_FILENAME;
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_atari_audio_CONFIG_FILENAME;
     ofstream ofs(filename.c_str());
 
     if (ofs.fail()) {
@@ -1674,7 +1669,7 @@ void settingsWindow::saveSettingsAtariAudioLibrary() const {
         return;
     }
 
-    ofs << "continuousPlayback=" << (ui->checkBoxAtariAudioLibraryContinuousPlayback->isChecked() ? "true" : "false") <<
+    ofs << "continuousPlayback=" << (ui->checkBoxAtariAudioContinuousPlayback->isChecked() ? "true" : "false") <<
             "\n";
     ofs.close();
 }
@@ -1984,7 +1979,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         selectedPlugin == PLUGIN_adplug_NAME) {
         ui->groupBoxAdplug->setHidden(false);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2005,7 +2000,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_asap_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(false);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2023,10 +2018,10 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
         ui->groupBoxZxtune->setHidden(true);
-    } else if (selectedPlugin == PLUGIN_atari_audio_library_NAME) {
+    } else if (selectedPlugin == PLUGIN_atari_audio_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(false);
+        ui->groupBoxAtariAudio->setHidden(false);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2047,7 +2042,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_fmod_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(false);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2068,7 +2063,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_furnace_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(false);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2089,7 +2084,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_game_music_emu_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(false);
@@ -2110,7 +2105,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_highly_experimental_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2131,7 +2126,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_highly_quixotic_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2152,7 +2147,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_highly_theoretical_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2173,7 +2168,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_hivelytracker_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2194,7 +2189,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_lazyusf2_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2215,7 +2210,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_libkss_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2236,7 +2231,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_libopenmpt_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2257,7 +2252,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_libsidplayfp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2278,7 +2273,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_libvgm_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2299,7 +2294,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_libxmp_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2320,7 +2315,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_uade_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2341,7 +2336,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_vgmstream_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2361,7 +2356,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_vio2sf_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2381,7 +2376,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else if (selectedPlugin == PLUGIN_zxtune_NAME) {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2401,7 +2396,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
     } else {
         ui->groupBoxAdplug->setHidden(true);
         ui->groupBoxAsap->setHidden(true);
-        ui->groupBoxAtariAudioLibrary->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
         ui->groupBoxFmod->setHidden(true);
         ui->groupBoxFurnace->setHidden(true);
         ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2529,7 +2524,7 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxAsap->setStyleSheet(stylesheet);
 
-    stylesheet = ui->groupBoxAtariAudioLibrary->styleSheet();
+    stylesheet = ui->groupBoxAtariAudio->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
     stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
@@ -2538,7 +2533,7 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
-    ui->groupBoxAtariAudioLibrary->setStyleSheet(stylesheet);
+    ui->groupBoxAtariAudio->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxFmod->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -2855,7 +2850,7 @@ void settingsWindow::on_buttonVisualizer_clicked() const {
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxAsap->setHidden(true);
-    ui->groupBoxAtariAudioLibrary->setHidden(true);
+    ui->groupBoxAtariAudio->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
     ui->groupBoxFurnace->setHidden(true);
     ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2882,7 +2877,7 @@ void settingsWindow::on_buttonGeneral_clicked() const {
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxAsap->setHidden(true);
-    ui->groupBoxAtariAudioLibrary->setHidden(true);
+    ui->groupBoxAtariAudio->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
     ui->groupBoxFurnace->setHidden(true);
     ui->groupBoxGameMusicEmu->setHidden(true);
@@ -2916,7 +2911,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->tableWidgetPlugins->setHidden(true);
     ui->groupBoxAdplug->setHidden(true);
     ui->groupBoxAsap->setHidden(true);
-    ui->groupBoxAtariAudioLibrary->setHidden(true);
+    ui->groupBoxAtariAudio->setHidden(true);
     ui->groupBoxFmod->setHidden(true);
     ui->groupBoxFurnace->setHidden(true);
     ui->groupBoxGameMusicEmu->setHidden(true);
@@ -3745,8 +3740,8 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxAdPlugContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxAsapContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxAsapContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
-    ui->checkBoxAtariAudioLibraryContinuousPlayback->setIcon(
-        mainWindow->icons[ui->checkBoxAtariAudioLibraryContinuousPlayback->isChecked()
+    ui->checkBoxAtariAudioContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxAtariAudioContinuousPlayback->isChecked()
                               ? "checkbox-on"
                               : "checkbox-off"]);
     ui->checkBoxFmodSeamlessLoop->setIcon(
@@ -3892,8 +3887,8 @@ void settingsWindow::on_checkBoxAsapContinuousPlayback_toggled(const bool isChec
     ui->checkBoxAsapContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
-void settingsWindow::on_checkBoxAtariAudioLibraryContinuousPlayback_toggled(const bool isChecked) const {
-    ui->checkBoxAtariAudioLibraryContinuousPlayback->setIcon(
+void settingsWindow::on_checkBoxAtariAudioContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxAtariAudioContinuousPlayback->setIcon(
         mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
