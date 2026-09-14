@@ -39,8 +39,6 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     nullptr // getwaveformat
 };
 
-static constexpr unsigned int sampleRate = 44100;
-
 class pluginAtariAudioLibrary {
     FMOD_CODEC_STATE *_codec;
 
@@ -51,22 +49,13 @@ public:
     }
 
     ~pluginAtariAudioLibrary() {
-        SndhRenderer::Destroy(sndh);
-    }
-
-    static uint32_t samplesToMs(const uint32_t samples) {
-        const uint64_t ms = static_cast<uint64_t>(samples) * 1000 / sampleRate;
-        return static_cast<uint32_t>(ms);
-    }
-
-    static uint32_t msToSamples(const uint32_t ms) {
-        const uint64_t samples = static_cast<uint64_t>(ms) * sampleRate / 1000;
-        return static_cast<uint32_t>(samples);
+        AtariAudioRenderer::Destroy(sndh);
     }
 
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
-    SndhRenderer *sndh;
+    AtariAudioRenderer *sndh;
+    static constexpr unsigned int sampleRate = 44100;
     uint32_t renderingPosition = 0;
     uint32_t seekPosition;
     bool isSeeking = false;
@@ -96,7 +85,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     plugin->sndh = SndhRenderer::Create(plugin->info->fileBuffer, static_cast<uint32_t>(plugin->info->filesize),
-                                        sampleRate);
+                                        pluginAtariAudioLibrary::sampleRate);
 
     if (!plugin->sndh) {
         delete plugin;
@@ -137,7 +126,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 1;
-    plugin->waveformat.frequency = sampleRate;
+    plugin->waveformat.frequency = pluginAtariAudioLibrary::sampleRate;
     plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
@@ -182,7 +171,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
                 *read = size;
             }
 
-            plugin->sndh->AudioRender(nullptr, toSkip);
+            plugin->sndh->FastForward(toSkip);
             plugin->renderingPosition += toSkip;
         } else {
             plugin->isSeeking = false;
@@ -201,7 +190,8 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginAtariAudioLibrary *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        *length = plugin->sndh->GetSubsongDurationMs(plugin->info->currentSubsong + 1);
+        *length = plugin->sndh->SampleToMs(
+            plugin->sndh->GetSubsongDurationSample(plugin->info->currentSubsong + 1));
         return FMOD_OK;
     }
 
@@ -223,7 +213,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
         if (position == 0) {
             shouldReinit = plugin->renderingPosition != 0;
         } else {
-            plugin->seekPosition = pluginAtariAudioLibrary::msToSamples(position);
+            plugin->seekPosition = plugin->sndh->MsToSample(position);
             shouldReinit = plugin->seekPosition < plugin->renderingPosition;
             plugin->isSeeking = true;
         }
@@ -248,7 +238,7 @@ static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *pos
     const auto *plugin = static_cast<pluginAtariAudioLibrary *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS_REAL) {
-        *position = pluginAtariAudioLibrary::samplesToMs(plugin->renderingPosition);
+        *position = plugin->sndh->SampleToMs(plugin->renderingPosition);
         return FMOD_OK;
     }
 
