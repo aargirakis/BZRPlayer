@@ -499,6 +499,10 @@ unsigned int SoundManager::getPosition(const FMOD_TIMEUNIT timeUnit) const {
     unsigned int currentMs;
     FMOD_Channel_GetPosition(channel, &currentMs, timeUnit);
 
+  //  if (currentMs > 500) {
+   //     currentMs -= 500;
+   // }
+
     return currentMs;
 }
 
