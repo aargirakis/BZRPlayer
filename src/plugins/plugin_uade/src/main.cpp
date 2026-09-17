@@ -193,12 +193,12 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     uade_config_set_option(uadeConfig, UC_UADECORE_FILE, uade_core);
     uade_config_set_option(uadeConfig, UC_NO_CONTENT_DB, nullptr);
     uade_config_set_option(uadeConfig, UC_ONE_SUBSONG, nullptr);
+    uade_config_set_option(uadeConfig, UC_SUBSONG_TIMEOUT_VALUE, "-1");
 
     if (plugin->info->isContinuousPlaybackActive) {
         uade_config_set_option(uadeConfig, UC_NO_EP_END, nullptr);
         uade_config_set_option(uadeConfig, UC_DISABLE_TIMEOUTS, nullptr);
         uade_config_set_option(uadeConfig, UC_TIMEOUT_VALUE, "-1");
-        uade_config_set_option(uadeConfig, UC_SUBSONG_TIMEOUT_VALUE, "-1");
         uade_config_set_option(uadeConfig, UC_SILENCE_TIMEOUT_VALUE, "-1");
     } else {
         uade_config_set_option(uadeConfig, UC_ENABLE_TIMEOUTS, nullptr);
