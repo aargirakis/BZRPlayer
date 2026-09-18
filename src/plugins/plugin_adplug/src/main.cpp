@@ -1,10 +1,10 @@
 #include <fstream>
-#include <adplug.h>
-#include <emuopl.h>
-#include <kemuopl.h>
-#include <nemuopl.h>
-#include <wemuopl.h>
-#include <surroundopl.h>
+#include "adplug.h"
+#include "emuopl.h"
+#include "kemuopl.h"
+#include "nemuopl.h"
+#include "wemuopl.h"
+#include "surroundopl.h"
 #include "fmod_errors.h"
 #include "info.h"
 #include "logger.h"
