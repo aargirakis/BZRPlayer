@@ -55,7 +55,7 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
     Info *info;
     AtariAudioRenderer *sndh;
-    static constexpr unsigned int sampleRate = 44100;
+    static constexpr unsigned int sampleRate = 48000;
     uint32_t renderingPosition = 0;
     uint32_t seekPosition;
     bool isSeeking = false;
