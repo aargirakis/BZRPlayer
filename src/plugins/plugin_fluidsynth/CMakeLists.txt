@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "fluidsynth")
-set(VERSION "2.6.0")
+set(VERSION "2.6.1")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "FluidSynth (BW MIDI Sequencer)" PARENT_SCOPE)
@@ -14,7 +14,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "v${VERSION}.tar.gz")
 set(URL "https://github.com/FluidSynth/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "6d17570ea2086dd6fbcac995465773a6f316e689089b7fb7ba0b34c2ec6f680d")
+set(SHA_256_HASH "3d258a3bf97cc20c59eeebfe62c2432fae88adda74d3ad098681c76e0ebf446b")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" "")
 
 set(EXTERNAL_SOURCE_DIR_${NAME} "${EXTERNAL_SOURCE_DIR}")
