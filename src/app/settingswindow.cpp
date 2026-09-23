@@ -69,6 +69,17 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->comboBoxAdPlugPlayback->addItem("Stereo", "1");
     ui->comboBoxAdPlugPlayback->addItem("Surround", "2");
 
+    ui->comboBoxAtariAudioDefaultAudioChipClock->installEventFilter(this);
+    ui->comboBoxAtariAudioDefaultAudioChipClock->addItem("1 MHz (Amstrad CPC / Oric)", "1000000");
+    ui->comboBoxAtariAudioDefaultAudioChipClock->addItem("1.22 MHz (FM-7)", "1228800");
+    ui->comboBoxAtariAudioDefaultAudioChipClock->addItem("1.5 MHz (Vectrex)", "1500000");
+    ui->comboBoxAtariAudioDefaultAudioChipClock->addItem("1.75 MHz (Pentagon)", "1750000");
+    ui->comboBoxAtariAudioDefaultAudioChipClock->addItem("1.76 MHz (T/S 2068)", "1764000");
+    ui->comboBoxAtariAudioDefaultAudioChipClock->addItem("1.77 MHz (ZX Spectrum)", "1773450");
+    ui->comboBoxAtariAudioDefaultAudioChipClock->addItem("1.78 MHz (MSX)", "1789772");
+    ui->comboBoxAtariAudioDefaultAudioChipClock->addItem("2 MHz (Atari ST / Sharp X1)", "2000000");
+    ui->comboBoxAtariAudioDefaultAudioChipClock->addItem("3.5 MHz (Taganrog)", "3500000");
+
     ui->comboBoxHivelyTrackerStereoSeparation->installEventFilter(this);
     ui->comboBoxHivelyTrackerStereoSeparation->addItem("0% (Mono)", "0");
     ui->comboBoxHivelyTrackerStereoSeparation->addItem("25%", "1");
@@ -738,6 +749,7 @@ bool settingsWindow::eventFilter(QObject *obj, QEvent *event) {
          obj == ui->comboBoxAdPlugEmulator ||
          obj == ui->comboBoxAdPlugFreq ||
          obj == ui->comboBoxAdPlugPlayback ||
+         obj == ui->comboBoxAtariAudioDefaultAudioChipClock ||
          obj == ui->comboBoxHivelyTrackerStereoSeparation ||
          obj == ui->comboBoxDefaultPlayMode ||
          obj == ui->comboBoxRotatingObjectMaterial ||
@@ -948,6 +960,8 @@ void settingsWindow::loadSettingsAtariAudio() const {
     }
 
     // defaults
+    ui->comboBoxAtariAudioDefaultAudioChipClock->setCurrentIndex(
+        ui->comboBoxAtariAudioDefaultAudioChipClock->findData("2000000"));
     ui->checkBoxAtariAudioContinuousPlayback->setChecked(false);
 
     if (!useDefaults) {
@@ -958,7 +972,10 @@ void settingsWindow::loadSettingsAtariAudio() const {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("continuousPlayback") == 0) {
+                if (word.compare("defaultAudioChipClock") == 0) {
+                    int index = ui->comboBoxAtariAudioDefaultAudioChipClock->findData(value.c_str());
+                    ui->comboBoxAtariAudioDefaultAudioChipClock->setCurrentIndex(index);
+                } else if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxAtariAudioContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
@@ -1669,6 +1686,8 @@ void settingsWindow::saveSettingsAtariAudio() const {
         return;
     }
 
+    ofs << "defaultAudioChipClock=" << ui->comboBoxAtariAudioDefaultAudioChipClock->currentData().toString().
+            toStdString().c_str() << "\n";
     ofs << "continuousPlayback=" << (ui->checkBoxAtariAudioContinuousPlayback->isChecked() ? "true" : "false") <<
             "\n";
     ofs.close();

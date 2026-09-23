@@ -4982,11 +4982,58 @@ QComboBox::drop-down:disabled {
    <property name="flat">
     <bool>true</bool>
    </property>
+   <widget class="QLabel" name="labelAtariAudioDefaultAudioChipClock">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>300</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>YM2 &amp; YM3x file formats does not provide an audio chip clock value: 2 MHz is the default since YM has been originally designed for Atari ST</string>
+    </property>
+    <property name="text">
+     <string>Default audio chip clock (YM2 / YM3x only)</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxAtariAudioDefaultAudioChipClock">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>20</y>
+      <width>220</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+    <property name="frame">
+     <bool>false</bool>
+    </property>
+   </widget>
    <widget class="QCheckBox" name="checkBoxAtariAudioContinuousPlayback">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>70</y>
       <width>200</width>
       <height>26</height>
      </rect>

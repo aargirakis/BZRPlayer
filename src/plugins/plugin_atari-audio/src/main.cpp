@@ -84,20 +84,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginAtariAudio(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    plugin->atariAudio = AtariAudioRenderer::Create(plugin->info->fileBuffer,
-                                                    static_cast<uint32_t>(plugin->info->filesize),
-                                                    pluginAtariAudio::sampleRate);
-
-    if (!plugin->atariAudio) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
-    if (!plugin->atariAudio->InitSubSong(plugin->info->currentSubsong + 1)) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
     string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
@@ -108,6 +94,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     // defaults
+    uint32_t defaultAudioChipClock = 2000000;
     plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -116,13 +103,29 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word == "continuousPlayback") {
+                if (word == "defaultAudioChipClock") {
+                    defaultAudioChipClock = stoi(value);
+                } else if (word == "continuousPlayback") {
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
             }
         }
         ifs.close();
+    }
+
+    plugin->atariAudio = AtariAudioRenderer::Create(plugin->info->fileBuffer,
+                                                    static_cast<uint32_t>(plugin->info->filesize),
+                                                    pluginAtariAudio::sampleRate, defaultAudioChipClock);
+
+    if (!plugin->atariAudio) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
+
+    if (!plugin->atariAudio->InitSubSong(plugin->info->currentSubsong + 1)) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
     }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
