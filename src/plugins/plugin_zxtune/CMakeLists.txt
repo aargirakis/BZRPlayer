@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "zxtune")
-set(VERSION "5100")
+set(VERSION "5110")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "ZXTune" PARENT_SCOPE)
@@ -18,7 +18,7 @@ set(NAME_TAGGED "${NAME}-${TAG}")
 set(FILENAME "${NAME_TAGGED}.tar.gz")
 set(FILENAME_URL "${TAG}.tar.gz")
 set(URL "https://github.com/vitamin-caig/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "2123cc21bc422eaec3ae358246ebe518bc7b9066d6f0726d2eb7a264ff9359fb")
+set(SHA_256_HASH "1b64fe16d60ce0c971b37e67ca0130b917b60b7dfda2a05ec1c606c37bd8dd58")
 set(UNPACKED_DIR "${NAME_TAGGED}")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches)
@@ -47,13 +47,14 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/analysis/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/binary/compression/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/binary/format/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/binary/format/full/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/binary/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/archives/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/archives/full/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/ay/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/dac_plugin.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/multi/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/saa/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/tfm/*.cpp
@@ -62,56 +63,50 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/devices/dac/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/devices/fm/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/devices/saa/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/hrip.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/scl.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/trd.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/trdos_catalogue.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/trdos_utils.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/zxstate.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/zxzip.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/other/zxstate.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/archived/trdos/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/aym/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/common/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/chiptracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/digital.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/digitalmusicmaker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/digitalstudio.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/extremetracker1.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/prodigitracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/sampletracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/digital/sqdigitaltracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/emulation/ay.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/fm/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/multidevice/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/multitrack/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/multidevice/multitrackcontainer.cpp
         ${EXTERNAL_SOURCE_DIR}/src/formats/chiptune/saa/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/multitrack/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/charpres.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/codecruncher3.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledasc.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledpt2.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledptu13.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledst3.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compiledstp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/compressorcode4.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/container.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/datasquieezer.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/dsk.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/esvcruncher.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/fulldiskimage.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/gamepacker.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/hobeta.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/hrum.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/hrust1.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/hrust2.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/image_utils.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/lha_file.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/lzh.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/lzs.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/megalz.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/mspack.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/pack2.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/powerfullcodedecreaser6.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/sna128.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/teledisk.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/trush.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/turbolz.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/z80.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/zxzip_file.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/common/container.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/decompilers/compiledasc.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/decompilers/compiledpt2.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/decompilers/compiledptu13.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/decompilers/compiledst3.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/decompilers/compiledstp.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/images/dsk.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/images/fulldiskimage.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/images/teledisk.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/images/utils.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/snapshots/sna128.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/snapshots/z80.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/formats/packed/zx/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/aym/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/*.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/chiptracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_base.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_factory.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_parameters.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_properties_helper.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/dac_simple.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/digitalmusicmaker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/digitalstudio.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/extremetracker1.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/prodigitracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/sampletracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/sqdigitaltracker.cpp
+        ${EXTERNAL_SOURCE_DIR}/src/module/players/multitrack/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/saa/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/tfm/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/src/*.cpp
@@ -126,13 +121,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif ()
 
 list(REMOVE_ITEM SOURCES
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/ay/ay_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/ahx_supp.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/dac/v2m_supp.cpp
         ${EXTERNAL_SOURCE_DIR}/src/core/plugins/players/multitrack_plugin.cpp
         ${EXTERNAL_SOURCE_DIR}/src/module/players/aym/ayemul.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/abysshighestexperience.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/module/players/dac/v2m.cpp
         ${EXTERNAL_SOURCE_DIR}/src/sound/impl/resampler.cpp
 )
 
@@ -141,10 +131,8 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}
         ${EXTERNAL_SOURCE_DIR}/3rdparty/fmt/include
-        ${EXTERNAL_SOURCE_DIR}/3rdparty/lhasa/lib
         ${EXTERNAL_SOURCE_DIR}/include
         ${EXTERNAL_SOURCE_DIR}/src
-        ${EXTERNAL_SOURCE_DIR}/src/module
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${LOGGER_API_DIR}

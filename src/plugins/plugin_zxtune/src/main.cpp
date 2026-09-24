@@ -2,14 +2,14 @@
 #include <fstream>
 #include <regex>
 #include <sstream>
-#include "attributes.h"
 #include "binary/container_factories.h"
 #include "core/core_parameters.h"
 #include "core/data_location.h"
 #include "core/service.h"
 #include "error.h"
-#include "module/track_information.h"
-#include "module/track_state.h"
+#include "module/attributes.h"
+#include "module/information.h"
+#include "module/state.h"
 #include "module/players/pipeline.h"
 #include "sound/sound_parameters.h"
 #include "fmod_errors.h"
@@ -108,7 +108,7 @@ public:
             if (const auto path = location.GetPath(); !path->Empty()) {
                 isContainer = true;
                 for (const auto &element: path->Elements()) {
-                    if (!element.starts_with("+")) {
+                    if (!element.starts_with('+')) {
                         containerFilenames += " > " + element;
                         containerLastFilename = element;
                     }
@@ -159,7 +159,7 @@ public:
     ModulesDetector modulesDetector;
     shared_ptr<Parameters::Container> soundParams;
     Module::Renderer::Ptr renderer;
-    Module::Information::Ptr moduleInfo;
+    Module::Information moduleInfo;
     Sound::Chunk chunk;
     unsigned int chunkSamplesBuffered = 0;
 };
@@ -261,8 +261,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             info->containerLastFilename = plugin->modulesDetector.getContainerLastFilename();
         }
 
-        if (const auto *trackInfo = dynamic_cast<const Module::TrackInformation *>(plugin->moduleInfo.get())) {
-            info->loopPosition = trackInfo->LoopPosition();
+        if (plugin->moduleInfo.Track) {
+            info->loopPosition = plugin->moduleInfo.Track->LoopPosition;
         }
 
         const Parameters::Accessor::Ptr moduleProperties = plugin->modulesDetector.getCurrentModule()->
@@ -323,7 +323,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             }
         }
 
-        if (const auto trackState = dynamic_pointer_cast<const Module::TrackState>(plugin->renderer->GetState())) {
+        if (plugin->renderer->GetState().Track) {
             // TODO gather at-the-moment-state data for visualizer and tracker view in the read callback
             // TODO along with: ATTR_CURRENT_POSITION, ATTR_CURRENT_PATTERN, ATTR_CURRENT_LINE
         }
@@ -371,7 +371,7 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
     const auto *plugin = static_cast<pluginZxtune *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
-        *length = plugin->moduleInfo->Duration().Get();
+        *length = plugin->moduleInfo.Duration.Get();
         return FMOD_OK;
     }
 

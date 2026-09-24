@@ -1,0 +1,17 @@
+--- src/core/plugins/players/dac/dac_plugin.cpp	2026-09-22 12:50:14.000000000 +0200
++++ src/core/plugins/players/dac/dac_plugin.cpp	2026-09-25 15:21:33.226000000 +0200
+@@ -75,6 +75,7 @@
+       auto plugin = CreatePlayerPlugin("ET1"_id, std::move(decoder), &CreateExtremeTracker1Chiptune);
+       registrator.RegisterPlugin(std::move(plugin));
+     }
++#if 0
+     {
+       auto decoder = CreateAbyssHighestExperienceDecoder();
+       auto factory = Module::AHX::CreateFactory(AbyssHighestExperience::Parse);
+@@ -93,5 +94,6 @@
+       auto plugin = CreatePlayerPlugin("V2M"_id, std::move(decoder), std::move(factory));
+       registrator.RegisterPlugin(std::move(plugin));
+     }
++#endif
+   }
+ }  // namespace ZXTune

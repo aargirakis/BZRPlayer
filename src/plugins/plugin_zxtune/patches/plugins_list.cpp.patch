@@ -1,29 +1,34 @@
---- src/core/plugins/players/plugins_list.cpp	2025-05-30 12:43:47.000000000 +0200
-+++ src/core/plugins/players/plugins_list.cpp	2025-10-09 16:33:52.533483607 +0200
-@@ -69,7 +69,6 @@
+--- src/core/plugins/players/plugins_list.cpp	2026-09-22 12:50:14.000000000 +0200
++++ src/core/plugins/players/plugins_list.cpp	2026-09-25 15:09:33.001000000 +0200
+@@ -16,20 +16,7 @@
+   void RegisterDACPlugins(PlayerPluginsRegistrator& players);
+   void RegisterTFMPlugins(PlayerPluginsRegistrator& players);
+   void RegisterCOPSupport(PlayerPluginsRegistrator& players);
+-  void RegisterXMPPlugins(PlayerPluginsRegistrator& players);
+-  void RegisterSIDPlugins(PlayerPluginsRegistrator& players, ArchivePluginsRegistrator& archives);
+-  void RegisterSPCSupport(PlayerPluginsRegistrator& players);
+   void RegisterMTCSupport(PlayerPluginsRegistrator& players);
+-  void RegisterGMEPlugins(PlayerPluginsRegistrator& players, ArchivePluginsRegistrator& archives);
+-  void RegisterXSFPlugins(PlayerPluginsRegistrator& players);
+-  void RegisterASAPPlugins(PlayerPluginsRegistrator& players, ArchivePluginsRegistrator& archives);
+-  void RegisterMP3Plugin(PlayerPluginsRegistrator& players);
+-  void RegisterOGGPlugin(PlayerPluginsRegistrator& players);
+-  void RegisterWAVPlugin(PlayerPluginsRegistrator& players);
+-  void RegisterFLACPlugin(PlayerPluginsRegistrator& players);
+-  void RegisterVGMPlugins(PlayerPluginsRegistrator& players);
+-  void RegisterMPTPlugins(PlayerPluginsRegistrator& players);
+-  void RegisterVGMStreamPlugins(PlayerPluginsRegistrator& players, ArchivePluginsRegistrator& archives);
+ 
+   void RegisterPlayerPlugins(PlayerPluginsRegistrator& players, ArchivePluginsRegistrator& archives)
    {
-     // try TS & AY first
-     RegisterTSSupport(players);
--    RegisterAYSupport(players);
-     RegisterPT3Support(players);
-     RegisterPT2Support(players);
-     RegisterSTCSupport(players);
-@@ -97,28 +96,8 @@
-     RegisterFTCSupport(players);
+@@ -37,19 +24,6 @@
+     RegisterDACPlugins(players);
+     RegisterTFMPlugins(players);
      RegisterCOPSupport(players);
-     RegisterTFESupport(players);
 -    RegisterXMPPlugins(players);
-     RegisterET1Support(players);
-     RegisterAYCSupport(players);
 -    RegisterSPCSupport(players);
      RegisterMTCSupport(players);
--    RegisterAHXSupport(players);
--    RegisterPSFSupport(players);
--    RegisterUSFSupport(players);
--    RegisterGSFSupport(players);
--    Register2SFSupport(players);
--    RegisterNCSFSupport(players);
--    RegisterSDSFSupport(players);
+-    RegisterXSFPlugins(players);
 -    RegisterMP3Plugin(players);
 -    RegisterOGGPlugin(players);
 -    RegisterFLACPlugin(players);
@@ -33,7 +38,6 @@
 -    RegisterGMEPlugins(players, archives);
 -    RegisterASAPPlugins(players, archives);
 -    RegisterVGMStreamPlugins(players, archives);
--    RegisterV2MSupport(players);
 -    RegisterWAVPlugin(players);  // wav after VGMStream
    }
  }  // namespace ZXTune

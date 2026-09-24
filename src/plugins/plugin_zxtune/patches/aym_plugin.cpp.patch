@@ -1,0 +1,18 @@
+--- src/core/plugins/players/ay/aym_plugin.cpp	2026-09-25 09:12:19.062000000 +0200
++++ src/core/plugins/players/ay/aym_plugin.cpp	2026-09-25 10:42:40.641000000 +0200
+@@ -59,6 +59,7 @@
+       auto plugin = CreatePlayerPlugin("TS"_id, CAPS, std::move(decoder), std::move(factory));
+       registrator.RegisterPlugin(std::move(plugin));
+     }
++#if 0
+     {
+       const uint_t CAPS = Capabilities::Module::Type::MEMORYDUMP | Capabilities::Module::Device::AY38910
+                           | Capabilities::Module::Device::BEEPER;
+@@ -68,6 +69,7 @@
+       auto plugin = CreatePlayerPlugin("AY"_id, CAPS, std::move(decoder), std::move(factory));
+       registrator.RegisterPlugin(std::move(plugin));
+     }
++#endif
+     {
+       const uint_t CAPS = Capabilities::Module::Type::TRACK | Capabilities::Module::Device::AY38910
+                           | Capabilities::Module::Device::TURBOSOUND;
