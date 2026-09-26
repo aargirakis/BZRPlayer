@@ -104,6 +104,7 @@ public:
             }
 
             containerFilenames = filename;
+            containerLastFilename = filename;
 
             if (const auto path = location.GetPath(); !path->Empty()) {
                 isContainer = true;
