@@ -267,6 +267,10 @@ private slots:
 
     void on_checkBoxLibxmpContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_buttonMdxminiCustomPdxDirBrowse_clicked();
+
+    void on_checkBoxMdxminiCustomPdxDir_toggled(bool isChecked) const;
+
     void on_checkBoxMdxminiContinuousPlayback_toggled(bool isChecked) const;
 
     void on_buttonUadeSonglengthsBrowse_clicked();

@@ -7841,11 +7841,68 @@ QComboBox::drop-down:disabled {
    <property name="flat">
     <bool>true</bool>
    </property>
-   <widget class="QCheckBox" name="checkBoxMdxminiContinuousPlayback">
+   <widget class="QCheckBox" name="checkBoxMdxminiCustomPdxDir">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>20</y>
+      <width>250</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Additional folder where to look up for PDX files</string>
+    </property>
+    <property name="text">
+     <string>Custom PDX folder</string>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>40</width>
+      <height>40</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditMdxminiCustomPdxDirPath">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>50</y>
+      <width>530</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="cursorMoveStyle">
+     <enum>Qt::CursorMoveStyle::LogicalMoveStyle</enum>
+    </property>
+    <property name="clearButtonEnabled">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonMdxminiCustomPdxDirBrowse">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>50</y>
+      <width>51</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxMdxminiContinuousPlayback">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
       <width>200</width>
       <height>26</height>
      </rect>

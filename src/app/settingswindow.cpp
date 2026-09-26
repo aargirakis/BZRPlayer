@@ -1478,6 +1478,9 @@ void settingsWindow::loadSettingsMdxmini() const {
     }
 
     // defaults
+    ui->checkBoxMdxminiCustomPdxDir->setChecked(false);
+    ui->lineEditMdxminiCustomPdxDirPath->setEnabled(false);
+    ui->buttonMdxminiCustomPdxDirBrowse->setEnabled(false);
     ui->checkBoxMdxminiContinuousPlayback->setChecked(false);
 
     if (!useDefaults) {
@@ -1488,7 +1491,15 @@ void settingsWindow::loadSettingsMdxmini() const {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
 
-                if (word.compare("continuousPlayback") == 0) {
+                if (word.compare("mdxminiCustomPdxDirEnabled") == 0) {
+                    if (value.compare("true") == 0) {
+                        ui->checkBoxMdxminiCustomPdxDir->setChecked(true);
+                    } else {
+                        ui->checkBoxMdxminiCustomPdxDir->setChecked(false);
+                    }
+                } else if (word.compare("mdxminiCustomPdxDirPath") == 0) {
+                    ui->lineEditMdxminiCustomPdxDirPath->setText(value.c_str());
+                } else if (word.compare("continuousPlayback") == 0) {
                     ui->checkBoxMdxminiContinuousPlayback->setChecked(value.compare("true") == 0);
                 }
             }
@@ -1957,6 +1968,8 @@ void settingsWindow::saveSettingsMdxmini() const {
         return;
     }
 
+    ofs << "mdxminiCustomPdxDirEnabled=" << (ui->checkBoxMdxminiCustomPdxDir->isChecked() ? "true" : "false") << "\n";
+    ofs << "mdxminiCustomPdxDirPath=" << ui->lineEditMdxminiCustomPdxDirPath->text().toStdString().c_str() << "\n";
     ofs << "continuousPlayback=" << (ui->checkBoxMdxminiContinuousPlayback->isChecked() ? "true" : "false") << "\n";
     ofs.close();
 }
@@ -3910,6 +3923,8 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxLibvgmContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxLibxmpContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxLibxmpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxMdxminiCustomPdxDir->setIcon(
+        mainWindow->icons[ui->checkBoxMdxminiCustomPdxDir->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxMdxminiContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxMdxminiContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxUadeContinuousPlayback->setIcon(
@@ -4188,6 +4203,28 @@ void settingsWindow::on_checkBoxLibvgmContinuousPlayback_toggled(const bool isCh
 
 void settingsWindow::on_checkBoxLibxmpContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxLibxmpContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_buttonMdxminiCustomPdxDirBrowse_clicked() {
+    const auto startDir = ui->lineEditMdxminiCustomPdxDirPath->text();
+
+    if (const auto dir = QDir::cleanPath(
+            QFileDialog::getExistingDirectory(this, "Choose your custom PDX folder", startDir));
+        !dir.isEmpty()) {
+        ui->lineEditMdxminiCustomPdxDirPath->setText(dir);
+    }
+}
+
+void settingsWindow::on_checkBoxMdxminiCustomPdxDir_toggled(const bool isChecked) const {
+    if (isChecked) {
+        ui->checkBoxMdxminiCustomPdxDir->setIcon(mainWindow->icons["checkbox-on"]);
+        ui->lineEditMdxminiCustomPdxDirPath->setEnabled(true);
+        ui->buttonMdxminiCustomPdxDirBrowse->setEnabled(true);
+    } else {
+        ui->checkBoxMdxminiCustomPdxDir->setIcon(mainWindow->icons["checkbox-off"]);
+        ui->lineEditMdxminiCustomPdxDirPath->setEnabled(false);
+        ui->buttonMdxminiCustomPdxDirBrowse->setEnabled(false);
+    }
 }
 
 void settingsWindow::on_checkBoxMdxminiContinuousPlayback_toggled(const bool isChecked) const {

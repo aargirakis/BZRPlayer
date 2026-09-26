@@ -79,12 +79,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginMdxmini(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
-    if (const int success = mdx_open(&plugin->data, &plugin->info->filePath[0], &plugin->info->fileDir[0]);
-        success < 0) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
     string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
@@ -95,6 +89,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     // defaults
+    bool isCustomPdxDirEnabled;
+    string customPdxDirPath;
     plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -103,13 +99,29 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             if (int i = line.find_first_of("="); i != -1) {
                 string word = line.substr(0, i);
                 string value = line.substr(i + 1);
-                if (word == "continuousPlayback") {
+
+                if (word == "mdxminiCustomPdxDirEnabled") {
+                    if (value == "true") {
+                        isCustomPdxDirEnabled = true;
+                    } else {
+                        isCustomPdxDirEnabled = false;
+                    }
+                } else if (word == "mdxminiCustomPdxDirPath") {
+                    customPdxDirPath = value;
+                } else if (word == "continuousPlayback") {
                     plugin->info->isContinuousPlaybackActive =
                             plugin->info->isPlayModeRepeatSongEnabled && value == "true";
                 }
             }
         }
         ifs.close();
+    }
+
+    if (const int success = mdx_open(&plugin->data, &plugin->info->filePath[0],
+                                     isCustomPdxDirEnabled ? customPdxDirPath.data() : nullptr);
+        success < 0) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
     }
 
     mdx_set_max_loop(&plugin->data, 1);
