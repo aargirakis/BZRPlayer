@@ -11,6 +11,8 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
+
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
@@ -26,7 +28,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &close, // close callback.
     &read, // read callback
     // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
-    nullptr,
+    &getLength,
     &setPosition, // setposition callback
     // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
     nullptr,
@@ -47,10 +49,10 @@ public:
         // delete some stuff
     }
 
+    FMOD_CODEC_WAVEFORMAT waveformat;
     t_mdxmini data;
     Info *info;
-
-    FMOD_CODEC_WAVEFORMAT waveformat;
+    unsigned int length;
 };
 
 /*
@@ -82,11 +84,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    plugin->length = mdx_get_length(&plugin->data) * 1000;
+
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
     plugin->waveformat.frequency = 44100;
     plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
-    plugin->waveformat.lengthpcm = mdx_get_length(&plugin->data) * plugin->waveformat.frequency;
+    plugin->waveformat.lengthpcm = -1;
 
     codec->waveformat = &plugin->waveformat;
     codec->numsubsounds = 0;
@@ -129,6 +133,17 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
 
     *read = maxSamples;
     return FMOD_OK;
+}
+
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    auto *plugin = static_cast<pluginMdxmini *>(codec->plugindata);
+
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
+        *length = plugin->length;
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
