@@ -84,6 +84,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    mdx_set_max_loop(&plugin->data, 1);
     plugin->length = mdx_get_length(&plugin->data) * 1000;
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
