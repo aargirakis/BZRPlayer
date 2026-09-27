@@ -392,6 +392,10 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsLibxmp();
     }
 
+    if (PLUGIN_mdxmini_LIB != "") {
+        loadSettingsMdxmini();
+    }
+
     if (PLUGIN_uade_LIB != "") {
         loadSettingsUade();
     }
@@ -843,6 +847,10 @@ void settingsWindow::on_buttonOk_clicked() {
 
     if (PLUGIN_libxmp_LIB != "") {
         saveSettingsLibxmp();
+    }
+
+    if (PLUGIN_mdxmini_LIB != "") {
+        saveSettingsMdxmini();
     }
 
     if (PLUGIN_uade_LIB != "") {
@@ -1458,6 +1466,38 @@ void settingsWindow::loadSettingsLibxmp() const {
     }
 }
 
+void settingsWindow::loadSettingsMdxmini() const {
+    // read config from disk
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_mdxmini_CONFIG_FILENAME;
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    ui->checkBoxMdxminiContinuousPlayback->setChecked(false);
+
+    if (!useDefaults) {
+        string line;
+
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+
+                if (word.compare("continuousPlayback") == 0) {
+                    ui->checkBoxMdxminiContinuousPlayback->setChecked(value.compare("true") == 0);
+                }
+            }
+        }
+
+        ifs.close();
+    }
+}
+
 void settingsWindow::loadSettingsUade() const {
     // read config from disk
     string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_uade_CONFIG_FILENAME;
@@ -1907,6 +1947,20 @@ void settingsWindow::saveSettingsLibxmp() const {
     ofs.close();
 }
 
+void settingsWindow::saveSettingsMdxmini() const {
+    // save config to disk
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_mdxmini_CONFIG_FILENAME;
+    ofstream ofs(filename.c_str());
+
+    if (ofs.fail()) {
+        // the file could not be opened
+        return;
+    }
+
+    ofs << "continuousPlayback=" << (ui->checkBoxMdxminiContinuousPlayback->isChecked() ? "true" : "false") << "\n";
+    ofs.close();
+}
+
 void settingsWindow::saveSettingsUade() const {
     // save config to disk
     const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_uade_CONFIG_FILENAME;
@@ -2012,6 +2066,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2033,6 +2088,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2054,6 +2110,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2075,6 +2132,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2096,6 +2154,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2117,6 +2176,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2138,6 +2198,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2159,6 +2220,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2180,6 +2242,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2201,6 +2264,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2222,6 +2286,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2243,6 +2308,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2264,6 +2330,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2285,6 +2352,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(false);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2306,6 +2374,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(false);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2327,6 +2396,29 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(false);
+        ui->groupBoxMdxmini->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
+        ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
+    } else if (selectedPlugin == PLUGIN_mdxmini_NAME) {
+        ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxAsap->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
+        ui->groupBoxHighlyExperimental->setHidden(true);
+        ui->groupBoxHighlyQuixotic->setHidden(true);
+        ui->groupBoxHighlyTheoretical->setHidden(true);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
+        ui->groupBoxLibkss->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
+        ui->groupBoxLibvgm->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(false);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2348,6 +2440,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(false);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2368,6 +2461,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(false);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2388,6 +2482,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(false);
@@ -2408,6 +2503,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2428,6 +2524,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxLibsidplayfp->setHidden(true);
         ui->groupBoxLibvgm->setHidden(true);
         ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
         ui->groupBoxUade->setHidden(true);
         ui->groupBoxVgmstream->setHidden(true);
         ui->groupBoxVio2sf->setHidden(true);
@@ -2697,6 +2794,17 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxLibxmp->setStyleSheet(stylesheet);
 
+    stylesheet = ui->groupBoxMdxmini->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxMdxmini->setStyleSheet(stylesheet);
+
     stylesheet = ui->groupBoxUade->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
     stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
@@ -2883,6 +2991,7 @@ void settingsWindow::on_buttonVisualizer_clicked() const {
     ui->groupBoxLibsidplayfp->setHidden(true);
     ui->groupBoxLibvgm->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
+    ui->groupBoxMdxmini->setHidden(true);
     ui->groupBoxUade->setHidden(true);
     ui->groupBoxVgmstream->setHidden(true);
     ui->groupBoxVio2sf->setHidden(true);
@@ -2910,6 +3019,7 @@ void settingsWindow::on_buttonGeneral_clicked() const {
     ui->groupBoxLibsidplayfp->setHidden(true);
     ui->groupBoxLibvgm->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
+    ui->groupBoxMdxmini->setHidden(true);
     ui->groupBoxUade->setHidden(true);
     ui->groupBoxVgmstream->setHidden(true);
     ui->groupBoxVio2sf->setHidden(true);
@@ -2944,6 +3054,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->groupBoxLibsidplayfp->setHidden(true);
     ui->groupBoxLibvgm->setHidden(true);
     ui->groupBoxLibxmp->setHidden(true);
+    ui->groupBoxMdxmini->setHidden(true);
     ui->groupBoxUade->setHidden(true);
     ui->groupBoxVgmstream->setHidden(true);
     ui->groupBoxVio2sf->setHidden(true);
@@ -3799,6 +3910,8 @@ void settingsWindow::updateCheckBoxes() const {
         mainWindow->icons[ui->checkBoxLibvgmContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxLibxmpContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxLibxmpContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxMdxminiContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxMdxminiContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxUadeContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxUadeContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxUadeFilterEmu->setIcon(
@@ -4075,6 +4188,10 @@ void settingsWindow::on_checkBoxLibvgmContinuousPlayback_toggled(const bool isCh
 
 void settingsWindow::on_checkBoxLibxmpContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxLibxmpContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxMdxminiContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxMdxminiContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::on_buttonUadeSonglengthsBrowse_clicked() {

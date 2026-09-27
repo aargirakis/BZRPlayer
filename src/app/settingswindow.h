@@ -267,6 +267,8 @@ private slots:
 
     void on_checkBoxLibxmpContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxMdxminiContinuousPlayback_toggled(bool isChecked) const;
+
     void on_buttonUadeSonglengthsBrowse_clicked();
 
     void on_checkBoxUadeContinuousPlayback_toggled(bool isChecked) const;
@@ -326,6 +328,8 @@ private:
 
     void loadSettingsLibxmp() const;
 
+    void loadSettingsMdxmini() const;
+
     void loadSettingsUade() const;
 
     void loadSettingsVgmstream() const;
@@ -363,6 +367,8 @@ private:
     void saveSettingsLibvgm() const;
 
     void saveSettingsLibxmp() const;
+
+    void saveSettingsMdxmini() const;
 
     void saveSettingsUade() const;
 

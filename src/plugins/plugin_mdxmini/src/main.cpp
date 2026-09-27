@@ -1,4 +1,5 @@
 #include <cstring>
+#include <fstream>
 #include "mdxmini.h"
 #include "fmod_errors.h"
 #include "info.h"
@@ -84,8 +85,39 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
+    string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    plugin->info->isContinuousPlaybackActive = false;
+
+    if (!useDefaults) {
+        string line;
+        while (getline(ifs, line)) {
+            if (int i = line.find_first_of("="); i != -1) {
+                string word = line.substr(0, i);
+                string value = line.substr(i + 1);
+                if (word == "continuousPlayback") {
+                    plugin->info->isContinuousPlaybackActive =
+                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+                }
+            }
+        }
+        ifs.close();
+    }
+
     mdx_set_max_loop(&plugin->data, 1);
     plugin->length = mdx_get_length(&plugin->data) * 1000;
+
+    if (plugin->info->isContinuousPlaybackActive) {
+        plugin->data.mdx->fade_out_speed = 0;
+    }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = 2;
@@ -128,7 +160,8 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     static constexpr unsigned int maxSamples = 256;
 
     if (const auto plugin = static_cast<pluginMdxmini *>(codec->plugindata);
-        !mdx_calc_sample(&plugin->data, static_cast<short *>(buffer), maxSamples)) {
+        !mdx_calc_sample(&plugin->data, static_cast<short *>(buffer), maxSamples) &&
+        !plugin->info->isContinuousPlaybackActive) {
         return FMOD_ERR_FILE_EOF;
     }
 

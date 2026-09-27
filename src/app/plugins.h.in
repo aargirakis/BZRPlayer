@@ -141,6 +141,7 @@
 #define PLUGIN_mdxmini_LIB "@PLUGIN_mdxmini_LIB@"
 #define PLUGIN_mdxmini_NAME "@PLUGIN_mdxmini_NAME@"
 #define PLUGIN_mdxmini_VERSION "@PLUGIN_mdxmini_VERSION@"
+#define PLUGIN_mdxmini_CONFIG_FILENAME "@PLUGIN_mdxmini_CONFIG_FILENAME@"
 
 #define PLUGIN_organya_decoder 24
 #define PLUGIN_organya_decoder_LIB "@PLUGIN_organya-decoder_LIB@"
