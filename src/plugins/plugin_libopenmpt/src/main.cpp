@@ -117,44 +117,47 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!useDefaults) {
         string line;
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
-                if (word == "stereoSeparation") {
-                    stereo_separation = atoi(value.c_str());
-                } else if (word == "continuousPlayback") {
-                    info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
-                } else if (word == "interpolationFilter") {
-                    interpolation_filter = atoi(value.c_str());
-                } else if (word == "emulateAmigaFilter") {
-                    if (value == "true") {
-                        emulate_amiga_filter = "1";
-                    } else {
-                        emulate_amiga_filter = "0";
-                    }
-                } else if (word == "amigaFilter") {
-                    if (value == "a500") {
-                        amiga_filter = "a500";
-                    } else if (value == "a1200") {
-                        amiga_filter = "a1200";
-                    } else if (value == "unfiltered") {
-                        amiga_filter = "unfiltered";
-                    } else if (value == "auto") {
-                        amiga_filter = "auto";
-                    }
-                } else if (word == "dither") {
-                    if (value == "0") {
-                        dither = "0";
-                    } else if (value == "1") {
-                        dither = "1";
-                    } else if (value == "2") {
-                        dither = "2";
-                    } else if (value == "3") {
-                        dither = "3";
-                    }
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
+
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "stereoSeparation") {
+                stereo_separation = stoi(value);
+            } else if (word == "continuousPlayback") {
+                info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
+            } else if (word == "interpolationFilter") {
+                interpolation_filter = stoi(value);
+            } else if (word == "emulateAmigaFilter") {
+                if (value == "true") {
+                    emulate_amiga_filter = "1";
+                } else {
+                    emulate_amiga_filter = "0";
+                }
+            } else if (word == "amigaFilter") {
+                if (value == "a500") {
+                    amiga_filter = "a500";
+                } else if (value == "a1200") {
+                    amiga_filter = "a1200";
+                } else if (value == "unfiltered") {
+                    amiga_filter = "unfiltered";
+                } else if (value == "auto") {
+                    amiga_filter = "auto";
+                }
+            } else if (word == "dither") {
+                if (value == "0") {
+                    dither = "0";
+                } else if (value == "1") {
+                    dither = "1";
+                } else if (value == "2") {
+                    dither = "2";
+                } else if (value == "3") {
+                    dither = "3";
                 }
             }
         }
+
         ifs.close();
     }
 

@@ -96,24 +96,25 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!useDefaults) {
         string line;
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word == "mdxminiCustomPdxDirEnabled") {
-                    if (value == "true") {
-                        isCustomPdxDirEnabled = true;
-                    } else {
-                        isCustomPdxDirEnabled = false;
-                    }
-                } else if (word == "mdxminiCustomPdxDirPath") {
-                    customPdxDirPath = value;
-                } else if (word == "continuousPlayback") {
-                    plugin->info->isContinuousPlaybackActive =
-                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "mdxminiCustomPdxDirEnabled") {
+                if (value == "true") {
+                    isCustomPdxDirEnabled = true;
+                } else {
+                    isCustomPdxDirEnabled = false;
                 }
+            } else if (word == "mdxminiCustomPdxDirPath") {
+                customPdxDirPath = value;
+            } else if (word == "continuousPlayback") {
+                plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
             }
         }
+
         ifs.close();
     }
 

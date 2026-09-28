@@ -901,22 +901,23 @@ void settingsWindow::loadSettingsAdplug() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("emulator") == 0) {
-                    int index = ui->comboBoxAdPlugEmulator->findData(value.c_str());
-                    ui->comboBoxAdPlugEmulator->setCurrentIndex(index);
-                } else if (word.compare("frequency") == 0) {
-                    int index = ui->comboBoxAdPlugFreq->findData(value.c_str());
-                    ui->comboBoxAdPlugFreq->setCurrentIndex(index);
-                } else if (word.compare("playback") == 0) {
-                    int index = ui->comboBoxAdPlugPlayback->findData(value.c_str());
-                    ui->comboBoxAdPlugPlayback->setCurrentIndex(index);
-                } else if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxAdPlugContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "emulator") {
+                int index = ui->comboBoxAdPlugEmulator->findData(value.c_str());
+                ui->comboBoxAdPlugEmulator->setCurrentIndex(index);
+            } else if (word == "frequency") {
+                int index = ui->comboBoxAdPlugFreq->findData(value.c_str());
+                ui->comboBoxAdPlugFreq->setCurrentIndex(index);
+            } else if (word == "playback") {
+                int index = ui->comboBoxAdPlugPlayback->findData(value.c_str());
+                ui->comboBoxAdPlugPlayback->setCurrentIndex(index);
+            } else if (word == "continuousPlayback") {
+                ui->checkBoxAdPlugContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -942,13 +943,14 @@ void settingsWindow::loadSettingsAsap() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxAsapContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxAsapContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -976,16 +978,17 @@ void settingsWindow::loadSettingsAtariAudio() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("defaultAudioChipClock") == 0) {
-                    int index = ui->comboBoxAtariAudioDefaultAudioChipClock->findData(value.c_str());
-                    ui->comboBoxAtariAudioDefaultAudioChipClock->setCurrentIndex(index);
-                } else if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxAtariAudioContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "defaultAudioChipClock") {
+                int index = ui->comboBoxAtariAudioDefaultAudioChipClock->findData(value.c_str());
+                ui->comboBoxAtariAudioDefaultAudioChipClock->setCurrentIndex(index);
+            } else if (word == "continuousPlayback") {
+                ui->checkBoxAtariAudioContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1011,13 +1014,14 @@ void settingsWindow::loadSettingsFmod() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("seamlessLoop") == 0) {
-                    ui->checkBoxFmodSeamlessLoop->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "seamlessLoop") {
+                ui->checkBoxFmodSeamlessLoop->setChecked(value == "true");
             }
         }
 
@@ -1045,13 +1049,14 @@ void settingsWindow::loadSettingsFurnace() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxFurnaceContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxFurnaceContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1077,13 +1082,14 @@ void settingsWindow::loadSettingsGameMusicEmu() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxGameMusicEmuContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxGameMusicEmuContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1109,13 +1115,14 @@ void settingsWindow::loadSettingsHighlyExperimental() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxHighlyExperimentalContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxHighlyExperimentalContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1141,13 +1148,14 @@ void settingsWindow::loadSettingsHighlyQuixotic() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxHighlyQuixoticContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxHighlyQuixoticContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1173,13 +1181,14 @@ void settingsWindow::loadSettingsHighlyTheoretical() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxHighlyTheoreticalContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxHighlyTheoreticalContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1207,16 +1216,17 @@ void settingsWindow::loadSettingsHivelytracker() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("stereoSeparation") == 0) {
-                    int index = ui->comboBoxHivelyTrackerStereoSeparation->findData(value.c_str());
-                    ui->comboBoxHivelyTrackerStereoSeparation->setCurrentIndex(index);
-                } else if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxHivelyTrackerContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "stereoSeparation") {
+                int index = ui->comboBoxHivelyTrackerStereoSeparation->findData(value.c_str());
+                ui->comboBoxHivelyTrackerStereoSeparation->setCurrentIndex(index);
+            } else if (word == "continuousPlayback") {
+                ui->checkBoxHivelyTrackerContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1242,13 +1252,14 @@ void settingsWindow::loadSettingsLazyusf2() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxLazyusf2ContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxLazyusf2ContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1274,13 +1285,14 @@ void settingsWindow::loadSettingsLibkss() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxLibkssContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxLibkssContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1314,30 +1326,31 @@ void settingsWindow::loadSettingsLibopenmpt() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("stereoSeparation") == 0) {
-                    ui->sliderLibopenmptStereoSeparation->setValue(atoi(value.c_str()));
-                } else if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxLibopenmptContinuousPlayback->setChecked(value.compare("true") == 0);
-                } else if (word.compare("emulateAmigaFilter") == 0) {
-                    if (value.compare("true") == 0) {
-                        ui->checkBoxLibopenmptAmigaResampler->setChecked(true);
-                    } else {
-                        ui->checkBoxLibopenmptAmigaResampler->setChecked(false);
-                    }
-                } else if (word.compare("interpolationFilter") == 0) {
-                    int index = ui->comboBoxLibopenmptResampling->findData(value.c_str());
-                    ui->comboBoxLibopenmptResampling->setCurrentIndex(index);
-                } else if (word.compare("amigaFilter") == 0) {
-                    int index = ui->comboBoxLibopenmptFilter->findData(value.c_str());
-                    ui->comboBoxLibopenmptFilter->setCurrentIndex(index);
-                } else if (word.compare("dither") == 0) {
-                    int index = ui->comboBoxLibopenmptDither->findData(value.c_str());
-                    ui->comboBoxLibopenmptDither->setCurrentIndex(index);
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "stereoSeparation") {
+                ui->sliderLibopenmptStereoSeparation->setValue(stoi(value));
+            } else if (word == "continuousPlayback") {
+                ui->checkBoxLibopenmptContinuousPlayback->setChecked(value == "true");
+            } else if (word == "emulateAmigaFilter") {
+                if (value == "true") {
+                    ui->checkBoxLibopenmptAmigaResampler->setChecked(true);
+                } else {
+                    ui->checkBoxLibopenmptAmigaResampler->setChecked(false);
                 }
+            } else if (word == "interpolationFilter") {
+                int index = ui->comboBoxLibopenmptResampling->findData(value.c_str());
+                ui->comboBoxLibopenmptResampling->setCurrentIndex(index);
+            } else if (word == "amigaFilter") {
+                int index = ui->comboBoxLibopenmptFilter->findData(value.c_str());
+                ui->comboBoxLibopenmptFilter->setCurrentIndex(index);
+            } else if (word == "dither") {
+                int index = ui->comboBoxLibopenmptDither->findData(value.c_str());
+                ui->comboBoxLibopenmptDither->setCurrentIndex(index);
             }
         }
 
@@ -1368,35 +1381,34 @@ void settingsWindow::loadSettingsLibsidplayfp() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("hvscFilesPath") == 0) {
-                    QString hvscFilesPathToLoad = value.c_str();
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
 
-                    if (hvscFilesPathToLoad.isEmpty()) {
-                        hvscFilesPathToLoad = mainWindow->getBundledHvscFilesPath();
-                    }
+            if (word == "hvscFilesPath") {
+                QString hvscFilesPathToLoad = value.c_str();
 
-                    mainWindow->setHvscFilesPath(hvscFilesPathToLoad);
-                    setUiLineEditLibsidplayfpHvscFilesPath(hvscFilesPathToLoad);
-                } else if (word.compare("hvscFilesEnabled") == 0) {
-                    if (value.compare("true") == 0) {
-                        ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(true);
-                    } else {
-                        ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(false);
-                    }
-                } else if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxLibsidplayfpContinuousPlayback->setChecked(value.compare("true") == 0);
+                if (hvscFilesPathToLoad.isEmpty()) {
+                    hvscFilesPathToLoad = mainWindow->getBundledHvscFilesPath();
                 }
+
+                mainWindow->setHvscFilesPath(hvscFilesPathToLoad);
+                setUiLineEditLibsidplayfpHvscFilesPath(hvscFilesPathToLoad);
+            } else if (word == "hvscFilesEnabled") {
+                if (value == "true") {
+                    ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(true);
+                } else {
+                    ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(false);
+                }
+            } else if (word == "continuousPlayback") {
+                ui->checkBoxLibsidplayfpContinuousPlayback->setChecked(value == "true");
             }
         }
 
         ifs.close();
     } else {
-        ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(false);
-        ui->checkBoxLibsidplayfpHvscFilesEnabled->setChecked(true);
         mainWindow->setHvscFilesPath(mainWindow->getBundledHvscFilesPath());
         setUiLineEditLibsidplayfpHvscFilesPath(mainWindow->getBundledHvscFilesPath());
     }
@@ -1420,13 +1432,14 @@ void settingsWindow::loadSettingsLibvgm() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxLibvgmContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxLibvgmContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1452,13 +1465,14 @@ void settingsWindow::loadSettingsLibxmp() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxLibxmpContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxLibxmpContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1487,21 +1501,22 @@ void settingsWindow::loadSettingsMdxmini() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("mdxminiCustomPdxDirEnabled") == 0) {
-                    if (value.compare("true") == 0) {
-                        ui->checkBoxMdxminiCustomPdxDir->setChecked(true);
-                    } else {
-                        ui->checkBoxMdxminiCustomPdxDir->setChecked(false);
-                    }
-                } else if (word.compare("mdxminiCustomPdxDirPath") == 0) {
-                    ui->lineEditMdxminiCustomPdxDirPath->setText(value.c_str());
-                } else if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxMdxminiContinuousPlayback->setChecked(value.compare("true") == 0);
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "mdxminiCustomPdxDirEnabled") {
+                if (value == "true") {
+                    ui->checkBoxMdxminiCustomPdxDir->setChecked(true);
+                } else {
+                    ui->checkBoxMdxminiCustomPdxDir->setChecked(false);
                 }
+            } else if (word == "mdxminiCustomPdxDirPath") {
+                ui->lineEditMdxminiCustomPdxDirPath->setText(value.c_str());
+            } else if (word == "continuousPlayback") {
+                ui->checkBoxMdxminiContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1537,60 +1552,61 @@ void settingsWindow::loadSettingsUade() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("frequency") == 0) {
-                    int index = ui->comboBoxUadeFreq->findData(value.c_str());
-                    ui->comboBoxUadeFreq->setCurrentIndex(index);
-                } else if (word.compare("resampler") == 0) {
-                    int index = ui->comboBoxUadeResampler->findData(value.c_str());
-                    ui->comboBoxUadeResampler->setCurrentIndex(index);
-                } else if (word.compare("filterEmu") == 0) {
-                    if (value.compare("true") == 0) {
-                        ui->checkBoxUadeFilterEmu->setChecked(true);
-                    } else {
-                        ui->checkBoxUadeFilterEmu->setChecked(false);
-                    }
-                } else if (word.compare("filterMode") == 0) {
-                    if (value.compare("a500") == 0) {
-                        ui->comboBoxUadeFilterEmuMode->setCurrentIndex(0);
-                    } else {
-                        ui->comboBoxUadeFilterEmuMode->setCurrentIndex(1);
-                    }
-                } else if (word.compare("ledForced") == 0) {
-                    if (value.compare("auto") == 0) {
-                        ui->comboBoxUadeLedFilter->setCurrentIndex(0);
-                    } else if (value.compare("on") == 0) {
-                        ui->comboBoxUadeLedFilter->setCurrentIndex(1);
-                    } else {
-                        ui->comboBoxUadeLedFilter->setCurrentIndex(2);
-                    }
-                } else if (word.compare("panning") == 0) {
-                    ui->sliderUadePanning->setValue(stoi(value));
-                } else if (word.compare("silenceTimeoutEnabled") == 0) {
-                    if (value.compare("true") == 0) {
-                        ui->checkBoxUadeSilenceTimeout->setChecked(true);
-                    } else {
-                        ui->checkBoxUadeSilenceTimeout->setChecked(false);
-                    }
-                } else if (word.compare("silenceTimeout") == 0) {
-                    ui->sliderUadeSilenceTimeOut->setValue(atoi(value.c_str()));
-                } else if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxUadeContinuousPlayback->setChecked(value.compare("true") == 0);
-                } else if (word.compare("uadeSonglengthsEnabled") == 0) {
-                    if (value.compare("true") == 0) {
-                        ui->checkBoxUadeSongLengths->setChecked(true);
-                    } else {
-                        ui->checkBoxUadeSongLengths->setChecked(false);
-                    }
-                } else if (word.compare("uadeSonglengthsPath") == 0) {
-                    if (value == "") {
-                        ui->lineEditUadeSonglengthsPath->setText("/" PLUGIN_uade_SONGLENGTHS_FILENAME);
-                    } else {
-                        ui->lineEditUadeSonglengthsPath->setText(value.c_str());
-                    }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "frequency") {
+                int index = ui->comboBoxUadeFreq->findData(value.c_str());
+                ui->comboBoxUadeFreq->setCurrentIndex(index);
+            } else if (word == "resampler") {
+                int index = ui->comboBoxUadeResampler->findData(value.c_str());
+                ui->comboBoxUadeResampler->setCurrentIndex(index);
+            } else if (word == "filterEmu") {
+                if (value == "true") {
+                    ui->checkBoxUadeFilterEmu->setChecked(true);
+                } else {
+                    ui->checkBoxUadeFilterEmu->setChecked(false);
+                }
+            } else if (word == "filterMode") {
+                if (value == "a500") {
+                    ui->comboBoxUadeFilterEmuMode->setCurrentIndex(0);
+                } else {
+                    ui->comboBoxUadeFilterEmuMode->setCurrentIndex(1);
+                }
+            } else if (word == "ledForced") {
+                if (value == "auto") {
+                    ui->comboBoxUadeLedFilter->setCurrentIndex(0);
+                } else if (value == "on") {
+                    ui->comboBoxUadeLedFilter->setCurrentIndex(1);
+                } else {
+                    ui->comboBoxUadeLedFilter->setCurrentIndex(2);
+                }
+            } else if (word == "panning") {
+                ui->sliderUadePanning->setValue(stoi(value));
+            } else if (word == "silenceTimeoutEnabled") {
+                if (value == "true") {
+                    ui->checkBoxUadeSilenceTimeout->setChecked(true);
+                } else {
+                    ui->checkBoxUadeSilenceTimeout->setChecked(false);
+                }
+            } else if (word == "silenceTimeout") {
+                ui->sliderUadeSilenceTimeOut->setValue(stoi(value));
+            } else if (word == "continuousPlayback") {
+                ui->checkBoxUadeContinuousPlayback->setChecked(value == "true");
+            } else if (word == "uadeSonglengthsEnabled") {
+                if (value == "true") {
+                    ui->checkBoxUadeSongLengths->setChecked(true);
+                } else {
+                    ui->checkBoxUadeSongLengths->setChecked(false);
+                }
+            } else if (word == "uadeSonglengthsPath") {
+                if (value.empty()) {
+                    ui->lineEditUadeSonglengthsPath->setText("/" PLUGIN_uade_SONGLENGTHS_FILENAME);
+                } else {
+                    ui->lineEditUadeSonglengthsPath->setText(value.c_str());
                 }
             }
         }
@@ -1617,13 +1633,14 @@ void settingsWindow::loadSettingsVgmstream() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxVgmstreamContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxVgmstreamContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1649,13 +1666,14 @@ void settingsWindow::loadSettingsVio2sf() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxVio2sfContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxVio2sfContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1681,13 +1699,14 @@ void settingsWindow::loadSettingsZxtune() const {
         string line;
 
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
 
-                if (word.compare("continuousPlayback") == 0) {
-                    ui->checkBoxZxtuneContinuousPlayback->setChecked(value.compare("true") == 0);
-                }
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxZxtuneContinuousPlayback->setChecked(value == "true");
             }
         }
 

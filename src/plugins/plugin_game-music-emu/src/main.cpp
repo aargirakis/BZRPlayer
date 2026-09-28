@@ -111,31 +111,33 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!useDefaults) {
         string line;
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
-                if (word == "frequency") {
-                    freq = atoi(value.c_str());
-                } else if (word == "ignore_silence") {
-                    if (value == "yes") {
-                        ignore_silence = true;
-                    } else if (value == "no") {
-                        ignore_silence = false;
-                    }
-                } else if (word == "tempo") {
-                    tempo = atof(value.c_str()) / 100.0;
-                } else if (word == "treble") {
-                    treble = atoi(value.c_str());
-                } else if (word == "bass") {
-                    bass = atoi(value.c_str());
-                } else if (word == "stereo_depth") {
-                    stereoDepth = atof(value.c_str()) / 100.0;
-                } else if (word == "continuousPlayback") {
-                    plugin->info->isContinuousPlaybackActive =
-                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
+
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "frequency") {
+                freq = stoi(value);
+            } else if (word == "ignore_silence") {
+                if (value == "yes") {
+                    ignore_silence = true;
+                } else if (value == "no") {
+                    ignore_silence = false;
                 }
+            } else if (word == "tempo") {
+                tempo = stod(value) / 100.0;
+            } else if (word == "treble") {
+                treble = stoi(value);
+            } else if (word == "bass") {
+                bass = stoi(value);
+            } else if (word == "stereo_depth") {
+                stereoDepth = stod(value) / 100.0;
+            } else if (word == "continuousPlayback") {
+                plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
             }
         }
+
         ifs.close();
     }
 

@@ -288,79 +288,81 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!useDefaults) {
         string line;
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
-                if (word == "frequency") {
-                    plugin->sampleRate = atoi(value.c_str());
-                } else if (word == "playback") {
-                    // old, just for compability
-                    if (value == "left") {
-                        playback = SidConfig::MONO;
-                        plugin->channels = 1;
-                    } else if (value == "mono") {
-                        playback = SidConfig::MONO;
-                        plugin->channels = 1;
-                    } else if (value == "stereo") {
-                        playback = SidConfig::STEREO;
-                        plugin->channels = 2;
-                    } else if (value == "right") // old, just for compability
-                    {
-                        playback = SidConfig::MONO;
-                        plugin->channels = 1;
-                    }
-                } else if (word == "sampling_method") {
-                    if (value == "interpolate") {
-                        samplingMethod = SidConfig::INTERPOLATE;
-                    } else if (value == "resample/interpolate") {
-                        samplingMethod = SidConfig::RESAMPLE_INTERPOLATE;
-                    }
-                } else if (word == "clock_speed") {
-                    if (value == "correct") {
-                        forcec64Model = false;
-                    } else if (value == "pal") {
-                        c64Model = SidConfig::PAL;
-                        forcec64Model = true;
-                    } else if (value == "ntsc") {
-                        c64Model = SidConfig::NTSC;
-                        forcec64Model = true;
-                    } else if (value == "old_ntsc") {
-                        c64Model = SidConfig::OLD_NTSC;
-                        forcec64Model = true;
-                    } else if (value == "drean") {
-                        c64Model = SidConfig::DREAN;
-                        forcec64Model = true;
-                    }
-                } else if (word == "sid_model") {
-                    if (value == "correct") {
-                        forceSidModel = false;
-                    } else if (value == "mos6581") {
-                        defaultSidModel = SidConfig::MOS6581;
-                        forceSidModel = true;
-                    } else if (value == "mos8580") {
-                        defaultSidModel = SidConfig::MOS8580;
-                        forceSidModel = true;
-                    }
-                } else if (word == "sid_filter") {
-                    if (value == "true") {
-                        filter = true;
-                    } else {
-                        filter = false;
-                    }
-                } else if (word == "hvscFilesPath") {
-                    plugin->hvscFilesPath = value;
-                } else if (word == "hvscFilesEnabled") {
-                    if (value == "true") {
-                        plugin->hvscFilesEnabled = true;
-                    } else {
-                        plugin->hvscFilesEnabled = false;
-                    }
-                } else if (word == "continuousPlayback") {
-                    plugin->info->isContinuousPlaybackActive =
-                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
+
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "frequency") {
+                plugin->sampleRate = stoi(value);
+            } else if (word == "playback") {
+                // old, just for compability
+                if (value == "left") {
+                    playback = SidConfig::MONO;
+                    plugin->channels = 1;
+                } else if (value == "mono") {
+                    playback = SidConfig::MONO;
+                    plugin->channels = 1;
+                } else if (value == "stereo") {
+                    playback = SidConfig::STEREO;
+                    plugin->channels = 2;
+                } else if (value == "right") // old, just for compability
+                {
+                    playback = SidConfig::MONO;
+                    plugin->channels = 1;
                 }
+            } else if (word == "sampling_method") {
+                if (value == "interpolate") {
+                    samplingMethod = SidConfig::INTERPOLATE;
+                } else if (value == "resample/interpolate") {
+                    samplingMethod = SidConfig::RESAMPLE_INTERPOLATE;
+                }
+            } else if (word == "clock_speed") {
+                if (value == "correct") {
+                    forcec64Model = false;
+                } else if (value == "pal") {
+                    c64Model = SidConfig::PAL;
+                    forcec64Model = true;
+                } else if (value == "ntsc") {
+                    c64Model = SidConfig::NTSC;
+                    forcec64Model = true;
+                } else if (value == "old_ntsc") {
+                    c64Model = SidConfig::OLD_NTSC;
+                    forcec64Model = true;
+                } else if (value == "drean") {
+                    c64Model = SidConfig::DREAN;
+                    forcec64Model = true;
+                }
+            } else if (word == "sid_model") {
+                if (value == "correct") {
+                    forceSidModel = false;
+                } else if (value == "mos6581") {
+                    defaultSidModel = SidConfig::MOS6581;
+                    forceSidModel = true;
+                } else if (value == "mos8580") {
+                    defaultSidModel = SidConfig::MOS8580;
+                    forceSidModel = true;
+                }
+            } else if (word == "sid_filter") {
+                if (value == "true") {
+                    filter = true;
+                } else {
+                    filter = false;
+                }
+            } else if (word == "hvscFilesPath") {
+                plugin->hvscFilesPath = value;
+            } else if (word == "hvscFilesEnabled") {
+                if (value == "true") {
+                    plugin->hvscFilesEnabled = true;
+                } else {
+                    plugin->hvscFilesEnabled = false;
+                }
+            } else if (word == "continuousPlayback") {
+                plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
             }
         }
+
         ifs.close();
     }
 

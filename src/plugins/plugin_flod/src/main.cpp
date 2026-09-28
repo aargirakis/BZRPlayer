@@ -103,36 +103,39 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!useDefaults) {
         string line;
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
-                if (word == "model") {
-                    if (value == "500") {
-                        model1200 = false;
-                    } else if (value == "1200") {
-                        model1200 = true;
-                    }
-                } else if (word == "filter") {
-                    if (value == "on") {
-                        filter = AmigaFilter::FORCE_ON;
-                    } else if (value == "off") {
-                        filter = AmigaFilter::FORCE_OFF;
-                    } else if (value == "auto") {
-                        filter = AmigaFilter::AUTOMATIC;
-                    }
-                } else if (word == "clockspeed") {
-                    if (value == "ntsc") {
-                        clockspeedNTSC = true;
-                    } else {
-                        clockspeedNTSC = false;
-                    }
-                } else if (word == "force") {
-                    force = atoi(value.c_str());
-                } else if (word == "player") {
-                    forcePlayer = atoi(value.c_str());
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
+
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "model") {
+                if (value == "500") {
+                    model1200 = false;
+                } else if (value == "1200") {
+                    model1200 = true;
                 }
+            } else if (word == "filter") {
+                if (value == "on") {
+                    filter = AmigaFilter::FORCE_ON;
+                } else if (value == "off") {
+                    filter = AmigaFilter::FORCE_OFF;
+                } else if (value == "auto") {
+                    filter = AmigaFilter::AUTOMATIC;
+                }
+            } else if (word == "clockspeed") {
+                if (value == "ntsc") {
+                    clockspeedNTSC = true;
+                } else {
+                    clockspeedNTSC = false;
+                }
+            } else if (word == "force") {
+                force = stoi(value);
+            } else if (word == "player") {
+                forcePlayer = stoi(value);
             }
         }
+
         ifs.close();
     }
 

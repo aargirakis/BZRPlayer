@@ -110,33 +110,35 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!useDefaults) {
         string line;
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
-                if (word == "emulator") {
-                    emulator = atoi(value.c_str());
-                } else if (word == "frequency") {
-                    freq = atoi(value.c_str());
-                } else if (word == "playback") {
-                    if (int playback = atoi(value.c_str()); playback == 0) // mono
-                    {
-                        plugin->waveformat.channels = 1;
-                        harmonic = false;
-                    } else if (playback == 1) // stereo
-                    {
-                        plugin->waveformat.channels = 2;
-                        harmonic = false;
-                    } else if (playback == 2) // surround (default)
-                    {
-                        plugin->waveformat.channels = 2;
-                        harmonic = true;
-                    }
-                } else if (word == "continuousPlayback") {
-                    plugin->info->isContinuousPlaybackActive =
-                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
+
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "emulator") {
+                emulator = stoi(value);
+            } else if (word == "frequency") {
+                freq = stoi(value);
+            } else if (word == "playback") {
+                if (int playback = stoi(value); playback == 0) // mono
+                {
+                    plugin->waveformat.channels = 1;
+                    harmonic = false;
+                } else if (playback == 1) // stereo
+                {
+                    plugin->waveformat.channels = 2;
+                    harmonic = false;
+                } else if (playback == 2) // surround (default)
+                {
+                    plugin->waveformat.channels = 2;
+                    harmonic = true;
                 }
+            } else if (word == "continuousPlayback") {
+                plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
             }
         }
+
         ifs.close();
     }
 

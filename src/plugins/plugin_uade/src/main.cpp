@@ -117,56 +117,58 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!useDefaults) {
         string line;
         while (getline(ifs, line)) {
-            if (int i = line.find_first_of("="); i != -1) {
-                string word = line.substr(0, i);
-                string value = line.substr(i + 1);
-                if (word == "frequency") {
-                    frequency = value;
-                } else if (word == "resampler") {
-                    resampler = value;
-                } else if (word == "filterEmu") {
-                    if (value == "true") {
-                        filter_emu = 1;
-                    } else {
-                        filter_emu = 0;
-                    }
-                } else if (word == "filterMode") {
-                    filter_mode = value;
-                } else if (word == "ledForced") {
-                    if (value == "auto") {
-                        led_forced = 0;
-                    } else if (value == "on") {
-                        led_forced = 1;
-                        led_state = 1;
-                    } else {
-                        led_forced = 1;
-                        led_state = 0;
-                    }
-                } else if (word == "panning") {
-                    int x = stoi(value);
-                    panning = format("{}.{}", x / 10, x % 10);
-                } else if (word == "silenceTimeout") {
-                    silence_timeout = value;
-                } else if (word == "silenceTimeoutEnabled") {
-                    if (value == "true") {
-                        silence_timeout_enabled = true;
-                    } else {
-                        silence_timeout_enabled = false;
-                    }
-                } else if (word == "continuousPlayback") {
-                    plugin->info->isContinuousPlaybackActive =
-                            plugin->info->isPlayModeRepeatSongEnabled && value == "true";
-                } else if (word == "uadeSonglengthsPath") {
-                    plugin->uadeSonglengthsPath = value;
-                } else if (word == "uadeSonglengthsEnabled") {
-                    if (value == "true") {
-                        plugin->uadeSonglengthsEnabled = true;
-                    } else {
-                        plugin->uadeSonglengthsEnabled = false;
-                    }
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
+
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "frequency") {
+                frequency = value;
+            } else if (word == "resampler") {
+                resampler = value;
+            } else if (word == "filterEmu") {
+                if (value == "true") {
+                    filter_emu = 1;
+                } else {
+                    filter_emu = 0;
+                }
+            } else if (word == "filterMode") {
+                filter_mode = value;
+            } else if (word == "ledForced") {
+                if (value == "auto") {
+                    led_forced = 0;
+                } else if (value == "on") {
+                    led_forced = 1;
+                    led_state = 1;
+                } else {
+                    led_forced = 1;
+                    led_state = 0;
+                }
+            } else if (word == "panning") {
+                int x = stoi(value);
+                panning = format("{}.{}", x / 10, x % 10);
+            } else if (word == "silenceTimeout") {
+                silence_timeout = value;
+            } else if (word == "silenceTimeoutEnabled") {
+                if (value == "true") {
+                    silence_timeout_enabled = true;
+                } else {
+                    silence_timeout_enabled = false;
+                }
+            } else if (word == "continuousPlayback") {
+                plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
+            } else if (word == "uadeSonglengthsPath") {
+                plugin->uadeSonglengthsPath = value;
+            } else if (word == "uadeSonglengthsEnabled") {
+                if (value == "true") {
+                    plugin->uadeSonglengthsEnabled = true;
+                } else {
+                    plugin->uadeSonglengthsEnabled = false;
                 }
             }
         }
+
         ifs.close();
     }
 
@@ -456,8 +458,8 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
     while (getline(ifs, line)) {
         if (line.substr(0, 32) == md5) {
             // we found it
-            int j = line.find_first_of("=");
-            if (j == -1) {
+            auto j = line.find_first_of('=');
+            if (j == string::npos) {
                 logError(string("Formatting error in Songlength db for entry with md5 ") + md5, PLUGIN_uade_NAME);
                 return -1;
             }
@@ -475,18 +477,18 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
 
             line = vstrings.at(subsong);
 
-            int i = line.find_first_of(":");
-            if (i == -1) {
+            auto i = line.find_first_of(':');
+            if (i == string::npos) {
                 logError(string("Formatting error in Songlength db for entry with md5 ") + md5, PLUGIN_uade_NAME);
                 return -1;
             }
 
-            int msk = line.find_first_of(".");
+            auto msk = line.find_first_of('.');
 
             int ms = 0;
-            if (msk != -1) // there are milliseconds
+            if (msk != string::npos) // there are milliseconds
             {
-                ms = atoi(line.substr(msk + 1).c_str());
+                ms = stoi(line.substr(msk + 1));
                 if (string str_ms = line.substr(msk + 1); str_ms.size() == 2) {
                     ms *= 10;
                 } else if (str_ms.size() == 1) {
@@ -494,9 +496,9 @@ unsigned int getLengthFromDatabase(const char *filename, int subsong, const char
                 }
             }
 
-            int sec = atoi(line.substr(i + 1, i + 3).c_str()) * 1000;
+            int sec = stoi(line.substr(i + 1, i + 3)) * 1000;
 
-            int min = atoi(line.substr(0, i).c_str()) * 1000 * 60;
+            int min = stoi(line.substr(0, i)) * 1000 * 60;
             length = min + sec + ms;
             break;
         }
