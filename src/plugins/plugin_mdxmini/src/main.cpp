@@ -50,10 +50,18 @@ public:
         // delete some stuff
     }
 
+    static uint32_t msToSamples(const uint32_t ms) {
+        const uint64_t samples = static_cast<uint64_t>(ms) * sampleRate * channels / 1000;
+        return static_cast<uint32_t>(samples);
+    }
+
     FMOD_CODEC_WAVEFORMAT waveformat;
     t_mdxmini data;
     Info *info;
     unsigned int length;
+    static constexpr unsigned int sampleRate = 44100;
+    static constexpr unsigned int channels = 2;
+    uint32_t renderingPosition = 0;
 };
 
 /*
@@ -133,8 +141,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.channels = static_cast<int>(pluginMdxmini::channels);
+    plugin->waveformat.frequency = static_cast<int>(pluginMdxmini::sampleRate);
     plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
@@ -144,7 +152,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     codec->plugindata = plugin; // user data value
 
     plugin->info->numChannels = mdx_get_tracks(&plugin->data);
-    mdx_set_rate(plugin->waveformat.frequency);
+    mdx_set_rate(pluginMdxmini::sampleRate);
     char title[MDX_MAX_TITLE_LENGTH];
 
     mdx_get_title(&plugin->data, title);
@@ -152,7 +160,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->info->fileFormat = "MDX";
     plugin->info->plugin = PLUGIN_mdxmini;
     plugin->info->pluginName = PLUGIN_mdxmini_NAME;
-    plugin->info->setSeekable(false);
+    plugin->info->setSeekable(true);
 
     return FMOD_OK;
 }
@@ -172,18 +180,20 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
     static constexpr unsigned int maxSamples = 256;
 
-    if (const auto plugin = static_cast<pluginMdxmini *>(codec->plugindata);
-        !mdx_calc_sample(&plugin->data, static_cast<short *>(buffer), maxSamples) &&
+    const auto plugin = static_cast<pluginMdxmini *>(codec->plugindata);
+
+    if (!mdx_calc_sample(&plugin->data, static_cast<short *>(buffer), maxSamples) &&
         !plugin->info->isContinuousPlaybackActive) {
         return FMOD_ERR_FILE_EOF;
     }
 
+    plugin->renderingPosition += maxSamples;
     *read = maxSamples;
     return FMOD_OK;
 }
 
 static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
-    auto *plugin = static_cast<pluginMdxmini *>(codec->plugindata);
+    const auto *plugin = static_cast<pluginMdxmini *>(codec->plugindata);
 
     if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
         *length = plugin->length;
@@ -195,7 +205,35 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginMdxmini *>(codec->plugindata);
+
     if (postype == FMOD_TIMEUNIT_MS) {
+        bool shouldReinit = false;
+        bool shouldSeek = false;
+        uint32_t seekPosition = 0;
+
+        if (position == 0) {
+            shouldReinit = plugin->renderingPosition != 0;
+        } else {
+            seekPosition = pluginMdxmini::msToSamples(position) & ~1;
+            shouldReinit = seekPosition < plugin->renderingPosition;
+            shouldSeek = true;
+        }
+
+        if (shouldReinit) {
+            // quick way to reinit
+            mdx_parse_mml_ym2151_async_get_length(plugin->data.songdata);
+
+            plugin->renderingPosition = 0;
+        }
+
+        if (shouldSeek) {
+            const uint32_t samplesToSkip = seekPosition - plugin->renderingPosition;
+
+            mdx_calc_log(&plugin->data, nullptr, static_cast<int>(samplesToSkip / pluginMdxmini::channels));
+            plugin->renderingPosition += samplesToSkip;
+        }
+
         return FMOD_OK;
     }
 
