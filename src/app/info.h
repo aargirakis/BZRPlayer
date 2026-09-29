@@ -51,6 +51,7 @@ public:
         comments = "";
         date = "";
         fade = "";
+        sampleFile = "";
         samples = nullptr;
         samplesSize = nullptr;
         samplesLoopStart = nullptr;
@@ -260,6 +261,7 @@ public:
     string comments;
     string date;
     string fade;
+    string sampleFile;
     string *samples;
     unsigned char **samplesData;
     unsigned int *samplesSize;

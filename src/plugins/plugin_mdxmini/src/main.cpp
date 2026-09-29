@@ -157,6 +157,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     mdx_get_title(&plugin->data, title);
     plugin->info->title = title;
+
+    if (plugin->data.mdx->pdx_name[0] == NULL) {
+        plugin->info->sampleFile = "-";
+    } else {
+        plugin->info->sampleFile = plugin->data.mdx->pdx_name;
+
+        if (plugin->data.mdx->haspdx == FLAG_FALSE) {
+            plugin->info->sampleFile += " (MISSING)";
+        }
+    }
+
     plugin->info->fileFormat = "MDX";
     plugin->info->plugin = PLUGIN_mdxmini;
     plugin->info->pluginName = PLUGIN_mdxmini_NAME;

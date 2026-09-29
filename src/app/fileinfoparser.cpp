@@ -230,6 +230,9 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
         case PLUGIN_mdxmini:
             info->title = convertToUtf8(info->title, cp932);
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
+
+            info->sampleFile = convertToUtf8(info->sampleFile, cp932);
+            addInfo(tableInfo, &row, "PCM Data", fromUtf8OrLatin1(info->sampleFile));
             break;
         case PLUGIN_protrekkr:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
