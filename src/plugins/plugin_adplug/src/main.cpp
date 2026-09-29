@@ -1,5 +1,6 @@
 #include <fstream>
 #include "adplug.h"
+#include "binstr.h"
 #include "emuopl.h"
 #include "kemuopl.h"
 #include "nemuopl.h"
@@ -11,6 +12,31 @@
 #include "plugins.h"
 
 using namespace std;
+
+namespace {
+    class CFileProviderImpl : public CFileProvider {
+        string mainFilename;
+        uint8_t *data;
+        const size_t dataSize;
+        const CProvider_Filesystem fs;
+
+    public:
+        CFileProviderImpl(string mainFilename, uint8_t *data, const size_t dataSize)
+            : mainFilename(move(mainFilename)), data(data), dataSize(dataSize) {
+        }
+
+        binistream *open(const string filename) const override {
+            if (filename == mainFilename)
+                return new binisstream(data, dataSize);
+
+            return fs.open(filename);
+        }
+
+        void close(binistream *f) const override {
+            delete f;
+        }
+    };
+}
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
 
@@ -196,7 +222,10 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             break;
     }
 
-    plugin->player = CAdPlug::factory(plugin->info->filePath, plugin->opl);
+    const CFileProviderImpl provider(plugin->info->filePath, plugin->info->fileBuffer, plugin->info->filesize);
+
+    plugin->player = CAdPlug::factory(plugin->info->filePath, plugin->opl, CAdPlug::players, provider);
+
     if (!plugin->player) {
         delete plugin;
         return FMOD_ERR_FORMAT;
