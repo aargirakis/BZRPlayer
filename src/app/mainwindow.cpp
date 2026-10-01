@@ -842,29 +842,38 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
         }
 
         if (obj->parent() != nullptr && obj->parent()->objectName() == "Playlist") {
-            if (key == Qt::Key_Delete) {
+            if (key == Qt::Key_Enter || key == Qt::Key_Return) {
+                if (const auto currentIndex = tableWidgetPlaylists[selectedPlaylist]->currentIndex();
+                    currentIndex.row() >= 0) {
+                    on_playlist_itemDoubleClicked(currentIndex);
+                }
+            } else if (key == Qt::Key_Delete) {
                 logDebug("Deleting playlists items", getClassName());
                 deleteFilesInPlaylist();
             }
-            //            else if(key == Qt::Key_Enter || key == Qt::Key_Return)
-            //            {
-            //                int selectedRow = tableWidgetPlaylists[selectedPlaylist]->currentRow();
-            //                if(selectedRow>=0)
-            //                {
-            //                    on_playlist_itemDoubleClicked(tableWidgetPlaylists[selectedPlaylist]->item(selectedRow,0));
-            //                }
-            //            }
         } else if (obj == ui->listWidget) {
-            if (key == Qt::Key_Delete) {
+            if (key == Qt::Key_Down) {
+                if (const auto item = ui->listWidget->item(ui->listWidget->currentRow() + 1);
+                    item != nullptr) {
+                    on_listWidget_itemClicked(item);
+                }
+            } else if (key == Qt::Key_Up) {
+                if (const auto item = ui->listWidget->item(ui->listWidget->currentRow() - 1);
+                    item != nullptr) {
+                    on_listWidget_itemClicked(item);
+                }
+            } else if (key == Qt::Key_Enter || key == Qt::Key_Return) {
+                on_listWidget_itemDoubleClicked(ui->listWidget->item(ui->listWidget->currentRow()));
+            } else if (key == Qt::Key_Delete) {
                 logDebug("Deleting playlist", getClassName());
                 deletePlaylist();
             }
         } else if (obj == visualizerFullScreen) {
-            if (key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
+            if (key == Qt::Key_Escape) {
                 visualizerFullScreen->hide();
             }
         } else if (obj == trackerFullScreen) {
-            if (key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
+            if (key == Qt::Key_Escape) {
                 trackerFullScreen->hide();
             }
         }
@@ -1755,7 +1764,7 @@ void MainWindow::resetToDefaultColors() {
 }
 
 void MainWindow::on_playlist_itemDoubleClicked(const QModelIndex &index) {
-    logDebugQ("Double click track on row " + QString::number(index.row()), getClassName());
+    logDebugQ("Track selected for playback at row " + QString::number(index.row()), getClassName());
 
     // remove highlighted playlist
     // there might by a state where no playlist is highlighted if a user
@@ -3898,7 +3907,7 @@ void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item) {
     }
 
     removeHighlight();
-    currentPlaylist = ui->listWidget->currentItem()->text();
+    currentPlaylist = item->text();
 
     if (isShuffleEnabled()) {
         resetShuffle(currentPlaylist);
