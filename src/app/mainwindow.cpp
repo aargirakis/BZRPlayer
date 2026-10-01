@@ -814,9 +814,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::KeyPress) {
         const auto key = static_cast<QKeyEvent *>(event)->key();
 
-        if (key == Qt::Key_F5) {
+        if (key == Qt::Key_Space) {
             ui->buttonPlay_2->click();
-        } else if (key == Qt::Key_Right) {
+            return true;
+        }
+
+        if (key == Qt::Key_Right) {
             if (QApplication::keyboardModifiers() == Qt::ShiftModifier) {
                 setPosition(3000);
             } else if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
@@ -857,11 +860,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
                 deletePlaylist();
             }
         } else if (obj == visualizerFullScreen) {
-            if (key == Qt::Key_Space || key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
+            if (key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
                 visualizerFullScreen->hide();
             }
         } else if (obj == trackerFullScreen) {
-            if (key == Qt::Key_Space || key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
+            if (key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
                 trackerFullScreen->hide();
             }
         }
