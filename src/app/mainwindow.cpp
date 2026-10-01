@@ -812,8 +812,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     }
 
     if (event->type() == QEvent::KeyPress) {
-        if (const auto key = static_cast<QKeyEvent *>(event)->key();
-            key == Qt::Key_F5) {
+        const auto key = static_cast<QKeyEvent *>(event)->key();
+
+        if (key == Qt::Key_F5) {
             ui->buttonPlay_2->click();
         } else if (key == Qt::Key_Right) {
             if (QApplication::keyboardModifiers() == Qt::ShiftModifier) {
@@ -838,8 +839,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
         }
 
         if (obj->parent() != nullptr && obj->parent()->objectName() == "Playlist") {
-            if (const auto key = static_cast<QKeyEvent *>(event)->key();
-                key == Qt::Key_Delete) {
+            if (key == Qt::Key_Delete) {
                 logDebug("Deleting playlists items", getClassName());
                 deleteFilesInPlaylist();
             }
@@ -852,19 +852,16 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
             //                }
             //            }
         } else if (obj == ui->listWidget) {
-            if (const auto key = static_cast<QKeyEvent *>(event)->key();
-                key == Qt::Key_Delete) {
+            if (key == Qt::Key_Delete) {
                 logDebug("Deleting playlist", getClassName());
                 deletePlaylist();
             }
         } else if (obj == visualizerFullScreen) {
-            if (const auto key = static_cast<QKeyEvent *>(event)->key();
-                key == Qt::Key_Space || key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
+            if (key == Qt::Key_Space || key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
                 visualizerFullScreen->hide();
             }
         } else if (obj == trackerFullScreen) {
-            if (const auto key = static_cast<QKeyEvent *>(event)->key();
-                key == Qt::Key_Space || key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
+            if (key == Qt::Key_Space || key == Qt::Key_Escape || key == Qt::Key_Enter || key == Qt::Key_Return) {
                 trackerFullScreen->hide();
             }
         }
