@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libkss")
-set(VERSION "1.3.1")
+set(VERSION "1.3.3")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -21,7 +21,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/digital-sound-antiques/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "10ef1b4317e1fd0aa5471ce01bd9760d80bdb6f1aae5de195c8fdb8a5bf5f7a3")
+set(SHA_256_HASH "cb1cb7363318a4476bad417b51d5e50a9ac58dc9bf1c7762cdcdf2552344d756")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
