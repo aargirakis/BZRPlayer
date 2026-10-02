@@ -57,9 +57,9 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
     tableInfo->clearContents();
     tableInfo->setRowCount(999);
 
-    int row = 0;
-
     const auto &info = SoundManager::getInstance().info;
+    int row = 0;
+    bool isSubsong = false;
 
     if (info->isLocalFilePath) {
         addInfo(tableInfo, &row, "Filename", info->filename.c_str());
@@ -79,7 +79,15 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
     addInfo(tableInfo, &row, "Format", info->fileFormat.c_str());
 
     if (info->isLocalFilePath) {
-        addSubsongInfo(tableInfo, &row);
+        const int currentSubsong = info->currentSubsong;
+        const int numSubsongs = info->numSubsongs;
+
+        isSubsong = currentSubsong != 0 || numSubsongs > 1;
+
+        if (isSubsong) {
+            addInfo(tableInfo, &row, "Subsong",
+                    QString::number(currentSubsong + 1) + "/" + QString::number(numSubsongs));
+        }
     }
 
     switch (info->plugin) {
@@ -90,10 +98,13 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Patterns", QString::number(info->numPatterns));
             addInfo(tableInfo, &row, "Orders", QString::number(info->numOrders));
             break;
-        case PLUGIN_asap: {
-            const int defaultSubsong = info->defaultSubsong;
-            addInfo(tableInfo, &row, "Default Subsong", defaultSubsong == -1 ? "-" : QString::number(defaultSubsong));
-        }
+        case PLUGIN_asap:
+            if (isSubsong) {
+                const int defaultSubsong = info->defaultSubsong;
+                addInfo(tableInfo, &row, "Default Subsong",
+                        defaultSubsong == -1 ? "-" : QString::number(defaultSubsong));
+            }
+
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
             addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
             addInfo(tableInfo, &row, "Creation Date", info->date.c_str());
@@ -101,7 +112,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Replay Freq", info->clockSpeedStr.c_str());
             break;
         case PLUGIN_atari_audio:
-            if (info->fileFormatSpecific == "SNDH") {
+            if (info->fileFormatSpecific == "SNDH" && isSubsong) {
                 const int defaultSubsong = info->defaultSubsong;
                 addInfo(tableInfo, &row, "Default Subsong",
                         defaultSubsong == -1 ? "-" : QString::number(defaultSubsong));
@@ -192,9 +203,12 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             break;
         case PLUGIN_libsidplayfp:
             if (info->isSid) {
-                const int defaultSubsong = info->defaultSubsong;
-                addInfo(tableInfo, &row, "Default Subsong",
-                        defaultSubsong == 0 ? "-" : QString::number(defaultSubsong));
+                if (isSubsong) {
+                    const int defaultSubsong = info->defaultSubsong;
+                    addInfo(tableInfo, &row, "Default Subsong",
+                            defaultSubsong == 0 ? "-" : QString::number(defaultSubsong));
+                }
+
                 addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
                 addInfo(tableInfo, &row, "Author", fromUtf8OrLatin1(info->artist));
                 addInfo(tableInfo, &row, "Released", fromUtf8OrLatin1(info->copyright));
@@ -408,17 +422,6 @@ void FileInfoParser::addMultilineInfo(QTableWidget *tableInfo, int *row, const Q
         tableInfo->setCellWidget(*row, 1, plainText);
         addInfo(tableInfo, row, label, text);
     }
-}
-
-void FileInfoParser::addSubsongInfo(QTableWidget *tableInfo, int *row) {
-    const auto &info = SoundManager::getInstance().info;
-
-    const int currentSubsong = info->currentSubsong;
-    const int numSubsongs = info->numSubsongs;
-    const bool isSubsong = currentSubsong != 0 || numSubsongs > 1;
-
-    addInfo(tableInfo, row, "Subsong",
-            isSubsong ? QString::number(currentSubsong + 1) + "/" + QString::number(numSubsongs) : "-");
 }
 
 void FileInfoParser::showFmodSupportedTagsIfAny(QTableWidget *tableInfo, const PlaylistItem *playlistItem, int *row) {
