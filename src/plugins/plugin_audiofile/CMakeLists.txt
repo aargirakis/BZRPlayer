@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "audiofile")
-set(VERSION "d9363a5d16af4ce55eb35c5aad9ca19bb9c53cbe")
+set(VERSION "b62c902dd258125cac86cd2df21fc898035a43d3")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
@@ -15,7 +15,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
 set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/mpruett/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "0590490b4134222b0dfb549a04115a7d81fdf5b2639620cc0824b98db02d7018")
+set(SHA_256_HASH "808aff989a24ee3b60d3f08897d90ca45a031c95c42fe22d4fd913042c1ce307")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches)
