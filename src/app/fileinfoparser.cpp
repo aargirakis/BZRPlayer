@@ -6,11 +6,11 @@
 
 using namespace std;
 
-const string piTitleTag = "Title";
-const string piArtistTagPrio1 = "Artist";
-const string piArtistTagPrio2 = "Album Artist";
-const string piArtistTagPrio3 = "Composer";
-const string piArtistTagPrio4 = "Author";
+constexpr string piTitleTag = "Title";
+constexpr string piArtistTagPrio1 = "Artist";
+constexpr string piArtistTagPrio2 = "Album Artist";
+constexpr string piArtistTagPrio3 = "Composer";
+constexpr string piArtistTagPrio4 = "Author";
 
 const unordered_map<string_view, int> metadataLookupMap = {
     {piTitleTag, 0},
@@ -33,7 +33,7 @@ const unordered_map<string_view, int> metadataLookupMap = {
     {"Comment", 17}
 };
 
-void normalizeText(string &str) {
+static void normalizeText(string &str) {
     bool isNewWord = true;
 
     for (char &c: str) {
@@ -67,7 +67,7 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
         addInfo(tableInfo, &row, "Size", groupDigits(info->filesize) + " bytes");
         addInfo(tableInfo, &row, "Last Modified", info->fileLastModified.c_str());
 
-        const auto fileCreatedAt = info->fileCreatedAt;
+        const auto &fileCreatedAt = info->fileCreatedAt;
         addInfo(tableInfo, &row, "Created", fileCreatedAt.empty() ? "-" : fileCreatedAt.c_str());
 
         addInfo(tableInfo, &row, "Length", msToNiceStringExact(SoundManager::getInstance().getLength(), true));
