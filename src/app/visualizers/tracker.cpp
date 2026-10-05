@@ -16,7 +16,6 @@
 #include "patternview/ImpulseTrackerPatternView.h"
 #include "patternview/MEDPatternView.h"
 #include "patternview/MultiTrackerPatternView.h"
-#include "patternview/NoiseTrackerPatternView.h"
 #include "patternview/OctaMED44ChanPatternView.h"
 #include "patternview/OctaMED54ChanPatternView.h"
 #include "patternview/OctaMED5ChanPatternView.h"
@@ -73,11 +72,11 @@ void Tracker::init() {
     } else if ((fileFormat.startsWith("protracker") && !fileFormat.startsWith("protracker xm")) ||
                fileFormat.startsWith("probably converted (m.k") ||
                fileFormat.startsWith("unknown/converted (m.k") ||
-               fileFormat.startsWith("converted 15 ins") || fileFormat.startsWith("unknown or converted (M")) {
+               fileFormat.startsWith("converted 15 ins") ||
+               fileFormat.startsWith("unknown or converted (M") ||
+               fileFormat.startsWith("noise") ||
+               fileFormat.startsWith("his master")) {
         trackerView = new ProTracker1PatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("noise") || QString(info->fileFormat.c_str()).
-               toLower().startsWith("his master")) {
-        trackerView = new NoiseTrackerPatternView(this, info->numChannels);
     } else if (fileFormat.startsWith("mnemotron")) {
         trackerView = new SoundTracker26PatternView(this, info->numChannels);
     } else if (fileFormat == "soundtracker") {
