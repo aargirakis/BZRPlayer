@@ -49,54 +49,54 @@ void Tracker::init() {
     }
 
     if (info->plugin != PLUGIN_libxmp && info->plugin != PLUGIN_hivelytracker &&
-        info->plugin != PLUGIN_libopenmpt && info->plugin != PLUGIN_sunvox_lib) {
+        info->plugin != PLUGIN_libopenmpt) {
         trackerView = nullptr;
         return;
     }
 
-    if (const QString fileFormat = QString::fromStdString(info->fileFormat).toLower();
-        fileFormat.startsWith("SunVox")) {
-        trackerView = new SoundFXPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("protracker mod (6chn") ||
-               fileFormat.startsWith("protracker mod (8chn") ||
-               fileFormat.startsWith("protracker mod (16ch")) {
+    const QString fileFormatLowered = QString::fromStdString(info->fileFormat).toLower();
+    const QString fileFormat = QString::fromStdString(info->fileFormat);
+
+    if (fileFormatLowered.startsWith("protracker mod (6chn") ||
+        fileFormatLowered.startsWith("protracker mod (8chn") ||
+        fileFormatLowered.startsWith("protracker mod (16ch")) {
         trackerView = new FastTracker1PatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("soundfx")) {
+    } else if (fileFormatLowered.startsWith("soundfx")) {
         trackerView = new SoundFXPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("ice tracker")) {
+    } else if (fileFormatLowered.startsWith("ice tracker")) {
         trackerView = new IceTrackerPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("protracker mod (patt")) {
+    } else if (fileFormatLowered.startsWith("protracker mod (patt")) {
         trackerView = new ProTracker36PatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("protracker mod (flt4")) {
+    } else if (fileFormatLowered.startsWith("protracker mod (flt4")) {
         trackerView = new StarTrekker13PatternView(this, info->numChannels);
-    } else if ((fileFormat.startsWith("protracker") && !fileFormat.startsWith("protracker xm")) ||
-               fileFormat.startsWith("probably converted (m.k") ||
-               fileFormat.startsWith("unknown/converted (m.k") ||
-               fileFormat.startsWith("converted 15 ins") ||
-               fileFormat.startsWith("unknown or converted (M") ||
-               fileFormat.startsWith("noise") ||
-               fileFormat.startsWith("his master")) {
+    } else if ((fileFormatLowered.startsWith("protracker") && !fileFormatLowered.startsWith("protracker xm")) ||
+               fileFormatLowered.startsWith("probably converted (m.k") ||
+               fileFormatLowered.startsWith("unknown/converted (m.k") ||
+               fileFormatLowered.startsWith("converted 15 ins") ||
+               fileFormatLowered.startsWith("unknown or converted (m") ||
+               fileFormatLowered.startsWith("noise") ||
+               fileFormatLowered.startsWith("his master")) {
         trackerView = new ProTracker1PatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("mnemotron")) {
+    } else if (fileFormatLowered.startsWith("mnemotron")) {
         trackerView = new SoundTracker26PatternView(this, info->numChannels);
-    } else if (fileFormat == "soundtracker") {
+    } else if (fileFormatLowered == "soundtracker") {
         trackerView = new UltimateSoundTrackerPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("game music creator")) {
+    } else if (fileFormatLowered.startsWith("game music creator")) {
         trackerView = new GameMusicCreatorPatternView(this, info->numChannels);
-    } else if (QString(info->fileFormat.c_str()) == "AHX") {
+    } else if (fileFormat == "AHX") {
         trackerView = new AHXPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("chiptracker")) {
+    } else if (fileFormatLowered.startsWith("chiptracker")) {
         trackerView = new ChipTrackerPatternView(this, info->numChannels);
-    } else if (QString(info->fileFormat.c_str()) == "HivelyTracker") {
+    } else if (fileFormat == "HivelyTracker") {
         trackerView = new HivelyTrackerPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("scream tracker 3")) {
+    } else if (fileFormatLowered.startsWith("scream tracker 3")) {
         trackerView = new ScreamTracker3PatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("scream tracker 2")) {
+    } else if (fileFormatLowered.startsWith("scream tracker 2")) {
         trackerView = new ScreamTracker2PatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("fasttracker 2") ||
-               fileFormat.startsWith("skale tracker xm") ||
-               fileFormat.startsWith("madtracker 2.0 xm") ||
-               fileFormat.endsWith("xm 1.04")) {
+    } else if (fileFormatLowered.startsWith("fasttracker 2") ||
+               fileFormatLowered.startsWith("skale tracker xm") ||
+               fileFormatLowered.startsWith("madtracker 2.0 xm") ||
+               fileFormatLowered.endsWith("xm 1.04")) {
         if (info->numChannels > 6) {
             trackerView = new FastTracker2PatternView(this, info->numChannels);
         } else if (info->numChannels > 4) {
@@ -104,35 +104,35 @@ void Tracker::init() {
         } else {
             trackerView = new FastTracker24ChanPatternView(this, info->numChannels);
         }
-    } else if (fileFormat.startsWith("octamed (mmd0")) {
+    } else if (fileFormatLowered.startsWith("octamed (mmd0")) {
         trackerView = new MEDPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("impulse")) {
+    } else if (fileFormatLowered.startsWith("impulse")) {
         trackerView = new ImpulseTrackerPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("composer 669")) {
+    } else if (fileFormatLowered.startsWith("composer 669")) {
         trackerView = new Composer669PatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("ultratracker")) {
+    } else if (fileFormatLowered.startsWith("ultratracker")) {
         trackerView = new UltraTrackerPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("digibooster pro")) {
+    } else if (fileFormatLowered.startsWith("digibooster pro")) {
         trackerView = new DigiBoosterProPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("digibooster")) {
+    } else if (fileFormatLowered.startsWith("digibooster")) {
         trackerView = new DigiBooster17PatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("oktalyzer")) {
+    } else if (fileFormatLowered.startsWith("oktalyzer")) {
         trackerView = new OktalyzerPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("octamed (mmd1")) {
+    } else if (fileFormatLowered.startsWith("octamed (mmd1")) {
         if (info->numChannels > 4) {
             trackerView = new OctaMEDPatternView(this, info->numChannels);
         } else {
             trackerView = new OctaMED44ChanPatternView(this, info->numChannels);
         }
-    } else if (fileFormat.startsWith("octamed (mmd2")) {
+    } else if (fileFormatLowered.startsWith("octamed (mmd2")) {
         if (info->numChannels > 4) {
             trackerView = new OctaMED5ChanPatternView(this, info->numChannels);
         } else {
             trackerView = new OctaMED54ChanPatternView(this, info->numChannels);
         }
-    } else if (fileFormat.startsWith("octamed (mmd3")) {
+    } else if (fileFormatLowered.startsWith("octamed (mmd3")) {
         trackerView = new OctaMEDSoundstudioPatternView(this, info->numChannels);
-    } else if (fileFormat.startsWith("multitracker") || fileFormat.startsWith("mdx")) {
+    } else if (fileFormatLowered.startsWith("multitracker") || fileFormatLowered.startsWith("mdx")) {
         trackerView = new MultiTrackerPatternView(this, info->numChannels);
     } else {
         trackerView = nullptr;
