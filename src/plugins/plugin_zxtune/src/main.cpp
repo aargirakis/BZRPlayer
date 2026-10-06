@@ -7,6 +7,7 @@
 #include "core/data_location.h"
 #include "core/service.h"
 #include "error.h"
+#include "make_ptr.h"
 #include "module/attributes.h"
 #include "module/information.h"
 #include "module/state.h"
@@ -77,7 +78,7 @@ public:
         }
 
         Ptr GetSubcontainer(const size_t offset, const size_t size) const override {
-            return Binary::CreateContainer(Data.SubView(offset, size));
+            return MakePtr<LightweightBinaryContainer>(Data.SubView(offset, size));
         }
 
     private:
