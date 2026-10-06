@@ -1,0 +1,11 @@
+--- src/mdx.h	2022-07-27 02:53:01.000000000 +0200
++++ src/mdx.h	2026-10-06 08:10:42.408000000 +0200
+@@ -204,7 +204,7 @@
+ /* ------------------------------------------------------------------ */
+ /* functions */
+ 
+-extern MDX_DATA *mdx_open_mdx( char * );
++extern MDX_DATA *mdx_open_mdx( const void *file_buffer, int file_size );
+ extern PDX_DATA *mdx_open_pdx( unsigned char *, long length );
+ extern int mdx_close_mdx( MDX_DATA * );
+ extern int mdx_close_pdx( PDX_DATA * );

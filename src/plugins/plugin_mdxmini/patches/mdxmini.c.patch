@@ -1,5 +1,5 @@
---- src/mdxmini.c	2022-07-26 17:53:00.000000000 +0200
-+++ src/mdxmini.c	2025-04-18 19:04:41.051347900 +0200
+--- src/mdxmini.c	2022-07-27 02:53:01.000000000 +0200
++++ src/mdxmini.c	2026-10-06 08:10:42.354000000 +0200
 @@ -37,6 +37,11 @@
  
  #endif
@@ -12,6 +12,28 @@
  
  /* ------------------------------------------------------------------ */
  #define PATH_BUF_SIZE 1024
+@@ -89,7 +94,7 @@
+ 
+ /* ------------------------------------------------------------------ */
+ 
+-int mdx_open( t_mdxmini *data, char *filename , char *pcmdir )
++int mdx_open( t_mdxmini* data, char *filename, const void *file_buffer, int file_size, char *pcmdir )
+ {
+   data->nlg_tempo = -1;
+ 
+@@ -132,10 +137,10 @@
+   }
+     /* load mdx file */
+ 
+-    data->mdx = mdx_open_mdx( filename );
++    data->mdx = mdx_open_mdx( file_buffer, file_size );
+     if ( !data->mdx ) 
+ 		return -1;
+-		
++
+ 	mdx = data->mdx;
+ 	
+ 	if ( pcmdir )
 @@ -392,6 +397,55 @@
  	return pcm8_get_buffer_size(data->songdata);
  }

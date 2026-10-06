@@ -126,7 +126,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-    if (const int success = mdx_open(&plugin->data, &plugin->info->filePath[0],
+    if (const int success = mdx_open(&plugin->data, &plugin->info->filePath[0], &plugin->info->fileBuffer[0],
+                                     static_cast<int>(plugin->info->filesize),
                                      isCustomPdxDirEnabled ? customPdxDirPath.data() : nullptr);
         success < 0) {
         delete plugin;

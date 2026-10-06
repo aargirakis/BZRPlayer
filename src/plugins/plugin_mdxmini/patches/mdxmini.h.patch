@@ -1,5 +1,5 @@
 --- src/mdxmini.h	2022-07-27 02:53:01.000000000 +0200
-+++ src/mdxmini.h	2024-09-24 21:07:26.530946787 +0200
++++ src/mdxmini.h	2026-10-06 08:10:42.413000000 +0200
 @@ -4,6 +4,9 @@
   * \author Misty De Meo
   * \date 3 January 2016
@@ -10,6 +10,15 @@
  
  #ifndef __MDXMINI_H__
  #define __MDXMINI_H__
+@@ -58,7 +61,7 @@
+  * \param pcmdir the full path on disk to a directory containing PDX samples to be used with this song. Can be null if the song doesn't use PCM samples.
+  * \return 0 on success, -1 if the file does not exist or cannot be recognized as an MDX song.
+  */
+-int  mdx_open(t_mdxmini *data, char *filename, char *pcmdir);
++int  mdx_open(t_mdxmini *data, char *filename, const void *file_buffer, int file_size, char *pcmdir);
+ /**
+  * \brief Finalizes the structs contained within a t_mdxmini struct.
+  *
 @@ -141,3 +144,6 @@
  void mdx_get_current_notes(t_mdxmini *data, int *notes, int len);
  

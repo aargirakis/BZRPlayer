@@ -1,0 +1,25 @@
+--- src/mdxfile.c	2022-07-27 02:53:01.000000000 +0200
++++ src/mdxfile.c	2026-10-06 08:10:42.382000000 +0200
+@@ -71,7 +71,7 @@
+   return FLAG_TRUE;
+ }
+ 
+-MDX_DATA *mdx_open_mdx( char *name ) {
++MDX_DATA *mdx_open_mdx( const void *file_buffer, int file_size ) {
+ 
+   int i,j;
+   int ptr;
+@@ -84,9 +84,10 @@
+   if ( mdx == NULL ) return NULL;
+ 
+   /* data read */
+-  if (!__load_file(mdx, name)) {
+-    goto error_end;
+-  }
++  mdx->data = malloc(file_size + 16);
++  memcpy(mdx->data, file_buffer, file_size);
++  memset(mdx->data + file_size, 0, 16);
++  mdx->length = file_size;
+ 
+   /* title parsing */
+ 
