@@ -120,7 +120,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     KSND_PlaySong(plugin->player, plugin->song, 0);
 
-    info->fileFormat = "Klystron";
+    info->fileFormat = "Klystrack";
     info->plugin = PLUGIN_klystron;
     info->pluginName = PLUGIN_klystron_NAME;
     info->setSeekable(false);
