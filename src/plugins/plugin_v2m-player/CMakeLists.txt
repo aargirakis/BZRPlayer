@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "v2m-player")
-set(VERSION "385ad6956202d09a2912ef91df9c44e13f9e4a84")
+set(VERSION "8a09be04afb608c25da6ec52193a596fd934ec60")
 string(SUBSTRING ${VERSION} 0 12 VERSION_SHORT)
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
@@ -15,7 +15,7 @@ set(NAME_VERSIONED "${NAME}-${VERSION_SHORT}")
 set(FILENAME "${NAME}-${VERSION}.tar.gz")
 set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/jgilje/${NAME}/archive/${FILENAME_URL}")
-set(SHA_256_HASH "b98a6707445e81434ecc051a5be91155fda667eafff2933da2e4495677a4b13e")
+set(SHA_256_HASH "6e2d37336fda8ba435df49f46e9718baef13a752969f8441148a34c4e5f71434")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches)
@@ -37,7 +37,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE RONAN V2MPLAYER_SYNC_FUNCTIONS)
+target_compile_definitions(${PROJECT_NAME} PRIVATE V2MPLAYER_SYNC_FUNCTIONS)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE logger)
 

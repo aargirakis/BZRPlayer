@@ -103,7 +103,9 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->player = new V2MPlayer();
     plugin->player->Init();
 
-    if (!plugin->player->Open(plugin->convertedSong)) {
+    constexpr uint32_t sampleRate = 44100;
+
+    if (!plugin->player->Open(plugin->convertedSong, sampleRate, true)) {
         return FMOD_ERR_FORMAT;
     }
 
@@ -119,7 +121,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
     plugin->waveformat.channels = channels;
-    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.frequency = sampleRate;
     plugin->waveformat.pcmblocksize = audioChunkSize;
     plugin->waveformat.lengthpcm = -1;
 
