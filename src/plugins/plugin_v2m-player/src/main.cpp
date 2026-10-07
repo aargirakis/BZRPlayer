@@ -14,6 +14,8 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec);
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read);
 
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype);
+
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
@@ -29,7 +31,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &close, // close callback.
     &read, // read callback
     // getlength callback (If not specified FMOD returns the length in FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS or FMOD_TIMEUNIT_PCMBYTES units based on the lengthpcm member of the FMOD_CODEC structure)
-    nullptr,
+    getLength,
     &setPosition, // setposition callback
     // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
     nullptr,
@@ -62,6 +64,7 @@ public:
     V2MPlayer *player;
     uint8_t *convertedSong;
     FMOD_CODEC_WAVEFORMAT waveformat;
+    unsigned int songLength;
 };
 
 /*
@@ -94,8 +97,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     auto *plugin = new pluginV2mPlayer(codec);
 
-    int songLength;
-    ConvertV2M(info->fileBuffer, static_cast<int>(info->filesize), &plugin->convertedSong, &songLength);
+    int newSize;
+    ConvertV2M(info->fileBuffer, static_cast<int>(info->filesize), &plugin->convertedSong, &newSize);
 
     plugin->player = new V2MPlayer();
     plugin->player->Init();
@@ -103,6 +106,16 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!plugin->player->Open(plugin->convertedSong)) {
         return FMOD_ERR_FORMAT;
     }
+
+    sS32 *positions;
+    const uint32_t numPositions = plugin->player->CalcPositions(&positions);
+
+    plugin->songLength = static_cast<unsigned int>(positions[2 * (numPositions - 1)]);
+
+    delete[] positions;
+
+    // add two extra seconds for reverb
+    plugin->songLength += 2000;
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCMFLOAT;
     plugin->waveformat.channels = channels;
@@ -119,22 +132,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     info->setSeekable(true);
     info->plugin = PLUGIN_v2m_player;
     info->pluginName = PLUGIN_v2m_player_NAME;
-
-    sS32 *p;
-    const uint32_t pos = plugin->player->CalcPositions(&p);
-
-    unsigned int length;
-    if (pos % 2 == 0) {
-        length = p[pos];
-    } else {
-        length = p[pos - 1];
-    }
-
-    delete[] p;
-
-    // add one extra second for reverb
-    plugin->waveformat.lengthpcm = static_cast<unsigned int>(
-        (1000 + length) * 2 / 1000.0 * plugin->waveformat.frequency);
 
     return FMOD_OK;
 }
@@ -164,6 +161,17 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     }
 
     return FMOD_OK;
+}
+
+static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *length, FMOD_TIMEUNIT lengthtype) {
+    const auto *plugin = static_cast<pluginV2mPlayer *>(codec->plugindata);
+
+    if (lengthtype == FMOD_TIMEUNIT_MS_REAL) {
+        *length = plugin->songLength;
+        return FMOD_OK;
+    }
+
+    return FMOD_ERR_UNSUPPORTED;
 }
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
