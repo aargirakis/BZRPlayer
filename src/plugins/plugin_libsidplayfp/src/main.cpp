@@ -554,7 +554,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
             *read = 0;
         }
     } else {
-        const auto rendered = plugin->player->play(static_cast<short int *>(buffer), 512);
+        const auto rendered = plugin->player->play(static_cast<short int *>(buffer), 256 * plugin->channels);
         plugin->renderingPosition += rendered;
         *read = rendered / plugin->channels;
     }
