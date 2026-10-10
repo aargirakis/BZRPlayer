@@ -1,3 +1,4 @@
+#include <fstream>
 #include "lib/ksnd.h"
 #include "snd/music.h"
 #include "fmod_errors.h"
@@ -105,6 +106,35 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     if (!plugin->song) {
         delete plugin;
         return FMOD_ERR_FORMAT;
+    }
+
+    string filename = info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    info->isContinuousPlaybackActive = false;
+
+    if (!useDefaults) {
+        string line;
+        while (getline(ifs, line)) {
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
+
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
+            }
+        }
+
+        ifs.close();
     }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;

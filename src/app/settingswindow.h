@@ -241,6 +241,8 @@ private slots:
 
     void on_checkBoxHivelyTrackerContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxKlystronContinuousPlayback_toggled(bool isChecked) const;
+
     void on_checkBoxLazyusf2ContinuousPlayback_toggled(bool isChecked) const;
 
     void on_checkBoxLibkssContinuousPlayback_toggled(bool isChecked) const;
@@ -320,6 +322,8 @@ private:
 
     void loadSettingsHivelytracker() const;
 
+    void loadSettingsKlystron() const;
+
     void loadSettingsLazyusf2() const;
 
     void loadSettingsLibkss() const;
@@ -361,6 +365,8 @@ private:
     void saveSettingsHighlyTheoretical() const;
 
     void saveSettingsHivelytracker() const;
+
+    void saveSettingsKlystron() const;
 
     void saveSettingsLazyusf2() const;
 

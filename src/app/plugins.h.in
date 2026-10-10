@@ -88,6 +88,7 @@
 #define PLUGIN_klystron_LIB "@PLUGIN_klystron_LIB@"
 #define PLUGIN_klystron_NAME "@PLUGIN_klystron_NAME@"
 #define PLUGIN_klystron_VERSION "@PLUGIN_klystron_VERSION@"
+#define PLUGIN_klystron_CONFIG_FILENAME "@PLUGIN_klystron_CONFIG_FILENAME@"
 
 #define PLUGIN_lazyusf2 16
 #define PLUGIN_lazyusf2_LIB "@PLUGIN_lazyusf2_LIB@"

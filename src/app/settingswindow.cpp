@@ -368,6 +368,10 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
         loadSettingsHivelytracker();
     }
 
+    if (PLUGIN_klystron_LIB != "") {
+        loadSettingsKlystron();
+    }
+
     if (PLUGIN_lazyusf2_LIB != "") {
         loadSettingsLazyusf2();
     }
@@ -825,6 +829,10 @@ void settingsWindow::on_buttonOk_clicked() {
         saveSettingsHivelytracker();
     }
 
+    if (PLUGIN_klystron_LIB != "") {
+        saveSettingsKlystron();
+    }
+
     if (PLUGIN_lazyusf2_LIB != "") {
         saveSettingsLazyusf2();
     }
@@ -1227,6 +1235,39 @@ void settingsWindow::loadSettingsHivelytracker() const {
                 ui->comboBoxHivelyTrackerStereoSeparation->setCurrentIndex(index);
             } else if (word == "continuousPlayback") {
                 ui->checkBoxHivelyTrackerContinuousPlayback->setChecked(value == "true");
+            }
+        }
+
+        ifs.close();
+    }
+}
+
+void settingsWindow::loadSettingsKlystron() const {
+    // read config from disk
+    string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_klystron_CONFIG_FILENAME;
+    ifstream ifs(filename.c_str());
+    bool useDefaults = false;
+
+    if (ifs.fail()) {
+        // the file could not be opened
+        useDefaults = true;
+    }
+
+    // defaults
+    ui->checkBoxKlystronContinuousPlayback->setChecked(false);
+
+    if (!useDefaults) {
+        string line;
+
+        while (getline(ifs, line)) {
+            auto i = line.find_first_of('=');
+            if (i == string::npos) continue;
+
+            string word = line.substr(0, i);
+            string value = line.substr(i + 1);
+
+            if (word == "continuousPlayback") {
+                ui->checkBoxKlystronContinuousPlayback->setChecked(value == "true");
             }
         }
 
@@ -1872,6 +1913,21 @@ void settingsWindow::saveSettingsHivelytracker() const {
     ofs.close();
 }
 
+void settingsWindow::saveSettingsKlystron() const {
+    // save config to disk
+    const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_klystron_CONFIG_FILENAME;
+    ofstream ofs(filename.c_str());
+
+    if (ofs.fail()) {
+        // the file could not be opened
+        return;
+    }
+
+    ofs << "continuousPlayback=" << (ui->checkBoxKlystronContinuousPlayback->isChecked() ? "true" : "false")
+            << "\n";
+    ofs.close();
+}
+
 void settingsWindow::saveSettingsLazyusf2() const {
     // save config to disk
     const string filename = userPath.toStdString() + PLUGIN_CONFIGS_DIR "/" PLUGIN_lazyusf2_CONFIG_FILENAME;
@@ -2092,6 +2148,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2114,6 +2171,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2136,6 +2194,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2158,6 +2217,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2180,6 +2240,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2202,6 +2263,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2224,6 +2286,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2246,6 +2309,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(false);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2268,6 +2332,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(false);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2290,6 +2355,30 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(false);
+        ui->groupBoxKlystron->setHidden(true);
+        ui->groupBoxLazyusf2->setHidden(true);
+        ui->groupBoxLibkss->setHidden(true);
+        ui->groupBoxLibopenmpt->setHidden(true);
+        ui->groupBoxLibsidplayfp->setHidden(true);
+        ui->groupBoxLibvgm->setHidden(true);
+        ui->groupBoxLibxmp->setHidden(true);
+        ui->groupBoxMdxmini->setHidden(true);
+        ui->groupBoxUade->setHidden(true);
+        ui->groupBoxVgmstream->setHidden(true);
+        ui->groupBoxVio2sf->setHidden(true);
+        ui->groupBoxZxtune->setHidden(true);
+    } else if (selectedPlugin == PLUGIN_klystron_NAME) {
+        ui->groupBoxAdplug->setHidden(true);
+        ui->groupBoxAsap->setHidden(true);
+        ui->groupBoxAtariAudio->setHidden(true);
+        ui->groupBoxFmod->setHidden(true);
+        ui->groupBoxFurnace->setHidden(true);
+        ui->groupBoxGameMusicEmu->setHidden(true);
+        ui->groupBoxHighlyExperimental->setHidden(true);
+        ui->groupBoxHighlyQuixotic->setHidden(true);
+        ui->groupBoxHighlyTheoretical->setHidden(true);
+        ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(false);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2312,6 +2401,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(false);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2334,6 +2424,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(false);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2356,6 +2447,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(false);
@@ -2378,6 +2470,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2400,6 +2493,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2422,6 +2516,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2444,6 +2539,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2466,6 +2562,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHighlyTheoretical->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2487,6 +2584,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2508,6 +2606,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2529,6 +2628,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2550,6 +2650,7 @@ void settingsWindow::on_tableWidgetPlugins_itemClicked(QTableWidgetItem *item) c
         ui->groupBoxHighlyExperimental->setHidden(true);
         ui->groupBoxHighlyQuixotic->setHidden(true);
         ui->groupBoxHivelytracker->setHidden(true);
+        ui->groupBoxKlystron->setHidden(true);
         ui->groupBoxLazyusf2->setHidden(true);
         ui->groupBoxLibkss->setHidden(true);
         ui->groupBoxLibopenmpt->setHidden(true);
@@ -2759,6 +2860,17 @@ void settingsWindow::changeStyleSheetColor() {
     stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
     stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
     ui->groupBoxHivelytracker->setStyleSheet(stylesheet);
+
+    stylesheet = ui->groupBoxKlystron->styleSheet();
+    stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
+    stylesheet.replace(mainWindow->colorBackgroundOld, mainWindow->getColorBackground());
+    stylesheet.replace(mainWindow->colorMainOld, mainWindow->getColorMain());
+    stylesheet.replace(mainWindow->colorMainHoverOld, mainWindow->getColorMainHover());
+    stylesheet.replace(mainWindow->colorMediumOld, mainWindow->getColorMedium());
+    stylesheet.replace(mainWindow->colorMainTextOld, mainWindow->getColorMainText());
+    stylesheet.replace(mainWindow->colorButtonOld, mainWindow->getColorButton());
+    stylesheet.replace(mainWindow->colorButtonHoverOld, mainWindow->getColorButtonHover());
+    ui->groupBoxKlystron->setStyleSheet(stylesheet);
 
     stylesheet = ui->groupBoxLazyusf2->styleSheet();
     stylesheet.replace(mainWindow->colorSelectionOld, mainWindow->getColorSelection());
@@ -3017,6 +3129,7 @@ void settingsWindow::on_buttonVisualizer_clicked() const {
     ui->groupBoxHighlyQuixotic->setHidden(true);
     ui->groupBoxHighlyTheoretical->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
+    ui->groupBoxKlystron->setHidden(true);
     ui->groupBoxLazyusf2->setHidden(true);
     ui->groupBoxLibkss->setHidden(true);
     ui->groupBoxLibopenmpt->setHidden(true);
@@ -3045,6 +3158,7 @@ void settingsWindow::on_buttonGeneral_clicked() const {
     ui->groupBoxHighlyQuixotic->setHidden(true);
     ui->groupBoxHighlyTheoretical->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
+    ui->groupBoxKlystron->setHidden(true);
     ui->groupBoxLazyusf2->setHidden(true);
     ui->groupBoxLibkss->setHidden(true);
     ui->groupBoxLibopenmpt->setHidden(true);
@@ -3080,6 +3194,7 @@ void settingsWindow::on_buttonAppearance_clicked() const {
     ui->groupBoxHighlyQuixotic->setHidden(true);
     ui->groupBoxHighlyTheoretical->setHidden(true);
     ui->groupBoxHivelytracker->setHidden(true);
+    ui->groupBoxKlystron->setHidden(true);
     ui->groupBoxLazyusf2->setHidden(true);
     ui->groupBoxLibkss->setHidden(true);
     ui->groupBoxLibopenmpt->setHidden(true);
@@ -3924,6 +4039,8 @@ void settingsWindow::updateCheckBoxes() const {
                               : "checkbox-off"]);
     ui->checkBoxHivelyTrackerContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxHivelyTrackerContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
+    ui->checkBoxKlystronContinuousPlayback->setIcon(
+        mainWindow->icons[ui->checkBoxKlystronContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxLazyusf2ContinuousPlayback->setIcon(
         mainWindow->icons[ui->checkBoxLazyusf2ContinuousPlayback->isChecked() ? "checkbox-on" : "checkbox-off"]);
     ui->checkBoxLibkssContinuousPlayback->setIcon(
@@ -4087,6 +4204,10 @@ void settingsWindow::on_checkBoxHighlyTheoreticalContinuousPlayback_toggled(cons
 
 void settingsWindow::on_checkBoxHivelyTrackerContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxHivelyTrackerContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_checkBoxKlystronContinuousPlayback_toggled(const bool isChecked) const {
+    ui->checkBoxKlystronContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
 }
 
 void settingsWindow::on_checkBoxLazyusf2ContinuousPlayback_toggled(const bool isChecked) const {

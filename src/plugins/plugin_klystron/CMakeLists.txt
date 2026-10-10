@@ -37,6 +37,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${LOGGER_API_DIR}
         ${FMOD_API_DIR})
 
+set(CONFIG_FILENAME "${PROJECT_NAME}.cfg")
+set(PLUGIN_${NAME}_CONFIG_FILENAME "${CONFIG_FILENAME}" PARENT_SCOPE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE CONFIG_FILENAME="${CONFIG_FILENAME}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGIN_CONFIGS_DIR="${PLUGIN_CONFIGS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE NOSDL_MIXER)
 target_compile_definitions(${PROJECT_NAME} PRIVATE STEREOOUTPUT)
 
