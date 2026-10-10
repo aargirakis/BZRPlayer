@@ -6449,11 +6449,103 @@ QComboBox::drop-down:disabled {
    <property name="flat">
     <bool>true</bool>
    </property>
+   <widget class="QLabel" name="labelKlystronOversampling">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>121</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Set oversampling quality: the less oversampling the less CPU intensive the playback is but the sound quality will suffer for very high frequencies</string>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="text">
+     <string>Oversampling</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="sliderKlystronOversampling">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>20</y>
+      <width>440</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>4</number>
+    </property>
+    <property name="singleStep">
+     <number>1</number>
+    </property>
+    <property name="pageStep">
+     <number>1</number>
+    </property>
+    <property name="value">
+     <number>4</number>
+    </property>
+    <property name="sliderPosition">
+     <number>4</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelKlystronOversamplingMin">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>40</y>
+      <width>121</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>None</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelKlystronOversamplingMax">
+    <property name="geometry">
+     <rect>
+      <x>555</x>
+      <y>40</y>
+      <width>121</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>16-Fold</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelKlystronOversamplingValue">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>20</y>
+      <width>45</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
    <widget class="QCheckBox" name="checkBoxKlystronContinuousPlayback">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>90</y>
       <width>200</width>
       <height>26</height>
      </rect>

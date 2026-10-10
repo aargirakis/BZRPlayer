@@ -243,6 +243,8 @@ private slots:
 
     void on_checkBoxKlystronContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_sliderKlystronOversampling_valueChanged(int value) const;
+
     void on_checkBoxLazyusf2ContinuousPlayback_toggled(bool isChecked) const;
 
     void on_checkBoxLibkssContinuousPlayback_toggled(bool isChecked) const;

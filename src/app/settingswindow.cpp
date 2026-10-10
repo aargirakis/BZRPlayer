@@ -87,6 +87,8 @@ settingsWindow::settingsWindow(QWidget *parent) : QDialog(parent),
     ui->comboBoxHivelyTrackerStereoSeparation->addItem("75%", "3");
     ui->comboBoxHivelyTrackerStereoSeparation->addItem("100% (Paula)", "4");
 
+    ui->sliderKlystronOversampling->installEventFilter(this);
+
     ui->comboBoxLibopenmptFilter->installEventFilter(this);
     ui->comboBoxLibopenmptFilter->addItem("Auto", "auto");
     ui->comboBoxLibopenmptFilter->addItem("A500 Filter", "a500");
@@ -759,6 +761,7 @@ bool settingsWindow::eventFilter(QObject *obj, QEvent *event) {
          obj == ui->comboBoxAdPlugPlayback ||
          obj == ui->comboBoxAtariAudioDefaultAudioChipClock ||
          obj == ui->comboBoxHivelyTrackerStereoSeparation ||
+         obj == ui->sliderKlystronOversampling ||
          obj == ui->comboBoxDefaultPlayMode ||
          obj == ui->comboBoxRotatingObjectMaterial ||
          obj == ui->comboBoxRotatingObjectModel ||
@@ -1254,6 +1257,8 @@ void settingsWindow::loadSettingsKlystron() const {
     }
 
     // defaults
+    ui->sliderKlystronOversampling->setValue(4);
+    ui->labelKlystronOversamplingValue->setText("4");
     ui->checkBoxKlystronContinuousPlayback->setChecked(false);
 
     if (!useDefaults) {
@@ -1266,7 +1271,9 @@ void settingsWindow::loadSettingsKlystron() const {
             string word = line.substr(0, i);
             string value = line.substr(i + 1);
 
-            if (word == "continuousPlayback") {
+            if (word == "oversampling") {
+                ui->sliderKlystronOversampling->setValue(stoi(value));
+            } else if (word == "continuousPlayback") {
                 ui->checkBoxKlystronContinuousPlayback->setChecked(value == "true");
             }
         }
@@ -1923,6 +1930,7 @@ void settingsWindow::saveSettingsKlystron() const {
         return;
     }
 
+    ofs << "oversampling=" << ui->sliderKlystronOversampling->value() << "\n";
     ofs << "continuousPlayback=" << (ui->checkBoxKlystronContinuousPlayback->isChecked() ? "true" : "false")
             << "\n";
     ofs.close();
@@ -4208,6 +4216,10 @@ void settingsWindow::on_checkBoxHivelyTrackerContinuousPlayback_toggled(const bo
 
 void settingsWindow::on_checkBoxKlystronContinuousPlayback_toggled(const bool isChecked) const {
     ui->checkBoxKlystronContinuousPlayback->setIcon(mainWindow->icons[isChecked ? "checkbox-on" : "checkbox-off"]);
+}
+
+void settingsWindow::on_sliderKlystronOversampling_valueChanged(const int value) const {
+    ui->labelKlystronOversamplingValue->setText(QString::number(value));
 }
 
 void settingsWindow::on_checkBoxLazyusf2ContinuousPlayback_toggled(const bool isChecked) const {

@@ -108,8 +108,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    KSND_SetPlayerQuality(plugin->player, 4);
-
     string filename = info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
@@ -120,6 +118,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     // defaults
+    int oversampling = 4;
     info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
@@ -131,13 +130,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             string word = line.substr(0, i);
             string value = line.substr(i + 1);
 
-            if (word == "continuousPlayback") {
+            if (word == "oversampling") {
+                oversampling = stoi(value);
+            } else if (word == "continuousPlayback") {
                 info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
             }
         }
 
         ifs.close();
     }
+
+    KSND_SetPlayerQuality(plugin->player, oversampling);
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = pluginKlystron::channels;
