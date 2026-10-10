@@ -7130,9 +7130,6 @@ QComboBox::drop-down:disabled {
       <height>26</height>
      </rect>
     </property>
-    <property name="text">
-     <string>50%</string>
-    </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
     </property>

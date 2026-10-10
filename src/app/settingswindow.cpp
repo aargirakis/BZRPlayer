@@ -1361,6 +1361,7 @@ void settingsWindow::loadSettingsLibopenmpt() const {
 
     // defaults
     ui->sliderLibopenmptStereoSeparation->setValue(100);
+    ui->labelLibopenmptStereoSeparationValue->setText("50%");
     ui->checkBoxLibopenmptContinuousPlayback->setChecked(false);
     ui->checkBoxLibopenmptAmigaResampler->setChecked(true);
     int index = ui->comboBoxLibopenmptFilter->findData("auto");
