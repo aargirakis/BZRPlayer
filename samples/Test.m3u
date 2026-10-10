@@ -43,7 +43,7 @@ plugin_libsidplayfp/RSID/Last_V8.sid::<>::?<>Real C64 one-file format (RSID)<><>
 plugin_libvgm/DOSBox Raw OPL/v0/dune1.dro::<>::?<>DOSBox Raw OPL v0<><>::????<><>::????dune1.dro<><>::????[time(h:m:s)] <><>::????[loop(h:m:s)][-]<><>::????[fade(h:m:s)]<><>::????[loopcount]<><>::????
 #EXTINF:228.180,revealed.truths
 plugin_libxmp/Eureka Packer/Anarchy-SpringMelodies-7.Eureka::<>::?<>Eureka Packer<><>::????<><>::????revealed.truths<><>::????[time(h:m:s)] <><>::????[loop(h:m:s)][-]<><>::????[fade(h:m:s)]<><>::????[loopcount]<><>::????
-#EXTINF:130.000,Ｆinal Ｆantasy III [       The Prelude             プレリュード       ]
+#EXTINF:49.000,Ｆinal Ｆantasy III [       The Prelude             プレリュード       ]
 plugin_mdxmini/Sharp X68000 MDX/MDX/FF3_01.mdx::<>::?<>MDX<><>::????<><>::????Ｆinal Ｆantasy III [       The Prelude             プレリュード       ]<><>::????[time(h:m:s)] <><>::????[loop(h:m:s)][-]<><>::????[fade(h:m:s)]<><>::????[loopcount]<><>::????
 #EXTINF:134.681,cave story - 46 - cave story (theme song) beta.org
 plugin_organya-decoder/Organya/cave story - 46 - cave story (theme song) beta.org::<>::?<>Organya<><>::????<><>::????cave story - 46 - cave story (theme song) beta.org<><>::????[time(h:m:s)] <><>::????[loop(h:m:s)][-]<><>::????[fade(h:m:s)]<><>::????[loopcount]<><>::????
@@ -55,7 +55,7 @@ plugin_sc68/sc68/About-Intro.sc68::<>::?<>SC68<><>::????<><>::????YM - Jam (UMD 
 plugin_sunvox_lib/SunVox/afternoon.sunvox::<>::?<>SunVox<><>::????<><>::????Afternoon. by NightRadio 2012<><>::????[time(h:m:s)] <><>::????[loop(h:m:s)][-]<><>::????[fade(h:m:s)]<><>::????[loopcount]<><>::????
 #EXTINF:33.000,kh.Wings_of_Fury
 plugin_uade/KrisHatlelid/kh.Wings_of_Fury::<>::?<>KrisHatlelid<><>::????1<><>::????kh.Wings_of_Fury<><>::????[time(h:m:s)] <><>::????[loop(h:m:s)][-]<><>::????[fade(h:m:s)]<><>::????[loopcount]<><>::????
-#EXTINF:203.361,riot of flowers.v2m
+#EXTINF:203.363,riot of flowers.v2m
 plugin_v2m-player/Farbrausch V2M/riot of flowers.v2m::<>::?<>Farbrausch V2M<><>::????<><>::????riot of flowers.v2m<><>::????[time(h:m:s)] <><>::????[loop(h:m:s)][-]<><>::????[fade(h:m:s)]<><>::????[loopcount]<><>::????
 #EXTINF:5.120,(mov) Rtl.aa3
 plugin_vgmstream/Sony OpenMG audio/ATRAC3+ (Adaptive TRansform Acoustic Coding 3+)/(mov) Rtl.aa3::<>::?<>Sony OpenMG audio<><>::????<><>::????(mov) Rtl.aa3<><>::????[time(h:m:s)] <><>::????[loop(h:m:s)][-]<><>::????[fade(h:m:s)]<><>::????[loopcount]<><>::????
