@@ -56,6 +56,7 @@ public:
     Info *info;
     AtariAudioRenderer *atariAudio;
     static constexpr unsigned int sampleRate = 48000;
+    static constexpr unsigned int channels = 1;
     uint32_t renderingPosition = 0;
     uint32_t seekPosition;
     bool isSeeking = false;
@@ -131,7 +132,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = 1;
+    plugin->waveformat.channels = pluginAtariAudio::channels;
     plugin->waveformat.frequency = pluginAtariAudio::sampleRate;
     plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
@@ -230,7 +231,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
         }
     } else {
         plugin->atariAudio->AudioRender(static_cast<int16_t *>(buffer), size);
-        plugin->renderingPosition += size;
+        plugin->renderingPosition += size * pluginAtariAudio::channels;
         *read = size;
     }
 
