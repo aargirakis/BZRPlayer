@@ -491,6 +491,14 @@ void SoundManager::setMute(const bool mute) const {
     checkFmodError(result);
 }
 
+unsigned int SoundManager::getFmodPreBufferingMs() const {
+    return fmodPreBufferingMs;
+}
+
+void SoundManager::setFmodPreBufferingMs(const unsigned int ms) {
+    fmodPreBufferingMs = ms;
+}
+
 unsigned int SoundManager::getPosition(const FMOD_TIMEUNIT timeUnit) const {
     if (!info->isLocalFilePath) {
         return 0;
@@ -667,6 +675,9 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
             fmodModeCurrent = fmodModeLocalPlugins;
             info->pluginsDir = info->libPath + PLUGINS_DIR + "/";
             loadPluginChain();
+
+            // has to be reset before invocation of FMOD_System_CreateSound
+            fmodPreBufferingMs = 0;
         }
     }
 

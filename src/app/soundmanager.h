@@ -49,6 +49,10 @@ public:
 
     bool isPaused() const;
 
+    unsigned int getFmodPreBufferingMs() const;
+
+    void setFmodPreBufferingMs(unsigned int ms);
+
     unsigned int getPosition(FMOD_TIMEUNIT) const;
 
     unsigned int getLength() const;
@@ -145,6 +149,7 @@ private:
     unsigned int mutedChannelsMask;
     QString mutedChannelsMaskString;
     bool isFmodSystemCreated = false;
+    unsigned int fmodPreBufferingMs;
 };
 
 #endif // SOUNDMANAGER_H

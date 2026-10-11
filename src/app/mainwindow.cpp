@@ -1106,7 +1106,7 @@ void MainWindow::refreshInfoNetworkStream() {
 
 void MainWindow::timerProgress() {
     unsigned int currentMs = 0;
-    const auto &sm = SoundManager::getInstance();
+    auto &sm = SoundManager::getInstance();
     const auto info = sm.info;
 
     if (sm.isPlaying()) {
@@ -1133,6 +1133,27 @@ void MainWindow::timerProgress() {
 
         if (currentMs == 0) {
             currentMs = sm.getPosition(FMOD_TIMEUNIT_MS);
+        } else {
+            /* FMOD_System_CreateSound is invoked with FMOD_CREATESTREAM flag since, by design, it is the only way to
+             * be able to pass pointer to buffered file instead of file path to fmod while keep using fmod callbacks.
+             * However with FMOD_CREATESTREAM set fmod performs a track pre-buffering (during FMOD_System_CreateSound
+             * invocation) before starting playback, which causes getPosition of FMOD_TIMEUNIT_MS_REAL to start from
+             * a value which includes the the pre-buffered milliseconds amount too.
+             * This results in inconsistencies between real playback timings and BZR2 playback timings: displayed timer
+             * timestamp (and cursor position) will starts from higher values leading to premature playback ending.
+             * Here preBufferingMs var value is set with currentMs var value the first time the track is played and
+             * then used to adjust the currentMs values.
+             */
+            auto preBufferingMs = sm.getFmodPreBufferingMs();
+
+            if (sm.getFmodPreBufferingMs() == 0) {
+                preBufferingMs = currentMs;
+                sm.setFmodPreBufferingMs(preBufferingMs);
+            }
+
+            if (currentMs >= preBufferingMs) {
+                currentMs -= preBufferingMs;
+            }
         }
 
         if (!ui->positionSlider->isSliderDown()) {
