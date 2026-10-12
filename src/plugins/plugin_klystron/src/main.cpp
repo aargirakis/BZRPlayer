@@ -141,6 +141,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     KSND_SetPlayerQuality(plugin->player, oversampling);
+    KSND_SetLooping(plugin->song, info->isContinuousPlaybackActive ? 0 : 1);
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = pluginKlystron::channels;
