@@ -1,6 +1,18 @@
 --- src/lib/ksnd.h	2020-09-26 08:03:28.000000000 +0200
-+++ src/lib/ksnd.h	2026-10-12 14:55:49.429000000 +0200
-@@ -194,10 +194,10 @@
++++ src/lib/ksnd.h	2026-10-12 18:44:24.189000000 +0200
+@@ -163,9 +163,10 @@
+  * @param player player context
+  * @param[out] buffer buffer to be filled
+  * @param buffer_length size of @a buffer in bytes
++ * @param is_seek rendering is skipped when set to non-zero value
+  * @return number of samples output
+  */
+-KLYSAPI extern int KSND_FillBuffer(KPlayer *player, short int *buffer, int buffer_length);
++KLYSAPI extern int KSND_FillBuffer(KPlayer *player, short int *buffer, int buffer_length, int is_seek);
+ 
+ /**
+  * Set player oversampling quality.
+@@ -194,10 +195,10 @@
   * if it encounters the song end. This is useful if you want to detect song end and avoid extra 
   * audio data in the buffer after the song end. 
   *

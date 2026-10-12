@@ -1,5 +1,21 @@
 --- src/lib/ksnd.c	2020-09-26 08:03:28.000000000 +0200
-+++ src/lib/ksnd.c	2026-10-12 15:03:12.407000000 +0200
++++ src/lib/ksnd.c	2026-10-12 18:27:52.233000000 +0200
+@@ -182,13 +182,13 @@
+ }
+ 
+ 
+-KLYSAPI int KSND_FillBuffer(KPlayer *player, short int *buffer, int buffer_length)
++KLYSAPI int KSND_FillBuffer(KPlayer *player, short int *buffer, int buffer_length, const int is_seek)
+ {
+   // Zero buffer as klystron will mix the new data with existing buffer contents
+   memset(buffer, 0, buffer_length);
+ 
+ #ifdef NOSDL_MIXER
+-	cyd_output_buffer_stereo(&player->cyd, (void*)buffer, buffer_length);
++	cyd_output_buffer_stereo(&player->cyd, (void*)buffer, buffer_length, is_seek);
+ #else
+ 	cyd_output_buffer_stereo(0, buffer, buffer_length, &player->cyd);
+ #endif
 @@ -255,12 +255,12 @@
  }
  

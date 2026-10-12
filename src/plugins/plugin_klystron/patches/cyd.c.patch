@@ -1,5 +1,5 @@
---- src/snd/cyd.c	2025-10-30 18:59:47.270921875 +0100
-+++ src/snd/cyd.c	2025-10-30 19:56:16.322489062 +0100
+--- src/snd/cyd.c	2020-09-26 08:03:28.000000000 +0200
++++ src/snd/cyd.c	2026-10-12 19:16:59.000000000 +0200
 @@ -49,6 +49,13 @@
  
  #endif
@@ -14,3 +14,40 @@
  #define envspd(cyd,slope) (slope!=0?(((Uint64)0xff0000 / ((slope) * (slope) * 256 / (ENVELOPE_SCALE * ENVELOPE_SCALE))) * CYD_BASE_FREQ / cyd->sample_rate):((Uint64)0xff0000 * CYD_BASE_FREQ / cyd->sample_rate))
  
  // used lfsr-generator <http://lfsr-generator.sourceforge.net/> for this:
+@@ -782,9 +789,9 @@
+ 
+ 
+ #ifdef NOSDL_MIXER
+-void cyd_output_buffer_stereo(void *udata, Uint8 *_stream, int len)
++void cyd_output_buffer_stereo(void *udata, Uint8 *_stream, int len, const int is_seek)
+ #else
+-void cyd_output_buffer_stereo(int chan, void *_stream, int len, void *udata)
++void cyd_output_buffer_stereo(int chan, void *_stream, int len, void *udata, const int is_seek)
+ #endif
+ {
+ 	CydEngine *cyd = udata;
+@@ -837,6 +844,7 @@
+ 				}
+ 			}
+ 
++			if (!is_seek) {
+ 			Sint32 left, right;
+ #ifdef STEREOOUTPUT
+ 			cyd_output(cyd, &left, &right);
+@@ -881,6 +889,7 @@
+ 			}
+ 
+ 			*((Sint16*)stream + 1) = o2;
++			}
+ 
+ 			cyd_cycle(cyd);
+ 			++cyd->samples_played;
+@@ -1070,7 +1079,7 @@
+   memset(cyd->waveout_hdr[cyd->waveout_hdr_idx].lpData, 0, cyd->waveout_hdr[cyd->waveout_hdr_idx].dwBufferLength);
+ 
+ #ifdef NOSDL_MIXER
+-	cyd_output_buffer_stereo(cyd, cyd->waveout_hdr[cyd->waveout_hdr_idx].lpData, cyd->waveout_hdr[cyd->waveout_hdr_idx].dwBufferLength);
++	cyd_output_buffer_stereo(cyd, cyd->waveout_hdr[cyd->waveout_hdr_idx].lpData, cyd->waveout_hdr[cyd->waveout_hdr_idx].dwBufferLength, cyd->is_seek);
+ #else
+ 	cyd_output_buffer_stereo(0, cyd->waveout_hdr[cyd->waveout_hdr_idx].lpData, cyd->waveout_hdr[cyd->waveout_hdr_idx].dwBufferLength, cyd);
+ #endif

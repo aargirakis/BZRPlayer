@@ -194,13 +194,14 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
         if (plugin->renderingPosition < plugin->seekPosition) {
             uint32_t toSkip = plugin->seekPosition - plugin->renderingPosition;
 
-            if (toSkip > 32768) {
-                toSkip = 32768;
+            if (toSkip > 32768 * 8) {
+                toSkip = 32768 * 8;
             }
 
             vector<short int> dummyBuffer(toSkip);
 
-            KSND_FillBuffer(plugin->player, dummyBuffer.data(), static_cast<int>(toSkip * plugin->waveformat.format));
+            KSND_FillBuffer(plugin->player, dummyBuffer.data(), static_cast<int>(toSkip * plugin->waveformat.format),
+                            1);
             plugin->renderingPosition += toSkip;
 
             memset(buffer, 0, size * plugin->waveformat.pcmblocksize);
@@ -211,7 +212,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
         }
     } else {
         KSND_FillBuffer(plugin->player, static_cast<short int *>(buffer),
-                        static_cast<int>(size * plugin->waveformat.pcmblocksize));
+                        static_cast<int>(size * plugin->waveformat.pcmblocksize), 0);
         plugin->renderingPosition += size * pluginKlystron::channels;
         *read = size;
     }

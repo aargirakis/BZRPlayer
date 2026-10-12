@@ -1,0 +1,22 @@
+--- src/snd/cyd.h	2020-09-26 08:03:28.000000000 +0200
++++ src/snd/cyd.h	2026-10-12 18:23:08.063000000 +0200
+@@ -166,6 +166,7 @@
+ #endif
+ 	Uint64 samples_played;
+ 	int oversample;
++	const int is_seek;
+ } CydEngine;
+ 
+ enum
+@@ -215,9 +216,9 @@
+ #endif
+ 
+ #ifdef NOSDL_MIXER
+-void cyd_output_buffer_stereo(void *udata, Uint8 *_stream, int len);
++void cyd_output_buffer_stereo(void *udata, Uint8 *_stream, int len, int is_seek);
+ #else
+-void cyd_output_buffer_stereo(int chan, void *_stream, int len, void *udata);
++void cyd_output_buffer_stereo(int chan, void *_stream, int len, void *udata, int is_seek);
+ #endif
+ 
+ Sint32 cyd_env_output(const CydEngine *cyd, Uint32 channel_flags, const CydAdsr *adsr, Sint32 input);
