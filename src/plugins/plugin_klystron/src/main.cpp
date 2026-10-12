@@ -17,8 +17,6 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype);
 
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype);
-
 FMOD_CODEC_DESCRIPTION codecDescription =
 {
     FMOD_CODEC_PLUGIN_VERSION,
@@ -26,7 +24,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     0x00010000, // version 0xAAAABBBB   A = major, B = minor.
     0, // whether or not force everything using this codec to be a stream
     // the time formats we would like to accept into setposition/getposition
-    FMOD_TIMEUNIT_MS | FMOD_TIMEUNIT_MS_REAL,
+    FMOD_TIMEUNIT_MS,
     &open, // open callback
     &close, // close callback.
     &read, // read callback
@@ -34,7 +32,7 @@ FMOD_CODEC_DESCRIPTION codecDescription =
     &getLength,
     &setPosition, // setposition callback
     // getposition callback (only used for timeunit types that are not FMOD_TIMEUNIT_PCM, FMOD_TIMEUNIT_MS and FMOD_TIMEUNIT_PCMBYTES)
-    &getPosition,
+    nullptr,
     nullptr, // sound create callback (don't need it)
     nullptr // getwaveformat
 };
@@ -46,11 +44,6 @@ public:
     pluginKlystron(FMOD_CODEC_STATE *codec) {
         _codec = codec;
         memset(&waveformat, 0, sizeof(waveformat));
-    }
-
-    static uint32_t samplesToMs(const uint32_t samples) {
-        const uint64_t ms = static_cast<uint64_t>(samples) * 1000 / (sampleRate * channels);
-        return static_cast<uint32_t>(ms);
     }
 
     static uint32_t msToSamples(const uint32_t ms) {
@@ -72,8 +65,6 @@ public:
     FMOD_CODEC_WAVEFORMAT waveformat;
     unsigned int songLength;
     uint32_t renderingPosition = 0;
-    uint32_t seekPosition;
-    bool isSeeking = false;
 };
 
 #ifdef __cplusplus
@@ -189,33 +180,12 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
-    if (auto *plugin = static_cast<pluginKlystron *>(codec->plugindata);
-        plugin->isSeeking) {
-        if (plugin->renderingPosition < plugin->seekPosition) {
-            uint32_t toSkip = plugin->seekPosition - plugin->renderingPosition;
+    auto *plugin = static_cast<pluginKlystron *>(codec->plugindata);
 
-            if (toSkip > 32768 * 8) {
-                toSkip = 32768 * 8;
-            }
-
-            vector<short int> dummyBuffer(toSkip);
-
-            KSND_FillBuffer(plugin->player, dummyBuffer.data(), static_cast<int>(toSkip * plugin->waveformat.format),
-                            1);
-            plugin->renderingPosition += toSkip;
-
-            memset(buffer, 0, size * plugin->waveformat.pcmblocksize);
-            *read = size;
-        } else {
-            plugin->isSeeking = false;
-            *read = 0;
-        }
-    } else {
-        KSND_FillBuffer(plugin->player, static_cast<short int *>(buffer),
-                        static_cast<int>(size * plugin->waveformat.pcmblocksize), 0);
-        plugin->renderingPosition += size * pluginKlystron::channels;
-        *read = size;
-    }
+    KSND_FillBuffer(plugin->player, static_cast<short int *>(buffer),
+                    static_cast<int>(size * plugin->waveformat.pcmblocksize), 0);
+    plugin->renderingPosition += size * pluginKlystron::channels;
+    *read = size;
 
     return FMOD_OK;
 }
@@ -237,13 +207,15 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
 
     if (postype == FMOD_TIMEUNIT_MS) {
         bool shouldReinit = false;
+        bool shouldSeek = false;
+        uint32_t seekPosition = 0;
 
         if (position == 0) {
             shouldReinit = plugin->renderingPosition != 0;
         } else {
-            plugin->seekPosition = pluginKlystron::msToSamples(position) & ~1;
-            shouldReinit = plugin->seekPosition < plugin->renderingPosition;
-            plugin->isSeeking = true;
+            seekPosition = pluginKlystron::msToSamples(position) & ~1;
+            shouldReinit = seekPosition < plugin->renderingPosition;
+            shouldSeek = true;
         }
 
         if (shouldReinit) {
@@ -251,17 +223,15 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
             plugin->renderingPosition = 0;
         }
 
-        return FMOD_OK;
-    }
+        if (shouldSeek) {
+            const uint32_t samplesToSkip = seekPosition - plugin->renderingPosition;
+            vector<short int> dummyBuffer(samplesToSkip);
 
-    return FMOD_ERR_UNSUPPORTED;
-}
+            KSND_FillBuffer(plugin->player, dummyBuffer.data(),
+                            static_cast<int>(samplesToSkip * plugin->waveformat.format), 1);
+            plugin->renderingPosition += samplesToSkip;
+        }
 
-static FMOD_RESULT F_CALL getPosition(FMOD_CODEC_STATE *codec, unsigned int *position, FMOD_TIMEUNIT postype) {
-    const auto *plugin = static_cast<pluginKlystron *>(codec->plugindata);
-
-    if (postype == FMOD_TIMEUNIT_MS_REAL) {
-        *position = pluginKlystron::samplesToMs(plugin->renderingPosition);
         return FMOD_OK;
     }
 
