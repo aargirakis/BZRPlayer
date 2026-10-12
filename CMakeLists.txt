@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project("BZR Player" VERSION "2.0.93")
+project("BZR Player" VERSION "2.0.94")
 
 include(GNUInstallDirs)
 
