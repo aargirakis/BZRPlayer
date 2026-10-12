@@ -1,0 +1,15 @@
+--- src/lib/ksnd.h	2020-09-26 08:03:28.000000000 +0200
++++ src/lib/ksnd.h	2026-10-12 14:55:49.429000000 +0200
+@@ -194,10 +194,10 @@
+  * if it encounters the song end. This is useful if you want to detect song end and avoid extra 
+  * audio data in the buffer after the song end. 
+  *
+- * @param player player context
++ * @param song song to play
+  * @param looping looping enabled
+  */
+-KLYSAPI extern void KSND_SetLooping(KPlayer *player, int looping);
++KLYSAPI extern void KSND_SetLooping(KSong *song, int looping);
+ 
+ /**
+  * Returns current position in the song.

@@ -1,0 +1,18 @@
+--- src/lib/ksnd.c	2020-09-26 08:03:28.000000000 +0200
++++ src/lib/ksnd.c	2026-10-12 15:03:12.407000000 +0200
+@@ -255,12 +255,12 @@
+ }
+ 
+ 
+-KLYSAPI void KSND_SetLooping(KPlayer *player, int looping)
++KLYSAPI void KSND_SetLooping(KSong *song, int looping)
+ {
+ 	if (looping)
+-		player->mus.flags |= MUS_NO_REPEAT;
++		song->song.flags |= MUS_NO_REPEAT;
+ 	else
+-		player->mus.flags &= ~MUS_NO_REPEAT;
++		song->song.flags &= ~MUS_NO_REPEAT;
+ }
+ 
+ 
