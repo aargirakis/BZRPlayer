@@ -538,7 +538,7 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
                 toSkip = 32768;
             }
 
-            vector<short> dummyBuffer(toSkip * plugin->channels);
+            vector<short> dummyBuffer(toSkip);
 
             const auto skipped = plugin->player->play(dummyBuffer.data(), toSkip);
             plugin->renderingPosition += skipped;
