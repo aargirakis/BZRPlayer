@@ -67,8 +67,8 @@ In addition to these **FMOD** itself is used to provide support for both MIDI an
 ## How to get
 
 [![AUR](https://img.shields.io/aur/version/bzr-player.svg?label=AUR)](https://aur.archlinux.org/packages/bzr-player/)\
-[Releases & changelogs](https://github.com/aargirakis/BZRPlayer/releases)\
-[Old versions archive](https://github.com/aargirakis/BZRPlayer/tree/binaries_archive/binaries)
+[Releases & changelogs](https://github.com/bzr-player/bzr-player/releases)\
+[Old versions archive](https://github.com/bzr-player/bzr-player/tree/binaries_archive/binaries)
 
 ----
 
@@ -97,7 +97,7 @@ containing the final archive release file
 #### Build example
 
 ```
-cd BZRPlayer &&
+cd bzr-player &&
 cmake -B cmake-build -S . -DCMAKE_PREFIX_PATH=/ucrt64 -DCMAKE_BUILD_TYPE=Release -G Ninja &&
 ninja -C cmake-build
 ```
@@ -156,7 +156,7 @@ In order to build BZR2 following packages are required:
   `bison` `build-essential` `cmake` `dos2unix` `flex` `libglvnd0` `libsdl2-dev` `libvulkan-dev` `ninja-build`
   `patchutils` `qt6-base-dev` `qt6-base-private-dev` `qt6-declarative-dev` `qt6-svg-dev`
   `libqt-advanced-docking-system-dev]`
-  ([libqt-advanced-docking-system-dev](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system-dev_5.1.1-0_amd64-ubuntu-24.04.deb)
+  ([libqt-advanced-docking-system-dev](https://github.com/bzr-player/bzr-player/releases/latest/download/libqt-advanced-docking-system-dev_5.1.1-0_amd64-ubuntu-24.04.deb)
   for Ubuntu 24.04 and equivalent)
 
 
@@ -185,7 +185,7 @@ instead of system ones
 #### Build with install example
 
 ```
-cd BZRPlayer &&
+cd bzr-player &&
 cmake -B cmake-build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -G Ninja &&
 ninja -C cmake-build &&
 sudo ninja -C cmake-build install
@@ -202,7 +202,7 @@ For running BZR2 following packages are required:
 - On **Debian-based** distros:\
   `fonts-noto-cjk` `libqt6core6` `libqt6network6` `libqt6openglwidgets6` `libqt6svg6` `libqt6xml6`
   `libqt-advanced-docking-system4`
-  ([libqt-advanced-docking-system](https://github.com/aargirakis/BZRPlayer/releases/latest/download/libqt-advanced-docking-system_5.1.1-0_amd64-ubuntu-24.04.deb)
+  ([libqt-advanced-docking-system](https://github.com/bzr-player/bzr-player/releases/latest/download/libqt-advanced-docking-system_5.1.1-0_amd64-ubuntu-24.04.deb)
   for Ubuntu 24.04 and equivalent)
 
 

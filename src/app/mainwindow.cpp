@@ -5449,7 +5449,7 @@ QStringList MainWindow::sortPreservingOrder(const QStringList &folderPlaylists,
 }
 
 void MainWindow::updateCheck() {
-    const auto checker = new UpdateChecker(PROJECT_VERSION, "https://github.com/aargirakis/BZRPlayer", this);
+    const auto checker = new UpdateChecker(PROJECT_VERSION, "https://github.com/bzr-player/bzr-player", this);
 
     connect(checker, &UpdateChecker::checkDone, this, [this](const QString &version, const QString &error) {
         if (!error.isEmpty()) {
